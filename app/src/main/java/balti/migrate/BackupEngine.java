@@ -47,18 +47,18 @@ public class BackupEngine {
     SharedPreferences main;
 
     private Process suProcess = null;
-    private BufferedReader outputStream = null;
-    private BufferedReader errorStream = null;
-    int n = 0, compressionLevel;
-    String finalMessage = "";
-    ArrayList<String> errors;
+    private int n = 0, compressionLevel;
+    private String finalMessage = "";
+    private ArrayList<String> errors;
 
-    Process getNumberOfFiles;
-    Process zipProcess;
+    private Process getNumberOfFiles;
+    private Process zipProcess;
 
-    Intent logBroadcast;
+    private Intent logBroadcast;
 
-    boolean isCancelled = false;
+    private boolean isCancelled = false;
+
+    final String TEMP_DIR_NAME = "/data/balti.migrate";
 
     BackupEngine(String backupSummary, String backupPackageNames, String backupName, int compressionLevel, String destination, Context context) {
         this.backupSummary = backupSummary;
@@ -75,6 +75,7 @@ public class BackupEngine {
         logBroadcast = new Intent("Migrate log broadcast");
 
         errors = new ArrayList<>(0);
+        n = backupSummary.split("\r\n|\r|\n").length;
     }
 
     NotificationCompat.Builder createNotificationBuilder(){
@@ -115,8 +116,8 @@ public class BackupEngine {
             if (isCancelled) throw new InterruptedIOException();
             if (receivedFiles[0] != null && receivedFiles[1] != null) {
                 suProcess = Runtime.getRuntime().exec("su -c sh " + receivedFiles[0].getAbsolutePath());
-                outputStream = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
-                errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
+                BufferedReader outputStream = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
+                BufferedReader errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
                 String line;
                 int c = 0, p;
                 progressNotif.addAction(cancelAction);
@@ -404,25 +405,42 @@ public class BackupEngine {
         return err;
     }
 
-    void makeRemoteScript(String pastingDir, String name) {
+    void makeRemoteScript(String filename) {
 
-        String scriptName = name + ".sh";
-        String zipName = name + ".tar.gz";
-        String dirName = name.substring(0, name.lastIndexOf('-'));
+        String scriptName = filename + ".sh";
         String scriptLocation = destination + "/" + backupName + "/" + scriptName;
+        File script = new File(scriptLocation);
+
+        String scriptText;
 
         (new File(destination + "/" + backupName)).mkdirs();
 
-        File script = new File(scriptLocation);
-        String scriptText = "#!sbin/sh\n\n" +
-                "mkdir -p " + pastingDir + "\n" +
-                "cd " + pastingDir + "\n" +
-                "rm -r " + dirName + "\n" +
-                "tar -xzpf " + zipName + "\n" +
-                "chmod 755 " + pastingDir + dirName + "\n" +
-                "chmod +r -R " + pastingDir + dirName + "\n" +
-                "rm " + zipName + "\n" +
-                "rm " + scriptName + "\n";
+        if (filename.endsWith(".apk")){
+
+            scriptText = "#!sbin/sh\n\n" +
+                    "cd " + TEMP_DIR_NAME + "\n" +
+                    "pm install -r " + filename + "\n" +
+                    "rm " + filename + "\n" +
+                    "rm " + scriptName + "\n";
+
+        }
+
+        else {
+
+            String dirName = filename.substring(0, filename.lastIndexOf('-'));
+
+            scriptText = "#!sbin/sh\n\n" +
+                    "cp " + "/data/balti.migrate/" + filename + " /data/data" + "\n" +
+                    "cd /data/data/" + "\n" +
+                    "rm -r " + dirName + "\n" +
+                    "tar -xzpf " + filename + "\n" +
+                    "chmod 755 " + dirName + "\n" +
+                    "chmod +r -R " + dirName + "\n" +
+                    "rm " + filename + "\n" +
+                    "rm " + scriptName + "\n";
+
+        }
+
         BufferedReader reader = new BufferedReader(new StringReader(scriptText));
 
         try {
@@ -535,29 +553,52 @@ public class BackupEngine {
             updater_writer.write("ui_print(\" \");\n");
 
             String line;
-            n = 0;
 
             String mkdirCommand = "mkdir -p " + destination + "/" + backupName + "/";
             writer.write(mkdirCommand + '\n', 0, mkdirCommand.length() + 1);
+
+            int c = 0;
 
             while ((line = reader.readLine()) != null) {
                 String echoCopyCommand = "echo \"migrate status: " + line.substring(0, line.lastIndexOf(' ')) + "\"";
 
                 String path = line.substring(line.lastIndexOf(' ') + 1);
-                String zipCommand;
-                //zipCommand = "cd " + path.substring(0, path.lastIndexOf('/')) + "; tar -cvzpf " + destination + "/" + backupName + "/" + getFileName(line) + ".tar.gz " + path.substring(path.lastIndexOf('/') + 1);
-                if (isApp(line)) zipCommand = "cd " + path.substring(0, path.lastIndexOf('/')) + "; tar cvzpf " + destination + "/" + backupName + "/" + getFileName(line) + ".tar.gz " + path.substring(path.lastIndexOf('/') + 1) + "/*.apk";
-                else zipCommand = "cd " + path.substring(0, path.lastIndexOf('/')) + "; tar -cvzpf " + destination + "/" + backupName + "/" + getFileName(line) + ".tar.gz " + path.substring(path.lastIndexOf('/') + 1);
+                String zipOrCopy;
+                String fileName = getFileName(line);
+                String pastingDir = line.substring(line.lastIndexOf(' ') + 1, line.lastIndexOf('/'));
 
-                makeRemoteScript(getPastingDir(line), getFileName(line));
+                boolean isApp = isApp(line);
+                if (isApp) zipOrCopy = "cd " + path.substring(0, path.lastIndexOf('/')) + "; cp " + path.substring(path.lastIndexOf('/') + 1) + "/*.apk " + destination + "/" + backupName + "/" + fileName + ".apk";
+                else zipOrCopy = "cd " + path.substring(0, path.lastIndexOf('/')) + "; tar -cvzpf " + destination + "/" + backupName + "/" + fileName + ".tar.gz " + path.substring(path.lastIndexOf('/') + 1);
+
+                String display = line.substring(0, line.lastIndexOf(' '));
+                updater_writer.write("ui_print(\"" + display + "\");\n");
+
+                if (isApp && path.startsWith("/system")){
+                    updater_writer.write("package_extract_file(\"" + fileName + ".apk" + "\", \"" + pastingDir + "/" + fileName + ".apk" + "\");\n");
+                }
+                else if (isApp){
+                    updater_writer.write("package_extract_file(\"" + fileName + ".apk" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".apk" + "\");\n");
+                    makeRemoteScript(fileName + ".apk");
+                    updater_writer.write("package_extract_file(\"" + fileName + ".sh" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
+                    updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
+                }
+                else {
+                    updater_writer.write("package_extract_file(\"" + fileName + ".tar.gz" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".tar.gz" + "\");\n");
+                    makeRemoteScript(fileName + ".tar.gz");
+                    updater_writer.write("package_extract_file(\"" + fileName + ".sh" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
+                    updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
+                }
+
+
+                updater_writer.write("set_progress(" + String.format("%.4f", ((++c * 1.0) / n)) + ");\n");
+
 
                 writer.write(echoCopyCommand + '\n', 0, echoCopyCommand.length() + 1);
-                writer.write(zipCommand + '\n', 0, zipCommand.length() + 1);
-                n++;
+                writer.write(zipOrCopy + '\n', 0, zipOrCopy.length() + 1);
             }
 
-            BufferedReader reader2 = new BufferedReader(new StringReader(backupSummary));
-            int c = 0;
+            /*BufferedReader reader2 = new BufferedReader(new StringReader(backupSummary));
             while ((line = reader2.readLine()) != null) {
                 String display = line.substring(0, line.lastIndexOf(' '));
                 updater_writer.write("ui_print(\"" + display + "\");\n");
@@ -571,7 +612,7 @@ public class BackupEngine {
                 updater_writer.write("run_program(\"" + pastingDir + "/" + fileName + ".sh" + "\");\n");
 
                 updater_writer.write("set_progress(" + String.format("%.4f", ((++c * 1.0) / n)) + ");\n");
-            }
+            }*/
 
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("ui_print(\"Unpacking permission fixer\");\n");
@@ -659,14 +700,14 @@ public class BackupEngine {
         }
     }
 
-    String getPastingDir(String line) {
+    /*String getPastingDir(String line) {
         String pastingDir = line.substring(line.lastIndexOf(' ') + 1, line.lastIndexOf('/'));
         String type = line.substring(0, line.indexOf(':'));
-        if (type.equals("DATA"))
-            pastingDir = "/data/data";
+        if (type.equals("DATA") || pastingDir.startsWith("/data"))
+            pastingDir = TEMP_DIR_NAME;
         pastingDir = pastingDir + '/';
         return pastingDir;
-    }
+    }*/
 
     String getFileName(String line) {
         String path = line.substring(line.lastIndexOf(' ') + 1);
