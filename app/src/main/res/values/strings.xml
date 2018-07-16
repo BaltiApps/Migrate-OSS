@@ -1,0 +1,62 @@
+<resources>
+    <string name="app_name">Migrate</string>
+
+    <!--activity_main.xml-->
+    <string name="selectOperation">Select operation</string>
+    <string name="backupButton">Backup</string>
+    <string name="restoreButton">Restore</string>
+
+    <!--permission_screen.xml-->
+    <string name="permissionsRequired">Following permissions are required</string>
+    <string name="storage">Storage access</string>
+    <string name="rootAccess">Root access</string>
+    <string name="injectAccess">Inject tools</string>
+    <string name="grantPermissions">Grant permissions</string>
+    <string name="requesting">Requesting...</string>
+
+    <!--backup_layout.xml-->
+    <string name="backupLabel">Backup</string>
+    <string name="data">Data</string>
+    <string name="app">App</string>
+    <string-array name="appTypeList">
+        <item>User apps</item>
+        <item>System apps</item>
+        <item>System + user</item>
+    </string-array>
+
+    <!--progress_layout-->
+    <string name="loading">Loading…</string>
+
+    <!--BackupEngine.java-->
+    <string name="failedToBackup">Backup failed! Please try again.</string>
+    <string name="close">Close</string>
+    <string name="backingUp">Backing up</string>
+    <string name="finished">Finished!</string>
+    <string name="noErrors">Finished! No errors.</string>
+    <string name="combining">Combining all files</string>
+    <string name="errorMakingScripts">Error making scripts</string>
+    <string name="backupCancelled">Backup cancelled</string>
+    <string name="deletingFiles">Deleting files</string>
+    <string name="backupFinishedWithErrors">Backup finished with errors</string>
+    <string name="notEnoughSpace">Backup incomplete. Not enough storage space.</string>
+
+    <!--BackupActivity.java-->
+    <string name="setBackupName">Set backup name</string>
+    <string name="overwrite">Overwrite?</string>
+    <string name="overwriteMessage">A backup with same name already exists. Do you want to overwrite?</string>
+    <string name="yes">Yes</string>
+    <string name="rename">No, rename</string>
+    <string name="empty">Backup name cannot be empty</string>
+
+    <!--PermissionScreen.java-->
+    <string name="injectTitle">Inject some tools</string>
+    <string name="injectMessage">Some command line utilities aren\'t available. Please click \"Proceed\" to install them.</string>
+    <string name="injectFailed">Inject failed!</string>
+    <string name="proceed">Proceed</string>
+
+    <!--log_view.xml-->
+    <string name="logButton">Logs</string>
+    <string name="progressLog">Progress logs</string>
+    <string name="errorLog">Error logs</string>
+
+</resources>

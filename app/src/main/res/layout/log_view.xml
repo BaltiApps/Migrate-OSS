@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/logButton"
+        android:layout_gravity="end"
+        android:text="@string/logButton"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/logViewActual"
+        android:visibility="gone"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/progressLog"
+            android:padding="5dp"
+            />
+
+        <TextView
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressLogDisplay"
+            android:scrollbars="vertical"
+            android:fontFamily="monospace"
+            android:background="@android:color/black"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:maxLines="5"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/errorLog"
+            android:padding="5dp"
+            android:id="@+id/errorLogHeader"
+            android:visibility="gone"
+            />
+
+        <TextView
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/errorLogDisplay"
+            android:scrollbars="vertical"
+            android:fontFamily="monospace"
+            android:background="@android:color/black"
+            android:textColor="@android:color/holo_red_light"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:maxLines="5"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>
