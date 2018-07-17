@@ -440,8 +440,8 @@ public class BackupEngine {
                     "tar -xzpf " + filename + "\n" +
                     "chmod 755 " + dirName + "\n" +
                     "chmod +r -R " + dirName + "\n" +
-                    "rm " + filename + "\n" +
-                    "rm " + scriptName + "\n";
+                    "rm " + TEMP_DIR_NAME + "/" + filename + "\n" +
+                    "rm " + TEMP_DIR_NAME + "/" + scriptName + "\n";
 
         }
 
@@ -636,7 +636,7 @@ public class BackupEngine {
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("ui_print(\"Finished!\");\n");
             updater_writer.write("ui_print(\"*****\");\n");
-            updater_writer.write("ui_print(\"YOU WILL BE PROMPTED TO FIX PERMISSIONS ON REBOOT! PLEASE DON'T SKIP IT!!\");\n");
+            updater_writer.write("ui_print(\"YOU WILL BE PROMPTED TO CONTINUE RESTORE AFTER STARTUP!!\");\n");
             updater_writer.write("ui_print(\"*****\");\n");
             updater_writer.write("ui_print(\" \");\n");
 
