@@ -417,6 +417,8 @@ public class BackupEngine {
 
         if (isApp){
 
+            filename = filename + ".apk";
+
             scriptText = "#!sbin/sh\n\n" +
                     "cd " + TEMP_DIR_NAME + "\n" +
                     "pm install -r " + filename + "\n" +
@@ -429,8 +431,10 @@ public class BackupEngine {
 
             String dirName = filename.substring(0, filename.lastIndexOf('-'));
 
+            filename = filename + ".tar.gz";
+
             scriptText = "#!sbin/sh\n\n" +
-                    "cp " + "/data/balti.migrate/" + filename + " /data/data" + "\n" +
+                    "cp " + "/data/balti.migrate/" + filename + " /data/data/" + "\n" +
                     "cd /data/data/" + "\n" +
                     "rm -r " + dirName + "\n" +
                     "tar -xzpf " + filename + "\n" +
