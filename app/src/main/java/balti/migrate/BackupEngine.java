@@ -405,7 +405,7 @@ public class BackupEngine {
         return err;
     }
 
-    void makeRemoteScript(String filename) {
+    void makeRemoteScript(String filename, boolean isApp) {
 
         String scriptName = filename + ".sh";
         String scriptLocation = destination + "/" + backupName + "/" + scriptName;
@@ -415,7 +415,7 @@ public class BackupEngine {
 
         (new File(destination + "/" + backupName)).mkdirs();
 
-        if (filename.endsWith(".apk")){
+        if (isApp){
 
             scriptText = "#!sbin/sh\n\n" +
                     "cd " + TEMP_DIR_NAME + "\n" +
@@ -476,7 +476,7 @@ public class BackupEngine {
         File script = new File(context.getFilesDir(), "script.sh");
         File updater_script = new File(context.getFilesDir(), "updater-script");
         File update_binary = new File(context.getFilesDir(), "update-binary");
-        File fixer = new File(context.getFilesDir() + "/system/app/PermissionFixer", "PermissionFixer.apk");
+        File helper = new File(context.getFilesDir() + "/system/app/MigrateHelper", "MigrateHelper.apk");
         File prepScript = new File(context.getFilesDir(), "prep.sh");
 
         AssetManager assetManager = context.getAssets();
@@ -492,10 +492,10 @@ public class BackupEngine {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        (new File(fixer.getAbsolutePath().substring(0, fixer.getAbsolutePath().lastIndexOf('/')))).mkdirs();
+        (new File(helper.getAbsolutePath().substring(0, helper.getAbsolutePath().lastIndexOf('/')))).mkdirs();
         try {
-            InputStream inputStream = assetManager.open("fixer.apk");
-            FileOutputStream writer = new FileOutputStream(fixer);
+            InputStream inputStream = assetManager.open("helper.apk");
+            FileOutputStream writer = new FileOutputStream(helper);
             while ((read = inputStream.read(buffer)) > 0) {
                 writer.write(buffer, 0, read);
             }
@@ -579,13 +579,13 @@ public class BackupEngine {
                 }
                 else if (isApp){
                     updater_writer.write("package_extract_file(\"" + fileName + ".apk" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".apk" + "\");\n");
-                    makeRemoteScript(fileName + ".apk");
+                    makeRemoteScript(fileName, true);
                     updater_writer.write("package_extract_file(\"" + fileName + ".sh" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
                     updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
                 }
                 else {
                     updater_writer.write("package_extract_file(\"" + fileName + ".tar.gz" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".tar.gz" + "\");\n");
-                    makeRemoteScript(fileName + ".tar.gz");
+                    makeRemoteScript(fileName, false);
                     updater_writer.write("package_extract_file(\"" + fileName + ".sh" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
                     updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
                 }
@@ -615,9 +615,9 @@ public class BackupEngine {
             }*/
 
             updater_writer.write("ui_print(\" \");\n");
-            updater_writer.write("ui_print(\"Unpacking permission fixer\");\n");
+            updater_writer.write("ui_print(\"Unpacking helper\");\n");
             updater_writer.write("package_extract_dir(\"system\", \"/system\");\n");
-            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/system/app/PermissionFixer/" + "\");\n");
+            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/system/app/MigrateHelper/" + "\");\n");
             updater_writer.write("package_extract_file(\"permissionList\", \"/cache/permissionList\");\n");
             updater_writer.write("set_progress(1.0000);\n");
             updater_writer.write("ui_print(\" \");\n");
@@ -645,7 +645,7 @@ public class BackupEngine {
             /*writer.write("cp " + updater_script.getAbsolutePath() + " " + flashDirPath + "\n");
             writer.write("cp " + update_binary.getAbsolutePath() + " " + flashDirPath + "\n");*/
 
-            writer.write("echo \"migrate status: " + "Including fixer" + "\"\n");
+            writer.write("echo \"migrate status: " + "Including helper" + "\"\n");
             writer.write("cp -r " + context.getFilesDir() + "/system" + " " + destination + "/" + backupName + "\n");
             writer.write("mv " + makePermissionList() + " " + destination + "/" + backupName + "\n");
             writer.write("rm -r " + context.getFilesDir() + "/system" + "\n");
