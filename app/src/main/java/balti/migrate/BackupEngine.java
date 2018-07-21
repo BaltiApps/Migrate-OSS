@@ -369,6 +369,7 @@ public class BackupEngine {
                     "cd /data/data/" + "\n" +
                     "rm -r " + dirName + "\n" +
                     "tar -xzpf " + filename + "\n" +
+                    "rm " + filename + "\n" +
                     "chmod 755 " + dirName + "\n" +
                     "chmod +r -R " + dirName + "\n" +
                     "rm " + TEMP_DIR_NAME + "/" + filename + "\n" +
