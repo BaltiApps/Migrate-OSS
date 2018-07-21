@@ -6,6 +6,15 @@
     android:padding="10dp"
     >
 
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="50dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:src="@drawable/ic_backup"
+        />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,9 +22,41 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textStyle="bold"
         android:id="@+id/progressTask"
-        android:paddingBottom="10dp"
         android:textColor="@color/colorPrimary"
         />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+
+        <ProgressBar
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/progressBar"
+            android:max="100"
+            />
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="50%"
+            android:gravity="end"
+            android:layout_margin="5dp"
+            android:id="@+id/progressPercent"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            />
+
+    </LinearLayout>
 
 
     <TextView
@@ -25,6 +66,7 @@
         android:id="@+id/progressLogTextView"
         android:scrollbars="vertical"
         android:fontFamily="monospace"
+        android:layout_marginTop="5dp"
         />
 
     <TextView
@@ -43,35 +85,6 @@
         android:orientation="vertical"
         >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            >
-
-            <ProgressBar
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:id="@+id/progressBar"
-                android:max="100"
-                />
-
-            <TextView
-                android:layout_width="55dp"
-                android:layout_height="wrap_content"
-                android:text="50%"
-                android:gravity="center"
-                android:layout_margin="5dp"
-                android:id="@+id/progressPercent"
-                android:textSize="18sp"
-                />
-
-        </LinearLayout>
 
         <Button
             android:layout_width="wrap_content"
