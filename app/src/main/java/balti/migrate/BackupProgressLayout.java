@@ -4,11 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -69,8 +70,6 @@ public class BackupProgressLayout extends AppCompatActivity {
                 if (p >= 0) {
                     progress.setText(p + "%");
                     String t = intent.getStringExtra("task");
-                    //Log.d("Migrate", "finMsgBr: " + t);
-                    //Log.d("Migrate", "p: " + p);
                     task.setText(t);
                     progressBar.setProgress(p);
                     if (p < 100){
@@ -80,6 +79,8 @@ public class BackupProgressLayout extends AppCompatActivity {
                     else{
                         backIntent = new Intent(BackupProgressLayout.this, BackupActivity.class);
                         actionButton.setText(getString(R.string.close));
+                        actionButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+                        actionButton.setTextColor(Color.WHITE);
                         actionButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -117,7 +118,6 @@ public class BackupProgressLayout extends AppCompatActivity {
             Intent finishedBroadcast = new Intent("Migrate progress broadcast");
             finishedBroadcast.putExtra("progress", 100);
             finishedBroadcast.putExtra("task", getIntent().getStringExtra("finishedMessage"));
-            //Log.d("Migrate", "finMsg: " + getIntent().getStringExtra("finishedMessage"));
             sendBroadcast(finishedBroadcast);
             sendBroadcast(new Intent("Migrate log broadcast").putExtra("type", "errors").putStringArrayListExtra("content", getIntent().getStringArrayListExtra("errors")));
         }

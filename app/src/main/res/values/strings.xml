@@ -54,9 +54,4 @@
     <string name="injectFailed">Inject failed!</string>
     <string name="proceed">Proceed</string>
 
-    <!--log_view.xml-->
-    <string name="logButton">Logs</string>
-    <string name="progressLog">Progress logs</string>
-    <string name="errorLog">Error logs</string>
-
 </resources>

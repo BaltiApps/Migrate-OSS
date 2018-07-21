@@ -45,8 +45,6 @@ import java.util.Vector;
 
 public class BackupActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, OnCheck {
 
-    int type = 0;
-
     ListView listView;
     CheckBox appAllSelect, dataAllSelect;
     Spinner appType;
@@ -58,12 +56,6 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
     String destination;
 
-    TextView task, progress;
-    AlertDialog progressDialog;
-    View progressView;
-    LogView logView;
-    LinearLayout dialogContainer;
-    boolean wasProgressDialogShown;
 
     LayoutInflater layoutInflater;
     SharedPreferences main;
@@ -275,61 +267,6 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
         setBackupEnabled(dataAllSelect.isChecked() || appAllSelect.isChecked());
     }
-
-    /*void createOnProgressDialog(){
-
-        dialogContainer = new LinearLayout(this);
-        dialogContainer.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        dialogContainer.setOrientation(LinearLayout.VERTICAL);
-
-        progressView = layoutInflater.inflate(R.layout.progress_layout, null);
-        task = progressView.findViewById(R.id.task);
-        progress = progressView.findViewById(R.id.progress);
-
-        logView = new LogView(this, null, null);
-        logView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        dialogContainer.addView(progressView);
-        dialogContainer.addView(logView);
-
-        progressDialog = new AlertDialog.Builder(BackupActivity.this)
-                .setOnKeyListener(new DialogInterface.OnKeyListener() {
-                    @Override
-                    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                        if (keyCode == KeyEvent.KEYCODE_BACK) {
-                            progressDialog.dismiss();
-                            finish();
-                        }
-                        return false;
-                    }
-                })
-                .setTitle(getString(R.string.backingUp))
-                .setView(dialogContainer)
-                .setPositiveButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        sendBroadcast(new Intent("Migrate backup cancel broadcast"));
-                    }
-                })
-                .create();
-        progressDialog.show();
-        wasProgressDialogShown = true;
-    }*/
-
-    /*void createOnFinishDialog(String finalStatus){
-
-        LogView finishLog = new LogView(this, null, logView);
-
-        progressDialog = new AlertDialog.Builder(BackupActivity.this)
-                .setTitle(getString(R.string.finished))
-                .setView(finishLog)
-                .setMessage(finalStatus)
-                .setPositiveButton(getString(R.string.close), null)
-                .create();
-        progressDialog.setCancelable(true);
-        progressDialog.show();
-        //registerLogReceiver();
-    }*/
 
     void askForBackupName(){
         final EditText editText = new EditText(this);

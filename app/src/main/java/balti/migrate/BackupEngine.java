@@ -6,18 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -26,11 +21,8 @@ import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Calendar;
 import java.util.Vector;
-import java.util.zip.CRC32;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Created by sayantan on 9/10/17.
@@ -57,6 +49,8 @@ public class BackupEngine {
     private Intent logBroadcast;
 
     private boolean isCancelled = false;
+    private long startMillis;
+    private long endMillis;
 
     final String TEMP_DIR_NAME = "/data/balti.migrate";
 
@@ -89,7 +83,43 @@ public class BackupEngine {
         return builder;
     }
 
+    long timeInMillis(){
+        Calendar calendar = Calendar.getInstance();
+        return calendar.getTimeInMillis();
+    }
+
+    String calendarDifference(long start, long end){
+        String diff = "";
+
+        try {
+
+            long longDiff = end - start;
+            longDiff = longDiff / 1000;
+
+            long d = longDiff / (60 * 60 * 24);
+            if (d != 0) diff = diff + d + "days ";
+            longDiff = longDiff % (60 * 60 * 24);
+
+            long h = longDiff / (60 * 60);
+            if (h != 0) diff = diff + h + "hrs ";
+            longDiff = longDiff % (60 * 60);
+
+            long m = longDiff / 60;
+            if (m != 0) diff = diff + m + "mins ";
+            longDiff = longDiff % 60;
+
+            long s = longDiff;
+            diff = diff + s + "secs";
+
+        }
+        catch (Exception ignored){}
+
+        return diff;
+    }
+
     void initiateBackup() {
+
+        startMillis = timeInMillis();
 
         errors = new ArrayList<>(0);
 
@@ -173,6 +203,8 @@ public class BackupEngine {
             progressNotif.setContentText(errors.get(0));
         }
 
+        endMillis = timeInMillis();
+
         progressNotif.setContentTitle(finalMessage);
 
         notificationManager.cancel(NOTIFICATION_ID);
@@ -207,7 +239,7 @@ public class BackupEngine {
         context.sendBroadcast(logBroadcast);
 
         progressBroadcast.putExtra("progress", 100);
-        progressBroadcast.putExtra("task", finalMessage.trim());
+        progressBroadcast.putExtra("task", finalMessage.trim() + "\n(" + calendarDifference(startMillis, endMillis) + ")");
         context.sendBroadcast(progressBroadcast);
     }
 

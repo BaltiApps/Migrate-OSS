@@ -9,10 +9,11 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="30dp"
+        android:lines="2"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textStyle="bold"
         android:id="@+id/progressTask"
+        android:paddingBottom="10dp"
         android:textColor="@color/colorPrimary"
         />
 
@@ -75,9 +76,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorPrimary"
-            android:textColor="@android:color/white"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:id="@+id/progressActionButton"
             />
 
