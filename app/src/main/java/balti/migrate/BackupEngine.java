@@ -304,107 +304,6 @@ public class BackupEngine {
         return allFiles;
     }
 
-    private String javaZipAll(Intent progressBroadcast, NotificationManager notificationManager, NotificationCompat.Builder progressNotif){
-
-        String err = "";
-        try {
-
-            progressNotif.setContentTitle(context.getString(R.string.combining))
-                    .setProgress(0, 0, false)
-                    .setContentText("");
-            notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
-
-            getNumberOfFiles = Runtime.getRuntime().exec("ls -l " + destination + "/" + backupName);
-            BufferedReader outputReader = new BufferedReader(new InputStreamReader(getNumberOfFiles.getInputStream()));
-            BufferedReader errorReader = new BufferedReader(new InputStreamReader(getNumberOfFiles.getErrorStream()));
-            getNumberOfFiles.waitFor();
-            String l; int n = 0;
-            while (outputReader.readLine() != null){
-                ++n;
-            }
-            --n;
-            while ((l = errorReader.readLine()) != null){
-                err = err + l + "\n";
-            }
-            (new File(destination + "/" + backupName + ".zip")).delete();
-            int c = 0;
-
-            File directory = new File(destination + "/" + backupName);
-            Vector<File> files = getAllFiles(directory, new Vector<File>(1));
-
-            File zipFile = new File(destination + "/" + backupName + ".zip");
-
-            FileOutputStream fileOutputStream = new FileOutputStream(zipFile);
-            ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
-
-            int part = 0;
-
-            for (File file : files)
-            {
-
-                String fn = file.getAbsolutePath();
-                fn = fn.substring(directory.getAbsolutePath().length() + 1);
-                ZipEntry zipEntry;
-
-                if (file.isDirectory()) {
-                    zipEntry = new ZipEntry(fn + "/");
-                    zipOutputStream.putNextEntry(zipEntry);
-                    zipOutputStream.closeEntry();
-                    continue;
-                }
-                else {
-                    zipEntry = new ZipEntry(fn);
-                    zipOutputStream.putNextEntry(zipEntry);
-
-                    FileInputStream fileInputStream = new FileInputStream(file);
-                    byte[] buffer = new byte[4096];
-                    int read;
-                    while ((read = fileInputStream.read(buffer)) > 0)
-                    {
-                        zipOutputStream.write(buffer, 0, read);
-                    }
-                    zipOutputStream.closeEntry();
-                    fileInputStream.close();
-                    file.delete();
-                }
-
-                if (zipFile.length() >= 1000000){
-                    zipOutputStream.close();
-                    zipFile = new File(destination + "/" + backupName + "_part" + ++part + ".zip");
-                    fileOutputStream = new FileOutputStream(zipFile);
-                    zipOutputStream = new ZipOutputStream(fileOutputStream);
-                }
-
-                int pr = c++*100 / n;
-                if (pr == 100) pr = 99;
-                progressBroadcast.putExtra("task", context.getString(R.string.combining))
-                        .putExtra("progress", pr);
-                context.sendBroadcast(progressBroadcast);
-
-                progressNotif.setProgress(n, c, false);
-                notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
-
-                logBroadcast.putExtra("content", "compressed: " +file.getName());
-                context.sendBroadcast(logBroadcast);
-            }
-            zipOutputStream.close();
-            fullDelete(directory.getAbsolutePath());
-
-            while ((l = errorReader.readLine()) != null){
-                err = err + l + "\n";
-            }
-
-            if (c < n){
-                finalMessage = context.getString(R.string.notEnoughSpace) + "\n";
-            }
-        }
-        catch (Exception e) {
-            if (!isCancelled)
-                err = err + e.getMessage() + "\n";
-        }
-        return err;
-    }
-
     void makeRemoteScript(String filename, boolean isApp) {
 
         String scriptName = filename + ".sh";
@@ -529,18 +428,6 @@ public class BackupEngine {
             updater_writer.write("ui_print(\"Migrate Flash package\");\n");
             updater_writer.write("ui_print(\"----------------------\");\n");
             updater_writer.write("ui_print(\" \");\n");
-/*
-            String system, systemType, data, dataType;
-            boolean isMountDataAvailable = true;
-
-            system = main.getString("system", "");
-            systemType = main.getString("systemType", "");
-            data = main.getString("data", "");
-            dataType = main.getString("dataType", "");
-
-            if (system.equals("") || systemType.equals("") || data.equals("") || dataType.equals(""))
-                isMountDataAvailable = false;*/
-
             updater_writer.write("ui_print(\"Mounting partition...\");\n");
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("run_program(\"/sbin/busybox\", \"mount\", \"/system\");\n");
@@ -601,22 +488,6 @@ public class BackupEngine {
                 writer.write(echoCopyCommand + '\n', 0, echoCopyCommand.length() + 1);
                 writer.write(zipOrCopy + '\n', 0, zipOrCopy.length() + 1);
             }
-
-            /*BufferedReader reader2 = new BufferedReader(new StringReader(backupSummary));
-            while ((line = reader2.readLine()) != null) {
-                String display = line.substring(0, line.lastIndexOf(' '));
-                updater_writer.write("ui_print(\"" + display + "\");\n");
-
-                String pastingDir = getPastingDir(line);
-                String fileName = getFileName(line);
-
-                updater_writer.write("package_extract_file(\"" + fileName + ".tar.gz" + "\", \"" + pastingDir + "/" + fileName + ".tar.gz" + "\");\n");
-                updater_writer.write("package_extract_file(\"" + fileName + ".sh" + "\", \"" + pastingDir + "/" + fileName + ".sh" + "\");\n");
-                updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + pastingDir + "/" + fileName + ".sh" + "\");\n");
-                updater_writer.write("run_program(\"" + pastingDir + "/" + fileName + ".sh" + "\");\n");
-
-                updater_writer.write("set_progress(" + String.format("%.4f", ((++c * 1.0) / n)) + ");\n");
-            }*/
 
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("ui_print(\"Unpacking helper\");\n");
@@ -703,15 +574,6 @@ public class BackupEngine {
             }
         }
     }
-
-    /*String getPastingDir(String line) {
-        String pastingDir = line.substring(line.lastIndexOf(' ') + 1, line.lastIndexOf('/'));
-        String type = line.substring(0, line.indexOf(':'));
-        if (type.equals("DATA") || pastingDir.startsWith("/data"))
-            pastingDir = TEMP_DIR_NAME;
-        pastingDir = pastingDir + '/';
-        return pastingDir;
-    }*/
 
     String getFileName(String line) {
         String path = line.substring(line.lastIndexOf(' ') + 1);
