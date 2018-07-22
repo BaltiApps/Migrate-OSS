@@ -140,7 +140,6 @@ public class AppListAdapter extends BaseAdapter {
                         app.setChecked(true);
                     }
                 }
-                Log.d("Migrate", "source: " + appList.get(i).PACKAGE_INFO.applicationInfo.sourceDir);
             }
         });
 
