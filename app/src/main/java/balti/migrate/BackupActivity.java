@@ -125,46 +125,15 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         appAllSelect.setOnCheckedChangeListener(this);
         dataAllSelect.setOnCheckedChangeListener(this);
 
-        /*logReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getStringExtra("type").equals("progress")){
-                    logView.addProgress(intent.getStringExtra("content"));
-                }
-                else if (intent.getStringExtra("type").equals("errors")){
-                    logView.setError(intent.getStringArrayListExtra("content"));
-                }
-            }
-        };
-
-        logReceiverIF = new IntentFilter("Migrate log broadcast");*/
-
         startBackupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 askForBackupName();
-                //registerLogReceiver();
             }
         });
 
-
-        /*if (getIntent().getAction() != null && getIntent().getAction().equals("finished"))
-        {
-            Intent finishedBroadcast = new Intent("Migrate progress broadcast");
-            finishedBroadcast.putExtra("progress", 100)
-                    .putExtra("task", getIntent().getStringExtra("finishedMessage"));
-            sendBroadcast(finishedBroadcast);
-            sendBroadcast(new Intent("Migrate log broadcast").putExtra("type", "errors").putStringArrayListExtra("content", getIntent().getStringArrayListExtra("errors")));
-        }
-        else {
-            //registerLogReceiver();
-            sendBroadcast(new Intent("get data"));
-        }*/
     }
 
-    /*void registerLogReceiver(){
-        registerReceiver(logReceiver, logReceiverIF);
-    }*/
 
 
     void updateAppsList(int i) {

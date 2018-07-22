@@ -336,13 +336,13 @@ public class BackupEngine {
         return allFiles;
     }
 
-    void makeRemoteScript(String filename, boolean isApp) {
+    void makeRemoteScript(String filename, boolean isApp, boolean isSystem, String sysAppPastinDir) {
 
         String scriptName = filename + ".sh";
         String scriptLocation = destination + "/" + backupName + "/" + scriptName;
         File script = new File(scriptLocation);
 
-        String scriptText;
+        String scriptText = "#!sbin/sh\n\n";
 
         (new File(destination + "/" + backupName)).mkdirs();
 
@@ -350,11 +350,25 @@ public class BackupEngine {
 
             filename = filename + ".apk";
 
-            scriptText = "#!sbin/sh\n\n" +
-                    "cd " + TEMP_DIR_NAME + "\n" +
-                    "pm install -r " + filename + "\n" +
-                    "rm " + filename + "\n" +
-                    "rm " + scriptName + "\n";
+            if (!isSystem) {
+
+                scriptText = scriptText +
+                        "cd " + TEMP_DIR_NAME + "\n" +
+                        "pm install -r " + filename + "\n" +
+                        "rm " + filename + "\n" +
+                        "rm " + scriptName + "\n";
+            }
+            else {
+
+                String sysAppNameDir = sysAppPastinDir + "/" + filename.substring(0, filename.lastIndexOf('-')) + "/";
+
+                scriptText = scriptText +
+                        "mkdir -p " + sysAppNameDir + "\n" +
+                        "cd /system/app/" + "\n" +
+                        "mv " + filename + " " + sysAppNameDir + "\n" +
+                        "rm " + scriptName + "\n";
+
+            }
 
         }
 
@@ -364,7 +378,7 @@ public class BackupEngine {
 
             filename = filename + ".tar.gz";
 
-            scriptText = "#!sbin/sh\n\n" +
+            scriptText = scriptText +
                     "cp " + "/data/balti.migrate/" + filename + " /data/data/" + "\n" +
                     "cd /data/data/" + "\n" +
                     "rm -r " + dirName + "\n" +
@@ -492,7 +506,9 @@ public class BackupEngine {
                 String pastingDir = line.substring(line.lastIndexOf(' ') + 1, line.lastIndexOf('/'));
 
                 boolean isApp = isApp(line);
-                if (isApp) zipOrCopy = "cd " + path.substring(0, path.lastIndexOf('/')) + "; cp " + path.substring(path.lastIndexOf('/') + 1) + "/*.apk " + destination + "/" + backupName + "/" + fileName + ".apk";
+                if (isApp) {
+                    zipOrCopy = "cd " + path.substring(0, path.lastIndexOf('/')) + "; cp " + path.substring(path.lastIndexOf('/') + 1) + "/*.apk " + destination + "/" + backupName + "/" + fileName + ".apk";
+                }
                 else zipOrCopy = "cd " + path.substring(0, path.lastIndexOf('/')) + "; tar -cvzpf " + destination + "/" + backupName + "/" + fileName + ".tar.gz " + path.substring(path.lastIndexOf('/') + 1);
 
                 String display = line.substring(0, line.lastIndexOf(' '));
@@ -500,16 +516,20 @@ public class BackupEngine {
 
                 if (isApp && path.startsWith("/system")){
                     updater_writer.write("package_extract_file(\"" + fileName + ".apk" + "\", \"" + pastingDir + "/" + fileName + ".apk" + "\");\n");
+                    makeRemoteScript(fileName, true, true, pastingDir);
+                    updater_writer.write("package_extract_file(\"" + fileName + ".sh" + "\", \"" + pastingDir + "/" + fileName + ".sh" + "\");\n");
+                    updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + pastingDir + "/" + fileName + ".sh" + "\");\n");
+                    updater_writer.write("run_program(\"" + pastingDir + "/" + fileName + ".sh" + "\");\n");
                 }
                 else if (isApp){
                     updater_writer.write("package_extract_file(\"" + fileName + ".apk" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".apk" + "\");\n");
-                    makeRemoteScript(fileName, true);
+                    makeRemoteScript(fileName, true, false, "");
                     updater_writer.write("package_extract_file(\"" + fileName + ".sh" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
                     updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
                 }
                 else {
                     updater_writer.write("package_extract_file(\"" + fileName + ".tar.gz" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".tar.gz" + "\");\n");
-                    makeRemoteScript(fileName, false);
+                    makeRemoteScript(fileName, false, false, "");
                     updater_writer.write("package_extract_file(\"" + fileName + ".sh" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
                     updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
                 }
@@ -550,18 +570,14 @@ public class BackupEngine {
 
             writer.write("echo \"migrate status: " + "Making package Flash Ready" + "\"\n");
             writer.write("mkdir -p " + flashDirPath + "\n");
-            /*writer.write("cp " + updater_script.getAbsolutePath() + " " + flashDirPath + "\n");
-            writer.write("cp " + update_binary.getAbsolutePath() + " " + flashDirPath + "\n");*/
+            writer.write("mv " + updater_script.getAbsolutePath() + " " + flashDirPath + "\n");
+            writer.write("mv " + update_binary.getAbsolutePath() + " " + flashDirPath + "\n");
+            writer.write("mv " + prepScript.getAbsolutePath() + " " + destination + "/" + backupName + "\n");
 
             writer.write("echo \"migrate status: " + "Including helper" + "\"\n");
             writer.write("cp -r " + context.getFilesDir() + "/system" + " " + destination + "/" + backupName + "\n");
             writer.write("mv " + makePermissionList() + " " + destination + "/" + backupName + "\n");
             writer.write("rm -r " + context.getFilesDir() + "/system" + "\n");
-
-            writer.write("mkdir -p " + flashDirPath + "\n");
-            writer.write("mv " + updater_script.getAbsolutePath() + " " + flashDirPath + "\n");
-            writer.write("mv " + update_binary.getAbsolutePath() + " " + flashDirPath + "\n");
-            writer.write("mv " + prepScript.getAbsolutePath() + " " + destination + "/" + backupName + "\n");
 
             writer.close();
 
