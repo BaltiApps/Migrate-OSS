@@ -3,6 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
+    android:background="@drawable/main_bg_portrait"
     >
 
 
@@ -56,10 +57,11 @@
 
     <Button
         android:id="@+id/grantPermissions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/holo_blue_dark"
+        android:layout_width="@dimen/oval_button_width"
+        android:layout_height="@dimen/oval_button_height"
+        android:background="@drawable/main_button_bg"
         android:textColor="@android:color/white"
+        android:foreground="?android:attr/selectableItemBackground"
         android:text="@string/grantPermissions" />
 
 </LinearLayout>

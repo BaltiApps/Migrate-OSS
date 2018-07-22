@@ -6,56 +6,68 @@
     android:layout_height="match_parent"
     tools:context="balti.migrate.MainActivity"
     android:padding="10dp"
+    android:background="@drawable/main_bg_portrait"
     >
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/afterPermissionView"
-        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         >
+
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/drawer_icon"
+            android:id="@+id/drawerButton"
+            android:foreground="?android:attr/selectableItemBackground"
+            />
+
+        <Space
+            android:layout_width="20dp"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/selectOperation"
+            android:text="@string/app_name"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:padding="20dp"
             />
 
+    </LinearLayout>
+
+
+
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:paddingBottom="150dp"
             >
 
             <Button
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_width="@dimen/oval_button_width"
+                android:layout_height="@dimen/oval_button_height"
                 android:id="@+id/backupMain"
                 android:text="@string/backupButton"
-                android:drawableTop="@drawable/ic_backup"
-                android:drawableTint="@color/colorAccent"
+                android:background="@drawable/main_button_bg"
+                android:foreground="?android:attr/selectableItemBackground"
                 />
 
 
             <Button
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_width="@dimen/oval_button_width"
+                android:layout_height="@dimen/oval_button_height"
                 android:id="@+id/restoreMain"
                 android:text="@string/restoreButton"
-                android:drawableTop="@drawable/ic_restore"
-                android:drawableTint="@color/colorAccent"
+                android:background="@drawable/main_button_bg"
+                android:foreground="?android:attr/selectableItemBackground"
                 />
 
         </LinearLayout>
 
-    </LinearLayout>
 
 </RelativeLayout>
