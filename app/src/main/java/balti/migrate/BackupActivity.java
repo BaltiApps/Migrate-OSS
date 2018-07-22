@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -49,6 +50,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     CheckBox appAllSelect, dataAllSelect;
     Spinner appType;
     Button startBackupButton;
+    ImageButton selectAll, clearAll;
 
     PackageManager pm;
     Vector<BackupDataPacket> appList;
@@ -67,6 +69,14 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             super.onPreExecute();
             setBackupEnabled(false);
             listView.setAdapter(null);
+
+            appAllSelect.setEnabled(false);
+            dataAllSelect.setEnabled(false);
+            selectAll.setEnabled(false);
+            clearAll.setEnabled(false);
+            selectAll.setBackgroundColor(getResources().getColor(R.color.lightGray));
+            clearAll.setBackgroundColor(getResources().getColor(R.color.lightGray));
+
             (findViewById(R.id.appLoadingView)).setVisibility(View.VISIBLE);
         }
 
@@ -84,6 +94,14 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         @Override
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
+
+            appAllSelect.setEnabled(true);
+            dataAllSelect.setEnabled(true);
+            selectAll.setEnabled(true);
+            clearAll.setEnabled(true);
+            selectAll.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            clearAll.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+
             (findViewById(R.id.appLoadingView)).setVisibility(View.GONE);
             listView.setAdapter(adapter);
         }
@@ -102,14 +120,16 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
         pm = getPackageManager();
 
-        listView = (ListView) findViewById(R.id.appBackupList);
+        listView = findViewById(R.id.appBackupList);
 
-        appAllSelect = (CheckBox) findViewById(R.id.appAllSelect);
-        dataAllSelect = (CheckBox) findViewById(R.id.dataAllSelect);
+        appAllSelect = findViewById(R.id.appAllSelect);
+        dataAllSelect = findViewById(R.id.dataAllSelect);
 
-        startBackupButton = (Button) findViewById(R.id.backupStartButton);
+        startBackupButton = findViewById(R.id.backupStartButton);
+        selectAll = findViewById(R.id.selectAll);
+        clearAll = findViewById(R.id.clearAll);
 
-        appType = (Spinner) findViewById(R.id.appType);
+        appType = findViewById(R.id.appType);
         appType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -129,6 +149,22 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             @Override
             public void onClick(View view) {
                 askForBackupName();
+            }
+        });
+
+        selectAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dataAllSelect.setChecked(true);
+            }
+        });
+
+        clearAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dataAllSelect.setChecked(true);
+                dataAllSelect.setChecked(false);
+                appAllSelect.setChecked(false);
             }
         });
 
@@ -349,7 +385,6 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             }
         }
     }
-
 
 
     void setBackupEnabled(boolean isEnabled){
