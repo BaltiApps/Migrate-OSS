@@ -10,7 +10,6 @@
     <string name="permissionsRequired">Following permissions are required</string>
     <string name="storage">Storage access</string>
     <string name="rootAccess">Root access</string>
-    <string name="injectAccess">Inject tools</string>
     <string name="grantPermissions">Grant permissions</string>
     <string name="requesting">Requesting...</string>
 
@@ -49,9 +48,5 @@
     <string name="empty">Backup name cannot be empty</string>
 
     <!--PermissionScreen.java-->
-    <string name="injectTitle">Inject some tools</string>
-    <string name="injectMessage">Some command line utilities aren\'t available. Please click \"Proceed\" to install them.</string>
-    <string name="injectFailed">Inject failed!</string>
-    <string name="proceed">Proceed</string>
 
 </resources>

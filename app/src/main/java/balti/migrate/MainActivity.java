@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     boolean[] isPermissionGranted() {
-        boolean[] p = new boolean[]{false, false, false};
+        boolean[] p = new boolean[]{false, false};
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
             p[0] = true;
         if (main.getBoolean("initialRoot", true)) {
@@ -75,31 +75,15 @@ public class MainActivity extends AppCompatActivity {
                 p[1] = false;
             }
         }
-        p[2] = checkZipAndTar();
         return p;
     }
 
-    boolean checkZipAndTar(){
-        Process checkZip = null;
-        Process checkTar = null;
-        boolean r = false;
-        try {
-            checkZip = Runtime.getRuntime().exec("zip --help");
-            checkZip.waitFor();
-            checkTar = Runtime.getRuntime().exec("tar --help");
-            checkTar.waitFor();
-            r = true;
-        } catch (IOException | InterruptedException e) {
-            r = false;
-        }
-        return r;
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
         boolean[] p = isPermissionGranted();
-        if (!(p[0] && p[1] && p[2])) {
+        if (!(p[0] && p[1])) {
             startActivity(new Intent(this, PermissionsScreen.class));
             finish();
         }
@@ -109,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         boolean p[] = isPermissionGranted();
-        if (p[0] && p[1] && p[2]) {
+        if (p[0] && p[1]) {
             if (main.getBoolean("firstRun", true)) {
                 editor.putBoolean("firstRun", false);
                 editor.commit();

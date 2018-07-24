@@ -52,7 +52,9 @@ public class BackupEngine {
     private long startMillis;
     private long endMillis;
 
-    final String TEMP_DIR_NAME = "/data/balti.migrate";
+    String zipBinaryFilePath, tarBinaryFilePath;
+
+    private final String TEMP_DIR_NAME = "/data/balti.migrate";
 
     BackupEngine(String backupSummary, String backupPackageNames, String backupName, int compressionLevel, String destination, Context context) {
         this.backupSummary = backupSummary;
@@ -70,6 +72,9 @@ public class BackupEngine {
 
         errors = new ArrayList<>(0);
         n = backupSummary.split("\r\n|\r|\n").length;
+
+        zipBinaryFilePath = "";
+        tarBinaryFilePath = "";
     }
 
     NotificationCompat.Builder createNotificationBuilder(){
@@ -178,18 +183,18 @@ public class BackupEngine {
                 }
 
                 while ((line = errorStream.readLine()) != null) {
-                    errors.add(line);
+                    errors.add("RUN: " + line);
                 }
             } else {
                 errors.add(context.getString(R.string.errorMakingScripts));
             }
 
             String zipErr = zipAll(progressBroadcast, notificationManager, progressNotif);
-            if (!zipErr.equals("")) errors.add(zipErr);
+            if (!zipErr.equals("")) errors.add("ZIP: " + zipErr);
 
         } catch (Exception e) {
             if (!isCancelled){
-                errors.add(e.getMessage());
+                errors.add("INIT: " + e.getMessage());
             }
         }
 
@@ -254,8 +259,10 @@ public class BackupEngine {
             notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
 
             getNumberOfFiles = Runtime.getRuntime().exec("ls -l " + destination + "/" + backupName);
+
             BufferedReader outputReader = new BufferedReader(new InputStreamReader(getNumberOfFiles.getInputStream()));
             BufferedReader errorReader = new BufferedReader(new InputStreamReader(getNumberOfFiles.getErrorStream()));
+
             getNumberOfFiles.waitFor();
             String l; int n = 0;
             while (outputReader.readLine() != null){
@@ -265,18 +272,29 @@ public class BackupEngine {
             while ((l = errorReader.readLine()) != null){
                 err = err + l + "\n";
             }
+
             (new File(destination + "/" + backupName + ".zip")).delete();
+
             File tempScript = new File(context.getFilesDir().getAbsolutePath() + "/tempScript.sh");
-            String cmds = "#!/sbin/sh\n\ncd " + destination + "/" + backupName + "\nzip " + backupName + ".zip -" + compressionLevel + "vurm *\nmv " + backupName + ".zip " + destination + "\nrm -r " + destination + "/" + backupName + "\nrm " + tempScript.getAbsolutePath() + "\n";
+            String cmds = "#!/sbin/sh\n\n" +
+                    "cd " + destination + "/" + backupName + "\n" +
+                    zipBinaryFilePath + " " + backupName + ".zip -" + compressionLevel + "vurm *\n" +
+                    "mv " + backupName + ".zip " + destination + "\n" +
+                    "rm -r " + destination + "/" + backupName + "\n" +
+                    "rm " + tempScript.getAbsolutePath() + "\n";
+
             BufferedWriter writer = new BufferedWriter(new FileWriter(tempScript));
             BufferedReader reader = new BufferedReader(new StringReader(cmds));
             while ((l = reader.readLine()) != null){
                 writer.write(l + "\n");
             }
             writer.close();
+
             zipProcess = Runtime.getRuntime().exec("sh " + tempScript.getAbsolutePath());
+
             outputReader = new BufferedReader(new InputStreamReader(zipProcess.getInputStream()));
             errorReader = new BufferedReader(new InputStreamReader(zipProcess.getErrorStream()));
+
             String last = "";
             int c = 0;
             while ((l = outputReader.readLine()) != null) {
@@ -321,19 +339,6 @@ public class BackupEngine {
                 err = err + e.getMessage() + "\n";
         }
         return err;
-    }
-
-    Vector<File> getAllFiles(File directory, Vector<File> allFiles){
-        File files[] = directory.listFiles();
-        for (File f : files){
-            if (f.isFile())
-                allFiles.addElement(f);
-            else {
-                allFiles.addElement(f);
-                getAllFiles(f, allFiles);
-            }
-        }
-        return allFiles;
     }
 
     void makeRemoteScript(String filename, boolean isApp, boolean isSystem, String sysAppPastinDir) {
@@ -382,7 +387,7 @@ public class BackupEngine {
                     "cp " + "/data/balti.migrate/" + filename + " /data/data/" + "\n" +
                     "cd /data/data/" + "\n" +
                     "rm -r " + dirName + "\n" +
-                    "tar -xzpf " + filename + "\n" +
+                    TEMP_DIR_NAME +"/tar -xzpf " + filename + "\n" +
                     "rm " + filename + "\n" +
                     "chmod 755 " + dirName + "\n" +
                     "chmod +r -R " + dirName + "\n" +
@@ -422,7 +427,53 @@ public class BackupEngine {
         return permissionList.getAbsolutePath();
     }
 
+    void unpackBinaries(){
+
+        AssetManager assetManager = context.getAssets();
+
+        File zipBinary = new File(context.getFilesDir(), "zip");
+
+        int read;
+        byte buffer[] = new byte[4096];
+        try {
+            InputStream inputStream = assetManager.open("zip");
+            FileOutputStream writer = new FileOutputStream(zipBinary);
+            while ((read = inputStream.read(buffer)) > 0) {
+                writer.write(buffer, 0, read);
+            }
+            writer.close();
+            zipBinary.setExecutable(true);
+            zipBinaryFilePath = zipBinary.getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+            zipBinaryFilePath = "";
+        }
+
+        File tarBinary = new File(context.getFilesDir(), "tar");
+
+        buffer = new byte[4096];
+        try {
+            InputStream inputStream = assetManager.open("tar");
+            FileOutputStream writer = new FileOutputStream(tarBinary);
+            while ((read = inputStream.read(buffer)) > 0) {
+                writer.write(buffer, 0, read);
+            }
+            writer.close();
+            tarBinary.setExecutable(true);
+            tarBinaryFilePath = tarBinary.getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+            tarBinaryFilePath = "";
+        }
+
+    }
+
     File[] makeScripts() {
+
+        unpackBinaries();
+        if (tarBinaryFilePath.equals("") || zipBinaryFilePath.equals(""))
+            return new File[]{null, null};
+
         File script = new File(context.getFilesDir(), "script.sh");
         File updater_script = new File(context.getFilesDir(), "updater-script");
         File update_binary = new File(context.getFilesDir(), "update-binary");
@@ -509,7 +560,7 @@ public class BackupEngine {
                 if (isApp) {
                     zipOrCopy = "cd " + path.substring(0, path.lastIndexOf('/')) + "; cp " + path.substring(path.lastIndexOf('/') + 1) + "/*.apk " + destination + "/" + backupName + "/" + fileName + ".apk";
                 }
-                else zipOrCopy = "cd " + path.substring(0, path.lastIndexOf('/')) + "; tar -cvzpf " + destination + "/" + backupName + "/" + fileName + ".tar.gz " + path.substring(path.lastIndexOf('/') + 1);
+                else zipOrCopy = "cd " + path.substring(0, path.lastIndexOf('/')) + "; " + tarBinaryFilePath + " -cvzpf " + destination + "/" + backupName + "/" + fileName + ".tar.gz " + path.substring(path.lastIndexOf('/') + 1);
 
                 String display = line.substring(0, line.lastIndexOf(' '));
                 updater_writer.write("ui_print(\"" + display + "\");\n");
@@ -547,6 +598,10 @@ public class BackupEngine {
             updater_writer.write("package_extract_dir(\"system\", \"/system\");\n");
             updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/system/app/MigrateHelper/" + "\");\n");
             updater_writer.write("package_extract_file(\"permissionList\", \"/cache/permissionList\");\n");
+
+            updater_writer.write("package_extract_file(\"tar\", \"" + TEMP_DIR_NAME + "/tar" + "\");\n");
+            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + TEMP_DIR_NAME + "/tar" + "\");\n");
+
             updater_writer.write("set_progress(1.0000);\n");
             updater_writer.write("ui_print(\" \");\n");
 
@@ -573,6 +628,7 @@ public class BackupEngine {
             writer.write("mv " + updater_script.getAbsolutePath() + " " + flashDirPath + "\n");
             writer.write("mv " + update_binary.getAbsolutePath() + " " + flashDirPath + "\n");
             writer.write("mv " + prepScript.getAbsolutePath() + " " + destination + "/" + backupName + "\n");
+            writer.write("cp " + tarBinaryFilePath + " " + destination + "/" + backupName + "\n");
 
             writer.write("echo \"migrate status: " + "Including helper" + "\"\n");
             writer.write("cp -r " + context.getFilesDir() + "/system" + " " + destination + "/" + backupName + "\n");

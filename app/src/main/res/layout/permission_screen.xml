@@ -39,17 +39,6 @@
         />
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/injectAccess"
-        android:drawableStart="@drawable/ic_inject"
-        android:gravity="center_vertical"
-        android:padding="@dimen/small_padding_width"
-        android:id="@+id/injectTextView"
-        android:drawablePadding="@dimen/small_padding_width"
-        />
-
     <Space
         android:layout_width="wrap_content"
         android:layout_height="@dimen/large_padding_width" />
