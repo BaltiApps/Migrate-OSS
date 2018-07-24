@@ -2,12 +2,16 @@ package balti.migrate;
 
 import android.app.IntentService;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.support.annotation.Nullable;
+
+import java.util.Objects;
 
 /**
  * Created by sayantan on 15/10/17.
@@ -62,6 +66,8 @@ public class BackupService extends IntentService {
 
             Notification notification;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                NotificationChannel notificationChannel = new NotificationChannel(CHANNEL, CHANNEL, NotificationManager.IMPORTANCE_DEFAULT);
+                ((NotificationManager) Objects.requireNonNull(getSystemService(NOTIFICATION_SERVICE))).createNotificationChannel(notificationChannel);
                 notification = new Notification.Builder(this, CHANNEL)
                         .setContentTitle(getString(R.string.loading))
                         .build();
