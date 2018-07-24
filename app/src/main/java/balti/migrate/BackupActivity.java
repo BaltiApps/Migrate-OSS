@@ -74,8 +74,6 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             dataAllSelect.setEnabled(false);
             selectAll.setEnabled(false);
             clearAll.setEnabled(false);
-            selectAll.setBackgroundColor(getResources().getColor(R.color.lightGray));
-            clearAll.setBackgroundColor(getResources().getColor(R.color.lightGray));
 
             (findViewById(R.id.appLoadingView)).setVisibility(View.VISIBLE);
         }
@@ -99,8 +97,6 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             dataAllSelect.setEnabled(true);
             selectAll.setEnabled(true);
             clearAll.setEnabled(true);
-            selectAll.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-            clearAll.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
 
             (findViewById(R.id.appLoadingView)).setVisibility(View.GONE);
             listView.setAdapter(adapter);
@@ -389,9 +385,6 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
     void setBackupEnabled(boolean isEnabled){
         startBackupButton.setEnabled(isEnabled);
-        if (isEnabled)
-            startBackupButton.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-        else startBackupButton.setBackgroundColor(getResources().getColor(R.color.lightGray));
     }
 
     boolean isBackupRunning(){

@@ -9,33 +9,42 @@
     android:background="@drawable/main_bg_portrait"
     >
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <Toolbar
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
+        android:id="@+id/activity_main_toolbar"
         >
 
-        <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/drawer_icon"
-            android:id="@+id/drawerButton"
-            android:foreground="?android:attr/selectableItemBackground"
-            />
 
-        <Space
-            android:layout_width="20dp"
-            android:layout_height="wrap_content" />
-
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
 
-    </LinearLayout>
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/drawer_icon"
+                android:id="@+id/drawerButton"
+                android:foreground="?android:attr/selectableItemBackground"
+                />
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                />
+
+        </LinearLayout>
+
+    </Toolbar>
 
 
 
@@ -43,27 +52,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:paddingBottom="150dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
             >
 
             <Button
-                android:layout_width="@dimen/oval_button_width"
-                android:layout_height="@dimen/oval_button_height"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="@dimen/button_height"
                 android:id="@+id/backupMain"
                 android:text="@string/backupButton"
-                android:background="@drawable/main_button_bg"
+                android:background="@drawable/normal_button"
                 android:foreground="?android:attr/selectableItemBackground"
                 />
 
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="20dp" />
 
             <Button
-                android:layout_width="@dimen/oval_button_width"
-                android:layout_height="@dimen/oval_button_height"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="@dimen/button_height"
                 android:id="@+id/restoreMain"
                 android:text="@string/restoreButton"
-                android:background="@drawable/main_button_bg"
+                android:background="@drawable/normal_button"
                 android:foreground="?android:attr/selectableItemBackground"
                 />
 

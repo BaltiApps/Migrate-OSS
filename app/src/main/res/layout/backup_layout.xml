@@ -3,13 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/app_list_bg"
+    >
+
+    <Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/colorPrimary"
+        android:id="@+id/backup_layout_toolbar"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
+        />
 
     <Toolbar
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
-        android:background="@color/lightGray"
-        android:elevation="5dp"
+        android:background="@color/colorPrimary"
         >
 
         <RelativeLayout
@@ -125,35 +134,35 @@
         android:orientation="horizontal"
         >
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="@string/backupLabel"
-            android:textColor="@android:color/white"
-            android:id="@+id/backupStartButton"
-            />
-
-        <Space
-            android:layout_width="5dp"
-            android:layout_height="wrap_content" />
 
         <ImageButton
-            android:layout_width="45dp"
+            android:layout_width="@dimen/button_height"
             android:layout_height="match_parent"
             android:src="@drawable/ic_clear_all"
             android:id="@+id/clearAll"
+            android:background="@drawable/small_button"
+            android:foreground="?android:attr/selectableItemBackground"
             />
 
-        <Space
-            android:layout_width="5dp"
-            android:layout_height="wrap_content" />
 
         <ImageButton
-            android:layout_width="45dp"
+            android:layout_width="@dimen/button_height"
             android:layout_height="match_parent"
             android:src="@drawable/ic_select_all"
             android:id="@+id/selectAll"
+            android:background="@drawable/small_button"
+            android:foreground="?android:attr/selectableItemBackground"
+            />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="@dimen/button_height"
+            android:text="@string/backupLabel"
+            android:textColor="@android:color/white"
+            android:id="@+id/backupStartButton"
+            android:background="@drawable/backup_button"
+            android:foreground="?android:attr/selectableItemBackground"
             />
 
     </LinearLayout>

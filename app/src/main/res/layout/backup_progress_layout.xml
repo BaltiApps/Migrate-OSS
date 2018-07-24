@@ -4,26 +4,37 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp"
+    android:background="@drawable/log_bg_portrait"
     >
 
-
-    <ImageView
-        android:layout_width="30dp"
-        android:layout_height="50dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:src="@drawable/ic_backup"
-        />
-
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:lines="2"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textStyle="bold"
-        android:id="@+id/progressTask"
-        android:textColor="@color/colorPrimary"
-        />
+        android:layout_height="100dp"
+        android:orientation="horizontal"
+        android:background="@drawable/log_header"
+        android:padding="5dp"
+        android:gravity="center_vertical"
+        >
+
+
+        <ImageView
+            android:layout_width="@dimen/small_icon_wh"
+            android:layout_height="@dimen/small_icon_wh"
+            android:src="@drawable/ic_backup"
+            android:layout_margin="10dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lines="2"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textStyle="bold"
+            android:id="@+id/progressTask"
+            android:textColor="@color/colorAccent"
+            />
+
+    </LinearLayout>
 
 
     <LinearLayout
@@ -31,6 +42,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         >
 
         <ProgressBar
@@ -66,7 +79,9 @@
         android:id="@+id/progressLogTextView"
         android:scrollbars="vertical"
         android:fontFamily="monospace"
-        android:layout_marginTop="5dp"
+        android:background="@drawable/log_message"
+        android:textColor="@android:color/white"
+        android:padding="@dimen/padding_width"
         />
 
     <TextView
@@ -87,10 +102,12 @@
 
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/log_button_width"
+            android:layout_height="@dimen/button_height"
             android:layout_gravity="end"
             android:id="@+id/progressActionButton"
+            android:background="@drawable/log_action_button"
+            android:foreground="?android:attr/selectableItemBackground"
             />
 
     </LinearLayout>

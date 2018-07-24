@@ -79,8 +79,6 @@ public class BackupProgressLayout extends AppCompatActivity {
                     else{
                         backIntent = new Intent(BackupProgressLayout.this, BackupActivity.class);
                         actionButton.setText(getString(R.string.close));
-                        actionButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
-                        actionButton.setTextColor(Color.WHITE);
                         actionButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {

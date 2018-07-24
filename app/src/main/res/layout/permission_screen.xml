@@ -21,22 +21,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/storage"
-        android:drawableLeft="@drawable/ic_storage"
+        android:drawableStart="@drawable/ic_storage"
         android:gravity="center_vertical"
-        android:padding="2dp"
+        android:padding="@dimen/padding_width"
         android:id="@+id/storagePermTextView"
-        android:drawableTint="@color/colorAccent"
+        android:drawablePadding="@dimen/padding_width"
         />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/rootAccess"
-        android:drawableLeft="@drawable/ic_root"
         android:gravity="center_vertical"
-        android:padding="2dp"
+        android:padding="@dimen/padding_width"
         android:id="@+id/rootPermTextView"
-        android:drawableTint="@color/colorAccent"
+        android:drawablePadding="@dimen/padding_width"
         />
 
 
@@ -44,22 +43,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/injectAccess"
-        android:drawableLeft="@drawable/ic_inject"
+        android:drawableStart="@drawable/ic_inject"
         android:gravity="center_vertical"
-        android:padding="2dp"
+        android:padding="@dimen/padding_width"
         android:id="@+id/injectTextView"
-        android:drawableTint="@color/colorAccent"
+        android:drawablePadding="@dimen/padding_width"
         />
 
     <Space
         android:layout_width="wrap_content"
-        android:layout_height="5dp" />
+        android:layout_height="10dp" />
 
     <Button
         android:id="@+id/grantPermissions"
-        android:layout_width="@dimen/oval_button_width"
-        android:layout_height="@dimen/oval_button_height"
-        android:background="@drawable/main_button_bg"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:background="@drawable/normal_button"
         android:textColor="@android:color/white"
         android:foreground="?android:attr/selectableItemBackground"
         android:text="@string/grantPermissions" />
