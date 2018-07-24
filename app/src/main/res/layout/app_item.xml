@@ -12,6 +12,7 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:id="@+id/checkboxes"
+        android:paddingEnd="@dimen/large_padding_width"
         >
 
 
@@ -58,7 +59,7 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:id="@+id/appIcon"
-            android:layout_margin="5dp"
+            android:layout_margin="@dimen/small_padding_width"
             android:padding="@dimen/large_padding_width"
             />
 
