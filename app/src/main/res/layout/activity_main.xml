@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="balti.migrate.MainActivity"
-    android:padding="10dp"
+    android:padding="@dimen/large_padding_width"
     android:background="@drawable/main_bg_portrait"
     >
 

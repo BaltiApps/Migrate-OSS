@@ -59,7 +59,7 @@
             android:layout_height="60dp"
             android:id="@+id/appIcon"
             android:layout_margin="5dp"
-            android:padding="10dp"
+            android:padding="@dimen/large_padding_width"
             />
 
         <TextView
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/appName"
             android:text="App name"
-            android:layout_margin="10dp"
+            android:layout_margin="@dimen/large_padding_width"
             android:textAppearance="?android:attr/textAppearanceMedium"
             />
 

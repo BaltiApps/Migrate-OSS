@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="10dp"
+    android:padding="@dimen/large_padding_width"
     android:background="@drawable/log_bg_portrait"
     >
 
@@ -21,7 +21,7 @@
             android:layout_width="@dimen/small_icon_wh"
             android:layout_height="@dimen/small_icon_wh"
             android:src="@drawable/ic_backup"
-            android:layout_margin="10dp"
+            android:layout_margin="@dimen/large_padding_width"
             />
 
         <TextView
@@ -51,8 +51,8 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             style="?android:attr/progressBarStyleHorizontal"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="@dimen/large_padding_width"
+            android:layout_marginTop="@dimen/large_padding_width"
             android:id="@+id/progressBar"
             android:max="100"
             />
@@ -81,7 +81,7 @@
         android:fontFamily="monospace"
         android:background="@drawable/log_message"
         android:textColor="@android:color/white"
-        android:padding="@dimen/padding_width"
+        android:padding="@dimen/small_padding_width"
         />
 
     <TextView

@@ -14,7 +14,7 @@
         android:text="@string/permissionsRequired"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:gravity="center"
-        android:padding="10dp"
+        android:padding="@dimen/large_padding_width"
         />
 
     <TextView
@@ -23,9 +23,9 @@
         android:text="@string/storage"
         android:drawableStart="@drawable/ic_storage"
         android:gravity="center_vertical"
-        android:padding="@dimen/padding_width"
+        android:padding="@dimen/small_padding_width"
         android:id="@+id/storagePermTextView"
-        android:drawablePadding="@dimen/padding_width"
+        android:drawablePadding="@dimen/small_padding_width"
         />
 
     <TextView
@@ -33,9 +33,9 @@
         android:layout_height="wrap_content"
         android:text="@string/rootAccess"
         android:gravity="center_vertical"
-        android:padding="@dimen/padding_width"
+        android:padding="@dimen/small_padding_width"
         android:id="@+id/rootPermTextView"
-        android:drawablePadding="@dimen/padding_width"
+        android:drawablePadding="@dimen/small_padding_width"
         />
 
 
@@ -45,14 +45,14 @@
         android:text="@string/injectAccess"
         android:drawableStart="@drawable/ic_inject"
         android:gravity="center_vertical"
-        android:padding="@dimen/padding_width"
+        android:padding="@dimen/small_padding_width"
         android:id="@+id/injectTextView"
-        android:drawablePadding="@dimen/padding_width"
+        android:drawablePadding="@dimen/small_padding_width"
         />
 
     <Space
         android:layout_width="wrap_content"
-        android:layout_height="10dp" />
+        android:layout_height="@dimen/large_padding_width" />
 
     <Button
         android:id="@+id/grantPermissions"

@@ -7,103 +7,106 @@
     android:background="@drawable/app_list_bg"
     >
 
-    <Toolbar
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@color/colorPrimary"
-        android:id="@+id/backup_layout_toolbar"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark"
-        />
-
-    <Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/large_padding_width"
+        android:paddingEnd="@dimen/large_padding_width"
+        android:paddingStart="@dimen/large_padding_width"
+        android:paddingBottom="@dimen/small_padding_width"
         android:background="@color/colorPrimary"
         >
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_back"
+            android:background="@android:color/transparent"
+            android:padding="@dimen/large_padding_width"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:id="@+id/backupLayoutBackButton"
+            />
+
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="?android:attr/actionBarSize">
 
             <Spinner
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:id="@+id/appType"
                 android:entries="@array/appTypeList"
+                android:layout_alignParentStart="true"
                 />
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:orientation="horizontal"
                 >
 
-
                 <RelativeLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_alignParentRight="true"
+                    android:id="@+id/appCheckboxView"
                     >
 
-                    <RelativeLayout
-                        android:layout_width="50dp"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/appCheckboxView"
-                        >
+                        android:text="@string/app"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/app"
-                            android:layout_alignParentTop="true"
-                            android:layout_centerHorizontal="true"
-                            />
-
-                        <CheckBox
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:id="@+id/appAllSelect"
-                            android:gravity="bottom"
-                            android:layout_centerHorizontal="true"
-                            android:layout_alignParentTop="true"
-                            />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="50dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/dataCheckboxView"
-                        android:layout_toRightOf="@id/appCheckboxView"
-                        >
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/data"
-                            android:layout_alignParentTop="true"
-                            android:layout_centerHorizontal="true"
-                            />
-
-                        <CheckBox
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:id="@+id/dataAllSelect"
-                            android:gravity="bottom"
-                            android:layout_centerHorizontal="true"
-                            android:layout_alignParentTop="true"
-                            />
-
-                    </RelativeLayout>
+                    <CheckBox
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:id="@+id/appAllSelect"
+                        android:gravity="bottom"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentTop="true"
+                        />
 
                 </RelativeLayout>
 
-            </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/dataCheckboxView"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/data"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        />
+
+                    <CheckBox
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:id="@+id/dataAllSelect"
+                        android:gravity="bottom"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentTop="true"
+                        />
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
 
         </RelativeLayout>
 
-    </Toolbar>
+    </LinearLayout>
+
+
+
+
 
     <RelativeLayout
         android:layout_width="match_parent"

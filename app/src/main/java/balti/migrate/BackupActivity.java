@@ -1,11 +1,9 @@
 package balti.migrate;
 
 import android.app.ActivityManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -17,21 +15,16 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -50,14 +43,13 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     CheckBox appAllSelect, dataAllSelect;
     Spinner appType;
     Button startBackupButton;
-    ImageButton selectAll, clearAll;
+    ImageButton selectAll, clearAll, backButton;
 
     PackageManager pm;
     Vector<BackupDataPacket> appList;
     AppListAdapter adapter;
 
     String destination;
-
 
     LayoutInflater layoutInflater;
     SharedPreferences main;
@@ -124,6 +116,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         startBackupButton = findViewById(R.id.backupStartButton);
         selectAll = findViewById(R.id.selectAll);
         clearAll = findViewById(R.id.clearAll);
+        backButton = findViewById(R.id.backupLayoutBackButton);
 
         appType = findViewById(R.id.appType);
         appType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -161,6 +154,13 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
                 dataAllSelect.setChecked(true);
                 dataAllSelect.setChecked(false);
                 appAllSelect.setChecked(false);
+            }
+        });
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
             }
         });
 

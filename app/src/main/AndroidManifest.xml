@@ -21,7 +21,6 @@
         </activity>
 
         <activity android:name=".BackupActivity"
-            android:label="@string/backupLabel"
             />
 
         <activity android:name=".PermissionsScreen"/>
