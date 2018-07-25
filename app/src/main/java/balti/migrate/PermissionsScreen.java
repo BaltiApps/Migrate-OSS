@@ -45,10 +45,10 @@ public class PermissionsScreen extends AppCompatActivity {
         main = getSharedPreferences("main", MODE_PRIVATE);
         editor = main.edit();
 
-        storagePerm = (TextView) findViewById(R.id.storagePermTextView);
-        rootPerm = (TextView) findViewById(R.id.rootPermTextView);
+        storagePerm = findViewById(R.id.storagePermTextView);
+        rootPerm = findViewById(R.id.rootPermTextView);
 
-        grantPermissions = (Button) findViewById(R.id.grantPermissions);
+        grantPermissions = findViewById(R.id.grantPermissions);
         grantPermissions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,6 +75,8 @@ public class PermissionsScreen extends AppCompatActivity {
             rootPerm.setVisibility(View.VISIBLE);
         else rootPerm.setVisibility(View.GONE);
 
+        if (p[0] && p[1])
+            startMainActivity();
 
     }
 
@@ -127,6 +129,11 @@ public class PermissionsScreen extends AppCompatActivity {
             grantPermissions.setText(getString(R.string.grantPermissions));
             grantPermissions.setEnabled(true);
         }
+    }
+
+    void startMainActivity(){
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 
 }
