@@ -597,10 +597,7 @@ public class BackupEngine {
             updater_writer.write("ui_print(\"Unpacking helper\");\n");
             updater_writer.write("package_extract_dir(\"system\", \"/system\");\n");
             updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/system/app/MigrateHelper/" + "\");\n");
-            updater_writer.write("package_extract_file(\"permissionList\", \"/cache/permissionList\");\n");
-
-            updater_writer.write("package_extract_file(\"tar\", \"" + TEMP_DIR_NAME + "/tar" + "\");\n");
-            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + TEMP_DIR_NAME + "/tar" + "\");\n");
+            updater_writer.write("package_extract_file(\"permissionList\", \"" + TEMP_DIR_NAME + "/permissionList\");\n");
 
             updater_writer.write("set_progress(1.0000);\n");
             updater_writer.write("ui_print(\" \");\n");
@@ -628,7 +625,6 @@ public class BackupEngine {
             writer.write("mv " + updater_script.getAbsolutePath() + " " + flashDirPath + "\n");
             writer.write("mv " + update_binary.getAbsolutePath() + " " + flashDirPath + "\n");
             writer.write("mv " + prepScript.getAbsolutePath() + " " + destination + "/" + backupName + "\n");
-            writer.write("cp " + tarBinaryFilePath + " " + destination + "/" + backupName + "\n");
 
             writer.write("echo \"migrate status: " + "Including helper" + "\"\n");
             writer.write("cp -r " + context.getFilesDir() + "/system" + " " + destination + "/" + backupName + "\n");
