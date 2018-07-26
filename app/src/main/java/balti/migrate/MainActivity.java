@@ -3,12 +3,15 @@ package balti.migrate;
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,6 +38,21 @@ public class MainActivity extends AppCompatActivity {
 
         main = getSharedPreferences("main", MODE_PRIVATE);
         editor = main.edit();
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1 && !main.getBoolean("android_version_warning", false)){
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.too_fast)
+                    .setMessage(R.string.too_fast_desc)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setNegativeButton(R.string.dont_show_again, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            editor.putBoolean("advanced_android_warning", true);
+                            editor.commit();
+                        }
+                    })
+                    .show();
+        }
 
         if (main.getBoolean("firstRun", true)){
 

@@ -47,6 +47,11 @@
     <string name="rename">No, rename</string>
     <string name="empty">Backup name cannot be empty</string>
 
+    <!--MainActivity.java-->
+    <string name="too_fast">Whoa, too fast!!</string>
+    <string name="too_fast_desc">The app has not been explicitly tested on Android version above Oreo (8.1).\n\nPlease submit your feedback on whether the app works or not.</string>
+    <string name="dont_show_again">Don\'t show again</string>
+
     <!--PermissionScreen.java-->
 
 </resources>
