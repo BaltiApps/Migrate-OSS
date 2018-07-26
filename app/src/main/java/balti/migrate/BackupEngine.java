@@ -52,7 +52,7 @@ public class BackupEngine {
     private long startMillis;
     private long endMillis;
 
-    String zipBinaryFilePath, tarBinaryFilePath;
+    private String zipBinaryFilePath, tarBinaryFilePath;
 
     private final String TEMP_DIR_NAME = "/data/balti.migrate";
 
@@ -225,7 +225,7 @@ public class BackupEngine {
         }*/
 
 
-        activityIntent.setAction("finished").putExtra("finishedMessage", finalMessage).putStringArrayListExtra("errors", errors);
+        activityIntent.setAction("finished").putExtra("finishedMessage", finalMessage.trim() + "\n(" + calendarDifference(startMillis, endMillis) + ")").putStringArrayListExtra("errors", errors);
         activityPendingIntent = PendingIntent.getActivity(context, 1, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         progressNotif
                 .setProgress(0, 0, false)
@@ -246,6 +246,8 @@ public class BackupEngine {
         progressBroadcast.putExtra("progress", 100);
         progressBroadcast.putExtra("task", finalMessage.trim() + "\n(" + calendarDifference(startMillis, endMillis) + ")");
         context.sendBroadcast(progressBroadcast);
+
+        context.stopService(new Intent(context, BackupService.class));
     }
 
     private String zipAll(Intent progressBroadcast, NotificationManager notificationManager, NotificationCompat.Builder progressNotif){

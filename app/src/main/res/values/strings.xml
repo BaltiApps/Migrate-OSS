@@ -30,7 +30,6 @@
     <string name="failedToBackup">Backup failed! Please try again.</string>
     <string name="close">Close</string>
     <string name="backingUp">Backing up</string>
-    <string name="finished">Finished!</string>
     <string name="noErrors">Finished! No errors.</string>
     <string name="combining">Combining all files</string>
     <string name="errorMakingScripts">Error making scripts</string>
