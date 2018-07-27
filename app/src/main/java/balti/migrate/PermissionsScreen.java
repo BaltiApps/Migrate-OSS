@@ -98,7 +98,7 @@ public class PermissionsScreen extends AppCompatActivity {
     }
 
     boolean suEcho() throws IOException, InterruptedException {
-        boolean result = false;
+        boolean result;
         Process suRequest = Runtime.getRuntime().exec("su -c echo");
         suRequest.waitFor();
         if (suRequest.exitValue() == 0) result = true;
@@ -118,6 +118,14 @@ public class PermissionsScreen extends AppCompatActivity {
 
             try {
                 p1 = suEcho();
+
+                if (!p1)
+                    new AlertDialog.Builder(this)
+                            .setTitle(R.string.root_permission_denied)
+                            .setMessage(R.string.root_permission_denied_desc)
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show();
+
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
