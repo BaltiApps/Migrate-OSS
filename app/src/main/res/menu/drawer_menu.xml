@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item android:id="@+id/preferences"
+        android:icon="@drawable/ic_preferences"
+        android:title="@string/preferences"/>
+
+
+    <item android:id="@+id/helpPage"
+        android:icon="@drawable/ic_help"
+        android:title="@string/help"/>
+
+
+    <item android:title="@string/aboutThisApp"
+        >
+
+        <menu>
+            <group android:id="@+id/about_group"
+                >
+
+                <item android:id="@+id/changelog"
+                    android:title="@string/changelog"
+                    android:icon="@drawable/ic_changelog"/>
+
+                <item android:id="@+id/about"
+                    android:title="@string/about"
+                    android:icon="@drawable/ic_info"/>
+
+                <item android:id="@+id/thanks"
+                    android:title="@string/specialThanks"
+                    android:icon="@drawable/ic_thanks"/>
+
+                <item android:id="@+id/rate"
+                    android:title="@string/rateTheApp"
+                    android:icon="@drawable/ic_rate"/>
+
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="@string/other_options"
+        >
+
+        <menu>
+            <group android:id="@+id/others_group"
+                >
+
+                <item android:id="@+id/otherApps"
+                    android:title="@string/other_apps"
+                    android:icon="@drawable/ic_other_apps"/>
+
+                <item android:id="@+id/contact"
+                    android:title="@string/contact"
+                    android:icon="@drawable/ic_email"/>
+
+            </group>
+        </menu>
+    </item>
+
+</menu>

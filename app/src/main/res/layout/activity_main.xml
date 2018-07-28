@@ -1,84 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="balti.migrate.MainActivity"
-    android:padding="@dimen/large_padding_width"
-    android:background="@drawable/main_bg_portrait"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
+    tools:context="balti.migrate.MainActivity">
 
-    <Toolbar
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/activity_main_toolbar"
+        android:layout_height="match_parent"
+        android:background="@drawable/main_bg_portrait"
+        android:padding="@dimen/large_padding_width"
         >
 
+        <Toolbar
+            android:id="@+id/activity_main_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            >
 
-            <ImageButton
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="@drawable/drawer_icon"
-                android:id="@+id/drawerButton"
-                android:foreground="?android:attr/selectableItemBackground"
-                />
-
-            <Space
-                android:layout_width="20dp"
-                android:layout_height="wrap_content" />
-
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-        </LinearLayout>
+                <ImageButton
+                    android:id="@+id/drawerButton"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/drawer_icon"
+                    android:foreground="?android:attr/selectableItemBackground" />
 
-    </Toolbar>
+                <Space
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
+            </LinearLayout>
+
+        </Toolbar>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            >
+            android:layout_gravity="center_vertical|end"
+            android:orientation="vertical">
 
             <Button
+                android:id="@+id/backupMain"
                 android:layout_width="@dimen/button_width"
                 android:layout_height="@dimen/button_height"
-                android:id="@+id/backupMain"
-                android:text="@string/backupButton"
                 android:background="@drawable/normal_button"
                 android:foreground="?android:attr/selectableItemBackground"
-                />
+                android:text="@string/backupButton" />
 
             <Space
                 android:layout_width="wrap_content"
                 android:layout_height="20dp" />
 
             <Button
+                android:id="@+id/restoreMain"
                 android:layout_width="@dimen/button_width"
                 android:layout_height="@dimen/button_height"
-                android:id="@+id/restoreMain"
-                android:text="@string/restoreButton"
                 android:background="@drawable/normal_button"
                 android:foreground="?android:attr/selectableItemBackground"
-                />
+                android:text="@string/restoreButton" />
 
         </LinearLayout>
 
+    </FrameLayout>
 
-</RelativeLayout>
+    <android.support.design.widget.NavigationView
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        android:id="@+id/navigationDrawer"
+        app:menu="@menu/drawer_menu"
+        />
+
+
+</android.support.v4.widget.DrawerLayout>

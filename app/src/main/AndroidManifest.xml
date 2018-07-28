@@ -36,6 +36,15 @@
             android:screenOrientation="portrait"
             />
 
+
+        <activity android:name=".HelpPage"
+            android:screenOrientation="portrait"
+            />
+
+        <activity android:name=".PreferenceScreen"
+            android:screenOrientation="portrait"
+            />
+
         <service android:name=".BackupService"/>
 
     </application>
