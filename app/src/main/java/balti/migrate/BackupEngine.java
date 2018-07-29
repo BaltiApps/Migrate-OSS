@@ -22,7 +22,6 @@ import java.io.InterruptedIOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Vector;
 
 /**
  * Created by sayantan on 9/10/17.
@@ -52,7 +51,7 @@ public class BackupEngine {
     private long startMillis;
     private long endMillis;
 
-    private String zipBinaryFilePath, tarBinaryFilePath;
+    private String zipBinaryFilePath, busyboxBinaryFilePath;
 
     private final String TEMP_DIR_NAME = "/data/balti.migrate";
 
@@ -74,7 +73,7 @@ public class BackupEngine {
         n = backupSummary.split("\r\n|\r|\n").length;
 
         zipBinaryFilePath = "";
-        tarBinaryFilePath = "";
+        busyboxBinaryFilePath = "";
     }
 
     NotificationCompat.Builder createNotificationBuilder(){
@@ -389,7 +388,7 @@ public class BackupEngine {
                     "cp " + "/data/balti.migrate/" + filename + " /data/data/" + "\n" +
                     "cd /data/data/" + "\n" +
                     "rm -r " + dirName + "\n" +
-                    TEMP_DIR_NAME +"/tar -xzpf " + filename + "\n" +
+                    TEMP_DIR_NAME +"/toybox tar -xzpf " + filename + "\n" +
                     "rm " + filename + "\n" +
                     "chmod 755 " + dirName + "\n" +
                     "chmod +r -R " + dirName + "\n" +
@@ -451,21 +450,21 @@ public class BackupEngine {
             zipBinaryFilePath = "";
         }
 
-        File tarBinary = new File(context.getFilesDir(), "tar");
+        File busyboxBinary = new File(context.getFilesDir(), "busybox");
 
         buffer = new byte[4096];
         try {
-            InputStream inputStream = assetManager.open("tar");
-            FileOutputStream writer = new FileOutputStream(tarBinary);
+            InputStream inputStream = assetManager.open("busybox");
+            FileOutputStream writer = new FileOutputStream(busyboxBinary);
             while ((read = inputStream.read(buffer)) > 0) {
                 writer.write(buffer, 0, read);
             }
             writer.close();
-            tarBinary.setExecutable(true);
-            tarBinaryFilePath = tarBinary.getAbsolutePath();
+            busyboxBinary.setExecutable(true);
+            busyboxBinaryFilePath = busyboxBinary.getAbsolutePath();
         } catch (IOException e) {
             e.printStackTrace();
-            tarBinaryFilePath = "";
+            busyboxBinaryFilePath = "";
         }
 
     }
@@ -473,7 +472,7 @@ public class BackupEngine {
     File[] makeScripts() {
 
         unpackBinaries();
-        if (tarBinaryFilePath.equals("") || zipBinaryFilePath.equals(""))
+        if (busyboxBinaryFilePath.equals("") || zipBinaryFilePath.equals(""))
             return new File[]{null, null};
 
         File script = new File(context.getFilesDir(), "script.sh");
@@ -562,7 +561,7 @@ public class BackupEngine {
                 if (isApp) {
                     zipOrCopy = "cd " + path.substring(0, path.lastIndexOf('/')) + "; cp " + path.substring(path.lastIndexOf('/') + 1) + "/*.apk " + destination + "/" + backupName + "/" + fileName + ".apk";
                 }
-                else zipOrCopy = "cd " + path.substring(0, path.lastIndexOf('/')) + "; " + tarBinaryFilePath + " -cvzpf " + destination + "/" + backupName + "/" + fileName + ".tar.gz " + path.substring(path.lastIndexOf('/') + 1);
+                else zipOrCopy = "cd " + path.substring(0, path.lastIndexOf('/')) + "; " + busyboxBinaryFilePath + " tar -cvzpf " + destination + "/" + backupName + "/" + fileName + ".tar.gz " + path.substring(path.lastIndexOf('/') + 1);
 
                 String display = line.substring(0, line.lastIndexOf(' '));
                 updater_writer.write("ui_print(\"" + display + "\");\n");
