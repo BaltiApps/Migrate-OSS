@@ -388,7 +388,7 @@ public class BackupEngine {
                     "cp " + "/data/balti.migrate/" + filename + " /data/data/" + "\n" +
                     "cd /data/data/" + "\n" +
                     "rm -r " + dirName + "\n" +
-                    TEMP_DIR_NAME +"/toybox tar -xzpf " + filename + "\n" +
+                    TEMP_DIR_NAME +"/busybox tar -xzpf " + filename + "\n" +
                     "rm " + filename + "\n" +
                     "chmod 755 " + dirName + "\n" +
                     "chmod +r -R " + dirName + "\n" +
