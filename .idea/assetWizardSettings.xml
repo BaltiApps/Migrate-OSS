@@ -34,7 +34,6 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
-                                      <entry key="backgroundColor" value="00251a" />
                                       <entry key="foregroundImage" value="$USER_HOME$/Downloads/migrate/migrate_icon.png" />
                                       <entry key="webIconShape" value="CIRCLE" />
                                     </map>
