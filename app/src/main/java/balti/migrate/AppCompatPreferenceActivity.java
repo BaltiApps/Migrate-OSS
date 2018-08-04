@@ -1,4 +1,4 @@
-package balti.bgvideo;
+package balti.migrate;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

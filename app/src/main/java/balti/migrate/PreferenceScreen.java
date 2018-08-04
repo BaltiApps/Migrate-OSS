@@ -2,7 +2,7 @@ package balti.migrate;
 
 import android.os.Bundle;
 
-public class PreferenceScreen extends balti.bgvideo.AppCompatPreferenceActivity {
+public class PreferenceScreen extends balti.migrate.AppCompatPreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

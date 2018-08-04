@@ -70,11 +70,13 @@ public class BackupService extends IntentService {
                 ((NotificationManager) Objects.requireNonNull(getSystemService(NOTIFICATION_SERVICE))).createNotificationChannel(notificationChannel);
                 notification = new Notification.Builder(this, CHANNEL)
                         .setContentTitle(getString(R.string.loading))
+                        .setSmallIcon(R.drawable.ic_notification_icon)
                         .build();
             }
             else {
                 notification = new Notification.Builder(this)
                         .setContentTitle(getString(R.string.loading))
+                        .setSmallIcon(R.drawable.ic_notification_icon)
                         .build();
             }
 
