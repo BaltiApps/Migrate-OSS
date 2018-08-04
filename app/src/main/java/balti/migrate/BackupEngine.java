@@ -133,7 +133,7 @@ public class BackupEngine {
         NotificationCompat.Builder progressNotif = createNotificationBuilder();
 
         notificationManager.cancel(NOTIFICATION_ID + 1);
-        progressNotif.setSmallIcon(R.mipmap.ic_launcher)
+        progressNotif.setSmallIcon(R.drawable.ic_notification_icon)
                 .setContentTitle(context.getString(R.string.backingUp));
 
         Intent cancelIntent = new Intent("Migrate backup cancel broadcast");
@@ -198,7 +198,7 @@ public class BackupEngine {
         }
 
         progressNotif = createNotificationBuilder();
-        progressNotif.setSmallIcon(R.mipmap.ic_launcher);
+        progressNotif.setSmallIcon(R.drawable.ic_notification_icon);
 
         if (isCancelled) finalMessage = context.getString(R.string.backupCancelled);
         else if (errors.size() == 0) finalMessage = context.getString(R.string.noErrors);
