@@ -65,6 +65,7 @@
     <string name="too_fast">Whoa, too fast!!</string>
     <string name="too_fast_desc">The app has not been explicitly tested on Android version above Oreo (8.1).\n\nPlease submit your feedback on whether the app works or not.</string>
     <string name="dont_show_again">Don\'t show again</string>
+    <string name="please_wait">Please wait</string>
 
     <string name="root_permission_denied">Root permission denied!</string>
     <string name="root_permission_denied_desc">Please make sure that your device is rooted and you have allowed root permission</string>

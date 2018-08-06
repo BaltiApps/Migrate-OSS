@@ -60,31 +60,14 @@ public class BackupProgressLayout extends AppCompatActivity {
 
         backIntent = null;
 
+        if (getIntent().getExtras() != null){
+            handleProgress(getIntent());
+        }
+
         progressReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-
-                int p = intent.getIntExtra("progress", 0);
-                if (p >= 0) {
-                    progress.setText(p + "%");
-                    String t = intent.getStringExtra("task");
-                    task.setText(t);
-                    progressBar.setProgress(p);
-                    if (p < 100){
-                        backIntent = null;
-                        actionButton.setText(getString(android.R.string.cancel));
-                    }
-                    else{
-                        backIntent = new Intent(BackupProgressLayout.this, BackupActivity.class);
-                        actionButton.setText(getString(R.string.close));
-                        actionButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                finishThis();
-                            }
-                        });
-                    }
-                }
+                handleProgress(intent);
             }
 
         };
@@ -119,6 +102,30 @@ public class BackupProgressLayout extends AppCompatActivity {
         }
         else {
             sendBroadcast(new Intent("get data"));
+        }
+    }
+
+    void handleProgress(Intent intent){
+        int p = intent.getIntExtra("progress", 0);
+        if (p >= 0) {
+            progress.setText(p + "%");
+            String t = intent.getStringExtra("task");
+            task.setText(t);
+            progressBar.setProgress(p);
+            if (p < 100){
+                backIntent = null;
+                actionButton.setText(getString(android.R.string.cancel));
+            }
+            else{
+                backIntent = new Intent(BackupProgressLayout.this, BackupActivity.class);
+                actionButton.setText(getString(R.string.close));
+                actionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        finishThis();
+                    }
+                });
+            }
         }
     }
 

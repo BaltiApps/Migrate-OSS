@@ -1,17 +1,23 @@
 package balti.migrate;
 
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -27,10 +33,14 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
 
 /**
@@ -53,6 +63,8 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
     LayoutInflater layoutInflater;
     SharedPreferences main;
+
+    BroadcastReceiver progressReceiver;
 
     class AppUpdate extends AsyncTask{
 
@@ -92,6 +104,92 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
             (findViewById(R.id.appLoadingView)).setVisibility(View.GONE);
             listView.setAdapter(adapter);
+        }
+    }
+
+    class MakeBackupSummary extends AsyncTask<Void, Void, Object[]>{
+
+        AlertDialog ad;
+        String backupName;
+
+        MakeBackupSummary(String backupName) {
+            this.backupName = backupName;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            ad = new AlertDialog.Builder(BackupActivity.this)
+                    .setView(layoutInflater.inflate(R.layout.please_wait, null))
+                    .setCancelable(false)
+                    .create();
+
+            ad.show();
+        }
+
+        @Override
+        protected Object[] doInBackground(Void... voids) {
+
+            File backupSummary = new File(getFilesDir(), "backup_summary");
+
+            try {
+
+                BufferedWriter writer = new BufferedWriter(new FileWriter(backupSummary.getAbsolutePath()));
+
+                for (int i = 0; i < appList.size(); i++) {
+
+                    if (appList.elementAt(i).APP) {
+
+                        String appName = pm.getApplicationLabel(appList.get(i).PACKAGE_INFO.applicationInfo).toString();
+                        appName = appName.replace(' ', '_');
+
+                        String packageName = appList.get(i).PACKAGE_INFO.packageName;
+                        String apkPath = appList.elementAt(i).PACKAGE_INFO.applicationInfo.sourceDir;
+                        String dataPath = "NULL";
+                        if (appList.get(i).DATA)
+                            dataPath = appList.elementAt(i).PACKAGE_INFO.applicationInfo.dataDir;
+                        String versionName = appList.elementAt(i).PACKAGE_INFO.versionName;
+
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        Bitmap icon = getBitmapFromDrawable(pm.getApplicationIcon(appList.get(i).PACKAGE_INFO.applicationInfo));
+                        icon.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        String appIcon = byteToString(stream.toByteArray());
+
+                        String line = appName + " " + packageName + " " + apkPath + " " + dataPath + " " + appIcon + " " + versionName;
+
+                        writer.write(line + "\n");
+
+                    }
+
+                }
+                writer.close();
+                return new Object[]{true};
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                return new Object[]{false, e.getMessage()};
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Object[] o) {
+            super.onPostExecute(o);
+            ad.dismiss();
+            if ((boolean)o[0]){
+                Intent bService = new Intent(BackupActivity.this, BackupService.class)
+                        .putExtra("backupName", backupName)
+                        .putExtra("compressionLevel", main.getInt("compressionLevel", 0))
+                        .putExtra("destination", destination);
+
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    startForegroundService(bService);
+                else startService(bService);
+            }
+            else {
+                Toast.makeText(BackupActivity.this, (String)o[1], Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -164,6 +262,20 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             }
         });
 
+        progressReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Intent progressActivityStartIntent = new Intent(BackupActivity.this, BackupProgressLayout.class);
+                progressActivityStartIntent.putExtras(Objects.requireNonNull(intent.getExtras()));
+                progressActivityStartIntent.setAction("Migrate progress broadcast");
+                startActivity(progressActivityStartIntent);
+                finish();
+            }
+        };
+        registerReceiver(progressReceiver, new IntentFilter("Migrate progress broadcast"));
+
+        sendBroadcast(new Intent("get data"));
+
     }
 
 
@@ -216,10 +328,6 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         }
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
 
     @Override
     public void onCheck(Vector<BackupDataPacket> backupDataPackets) {
@@ -327,29 +435,12 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     }
 
     void startBackup(String backupName){
-        String backupSummary = "";
-        String backupPackageNames = "";
-        int count = 0;
-        for (int i = 0; i < appList.size(); i++){
-            if (appList.elementAt(i).APP) ++count;
-            if (appList.elementAt(i).DATA) ++count;
-        }
-        int n = 0;
-        for (int i = 0; i < appList.size(); i++) {
-            if (appList.elementAt(i).APP || appList.elementAt(i).DATA) {
-                backupPackageNames = backupPackageNames + appList.elementAt(i).PACKAGE_INFO.applicationInfo.packageName + "\n";
-                if (appList.elementAt(i).APP) {
-                    String path = appList.elementAt(i).PACKAGE_INFO.applicationInfo.sourceDir;
-                    backupSummary = backupSummary + "APP: " + pm.getApplicationLabel(appList.get(i).PACKAGE_INFO.applicationInfo) + " (" + ++n + "/" + count + ") " + (new File(path)).getParent() + '\n';
-                }
-                if (appList.elementAt(i).DATA) {
-                    String path = appList.elementAt(i).PACKAGE_INFO.applicationInfo.dataDir;
-                    backupSummary = backupSummary + "DATA: " + pm.getApplicationLabel(appList.get(i).PACKAGE_INFO.applicationInfo) + " (" + ++n + "/" + count + ") " + path + '\n';
-                }
-            }
-        }
 
-        Intent bService = new Intent(BackupActivity.this, BackupService.class)
+        MakeBackupSummary obj = new MakeBackupSummary(backupName);
+        obj.execute();
+
+
+        /*Intent bService = new Intent(BackupActivity.this, BackupService.class)
                 .setAction("start service")
                 .putExtra("backupSummary", backupSummary)
                 .putExtra("backupName", backupName)
@@ -357,15 +448,31 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
                 .putExtra("compressionLevel", main.getInt("compressionLevel", 0))
                 .putExtra("destination", destination);
 
-        /*if (!wasProgressDialogShown)
-            createOnProgressDialog();*/
+        *//*if (!wasProgressDialogShown)
+            createOnProgressDialog();*//*
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             startForegroundService(bService);
         else startService(bService);
 
         startActivity(new Intent(this, BackupProgressLayout.class));
-        finish();
+        finish();*/
+    }
+
+    String byteToString(byte[] bytes){
+        StringBuilder res = new StringBuilder();
+        for (byte b : bytes){
+            res.append(b);
+        }
+        return res.toString();
+    }
+
+    private Bitmap getBitmapFromDrawable(@NonNull Drawable drawable) {
+        final Bitmap bmp = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bmp);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bmp;
     }
 
     void dirDelete(String path){
@@ -398,5 +505,14 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             }
         }
         return false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            unregisterReceiver(progressReceiver);
+        }
+        catch (Exception ignored){}
     }
 }

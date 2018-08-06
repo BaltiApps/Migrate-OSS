@@ -36,8 +36,9 @@ public class BackupService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        if (intent.getAction().equals("start service")) {
-            backupEngine = new BackupEngine(intent.getStringExtra("backupSummary"), intent.getStringExtra("backupPackageNames"), intent.getStringExtra("backupName"), intent.getIntExtra("compressionLevel", 0), intent.getStringExtra("destination"), this);
+
+        assert intent != null;
+        backupEngine = new BackupEngine(intent.getStringExtra("backupName"), intent.getIntExtra("compressionLevel", 0), intent.getStringExtra("destination"), this);
             toReturnIntent = new Intent("Migrate progress broadcast");
             progressBroadcast = new BroadcastReceiver() {
                 @Override
@@ -84,7 +85,6 @@ public class BackupService extends IntentService {
 
             backupEngine.initiateBackup();
 
-        }
     }
 
 
