@@ -462,7 +462,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     String byteToString(byte[] bytes){
         StringBuilder res = new StringBuilder();
         for (byte b : bytes){
-            res.append(b);
+            res.append(b).append("_");
         }
         return res.toString();
     }

@@ -158,10 +158,22 @@ public class BackupEngine {
 
                 logBroadcast.putExtra("type", "progress");
 
+                String iconString;
+
                 while ((line = outputStream.readLine()) != null) {
 
-                    if (line.trim().startsWith("migrate status:")) {
+                    line = line.trim();
+                    iconString = "";
+
+                    if (line.startsWith("migrate status:")) {
                         line = line.substring(16);
+
+                        if (line.contains("icon:"))
+                        {
+                            iconString = line.substring(line.lastIndexOf(' ') + 1);
+                            line = line.substring(0, line.indexOf("icon:"));
+                        }
+
                         p = c++ * 100 / numberOfJobs;
                         progressBroadcast.putExtra("task", line);
 
@@ -173,6 +185,7 @@ public class BackupEngine {
                             notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
 
                             progressBroadcast.putExtra("progress", p);
+                            progressBroadcast.putExtra("icon", iconString);
                             context.sendBroadcast(progressBroadcast);
                         }
                     }
@@ -188,6 +201,7 @@ public class BackupEngine {
                 errors.add(context.getString(R.string.errorMakingScripts));
             }
 
+            progressBroadcast.putExtra("icon", "");
             String zipErr = zipAll(progressBroadcast, notificationManager, progressNotif);
             if (!zipErr.equals("")) errors.add("ZIP: " + zipErr);
 
@@ -617,7 +631,7 @@ public class BackupEngine {
                     dataPath = dataPath.substring(0, dataPath.lastIndexOf('/'));
                 }
 
-                String echoCopyCommand = "echo \"migrate status: " + appName + " (" + c + "/" + numberOfJobs + ")" + "\"";
+                String echoCopyCommand = "echo \"migrate status: " + appName + " (" + c + "/" + numberOfJobs + ") icon: " + appIcon + "\"";
 
                 //String path = line.substring(line.lastIndexOf(' ') + 1);
                 //String zipOrCopy;

@@ -4,6 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +14,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -28,6 +32,7 @@ public class BackupProgressLayout extends AppCompatActivity {
     IntentFilter progressReceiverIF, logReceiverIF;
 
     TextView task;
+    ImageView appIcon;
     TextView progress;
     TextView progressLog;
     TextView errorLog;
@@ -36,12 +41,48 @@ public class BackupProgressLayout extends AppCompatActivity {
 
     Intent backIntent;
 
+    class SetAppIcon extends AsyncTask<String, Void, Bitmap>{
+
+
+        @Override
+        protected Bitmap doInBackground(String... strings) {
+
+            Bitmap bmp = null;
+            String[] bytes = strings[0].split("_");
+
+            try {
+                byte imageData[] = new byte[bytes.length];
+                for (int i = 0; i < bytes.length; i++) {
+                    imageData[i] = Byte.parseByte(bytes[i]);
+                }
+                bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+                //Log.d("migrate", "icon: " + bmp);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+            return bmp;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            if (bitmap != null) {
+                appIcon.setImageBitmap(bitmap);
+            }
+            else {
+                appIcon.setImageResource(R.drawable.ic_backup);
+            }
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.backup_progress_layout);
 
         task = findViewById(R.id.progressTask);
+        appIcon = findViewById(R.id.app_icon);
         progress = findViewById(R.id.progressPercent);
         progressBar = findViewById(R.id.progressBar);
         progressLog = findViewById(R.id.progressLogTextView);
@@ -107,6 +148,18 @@ public class BackupProgressLayout extends AppCompatActivity {
 
     void handleProgress(Intent intent){
         int p = intent.getIntExtra("progress", 0);
+
+        if (intent.hasExtra("icon")){
+            String iconString = intent.getStringExtra("icon");
+            if (!iconString.equals("")){
+                SetAppIcon obj = new SetAppIcon();
+                obj.execute(iconString);
+            }
+            else {
+                appIcon.setImageResource(R.drawable.ic_backup);
+            }
+        }
+
         if (p >= 0) {
             progress.setText(p + "%");
             String t = intent.getStringExtra("task");

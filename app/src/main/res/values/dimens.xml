@@ -6,4 +6,5 @@
     <dimen name="small_icon_wh">30dp</dimen>
     <dimen name="small_padding_width">5dp</dimen>
     <dimen name="large_padding_width">10dp</dimen>
+    <dimen name="app_icon_dimen">40dp</dimen>
 </resources>
