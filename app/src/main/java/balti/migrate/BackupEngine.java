@@ -444,7 +444,7 @@ public class BackupEngine {
                 "{\n" +
                 "   \"app_name\" : \"" + appName + "\"\n" +
                 "   \"package_name\" : \"" + packageName + "\"\n" +
-                "   \"apk\" : \"" + apkName + "\"\n" +
+                "   \"apk\" : \"" + packageName + ".apk" + "\"\n" +
                 "   \"data\" : \"" + dataName + "\"\n" +
                 "   \"icon\" : \"" + icon + "\"\n" +
                 "   \"version\" : \"" + version + "\"\n" +
@@ -466,21 +466,6 @@ public class BackupEngine {
             e.printStackTrace();
         }
     }
-
-    /*String makePermissionList(){
-        File permissionList = new File(context.getFilesDir() + "/permissionList");
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(permissionList));
-            BufferedReader reader = new BufferedReader(new StringReader(backupPackageNames));
-            String line;
-            while ((line = reader.readLine()) != null)
-                writer.write(line + "\n");
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return permissionList.getAbsolutePath();
-    }*/
 
     void unpackBinaries(){
 
@@ -633,25 +618,13 @@ public class BackupEngine {
 
                 String echoCopyCommand = "echo \"migrate status: " + appName + " (" + c + "/" + numberOfJobs + ") icon: " + appIcon + "\"";
 
-                //String path = line.substring(line.lastIndexOf(' ') + 1);
-                //String zipOrCopy;
-                //String fileName = getFileName(line);
-                //String pastingDir = line.substring(line.lastIndexOf(' ') + 1, line.lastIndexOf('/'));
-
-                //boolean isApp = isApp(line);
-
                 String command;
 
                 command = "cd " + apkPath + "; cp " + apkName + " " + destination + "/" + backupName + "/" + packageName + ".apk" + "\n";
                 if (!dataPath.equals("NULL")){
                     command = command + "cd " + dataPath + "; " + busyboxBinaryFilePath + " tar -cvzpf " + destination + "/" + backupName + "/" + dataName + ".tar.gz " + dataName + "\n";
                 }
-                /*if (isApp) {
-                    zipOrCopy = "cd " + path.substring(0, path.lastIndexOf('/')) + "; cp " + path.substring(path.lastIndexOf('/') + 1) + "/*.apk " + destination + "/" + backupName + "/" + fileName + ".apk";
-                }
-                else zipOrCopy = "cd " + path.substring(0, path.lastIndexOf('/')) + "; " + busyboxBinaryFilePath + " tar -cvzpf " + destination + "/" + backupName + "/" + fileName + ".tar.gz " + path.substring(path.lastIndexOf('/') + 1);*/
 
-                //String display = line.substring(0, line.lastIndexOf(' '));
                 updater_writer.write("ui_print(\"" + appName + " (" + c + "/" + numberOfJobs + ")\");\n");
 
                 if (apkPath.startsWith("/system")){
@@ -661,34 +634,22 @@ public class BackupEngine {
                     updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"/system/" + packageName + ".sh" + "\");\n");
                     updater_writer.write("run_program(\"/system/" + packageName + ".sh" + "\");\n");
                 }
-                /*else if (isApp){
-                    updater_writer.write("package_extract_file(\"" + fileName + ".apk" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".apk" + "\");\n");
-                    makeRemoteScript(fileName, true, false, "");
-                    updater_writer.write("package_extract_file(\"" + fileName + ".sh" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
-                    updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
-                }
-                else {
-                    updater_writer.write("package_extract_file(\"" + fileName + ".tar.gz" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".tar.gz" + "\");\n");
-                    makeRemoteScript(fileName, false, false, "");
-                    updater_writer.write("package_extract_file(\"" + fileName + ".sh" + "\", \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
-                    updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + TEMP_DIR_NAME + "/" + fileName + ".sh" + "\");\n");
-                }*/
-                else {
-                    String tempApkName;
-                    if (apkPath.startsWith("/system")) {
-                        tempApkName = "NULL";
-                    }
-                    else {
-                        tempApkName = apkName;
-                        updater_writer.write("package_extract_file(\"" + packageName + ".apk" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".apk" + "\");\n");
-                    }
-                    makeMetadataFile(appName, packageName, tempApkName, dataName + ".tar.gz", appIcon, version);
 
-                    if (!dataName.equals("NULL")){
-                        updater_writer.write("package_extract_file(\"" + dataName + ".tar.gz" + "\", \"" + TEMP_DIR_NAME + "/" + dataName + ".tar.gz" + "\");\n");
-                    }
-                    updater_writer.write("package_extract_file(\"" + packageName + ".json" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".json" + "\");\n");
+
+                String tempApkName;
+                if (apkPath.startsWith("/system")) {
+                    tempApkName = "NULL";
+                } else {
+                    tempApkName = apkName;
+                    updater_writer.write("package_extract_file(\"" + packageName + ".apk" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".apk" + "\");\n");
                 }
+                makeMetadataFile(appName, packageName, tempApkName, dataName + ".tar.gz", appIcon, version);
+
+                if (!dataName.equals("NULL")) {
+                    updater_writer.write("package_extract_file(\"" + dataName + ".tar.gz" + "\", \"" + TEMP_DIR_NAME + "/" + dataName + ".tar.gz" + "\");\n");
+                }
+                updater_writer.write("package_extract_file(\"" + packageName + ".json" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".json" + "\");\n");
+
 
 
                 updater_writer.write("set_progress(" + String.format("%.4f", ((c * 1.0) / numberOfJobs)) + ");\n");
@@ -702,7 +663,6 @@ public class BackupEngine {
             updater_writer.write("ui_print(\"Unpacking helper\");\n");
             updater_writer.write("package_extract_dir(\"system\", \"/system\");\n");
             updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/system/app/MigrateHelper/" + "\");\n");
-            //updater_writer.write("package_extract_file(\"permissionList\", \"" + TEMP_DIR_NAME + "/permissionList\");\n");
 
             updater_writer.write("set_progress(1.0000);\n");
             updater_writer.write("ui_print(\" \");\n");
@@ -733,7 +693,6 @@ public class BackupEngine {
 
             writer.write("echo \"migrate status: " + "Including helper" + "\"\n");
             writer.write("cp -r " + context.getFilesDir() + "/system" + " " + destination + "/" + backupName + "\n");
-            //writer.write("mv " + makePermissionList() + " " + destination + "/" + backupName + "\n");
             writer.write("rm -r " + context.getFilesDir() + "/system" + "\n");
 
             writer.close();
@@ -748,10 +707,6 @@ public class BackupEngine {
         return new File[]{script, updater_script};
     }
 
-    boolean isApp(String line){
-        return line.substring(0, line.indexOf(':')).equals("APP");
-    }
-
     void cancelProcess() {
         isCancelled = true;
         try {
@@ -764,7 +719,6 @@ public class BackupEngine {
         Toast.makeText(context, context.getString(R.string.deletingFiles), Toast.LENGTH_SHORT).show();
         fullDelete(destination + "/" + backupName);
         fullDelete(destination + "/" + backupName + ".zip");
-        //finalMessage = context.getString(R.string.backupCancelled);
     }
 
     void fullDelete(String path){
@@ -780,9 +734,4 @@ public class BackupEngine {
             }
         }
     }
-
-    /*String getFileName(String line) {
-        String path = line.substring(line.lastIndexOf(' ') + 1);
-        return path.substring(path.lastIndexOf('/') + 1) + "-" + line.substring(0, line.indexOf(':')).toLowerCase();
-    }*/
 }
