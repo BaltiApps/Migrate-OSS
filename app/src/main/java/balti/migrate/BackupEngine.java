@@ -442,11 +442,11 @@ public class BackupEngine {
 
         String metadataContent = "" +
                 "{\n" +
-                "   \"app_name\" : \"" + appName + "\"\n" +
-                "   \"package_name\" : \"" + packageName + "\"\n" +
-                "   \"apk\" : \"" + packageName + ".apk" + "\"\n" +
-                "   \"data\" : \"" + dataName + "\"\n" +
-                "   \"icon\" : \"" + icon + "\"\n" +
+                "   \"app_name\" : \"" + appName + "\",\n" +
+                "   \"package_name\" : \"" + packageName + "\",\n" +
+                "   \"apk\" : \"" + packageName + ".apk" + "\",\n" +
+                "   \"data\" : \"" + dataName + "\",\n" +
+                "   \"icon\" : \"" + icon + "\",\n" +
                 "   \"version\" : \"" + version + "\"\n" +
                 "}\n";
 
