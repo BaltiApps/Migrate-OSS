@@ -17,6 +17,16 @@
         android:layout_gravity="center_horizontal"
         style="?android:attr/textAppearanceLarge"
         android:padding="@dimen/large_padding_width"
+        android:id="@+id/waiting_head"
+        />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="@dimen/small_padding_width"
+        android:id="@+id/waiting_progress"
         />
 
 </LinearLayout>

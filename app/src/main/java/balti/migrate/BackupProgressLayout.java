@@ -120,11 +120,15 @@ public class BackupProgressLayout extends AppCompatActivity {
         logReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getStringExtra("type").equals("progress")){
-                    progressLog.append(intent.getStringExtra("content") + "\n");
+                try {
+                    if (intent.getStringExtra("type").equals("progress")) {
+                        progressLog.append(intent.getStringExtra("content") + "\n");
+                    } else if (intent.getStringExtra("type").equals("errors")) {
+                        setError(intent.getStringArrayListExtra("content"));
+                    }
                 }
-                else if (intent.getStringExtra("type").equals("errors")){
-                    setError(intent.getStringArrayListExtra("content"));
+                catch (Exception e){
+                    e.printStackTrace();
                 }
             }
         };
@@ -137,7 +141,7 @@ public class BackupProgressLayout extends AppCompatActivity {
         {
             Intent finishedBroadcast = new Intent("Migrate progress broadcast");
             finishedBroadcast.putExtra("progress", 100);
-            finishedBroadcast.putExtra("task", getIntent().getStringExtra("finishedMessage"));
+            try { finishedBroadcast.putExtra("task", getIntent().getStringExtra("finishedMessage")); } catch (Exception e){ e.printStackTrace(); }
             sendBroadcast(finishedBroadcast);
             sendBroadcast(new Intent("Migrate log broadcast").putExtra("type", "errors").putStringArrayListExtra("content", getIntent().getStringArrayListExtra("errors")));
         }
@@ -150,7 +154,8 @@ public class BackupProgressLayout extends AppCompatActivity {
         int p = intent.getIntExtra("progress", 0);
 
         if (intent.hasExtra("icon")){
-            String iconString = intent.getStringExtra("icon");
+            String iconString = "";
+            try { iconString = intent.getStringExtra("icon");} catch (Exception ignored){}
             if (!iconString.equals("")){
                 SetAppIcon obj = new SetAppIcon();
                 obj.execute(iconString);
@@ -162,8 +167,7 @@ public class BackupProgressLayout extends AppCompatActivity {
 
         if (p >= 0) {
             progress.setText(p + "%");
-            String t = intent.getStringExtra("task");
-            task.setText(t);
+            try {task.setText(intent.getStringExtra("task"));} catch (Exception ignored){}
             progressBar.setProgress(p);
             if (p < 100){
                 backIntent = null;

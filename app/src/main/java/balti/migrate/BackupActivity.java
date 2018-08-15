@@ -31,6 +31,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedWriter;
@@ -52,7 +53,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     ListView listView;
     CheckBox appAllSelect, dataAllSelect;
     Spinner appType;
-    Button startBackupButton;
+    TextView startBackupButton;
     ImageButton selectAll, clearAll, backButton;
 
     PackageManager pm;
@@ -65,6 +66,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     SharedPreferences main;
 
     BroadcastReceiver progressReceiver;
+    AlertDialog ad;
 
     class AppUpdate extends AsyncTask{
 
@@ -107,13 +109,18 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         }
     }
 
-    class MakeBackupSummary extends AsyncTask<Void, Void, Object[]>{
+    class MakeBackupSummary extends AsyncTask<Void, String, Object[]>{
 
-        AlertDialog ad;
         String backupName;
+        View dialogView;
+        TextView waitingHead, waitingProgress;
 
         MakeBackupSummary(String backupName) {
             this.backupName = backupName;
+            dialogView = layoutInflater.inflate(R.layout.please_wait, null);
+            waitingHead = dialogView.findViewById(R.id.waiting_head);
+            waitingProgress = dialogView.findViewById(R.id.waiting_progress);
+            waitingProgress.setVisibility(View.GONE);
         }
 
         @Override
@@ -121,11 +128,12 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             super.onPreExecute();
 
             ad = new AlertDialog.Builder(BackupActivity.this)
-                    .setView(layoutInflater.inflate(R.layout.please_wait, null))
+                    .setView(dialogView)
                     .setCancelable(false)
                     .create();
 
             ad.show();
+            waitingHead.setText(R.string.reading_data);
         }
 
         @Override
@@ -136,10 +144,13 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             try {
 
                 BufferedWriter writer = new BufferedWriter(new FileWriter(backupSummary.getAbsolutePath()));
+                int n = appList.size();
 
-                for (int i = 0; i < appList.size(); i++) {
+                for (int i = 0; i < n; i++) {
 
                     if (appList.elementAt(i).APP) {
+
+                        publishProgress((i+1) + " of " + n);
 
                         String appName = pm.getApplicationLabel(appList.get(i).PACKAGE_INFO.applicationInfo).toString();
                         appName = appName.replace(' ', '_');
@@ -173,9 +184,17 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         }
 
         @Override
+        protected void onProgressUpdate(String ... strings) {
+            super.onProgressUpdate(strings);
+            waitingProgress.setVisibility(View.VISIBLE);
+            waitingProgress.setText(strings[0]);
+        }
+
+        @Override
         protected void onPostExecute(Object[] o) {
             super.onPostExecute(o);
-            ad.dismiss();
+            waitingHead.setText(R.string.just_a_minute);
+            waitingProgress.setText(R.string.starting_engine);
             if ((boolean)o[0]){
                 Intent bService = new Intent(BackupActivity.this, BackupService.class)
                         .putExtra("backupName", backupName)
@@ -512,6 +531,10 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         super.onDestroy();
         try {
             unregisterReceiver(progressReceiver);
+        }
+        catch (Exception ignored){}
+        try {
+            ad.dismiss();
         }
         catch (Exception ignored){}
     }

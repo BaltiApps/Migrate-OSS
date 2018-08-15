@@ -38,7 +38,10 @@ public class BackupService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
 
         assert intent != null;
-        backupEngine = new BackupEngine(intent.getStringExtra("backupName"), intent.getIntExtra("compressionLevel", 0), intent.getStringExtra("destination"), this);
+        try {
+            backupEngine = new BackupEngine(intent.getStringExtra("backupName"), intent.getIntExtra("compressionLevel", 0), intent.getStringExtra("destination"), this);
+        }
+        catch (Exception e){e.printStackTrace();}
             toReturnIntent = new Intent("Migrate progress broadcast");
             progressBroadcast = new BroadcastReceiver() {
                 @Override
@@ -51,7 +54,10 @@ public class BackupService extends IntentService {
             cancelReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    backupEngine.cancelProcess();
+                    try {
+                        backupEngine.cancelProcess();
+                    }
+                    catch (Exception ignored){}
                 }
             };
             cancelReceiverIF = new IntentFilter("Migrate backup cancel broadcast");
@@ -83,7 +89,14 @@ public class BackupService extends IntentService {
 
             startForeground(BackupEngine.NOTIFICATION_ID, notification);
 
-            backupEngine.initiateBackup();
+            try {
+                backupEngine.initiateBackup();
+            }catch (Exception e){
+                e.printStackTrace();
+                toReturnIntent.putExtra("progress", 100).putExtra("task", getString(R.string.error_loading_engine));
+                sendBroadcast(toReturnIntent.setAction("Migrate progress broadcast"));
+                stopSelf();
+            }
 
     }
 

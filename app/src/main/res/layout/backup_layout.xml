@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_list_bg"
-    >
+    android:background="@drawable/app_list_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -131,45 +129,54 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:background="@color/colorPrimary"
+        android:padding="10dp"
+        android:gravity="center_vertical"
+        android:id="@+id/bottom_bar"
         >
 
-
-        <ImageButton
-            android:layout_width="@dimen/button_height"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_clear_all"
-            android:id="@+id/clearAll"
-            android:background="@drawable/small_button"
+        <TextView
+            android:layout_width="@dimen/next_button_width"
+            android:layout_height="@dimen/next_button_height"
+            android:layout_alignParentEnd="true"
+            android:padding="@dimen/large_padding_width"
+            android:background="@drawable/next"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            />
-
-
-        <ImageButton
-            android:layout_width="@dimen/button_height"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_select_all"
-            android:id="@+id/selectAll"
-            android:background="@drawable/small_button"
-            android:foreground="?android:attr/selectableItemBackground"
-            />
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="@dimen/button_height"
-            android:text="@string/backupLabel"
-            android:textColor="@android:color/white"
             android:id="@+id/backupStartButton"
-            android:background="@drawable/backup_button"
-            android:foreground="?android:attr/selectableItemBackground"
+            android:textColor="@android:color/white"
+            android:text="@string/backupButton"
             />
 
-    </LinearLayout>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_clear_all"
+            android:background="@android:color/transparent"
+            android:padding="10dp"
+            android:id="@+id/clearAll"
+            android:layout_alignTop="@id/backupStartButton"
+            android:layout_alignBottom="@id/backupStartButton"
+            />
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_select_all"
+            android:background="@android:color/transparent"
+            android:padding="10dp"
+            android:id="@+id/selectAll"
+            android:layout_alignTop="@id/backupStartButton"
+            android:layout_alignBottom="@id/backupStartButton"
+            android:layout_toEndOf="@id/clearAll"
+            />
+
+    </RelativeLayout>
 
 
 </LinearLayout>

@@ -590,6 +590,18 @@ public class BackupEngine {
             updater_writer.write("ui_print(\"Restoring...\");\n");
             updater_writer.write("ui_print(\" \");\n");
 
+            String flashDirPath = destination + "/" + backupName + "/META-INF/com/google/android/";
+
+            writer.write("echo \"migrate status: " + "Making package Flash Ready" + "\"\n");
+            writer.write("mkdir -p " + flashDirPath + "\n");
+            writer.write("mv " + updater_script.getAbsolutePath() + " " + flashDirPath + "\n");
+            writer.write("mv " + update_binary.getAbsolutePath() + " " + flashDirPath + "\n");
+            writer.write("mv " + prepScript.getAbsolutePath() + " " + destination + "/" + backupName + "\n");
+
+            writer.write("echo \"migrate status: " + "Including helper" + "\"\n");
+            writer.write("cp -r " + context.getFilesDir() + "/system" + " " + destination + "/" + backupName + "\n");
+            writer.write("rm -r " + context.getFilesDir() + "/system" + "\n");
+
             String line;
 
             String mkdirCommand = "mkdir -p " + destination + "/" + backupName + "/";
@@ -682,18 +694,6 @@ public class BackupEngine {
             updater_writer.write("ui_print(\" \");\n");
 
             updater_writer.close();
-
-            String flashDirPath = destination + "/" + backupName + "/META-INF/com/google/android/";
-
-            writer.write("echo \"migrate status: " + "Making package Flash Ready" + "\"\n");
-            writer.write("mkdir -p " + flashDirPath + "\n");
-            writer.write("mv " + updater_script.getAbsolutePath() + " " + flashDirPath + "\n");
-            writer.write("mv " + update_binary.getAbsolutePath() + " " + flashDirPath + "\n");
-            writer.write("mv " + prepScript.getAbsolutePath() + " " + destination + "/" + backupName + "\n");
-
-            writer.write("echo \"migrate status: " + "Including helper" + "\"\n");
-            writer.write("cp -r " + context.getFilesDir() + "/system" + " " + destination + "/" + backupName + "\n");
-            writer.write("rm -r " + context.getFilesDir() + "/system" + "\n");
 
             writer.close();
 
