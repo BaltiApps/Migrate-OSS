@@ -469,43 +469,34 @@ public class BackupEngine {
 
     void unpackBinaries(){
 
-        AssetManager assetManager = context.getAssets();
+        zipBinaryFilePath = unpackAssetToInternal("zip", "zip");
+        busyboxBinaryFilePath = unpackAssetToInternal("busybox", "busybox");
+    }
 
-        File zipBinary = new File(context.getFilesDir(), "zip");
+
+    private String unpackAssetToInternal(String assetFileName, String targetFileName){
+
+        AssetManager assetManager = context.getAssets();
+        File unpackFile = new File(context.getFilesDir(), targetFileName);
+        String path = "";
 
         int read;
         byte buffer[] = new byte[4096];
         try {
-            InputStream inputStream = assetManager.open("zip");
-            FileOutputStream writer = new FileOutputStream(zipBinary);
+            InputStream inputStream = assetManager.open(assetFileName);
+            FileOutputStream writer = new FileOutputStream(unpackFile);
             while ((read = inputStream.read(buffer)) > 0) {
                 writer.write(buffer, 0, read);
             }
             writer.close();
-            zipBinary.setExecutable(true);
-            zipBinaryFilePath = zipBinary.getAbsolutePath();
+            unpackFile.setExecutable(true);
+            path = unpackFile.getAbsolutePath();
         } catch (IOException e) {
             e.printStackTrace();
-            zipBinaryFilePath = "";
+            path = "";
         }
 
-        File busyboxBinary = new File(context.getFilesDir(), "busybox");
-
-        buffer = new byte[4096];
-        try {
-            InputStream inputStream = assetManager.open("busybox");
-            FileOutputStream writer = new FileOutputStream(busyboxBinary);
-            while ((read = inputStream.read(buffer)) > 0) {
-                writer.write(buffer, 0, read);
-            }
-            writer.close();
-            busyboxBinary.setExecutable(true);
-            busyboxBinaryFilePath = busyboxBinary.getAbsolutePath();
-        } catch (IOException e) {
-            e.printStackTrace();
-            busyboxBinaryFilePath = "";
-        }
-
+        return path;
     }
 
     File[] makeScripts() {
