@@ -570,13 +570,12 @@ public class BackupEngine {
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("run_program(\"/sbin/busybox\", \"mount\", \"/system\");\n");
             updater_writer.write("run_program(\"/sbin/busybox\", \"mount\", \"/data\");\n");
-            updater_writer.write("run_program(\"/sbin/busybox\", \"mount\", \"/cache\");\n");
 
             updater_writer.write("ui_print(\"Making directories...\");\n");
             updater_writer.write("ui_print(\" \");\n");
-            updater_writer.write("package_extract_file(\"" + "prep.sh" + "\", \"" + "/cache/prep.sh" + "\");\n");
-            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/cache/prep.sh" + "\");\n");
-            updater_writer.write("run_program(\"" + "/cache/prep.sh" + "\");\n");
+            updater_writer.write("package_extract_file(\"" + "prep.sh" + "\", \"" + "/tmp/prep.sh" + "\");\n");
+            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/tmp/prep.sh" + "\");\n");
+            updater_writer.write("run_program(\"" + "/tmp/prep.sh" + "\");\n");
 
             updater_writer.write("ui_print(\"Restoring...\");\n");
             updater_writer.write("ui_print(\" \");\n");
@@ -674,7 +673,6 @@ public class BackupEngine {
             updater_writer.write("ui_print(\"Unmounting partitions...\");\n");
             updater_writer.write("run_program(\"/sbin/busybox\", \"umount\", \"/system\");\n");
             updater_writer.write("run_program(\"/sbin/busybox\", \"umount\", \"/data\");\n");
-            updater_writer.write("run_program(\"/sbin/busybox\", \"umount\", \"/cache\");\n");
 
 
             updater_writer.write("ui_print(\" \");\n");
