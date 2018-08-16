@@ -571,13 +571,13 @@ public class BackupEngine {
             updater_writer.write("run_program(\"/sbin/busybox\", \"mount\", \"/system\");\n");
             updater_writer.write("run_program(\"/sbin/busybox\", \"mount\", \"/data\");\n");
 
-            updater_writer.write("ui_print(\"Making directories...\");\n");
+            updater_writer.write("ui_print(\"Making Migrate cache directories...\");\n");
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("package_extract_file(\"" + "prep.sh" + "\", \"" + "/tmp/prep.sh" + "\");\n");
             updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/tmp/prep.sh" + "\");\n");
             updater_writer.write("run_program(\"" + "/tmp/prep.sh" + "\");\n");
 
-            updater_writer.write("ui_print(\"Restoring...\");\n");
+            updater_writer.write("ui_print(\"Restoring to Migrate cache...\");\n");
             updater_writer.write("ui_print(\" \");\n");
 
             String flashDirPath = destination + "/" + backupName + "/META-INF/com/google/android/";
@@ -677,7 +677,10 @@ public class BackupEngine {
 
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("ui_print(\"Finished!\");\n");
+            updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("ui_print(\"*****\");\n");
+            updater_writer.write("ui_print(\"Files have been restored to Migrate cache.\");\n");
+            updater_writer.write("ui_print(\"PLEASE MAKE SURE THAT YOUR ROM IS ROOTED.\");\n");
             updater_writer.write("ui_print(\"YOU WILL BE PROMPTED TO CONTINUE RESTORE AFTER STARTUP!!\");\n");
             updater_writer.write("ui_print(\"*****\");\n");
             updater_writer.write("ui_print(\" \");\n");
