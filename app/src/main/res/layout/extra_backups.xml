@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/app_list_bg"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="@dimen/large_padding_width"
+        android:background="@color/colorPrimary"
+        >
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_back"
+            android:background="@android:color/transparent"
+            android:padding="@dimen/large_padding_width"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:id="@+id/extraBackupsBackButton"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/extras"
+            android:paddingStart="@dimen/small_padding_width"
+            />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        >
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:padding="10dp"
+        android:gravity="center_vertical"
+        android:id="@+id/bottom_bar"
+        >
+
+        <TextView
+            android:layout_width="@dimen/next_button_width"
+            android:layout_height="@dimen/next_button_height"
+            android:layout_alignParentEnd="true"
+            android:padding="@dimen/large_padding_width"
+            android:background="@drawable/next"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:id="@+id/startBackupButton"
+            android:textColor="@android:color/white"
+            android:text="@string/start_backup"
+            android:drawableEnd="@drawable/ic_next"
+            android:textAllCaps="true"
+            />
+
+    </RelativeLayout>
+
+</LinearLayout>

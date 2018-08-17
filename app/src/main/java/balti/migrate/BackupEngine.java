@@ -440,11 +440,17 @@ public class BackupEngine {
         String metadataLocation = destination + "/" + backupName + "/" + metadataFileName;
         File metadataFile = new File(metadataLocation);
 
+        if (!apkName.equals("NULL"))
+            apkName = apkName + ".apk";
+
+        if (!dataName.equals("NULL"))
+            dataName = dataName + ".tar.gz";
+
         String metadataContent = "" +
                 "{\n" +
                 "   \"app_name\" : \"" + appName + "\",\n" +
                 "   \"package_name\" : \"" + packageName + "\",\n" +
-                "   \"apk\" : \"" + packageName + ".apk" + "\",\n" +
+                "   \"apk\" : \"" + apkName + "\",\n" +
                 "   \"data\" : \"" + dataName + "\",\n" +
                 "   \"icon\" : \"" + icon + "\",\n" +
                 "   \"version\" : \"" + version + "\"\n" +
@@ -508,37 +514,20 @@ public class BackupEngine {
         File backupSummary = new File(context.getFilesDir(), "backup_summary");
         File script = new File(context.getFilesDir(), "script.sh");
         File updater_script = new File(context.getFilesDir(), "updater-script");
-        File update_binary = new File(context.getFilesDir(), "update-binary");
         File helper = new File(context.getFilesDir() + "/system/app/MigrateHelper", "MigrateHelper.apk");
-        File prepScript = new File(context.getFilesDir(), "prep.sh");
+
+        String update_binary = unpackAssetToInternal("update-binary", "update-binary");
+        String prepScript = unpackAssetToInternal("prep.sh", "prep.sh");
 
         AssetManager assetManager = context.getAssets();
         int read;
         byte buffer[] = new byte[4096];
-        try {
-            InputStream inputStream = assetManager.open("update-binary");
-            FileOutputStream writer = new FileOutputStream(update_binary);
-            while ((read = inputStream.read(buffer)) > 0) {
-                writer.write(buffer, 0, read);
-            }
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         (new File(helper.getAbsolutePath().substring(0, helper.getAbsolutePath().lastIndexOf('/')))).mkdirs();
+
         try {
             InputStream inputStream = assetManager.open("helper.apk");
             FileOutputStream writer = new FileOutputStream(helper);
-            while ((read = inputStream.read(buffer)) > 0) {
-                writer.write(buffer, 0, read);
-            }
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            InputStream inputStream = assetManager.open("prep.sh");
-            FileOutputStream writer = new FileOutputStream(prepScript);
             while ((read = inputStream.read(buffer)) > 0) {
                 writer.write(buffer, 0, read);
             }
@@ -585,8 +574,8 @@ public class BackupEngine {
             writer.write("echo \"migrate status: " + "Making package Flash Ready" + "\"\n");
             writer.write("mkdir -p " + flashDirPath + "\n");
             writer.write("mv " + updater_script.getAbsolutePath() + " " + flashDirPath + "\n");
-            writer.write("mv " + update_binary.getAbsolutePath() + " " + flashDirPath + "\n");
-            writer.write("mv " + prepScript.getAbsolutePath() + " " + destination + "/" + backupName + "\n");
+            writer.write("mv " + update_binary + " " + flashDirPath + "\n");
+            writer.write("mv " + prepScript + " " + destination + "/" + backupName + "\n");
 
             writer.write("echo \"migrate status: " + "Including helper" + "\"\n");
             writer.write("cp -r " + context.getFilesDir() + "/system" + " " + destination + "/" + backupName + "\n");
@@ -606,7 +595,7 @@ public class BackupEngine {
                 String packageName = items[1];
                 String apkPath = items[2].substring(0, items[2].lastIndexOf('/'));
                 String apkName = items[2].substring(items[2].lastIndexOf('/')+1);       //has .apk extension
-                String dataPath = items[3];
+                String dataPath = items[3].trim();
                 String dataName = "NULL";
                 String appIcon = items[4];
                 String version = items[5];
@@ -642,10 +631,10 @@ public class BackupEngine {
                 if (apkPath.startsWith("/system")) {
                     tempApkName = "NULL";
                 } else {
-                    tempApkName = apkName;
+                    tempApkName = packageName;
                     updater_writer.write("package_extract_file(\"" + packageName + ".apk" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".apk" + "\");\n");
                 }
-                makeMetadataFile(appName, packageName, tempApkName, dataName + ".tar.gz", appIcon, version);
+                makeMetadataFile(appName, packageName, tempApkName, dataName, appIcon, version);
 
                 if (!dataName.equals("NULL")) {
                     updater_writer.write("package_extract_file(\"" + dataName + ".tar.gz" + "\", \"" + TEMP_DIR_NAME + "/" + dataName + ".tar.gz" + "\");\n");

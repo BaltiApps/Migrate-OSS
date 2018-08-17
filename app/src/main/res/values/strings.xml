@@ -29,6 +29,7 @@
     <string name="requesting">Requesting...</string>
 
     <!--backup_layout.xml-->
+    <string name="select_apps">Select apps</string>
     <string name="backupLabel">Backup</string>
     <string name="data">Data</string>
     <string name="app">App</string>
@@ -37,9 +38,14 @@
         <item>System apps</item>
         <item>System + user</item>
     </string-array>
+    <string name="next">Next</string>
+
+    <!--extra_backups-->
+    <string name="extras">Extras</string>
 
     <!--progress_layout-->
     <string name="loading">Loading…</string>
+    <string name="start_backup">Start backup</string>
 
     <!--BackupEngine.java-->
     <string name="failedToBackup">Backup failed! Please try again.</string>
