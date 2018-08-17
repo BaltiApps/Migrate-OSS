@@ -11,8 +11,8 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
@@ -84,6 +84,8 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
             (findViewById(R.id.appLoadingView)).setVisibility(View.GONE);
             listView.setAdapter(adapter);
+
+            dataAllSelect.setChecked(true);
         }
     }
 
@@ -161,17 +163,15 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
                 finish();
             }
         };
-        registerReceiver(progressReceiver, new IntentFilter("Migrate progress broadcast"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(progressReceiver, new IntentFilter("Migrate progress broadcast"));
 
-        sendBroadcast(new Intent("get data"));
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("get data"));
 
     }
 
     void startExtraBackupsStartingActivity(){
         Intent intent = new Intent(BackupActivity.this, ExtraBackups.class);
-        Log.d("migrate", "starting");
         startActivity(intent);
-        Log.d("migrate", "sending");
         ExtraBackups.setAppList(appList);
         finish();
     }
@@ -295,7 +295,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     protected void onDestroy() {
         super.onDestroy();
         try {
-            unregisterReceiver(progressReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(progressReceiver);
         }
         catch (Exception ignored){}
     }

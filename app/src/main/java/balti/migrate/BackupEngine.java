@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -186,12 +187,12 @@ public class BackupEngine {
 
                             progressBroadcast.putExtra("progress", p);
                             progressBroadcast.putExtra("icon", iconString);
-                            context.sendBroadcast(progressBroadcast);
+                            LocalBroadcastManager.getInstance(context).sendBroadcast(progressBroadcast);
                         }
                     }
 
                     logBroadcast.putExtra("content", line);
-                    context.sendBroadcast(logBroadcast);
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
                 }
 
                 while ((line = errorStream.readLine()) != null) {
@@ -250,15 +251,15 @@ public class BackupEngine {
 
         logBroadcast.putExtra("type", "progress");
         logBroadcast.putExtra("content", "\n\n" + finalMessage.trim());
-        context.sendBroadcast(logBroadcast);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
 
         logBroadcast.putExtra("type", "errors");
         logBroadcast.putStringArrayListExtra("content", errors);
-        context.sendBroadcast(logBroadcast);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
 
         progressBroadcast.putExtra("progress", 100);
         progressBroadcast.putExtra("task", finalMessage.trim() + "\n(" + calendarDifference(startMillis, endMillis) + ")");
-        context.sendBroadcast(progressBroadcast);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(progressBroadcast);
 
         context.stopService(new Intent(context, BackupService.class));
     }
@@ -332,13 +333,13 @@ public class BackupEngine {
                 if (pr == 100) pr = 99;
                 progressBroadcast.putExtra("task", context.getString(R.string.combining))
                         .putExtra("progress", pr);
-                context.sendBroadcast(progressBroadcast);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(progressBroadcast);
 
                 progressNotif.setProgress(n, c, false);
                 notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
 
                 logBroadcast.putExtra("content", l);
-                context.sendBroadcast(logBroadcast);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
             }
 
             while ((l = errorReader.readLine()) != null){

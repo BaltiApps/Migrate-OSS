@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
@@ -40,6 +41,8 @@ public class BackupProgressLayout extends AppCompatActivity {
     Button actionButton;
 
     Intent backIntent;
+
+    String lastLog = "";
 
     class SetAppIcon extends AsyncTask<String, Void, Bitmap>{
 
@@ -95,7 +98,7 @@ public class BackupProgressLayout extends AppCompatActivity {
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendBroadcast(new Intent("Migrate backup cancel broadcast"));
+                LocalBroadcastManager.getInstance(BackupProgressLayout.this).sendBroadcast(new Intent("Migrate backup cancel broadcast"));
             }
         });
 
@@ -114,7 +117,7 @@ public class BackupProgressLayout extends AppCompatActivity {
         };
 
         progressReceiverIF = new IntentFilter("Migrate progress broadcast");
-        registerReceiver(progressReceiver, progressReceiverIF);
+        LocalBroadcastManager.getInstance(this).registerReceiver(progressReceiver, progressReceiverIF);
 
 
         logReceiver = new BroadcastReceiver() {
@@ -122,7 +125,11 @@ public class BackupProgressLayout extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 try {
                     if (intent.getStringExtra("type").equals("progress")) {
-                        progressLog.append(intent.getStringExtra("content") + "\n");
+                        String logMsg = intent.getStringExtra("content");
+                        if (!logMsg.trim().equals(lastLog.trim())) {
+                            lastLog = logMsg;
+                            progressLog.append(lastLog +"\n");
+                        }
                     } else if (intent.getStringExtra("type").equals("errors")) {
                         setError(intent.getStringArrayListExtra("content"));
                     }
@@ -134,7 +141,7 @@ public class BackupProgressLayout extends AppCompatActivity {
         };
 
         logReceiverIF = new IntentFilter("Migrate log broadcast");
-        registerReceiver(logReceiver, logReceiverIF);
+        LocalBroadcastManager.getInstance(this).registerReceiver(logReceiver, logReceiverIF);
 
 
         if (getIntent().getAction() != null && getIntent().getAction().equals("finished"))
@@ -142,11 +149,11 @@ public class BackupProgressLayout extends AppCompatActivity {
             Intent finishedBroadcast = new Intent("Migrate progress broadcast");
             finishedBroadcast.putExtra("progress", 100);
             try { finishedBroadcast.putExtra("task", getIntent().getStringExtra("finishedMessage")); } catch (Exception e){ e.printStackTrace(); }
-            sendBroadcast(finishedBroadcast);
-            sendBroadcast(new Intent("Migrate log broadcast").putExtra("type", "errors").putStringArrayListExtra("content", getIntent().getStringArrayListExtra("errors")));
+            LocalBroadcastManager.getInstance(this).sendBroadcast(finishedBroadcast);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("Migrate log broadcast").putExtra("type", "errors").putStringArrayListExtra("content", getIntent().getStringArrayListExtra("errors")));
         }
         else {
-            sendBroadcast(new Intent("get data"));
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("get data"));
         }
     }
 
@@ -204,11 +211,11 @@ public class BackupProgressLayout extends AppCompatActivity {
 
     void finishThis(){
         try {
-            if (progressReceiver != null) unregisterReceiver(progressReceiver);
+            if (progressReceiver != null) LocalBroadcastManager.getInstance(this).unregisterReceiver(progressReceiver);
         }
         catch (IllegalArgumentException ignored){}
         try {
-            if (logReceiver != null) unregisterReceiver(logReceiver);
+            if (logReceiver != null) LocalBroadcastManager.getInstance(this).unregisterReceiver(logReceiver);
         }
         catch (IllegalArgumentException ignored){}
         if (backIntent != null) startActivity(backIntent);

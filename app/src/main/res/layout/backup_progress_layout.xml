@@ -100,15 +100,21 @@
             android:padding="@dimen/large_padding_width"
             />
 
-        <TextView
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/errorLogTextView"
-            android:textColor="@android:color/holo_red_dark"
-            android:paddingTop="@dimen/small_padding_width"
-            android:scrollbars="vertical"
-            android:fontFamily="monospace"
-            />
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/errorLogTextView"
+                android:textColor="@android:color/holo_red_dark"
+                android:paddingTop="@dimen/small_padding_width"
+                android:scrollbars="vertical"
+                android:fontFamily="monospace"
+                />
+
+        </ScrollView>
 
 
         <LinearLayout
