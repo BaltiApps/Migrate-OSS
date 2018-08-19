@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .setNegativeButton(R.string.dont_show_again, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            editor.putBoolean("advanced_android_warning", true);
+                            editor.putBoolean("android_version_warning", true);
                             editor.commit();
                         }
                     })

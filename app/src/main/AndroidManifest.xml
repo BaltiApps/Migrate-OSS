@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
 
     <application
         android:allowBackup="true"
@@ -47,6 +49,12 @@
 
         <activity android:name=".PreferenceScreen"
             android:screenOrientation="portrait"
+            />
+
+        <activity android:name=".ContactsSelectorActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/DialogActivity"
+            android:label="@string/contacts_selector_label"
             />
 
         <service android:name=".BackupService"/>

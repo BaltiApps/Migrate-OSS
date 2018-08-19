@@ -7,13 +7,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
@@ -21,20 +25,28 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
+import java.util.Vector;
 
 public class ExtraBackups extends AppCompatActivity {
 
@@ -46,12 +58,21 @@ public class ExtraBackups extends AppCompatActivity {
     private TextView startBackup;
     private ImageButton back;
 
+    private LinearLayout contactsMainItem;
+    private ProgressBar contactsReadProgressBar;
+    private TextView contactsSelectedStatus;
+
     private LayoutInflater layoutInflater;
 
     private SharedPreferences main;
     private BroadcastReceiver progressReceiver;
     private AlertDialog ad;
     private PackageManager pm;
+
+    private Vector<ContactsDataPacket> contactsList;
+
+    private ReadContacts contactsReader;
+    private AlertDialog ContactsSelectorDialog;
 
     class MakeBackupSummary extends AsyncTask<Void, String, Object[]> {
 
@@ -156,6 +177,181 @@ public class ExtraBackups extends AppCompatActivity {
         }
     }
 
+    class LoadContactsForSelection extends AsyncTask{
+
+        ProgressBar progressBar;
+        ListView listView;
+        Button ok, cancel;
+        Vector<ContactsDataPacket> dataPackets;
+        View contactsSelectorView;
+
+        ContactListAdapter adapter;
+
+        public LoadContactsForSelection() {
+
+            contactsSelectorView = layoutInflater.inflate(R.layout.contacts_selector, null);
+            contactsSelectorView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            dataPackets = new Vector<>(0);
+
+            this.progressBar = contactsSelectorView.findViewById(R.id.contacts_selector_round_progress);
+            this.listView = contactsSelectorView.findViewById(R.id.show_contacts);
+            this.ok = contactsSelectorView.findViewById(R.id.contact_selector_ok);
+            this.cancel = contactsSelectorView.findViewById(R.id.contact_selector_cancel);
+
+            ok.setOnClickListener(null);
+            cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ContactsSelectorDialog.dismiss();
+                }
+            });
+
+            ContactsSelectorDialog = new AlertDialog.Builder(ExtraBackups.this)
+                    .setView(contactsSelectorView)
+                    .setCancelable(false)
+                    .create();
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            ContactsSelectorDialog.show();
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            for (int i = 0; i < contactsList.size(); i++){
+                ContactsDataPacket dataPacket = new ContactsDataPacket(contactsList.get(i).fullName, contactsList.get(i).vcfData);
+                dataPacket.selected = contactsList.get(i).selected;
+                dataPackets.add(dataPacket);
+            }
+            adapter = new ContactListAdapter(ExtraBackups.this, dataPackets);
+            listView.setAdapter(adapter);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            progressBar.setVisibility(View.GONE);
+            listView.setVisibility(View.VISIBLE);
+            ok.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    updateContactsList(dataPackets);
+                    ContactsSelectorDialog.dismiss();
+                }
+            });
+        }
+    }
+
+    class ReadContacts extends AsyncTask<Void, Integer, Vector<ContactsDataPacket>>{
+
+        int contactsCount = 0;
+        Cursor cursor;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            contactsSelectedStatus.setText(R.string.reading);
+            contactsReadProgressBar.setVisibility(View.VISIBLE);
+            cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+            if (cursor != null) {
+                contactsCount = cursor.getCount();
+                contactsReadProgressBar.setMax(contactsCount);
+            }
+            contactsMainItem.setClickable(false);
+        }
+
+        @Override
+        protected Vector<ContactsDataPacket> doInBackground(Void... voids) {
+            Vector<ContactsDataPacket> tempContactsStorage = new Vector<>(0);
+
+            try {
+                if (cursor != null) {
+                    cursor.moveToFirst();
+                    for (int i = 0; i < contactsCount; i++) {
+                        String temp[] = getVcfData(cursor);
+                        ContactsDataPacket obj = new ContactsDataPacket(temp[0], temp[1]);
+                        tempContactsStorage.add(obj);
+                        publishProgress(i);
+                        cursor.moveToNext();
+                    }
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+
+            return tempContactsStorage;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            contactsReadProgressBar.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Vector<ContactsDataPacket> receivedDataPackets) {
+            super.onPostExecute(contactsList);
+
+            if (cursor != null) try {
+                cursor.close();
+            }catch (Exception ignored){}
+
+            updateContactsList(receivedDataPackets);
+
+            contactsMainItem.setClickable(true);
+            contactsMainItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+
+                    new LoadContactsForSelection().execute();
+
+                }
+            });
+        }
+
+        private String[] getVcfData(Cursor cursor) {
+            String lookupKey = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+            String vcardstring;
+            String fullName;
+            Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey);
+            AssetFileDescriptor fd;
+            try {
+                fd = ExtraBackups.this.getContentResolver().openAssetFileDescriptor(uri, "r");
+
+                FileInputStream fis = fd.createInputStream();
+                byte[] buf = readBytes(fis);
+                fis.read(buf);
+                vcardstring= new String(buf);
+                fullName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+            } catch (Exception e1)
+            {
+                e1.printStackTrace();
+                fullName = "";
+                vcardstring = "";
+            }
+            return new String[]{fullName, vcardstring};
+        }
+
+        byte[] readBytes(InputStream stream) throws IOException {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            int len;
+            byte[] buffer = new byte[2048];
+            while ((len = stream.read(buffer)) != -1){
+                byteArrayOutputStream.write(buffer, 0, len);
+            }
+            return byteArrayOutputStream.toByteArray();
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -167,6 +363,10 @@ public class ExtraBackups extends AppCompatActivity {
         destination = main.getString("defaultBackupPath", Environment.getExternalStorageDirectory() + "/Migrate");
 
         layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        contactsMainItem = findViewById(R.id.extra_item_contacts);
+        contactsSelectedStatus = findViewById(R.id.contacts_selected_status);
+        contactsReadProgressBar = findViewById(R.id.contacts_read_progress);
 
         startBackup = findViewById(R.id.startBackupButton);
 
@@ -200,6 +400,13 @@ public class ExtraBackups extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(progressReceiver, new IntentFilter("Migrate progress broadcast"));
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("get data"));
+
+        try {
+            contactsReader = new ReadContacts();
+            contactsReader.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     static void setAppList(List<BackupDataPacket> al){
@@ -316,6 +523,10 @@ public class ExtraBackups extends AppCompatActivity {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(progressReceiver);
         }
         catch (Exception ignored){}
+        try {
+            contactsReader.cancel(true);
+        }
+        catch (Exception ignored){}
     }
 
     @Override
@@ -323,4 +534,63 @@ public class ExtraBackups extends AppCompatActivity {
         super.onBackPressed();
         startActivity(new Intent(ExtraBackups.this, BackupActivity.class));
     }
+
+    void updateContactsList(Vector<ContactsDataPacket> newContactsDataPackets){
+
+        if (newContactsDataPackets == null)
+            return;
+
+        int l = newContactsDataPackets.size();
+        contactsReadProgressBar.setVisibility(View.VISIBLE);
+        contactsSelectedStatus.setText(R.string.reading);
+        contactsReadProgressBar.setMax(l);
+        int n = 0;
+        for (int i = 0; i < l; i++){
+            if (newContactsDataPackets.get(i).selected)
+                n++;
+        }
+
+        contactsList = newContactsDataPackets;
+        contactsReadProgressBar.setVisibility(View.GONE);
+        contactsSelectedStatus.setText(n + " of " + contactsList.size());
+
+
+    }
+
+    /*private void getVcardString() throws IOException {
+
+        Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+        if(cursor!=null&&cursor.getCount()>0)
+        {
+            int i;
+            String storage_path = Environment.getExternalStorageDirectory().toString() + File.separator + "vFile.vcf";
+            FileOutputStream mFileOutputStream = new FileOutputStream(storage_path, false);
+            cursor.moveToFirst();
+            for(i = 0;i<cursor.getCount();i++)
+            {
+                String vcard = get(cursor);
+                cursor.moveToNext();
+                mFileOutputStream.write(vcard.getBytes());
+            }
+            mFileOutputStream.close();
+            cursor.close();
+        }
+        else
+        {
+            Log.d("TAG", "No Contacts in Your Phone");
+        }
+    }*/
+
+    /*private void restoreContacts(){
+        final MimeTypeMap mime = MimeTypeMap.getSingleton();
+        String tmptype = mime.getMimeTypeFromExtension("vcf");
+        final File file = new File(Environment.getExternalStorageDirectory().toString()
+                + "/vFile.vcf");
+        Intent i = new Intent();
+        i.setAction(android.content.Intent.ACTION_VIEW);
+        i.setDataAndType(Uri.fromFile(file), "text/x-vcard");
+        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(i);
+    }*/
+
 }

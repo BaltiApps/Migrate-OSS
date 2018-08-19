@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/contacts_button_bar"
+        android:padding="@dimen/small_padding_width"
+        android:background="@color/colorPrimary"
+        >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@android:string/cancel"
+            android:backgroundTint="@color/colorPrimary"
+            android:layout_alignParentStart="true"
+            android:textColor="@color/colorAccent"
+            android:layout_centerVertical="true"
+            android:id="@+id/contact_selector_cancel"
+            />
+
+        <Button
+            android:layout_width="@dimen/next_button_width"
+            android:layout_height="@dimen/next_button_height"
+            android:text="@android:string/ok"
+            android:background="@drawable/next"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:id="@+id/contact_selector_ok"
+            />
+
+
+    </RelativeLayout>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/show_contacts"
+        android:layout_above="@id/contacts_button_bar"
+        android:padding="@dimen/large_padding_width"
+        android:visibility="invisible"
+        />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/contacts_selector_round_progress"
+        />
+
+
+
+</RelativeLayout>

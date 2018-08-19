@@ -29,20 +29,107 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/extras"
-            android:paddingStart="@dimen/small_padding_width"
+            android:padding="@dimen/small_padding_width"
             />
 
     </LinearLayout>
 
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
         >
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/large_padding_width"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/small_padding_width"
+                android:background="#9b222222"
+                android:elevation="10dp"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="@dimen/large_padding_width"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:paddingTop="@dimen/extra_items_padding"
+                android:paddingBottom="@dimen/extra_items_padding"
+                android:id="@+id/extra_item_contacts"
+                >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_contacts_icon"
+                    android:padding="@dimen/extra_items_padding"
+                    />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/contacts_label"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="12sp"
+                            android:textColor="@color/colorAccent"
+                            android:text="@string/reading"
+                            android:id="@+id/contacts_selected_status"
+                            />
+
+                        <ProgressBar
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:id="@+id/contacts_read_progress"
+                            android:paddingStart="@dimen/small_padding_width"
+                            android:paddingEnd="@dimen/small_padding_width"
+                            />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/small_padding_width"
+                    android:gravity="center"
+                    android:id="@+id/do_backup_contacts"
+                    />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
 
     <RelativeLayout
         android:layout_width="match_parent"

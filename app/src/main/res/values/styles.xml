@@ -9,4 +9,8 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="DialogActivity" parent="Base.Theme.AppCompat.Dialog">
+
+    </style>
+
 </resources>

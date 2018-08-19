@@ -42,6 +42,15 @@
 
     <!--extra_backups-->
     <string name="extras">Extras</string>
+    <string name="contacts_label">Contacts</string>
+    <string name="sms_label">SMS messages</string>
+    <string name="call_log_label">Call logs</string>
+    <string name="wifi_passwords_label">Wifi passwords</string>
+    <string name="wallpapers_label">Wallpapers</string>
+    <string name="reading">Reading...</string>
+
+    <!--contacts_selector.xml-->
+    <string name="contacts_selector_label">Select contacts</string>
 
     <!--progress_layout-->
     <string name="loading">Loading…</string>

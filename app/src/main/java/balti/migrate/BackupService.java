@@ -24,7 +24,6 @@ public class BackupService extends IntentService {
     IntentFilter cancelReceiverIF, progressBroadcastIF, requestProgressIF;
 
     int p;
-    String task = "";
     public static final String CHANNEL = "Backup notification";
 
     BackupEngine backupEngine;
