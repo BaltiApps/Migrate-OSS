@@ -126,13 +126,14 @@ public class BackupProgressLayout extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 try {
                     if (intent.getStringExtra("type").equals("progress")) {
-                        Log.d("migrate", "received: " + intent.getStringExtra("content"));
+                        //Log.d("migrate", "received: " + intent.getStringExtra("content"));
                         String logMsg = intent.getStringExtra("content");
                         if (!logMsg.trim().equals(lastLog.trim())) {
                             lastLog = logMsg;
                             progressLog.append(lastLog +"\n");
                         }
                     } else if (intent.getStringExtra("type").equals("errors")) {
+                        progressLog.append("\n\n" + getString(R.string.backupFinishedWithErrors));
                         setError(intent.getStringArrayListExtra("content"));
                     }
                 }
@@ -176,7 +177,10 @@ public class BackupProgressLayout extends AppCompatActivity {
 
         if (p >= 0) {
             progress.setText(p + "%");
-            try {task.setText(intent.getStringExtra("task"));} catch (Exception ignored){}
+            try {
+                task.setText(intent.getStringExtra("task"));
+                Log.d("migrate", "received task: " + intent.getStringExtra("task"));
+            } catch (Exception ignored){}
             progressBar.setProgress(p);
             if (p < 100){
                 backIntent = null;
