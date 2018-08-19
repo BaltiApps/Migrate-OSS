@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -273,6 +274,7 @@ public class BackupEngine {
         logBroadcast.putExtra("type", "progress");
         logBroadcast.putExtra("content", "\n\n" + finalMessage.trim());
         LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
+        Log.d("migrate", "send: " + logBroadcast.getStringExtra("content"));
 
         logBroadcast.putExtra("type", "errors");
         logBroadcast.putStringArrayListExtra("content", errors);

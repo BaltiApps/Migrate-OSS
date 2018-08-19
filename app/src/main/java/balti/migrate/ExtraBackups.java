@@ -416,7 +416,7 @@ public class ExtraBackups extends AppCompatActivity {
 
         try {
             contactsReader = new ReadContacts();
-            contactsReader.execute();
+            contactsReader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } catch (Exception e) {
             e.printStackTrace();
         }
