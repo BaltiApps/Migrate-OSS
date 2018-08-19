@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -60,7 +59,6 @@ public class BackupProgressLayout extends AppCompatActivity {
                     imageData[i] = Byte.parseByte(bytes[i]);
                 }
                 bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
-                //Log.d("migrate", "icon: " + bmp);
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -126,7 +124,6 @@ public class BackupProgressLayout extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 try {
                     if (intent.getStringExtra("type").equals("progress")) {
-                        //Log.d("migrate", "received: " + intent.getStringExtra("content"));
                         String logMsg = intent.getStringExtra("content");
                         if (!logMsg.trim().equals(lastLog.trim())) {
                             lastLog = logMsg;
@@ -179,7 +176,6 @@ public class BackupProgressLayout extends AppCompatActivity {
             progress.setText(p + "%");
             try {
                 task.setText(intent.getStringExtra("task"));
-                Log.d("migrate", "received task: " + intent.getStringExtra("task"));
             } catch (Exception ignored){}
             progressBar.setProgress(p);
             if (p < 100){
