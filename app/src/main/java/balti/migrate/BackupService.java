@@ -1,15 +1,14 @@
 package balti.migrate;
 
+import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -19,7 +18,7 @@ import java.util.Objects;
  * Created by sayantan on 15/10/17.
  */
 
-public class BackupService extends Service {
+public class BackupService extends IntentService {
 
     BroadcastReceiver cancelReceiver, progressBroadcast, requestProgress;
     IntentFilter cancelReceiverIF, progressBroadcastIF, requestProgressIF;
@@ -27,14 +26,23 @@ public class BackupService extends Service {
     int p;
     public static final String CHANNEL = "Backup notification";
 
-    static BackupEngine backupEngine;
+    BackupEngine backupEngine;
 
     Intent toReturnIntent;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+    public BackupService() {
+        super("bService");
+    }
 
+    @Override
+    protected void onHandleIntent(@Nullable Intent intent) {
+
+        assert intent != null;
+        try {
+            backupEngine = new BackupEngine(intent.getStringExtra("backupName"), intent.getIntExtra("compressionLevel", 0), intent.getStringExtra("destination"), this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         toReturnIntent = new Intent("Migrate progress broadcast");
         progressBroadcast = new BroadcastReceiver() {
             @Override
@@ -48,7 +56,7 @@ public class BackupService extends Service {
             @Override
             public void onReceive(Context context, Intent intent) {
                 try {
-                    BackupService.backupEngine.cancelProcess();
+                    backupEngine.cancelProcess();
                 } catch (Exception ignored) {
                 }
             }
@@ -80,29 +88,17 @@ public class BackupService extends Service {
         }
 
         startForeground(BackupEngine.NOTIFICATION_ID, notification);
-    }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-
-
-
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    /*static void startBackup(String backupName, int compressionLevel, String destination,){
         try {
-            BackupService.backupEngine = new BackupEngine(intent.getStringExtra("backupName"), intent.getIntExtra("compressionLevel", 0), intent.getStringExtra("destination"), this);
-            Log.d("migrate", "init " + (backupEngine == null));
+            backupEngine.initiateBackup();
         } catch (Exception e) {
             e.printStackTrace();
+            toReturnIntent.putExtra("progress", 100).putExtra("task", getString(R.string.error_loading_engine));
+            LocalBroadcastManager.getInstance(this).sendBroadcast(toReturnIntent.setAction("Migrate progress broadcast"));
+            stopSelf();
         }
-        try {
-            BackupService.backupEngine.initiateBackup();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }*/
+
+    }
 
 
     @Override
@@ -117,11 +113,5 @@ public class BackupService extends Service {
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(requestProgress);
         } catch (Exception ignored){}
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 }

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -57,17 +56,6 @@ public class BackupEngine {
     private String zipBinaryFilePath, busyboxBinaryFilePath;
 
     private final String TEMP_DIR_NAME = "/data/balti.migrate";
-
-    StartBackup startBackupTask;
-
-    class StartBackup extends AsyncTask{
-
-        @Override
-        protected Object doInBackground(Object[] objects) {
-            initiateBackup();
-            return null;
-        }
-    }
 
     BackupEngine(String backupName, int compressionLevel, String destination, Context context) {
         this.backupName = backupName;
@@ -132,15 +120,6 @@ public class BackupEngine {
         catch (Exception ignored){}
 
         return diff;
-    }
-
-    void startBackup(){
-        try {
-            startBackupTask.cancel(true);
-        }
-        catch (Exception ignored){}
-        startBackupTask = new StartBackup();
-        startBackupTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     void initiateBackup() {
@@ -722,11 +701,6 @@ public class BackupEngine {
         Toast.makeText(context, context.getString(R.string.deletingFiles), Toast.LENGTH_SHORT).show();
         fullDelete(destination + "/" + backupName);
         fullDelete(destination + "/" + backupName + ".zip");
-
-        try {
-            startBackupTask.cancel(true);
-        }
-        catch (Exception ignored){}
     }
 
     void fullDelete(String path){
