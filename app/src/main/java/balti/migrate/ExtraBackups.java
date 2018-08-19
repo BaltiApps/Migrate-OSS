@@ -161,15 +161,28 @@ public class ExtraBackups extends AppCompatActivity {
             waitingHead.setText(R.string.just_a_minute);
             waitingProgress.setText(R.string.starting_engine);
             if ((boolean)o[0]){
+
+                try {
+                    contactsReader.cancel(true);
+                }
+                catch (Exception ignored){}
+
                 Intent bService = new Intent(ExtraBackups.this, BackupService.class)
                         .putExtra("backupName", backupName)
                         .putExtra("compressionLevel", main.getInt("compressionLevel", 0))
                         .putExtra("destination", destination);
 
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                BackupService.backupEngine = new BackupEngine(backupName, main.getInt("compressionLevel", 0), destination, ExtraBackups.this);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     startForegroundService(bService);
-                else startService(bService);
+                    BackupService.backupEngine.startBackup();
+                }
+                else{
+                    startService(bService);
+                    BackupService.backupEngine.startBackup();
+                }
+
             }
             else {
                 Toast.makeText(ExtraBackups.this, (String)o[1], Toast.LENGTH_SHORT).show();
