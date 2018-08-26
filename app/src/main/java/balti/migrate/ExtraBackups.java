@@ -48,6 +48,7 @@ public class ExtraBackups extends AppCompatActivity {
 
     private String destination;
     private static boolean isAnyAppSelected = false;
+    private static boolean isAllAppSelected = false;
     private static List<BackupDataPacket> appList;
 
     private TextView startBackup;
@@ -412,19 +413,23 @@ public class ExtraBackups extends AppCompatActivity {
         }
     }
 
-    static void setAppList(List<BackupDataPacket> al){
+    static void setAppList(List<BackupDataPacket> al, boolean isDataAllSelected){
         appList = al;
         for (BackupDataPacket packet : appList){
             if (isAnyAppSelected = packet.APP)
                 break;
         }
+        isAllAppSelected = isDataAllSelected;
     }
 
     void askForBackupName(){
         final EditText editText = new EditText(this);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
-        editText.setText(getString(R.string.backupLabel) + "_" + sdf.format(Calendar.getInstance().getTime()));
+        if (isAllAppSelected && doBackupContacts.isChecked())
+            editText.setText(getString(R.string.fullBackupLabel) + "_" + sdf.format(Calendar.getInstance().getTime()));
+        else
+            editText.setText(getString(R.string.backupLabel) + "_" + sdf.format(Calendar.getInstance().getTime()));
 
         final AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.setBackupName))

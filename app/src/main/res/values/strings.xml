@@ -32,6 +32,7 @@
     <!--backup_layout.xml-->
     <string name="select_apps">Select apps</string>
     <string name="backupLabel">Backup</string>
+    <string name="fullBackupLabel">Full_backup</string>
     <string name="data">Data</string>
     <string name="app">App</string>
     <string-array name="appTypeList">

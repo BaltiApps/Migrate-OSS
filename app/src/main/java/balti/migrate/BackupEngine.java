@@ -228,7 +228,7 @@ public class BackupEngine {
                             LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
                             progressNotif.setContentTitle(context.getString(R.string.backingUp))
-                                    .setProgress(numberOfJobs, p, false)
+                                    .setProgress(numberOfJobs, c, false)
                                     .setContentText(line);
                             notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
 

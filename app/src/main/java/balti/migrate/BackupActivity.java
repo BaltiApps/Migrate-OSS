@@ -176,7 +176,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     void startExtraBackupsStartingActivity(){
         Intent intent = new Intent(BackupActivity.this, ExtraBackups.class);
         startActivity(intent);
-        ExtraBackups.setAppList(appList);
+        ExtraBackups.setAppList(appList, dataAllSelect.isChecked());
         finish();
     }
 
