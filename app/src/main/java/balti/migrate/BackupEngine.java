@@ -186,6 +186,8 @@ public class BackupEngine {
             if (isCancelled) throw new InterruptedIOException();
             if (receivedFiles[0] != null && receivedFiles[1] != null) {
 
+                progressNotif.addAction(cancelAction);
+
                 String contactsErr = backupContacts(notificationManager, progressNotif);
                 if (!contactsErr.equals("")) errors.add("CONTACTS: " + contactsErr);
 
@@ -197,7 +199,6 @@ public class BackupEngine {
                     BufferedReader errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
                     String line;
                     int c = 0, p = 100;
-                    progressNotif.addAction(cancelAction);
 
 
                     String iconString;
