@@ -50,12 +50,11 @@ public class BackupEngine {
 
     private boolean doBackupContacts = false;
     private Vector<ContactsDataPacket> contactsDataPackets;
-    private int contactsSize = 0;
 
     private Process getNumberOfFiles;
     private Process zipProcess;
 
-    private Intent logBroadcast;
+    private Intent actualProgressBroadcast;
 
     private boolean isCancelled = false;
     private long startMillis;
@@ -95,7 +94,7 @@ public class BackupEngine {
         getNumberOfFiles = zipProcess = null;
 
         main = context.getSharedPreferences("main", Context.MODE_PRIVATE);
-        logBroadcast = new Intent("Migrate log broadcast");
+        actualProgressBroadcast = new Intent("Migrate progress broadcast");
 
         errors = new ArrayList<>(0);
 
@@ -165,7 +164,6 @@ public class BackupEngine {
 
         errors = new ArrayList<>(0);
 
-        Intent progressBroadcast = new Intent("Migrate progress broadcast");
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         NotificationCompat.Builder progressNotif = createNotificationBuilder();
@@ -175,9 +173,9 @@ public class BackupEngine {
                 .setContentTitle(context.getString(R.string.backingUp));
 
         Intent cancelIntent = new Intent("Migrate backup cancel broadcast");
-        Intent activityIntent = new Intent(context, BackupProgressLayout.class);
-        PendingIntent cancelPendingIntent = PendingIntent.getBroadcast(context, 0, cancelIntent, 0);
-        PendingIntent activityPendingIntent = PendingIntent.getActivity(context, 1, activityIntent, 0);
+        Intent activityProgressIntent = new Intent(context, BackupProgressLayout.class);
+        PendingIntent cancelPendingIntent = PendingIntent.getBroadcast(context, 53, cancelIntent, 0);
+        PendingIntent activityPendingIntent = PendingIntent.getActivity(context, 1, activityProgressIntent, 0);
 
         progressNotif.setContentIntent(activityPendingIntent);
 
@@ -188,7 +186,7 @@ public class BackupEngine {
             if (isCancelled) throw new InterruptedIOException();
             if (receivedFiles[0] != null && receivedFiles[1] != null) {
 
-                String contactsErr = backupContacts(progressBroadcast, notificationManager, progressNotif);
+                String contactsErr = backupContacts(notificationManager, progressNotif);
                 if (!contactsErr.equals("")) errors.add("CONTACTS: " + contactsErr);
 
                 if (isCancelled)
@@ -201,14 +199,14 @@ public class BackupEngine {
                     int c = 0, p = 100;
                     progressNotif.addAction(cancelAction);
 
-                    logBroadcast.putExtra("type", "progress");
 
                     String iconString;
 
                     while ((line = outputStream.readLine()) != null) {
 
                         line = line.trim();
-                        iconString = "";
+
+                        actualProgressBroadcast.putExtra("type", "app_progress");
 
                         if (line.startsWith("migrate status:")) {
                             line = line.substring(16);
@@ -216,26 +214,28 @@ public class BackupEngine {
                             if (line.contains("icon:")) {
                                 iconString = line.substring(line.lastIndexOf(' ') + 1);
                                 line = line.substring(0, line.indexOf("icon:"));
+                                actualProgressBroadcast.putExtra("app_icon", iconString);
+                                actualProgressBroadcast.putExtra("app_name", line);
+                            }
+                            else {
+                                actualProgressBroadcast.putExtra("app_name", line);
                             }
 
                             if (numberOfJobs != 0) p = c++ * 100 / numberOfJobs;
-                            progressBroadcast.putExtra("task", line);
+                            actualProgressBroadcast.putExtra("progress", p);
 
-                            if (p < 100) {
+                            LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
-                                progressNotif.setProgress(numberOfJobs, c - 1, false)
-                                        .setContentIntent(activityPendingIntent)
-                                        .setContentText(line);
-                                notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+                            progressNotif.setContentTitle(context.getString(R.string.backingUp))
+                                    .setProgress(numberOfJobs, p, false)
+                                    .setContentText(line);
+                            notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
 
-                                progressBroadcast.putExtra("progress", p);
-                                progressBroadcast.putExtra("icon", iconString);
-                                LocalBroadcastManager.getInstance(context).sendBroadcast(progressBroadcast);
-                            }
                         }
 
-                        logBroadcast.putExtra("content", line);
-                        LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
+                        actualProgressBroadcast.putExtra("app_log", line);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
                     }
 
 
@@ -247,8 +247,7 @@ public class BackupEngine {
                 errors.add(context.getString(R.string.errorMakingScripts));
             }
 
-            progressBroadcast.putExtra("icon", "");
-            String zipErr = zipAll(progressBroadcast, notificationManager, progressNotif);
+            String zipErr = zipAll(notificationManager, progressNotif);
             if (!zipErr.equals("")) errors.add("ZIP: " + zipErr);
 
         } catch (Exception e) {
@@ -284,8 +283,10 @@ public class BackupEngine {
         }*/
 
 
-        activityIntent.setAction("finished").putExtra("finishedMessage", finalMessage.trim() + "\n(" + calendarDifference(startMillis, endMillis) + ")").putStringArrayListExtra("errors", errors);
-        activityPendingIntent = PendingIntent.getActivity(context, 1, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        activityProgressIntent.putExtra("type", "finished").putExtra("finishedMessage", finalMessage.trim() + "\n(" + calendarDifference(startMillis, endMillis) + ")");
+        if (errors.size() > 0)
+            activityProgressIntent.putStringArrayListExtra("errors", errors);
+        activityPendingIntent = PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         progressNotif
                 .setProgress(0, 0, false)
                 .setContentIntent(activityPendingIntent)
@@ -295,25 +296,18 @@ public class BackupEngine {
         notificationManager.notify(NOTIFICATION_ID + 1, progressNotif.build());
 
 
+        actualProgressBroadcast.putExtra("type","finished")
+                .putExtra("finishedMessage", finalMessage.trim() + "\n(" + calendarDifference(startMillis, endMillis) + ")");
         if (errors.size() > 0) {
-            logBroadcast.putExtra("type", "errors");
-            logBroadcast.putStringArrayListExtra("content", errors);
-            LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
-        }
-        else {
-            logBroadcast.putExtra("type", "progress");
-            logBroadcast.putExtra("content", "\n\n" + finalMessage.trim());
-            LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
+            actualProgressBroadcast.putStringArrayListExtra("errors", errors);
         }
 
-        progressBroadcast.putExtra("progress", 100);
-        progressBroadcast.putExtra("task", finalMessage.trim() + "\n(" + calendarDifference(startMillis, endMillis) + ")");
-        LocalBroadcastManager.getInstance(context).sendBroadcast(progressBroadcast);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
         context.stopService(new Intent(context, BackupService.class));
     }
 
-    private String zipAll(Intent progressBroadcast, NotificationManager notificationManager, NotificationCompat.Builder progressNotif){
+    private String zipAll(NotificationManager notificationManager, NotificationCompat.Builder progressNotif){
 
         String err = "";
         try {
@@ -380,15 +374,14 @@ public class BackupEngine {
 
                 int pr = c*100 / n;
                 if (pr == 100) pr = 99;
-                progressBroadcast.putExtra("task", context.getString(R.string.combining))
-                        .putExtra("progress", pr);
-                LocalBroadcastManager.getInstance(context).sendBroadcast(progressBroadcast);
+                actualProgressBroadcast.putExtra("type", "zip_progress")
+                        .putExtra("progress", pr)
+                        .putExtra("zip_log", l);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
                 progressNotif.setProgress(n, c, false);
                 notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
 
-                logBroadcast.putExtra("content", l).putExtra("type", "progress");
-                LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
             }
 
             while ((l = errorReader.readLine()) != null){
@@ -785,7 +778,7 @@ public class BackupEngine {
         }
     }
 
-    String backupContacts(Intent progressBroadcast, NotificationManager notificationManager, NotificationCompat.Builder progressNotif){
+    String backupContacts(NotificationManager notificationManager, NotificationCompat.Builder progressNotif){
 
         StringBuilder errors = new StringBuilder();
 
@@ -822,9 +815,6 @@ public class BackupEngine {
             if (bufferedWriter == null)
                 return errors.toString();
 
-            progressBroadcast.putExtra("task", context.getString(R.string.backing_contacts));
-            LocalBroadcastManager.getInstance(context).sendBroadcast(progressBroadcast);
-
             for (int j = 0; j < n; j++) {
 
                 if (isCancelled)
@@ -840,8 +830,8 @@ public class BackupEngine {
                             .setContentText(thisPacket.fullName);
                     notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
 
-                    logBroadcast.putExtra("content", thisPacket.fullName).putExtra("type", "progress").putExtra("contacts_progress", (j*100/n));
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
+                    actualProgressBroadcast.putExtra("type", "contact_progress").putExtra("contact_name", thisPacket.fullName).putExtra("progress", (j*100/n));
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -890,9 +880,6 @@ public class BackupEngine {
             if (bufferedWriter == null)
                 return errors.toString();
 
-            progressBroadcast.putExtra("task", context.getString(R.string.backing_contacts));
-            LocalBroadcastManager.getInstance(context).sendBroadcast(progressBroadcast);
-
             for (int j = 0; j < n; j++) {
 
 
@@ -910,8 +897,8 @@ public class BackupEngine {
                     notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
 
 
-                    logBroadcast.putExtra("content", data[0]).putExtra("type", "progress").putExtra("contacts_progress", (j*100/n));
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
+                    actualProgressBroadcast.putExtra("type", "contact_progress").putExtra("contact_name", data[0]).putExtra("progress", (j*100/n));
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
                     cursor.moveToNext();
 

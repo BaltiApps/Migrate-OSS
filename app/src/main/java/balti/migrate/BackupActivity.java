@@ -160,6 +160,10 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
                 progressActivityStartIntent.putExtras(Objects.requireNonNull(intent.getExtras()));
                 progressActivityStartIntent.setAction("Migrate progress broadcast");
                 startActivity(progressActivityStartIntent);
+
+                try {
+                    LocalBroadcastManager.getInstance(BackupActivity.this).unregisterReceiver(progressReceiver);
+                }catch (Exception e){e.printStackTrace();}
                 finish();
             }
         };

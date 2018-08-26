@@ -54,6 +54,7 @@ public class BackupService extends Service {
             }
         };
         cancelReceiverIF = new IntentFilter("Migrate backup cancel broadcast");
+        registerReceiver(cancelReceiver, cancelReceiverIF);
         LocalBroadcastManager.getInstance(this).registerReceiver(cancelReceiver, cancelReceiverIF);
         requestProgress = new BroadcastReceiver() {
             @Override
@@ -110,6 +111,9 @@ public class BackupService extends Service {
         super.onDestroy();
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(cancelReceiver);
+        } catch (Exception ignored){}
+        try {
+            unregisterReceiver(cancelReceiver);
         } catch (Exception ignored){}
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(progressBroadcast);

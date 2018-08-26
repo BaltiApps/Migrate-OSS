@@ -29,8 +29,8 @@ import static android.view.View.VISIBLE;
 
 public class BackupProgressLayout extends AppCompatActivity {
 
-    BroadcastReceiver progressReceiver, logReceiver;
-    IntentFilter progressReceiverIF, logReceiverIF;
+    BroadcastReceiver progressReceiver;
+    IntentFilter progressReceiverIF;
 
     TextView task;
     ImageView appIcon;
@@ -40,9 +40,8 @@ public class BackupProgressLayout extends AppCompatActivity {
     ProgressBar progressBar;
     Button actionButton;
 
-    Intent backIntent;
-
     String lastLog = "";
+    String lastIconString = "";
 
     class SetAppIcon extends AsyncTask<String, Void, Bitmap>{
 
@@ -94,14 +93,13 @@ public class BackupProgressLayout extends AppCompatActivity {
         progressLog.setGravity(Gravity.BOTTOM);
         progressLog.setMovementMethod(new ScrollingMovementMethod());
 
+        actionButton.setText(getString(android.R.string.cancel));
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 LocalBroadcastManager.getInstance(BackupProgressLayout.this).sendBroadcast(new Intent("Migrate backup cancel broadcast"));
             }
         });
-
-        backIntent = null;
 
         if (getIntent().getExtras() != null){
             handleProgress(getIntent());
@@ -119,38 +117,6 @@ public class BackupProgressLayout extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(progressReceiver, progressReceiverIF);
 
 
-        logReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                try {
-                    if (intent.getStringExtra("type").equals("progress")) {
-                        String logMsg = intent.getStringExtra("content");
-                        if (!logMsg.trim().equals(lastLog.trim())) {
-                            lastLog = logMsg;
-                            progressLog.append(lastLog +"\n");
-                        }
-                        if (intent.hasExtra("contacts_progress")){
-                            progressBar.setMax(100);
-                            int pr = intent.getIntExtra("contacts_progress", 0);
-                            progressBar.setProgress(pr);
-                            progress.setText(pr + "%");
-                        }
-                    }
-                    else if (intent.getStringExtra("type").equals("errors")) {
-                        progressLog.append("\n\n" + getString(R.string.backupFinishedWithErrors));
-                        setError(intent.getStringArrayListExtra("content"));
-                    }
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        logReceiverIF = new IntentFilter("Migrate log broadcast");
-        LocalBroadcastManager.getInstance(this).registerReceiver(logReceiver, logReceiverIF);
-
-
         if (getIntent().getAction() != null && getIntent().getAction().equals("finished"))
         {
             Intent finishedBroadcast = new Intent("Migrate progress broadcast");
@@ -165,32 +131,32 @@ public class BackupProgressLayout extends AppCompatActivity {
     }
 
     void handleProgress(Intent intent){
-        int p = intent.getIntExtra("progress", 0);
+        try {
+            String type = "";
 
-        if (intent.hasExtra("icon")){
-            String iconString = "";
-            try { iconString = intent.getStringExtra("icon");} catch (Exception ignored){}
-            if (!iconString.equals("")){
-                SetAppIcon obj = new SetAppIcon();
-                obj.execute(iconString);
-            }
-            else {
-                appIcon.setImageResource(R.drawable.ic_backup);
-            }
-        }
+            if (intent.hasExtra("type"))
+                type = intent.getStringExtra("type");
 
-        if (p >= 0) {
-            progress.setText(p + "%");
-            try {
-                task.setText(intent.getStringExtra("task"));
-            } catch (Exception ignored){}
-            progressBar.setProgress(p);
-            if (p < 100){
-                backIntent = null;
-                actionButton.setText(getString(android.R.string.cancel));
-            }
-            else{
-                backIntent = new Intent(BackupProgressLayout.this, BackupActivity.class);
+            if (type.equals("finished")){
+                try {
+                    task.setText(intent.getStringExtra("finishedMessage"));
+                }
+                catch (Exception e){ e.printStackTrace(); }
+
+                if (intent.hasExtra("errors")){
+                    progressLog.append("\n\n" + getString(R.string.backupFinishedWithErrors));
+                    setError(intent.getStringArrayListExtra("errors"));
+                    appIcon.setImageResource(R.drawable.ic_error);
+                }
+                else if (intent.getStringExtra("finishedMessage").startsWith(getString(R.string.backupCancelled))){
+                    progressLog.append("\n\n" + getString(R.string.backupCancelled));
+                    appIcon.setImageResource(R.drawable.ic_cancelled);
+                }
+                else {
+                    progressLog.append("\n\n" + getString(R.string.noErrors));
+                    appIcon.setImageResource(R.drawable.ic_finished);
+                }
+
                 actionButton.setText(getString(R.string.close));
                 actionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -199,7 +165,86 @@ public class BackupProgressLayout extends AppCompatActivity {
                     }
                 });
             }
+            else {
+
+                actionButton.setText(getString(android.R.string.cancel));
+                actionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        LocalBroadcastManager.getInstance(BackupProgressLayout.this).sendBroadcast(new Intent("Migrate backup cancel broadcast"));
+                    }
+                });
+
+                if (type.equals("contact_progress")) {
+
+                    appIcon.setImageResource(R.drawable.ic_contacts_icon);
+
+                    task.setText(R.string.backing_contacts);
+
+                    setProgress("progress", intent);
+
+                    addLog("contact_name", intent);
+
+                } else if (type.equals("app_progress")) {
+
+                    if (intent.hasExtra("app_name")) {
+                        task.setText(intent.getStringExtra("app_name"));
+                    }
+
+                    if (intent.hasExtra("app_icon")) {
+                        String iconString = "";
+                        try {
+                            iconString = intent.getStringExtra("app_icon");
+                        } catch (Exception ignored) {
+                        }
+                        if (!iconString.equals("") && !iconString.equals(lastIconString)) {
+                            SetAppIcon obj = new SetAppIcon();
+                            lastIconString = iconString;
+                            obj.execute(lastIconString);
+                        }
+                    } else {
+                        appIcon.setImageResource(R.drawable.ic_backup);
+                    }
+
+                    setProgress("progress", intent);
+
+                    addLog("app_log", intent);
+
+                } else if (type.equals("zip_progress")) {
+
+                    appIcon.setImageResource(R.drawable.ic_combine);
+
+                    task.setText(R.string.combining);
+
+                    setProgress("progress", intent);
+
+                    addLog("zip_log", intent);
+
+                }
+            }
+
         }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    void addLog(String key, Intent intent){
+        try {
+            String logMsg = intent.getStringExtra(key);
+            if (!logMsg.trim().equals(lastLog.trim())) {
+                lastLog = logMsg;
+                progressLog.append(lastLog + "\n");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    void setProgress(String key, Intent intent){
+        int pr = intent.getIntExtra(key, 0);
+        progressBar.setProgress(pr);
+        progress.setText(pr + "%");
     }
 
 
@@ -214,10 +259,6 @@ public class BackupProgressLayout extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        try {
-            if (logReceiver != null) LocalBroadcastManager.getInstance(this).unregisterReceiver(logReceiver);
-        }
-        catch (IllegalArgumentException ignored){}
         finishThis();
     }
 
@@ -228,7 +269,6 @@ public class BackupProgressLayout extends AppCompatActivity {
         }
         catch (IllegalArgumentException ignored){}
 
-        if (backIntent != null) startActivity(backIntent);
         finish();
     }
 }

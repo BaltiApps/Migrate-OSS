@@ -394,6 +394,9 @@ public class ExtraBackups extends AppCompatActivity {
                 progressActivityStartIntent.putExtras(Objects.requireNonNull(intent.getExtras()));
                 progressActivityStartIntent.setAction("Migrate progress broadcast");
                 startActivity(progressActivityStartIntent);
+                try {
+                    LocalBroadcastManager.getInstance(ExtraBackups.this).unregisterReceiver(progressReceiver);
+                }catch (Exception e){e.printStackTrace();}
                 finish();
             }
         };
