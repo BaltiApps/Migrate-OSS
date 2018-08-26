@@ -51,12 +51,6 @@
             android:screenOrientation="portrait"
             />
 
-        <activity android:name=".ContactsSelectorActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/DialogActivity"
-            android:label="@string/contacts_selector_label"
-            />
-
         <service android:name=".BackupService"/>
 
     </application>

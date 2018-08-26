@@ -23,7 +23,7 @@ import java.io.IOException;
 
 public class PermissionsScreen extends AppCompatActivity {
 
-    TextView storagePerm, rootPerm;
+    TextView storagePerm, rootPerm, contactsAccess;
     Button grantPermissions;
 
     SharedPreferences main;
@@ -39,6 +39,7 @@ public class PermissionsScreen extends AppCompatActivity {
 
         storagePerm = findViewById(R.id.storagePermTextView);
         rootPerm = findViewById(R.id.rootPermTextView);
+        contactsAccess = findViewById(R.id.contactsPermTextView);
 
         grantPermissions = findViewById(R.id.grantPermissions);
         grantPermissions.setOnClickListener(new View.OnClickListener() {
@@ -67,14 +68,18 @@ public class PermissionsScreen extends AppCompatActivity {
             rootPerm.setVisibility(View.VISIBLE);
         else rootPerm.setVisibility(View.GONE);
 
-        if (p[0] && p[1])
+        if (!p[2])
+            contactsAccess.setVisibility(View.VISIBLE);
+        else contactsAccess.setVisibility(View.GONE);
+
+        if (p[0] && p[1] && p[2])
             startMainActivity();
 
     }
 
 
     boolean[] isPermissionGranted() {
-        boolean[] p = new boolean[]{false, false};
+        boolean[] p = new boolean[]{false, false, false};
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
             p[0] = true;
         if (main.getBoolean("initialRoot", true)) {
@@ -86,6 +91,11 @@ public class PermissionsScreen extends AppCompatActivity {
                 p[1] = false;
             }
         }
+
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)
+            p[2] = true;
+
         return p;
     }
 
@@ -99,7 +109,7 @@ public class PermissionsScreen extends AppCompatActivity {
     }
 
     void requestPermissions() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS}, 0);
     }
 
     @Override

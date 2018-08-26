@@ -46,21 +46,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigationDrawer);
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1 && !main.getBoolean("android_version_warning", false)){
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.too_fast)
-                    .setMessage(R.string.too_fast_desc)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .setNegativeButton(R.string.dont_show_again, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            editor.putBoolean("android_version_warning", true);
-                            editor.commit();
-                        }
-                    })
-                    .show();
-        }
-
         if (main.getBoolean("firstRun", true)) {
 
             editor.putInt("version", 1);
@@ -99,9 +84,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     boolean[] isPermissionGranted() {
-        boolean[] p = new boolean[]{false, false};
+        boolean[] p = new boolean[]{false, false, false};
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
             p[0] = true;
+
         if (main.getBoolean("initialRoot", true)) {
             p[1] = false;
         } else {
@@ -114,6 +101,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 p[1] = false;
             }
         }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)
+            p[2] = true;
+
         return p;
     }
 
@@ -122,9 +113,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         super.onResume();
         boolean[] p = isPermissionGranted();
-        if (!(p[0] && p[1])) {
+        if (!(p[0] && p[1] && p[2])) {
             startActivity(new Intent(this, PermissionsScreen.class));
             finish();
+        }
+        else {
+
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1 && !main.getBoolean("android_version_warning", false)){
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.too_fast)
+                        .setMessage(R.string.too_fast_desc)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .setNegativeButton(R.string.dont_show_again, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                editor.putBoolean("android_version_warning", true);
+                                editor.commit();
+                            }
+                        })
+                        .show();
+            }
         }
     }
 
@@ -132,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onDestroy() {
         super.onDestroy();
         boolean p[] = isPermissionGranted();
-        if (p[0] && p[1]) {
+        if (p[0] && p[1] && p[2]) {
             if (main.getBoolean("firstRun", true)) {
                 editor.putBoolean("firstRun", false);
                 editor.commit();

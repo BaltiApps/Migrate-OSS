@@ -25,6 +25,7 @@
     <string name="permissionsRequired">Following permissions are required</string>
     <string name="storage">Storage access</string>
     <string name="rootAccess">Root access</string>
+    <string name="contactsAccess">Contacts access</string>
     <string name="grantPermissions">Grant permissions</string>
     <string name="requesting">Requesting...</string>
 
@@ -48,6 +49,7 @@
     <string name="wifi_passwords_label">Wifi passwords</string>
     <string name="wallpapers_label">Wallpapers</string>
     <string name="reading">Reading...</string>
+    <string name="reading_error">Error reading</string>
 
     <!--contacts_selector.xml-->
     <string name="contacts_selector_label">Select contacts</string>
@@ -62,6 +64,7 @@
     <string name="backingUp">Backing up</string>
     <string name="noErrors">Finished! No errors.</string>
     <string name="combining">Combining all files</string>
+    <string name="backing_contacts">Backing up contacts</string>
     <string name="errorMakingScripts">Error making scripts</string>
     <string name="backupCancelled">Backup cancelled</string>
     <string name="deletingFiles">Deleting files</string>

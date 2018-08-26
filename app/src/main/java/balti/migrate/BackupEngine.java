@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
@@ -23,8 +24,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Vector;
 
 /**
  * Created by sayantan on 9/10/17.
@@ -45,6 +48,10 @@ public class BackupEngine {
     private String finalMessage = "";
     private ArrayList<String> errors;
 
+    private boolean doBackupContacts = false;
+    private Vector<ContactsDataPacket> contactsDataPackets;
+    private int contactsSize = 0;
+
     private Process getNumberOfFiles;
     private Process zipProcess;
 
@@ -62,8 +69,17 @@ public class BackupEngine {
 
     class StartBackup extends AsyncTask{
 
+        boolean doBackupContacts;
+        Vector<ContactsDataPacket> contactsDataPackets;
+
+        public StartBackup(boolean doContactsBackup, Vector<ContactsDataPacket> contactsDataPackets) {
+            this.doBackupContacts = doContactsBackup;
+            this.contactsDataPackets = contactsDataPackets;
+        }
+
         @Override
         protected Object doInBackground(Object[] objects) {
+            setDoContactsBackup(doBackupContacts, contactsDataPackets);
             initiateBackup();
             return null;
         }
@@ -134,12 +150,12 @@ public class BackupEngine {
         return diff;
     }
 
-    void startBackup(){
+    void startBackup(boolean doBackupContacts, Vector<ContactsDataPacket> contactsDataPackets){
         try {
             startBackupTask.cancel(true);
         }
         catch (Exception ignored){}
-        startBackupTask = new StartBackup();
+        startBackupTask = new StartBackup(doBackupContacts, contactsDataPackets);
         startBackupTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -171,54 +187,62 @@ public class BackupEngine {
             File receivedFiles[] = makeScripts();
             if (isCancelled) throw new InterruptedIOException();
             if (receivedFiles[0] != null && receivedFiles[1] != null) {
-                suProcess = Runtime.getRuntime().exec("su -c sh " + receivedFiles[0].getAbsolutePath());
-                BufferedReader outputStream = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
-                BufferedReader errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
-                String line;
-                int c = 0, p;
-                progressNotif.addAction(cancelAction);
 
-                logBroadcast.putExtra("type", "progress");
+                String contactsErr = backupContacts(progressBroadcast, notificationManager, progressNotif);
+                if (!contactsErr.equals("")) errors.add("CONTACTS: " + contactsErr);
 
-                String iconString;
+                if (isCancelled)
+                    throw new InterruptedIOException();
 
-                while ((line = outputStream.readLine()) != null) {
+                    suProcess = Runtime.getRuntime().exec("su -c sh " + receivedFiles[0].getAbsolutePath());
+                    BufferedReader outputStream = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
+                    BufferedReader errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
+                    String line;
+                    int c = 0, p = 100;
+                    progressNotif.addAction(cancelAction);
 
-                    line = line.trim();
-                    iconString = "";
+                    logBroadcast.putExtra("type", "progress");
 
-                    if (line.startsWith("migrate status:")) {
-                        line = line.substring(16);
+                    String iconString;
 
-                        if (line.contains("icon:"))
-                        {
-                            iconString = line.substring(line.lastIndexOf(' ') + 1);
-                            line = line.substring(0, line.indexOf("icon:"));
+                    while ((line = outputStream.readLine()) != null) {
+
+                        line = line.trim();
+                        iconString = "";
+
+                        if (line.startsWith("migrate status:")) {
+                            line = line.substring(16);
+
+                            if (line.contains("icon:")) {
+                                iconString = line.substring(line.lastIndexOf(' ') + 1);
+                                line = line.substring(0, line.indexOf("icon:"));
+                            }
+
+                            if (numberOfJobs != 0) p = c++ * 100 / numberOfJobs;
+                            progressBroadcast.putExtra("task", line);
+
+                            if (p < 100) {
+
+                                progressNotif.setProgress(numberOfJobs, c - 1, false)
+                                        .setContentIntent(activityPendingIntent)
+                                        .setContentText(line);
+                                notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+                                progressBroadcast.putExtra("progress", p);
+                                progressBroadcast.putExtra("icon", iconString);
+                                LocalBroadcastManager.getInstance(context).sendBroadcast(progressBroadcast);
+                            }
                         }
 
-                        p = c++ * 100 / numberOfJobs;
-                        progressBroadcast.putExtra("task", line);
-
-                        if (p < 100) {
-
-                            progressNotif.setProgress(numberOfJobs, c - 1, false)
-                                    .setContentIntent(activityPendingIntent)
-                                    .setContentText(line);
-                            notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
-
-                            progressBroadcast.putExtra("progress", p);
-                            progressBroadcast.putExtra("icon", iconString);
-                            LocalBroadcastManager.getInstance(context).sendBroadcast(progressBroadcast);
-                        }
+                        logBroadcast.putExtra("content", line);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
                     }
 
-                    logBroadcast.putExtra("content", line);
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
-                }
 
-                while ((line = errorStream.readLine()) != null) {
-                    errors.add("RUN: " + line);
-                }
+                    while ((line = errorStream.readLine()) != null) {
+                        errors.add("RUN: " + line);
+                    }
+
             } else {
                 errors.add(context.getString(R.string.errorMakingScripts));
             }
@@ -363,7 +387,7 @@ public class BackupEngine {
                 progressNotif.setProgress(n, c, false);
                 notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
 
-                logBroadcast.putExtra("content", l);
+                logBroadcast.putExtra("content", l).putExtra("type", "progress");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
             }
 
@@ -667,14 +691,16 @@ public class BackupEngine {
                 }
                 updater_writer.write("package_extract_file(\"" + packageName + ".json" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".json" + "\");\n");
 
-
-
                 updater_writer.write("set_progress(" + String.format("%.4f", ((c * 1.0) / numberOfJobs)) + ");\n");
-
 
                 writer.write(echoCopyCommand + '\n', 0, echoCopyCommand.length() + 1);
                 writer.write(command, 0, command.length());
             }
+
+            String contactsFileName = "Contacts_" + new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(Calendar.getInstance().getTime()) + ".vcf";
+            if (doBackupContacts)
+                updater_writer.write("package_extract_file(\"" + contactsFileName + "\", \"" + TEMP_DIR_NAME + "/" + contactsFileName + "\");\n");
+
 
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("ui_print(\"Unpacking helper\");\n");
@@ -746,4 +772,173 @@ public class BackupEngine {
             }
         }
     }
+
+    void setDoContactsBackup(boolean doBackupContacts, Vector<ContactsDataPacket> contactList){
+        this.doBackupContacts = doBackupContacts;
+        if (contactList == null)
+            contactsDataPackets = null;
+        else {
+            contactsDataPackets = new Vector<>(0);
+            for (ContactsDataPacket packet : contactList)
+                if (packet.selected)
+                    contactsDataPackets.add(packet);
+        }
+    }
+
+    String backupContacts(Intent progressBroadcast, NotificationManager notificationManager, NotificationCompat.Builder progressNotif){
+
+        StringBuilder errors = new StringBuilder();
+
+        if (!doBackupContacts)
+            return errors.toString();
+
+        (new File(destination + "/" + backupName)).mkdirs();
+
+
+        progressNotif.setContentTitle(context.getString(R.string.backing_contacts))
+                .setProgress(0, 0, false)
+                .setContentText("");
+        notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
+        String vcfFileName = "Contacts_" + sdf.format(Calendar.getInstance().getTime()) + ".vcf";
+        String vcfFilePath = destination + "/" + backupName + "/" + vcfFileName;
+
+        File vcfFile = new File(vcfFilePath);
+        if (vcfFile.exists()) vcfFile.delete();
+
+        if (contactsDataPackets != null){
+
+            int n = contactsDataPackets.size();
+
+            BufferedWriter bufferedWriter = null;
+            try {
+                bufferedWriter = new BufferedWriter(new FileWriter(vcfFile, true));
+            } catch (IOException e) {
+                e.printStackTrace();
+                errors.append(e.getMessage()).append("\n");
+            }
+
+            if (bufferedWriter == null)
+                return errors.toString();
+
+            progressBroadcast.putExtra("task", context.getString(R.string.backing_contacts));
+            LocalBroadcastManager.getInstance(context).sendBroadcast(progressBroadcast);
+
+            for (int j = 0; j < n; j++) {
+
+                if (isCancelled)
+                    return errors.toString();
+
+                ContactsDataPacket thisPacket = contactsDataPackets.get(j);
+
+                try {
+
+                    bufferedWriter.write(thisPacket.vcfData + "\n");
+
+                    progressNotif.setProgress(n, j, false)
+                            .setContentText(thisPacket.fullName);
+                    notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+                    logBroadcast.putExtra("content", thisPacket.fullName).putExtra("type", "progress").putExtra("contacts_progress", (j*100/n));
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    errors.append(e.getMessage()).append("\n");
+                }
+            }
+
+
+            try {
+                bufferedWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                errors.append(e.getMessage()).append("\n");
+            }
+        }
+
+        else {
+
+            VcfTools vcfTools = new VcfTools(context);
+            Cursor cursor = vcfTools.getContactsCursor();
+
+            int n = -1;
+
+            try {
+                n = cursor.getCount();
+                cursor.moveToFirst();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                errors.append(e.getMessage()).append("\n");
+            }
+
+            if (n == -1)
+                return errors.toString();
+
+
+            BufferedWriter bufferedWriter = null;
+
+            try {
+                bufferedWriter = new BufferedWriter(new FileWriter(vcfFile, true));
+            } catch (IOException e) {
+                e.printStackTrace();
+                errors.append(e.getMessage()).append("\n");
+            }
+
+            if (bufferedWriter == null)
+                return errors.toString();
+
+            progressBroadcast.putExtra("task", context.getString(R.string.backing_contacts));
+            LocalBroadcastManager.getInstance(context).sendBroadcast(progressBroadcast);
+
+            for (int j = 0; j < n; j++) {
+
+
+                if (isCancelled)
+                    return errors.toString();
+
+                try {
+
+                    String[] data = vcfTools.getVcfData(cursor);
+
+                    bufferedWriter.write(data[1] + "\n");
+
+                    progressNotif.setProgress(n, j, false)
+                            .setContentText(data[0]);
+                    notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+
+                    logBroadcast.putExtra("content", data[0]).putExtra("type", "progress").putExtra("contacts_progress", (j*100/n));
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(logBroadcast);
+
+                    cursor.moveToNext();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    errors.append(e.getMessage()).append("\n");
+                }
+            }
+
+
+            try {
+                cursor.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                errors.append(e.getMessage()).append("\n");
+            }
+
+
+            try {
+                bufferedWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                errors.append(e.getMessage()).append("\n");
+            }
+        }
+
+        return errors.toString();
+    }
+
 }

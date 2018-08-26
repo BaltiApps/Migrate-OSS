@@ -129,7 +129,14 @@ public class BackupProgressLayout extends AppCompatActivity {
                             lastLog = logMsg;
                             progressLog.append(lastLog +"\n");
                         }
-                    } else if (intent.getStringExtra("type").equals("errors")) {
+                        if (intent.hasExtra("contacts_progress")){
+                            progressBar.setMax(100);
+                            int pr = intent.getIntExtra("contacts_progress", 0);
+                            progressBar.setProgress(pr);
+                            progress.setText(pr + "%");
+                        }
+                    }
+                    else if (intent.getStringExtra("type").equals("errors")) {
                         progressLog.append("\n\n" + getString(R.string.backupFinishedWithErrors));
                         setError(intent.getStringArrayListExtra("content"));
                     }

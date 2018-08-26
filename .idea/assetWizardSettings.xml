@@ -151,11 +151,9 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="2c9d94" />
-                            <entry key="height" value="40" />
-                            <entry key="outputName" value="ic_contacts_icon" />
+                            <entry key="outputName" value="ic_contact_perm" />
                             <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="$USER_HOME$/Downloads/migrate/app_bg.svg" />
-                            <entry key="width" value="40" />
                           </map>
                         </option>
                       </PersistentState>
