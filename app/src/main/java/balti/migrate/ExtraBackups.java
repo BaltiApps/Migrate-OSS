@@ -14,7 +14,6 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
@@ -25,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -42,6 +42,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
+
+import static android.os.Environment.getExternalStorageDirectory;
 
 public class ExtraBackups extends AppCompatActivity {
 
@@ -264,7 +266,7 @@ public class ExtraBackups extends AppCompatActivity {
         }
     }
 
-    class ReadContacts extends AsyncTask<Void, Integer, Vector<ContactsDataPacket>>{
+    class ReadContacts extends AsyncTask<Void, Object, Vector<ContactsDataPacket>>{
 
         int contactsCount = 0;
         Cursor cursor;
@@ -277,13 +279,12 @@ public class ExtraBackups extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            contactsSelectedStatus.setText(R.string.reading);
+            contactsSelectedStatus.setVisibility(View.VISIBLE);
             contactsReadProgressBar.setVisibility(View.VISIBLE);
             cursor = vcfTools.getContactsCursor();
             if (cursor != null) {
                 contactsCount = cursor.getCount();
                 contactsReadProgressBar.setMax(contactsCount);
-                doBackupContacts.setChecked(true);
                 doBackupContacts.setEnabled(true);
             }
             else {
@@ -306,8 +307,9 @@ public class ExtraBackups extends AppCompatActivity {
                     for (int i = 0; i < contactsCount; i++) {
                         String temp[] = vcfTools.getVcfData(cursor);
                         ContactsDataPacket obj = new ContactsDataPacket(temp[0], temp[1]);
-                        tempContactsStorage.add(obj);
-                        publishProgress(i);
+                        if (!isDuplicate(obj, tempContactsStorage))
+                            tempContactsStorage.add(obj);
+                        publishProgress(i, getString(R.string.filtering_duplicates) + "\n" + i);
                         cursor.moveToNext();
                     }
                 }
@@ -319,10 +321,19 @@ public class ExtraBackups extends AppCompatActivity {
             return tempContactsStorage;
         }
 
+        boolean isDuplicate(ContactsDataPacket cdp, Vector<ContactsDataPacket> dataPackets){
+            for (ContactsDataPacket dataPacket : dataPackets){
+                if (cdp.fullName.equals(dataPacket.fullName) && cdp.vcfData.equals(dataPacket.vcfData))
+                    return true;
+            }
+            return false;
+        }
+
         @Override
-        protected void onProgressUpdate(Integer... values) {
+        protected void onProgressUpdate(Object... values) {
             super.onProgressUpdate(values);
-            contactsReadProgressBar.setProgress(values[0]);
+            contactsReadProgressBar.setProgress((int)values[0]);
+            contactsSelectedStatus.setText((String)values[1]);
         }
 
         @Override
@@ -360,7 +371,7 @@ public class ExtraBackups extends AppCompatActivity {
         pm = getPackageManager();
 
         main = getSharedPreferences("main", MODE_PRIVATE);
-        destination = main.getString("defaultBackupPath", Environment.getExternalStorageDirectory() + "/Migrate");
+        destination = main.getString("defaultBackupPath", getExternalStorageDirectory() + "/Migrate");
 
         layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -405,12 +416,48 @@ public class ExtraBackups extends AppCompatActivity {
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("get data"));
 
-        try {
-            contactsReader = new ReadContacts();
-            contactsReader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        doBackupContacts.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if(b) {
+
+                    new AlertDialog.Builder(ExtraBackups.this)
+                            .setTitle(R.string.not_recommended)
+                            .setMessage(getText(R.string.contacts_not_recommended))
+                            .setPositiveButton(R.string.dont_backup, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    doBackupContacts.setChecked(false);
+                                }
+                            })
+                            .setNegativeButton(R.string.backup_contacts_anyway, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    try {
+                                        contactsReader = new ReadContacts();
+                                        contactsReader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            })
+                            .setCancelable(false)
+                            .show();
+
+                }
+                else {
+                    contactsMainItem.setClickable(false);
+                    contactsReadProgressBar.setVisibility(View.GONE);
+                    contactsSelectedStatus.setVisibility(View.GONE);
+                    try {
+                        contactsReader.cancel(true);
+                    }
+                    catch (Exception ignored){}
+                }
+            }
+        });
+
     }
 
     static void setAppList(List<BackupDataPacket> al, boolean isDataAllSelected){
@@ -565,41 +612,5 @@ public class ExtraBackups extends AppCompatActivity {
 
 
     }
-
-    /*private void getVcardString() throws IOException {
-
-        Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
-        if(cursor!=null&&cursor.getCount()>0)
-        {
-            int i;
-            String storage_path = Environment.getExternalStorageDirectory().toString() + File.separator + "vFile.vcf";
-            FileOutputStream mFileOutputStream = new FileOutputStream(storage_path, false);
-            cursor.moveToFirst();
-            for(i = 0;i<cursor.getCount();i++)
-            {
-                String vcard = get(cursor);
-                cursor.moveToNext();
-                mFileOutputStream.write(vcard.getBytes());
-            }
-            mFileOutputStream.close();
-            cursor.close();
-        }
-        else
-        {
-            Log.d("TAG", "No Contacts in Your Phone");
-        }
-    }*/
-
-    /*private void restoreContacts(){
-        final MimeTypeMap mime = MimeTypeMap.getSingleton();
-        String tmptype = mime.getMimeTypeFromExtension("vcf");
-        final File file = new File(Environment.getExternalStorageDirectory().toString()
-                + "/vFile.vcf");
-        Intent i = new Intent();
-        i.setAction(android.content.Intent.ACTION_VIEW);
-        i.setDataAndType(Uri.fromFile(file), "text/x-vcard");
-        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        startActivity(i);
-    }*/
 
 }

@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="@dimen/small_padding_width"
-                android:background="#9b222222"
+                android:background="@color/extraItemBg"
                 android:elevation="10dp"
                 android:gravity="center_vertical"
                 android:layout_marginBottom="@dimen/large_padding_width"
@@ -89,6 +89,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
+                        android:gravity="center_vertical"
                         >
 
                         <TextView
@@ -96,8 +97,9 @@
                             android:layout_height="wrap_content"
                             android:textSize="12sp"
                             android:textColor="@color/colorAccent"
-                            android:text="@string/reading"
                             android:id="@+id/contacts_selected_status"
+                            android:visibility="gone"
+                            android:gravity="center_horizontal"
                             />
 
                         <ProgressBar
@@ -107,6 +109,7 @@
                             android:id="@+id/contacts_read_progress"
                             android:paddingStart="@dimen/small_padding_width"
                             android:paddingEnd="@dimen/small_padding_width"
+                            android:visibility="gone"
                             />
 
                     </LinearLayout>

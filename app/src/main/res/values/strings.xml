@@ -49,8 +49,15 @@
     <string name="call_log_label">Call logs</string>
     <string name="wifi_passwords_label">Wifi passwords</string>
     <string name="wallpapers_label">Wallpapers</string>
-    <string name="reading">Reading...</string>
+    <string name="filtering_duplicates">Filtering\nduplicates</string>
+    <string name="reading">Reading</string>
     <string name="reading_error">Error reading</string>
+
+    <!--ExtraBackups.java-->
+    <string name="not_recommended">Not recommended!</string>
+    <string name="contacts_not_recommended">Contacts backup and restore is not recommended <b>if you intend to sign in with Google</b> on your next ROM. Restoring contacts will make unnecessary duplicates of same contact entries.</string>
+    <string name="dont_backup">Don\'t backup</string>
+    <string name="backup_contacts_anyway">Backup contacts anyway</string>
 
     <!--contacts_selector.xml-->
     <string name="contacts_selector_label">Select contacts</string>

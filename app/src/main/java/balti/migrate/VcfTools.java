@@ -37,6 +37,7 @@ public class VcfTools {
         try {
             fd = context.getContentResolver().openAssetFileDescriptor(uri, "r");
 
+            assert fd != null;
             FileInputStream fis = fd.createInputStream();
             byte[] buf = readBytes(fis);
             fis.read(buf);

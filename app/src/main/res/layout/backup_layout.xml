@@ -44,7 +44,8 @@
         </LinearLayout>
 
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize">
 
@@ -53,28 +54,30 @@
                 android:layout_height="match_parent"
                 android:id="@+id/appType"
                 android:entries="@array/appTypeList"
-                android:layout_alignParentStart="true"
                 />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_alignParentEnd="true"
                 android:orientation="horizontal"
+                android:layout_weight="1"
+                android:gravity="end"
                 >
 
-                <RelativeLayout
-                    android:layout_width="50dp"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/appCheckboxView"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:paddingEnd="@dimen/large_padding_width"
+                    android:paddingStart="@dimen/large_padding_width"
                     >
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/app"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true"
                         />
 
                     <CheckBox
@@ -82,24 +85,24 @@
                         android:layout_height="match_parent"
                         android:id="@+id/appAllSelect"
                         android:gravity="bottom"
-                        android:layout_centerHorizontal="true"
-                        android:layout_alignParentTop="true"
                         />
 
-                </RelativeLayout>
+                </LinearLayout>
 
-                <RelativeLayout
-                    android:layout_width="50dp"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/dataCheckboxView"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:paddingEnd="@dimen/large_padding_width"
+                    android:paddingStart="@dimen/large_padding_width"
                     >
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/data"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true"
                         />
 
                     <CheckBox
@@ -107,21 +110,15 @@
                         android:layout_height="match_parent"
                         android:id="@+id/dataAllSelect"
                         android:gravity="bottom"
-                        android:layout_centerHorizontal="true"
-                        android:layout_alignParentTop="true"
                         />
 
-                </RelativeLayout>
-
+                </LinearLayout>
 
             </LinearLayout>
 
-        </RelativeLayout>
+        </LinearLayout>
 
     </LinearLayout>
-
-
-
 
 
     <RelativeLayout

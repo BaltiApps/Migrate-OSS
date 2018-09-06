@@ -692,8 +692,12 @@ public class BackupEngine {
             }
 
             String contactsFileName = "Contacts_" + new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(Calendar.getInstance().getTime()) + ".vcf";
-            if (doBackupContacts)
+            if (doBackupContacts) {
+                updater_writer.write("ui_print(\" \");\n");
+                updater_writer.write("ui_print(\"Extracting contacts: " + contactsFileName + "\");\n");
                 updater_writer.write("package_extract_file(\"" + contactsFileName + "\", \"" + TEMP_DIR_NAME + "/" + contactsFileName + "\");\n");
+                updater_writer.write("ui_print(\" \");\n");
+            }
 
 
             updater_writer.write("ui_print(\" \");\n");
@@ -854,6 +858,8 @@ public class BackupEngine {
             VcfTools vcfTools = new VcfTools(context);
             Cursor cursor = vcfTools.getContactsCursor();
 
+            Vector<String[]> vcfDatas = new Vector<>(0);
+
             int n = -1;
 
             try {
@@ -891,15 +897,19 @@ public class BackupEngine {
 
                     String[] data = vcfTools.getVcfData(cursor);
 
-                    bufferedWriter.write(data[1] + "\n");
+                    if (!isDuplicate(data, vcfDatas)) {
+                        bufferedWriter.write(data[1] + "\n");
+
+                        actualProgressBroadcast.putExtra("type", "contact_progress").putExtra("contact_name", data[0]).putExtra("progress", (j*100/n));
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+                        vcfDatas.add(data);
+                    }
 
                     progressNotif.setProgress(n, j, false)
                             .setContentText(data[0]);
                     notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
 
-
-                    actualProgressBroadcast.putExtra("type", "contact_progress").putExtra("contact_name", data[0]).putExtra("progress", (j*100/n));
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
                     cursor.moveToNext();
 
@@ -927,6 +937,14 @@ public class BackupEngine {
         }
 
         return errors.toString();
+    }
+
+    boolean isDuplicate(String data[], Vector<String[]> vcfDatas){
+        for (String vcfData[] : vcfDatas){
+            if (data[0].equals(vcfData[0]) && data[1].equals(vcfData[1]))
+                return true;
+        }
+        return false;
     }
 
 }
