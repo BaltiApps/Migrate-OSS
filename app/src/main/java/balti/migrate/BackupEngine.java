@@ -2,11 +2,13 @@ package balti.migrate;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
@@ -50,6 +52,11 @@ public class BackupEngine {
 
     private boolean doBackupContacts = false;
     private Vector<ContactsDataPacket> contactsDataPackets;
+    private String contactsBackupName;
+
+    private boolean doBackupSms = false;
+    private Vector<SmsDataPacket> smsDataPackets;
+    private String smsBackupName;
 
     private Process getNumberOfFiles;
     private Process zipProcess;
@@ -71,14 +78,20 @@ public class BackupEngine {
         boolean doBackupContacts;
         Vector<ContactsDataPacket> contactsDataPackets;
 
-        public StartBackup(boolean doContactsBackup, Vector<ContactsDataPacket> contactsDataPackets) {
+        boolean doSmsBackup1;
+        Vector<SmsDataPacket> smsDataPackets1;
+
+        public StartBackup(boolean doContactsBackup, Vector<ContactsDataPacket> contactsDataPackets, boolean doSmsBackup, Vector<SmsDataPacket> smsDataPackets) {
             this.doBackupContacts = doContactsBackup;
             this.contactsDataPackets = contactsDataPackets;
+            this.doSmsBackup1 = doSmsBackup;
+            this.smsDataPackets1 = smsDataPackets;
         }
 
         @Override
         protected Object doInBackground(Object[] objects) {
             setDoContactsBackup(doBackupContacts, contactsDataPackets);
+            setDoSmsBackup(doSmsBackup1, smsDataPackets1);
             initiateBackup();
             return null;
         }
@@ -101,7 +114,10 @@ public class BackupEngine {
         zipBinaryFilePath = "";
         busyboxBinaryFilePath = "";
 
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(Calendar.getInstance().getTime());
 
+        contactsBackupName = "Contacts_" + timeStamp + ".vcf";
+        smsBackupName = "Sms_" + timeStamp + ".db";
     }
 
     NotificationCompat.Builder createNotificationBuilder(){
@@ -149,12 +165,12 @@ public class BackupEngine {
         return diff;
     }
 
-    void startBackup(boolean doBackupContacts, Vector<ContactsDataPacket> contactsDataPackets){
+    void startBackup(boolean doBackupContacts, Vector<ContactsDataPacket> contactsDataPackets, boolean doBackupSms, Vector<SmsDataPacket> smsDataPackets){
         try {
             startBackupTask.cancel(true);
         }
         catch (Exception ignored){}
-        startBackupTask = new StartBackup(doBackupContacts, contactsDataPackets);
+        startBackupTask = new StartBackup(doBackupContacts, contactsDataPackets, doBackupSms, smsDataPackets);
         startBackupTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -190,6 +206,9 @@ public class BackupEngine {
 
                 String contactsErr = backupContacts(notificationManager, progressNotif);
                 if (!contactsErr.equals("")) errors.add("CONTACTS: " + contactsErr);
+
+                String smsErr = backupSms(notificationManager, progressNotif);
+                if (!smsErr.equals("")) errors.add("SMS: " + smsErr);
 
                 if (isCancelled)
                     throw new InterruptedIOException();
@@ -691,11 +710,17 @@ public class BackupEngine {
                 writer.write(command, 0, command.length());
             }
 
-            String contactsFileName = "Contacts_" + new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(Calendar.getInstance().getTime()) + ".vcf";
-            if (doBackupContacts) {
+            if (doBackupContacts || doBackupSms) {
                 updater_writer.write("ui_print(\" \");\n");
-                updater_writer.write("ui_print(\"Extracting contacts: " + contactsFileName + "\");\n");
-                updater_writer.write("package_extract_file(\"" + contactsFileName + "\", \"" + TEMP_DIR_NAME + "/" + contactsFileName + "\");\n");
+
+                if (doBackupContacts) {
+                    updater_writer.write("ui_print(\"Extracting contacts: " + contactsBackupName + "\");\n");
+                    updater_writer.write("package_extract_file(\"" + contactsBackupName + "\", \"" + TEMP_DIR_NAME + "/" + contactsBackupName + "\");\n");
+                }
+                if (doBackupSms) {
+                    updater_writer.write("ui_print(\"Extracting sms: " + smsBackupName + "\");\n");
+                    updater_writer.write("package_extract_file(\"" + smsBackupName + "\", \"" + TEMP_DIR_NAME + "/" + smsBackupName + "\");\n");
+                }
                 updater_writer.write("ui_print(\" \");\n");
             }
 
@@ -783,6 +808,18 @@ public class BackupEngine {
         }
     }
 
+    void setDoSmsBackup(boolean doBackupSms, Vector<SmsDataPacket> smsDataPackets){
+        this.doBackupSms = doBackupSms;
+        if (smsDataPackets == null)
+            this.smsDataPackets = null;
+        else {
+            this.smsDataPackets = new Vector<>(0);
+            for (SmsDataPacket packet : smsDataPackets)
+                if (packet.selected)
+                    this.smsDataPackets.add(packet);
+        }
+    }
+
     String backupContacts(NotificationManager notificationManager, NotificationCompat.Builder progressNotif){
 
         StringBuilder errors = new StringBuilder();
@@ -798,9 +835,7 @@ public class BackupEngine {
                 .setContentText("");
         notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
-        String vcfFileName = "Contacts_" + sdf.format(Calendar.getInstance().getTime()) + ".vcf";
-        String vcfFilePath = destination + "/" + backupName + "/" + vcfFileName;
+        String vcfFilePath = destination + "/" + backupName + "/" + contactsBackupName;
 
         File vcfFile = new File(vcfFilePath);
         if (vcfFile.exists()) vcfFile.delete();
@@ -945,6 +980,175 @@ public class BackupEngine {
                 return true;
         }
         return false;
+    }
+
+    String backupSms(NotificationManager notificationManager, NotificationCompat.Builder progressNotif){
+
+        StringBuilder errors = new StringBuilder();
+
+        if (!doBackupSms)
+            return errors.toString();
+
+        (new File(destination + "/" + backupName)).mkdirs();
+
+        String smsDBFilePath = destination + "/" + backupName + "/" + smsBackupName;
+
+        String DROP_TABLE = "DROP TABLE IF EXISTS sms";
+        String CREATE_TABLE = "CREATE TABLE sms ( id INTEGER PRIMARY KEY, smsAddress TEXT, smsBody TEXT, smsType TEXT, smsDate TEXT, smsDateSent TEXT, smsCreator TEXT, smsPerson TEXT, smsProtocol TEXT, smsSeen TEXT, smsServiceCenter TEXT, smsStatus TEXT, smsSubject TEXT, smsThreadId TEXT, smsError INTEGER, smsRead INTEGER, smsLocked INTEGER, smsReplyPathPresent INTEGER )";
+
+        if (smsDataPackets == null){
+
+            smsDataPackets = new Vector<>(0);
+
+
+            progressNotif.setContentTitle(context.getString(R.string.reading_sms))
+                    .setProgress(0, 0, false)
+                    .setContentText("");
+            notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+            actualProgressBroadcast.putExtra("type", "sms_reading");
+            LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+            Cursor inboxCursor, outboxCursor, sentCursor, draftCursor;
+
+            SmsTools smsTools = new SmsTools(context);
+
+            inboxCursor = smsTools.getSmsInboxCursor();
+            outboxCursor = smsTools.getSmsOutboxCursor();
+            sentCursor = smsTools.getSmsSentCursor();
+            draftCursor = smsTools.getSmsDraftCursor();
+
+            try {
+                if (inboxCursor != null && inboxCursor.getCount() > 0) {
+                    inboxCursor.moveToFirst();
+                    do {
+                        smsDataPackets.add(smsTools.getSmsPacket(inboxCursor, true));
+                    }
+                    while (inboxCursor.moveToNext());
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                errors.append(e.getMessage()).append("\n");
+            }
+
+            try {
+                if (outboxCursor != null && outboxCursor.getCount() > 0) {
+                    outboxCursor.moveToFirst();
+                    do {
+                        smsDataPackets.add(smsTools.getSmsPacket(outboxCursor, true));
+                    }
+                    while (outboxCursor.moveToNext());
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                errors.append(e.getMessage()).append("\n");
+            }
+
+            try {
+                if (sentCursor != null && sentCursor.getCount() > 0) {
+                    sentCursor.moveToFirst();
+                    do {
+                        smsDataPackets.add(smsTools.getSmsPacket(sentCursor, true));
+                    }
+                    while (sentCursor.moveToNext());
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                errors.append(e.getMessage()).append("\n");
+            }
+
+            try {
+                if (draftCursor != null && draftCursor.getCount() > 0) {
+                    draftCursor.moveToFirst();
+                    do {
+                        smsDataPackets.add(smsTools.getSmsPacket(draftCursor, true));
+                    }
+                    while (draftCursor.moveToNext());
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                errors.append(e.getMessage()).append("\n");
+            }
+
+        }
+
+        if (smsDataPackets != null || smsDataPackets.size() != 0) {
+
+            progressNotif.setContentTitle(context.getString(R.string.backing_sms))
+                    .setProgress(0, 0, false)
+                    .setContentText("");
+            notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+            int n = 0;
+            SQLiteDatabase db = null;
+
+            try {
+                n = smsDataPackets.size();
+                db = new DatabaseHelper(context, smsDBFilePath, CREATE_TABLE, DROP_TABLE).getWritableDatabase();
+                /*db = SQLiteDatabase.openOrCreateDatabase(smsDBFilePath, null);
+                db.execSQL(DROP_TABLE);
+                db.execSQL(CREATE_TABLE);*/
+            }catch (Exception e){
+                e.printStackTrace();
+                errors.append(e.getMessage()).append("\n");
+            }
+
+            for (int j = 0; j < n; j++){
+
+                try {
+
+                    SmsDataPacket dataPacket = smsDataPackets.get(j);
+
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put("smsAddress", dataPacket.smsAddress);
+                    contentValues.put("smsBody", dataPacket.smsBody);
+                    contentValues.put("smsType", dataPacket.smsType);
+                    contentValues.put("smsDate", dataPacket.smsDate);
+                    contentValues.put("smsDateSent", dataPacket.smsDateSent);
+                    contentValues.put("smsCreator", dataPacket.smsCreator);
+                    contentValues.put("smsPerson", dataPacket.smsPerson);
+                    contentValues.put("smsProtocol", dataPacket.smsProtocol);
+                    contentValues.put("smsSeen", dataPacket.smsSeen);
+                    contentValues.put("smsServiceCenter", dataPacket.smsServiceCenter);
+                    contentValues.put("smsStatus", dataPacket.smsStatus);
+                    contentValues.put("smsSubject", dataPacket.smsSubject);
+                    contentValues.put("smsThreadId", dataPacket.smsThreadId);
+                    contentValues.put("smsError", dataPacket.smsError);
+                    contentValues.put("smsRead", dataPacket.smsRead);
+                    contentValues.put("smsLocked", dataPacket.smsLocked);
+                    contentValues.put("smsReplyPathPresent", dataPacket.smsReplyPathPresent);
+
+                    db.insert("sms", null, contentValues);
+
+                    progressNotif.setProgress(n, j, false)
+                            .setContentText(dataPacket.smsAddress);
+                    notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+                    actualProgressBroadcast.putExtra("type", "sms_progress").putExtra("sms_address", dataPacket.smsAddress).putExtra("progress", (j*100/n));
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                    errors.append(e.getMessage()).append("\n");
+                }
+
+            }
+
+            try {
+                db.close();
+            } catch (Exception ignored){}
+
+        }
+
+        (new File(smsDBFilePath + "-shm")).delete();
+        (new File(smsDBFilePath + "-wal")).delete();
+
+        return errors.toString();
     }
 
 }

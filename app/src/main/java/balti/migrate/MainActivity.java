@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     boolean[] isPermissionGranted() {
-        boolean[] p = new boolean[]{false, false, false};
+        boolean[] p = new boolean[]{false, false, false, false};
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
             p[0] = true;
@@ -105,6 +105,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)
             p[2] = true;
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED)
+            p[3] = true;
+
         return p;
     }
 
@@ -113,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         super.onResume();
         boolean[] p = isPermissionGranted();
-        if (!(p[0] && p[1] && p[2])) {
+        if (!(p[0] && p[1] && p[2] && p[3])) {
             startActivity(new Intent(this, PermissionsScreen.class));
             finish();
         }
@@ -140,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onDestroy() {
         super.onDestroy();
         boolean p[] = isPermissionGranted();
-        if (p[0] && p[1] && p[2]) {
+        if (p[0] && p[1] && p[2] && p[3]) {
             if (main.getBoolean("firstRun", true)) {
                 editor.putBoolean("firstRun", false);
                 editor.commit();

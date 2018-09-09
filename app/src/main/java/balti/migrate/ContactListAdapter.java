@@ -77,4 +77,9 @@ public class ContactListAdapter extends BaseAdapter {
     }
 
 
+    void checkAll(boolean b){
+        for (ContactsDataPacket dataPacket : contactsList){
+            dataPacket.selected = b;
+        }
+    }
 }

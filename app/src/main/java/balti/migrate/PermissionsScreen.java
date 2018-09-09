@@ -23,7 +23,7 @@ import java.io.IOException;
 
 public class PermissionsScreen extends AppCompatActivity {
 
-    TextView storagePerm, rootPerm, contactsAccess;
+    TextView storagePerm, rootPerm, contactsAccess, smsAccess;
     Button grantPermissions;
 
     SharedPreferences main;
@@ -40,6 +40,7 @@ public class PermissionsScreen extends AppCompatActivity {
         storagePerm = findViewById(R.id.storagePermTextView);
         rootPerm = findViewById(R.id.rootPermTextView);
         contactsAccess = findViewById(R.id.contactsPermTextView);
+        smsAccess = findViewById(R.id.smsPermTextView);
 
         grantPermissions = findViewById(R.id.grantPermissions);
         grantPermissions.setOnClickListener(new View.OnClickListener() {
@@ -72,16 +73,21 @@ public class PermissionsScreen extends AppCompatActivity {
             contactsAccess.setVisibility(View.VISIBLE);
         else contactsAccess.setVisibility(View.GONE);
 
-        if (p[0] && p[1] && p[2])
+        if (!p[3])
+            smsAccess.setVisibility(View.VISIBLE);
+        else smsAccess.setVisibility(View.GONE);
+
+        if (p[0] && p[1] && p[2] && p[3])
             startMainActivity();
 
     }
 
 
     boolean[] isPermissionGranted() {
-        boolean[] p = new boolean[]{false, false, false};
+        boolean[] p = new boolean[]{false, false, false, false};
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
             p[0] = true;
+
         if (main.getBoolean("initialRoot", true)) {
             p[1] = false;
         } else {
@@ -92,9 +98,11 @@ public class PermissionsScreen extends AppCompatActivity {
             }
         }
 
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED)
             p[2] = true;
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED)
+            p[3] = true;
 
         return p;
     }
@@ -109,7 +117,7 @@ public class PermissionsScreen extends AppCompatActivity {
     }
 
     void requestPermissions() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS}, 0);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.READ_SMS}, 0);
     }
 
     @Override

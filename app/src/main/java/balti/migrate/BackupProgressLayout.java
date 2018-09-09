@@ -185,6 +185,24 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                     addLog("contact_name", intent);
 
+                } else if (type.equals("sms_reading")) {
+
+                    appIcon.setImageResource(R.drawable.ic_sms_icon);
+
+                    task.setText(R.string.reading_sms);
+
+                    progressBar.setIndeterminate(true);
+
+                } else if (type.equals("sms_progress")) {
+
+                    appIcon.setImageResource(R.drawable.ic_sms_icon);
+
+                    task.setText(R.string.backing_sms);
+
+                    setProgress("progress", intent);
+
+                    addLog("sms_address", intent);
+
                 } else if (type.equals("app_progress")) {
 
                     if (intent.hasExtra("app_name")) {
@@ -231,6 +249,10 @@ public class BackupProgressLayout extends AppCompatActivity {
 
     void addLog(String key, Intent intent){
         try {
+
+            if (!intent.hasExtra(key))
+                return;
+
             String logMsg = intent.getStringExtra(key);
             if (!logMsg.trim().equals(lastLog.trim())) {
                 lastLog = logMsg;
@@ -242,7 +264,12 @@ public class BackupProgressLayout extends AppCompatActivity {
     }
 
     void setProgress(String key, Intent intent){
+
+        if (!intent.hasExtra(key))
+            return;
+
         int pr = intent.getIntExtra(key, 0);
+        progressBar.setIndeterminate(false);
         progressBar.setProgress(pr);
         progress.setText(pr + "%");
     }
