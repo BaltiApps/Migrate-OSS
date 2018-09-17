@@ -30,7 +30,7 @@ public class SmsListAdapter extends BaseAdapter {
         Collections.sort(smsList, new Comparator<SmsDataPacket>() {
             @Override
             public int compare(SmsDataPacket t1, SmsDataPacket t2) {
-                return t1.smsThreadId.compareTo(t2.smsThreadId);
+                return t1.smsDate.compareTo(t2.smsDate);
             }
         });
     }
