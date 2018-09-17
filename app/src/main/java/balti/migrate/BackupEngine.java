@@ -117,7 +117,7 @@ public class BackupEngine {
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(Calendar.getInstance().getTime());
 
         contactsBackupName = "Contacts_" + timeStamp + ".vcf";
-        smsBackupName = "Sms_" + timeStamp + ".db";
+        smsBackupName = "Sms_" + timeStamp + ".sms.db";
     }
 
     NotificationCompat.Builder createNotificationBuilder(){
@@ -1088,10 +1088,9 @@ public class BackupEngine {
 
             try {
                 n = smsDataPackets.size();
-                db = new DatabaseHelper(context, smsDBFilePath, CREATE_TABLE, DROP_TABLE).getWritableDatabase();
-                /*db = SQLiteDatabase.openOrCreateDatabase(smsDBFilePath, null);
+                db = SQLiteDatabase.openOrCreateDatabase(smsDBFilePath, null);
                 db.execSQL(DROP_TABLE);
-                db.execSQL(CREATE_TABLE);*/
+                db.execSQL(CREATE_TABLE);
             }catch (Exception e){
                 e.printStackTrace();
                 errors.append(e.getMessage()).append("\n");
@@ -1106,9 +1105,9 @@ public class BackupEngine {
                     ContentValues contentValues = new ContentValues();
                     contentValues.put("smsAddress", dataPacket.smsAddress);
                     contentValues.put("smsBody", dataPacket.smsBody);
-                    contentValues.put("smsType", dataPacket.smsType);
                     contentValues.put("smsDate", dataPacket.smsDate);
                     contentValues.put("smsDateSent", dataPacket.smsDateSent);
+                    contentValues.put("smsType", dataPacket.smsType);
                     contentValues.put("smsCreator", dataPacket.smsCreator);
                     contentValues.put("smsPerson", dataPacket.smsPerson);
                     contentValues.put("smsProtocol", dataPacket.smsProtocol);
@@ -1116,7 +1115,6 @@ public class BackupEngine {
                     contentValues.put("smsServiceCenter", dataPacket.smsServiceCenter);
                     contentValues.put("smsStatus", dataPacket.smsStatus);
                     contentValues.put("smsSubject", dataPacket.smsSubject);
-                    contentValues.put("smsThreadId", dataPacket.smsThreadId);
                     contentValues.put("smsError", dataPacket.smsError);
                     contentValues.put("smsRead", dataPacket.smsRead);
                     contentValues.put("smsLocked", dataPacket.smsLocked);
