@@ -48,9 +48,9 @@ public class SmsTools {
     }
 
     public SmsDataPacket getSmsPacket(Cursor cursor, boolean selected) {
-        String smsAddress, smsBody, smsDate, smsDateSent, smsType, smsCreator, smsPerson, smsProtocol, smsSeen, smsServiceCenter, smsStatus, smsSubject;
+        String smsAddress, smsBody, smsDate, smsDateSent, smsType, smsCreator, smsPerson, smsProtocol, smsSeen, smsServiceCenter, smsStatus, smsSubject, smsThreadId;
         int smsError, smsRead, smsLocked, smsReplyPathPresent;
-        smsAddress = smsBody = smsDate = smsDateSent = smsType = smsCreator = smsPerson = smsProtocol = smsSeen = smsServiceCenter = smsStatus = smsSubject = "";
+        smsAddress = smsBody = smsDate = smsDateSent = smsType = smsCreator = smsPerson = smsProtocol = smsSeen = smsServiceCenter = smsStatus = smsSubject = smsThreadId = "";
         smsError = smsRead = smsLocked = smsReplyPathPresent = 0;
 
         try {
@@ -67,6 +67,7 @@ public class SmsTools {
             smsServiceCenter = cursor.getString(cursor.getColumnIndex(Telephony.Sms.SERVICE_CENTER));
             smsStatus = cursor.getString(cursor.getColumnIndex(Telephony.Sms.STATUS));
             smsSubject = cursor.getString(cursor.getColumnIndex(Telephony.Sms.SUBJECT));
+            smsThreadId = cursor.getString(cursor.getColumnIndex(Telephony.Sms.THREAD_ID));
 
             smsError = cursor.getInt(cursor.getColumnIndex(Telephony.Sms.ERROR_CODE));
             smsRead = cursor.getInt(cursor.getColumnIndex(Telephony.Sms.READ));
@@ -77,6 +78,6 @@ public class SmsTools {
             e.printStackTrace();
         }
 
-        return new SmsDataPacket(smsAddress, smsBody, smsDate, smsDateSent, smsType, smsCreator, smsPerson, smsProtocol, smsSeen, smsServiceCenter, smsStatus, smsSubject, smsError, smsRead, smsLocked, smsReplyPathPresent, selected);
+        return new SmsDataPacket(smsAddress, smsBody, smsDate, smsDateSent, smsType, smsCreator, smsPerson, smsProtocol, smsSeen, smsServiceCenter, smsStatus, smsSubject, smsThreadId, smsError, smsRead, smsLocked, smsReplyPathPresent, selected);
     }
 }

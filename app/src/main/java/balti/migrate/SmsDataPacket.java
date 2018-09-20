@@ -1,12 +1,12 @@
 package balti.migrate;
 
 public class SmsDataPacket {
-    String smsAddress, smsBody, smsDate, smsDateSent, smsType, smsCreator, smsPerson, smsProtocol, smsSeen, smsServiceCenter, smsStatus, smsSubject;
+    String smsAddress, smsBody, smsDate, smsDateSent, smsType, smsCreator, smsPerson, smsProtocol, smsSeen, smsServiceCenter, smsStatus, smsSubject, smsThreadID;
     int smsError, smsRead, smsLocked, smsReplyPathPresent;
 
     boolean selected;
 
-    public SmsDataPacket(String smsAddress, String smsBody, String smsDate, String smsDateSent, String smsType, String smsCreator, String smsPerson, String smsProtocol, String smsSeen, String smsServiceCenter, String smsStatus, String smsSubject, int smsError, int smsRead, int smsLocked, int smsReplyPathPresent, boolean selected) {
+    public SmsDataPacket(String smsAddress, String smsBody, String smsDate, String smsDateSent, String smsType, String smsCreator, String smsPerson, String smsProtocol, String smsSeen, String smsServiceCenter, String smsStatus, String smsSubject, String smsThreadId, int smsError, int smsRead, int smsLocked, int smsReplyPathPresent, boolean selected) {
         this.smsAddress = smsAddress;
         this.smsBody = smsBody;
         this.smsDate = smsDate;
@@ -19,6 +19,7 @@ public class SmsDataPacket {
         this.smsServiceCenter = smsServiceCenter;
         this.smsStatus = smsStatus;
         this.smsSubject = smsSubject;
+        this.smsThreadID = smsThreadId;
         this.smsError = smsError;
         this.smsRead = smsRead;
         this.smsLocked = smsLocked;
@@ -39,6 +40,7 @@ public class SmsDataPacket {
         this.smsServiceCenter = obj.smsServiceCenter;
         this.smsStatus = obj.smsStatus;
         this.smsSubject = obj.smsSubject;
+        this.smsThreadID = obj.smsThreadID;
         this.smsError = obj.smsError;
         this.smsRead = obj.smsRead;
         this.smsLocked = obj.smsLocked;
