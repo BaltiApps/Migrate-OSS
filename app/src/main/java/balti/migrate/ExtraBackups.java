@@ -902,7 +902,7 @@ public class ExtraBackups extends AppCompatActivity {
         startBackup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isAnyAppSelected || doBackupContacts.isChecked() || doBackupSms.isChecked())
+                if (isAnyAppSelected || doBackupContacts.isChecked() || doBackupSms.isChecked() || doBackupCalls.isChecked())
                     askForBackupName();
             }
         });
