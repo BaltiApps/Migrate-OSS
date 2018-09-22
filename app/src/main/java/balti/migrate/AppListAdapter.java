@@ -74,6 +74,9 @@ public class AppListAdapter extends BaseAdapter {
         TextView appName = view.findViewById(R.id.appName);
         appName.setText(packageManager.getApplicationLabel(appList.get(i).PACKAGE_INFO.applicationInfo));
 
+        TextView packageName = view.findViewById(R.id.packageName);
+        packageName.setText(appList.get(i).PACKAGE_INFO.packageName);
+
         ImageView icon = view.findViewById(R.id.appIcon);
         icon.setImageDrawable(packageManager.getApplicationIcon(appList.get(i).PACKAGE_INFO.applicationInfo));
 

@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else {
 
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1 && !main.getBoolean("android_version_warning", false)){
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P && !main.getBoolean("android_version_warning", false)){
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.too_fast)
                         .setMessage(R.string.too_fast_desc)

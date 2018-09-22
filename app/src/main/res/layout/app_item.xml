@@ -16,16 +16,33 @@
         android:padding="@dimen/large_padding_width"
         />
 
-
-    <TextView
+    <LinearLayout
+        android:layout_height="wrap_content"
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:id="@+id/appName"
-        android:text="App name"
+        android:orientation="vertical"
         android:layout_margin="@dimen/large_padding_width"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        />
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/appName"
+            android:text="App name"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="package.name"
+            android:id="@+id/packageName"
+            android:textColor="@color/colorAccent"
+            android:textSize="12sp"
+            />
+
+    </LinearLayout>
+
 
     <CheckBox
         android:layout_width="wrap_content"
