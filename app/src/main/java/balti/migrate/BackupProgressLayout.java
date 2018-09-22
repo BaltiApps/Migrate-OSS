@@ -44,6 +44,8 @@ public class BackupProgressLayout extends AppCompatActivity {
     String lastLog = "";
     String lastIconString = "";
 
+    String lastType = "";
+
     class SetAppIcon extends AsyncTask<String, Void, Bitmap>{
 
 
@@ -140,6 +142,11 @@ public class BackupProgressLayout extends AppCompatActivity {
             if (intent.hasExtra("type"))
                 type = intent.getStringExtra("type");
 
+            if (!type.equals(lastType)){
+                lastType = type;
+                progressLog.setText("");
+            }
+
             if (type.equals("finished")){
                 try {
                     task.setText(intent.getStringExtra("finishedMessage"));
@@ -205,6 +212,24 @@ public class BackupProgressLayout extends AppCompatActivity {
                     setProgress("progress", intent);
 
                     addLog("sms_address", intent);
+
+                } else if (type.equals("calls_reading")) {
+
+                    appIcon.setImageResource(R.drawable.ic_call_log_icon);
+
+                    task.setText(R.string.reading_calls);
+
+                    progressBar.setIndeterminate(true);
+
+                } else if (type.equals("calls_progress")) {
+
+                    appIcon.setImageResource(R.drawable.ic_call_log_icon);
+
+                    task.setText(R.string.backing_calls);
+
+                    setProgress("progress", intent);
+
+                    addLog("calls_name", intent);
 
                 } else if (type.equals("app_progress")) {
 

@@ -1,8 +1,11 @@
 package balti.migrate;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.provider.Telephony;
+import android.support.v4.app.ActivityCompat;
 
 public class SmsTools {
     Context context;
@@ -14,7 +17,9 @@ public class SmsTools {
     public Cursor getSmsInboxCursor(){
         Cursor cursor = null;
         try {
-            cursor = context.getContentResolver().query(Telephony.Sms.Inbox.CONTENT_URI, null, null, null, null);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED) {
+                cursor = context.getContentResolver().query(Telephony.Sms.Inbox.CONTENT_URI, null, null, null, null);
+            }
         }
         catch (Exception e){}
         return cursor;
@@ -23,7 +28,9 @@ public class SmsTools {
     public Cursor getSmsOutboxCursor(){
         Cursor cursor = null;
         try {
-            cursor = context.getContentResolver().query(Telephony.Sms.Outbox.CONTENT_URI, null, null, null, null);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED) {
+                cursor = context.getContentResolver().query(Telephony.Sms.Outbox.CONTENT_URI, null, null, null, null);
+            }
         }
         catch (Exception e){}
         return cursor;
@@ -32,7 +39,9 @@ public class SmsTools {
     public Cursor getSmsSentCursor(){
         Cursor cursor = null;
         try {
-            cursor = context.getContentResolver().query(Telephony.Sms.Sent.CONTENT_URI, null, null, null, null);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED) {
+                cursor = context.getContentResolver().query(Telephony.Sms.Sent.CONTENT_URI, null, null, null, null);
+            }
         }
         catch (Exception e){}
         return cursor;
@@ -41,7 +50,9 @@ public class SmsTools {
     public Cursor getSmsDraftCursor(){
         Cursor cursor = null;
         try {
-            cursor = context.getContentResolver().query(Telephony.Sms.Draft.CONTENT_URI, null, null, null, null);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED) {
+                cursor = context.getContentResolver().query(Telephony.Sms.Draft.CONTENT_URI, null, null, null, null);
+            }
         }
         catch (Exception e){}
         return cursor;

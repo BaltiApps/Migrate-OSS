@@ -7,16 +7,16 @@
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
         android:background="@color/colorPrimary"
-        android:id="@+id/sms_top_bar"
+        android:id="@+id/extra_item_selector_top_bar"
         >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/sms_selector_label"
             android:layout_centerVertical="true"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:padding="@dimen/large_padding_width"
+            android:id="@+id/extra_item_selector_title"
             />
 
         <ImageView
@@ -26,7 +26,7 @@
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
             android:padding="@dimen/large_padding_width"
-            android:id="@+id/sms_select_all"
+            android:id="@+id/extra_item_selector_select_all"
             android:clickable="true"
             android:focusable="true"
             />
@@ -37,8 +37,8 @@
             android:src="@drawable/ic_clear_all"
             android:layout_centerVertical="true"
             android:padding="@dimen/large_padding_width"
-            android:id="@+id/sms_clear_all"
-            android:layout_toStartOf="@id/sms_select_all"
+            android:id="@+id/extra_item_selector_clear_all"
+            android:layout_toStartOf="@id/extra_item_selector_select_all"
             android:clickable="true"
             android:focusable="true"
             />
@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:id="@+id/sms_button_bar"
+        android:id="@+id/extra_item_selector_button_bar"
         android:padding="@dimen/small_padding_width"
         android:background="@color/colorPrimary"
         >
@@ -63,7 +63,7 @@
             android:layout_alignParentStart="true"
             android:textColor="@color/colorAccent"
             android:layout_centerVertical="true"
-            android:id="@+id/sms_selector_cancel"
+            android:id="@+id/extra_item_selector_cancel"
             />
 
         <Button
@@ -74,7 +74,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:foreground="?android:attr/selectableItemBackground"
-            android:id="@+id/sms_selector_ok"
+            android:id="@+id/extra_item_selector_ok"
             />
 
     </RelativeLayout>
@@ -82,9 +82,9 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/show_sms"
-        android:layout_above="@id/sms_button_bar"
-        android:layout_below="@id/sms_top_bar"
+        android:id="@+id/extra_item_selector_item_holder"
+        android:layout_above="@id/extra_item_selector_button_bar"
+        android:layout_below="@id/extra_item_selector_top_bar"
         android:padding="@dimen/large_padding_width"
         android:visibility="invisible"
         />
@@ -93,7 +93,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:id="@+id/sms_selector_round_progress"
+        android:id="@+id/extra_item_selector_round_progress"
         />
 
 </RelativeLayout>

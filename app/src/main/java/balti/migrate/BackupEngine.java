@@ -58,6 +58,10 @@ public class BackupEngine {
     private Vector<SmsDataPacket> smsDataPackets;
     private String smsBackupName;
 
+    private boolean doBackupCalls = false;
+    private Vector<CallsDataPacket> callsDataPackets;
+    private String callsBackupName;
+
     private Process getNumberOfFiles;
     private Process zipProcess;
 
@@ -78,20 +82,27 @@ public class BackupEngine {
         boolean doBackupContacts;
         Vector<ContactsDataPacket> contactsDataPackets;
 
-        boolean doSmsBackup1;
-        Vector<SmsDataPacket> smsDataPackets1;
+        boolean doSmsBackup;
+        Vector<SmsDataPacket> smsDataPackets;
 
-        public StartBackup(boolean doContactsBackup, Vector<ContactsDataPacket> contactsDataPackets, boolean doSmsBackup, Vector<SmsDataPacket> smsDataPackets) {
+        boolean doBackupCalls;
+        Vector<CallsDataPacket> callsDataPackets;
+
+        public StartBackup(boolean doContactsBackup, Vector<ContactsDataPacket> contactsDataPackets, boolean doSmsBackup, Vector<SmsDataPacket> smsDataPackets,
+                boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets) {
             this.doBackupContacts = doContactsBackup;
             this.contactsDataPackets = contactsDataPackets;
-            this.doSmsBackup1 = doSmsBackup;
-            this.smsDataPackets1 = smsDataPackets;
+            this.doSmsBackup = doSmsBackup;
+            this.smsDataPackets = smsDataPackets;
+            this.doBackupCalls = doBackupCalls;
+            this.callsDataPackets = callsDataPackets;
         }
 
         @Override
         protected Object doInBackground(Object[] objects) {
             setDoContactsBackup(doBackupContacts, contactsDataPackets);
-            setDoSmsBackup(doSmsBackup1, smsDataPackets1);
+            setDoSmsBackup(doSmsBackup, smsDataPackets);
+            setDoCallsBackup(doBackupCalls, callsDataPackets);
             initiateBackup();
             return null;
         }
@@ -118,6 +129,7 @@ public class BackupEngine {
 
         contactsBackupName = "Contacts_" + timeStamp + ".vcf";
         smsBackupName = "Sms_" + timeStamp + ".sms.db";
+        callsBackupName = "Calls_" + timeStamp + ".calls.db";
     }
 
     NotificationCompat.Builder createNotificationBuilder(){
@@ -165,12 +177,13 @@ public class BackupEngine {
         return diff;
     }
 
-    void startBackup(boolean doBackupContacts, Vector<ContactsDataPacket> contactsDataPackets, boolean doBackupSms, Vector<SmsDataPacket> smsDataPackets){
+    void startBackup(boolean doBackupContacts, Vector<ContactsDataPacket> contactsDataPackets, boolean doBackupSms, Vector<SmsDataPacket> smsDataPackets,
+            boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets){
         try {
             startBackupTask.cancel(true);
         }
         catch (Exception ignored){}
-        startBackupTask = new StartBackup(doBackupContacts, contactsDataPackets, doBackupSms, smsDataPackets);
+        startBackupTask = new StartBackup(doBackupContacts, contactsDataPackets, doBackupSms, smsDataPackets, doBackupCalls, callsDataPackets);
         startBackupTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -209,6 +222,9 @@ public class BackupEngine {
 
                 String smsErr = backupSms(notificationManager, progressNotif);
                 if (!smsErr.equals("")) errors.add("SMS: " + smsErr);
+
+                String callsErr = backupCalls(notificationManager, progressNotif);
+                if (!callsErr.equals("")) errors.add("CALLS: " + callsErr);
 
                 if (isCancelled)
                     throw new InterruptedIOException();
@@ -291,17 +307,6 @@ public class BackupEngine {
         progressNotif.setContentTitle(finalMessage);
 
         notificationManager.cancel(NOTIFICATION_ID);
-
-        /*if (finalMessage.equals(context.getString(R.string.backupCancelled))) {
-            progressNotif.setContentTitle(finalMessage);
-        } else if (finalMessage.equals(context.getString(R.string.noErrors))) {
-            progressNotif.setContentTitle(context.getString(R.string.noErrors));
-        } else {
-            finalMessage = context.getString(R.string.backupFinishedWithErrors);
-            progressNotif.setContentTitle(context.getString(R.string.backupFinishedWithErrors));
-            progressNotif.setContentText(errors.get(0));
-        }*/
-
 
         activityProgressIntent.putExtra("type", "finished").putExtra("finishedMessage", finalMessage.trim() + "\n(" + calendarDifference(startMillis, endMillis) + ")");
         if (errors.size() > 0)
@@ -436,51 +441,6 @@ public class BackupEngine {
 
 
         (new File(destination + "/" + backupName)).mkdirs();
-
-        /*if (isApp){
-
-            filename = filename + ".apk";
-
-            if (!isSystem) {
-
-                scriptText = scriptText +
-                        "cd " + TEMP_DIR_NAME + "\n" +
-                        "pm install -r " + filename + "\n" +
-                        "rm " + filename + "\n" +
-                        "rm " + scriptName + "\n";
-            }
-            else {
-
-                String sysAppNameDir = sysAppPastinDir + "/" + filename.substring(0, filename.lastIndexOf('-')) + "/";
-
-                scriptText = scriptText +
-                        "mkdir -p " + sysAppNameDir + "\n" +
-                        "cd /system/app/" + "\n" +
-                        "mv " + filename + " " + sysAppNameDir + "\n" +
-                        "rm " + scriptName + "\n";
-
-            }
-
-        }
-
-        else {
-
-            String dirName = filename.substring(0, filename.lastIndexOf('-'));
-
-            filename = filename + ".tar.gz";
-
-            scriptText = scriptText +
-                    "cp " + "/data/balti.migrate/" + filename + " /data/data/" + "\n" +
-                    "cd /data/data/" + "\n" +
-                    "rm -r " + dirName + "\n" +
-                    TEMP_DIR_NAME +"/busybox tar -xzpf " + filename + "\n" +
-                    "rm " + filename + "\n" +
-                    "chmod 755 " + dirName + "\n" +
-                    "chmod +r -R " + dirName + "\n" +
-                    "rm " + TEMP_DIR_NAME + "/" + filename + "\n" +
-                    "rm " + TEMP_DIR_NAME + "/" + scriptName + "\n";
-
-        }*/
 
         BufferedReader reader = new BufferedReader(new StringReader(scriptText));
 
@@ -710,7 +670,7 @@ public class BackupEngine {
                 writer.write(command, 0, command.length());
             }
 
-            if (doBackupContacts || doBackupSms) {
+            if (doBackupContacts || doBackupSms || doBackupCalls) {
                 updater_writer.write("ui_print(\" \");\n");
 
                 if (doBackupContacts) {
@@ -720,6 +680,10 @@ public class BackupEngine {
                 if (doBackupSms) {
                     updater_writer.write("ui_print(\"Extracting sms: " + smsBackupName + "\");\n");
                     updater_writer.write("package_extract_file(\"" + smsBackupName + "\", \"" + TEMP_DIR_NAME + "/" + smsBackupName + "\");\n");
+                }
+                if (doBackupCalls) {
+                    updater_writer.write("ui_print(\"Extracting call logs: " + callsBackupName + "\");\n");
+                    updater_writer.write("package_extract_file(\"" + callsBackupName + "\", \"" + TEMP_DIR_NAME + "/" + callsBackupName + "\");\n");
                 }
                 updater_writer.write("ui_print(\" \");\n");
             }
@@ -817,6 +781,18 @@ public class BackupEngine {
             for (SmsDataPacket packet : smsDataPackets)
                 if (packet.selected)
                     this.smsDataPackets.add(packet);
+        }
+    }
+
+    void setDoCallsBackup(boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets){
+        this.doBackupCalls = doBackupCalls;
+        if (callsDataPackets == null)
+            this.callsDataPackets = null;
+        else {
+            this.callsDataPackets = new Vector<>(0);
+            for (CallsDataPacket packet : callsDataPackets)
+                if (packet.selected)
+                    this.callsDataPackets.add(packet);
         }
     }
 
@@ -1145,6 +1121,141 @@ public class BackupEngine {
 
         (new File(smsDBFilePath + "-shm")).delete();
         (new File(smsDBFilePath + "-wal")).delete();
+
+        return errors.toString();
+    }
+
+    String backupCalls(NotificationManager notificationManager, NotificationCompat.Builder progressNotif){
+
+        StringBuilder errors = new StringBuilder();
+
+        if (!doBackupCalls)
+            return errors.toString();
+
+        (new File(destination + "/" + backupName)).mkdirs();
+
+        String callsDBFilePath = destination + "/" + backupName + "/" + callsBackupName;
+
+        String DROP_TABLE = "DROP TABLE IF EXISTS calls";
+        String CREATE_TABLE = "CREATE TABLE calls ( id INTEGER PRIMARY KEY, callsCachedFormattedNumber TEXT, callsCachedLookupUri TEXT, callsCachedMatchedNumber TEXT," +
+                "callsCachedName TEXT, callsCachedNormalizedNumber TEXT, callsCachedNumberLabel TEXT, callsCachedNumberType TEXT, callsCachedPhotoId TEXT," +
+                "callsCountryIso TEXT, callsDataUsage TEXT, callsFeatures TEXT, callsGeocodedLocation TEXT, callsIsRead TEXT, callsNumber TEXT," +
+                "callsNumberPresentation TEXT, callsPhoneAccountComponentName TEXT, callsPhoneAccountId TEXT, callsTranscription TEXT," +
+                "callsType TEXT, callsVoicemailUri TEXT," +
+                "callsDate INTEGER, callsDuration INTEGER, callsNew INTEGER )";
+
+        if (callsDataPackets == null){
+
+            callsDataPackets = new Vector<>(0);
+
+
+            progressNotif.setContentTitle(context.getString(R.string.reading_calls))
+                    .setProgress(0, 0, false)
+                    .setContentText("");
+            notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+            actualProgressBroadcast.putExtra("type", "calls_reading");
+            LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+            Cursor callsCursor;
+
+            CallsTools callsTools = new CallsTools(context);
+
+            callsCursor = callsTools.getCallsCursor();
+
+            try {
+                if (callsCursor != null && callsCursor.getCount() > 0) {
+                    callsCursor.moveToFirst();
+                    do {
+                        callsDataPackets.add(callsTools.getCallsPacket(callsCursor, true));
+                    }
+                    while (callsCursor.moveToNext());
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                errors.append(e.getMessage()).append("\n");
+            }
+
+        }
+
+        if (callsDataPackets != null || callsDataPackets.size() != 0) {
+
+            progressNotif.setContentTitle(context.getString(R.string.backing_calls))
+                    .setProgress(0, 0, false)
+                    .setContentText("");
+            notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+            int n = 0;
+            SQLiteDatabase db = null;
+
+            try {
+                n = callsDataPackets.size();
+                db = SQLiteDatabase.openOrCreateDatabase(callsDBFilePath, null);
+                db.execSQL(DROP_TABLE);
+                db.execSQL(CREATE_TABLE);
+            }catch (Exception e){
+                e.printStackTrace();
+                errors.append(e.getMessage()).append("\n");
+            }
+
+            for (int j = 0; j < n; j++){
+
+                try {
+
+                    CallsDataPacket dataPacket = callsDataPackets.get(j);
+
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put("callsCachedFormattedNumber", dataPacket.callsCachedFormattedNumber);
+                    contentValues.put("callsCachedLookupUri", dataPacket.callsCachedLookupUri);
+                    contentValues.put("callsCachedMatchedNumber", dataPacket.callsCachedMatchedNumber);
+                    contentValues.put("callsCachedName", dataPacket.callsCachedName);
+                    contentValues.put("callsCachedNormalizedNumber", dataPacket.callsCachedNormalizedNumber);
+                    contentValues.put("callsCachedNumberLabel", dataPacket.callsCachedNumberLabel);
+                    contentValues.put("callsCachedNumberType", dataPacket.callsCachedNumberType);
+                    contentValues.put("callsCachedPhotoId", dataPacket.callsCachedPhotoId);
+                    contentValues.put("callsCountryIso", dataPacket.callsCountryIso);
+                    contentValues.put("callsDataUsage", dataPacket.callsDataUsage);
+                    contentValues.put("callsFeatures", dataPacket.callsFeatures);
+                    contentValues.put("callsGeocodedLocation", dataPacket.callsGeocodedLocation);
+                    contentValues.put("callsIsRead", dataPacket.callsIsRead);
+                    contentValues.put("callsNumber", dataPacket.callsNumber);
+                    contentValues.put("callsNumberPresentation", dataPacket.callsNumberPresentation);
+                    contentValues.put("callsPhoneAccountComponentName", dataPacket.callsPhoneAccountComponentName);
+                    contentValues.put("callsPhoneAccountId", dataPacket.callsPhoneAccountId);
+                    contentValues.put("callsTranscription", dataPacket.callsTranscription);
+                    contentValues.put("callsType", dataPacket.callsType);
+                    contentValues.put("callsVoicemailUri", dataPacket.callsVoicemailUri);
+                    contentValues.put("callsDate", dataPacket.callsDate);
+                    contentValues.put("callsDuration", dataPacket.callsDuration);
+                    contentValues.put("callsNew", dataPacket.callsNew);
+
+                    db.insert("calls", null, contentValues);
+
+                    String display;
+                    if (dataPacket.callsCachedName != null && !dataPacket.callsCachedName.equals("")) display = dataPacket.callsCachedName;
+                    else display = dataPacket.callsNumber;
+
+                    progressNotif.setProgress(n, j, false)
+                            .setContentText(display);
+                    notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+                    actualProgressBroadcast.putExtra("type", "calls_progress").putExtra("calls_name", display).putExtra("progress", (j*100/n));
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                    errors.append(e.getMessage()).append("\n");
+                }
+
+            }
+
+            try {
+                db.close();
+            } catch (Exception ignored){}
+
+        }
 
         return errors.toString();
     }

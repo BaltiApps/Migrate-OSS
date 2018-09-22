@@ -15,13 +15,11 @@ import java.util.Vector;
 public class ContactListAdapter extends BaseAdapter {
 
 
-    private Context context;
     LayoutInflater layoutInflater;
 
     Vector<ContactsDataPacket> contactsList;
 
     ContactListAdapter(Context context, Vector<ContactsDataPacket> contactsList){
-        this.context = context;
         this.contactsList = contactsList;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         Collections.sort(contactsList, new Comparator<ContactsDataPacket>() {

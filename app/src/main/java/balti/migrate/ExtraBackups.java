@@ -78,13 +78,22 @@ public class ExtraBackups extends AppCompatActivity {
     private ReadSms smsReader;
     private AlertDialog SmsSelectorDialog;
 
+    private LinearLayout callsMainItem;
+    private ProgressBar callsReadProgressBar;
+    private TextView callsSelectedStatus;
+    private CheckBox doBackupCalls;
+
+    private Vector<CallsDataPacket> callsList;
+
+    private ReadCalls callsReader;
+    private AlertDialog CallsSelectorDialog;
+
     private LayoutInflater layoutInflater;
 
     private SharedPreferences main;
     private BroadcastReceiver progressReceiver;
     private AlertDialog ad;
     private PackageManager pm;
-
 
 
     class MakeBackupSummary extends AsyncTask<Void, String, Object[]> {
@@ -128,7 +137,7 @@ public class ExtraBackups extends AppCompatActivity {
 
                     if (appList.get(i).APP) {
 
-                        publishProgress((i+1) + " of " + n);
+                        publishProgress((i + 1) + " of " + n);
 
                         String appName = pm.getApplicationLabel(appList.get(i).PACKAGE_INFO.applicationInfo).toString();
                         appName = appName.replace(' ', '_');
@@ -154,15 +163,14 @@ public class ExtraBackups extends AppCompatActivity {
                 }
                 writer.close();
                 return new Object[]{true};
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 return new Object[]{false, e.getMessage()};
             }
         }
 
         @Override
-        protected void onProgressUpdate(String ... strings) {
+        protected void onProgressUpdate(String... strings) {
             super.onProgressUpdate(strings);
             waitingProgress.setVisibility(View.VISIBLE);
             waitingProgress.setText(strings[0]);
@@ -173,17 +181,17 @@ public class ExtraBackups extends AppCompatActivity {
             super.onPostExecute(o);
             waitingHead.setText(R.string.just_a_minute);
             waitingProgress.setText(R.string.starting_engine);
-            if ((boolean)o[0]){
+            if ((boolean) o[0]) {
 
                 try {
                     contactsReader.cancel(true);
+                } catch (Exception ignored) {
                 }
-                catch (Exception ignored){}
 
                 try {
                     smsReader.cancel(true);
+                } catch (Exception ignored) {
                 }
-                catch (Exception ignored){}
 
                 Intent bService = new Intent(ExtraBackups.this, BackupService.class)
                         .putExtra("backupName", backupName)
@@ -194,27 +202,27 @@ public class ExtraBackups extends AppCompatActivity {
                 BackupService.backupEngine = new BackupEngine(backupName, main.getInt("compressionLevel", 0), destination, ExtraBackups.this);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     startForegroundService(bService);
-                    BackupService.backupEngine.startBackup(doBackupContacts.isChecked(), contactsList, doBackupSms.isChecked(), smsList);
-                }
-                else{
+                    BackupService.backupEngine.startBackup(doBackupContacts.isChecked(), contactsList, doBackupSms.isChecked(), smsList,
+                            doBackupCalls.isChecked(), callsList);
+                } else {
                     startService(bService);
-                    BackupService.backupEngine.startBackup(doBackupContacts.isChecked(), contactsList, doBackupSms.isChecked(), smsList);
+                    BackupService.backupEngine.startBackup(doBackupContacts.isChecked(), contactsList, doBackupSms.isChecked(), smsList,
+                            doBackupCalls.isChecked(), callsList);
                 }
 
-            }
-            else {
-                Toast.makeText(ExtraBackups.this, (String)o[1], Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(ExtraBackups.this, (String) o[1], Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    class ReadContacts extends AsyncTask<Void, Object, Vector<ContactsDataPacket>>{
+    class ReadContacts extends AsyncTask<Void, Object, Vector<ContactsDataPacket>> {
 
         int contactsCount = 0;
         Cursor cursor;
         VcfTools vcfTools;
 
-        ReadContacts(){
+        ReadContacts() {
             vcfTools = new VcfTools(ExtraBackups.this);
         }
 
@@ -228,8 +236,7 @@ public class ExtraBackups extends AppCompatActivity {
                 contactsCount = cursor.getCount();
                 contactsReadProgressBar.setMax(contactsCount);
                 doBackupContacts.setEnabled(true);
-            }
-            else {
+            } else {
                 doBackupContacts.setChecked(false);
                 doBackupContacts.setEnabled(false);
                 contactsSelectedStatus.setText(R.string.reading_error);
@@ -241,10 +248,13 @@ public class ExtraBackups extends AppCompatActivity {
 
         @Override
         protected Vector<ContactsDataPacket> doInBackground(Void... voids) {
-            Vector<ContactsDataPacket> tempContactsStorage = new Vector<>(0);
+            Vector<ContactsDataPacket> tempContactsStorage = null;
 
             try {
                 if (cursor != null) {
+
+                    tempContactsStorage = new Vector<>(0);
+
                     cursor.moveToFirst();
                     for (int i = 0; i < contactsCount; i++) {
                         String temp[] = vcfTools.getVcfData(cursor);
@@ -255,16 +265,15 @@ public class ExtraBackups extends AppCompatActivity {
                         cursor.moveToNext();
                     }
                 }
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
             return tempContactsStorage;
         }
 
-        boolean isDuplicate(ContactsDataPacket cdp, Vector<ContactsDataPacket> dataPackets){
-            for (ContactsDataPacket dataPacket : dataPackets){
+        boolean isDuplicate(ContactsDataPacket cdp, Vector<ContactsDataPacket> dataPackets) {
+            for (ContactsDataPacket dataPacket : dataPackets) {
                 if (cdp.fullName.equals(dataPacket.fullName) && cdp.vcfData.equals(dataPacket.vcfData))
                     return true;
             }
@@ -274,64 +283,70 @@ public class ExtraBackups extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(Object... values) {
             super.onProgressUpdate(values);
-            contactsReadProgressBar.setProgress((int)values[0]);
-            contactsSelectedStatus.setText((String)values[1]);
+            contactsReadProgressBar.setProgress((int) values[0]);
+            contactsSelectedStatus.setText((String) values[1]);
         }
 
         @Override
         protected void onPostExecute(Vector<ContactsDataPacket> receivedDataPackets) {
             super.onPostExecute(receivedDataPackets);
 
+            updateContactsList(receivedDataPackets);
+
+            if (cursor != null && contactsCount > 0) {
+                contactsMainItem.setClickable(true);
+                contactsMainItem.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+
+                        new LoadContactsForSelection().execute();
+
+                    }
+                });
+            }
+
             if (cursor != null) {
                 try {
                     cursor.close();
                 } catch (Exception ignored) {
                 }
-                updateContactsList(receivedDataPackets);
             }
-
-
-            contactsMainItem.setClickable(true);
-            contactsMainItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-
-                    new LoadContactsForSelection().execute();
-
-                }
-            });
         }
 
     }
 
-    class LoadContactsForSelection extends AsyncTask{
+    class LoadContactsForSelection extends AsyncTask {
 
         ProgressBar progressBar;
         ListView listView;
         Button ok, cancel;
         Vector<ContactsDataPacket> dataPackets;
-        View contactsSelectorView;
+        View itemSelectorView;
         RelativeLayout topBar, bottomBar;
         ImageView selectAll, clearAll;
+        TextView title;
 
         ContactListAdapter adapter;
 
         public LoadContactsForSelection() {
 
-            contactsSelectorView = layoutInflater.inflate(R.layout.contacts_selector, null);
-            contactsSelectorView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            itemSelectorView = layoutInflater.inflate(R.layout.extra_item_selector, null);
+            itemSelectorView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
             dataPackets = new Vector<>(0);
 
-            this.topBar = contactsSelectorView.findViewById(R.id.contacts_top_bar);
-            this.selectAll = contactsSelectorView.findViewById(R.id.contacts_select_all);
-            this.clearAll = contactsSelectorView.findViewById(R.id.contacts_clear_all);
-            this.progressBar = contactsSelectorView.findViewById(R.id.contacts_selector_round_progress);
-            this.listView = contactsSelectorView.findViewById(R.id.show_contacts);
-            this.bottomBar = contactsSelectorView.findViewById(R.id.contacts_button_bar);
-            this.ok = contactsSelectorView.findViewById(R.id.contact_selector_ok);
-            this.cancel = contactsSelectorView.findViewById(R.id.contact_selector_cancel);
+            this.topBar = itemSelectorView.findViewById(R.id.extra_item_selector_top_bar);
+            this.selectAll = itemSelectorView.findViewById(R.id.extra_item_selector_select_all);
+            this.clearAll = itemSelectorView.findViewById(R.id.extra_item_selector_clear_all);
+            this.progressBar = itemSelectorView.findViewById(R.id.extra_item_selector_round_progress);
+            this.listView = itemSelectorView.findViewById(R.id.extra_item_selector_item_holder);
+            this.bottomBar = itemSelectorView.findViewById(R.id.extra_item_selector_button_bar);
+            this.ok = itemSelectorView.findViewById(R.id.extra_item_selector_ok);
+            this.cancel = itemSelectorView.findViewById(R.id.extra_item_selector_cancel);
+            this.title = itemSelectorView.findViewById(R.id.extra_item_selector_title);
+
+            title.setText(R.string.contacts_selector_label);
 
             ok.setOnClickListener(null);
             cancel.setOnClickListener(new View.OnClickListener() {
@@ -342,7 +357,7 @@ public class ExtraBackups extends AppCompatActivity {
             });
 
             ContactsSelectorDialog = new AlertDialog.Builder(ExtraBackups.this)
-                    .setView(contactsSelectorView)
+                    .setView(itemSelectorView)
                     .setCancelable(false)
                     .create();
 
@@ -360,7 +375,7 @@ public class ExtraBackups extends AppCompatActivity {
 
         @Override
         protected Object doInBackground(Object[] objects) {
-            for (int i = 0; i < contactsList.size(); i++){
+            for (int i = 0; i < contactsList.size(); i++) {
                 ContactsDataPacket dataPacket = new ContactsDataPacket(contactsList.get(i).fullName, contactsList.get(i).vcfData);
                 dataPacket.selected = contactsList.get(i).selected;
                 dataPackets.add(dataPacket);
@@ -405,13 +420,13 @@ public class ExtraBackups extends AppCompatActivity {
         }
     }
 
-    class ReadSms extends AsyncTask<Void, Object, Vector<SmsDataPacket>>{
+    class ReadSms extends AsyncTask<Void, Object, Vector<SmsDataPacket>> {
 
         int smsCount = 0;
         Cursor inboxCursor, outboxCursor, sentCursor, draftCursor;
         SmsTools smsTools;
 
-        ReadSms(){
+        ReadSms() {
             smsTools = new SmsTools(ExtraBackups.this);
         }
 
@@ -425,7 +440,7 @@ public class ExtraBackups extends AppCompatActivity {
             sentCursor = smsTools.getSmsSentCursor();
             draftCursor = smsTools.getSmsDraftCursor();
             if (inboxCursor != null || outboxCursor != null || sentCursor != null || draftCursor != null) {
-                smsReadProgressBar.setMax(smsCount);
+
                 doBackupSms.setEnabled(true);
 
                 if (inboxCursor != null)
@@ -439,8 +454,10 @@ public class ExtraBackups extends AppCompatActivity {
 
                 if (draftCursor != null)
                     smsCount += draftCursor.getCount();
-            }
-            else {
+
+                smsReadProgressBar.setMax(smsCount);
+
+            } else {
                 doBackupSms.setChecked(false);
                 doBackupSms.setEnabled(false);
                 smsSelectedStatus.setText(R.string.reading_error);
@@ -452,9 +469,13 @@ public class ExtraBackups extends AppCompatActivity {
 
         @Override
         protected Vector<SmsDataPacket> doInBackground(Void... voids) {
-            Vector<SmsDataPacket> tempSmsStorage = new Vector<>(0);
+            Vector<SmsDataPacket> tempSmsStorage = null;
 
             int c = 0;
+
+            if (inboxCursor != null || outboxCursor != null || sentCursor != null || draftCursor != null) {
+                tempSmsStorage = new Vector<>(0);
+            }
 
             try {
                 if (inboxCursor != null && inboxCursor.getCount() > 0) {
@@ -492,8 +513,7 @@ public class ExtraBackups extends AppCompatActivity {
                     }
                     while (draftCursor.moveToNext());
                 }
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -503,13 +523,28 @@ public class ExtraBackups extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(Object... values) {
             super.onProgressUpdate(values);
-            contactsReadProgressBar.setProgress((int)values[0]);
-            contactsSelectedStatus.setText((String)values[1]);
+            smsReadProgressBar.setProgress((int) values[0]);
+            smsSelectedStatus.setText((String) values[1]);
         }
 
         @Override
         protected void onPostExecute(Vector<SmsDataPacket> receivedDataPackets) {
             super.onPostExecute(receivedDataPackets);
+
+            updateSmsList(receivedDataPackets);
+
+            if ((inboxCursor != null || outboxCursor != null || sentCursor != null || draftCursor != null) && smsCount > 0) {
+                smsMainItem.setClickable(true);
+                smsMainItem.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+
+                        new LoadSmsForSelection().execute();
+
+                    }
+                });
+            }
 
             if (inboxCursor != null) {
                 try {
@@ -538,50 +573,41 @@ public class ExtraBackups extends AppCompatActivity {
                 } catch (Exception ignored) {
                 }
             }
-
-            updateSmsList(receivedDataPackets);
-
-            smsMainItem.setClickable(true);
-            smsMainItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-
-                    new LoadSmsForSelection().execute();
-
-                }
-            });
         }
 
     }
 
-    class LoadSmsForSelection extends AsyncTask{
+    class LoadSmsForSelection extends AsyncTask {
 
         ProgressBar progressBar;
         ListView listView;
         Button ok, cancel;
         Vector<SmsDataPacket> dataPackets;
-        View smsSelectorView;
+        View itemSelectorView;
         RelativeLayout topBar, bottomBar;
         ImageView selectAll, clearAll;
+        TextView title;
 
         SmsListAdapter adapter;
 
         public LoadSmsForSelection() {
 
-            smsSelectorView = layoutInflater.inflate(R.layout.sms_selector, null);
-            smsSelectorView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            itemSelectorView = layoutInflater.inflate(R.layout.extra_item_selector, null);
+            itemSelectorView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
             dataPackets = new Vector<>(0);
 
-            this.topBar = smsSelectorView.findViewById(R.id.sms_top_bar);
-            this.selectAll = smsSelectorView.findViewById(R.id.sms_select_all);
-            this.clearAll = smsSelectorView.findViewById(R.id.sms_clear_all);
-            this.progressBar = smsSelectorView.findViewById(R.id.sms_selector_round_progress);
-            this.listView = smsSelectorView.findViewById(R.id.show_sms);
-            this.bottomBar = smsSelectorView.findViewById(R.id.sms_button_bar);
-            this.ok = smsSelectorView.findViewById(R.id.sms_selector_ok);
-            this.cancel = smsSelectorView.findViewById(R.id.sms_selector_cancel);
+            this.topBar = itemSelectorView.findViewById(R.id.extra_item_selector_top_bar);
+            this.selectAll = itemSelectorView.findViewById(R.id.extra_item_selector_select_all);
+            this.clearAll = itemSelectorView.findViewById(R.id.extra_item_selector_clear_all);
+            this.progressBar = itemSelectorView.findViewById(R.id.extra_item_selector_round_progress);
+            this.listView = itemSelectorView.findViewById(R.id.extra_item_selector_item_holder);
+            this.bottomBar = itemSelectorView.findViewById(R.id.extra_item_selector_button_bar);
+            this.ok = itemSelectorView.findViewById(R.id.extra_item_selector_ok);
+            this.cancel = itemSelectorView.findViewById(R.id.extra_item_selector_cancel);
+            this.title = itemSelectorView.findViewById(R.id.extra_item_selector_title);
+
+            title.setText(R.string.sms_selector_label);
 
             ok.setOnClickListener(null);
             cancel.setOnClickListener(new View.OnClickListener() {
@@ -592,7 +618,7 @@ public class ExtraBackups extends AppCompatActivity {
             });
 
             SmsSelectorDialog = new AlertDialog.Builder(ExtraBackups.this)
-                    .setView(smsSelectorView)
+                    .setView(itemSelectorView)
                     .setCancelable(false)
                     .create();
 
@@ -610,7 +636,7 @@ public class ExtraBackups extends AppCompatActivity {
 
         @Override
         protected Object doInBackground(Object[] objects) {
-            for (int i = 0; i < smsList.size(); i++){
+            for (int i = 0; i < smsList.size(); i++) {
                 SmsDataPacket dataPacket = new SmsDataPacket(smsList.get(i));
                 dataPackets.add(dataPacket);
             }
@@ -654,6 +680,196 @@ public class ExtraBackups extends AppCompatActivity {
         }
     }
 
+    class ReadCalls extends AsyncTask<Void, Object, Vector<CallsDataPacket>> {
+
+        int callsCount = 0;
+        Cursor callsCursor;
+        CallsTools callsTools;
+
+        ReadCalls() {
+            callsTools = new CallsTools(ExtraBackups.this);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            callsSelectedStatus.setVisibility(View.VISIBLE);
+            callsReadProgressBar.setVisibility(View.VISIBLE);
+            callsCursor = callsTools.getCallsCursor();
+            if (callsCursor != null) {
+                doBackupCalls.setEnabled(true);
+                callsCount = callsCursor.getCount();
+                callsReadProgressBar.setMax(callsCount);
+            } else {
+                doBackupCalls.setChecked(false);
+                doBackupCalls.setEnabled(false);
+                callsSelectedStatus.setText(R.string.reading_error);
+                callsReadProgressBar.setVisibility(View.GONE);
+            }
+            callsMainItem.setClickable(false);
+            callsList = null;
+        }
+
+        @Override
+        protected Vector<CallsDataPacket> doInBackground(Void... voids) {
+            Vector<CallsDataPacket> tempCallsStorage = null;
+
+            int c = 0;
+
+            if (callsCursor != null)
+                tempCallsStorage = new Vector<>(0);
+
+            try {
+                if (callsCursor != null && callsCursor.getCount() > 0) {
+
+                    callsCursor.moveToFirst();
+                    do {
+                        tempCallsStorage.add(callsTools.getCallsPacket(callsCursor, doBackupCalls.isChecked()));
+                        publishProgress(c, getString(R.string.reading_calls) + "\n" + c++);
+                    }
+                    while (callsCursor.moveToNext());
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return tempCallsStorage;
+        }
+
+        @Override
+        protected void onProgressUpdate(Object... values) {
+            super.onProgressUpdate(values);
+            callsReadProgressBar.setProgress((int) values[0]);
+            callsSelectedStatus.setText((String) values[1]);
+        }
+
+        @Override
+        protected void onPostExecute(Vector<CallsDataPacket> receivedDataPackets) {
+            super.onPostExecute(receivedDataPackets);
+
+            updateCallsList(receivedDataPackets);
+
+            if (callsCursor != null && callsCount > 0) {
+                callsMainItem.setClickable(true);
+                callsMainItem.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+
+                        new LoadCallsForSelection().execute();
+
+                    }
+                });
+            }
+
+        }
+
+    }
+
+    class LoadCallsForSelection extends AsyncTask {
+
+        ProgressBar progressBar;
+        ListView listView;
+        Button ok, cancel;
+        Vector<CallsDataPacket> dataPackets;
+        View itemSelectorView;
+        RelativeLayout topBar, bottomBar;
+        ImageView selectAll, clearAll;
+        TextView title;
+
+        CallsListAdapter adapter;
+
+        public LoadCallsForSelection() {
+
+            itemSelectorView = layoutInflater.inflate(R.layout.extra_item_selector, null);
+            itemSelectorView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            dataPackets = new Vector<>(0);
+
+            this.topBar = itemSelectorView.findViewById(R.id.extra_item_selector_top_bar);
+            this.selectAll = itemSelectorView.findViewById(R.id.extra_item_selector_select_all);
+            this.clearAll = itemSelectorView.findViewById(R.id.extra_item_selector_clear_all);
+            this.progressBar = itemSelectorView.findViewById(R.id.extra_item_selector_round_progress);
+            this.listView = itemSelectorView.findViewById(R.id.extra_item_selector_item_holder);
+            this.bottomBar = itemSelectorView.findViewById(R.id.extra_item_selector_button_bar);
+            this.ok = itemSelectorView.findViewById(R.id.extra_item_selector_ok);
+            this.cancel = itemSelectorView.findViewById(R.id.extra_item_selector_cancel);
+            this.title = itemSelectorView.findViewById(R.id.extra_item_selector_title);
+
+            title.setText(R.string.calls_selector_label);
+
+            ok.setOnClickListener(null);
+            cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CallsSelectorDialog.dismiss();
+                }
+            });
+
+            CallsSelectorDialog = new AlertDialog.Builder(ExtraBackups.this)
+                    .setView(itemSelectorView)
+                    .setCancelable(false)
+                    .create();
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            CallsSelectorDialog.show();
+            super.onPreExecute();
+            topBar.setVisibility(View.GONE);
+            bottomBar.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            for (int i = 0; i < callsList.size(); i++) {
+                CallsDataPacket dataPacket = new CallsDataPacket(callsList.get(i));
+                dataPackets.add(dataPacket);
+            }
+            adapter = new CallsListAdapter(ExtraBackups.this, dataPackets);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            listView.setAdapter(adapter);
+
+            topBar.setVisibility(View.VISIBLE);
+            bottomBar.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            listView.setVisibility(View.VISIBLE);
+
+            ok.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    updateCallsList(dataPackets);
+                    CallsSelectorDialog.dismiss();
+                }
+            });
+
+            selectAll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    adapter.checkAll(true);
+                    adapter.notifyDataSetChanged();
+                }
+            });
+
+            clearAll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    adapter.checkAll(false);
+                    adapter.notifyDataSetChanged();
+                }
+            });
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -676,13 +892,18 @@ public class ExtraBackups extends AppCompatActivity {
         smsReadProgressBar = findViewById(R.id.sms_read_progress);
         doBackupSms = findViewById(R.id.do_backup_sms);
 
+        callsMainItem = findViewById(R.id.extra_item_calls);
+        callsSelectedStatus = findViewById(R.id.calls_selected_status);
+        callsReadProgressBar = findViewById(R.id.calls_read_progress);
+        doBackupCalls = findViewById(R.id.do_backup_calls);
+
         startBackup = findViewById(R.id.startBackupButton);
 
         startBackup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (isAnyAppSelected || doBackupContacts.isChecked() || doBackupSms.isChecked())
-                askForBackupName();
+                    askForBackupName();
             }
         });
 
@@ -704,7 +925,9 @@ public class ExtraBackups extends AppCompatActivity {
                 startActivity(progressActivityStartIntent);
                 try {
                     LocalBroadcastManager.getInstance(ExtraBackups.this).unregisterReceiver(progressReceiver);
-                }catch (Exception e){e.printStackTrace();}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 finish();
             }
         };
@@ -716,7 +939,7 @@ public class ExtraBackups extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
-                if(b) {
+                if (b) {
 
                     new AlertDialog.Builder(ExtraBackups.this)
                             .setTitle(R.string.not_recommended)
@@ -741,15 +964,14 @@ public class ExtraBackups extends AppCompatActivity {
                             .setCancelable(false)
                             .show();
 
-                }
-                else {
+                } else {
                     contactsMainItem.setClickable(false);
                     contactsReadProgressBar.setVisibility(View.GONE);
                     contactsSelectedStatus.setVisibility(View.GONE);
                     try {
                         contactsReader.cancel(true);
+                    } catch (Exception ignored) {
                     }
-                    catch (Exception ignored){}
                 }
             }
         });
@@ -758,22 +980,21 @@ public class ExtraBackups extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
-                if (b){
+                if (b) {
                     try {
                         smsReader = new ReadSms();
                         smsReader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }
-                else {
+                } else {
                     smsMainItem.setClickable(false);
                     smsReadProgressBar.setVisibility(View.GONE);
                     smsSelectedStatus.setVisibility(View.GONE);
                     try {
                         smsReader.cancel(true);
+                    } catch (Exception ignored) {
                     }
-                    catch (Exception ignored){}
                 }
 
             }
@@ -781,18 +1002,44 @@ public class ExtraBackups extends AppCompatActivity {
 
         doBackupSms.setChecked(true);
 
+        doBackupCalls.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+                    try {
+                        callsReader = new ReadCalls();
+                        callsReader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    callsMainItem.setClickable(false);
+                    callsReadProgressBar.setVisibility(View.GONE);
+                    callsSelectedStatus.setVisibility(View.GONE);
+                    try {
+                        callsReader.cancel(true);
+                    } catch (Exception ignored) {
+                    }
+                }
+
+            }
+        });
+
+        doBackupCalls.setChecked(true);
+
     }
 
-    static void setAppList(List<BackupDataPacket> al, boolean isDataAllSelected){
+    static void setAppList(List<BackupDataPacket> al, boolean isDataAllSelected) {
         appList = al;
-        for (BackupDataPacket packet : appList){
+        for (BackupDataPacket packet : appList) {
             if (isAnyAppSelected = packet.APP)
                 break;
         }
         isAllAppSelected = isDataAllSelected;
     }
 
-    void askForBackupName(){
+    void askForBackupName() {
         final EditText editText = new EditText(this);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
@@ -812,14 +1059,15 @@ public class ExtraBackups extends AppCompatActivity {
         alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
-                Button okButton = ((AlertDialog)dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                Button okButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
                 okButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         String backupName = editText.getText().toString().trim().replace(' ', '_');
                         if (!backupName.equals(""))
                             checkOverwrite(backupName, alertDialog);
-                        else Toast.makeText(ExtraBackups.this, getString(R.string.empty), Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(ExtraBackups.this, getString(R.string.empty), Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -828,10 +1076,10 @@ public class ExtraBackups extends AppCompatActivity {
 
     }
 
-    void checkOverwrite(final String name, final AlertDialog alertDialog){
+    void checkOverwrite(final String name, final AlertDialog alertDialog) {
         final File dir = new File(destination + "/" + name);
         final File zip = new File(destination + "/" + name + ".zip");
-        if (dir.exists() || zip.exists()){
+        if (dir.exists() || zip.exists()) {
             new AlertDialog.Builder(ExtraBackups.this)
                     .setTitle(getString(R.string.overwrite))
                     .setMessage(getString(R.string.overwriteMessage))
@@ -846,20 +1094,19 @@ public class ExtraBackups extends AppCompatActivity {
                     })
                     .setNegativeButton(getString(R.string.rename), null)
                     .show();
-        }
-        else {
+        } else {
             alertDialog.dismiss();
             startBackup(name);
         }
     }
 
-    void startBackup(String backupName){
+    void startBackup(String backupName) {
 
         MakeBackupSummary obj = new MakeBackupSummary(backupName);
         obj.execute();
     }
 
-    void dirDelete(String path){
+    void dirDelete(String path) {
         File file = new File(path);
         if (file.exists()) {
             if (!file.isDirectory())
@@ -874,9 +1121,9 @@ public class ExtraBackups extends AppCompatActivity {
     }
 
 
-    String byteToString(byte[] bytes){
+    String byteToString(byte[] bytes) {
         StringBuilder res = new StringBuilder();
-        for (byte b : bytes){
+        for (byte b : bytes) {
             res.append(b).append("_");
         }
         return res.toString();
@@ -895,20 +1142,20 @@ public class ExtraBackups extends AppCompatActivity {
         super.onDestroy();
         try {
             ad.dismiss();
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored){}
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(progressReceiver);
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored){}
         try {
             contactsReader.cancel(true);
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored){}
         try {
             smsReader.cancel(true);
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored){}
     }
 
     @Override
@@ -917,7 +1164,7 @@ public class ExtraBackups extends AppCompatActivity {
         startActivity(new Intent(ExtraBackups.this, BackupActivity.class));
     }
 
-    void updateContactsList(Vector<ContactsDataPacket> newContactsDataPackets){
+    void updateContactsList(Vector<ContactsDataPacket> newContactsDataPackets) {
 
         if (newContactsDataPackets == null) {
             doBackupContacts.setChecked(false);
@@ -929,15 +1176,14 @@ public class ExtraBackups extends AppCompatActivity {
         contactsSelectedStatus.setText(R.string.reading);
         contactsReadProgressBar.setMax(l);
         int n = 0;
-        for (int i = 0; i < l; i++){
+        for (int i = 0; i < l; i++) {
             if (newContactsDataPackets.get(i).selected)
                 n++;
         }
 
-        if (n == 0){
+        if (n == 0) {
             doBackupContacts.setChecked(false);
-        }
-        else {
+        } else {
             contactsList = newContactsDataPackets;
             contactsReadProgressBar.setVisibility(View.GONE);
             contactsSelectedStatus.setText(n + " of " + contactsList.size());
@@ -945,7 +1191,7 @@ public class ExtraBackups extends AppCompatActivity {
 
     }
 
-    void updateSmsList(Vector<SmsDataPacket> newSmsDataPackets){
+    void updateSmsList(Vector<SmsDataPacket> newSmsDataPackets) {
 
         if (newSmsDataPackets == null) {
             doBackupSms.setChecked(false);
@@ -957,21 +1203,44 @@ public class ExtraBackups extends AppCompatActivity {
         smsSelectedStatus.setText(R.string.reading);
         smsReadProgressBar.setMax(l);
         int n = 0;
-        for (int i = 0; i < l; i++){
+        for (int i = 0; i < l; i++) {
             if (newSmsDataPackets.get(i).selected)
                 n++;
         }
 
-        if (n == 0){
+        if (n == 0) {
             doBackupSms.setChecked(false);
-        }
-        else {
+        } else {
             smsList = newSmsDataPackets;
             smsReadProgressBar.setVisibility(View.GONE);
             smsSelectedStatus.setText(n + " of " + smsList.size());
         }
     }
 
-}
+    void updateCallsList(Vector<CallsDataPacket> newCallsDataPackets) {
 
-//9307
+        if (newCallsDataPackets == null) {
+            doBackupCalls.setChecked(false);
+            return;
+        }
+
+        int l = newCallsDataPackets.size();
+        callsReadProgressBar.setVisibility(View.VISIBLE);
+        callsSelectedStatus.setText(R.string.reading);
+        callsReadProgressBar.setMax(l);
+        int n = 0;
+        for (int i = 0; i < l; i++) {
+            if (newCallsDataPackets.get(i).selected)
+                n++;
+        }
+
+        if (n == 0) {
+            doBackupCalls.setChecked(false);
+        } else {
+            callsList = newCallsDataPackets;
+            callsReadProgressBar.setVisibility(View.GONE);
+            callsSelectedStatus.setText(n + " of " + callsList.size());
+        }
+    }
+
+}

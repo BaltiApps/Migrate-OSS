@@ -27,6 +27,7 @@
     <string name="rootAccess">Root access</string>
     <string name="contactsAccess">Contacts access</string>
     <string name="smsAccess">Sms access</string>
+    <string name="callsAccess">Call logs access</string>
     <string name="grantPermissions">Grant permissions</string>
     <string name="requesting">Requesting...</string>
 
@@ -52,6 +53,7 @@
     <string name="wallpapers_label">Wallpapers</string>
     <string name="filtering_duplicates">Filtering\nduplicates</string>
     <string name="reading_sms">Reading sms</string>
+    <string name="reading_calls">Reading calls</string>
     <string name="reading">Reading</string>
     <string name="reading_error">Error reading</string>
 
@@ -61,11 +63,10 @@
     <string name="dont_backup">Don\'t backup</string>
     <string name="backup_contacts_anyway">Backup contacts anyway</string>
 
-    <!--contacts_selector.xml-->
-    <string name="contacts_selector_label">Select contacts</string>
-
-    <!--sms_selector.xml-->
+    <!--extra_item_selector.xml-->
     <string name="sms_selector_label">Select SMS</string>
+    <string name="contacts_selector_label">Select contacts</string>
+    <string name="calls_selector_label">Select calls</string>
 
     <!--progress_layout-->
     <string name="loading">Loading…</string>
@@ -79,6 +80,7 @@
     <string name="combining">Combining all files</string>
     <string name="backing_contacts">Backing up contacts</string>
     <string name="backing_sms">Backing up sms</string>
+    <string name="backing_calls">Backing up calls</string>
     <string name="errorMakingScripts">Error making scripts</string>
     <string name="backupCancelled">Backup cancelled</string>
     <string name="deletingFiles">Deleting files</string>

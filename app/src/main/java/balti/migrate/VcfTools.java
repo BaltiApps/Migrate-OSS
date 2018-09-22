@@ -1,10 +1,13 @@
 package balti.migrate;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -22,7 +25,9 @@ public class VcfTools {
     public Cursor getContactsCursor(){
         Cursor cursor = null;
         try {
-            cursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+                cursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+            }
         }
         catch (Exception e){}
         return cursor;

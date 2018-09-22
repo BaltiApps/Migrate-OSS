@@ -209,6 +209,86 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/small_padding_width"
+                android:background="@color/extraItemBg"
+                android:elevation="10dp"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="@dimen/large_padding_width"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:paddingTop="@dimen/extra_items_padding"
+                android:paddingBottom="@dimen/extra_items_padding"
+                android:id="@+id/extra_item_calls"
+                >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_call_log_icon"
+                    android:padding="@dimen/extra_items_padding"
+                    />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/call_log_label"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="12sp"
+                            android:textColor="@color/colorAccent"
+                            android:id="@+id/calls_selected_status"
+                            android:visibility="gone"
+                            android:gravity="center_horizontal"
+                            />
+
+                        <ProgressBar
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:id="@+id/calls_read_progress"
+                            android:paddingStart="@dimen/small_padding_width"
+                            android:paddingEnd="@dimen/small_padding_width"
+                            android:visibility="gone"
+                            />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/small_padding_width"
+                    android:gravity="center"
+                    android:id="@+id/do_backup_calls"
+                    />
+
+            </LinearLayout>
 
         </LinearLayout>
 

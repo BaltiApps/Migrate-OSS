@@ -17,14 +17,11 @@ import java.util.Vector;
 
 public class SmsListAdapter extends BaseAdapter {
 
-
-    private Context context;
     LayoutInflater layoutInflater;
 
     Vector<SmsDataPacket> smsList;
 
     SmsListAdapter(Context context, Vector<SmsDataPacket> smsList){
-        this.context = context;
         this.smsList = smsList;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         Collections.sort(smsList, new Comparator<SmsDataPacket>() {
