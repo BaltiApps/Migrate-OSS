@@ -44,7 +44,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
     BroadcastReceiver progressReceiver;
 
-    static String APP_LIST_PARCEL_KEY = "app_list";
+    AppUpdate appUpdate;
 
     class AppUpdate extends AsyncTask{
 
@@ -110,7 +110,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         appType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                AppUpdate appUpdate = new AppUpdate();
+                appUpdate = new AppUpdate();
                 appUpdate.execute(i);
             }
 
@@ -174,6 +174,12 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     }
 
     void startExtraBackupsStartingActivity(){
+
+        if (appUpdate.getStatus() == AsyncTask.Status.RUNNING){
+            appUpdate.cancel(true);
+            appList = new Vector<>(0);
+        }
+
         Intent intent = new Intent(BackupActivity.this, ExtraBackups.class);
         startActivity(intent);
         ExtraBackups.setAppList(appList, dataAllSelect.isChecked());

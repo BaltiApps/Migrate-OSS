@@ -56,6 +56,7 @@
     <string name="reading_calls">Reading calls</string>
     <string name="reading">Reading</string>
     <string name="reading_error">Error reading</string>
+    <string name="no_app_selected">No app selected!</string>
 
     <!--ExtraBackups.java-->
     <string name="not_recommended">Not recommended!</string>
