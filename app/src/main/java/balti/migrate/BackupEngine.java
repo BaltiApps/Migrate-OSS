@@ -800,7 +800,7 @@ public class BackupEngine {
 
         StringBuilder errors = new StringBuilder();
 
-        if (!doBackupContacts)
+        if (!doBackupContacts || isCancelled)
             return errors.toString();
 
         (new File(destination + "/" + backupName)).mkdirs();
@@ -962,7 +962,7 @@ public class BackupEngine {
 
         StringBuilder errors = new StringBuilder();
 
-        if (!doBackupSms)
+        if (!doBackupSms || isCancelled)
             return errors.toString();
 
         (new File(destination + "/" + backupName)).mkdirs();
@@ -998,6 +998,10 @@ public class BackupEngine {
                 if (inboxCursor != null && inboxCursor.getCount() > 0) {
                     inboxCursor.moveToFirst();
                     do {
+
+                        if (isCancelled)
+                            return errors.toString();
+
                         smsDataPackets.add(smsTools.getSmsPacket(inboxCursor, true));
                     }
                     while (inboxCursor.moveToNext());
@@ -1012,6 +1016,9 @@ public class BackupEngine {
                 if (outboxCursor != null && outboxCursor.getCount() > 0) {
                     outboxCursor.moveToFirst();
                     do {
+                        if (isCancelled)
+                            return errors.toString();
+
                         smsDataPackets.add(smsTools.getSmsPacket(outboxCursor, true));
                     }
                     while (outboxCursor.moveToNext());
@@ -1026,6 +1033,9 @@ public class BackupEngine {
                 if (sentCursor != null && sentCursor.getCount() > 0) {
                     sentCursor.moveToFirst();
                     do {
+                        if (isCancelled)
+                            return errors.toString();
+
                         smsDataPackets.add(smsTools.getSmsPacket(sentCursor, true));
                     }
                     while (sentCursor.moveToNext());
@@ -1040,6 +1050,9 @@ public class BackupEngine {
                 if (draftCursor != null && draftCursor.getCount() > 0) {
                     draftCursor.moveToFirst();
                     do {
+                        if (isCancelled)
+                            return errors.toString();
+
                         smsDataPackets.add(smsTools.getSmsPacket(draftCursor, true));
                     }
                     while (draftCursor.moveToNext());
@@ -1075,6 +1088,9 @@ public class BackupEngine {
             for (int j = 0; j < n; j++){
 
                 try {
+
+                    if (isCancelled)
+                        return errors.toString();
 
                     SmsDataPacket dataPacket = smsDataPackets.get(j);
 
@@ -1129,7 +1145,7 @@ public class BackupEngine {
 
         StringBuilder errors = new StringBuilder();
 
-        if (!doBackupCalls)
+        if (!doBackupCalls || isCancelled)
             return errors.toString();
 
         (new File(destination + "/" + backupName)).mkdirs();
@@ -1167,6 +1183,9 @@ public class BackupEngine {
                 if (callsCursor != null && callsCursor.getCount() > 0) {
                     callsCursor.moveToFirst();
                     do {
+                        if (isCancelled)
+                            return errors.toString();
+
                         callsDataPackets.add(callsTools.getCallsPacket(callsCursor, true));
                     }
                     while (callsCursor.moveToNext());
@@ -1202,6 +1221,9 @@ public class BackupEngine {
             for (int j = 0; j < n; j++){
 
                 try {
+
+                    if (isCancelled)
+                        return errors.toString();
 
                     CallsDataPacket dataPacket = callsDataPackets.get(j);
 

@@ -144,7 +144,7 @@ public class BackupProgressLayout extends AppCompatActivity {
 
             if (!type.equals(lastType)){
                 lastType = type;
-                progressLog.setText("");
+                progressLog.append("\n\n");
             }
 
             if (type.equals("finished")){
@@ -154,16 +154,16 @@ public class BackupProgressLayout extends AppCompatActivity {
                 catch (Exception e){ e.printStackTrace(); }
 
                 if (intent.hasExtra("errors")){
-                    progressLog.append("\n\n" + getString(R.string.backupFinishedWithErrors));
+                    progressLog.append(getString(R.string.backupFinishedWithErrors));
                     setError(intent.getStringArrayListExtra("errors"));
                     appIcon.setImageResource(R.drawable.ic_error);
                 }
                 else if (intent.getStringExtra("finishedMessage").startsWith(getString(R.string.backupCancelled))){
-                    progressLog.append("\n\n" + getString(R.string.backupCancelled));
+                    progressLog.append(getString(R.string.backupCancelled));
                     appIcon.setImageResource(R.drawable.ic_cancelled);
                 }
                 else {
-                    progressLog.append("\n\n" + getString(R.string.noErrors));
+                    progressLog.append(getString(R.string.noErrors));
                     appIcon.setImageResource(R.drawable.ic_finished);
                 }
 
