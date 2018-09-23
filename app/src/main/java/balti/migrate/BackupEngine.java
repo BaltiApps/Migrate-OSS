@@ -498,8 +498,12 @@ public class BackupEngine {
 
     void unpackBinaries(){
 
-        zipBinaryFilePath = unpackAssetToInternal("zip", "zip");
-        busyboxBinaryFilePath = unpackAssetToInternal("busybox", "busybox");
+        String cpu_abi = Build.SUPPORTED_ABIS[0];
+
+        if (cpu_abi.equals("armeabi-v7a")) {
+            zipBinaryFilePath = unpackAssetToInternal("zip", "zip");
+            busyboxBinaryFilePath = unpackAssetToInternal("busybox", "busybox");
+        }
     }
 
 

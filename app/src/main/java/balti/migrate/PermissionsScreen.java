@@ -1,9 +1,12 @@
 package balti.migrate;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -53,37 +57,95 @@ public class PermissionsScreen extends AppCompatActivity {
                 onResume();
             }
         });
+
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        boolean p[] = isPermissionGranted();
+        final String cpu_abi = Build.SUPPORTED_ABIS[0];
+
+        if (!(cpu_abi.equals("armeabi-v7a"))){
+
+            grantPermissions.setVisibility(View.GONE);
+
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.unsupported_device)
+                    .setMessage(getString(R.string.cpu_arch_is) + "\n" + cpu_abi + "\n\n" + getString(R.string.currently_supported_cpu))
+                    .setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .setNegativeButton(R.string.contact, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            String body = "";
+
+                            body = body + "CPU_ABI: " + cpu_abi + "\n\n";
+                            body = body + "Brand: " + Build.BRAND + "\n";
+                            body = body + "Manufacturer: " + Build.MANUFACTURER + "\n";
+                            body = body + "Model: " + Build.MODEL + "\n";
+                            body = body + "Device: " + Build.DEVICE + "\n";
+                            body = body + "SDK: " + Build.VERSION.SDK_INT + "\n";
+                            body = body + "Board: " + Build.BOARD + "\n";
+                            body = body + "Hardware: " + Build.HARDWARE;
+
+                            Intent email = new Intent(Intent.ACTION_SENDTO);
+                            email.setData(Uri.parse("mailto:"));
+                            email.putExtra(Intent.EXTRA_EMAIL, new String[]{"help.baltiapps@gmail.com"});
+                            email.putExtra(Intent.EXTRA_SUBJECT, "Unsupported device");
+                            email.putExtra(Intent.EXTRA_TEXT, body);
+
+                            try {
+                                startActivity(Intent.createChooser(email, getString(R.string.select_mail)));
+                            }
+                            catch (Exception e)
+                            {
+                                Toast.makeText(PermissionsScreen.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
+        }
+
+        else {
+
+            grantPermissions.setVisibility(View.VISIBLE);
+
+            boolean p[] = isPermissionGranted();
 
 
-        if (!p[0])
-            storagePerm.setVisibility(View.VISIBLE);
-        else storagePerm.setVisibility(View.GONE);
+            if (!p[0])
+                storagePerm.setVisibility(View.VISIBLE);
+            else storagePerm.setVisibility(View.GONE);
 
-        if (!p[1])
-            rootPerm.setVisibility(View.VISIBLE);
-        else rootPerm.setVisibility(View.GONE);
+            if (!p[1])
+                rootPerm.setVisibility(View.VISIBLE);
+            else rootPerm.setVisibility(View.GONE);
 
-        if (!p[2])
-            contactsAccess.setVisibility(View.VISIBLE);
-        else contactsAccess.setVisibility(View.GONE);
+            if (!p[2])
+                contactsAccess.setVisibility(View.VISIBLE);
+            else contactsAccess.setVisibility(View.GONE);
 
-        if (!p[3])
-            smsAccess.setVisibility(View.VISIBLE);
-        else smsAccess.setVisibility(View.GONE);
+            if (!p[3])
+                smsAccess.setVisibility(View.VISIBLE);
+            else smsAccess.setVisibility(View.GONE);
 
-        if (!p[4])
-            callsAccess.setVisibility(View.VISIBLE);
-        else callsAccess.setVisibility(View.GONE);
+            if (!p[4])
+                callsAccess.setVisibility(View.VISIBLE);
+            else callsAccess.setVisibility(View.GONE);
 
-        if (p[0] && p[1] && p[2] && p[3] && p[4])
-            startMainActivity();
+            if (p[0] && p[1] && p[2] && p[3] && p[4]) {
+                grantPermissions.setText(R.string.please_wait);
+                startMainActivity();
+            }
+        }
 
     }
 
