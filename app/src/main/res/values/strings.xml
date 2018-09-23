@@ -116,6 +116,13 @@
     <string name="later">Later</string>
     <string name="never_show">Never show</string>
 
+    <!--AppListAdapter.java-->
+    <string name="packageName">Package :</string>
+    <string name="versionName">Version name :</string>
+    <string name="uid">UID :</string>
+    <string name="sourceDir">Source dir :</string>
+    <string name="dataDir">Data dir :</string>
+
     <!--drawer_menu.xml-->
     <string name="aboutThisApp">About this app</string>
     <string name="about">About</string>

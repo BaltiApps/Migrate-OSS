@@ -3,6 +3,7 @@ package balti.migrate;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,33 +68,53 @@ public class AppListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(final int i, View view, ViewGroup viewGroup) {
+    public View getView(int i, View view, ViewGroup viewGroup) {
 
         view = layoutInflater.inflate(R.layout.app_item, null);
 
-        TextView appName = view.findViewById(R.id.appName);
-        appName.setText(packageManager.getApplicationLabel(appList.get(i).PACKAGE_INFO.applicationInfo));
+        final BackupDataPacket appItem = appList.get(i);
 
-        TextView packageName = view.findViewById(R.id.packageName);
-        packageName.setText(appList.get(i).PACKAGE_INFO.packageName);
+        final TextView appName = view.findViewById(R.id.appName);
+        appName.setText(packageManager.getApplicationLabel(appItem.PACKAGE_INFO.applicationInfo));
 
         ImageView icon = view.findViewById(R.id.appIcon);
-        icon.setImageDrawable(packageManager.getApplicationIcon(appList.get(i).PACKAGE_INFO.applicationInfo));
+        icon.setImageDrawable(packageManager.getApplicationIcon(appItem.PACKAGE_INFO.applicationInfo));
+
+        ImageView appInfo = view.findViewById(R.id.appInfo);
+        appInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(context)
+                        .setTitle(appName.getText())
+                        .setMessage(context.getString(R.string.packageName) + " " + appItem.PACKAGE_INFO.packageName + "\n" +
+                                context.getString(R.string.versionName) + " " + appItem.PACKAGE_INFO.versionName + "\n" +
+                                context.getString(R.string.uid) + " " + appItem.PACKAGE_INFO.applicationInfo.uid + "\n" +
+                                context.getString(R.string.sourceDir) + " " + appItem.PACKAGE_INFO.applicationInfo.sourceDir + "\n" +
+                                context.getString(R.string.dataDir) + " " + appItem.PACKAGE_INFO.applicationInfo.dataDir
+                        )
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show();
+            }
+        });
 
         final CheckBox app, data;
+
         app = view.findViewById(R.id.appCheckbox);
-        app.setChecked(appList.get(i).APP);
+        app.setChecked(appItem.APP);
+
         app.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                appList.get(i).APP = b;
+                appItem.APP = b;
                 onCheck.onCheck(appList);
             }
         });
+
         data = view.findViewById(R.id.dataCheckbox);
-        data.setChecked(appList.get(i).DATA);
+        data.setChecked(appItem.DATA);
 
         final int p = exclusions.returnExclusionState(appList.get(i).PACKAGE_INFO.packageName);
+
         if (p == Exclusions.EXCLUDE_DATA)
             data.setEnabled(false);
         else if (p == Exclusions.EXCLUDE_APP_DATA){
@@ -109,7 +130,7 @@ public class AppListAdapter extends BaseAdapter {
         data.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                appList.get(i).DATA = b;
+                appItem.DATA = b;
                 if (b)
                 {
                     app.setChecked(true);
@@ -125,7 +146,7 @@ public class AppListAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (appList.get(i).APP && appList.get(i).DATA){
+                if (appItem.APP && appItem.DATA){
                         data.setChecked(false);
                         app.setChecked(false);
                 }
@@ -142,7 +163,7 @@ public class AppListAdapter extends BaseAdapter {
             }
         });
 
-        if (appList.get(i).PACKAGE_INFO.applicationInfo.sourceDir.startsWith("/system"))
+        if (appItem.PACKAGE_INFO.applicationInfo.sourceDir.startsWith("/system"))
             appName.setTextColor(Color.RED);
 
         return view;
