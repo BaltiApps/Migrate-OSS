@@ -500,7 +500,7 @@ public class BackupEngine {
 
         String cpu_abi = Build.SUPPORTED_ABIS[0];
 
-        if (cpu_abi.equals("armeabi-v7a")) {
+        if (cpu_abi.equals("armeabi-v7a") || cpu_abi.equals("arm64-v8a")) {
             zipBinaryFilePath = unpackAssetToInternal("zip", "zip");
             busyboxBinaryFilePath = unpackAssetToInternal("busybox", "busybox");
         }

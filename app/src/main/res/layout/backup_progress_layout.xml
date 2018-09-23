@@ -129,7 +129,7 @@
                 android:layout_height="@dimen/button_height"
                 android:layout_gravity="end"
                 android:id="@+id/progressActionButton"
-                android:background="@drawable/log_action_button"
+                android:background="@drawable/cancel_backup"
                 android:foreground="?android:attr/selectableItemBackground"
                 />
 

@@ -99,6 +99,7 @@ public class BackupProgressLayout extends AppCompatActivity {
         progressLog.setMovementMethod(new ScrollingMovementMethod());
 
         actionButton.setText(getString(android.R.string.cancel));
+        actionButton.setBackground(getResources().getDrawable(R.drawable.cancel_backup));
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,6 +149,9 @@ public class BackupProgressLayout extends AppCompatActivity {
             }
 
             if (type.equals("finished")){
+
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
                 try {
                     task.setText(intent.getStringExtra("finishedMessage"));
                 }
@@ -168,6 +172,7 @@ public class BackupProgressLayout extends AppCompatActivity {
                 }
 
                 actionButton.setText(getString(R.string.close));
+                actionButton.setBackground(getResources().getDrawable(R.drawable.log_action_button));
                 actionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

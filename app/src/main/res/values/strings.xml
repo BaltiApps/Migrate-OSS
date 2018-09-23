@@ -34,7 +34,7 @@
     <!--PermissionScreen.java-->
     <string name="unsupported_device">Unsupported device.</string>
     <string name="cpu_arch_is">Your CPU arch is:</string>
-    <string name="currently_supported_cpu">Only <b>armeabi-v7a</b> CPU architectures are currently supported. Please contact via mail to help support your device.</string>
+    <string name="currently_supported_cpu">Only <b>armeabi-v7a, arm64-v8a</b> CPU architectures are currently supported. Please contact via mail to help support your device.</string>
 
     <!--backup_layout.xml-->
     <string name="select_apps">Select apps</string>
