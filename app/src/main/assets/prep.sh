@@ -11,6 +11,7 @@ for FD in `ls /proc/$$/fd`; do
 	fi
 done
 
+echo "ui_print  " >> /proc/self/fd/$OUTFD;
 echo "ui_print Checking parameters..." >> /proc/self/fd/$OUTFD;
 echo "ui_print  " >> /proc/self/fd/$OUTFD;
 

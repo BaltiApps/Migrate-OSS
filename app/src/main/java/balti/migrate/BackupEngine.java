@@ -618,8 +618,6 @@ public class BackupEngine {
             updater_writer.write("run_program(\"/sbin/busybox\", \"mount\", \"/system\");\n");
             updater_writer.write("run_program(\"/sbin/busybox\", \"mount\", \"/data\");\n");
 
-            updater_writer.write("ui_print(\"Making Migrate cache directories...\");\n");
-            updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("package_extract_file(\"" + "prep.sh" + "\", \"" + "/tmp/prep.sh" + "\");\n");
             updater_writer.write("package_extract_file(\"" + "package-data" + "\", \"" + "/tmp/package-data" + "\");\n");
             updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/tmp/prep.sh" + "\");\n");
