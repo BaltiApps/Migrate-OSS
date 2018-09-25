@@ -56,8 +56,8 @@ then
 			else
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
 				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
-				echo "ui_print Free space (/data): $data_free" >> /proc/self/fd/$OUTFD;
-				echo "ui_print Required space is $val" >> /proc/self/fd/$OUTFD;
+				echo "ui_print Free space (/data): $data_free KB" >> /proc/self/fd/$OUTFD;
+				echo "ui_print Required space is $val KB" >> /proc/self/fd/$OUTFD;
 				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Restore cannot progress. You can try:" >> /proc/self/fd/$OUTFD;
 				echo "ui_print * Wiping data" >> /proc/self/fd/$OUTFD;
@@ -79,8 +79,8 @@ then
 			else
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
 				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
-				echo "ui_print Free space (/system): $system_free" >> /proc/self/fd/$OUTFD;
-				echo "ui_print Required space is $val" >> /proc/self/fd/$OUTFD;
+				echo "ui_print Free space (/system): $system_free KB" >> /proc/self/fd/$OUTFD;
+				echo "ui_print Required space is $val KB" >> /proc/self/fd/$OUTFD;
 				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Restore cannot progress. You can try:" >> /proc/self/fd/$OUTFD;
 				echo "ui_print * A new ROM" >> /proc/self/fd/$OUTFD;
