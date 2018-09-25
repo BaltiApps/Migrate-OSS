@@ -68,6 +68,11 @@
     <string name="contacts_not_recommended">Contacts backup and restore is not recommended <b>if you intend to sign in with Google</b> on your next ROM. Restoring contacts will make unnecessary duplicates of same contact entries.</string>
     <string name="dont_backup">Don\'t backup</string>
     <string name="backup_contacts_anyway">Backup contacts anyway</string>
+    <string name="files_size">Estimated files size:</string>
+    <string name="available_space">Available space:</string>
+    <string name="insufficient_storage">Insufficient storage!</string>
+    <string name="required_storage">Migrate needs more free space:</string>
+    <string name="will_be_compressed">We need the estimated size to copy the app files. The final package will take much less space than the estimated size due to compression.</string>
 
     <!--extra_item_selector.xml-->
     <string name="sms_selector_label">Select SMS</string>

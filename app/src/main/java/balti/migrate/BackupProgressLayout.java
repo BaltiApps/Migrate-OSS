@@ -168,6 +168,8 @@ public class BackupProgressLayout extends AppCompatActivity {
                 }
                 else {
                     progressLog.append(getString(R.string.noErrors));
+                    progressBar.setProgress(100);
+                    progress.setText("100%");
                     appIcon.setImageResource(R.drawable.ic_finished);
                 }
 

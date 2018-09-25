@@ -77,6 +77,11 @@ public class BackupEngine {
 
     StartBackup startBackupTask;
 
+    private long systemRequiredSize = 0;
+    private long dataRequiredSize = 0;
+
+    private String cpu_abi;
+
     class StartBackup extends AsyncTask{
 
         boolean doBackupContacts;
@@ -108,12 +113,16 @@ public class BackupEngine {
         }
     }
 
-    BackupEngine(String backupName, int compressionLevel, String destination, Context context) {
+    BackupEngine(String backupName, int compressionLevel, String destination, Context context, long systemRequiredSize, long dataRequiredSize) {
         this.backupName = backupName;
         this.destination = destination;
         this.compressionLevel = compressionLevel;
         (new File(destination)).mkdirs();
         this.context = context;
+
+        this.systemRequiredSize = systemRequiredSize;
+        this.dataRequiredSize = dataRequiredSize;
+        cpu_abi = Build.SUPPORTED_ABIS[0];
 
         getNumberOfFiles = zipProcess = null;
 
@@ -216,6 +225,8 @@ public class BackupEngine {
             if (receivedFiles[0] != null && receivedFiles[1] != null) {
 
                 progressNotif.addAction(cancelAction);
+
+                makePackageData();
 
                 String contactsErr = backupContacts(notificationManager, progressNotif);
                 if (!contactsErr.equals("")) errors.add("CONTACTS: " + contactsErr);
@@ -424,6 +435,28 @@ public class BackupEngine {
         return err;
     }
 
+    void makePackageData(){
+
+        File package_data = new File(destination + "/" + backupName + "/package-data");
+        String contents = "";
+
+        package_data.getParentFile().mkdirs();
+
+        contents += "version 1.0" + "\n";
+        contents += "sdk " + Build.VERSION.SDK_INT + "\n";
+        contents += "cpu_abi " + cpu_abi + "\n";
+        contents += "data_required_size " + dataRequiredSize + "\n";
+        contents += "system_required_size " + systemRequiredSize + "\n";
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(package_data));
+            writer.write(contents);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     void systemAppInstallScript(String sysAppPackageName, String sysApkName, String sysAppPastingDir) {
 
         String scriptName = sysAppPackageName + ".sh";
@@ -497,8 +530,6 @@ public class BackupEngine {
     }
 
     void unpackBinaries(){
-
-        String cpu_abi = Build.SUPPORTED_ABIS[0];
 
         if (cpu_abi.equals("armeabi-v7a") || cpu_abi.equals("arm64-v8a")) {
             zipBinaryFilePath = unpackAssetToInternal("zip", "zip");
@@ -578,9 +609,9 @@ public class BackupEngine {
 
             updater_writer.write("show_progress(0, 0);\n");
             updater_writer.write("ui_print(\" \");\n");
-            updater_writer.write("ui_print(\"----------------------\");\n");
-            updater_writer.write("ui_print(\"Migrate Flash package\");\n");
-            updater_writer.write("ui_print(\"----------------------\");\n");
+            updater_writer.write("ui_print(\"---------------------------------\");\n");
+            updater_writer.write("ui_print(\"      Migrate Flash package      \");\n");
+            updater_writer.write("ui_print(\"---------------------------------\");\n");
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("ui_print(\"Mounting partition...\");\n");
             updater_writer.write("ui_print(\" \");\n");
@@ -590,8 +621,12 @@ public class BackupEngine {
             updater_writer.write("ui_print(\"Making Migrate cache directories...\");\n");
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("package_extract_file(\"" + "prep.sh" + "\", \"" + "/tmp/prep.sh" + "\");\n");
+            updater_writer.write("package_extract_file(\"" + "package-data" + "\", \"" + "/tmp/package-data" + "\");\n");
             updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/tmp/prep.sh" + "\");\n");
             updater_writer.write("run_program(\"" + "/tmp/prep.sh" + "\");\n");
+
+            updater_writer.write("ifelse(is_mounted(\"/data\") && is_mounted(\"/system\"), ui_print(\"Parameters checked!\") && sleep(2s), abort(\"Exiting...\"));\n");
+            updater_writer.write("ui_print(\" \");\n");
 
             updater_writer.write("ui_print(\"Restoring to Migrate cache...\");\n");
             updater_writer.write("ui_print(\" \");\n");
@@ -710,11 +745,11 @@ public class BackupEngine {
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("ui_print(\"Finished!\");\n");
             updater_writer.write("ui_print(\" \");\n");
-            updater_writer.write("ui_print(\"*****\");\n");
             updater_writer.write("ui_print(\"Files have been restored to Migrate cache.\");\n");
+            updater_writer.write("ui_print(\"---------------------------------\");\n");
             updater_writer.write("ui_print(\"PLEASE MAKE SURE THAT YOUR ROM IS ROOTED.\");\n");
             updater_writer.write("ui_print(\"YOU WILL BE PROMPTED TO CONTINUE RESTORE AFTER STARTUP!!\");\n");
-            updater_writer.write("ui_print(\"*****\");\n");
+            updater_writer.write("ui_print(\"---------------------------------\");\n");
             updater_writer.write("ui_print(\" \");\n");
 
             updater_writer.close();
