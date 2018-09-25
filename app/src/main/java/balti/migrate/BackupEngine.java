@@ -80,7 +80,7 @@ public class BackupEngine {
     private long systemRequiredSize = 0;
     private long dataRequiredSize = 0;
 
-    private String cpu_abi;
+    CommonTools commonTools;
 
     class StartBackup extends AsyncTask{
 
@@ -113,16 +113,17 @@ public class BackupEngine {
         }
     }
 
-    BackupEngine(String backupName, int compressionLevel, String destination, Context context, long systemRequiredSize, long dataRequiredSize) {
+    BackupEngine(String backupName, int compressionLevel, String destination, String busyboxBinaryFilePath, Context context, long systemRequiredSize, long dataRequiredSize) {
         this.backupName = backupName;
         this.destination = destination;
         this.compressionLevel = compressionLevel;
         (new File(destination)).mkdirs();
         this.context = context;
 
+        this.busyboxBinaryFilePath = busyboxBinaryFilePath;
+
         this.systemRequiredSize = systemRequiredSize;
         this.dataRequiredSize = dataRequiredSize;
-        cpu_abi = Build.SUPPORTED_ABIS[0];
 
         getNumberOfFiles = zipProcess = null;
 
@@ -132,13 +133,14 @@ public class BackupEngine {
         errors = new ArrayList<>(0);
 
         zipBinaryFilePath = "";
-        busyboxBinaryFilePath = "";
 
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(Calendar.getInstance().getTime());
 
         contactsBackupName = "Contacts_" + timeStamp + ".vcf";
         smsBackupName = "Sms_" + timeStamp + ".sms.db";
         callsBackupName = "Calls_" + timeStamp + ".calls.db";
+
+        commonTools = new CommonTools(context);
     }
 
     NotificationCompat.Builder createNotificationBuilder(){
@@ -444,7 +446,7 @@ public class BackupEngine {
 
         contents += "version 1.0" + "\n";
         contents += "sdk " + Build.VERSION.SDK_INT + "\n";
-        contents += "cpu_abi " + cpu_abi + "\n";
+        contents += "cpu_abi " + Build.SUPPORTED_ABIS[0] + "\n";
         contents += "data_required_size " + dataRequiredSize + "\n";
         contents += "system_required_size " + systemRequiredSize + "\n";
 
@@ -529,43 +531,10 @@ public class BackupEngine {
         }
     }
 
-    void unpackBinaries(){
-
-        if (cpu_abi.equals("armeabi-v7a") || cpu_abi.equals("arm64-v8a")) {
-            zipBinaryFilePath = unpackAssetToInternal("zip", "zip");
-            busyboxBinaryFilePath = unpackAssetToInternal("busybox", "busybox");
-        }
-    }
-
-
-    private String unpackAssetToInternal(String assetFileName, String targetFileName){
-
-        AssetManager assetManager = context.getAssets();
-        File unpackFile = new File(context.getFilesDir(), targetFileName);
-        String path = "";
-
-        int read;
-        byte buffer[] = new byte[4096];
-        try {
-            InputStream inputStream = assetManager.open(assetFileName);
-            FileOutputStream writer = new FileOutputStream(unpackFile);
-            while ((read = inputStream.read(buffer)) > 0) {
-                writer.write(buffer, 0, read);
-            }
-            writer.close();
-            unpackFile.setExecutable(true);
-            path = unpackFile.getAbsolutePath();
-        } catch (IOException e) {
-            e.printStackTrace();
-            path = "";
-        }
-
-        return path;
-    }
-
     File[] makeScripts() {
 
-        unpackBinaries();
+        zipBinaryFilePath = commonTools.unpackAssetToInternal("zip", "zip");
+
         if (busyboxBinaryFilePath.equals("") || zipBinaryFilePath.equals(""))
             return new File[]{null, null};
 
@@ -574,8 +543,8 @@ public class BackupEngine {
         File updater_script = new File(context.getFilesDir(), "updater-script");
         File helper = new File(context.getFilesDir() + "/system/app/MigrateHelper", "MigrateHelper.apk");
 
-        String update_binary = unpackAssetToInternal("update-binary", "update-binary");
-        String prepScript = unpackAssetToInternal("prep.sh", "prep.sh");
+        String update_binary = commonTools.unpackAssetToInternal("update-binary", "update-binary");
+        String prepScript = commonTools.unpackAssetToInternal("prep.sh", "prep.sh");
 
         AssetManager assetManager = context.getAssets();
         int read;

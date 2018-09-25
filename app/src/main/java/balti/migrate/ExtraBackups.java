@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -42,10 +41,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
@@ -118,6 +114,7 @@ public class ExtraBackups extends AppCompatActivity {
         long systemRequiredSize = 0, dataRequiredSize = 0;
 
         String duBinaryFilePath = "";
+        String busyboxBinaryFile = "";
 
         MakeBackupSummary(String backupName) {
             this.backupName = backupName;
@@ -138,11 +135,8 @@ public class ExtraBackups extends AppCompatActivity {
             waitingProgress.setVisibility(View.GONE);
             waitingDetails.setVisibility(View.GONE);
 
-            String cpu_abi = Build.SUPPORTED_ABIS[0];
-
-            if (cpu_abi.equals("armeabi-v7a") || cpu_abi.equals("arm64-v8a")) {
-                duBinaryFilePath = unpackAssetToInternal("du", "du");
-            }
+            busyboxBinaryFile = new CommonTools(ExtraBackups.this).unpackAssetToInternal("busybox", "busybox");
+            duBinaryFilePath = busyboxBinaryFile + " du";
         }
 
         @Override
@@ -299,7 +293,7 @@ public class ExtraBackups extends AppCompatActivity {
                             .putExtra("destination", destination);
 
 
-                    BackupService.backupEngine = new BackupEngine(backupName, main.getInt("compressionLevel", 0), destination, ExtraBackups.this, systemRequiredSize, dataRequiredSize);
+                    BackupService.backupEngine = new BackupEngine(backupName, main.getInt("compressionLevel", 0), destination, busyboxBinaryFile, ExtraBackups.this, systemRequiredSize, dataRequiredSize);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         startForegroundService(bService);
                         BackupService.backupEngine.startBackup(doBackupContacts.isChecked(), contactsList, doBackupSms.isChecked(), smsList,
@@ -1379,31 +1373,6 @@ public class ExtraBackups extends AppCompatActivity {
             callsReadProgressBar.setVisibility(View.GONE);
             callsSelectedStatus.setText(n + " of " + callsList.size());
         }
-    }
-
-    private String unpackAssetToInternal(String assetFileName, String targetFileName){
-
-        AssetManager assetManager = getAssets();
-        File unpackFile = new File(getFilesDir(), targetFileName);
-        String path = "";
-
-        int read;
-        byte buffer[] = new byte[4096];
-        try {
-            InputStream inputStream = assetManager.open(assetFileName);
-            FileOutputStream writer = new FileOutputStream(unpackFile);
-            while ((read = inputStream.read(buffer)) > 0) {
-                writer.write(buffer, 0, read);
-            }
-            writer.close();
-            unpackFile.setExecutable(true);
-            path = unpackFile.getAbsolutePath();
-        } catch (IOException e) {
-            e.printStackTrace();
-            path = "";
-        }
-
-        return path;
     }
 
 }
