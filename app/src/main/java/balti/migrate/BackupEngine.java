@@ -449,6 +449,7 @@ public class BackupEngine {
         contents += "version 1.0" + "\n";
         contents += "backup_name " + backupName + "\n";
         contents += "timestamp " + timeStamp + "\n";
+        contents += "device " + Build.DEVICE + "\n";
         contents += "sdk " + Build.VERSION.SDK_INT + "\n";
         contents += "cpu_abi " + Build.SUPPORTED_ABIS[0] + "\n";
         contents += "data_required_size " + dataRequiredSize + "\n";
