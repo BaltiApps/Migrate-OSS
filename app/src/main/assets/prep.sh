@@ -39,11 +39,11 @@ then
 		if [ "$key" = "cpu_abi" ]; then
 			cpu_arch="$(getprop ro.product.cpu.abi)"
 			if [ "$cpu_arch" = "$val" ]; then
-				echo "ui_print CPU architecture OK" >> /proc/self/fd/$OUTFD;
+				echo "ui_print CPU ABI is OK" >> /proc/self/fd/$OUTFD;
 			else
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
 				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
-				echo "ui_print Required CPU architecture is $val" >> /proc/self/fd/$OUTFD;
+				echo "ui_print Original CPU ABI was $val" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Found: $cpu_arch" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Restoration of some apps MAY FAIL!" >> /proc/self/fd/$OUTFD;
 				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
@@ -98,8 +98,8 @@ then
 			else
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
 				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
-				echo "ui_print Original android version was: $val" >> /proc/self/fd/$OUTFD;
-				echo "ui_print Current ROM android version: $cpu_arch" >> /proc/self/fd/$OUTFD;
+				echo "ui_print Original Android version was: $val" >> /proc/self/fd/$OUTFD;
+				echo "ui_print Current ROM Android version: $cpu_arch" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Restoration of some apps MAY FAIL!" >> /proc/self/fd/$OUTFD;
 				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;

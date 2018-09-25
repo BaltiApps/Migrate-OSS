@@ -50,6 +50,8 @@ public class BackupEngine {
     private String finalMessage = "";
     private ArrayList<String> errors;
 
+    String timeStamp = "";
+
     private boolean doBackupContacts = false;
     private Vector<ContactsDataPacket> contactsDataPackets;
     private String contactsBackupName;
@@ -80,7 +82,7 @@ public class BackupEngine {
     private long systemRequiredSize = 0;
     private long dataRequiredSize = 0;
 
-    CommonTools commonTools;
+    private CommonTools commonTools;
 
     class StartBackup extends AsyncTask{
 
@@ -134,7 +136,7 @@ public class BackupEngine {
 
         zipBinaryFilePath = "";
 
-        String timeStamp = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(Calendar.getInstance().getTime());
+        timeStamp = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(Calendar.getInstance().getTime());
 
         contactsBackupName = "Contacts_" + timeStamp + ".vcf";
         smsBackupName = "Sms_" + timeStamp + ".sms.db";
@@ -445,6 +447,8 @@ public class BackupEngine {
         package_data.getParentFile().mkdirs();
 
         contents += "version 1.0" + "\n";
+        contents += "backup_name " + backupName + "\n";
+        contents += "timestamp " + timeStamp + "\n";
         contents += "sdk " + Build.VERSION.SDK_INT + "\n";
         contents += "cpu_abi " + Build.SUPPORTED_ABIS[0] + "\n";
         contents += "data_required_size " + dataRequiredSize + "\n";
