@@ -293,7 +293,7 @@ public class ExtraBackups extends AppCompatActivity {
                             .putExtra("destination", destination);
 
 
-                    BackupService.backupEngine = new BackupEngine(backupName, main.getInt("compressionLevel", 0), destination, busyboxBinaryFile, ExtraBackups.this, systemRequiredSize, dataRequiredSize);
+                    BackupService.backupEngine = new BackupEngine(backupName, main.getInt("compressionLevel", 0), destination, busyboxBinaryFile, ExtraBackups.this, systemRequiredSize, dataRequiredSize, true);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         startForegroundService(bService);
                         BackupService.backupEngine.startBackup(doBackupContacts.isChecked(), contactsList, doBackupSms.isChecked(), smsList,

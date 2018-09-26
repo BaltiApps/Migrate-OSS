@@ -32,6 +32,10 @@
             android:screenOrientation="portrait"
             />
 
+        <activity android:name=".HowToRestore"
+            android:screenOrientation="portrait"
+            />
+
         <activity android:name=".ExtraBackups"
             android:screenOrientation="portrait"
             />

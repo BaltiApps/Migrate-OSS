@@ -12,4 +12,5 @@
     <dimen name="large_padding_width">10dp</dimen>
     <dimen name="app_icon_dimen">40dp</dimen>
     <dimen name="extra_items_padding">15dp</dimen>
+    <dimen name="restore_layouts_padding">30dp</dimen>
 </resources>

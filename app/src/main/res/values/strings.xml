@@ -95,7 +95,7 @@
     <string name="errorMakingScripts">Error making scripts</string>
     <string name="backupCancelled">Backup cancelled</string>
     <string name="deletingFiles">Deleting files</string>
-    <string name="backupFinishedWithErrors">Backup finished with errors</string>
+    <string name="backupFinishedWithErrors">Backup finished with errors.</string>
     <string name="notEnoughSpace">Backup incomplete. Not enough storage space.</string>
 
     <!--BackupActivity.java-->
@@ -132,6 +132,52 @@
     <string name="uid">UID :</string>
     <string name="sourceDir">Source dir :</string>
     <string name="dataDir">Data dir :</string>
+
+    <!--how_to_restore.xml-->
+    <string name="prev">Previous</string>
+    <string name="got_it">Got it!</string>
+
+    <!--restore_0.xml-->
+    <string name="step_0">Step 0 -\nTake a backup!</string>
+    <string name="step_0_desc">(obviously..)</string>
+
+    <!--restore_1.xml-->
+    <string name="step_1">Step 1 -\nFlash a new ROM</string>
+    <string name="step_1_desc">
+        1. Boot into TWRP\n
+        2. Flash your new ROM + GApps (optional)\n
+        3. Wipe data <b>(Strongly recommended!)</b>\n
+        4. <b>Important: Flash root!</b> Magisk is recommended.\n
+    </string>
+
+    <!--restore_2.xml-->
+    <string name="step_2">Step 2 -\nFlash backup zip!</string>
+    <string name="step_2_desc">
+        By default, your created backup zip file should be under:\n
+        <b>Internal storage -> Migrate</b>\n\n
+        In TWRP main menu, click INSTALL -> navigate to the backup file zip and install it.
+    </string>
+
+    <!--restore_3.xml-->
+    <string name="step_3">Step 3 -\nSetup your new ROM</string>
+    <string name="step_3_desc">
+        1. Reboot to system.\n
+        2. Complete any GApps/ROM setup.
+    </string>
+
+    <!--restore_4.xml-->
+    <string name="step_4">Step 4 -\nRestore apps and data.</string>
+    <string name="step_4_desc_1">You should be able to see a notification as shown. Open the notification.</string>
+    <string name="step_4_desc_2">If you don\'t see the notification, open app drawer and open \"Migrate helper\". You should get a screen like this:</string>
+    <string name="step_4_desc_3">
+        <b>RESTORE ALL APPS AND DATA</b>: Give root permission once and relax. All your apps and data will be restored.\n\n
+        <b>CHOOSE WHAT TO RESTORE</b>: Select which apps you would finally like to restore.\n\n
+        <b>UNINSTALL OR DISABLE</b>: Select if you want do delete all restored data and uninstall the app.\n\n
+    </string>
+
+    <!--restore_5.xml-->
+    <string name="step_5">Step 5 -\nEnjoy!</string>
+    <string name="step_5_desc">Enjoy your new ROM!</string>
 
     <!--drawer_menu.xml-->
     <string name="aboutThisApp">About this app</string>

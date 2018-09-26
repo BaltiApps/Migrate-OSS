@@ -46,6 +46,8 @@ public class BackupProgressLayout extends AppCompatActivity {
 
     String lastType = "";
 
+    ArrayList<String> allErrors;
+
     class SetAppIcon extends AsyncTask<String, Void, Bitmap>{
 
 
@@ -86,6 +88,8 @@ public class BackupProgressLayout extends AppCompatActivity {
         setContentView(R.layout.backup_progress_layout);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        allErrors = new ArrayList<>(0);
 
         task = findViewById(R.id.progressTask);
         appIcon = findViewById(R.id.app_icon);
@@ -150,37 +154,43 @@ public class BackupProgressLayout extends AppCompatActivity {
 
             if (type.equals("finished")){
 
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-                try {
-                    task.setText(intent.getStringExtra("finishedMessage"));
-                }
-                catch (Exception e){ e.printStackTrace(); }
-
-                if (intent.hasExtra("errors")){
-                    progressLog.append(getString(R.string.backupFinishedWithErrors));
-                    setError(intent.getStringArrayListExtra("errors"));
-                    appIcon.setImageResource(R.drawable.ic_error);
-                }
-                else if (intent.getStringExtra("finishedMessage").startsWith(getString(R.string.backupCancelled))){
-                    progressLog.append(getString(R.string.backupCancelled));
-                    appIcon.setImageResource(R.drawable.ic_cancelled);
-                }
-                else {
-                    progressLog.append(getString(R.string.noErrors));
-                    progressBar.setProgress(100);
-                    progress.setText("100%");
-                    appIcon.setImageResource(R.drawable.ic_finished);
+                if (intent.hasExtra("errors")) {
+                    allErrors.addAll(intent.getStringArrayListExtra("errors"));
                 }
 
-                actionButton.setText(getString(R.string.close));
-                actionButton.setBackground(getResources().getDrawable(R.drawable.log_action_button));
-                actionButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        finishThis();
+                if (intent.getBooleanExtra("final_process", true)) {
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+                    try {
+                        task.setText(intent.getStringExtra("finishedMessage"));
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                });
+
+                    if (intent.hasExtra("errors")) {
+                        progressLog.append(getString(R.string.backupFinishedWithErrors));
+                        setError(allErrors);
+                        appIcon.setImageResource(R.drawable.ic_error);
+                    } else if (intent.getStringExtra("finishedMessage").startsWith(getString(R.string.backupCancelled))) {
+                        progressLog.append(getString(R.string.backupCancelled));
+                        appIcon.setImageResource(R.drawable.ic_cancelled);
+                    } else {
+                        progressLog.append(getString(R.string.noErrors));
+                        progressBar.setProgress(100);
+                        progress.setText("100%");
+                        appIcon.setImageResource(R.drawable.ic_finished);
+                    }
+
+                    actionButton.setText(getString(R.string.close));
+                    actionButton.setBackground(getResources().getDrawable(R.drawable.log_action_button));
+                    actionButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            finishThis();
+                        }
+                    });
+                }
+
             }
             else {
 

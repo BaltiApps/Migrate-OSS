@@ -81,6 +81,7 @@ public class BackupEngine {
 
     private long systemRequiredSize = 0;
     private long dataRequiredSize = 0;
+    private boolean finalProcess = true;
 
     private CommonTools commonTools;
 
@@ -115,7 +116,7 @@ public class BackupEngine {
         }
     }
 
-    BackupEngine(String backupName, int compressionLevel, String destination, String busyboxBinaryFilePath, Context context, long systemRequiredSize, long dataRequiredSize) {
+    BackupEngine(String backupName, int compressionLevel, String destination, String busyboxBinaryFilePath, Context context, long systemRequiredSize, long dataRequiredSize, boolean finalProcess) {
         this.backupName = backupName;
         this.destination = destination;
         this.compressionLevel = compressionLevel;
@@ -126,6 +127,7 @@ public class BackupEngine {
 
         this.systemRequiredSize = systemRequiredSize;
         this.dataRequiredSize = dataRequiredSize;
+        this.finalProcess = finalProcess;
 
         getNumberOfFiles = zipProcess = null;
 
@@ -299,7 +301,7 @@ public class BackupEngine {
             }
 
             String zipErr = zipAll(notificationManager, progressNotif);
-            if (!zipErr.equals("")) errors.add("ZIP: " + zipErr);
+            if (!zipErr.trim().equals("")) errors.add("ZIP: " + zipErr);
 
         } catch (Exception e) {
             if (!isCancelled){
@@ -323,7 +325,8 @@ public class BackupEngine {
 
         notificationManager.cancel(NOTIFICATION_ID);
 
-        activityProgressIntent.putExtra("type", "finished").putExtra("finishedMessage", finalMessage.trim() + "\n(" + calendarDifference(startMillis, endMillis) + ")");
+        activityProgressIntent.putExtra("type", "finished").putExtra("finishedMessage", finalMessage.trim())
+                .putExtra("total_time", endMillis - startMillis).putExtra("final_process", finalProcess);
         if (errors.size() > 0)
             activityProgressIntent.putStringArrayListExtra("errors", errors);
         activityPendingIntent = PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -336,15 +339,16 @@ public class BackupEngine {
         notificationManager.notify(NOTIFICATION_ID + 1, progressNotif.build());
 
 
-        actualProgressBroadcast.putExtra("type","finished")
-                .putExtra("finishedMessage", finalMessage.trim() + "\n(" + calendarDifference(startMillis, endMillis) + ")");
+        actualProgressBroadcast.putExtra("type","finished").putExtra("finishedMessage", finalMessage.trim())
+                .putExtra("total_time", endMillis - startMillis).putExtra("final_process", finalProcess);
         if (errors.size() > 0) {
             actualProgressBroadcast.putStringArrayListExtra("errors", errors);
         }
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
-        context.stopService(new Intent(context, BackupService.class));
+        if (finalProcess)
+            context.stopService(new Intent(context, BackupService.class));
     }
 
     private String zipAll(NotificationManager notificationManager, NotificationCompat.Builder progressNotif){
@@ -412,6 +416,9 @@ public class BackupEngine {
                     }
                 }
 
+                if (l.startsWith("zip I/O error:") || l.startsWith("zip error:"))
+                    err = err + l + "\n";
+
                 int pr = c*100 / n;
                 if (pr == 100) pr = 99;
                 actualProgressBroadcast.putExtra("type", "zip_progress")
@@ -428,9 +435,6 @@ public class BackupEngine {
                 err = err + l + "\n";
             }
 
-            if (c < n){
-                finalMessage = context.getString(R.string.notEnoughSpace) + "\n";
-            }
         }
         catch (Exception e) {
             if (!isCancelled)

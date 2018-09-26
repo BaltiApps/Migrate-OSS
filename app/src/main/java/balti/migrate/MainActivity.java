@@ -70,6 +70,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         restore = findViewById(R.id.restoreMain);
+        restore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, HowToRestore.class));
+            }
+        });
 
         drawerButton = findViewById(R.id.drawerButton);
         drawerButton.setOnClickListener(new View.OnClickListener() {
