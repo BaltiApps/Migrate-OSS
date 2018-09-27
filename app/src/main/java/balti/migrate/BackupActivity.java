@@ -46,6 +46,8 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
     AppUpdate appUpdate;
 
+    int totalApps = 0;
+
     class AppUpdate extends AsyncTask{
 
         @Override
@@ -125,7 +127,6 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //askForBackupName();
                 startExtraBackupsStartingActivity();
             }
         });
@@ -182,7 +183,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
         Intent intent = new Intent(BackupActivity.this, ExtraBackups.class);
         startActivity(intent);
-        ExtraBackups.setAppList(appList, dataAllSelect.isChecked());
+        ExtraBackups.setAppList(appList, dataAllSelect.isChecked(), totalApps);
         finish();
     }
 
@@ -241,13 +242,19 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         appList = backupDataPackets;
         boolean app, data;
         boolean enable = false;
+
+        totalApps = 0;
+
         if (appList.size() > 0)
             app = data = true;
         else app = data = false;
         for (int i = 0; i < backupDataPackets.size(); i++) {
-            app = app && appList.elementAt(i).APP;
-            data = data && appList.elementAt(i).DATA;
-            enable = enable || appList.elementAt(i).APP || appList.elementAt(i).DATA;
+            BackupDataPacket packet = appList.elementAt(i);
+            app = app && packet.APP;
+            data = data && packet.DATA;
+            enable = enable || packet.APP || packet.DATA;
+            if (packet.APP || packet.DATA)
+                totalApps++;
         }
 
         setNextButtonEnabled(enable);

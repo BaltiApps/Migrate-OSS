@@ -41,6 +41,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -56,7 +57,6 @@ public class ExtraBackups extends AppCompatActivity {
 
 
     private String destination;
-    private static boolean isAnyAppSelected = false;
     private static boolean isAllAppSelected = false;
     private static List<BackupDataPacket> appList;
 
@@ -96,12 +96,19 @@ public class ExtraBackups extends AppCompatActivity {
     private LayoutInflater layoutInflater;
 
     private SharedPreferences main;
-    private BroadcastReceiver progressReceiver;
+    private BroadcastReceiver progressReceiver, serviceStartedReceiver;
     private AlertDialog ad;
     private PackageManager pm;
 
-    MakeBackupSummary makeBackupSummary;
+    private long MAX_TWRP_ZIP_SIZE = 4194300;
 
+    MakeBackupSummary makeBackupSummary;
+    static int totalSelectedApps = 0;
+
+    Vector<BackupBatch> backupBatches;
+    Vector<File> backupSummaries;
+    String backupName = "generic_backup_name";
+    String busyboxBinaryFile = "";
 
     class MakeBackupSummary extends AsyncTask<Void, String, Object[]> {
 
@@ -110,11 +117,11 @@ public class ExtraBackups extends AppCompatActivity {
         TextView waitingHead, waitingProgress, waitingDetails;
         Button cancel;
 
-        long totalSize = 0;
-        long systemRequiredSize = 0, dataRequiredSize = 0;
+        long totalSize = 0, availableKb, totalMemory = 0;
+
+        int parts = 1;
 
         String duBinaryFilePath = "";
-        String busyboxBinaryFile = "";
 
         MakeBackupSummary(String backupName) {
             this.backupName = backupName;
@@ -124,11 +131,16 @@ public class ExtraBackups extends AppCompatActivity {
             waitingDetails = dialogView.findViewById(R.id.waiting_details);
             cancel = dialogView.findViewById(R.id.waiting_cancel);
 
+            backupBatches = new Vector<>(0);
+
             cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     cancel(true);
-                    ad.dismiss();
+                    try {
+                        ad.dismiss();
+                    }
+                    catch (Exception ignored){}
                 }
             });
 
@@ -149,22 +161,220 @@ public class ExtraBackups extends AppCompatActivity {
                     .create();
 
             ad.show();
-            waitingHead.setText(R.string.reading_data);
         }
 
         @Override
         protected Object[] doInBackground(Void... voids) {
 
-            File backupSummary = new File(getFilesDir(), "backup_summary");
+            int length = appList.size();
+            publishProgress(getString(R.string.filtering_apps), "", "");
+            for (int i = 0, c = 0; i < length; i++){
+                BackupDataPacket packet = appList.get(c);
+                if (packet.APP || packet.DATA){
+                    c++;
+                }
+                else {
+                    appList.remove(c);
+                }
+            }
+
+            Vector<BackupDataPacketWithSize> appsWithSize = new Vector<>(0);
+            long totalBackupSize = 0;
 
             try {
 
-                BufferedWriter writer = new BufferedWriter(new FileWriter(backupSummary.getAbsolutePath()));
-                int n = appList.size();
+                publishProgress(getString(R.string.calculating_size), "", "");
 
                 Process memoryFinder = Runtime.getRuntime().exec("su");
                 BufferedReader processReader = new BufferedReader( new InputStreamReader(memoryFinder.getInputStream()));
                 BufferedWriter processWriter = new BufferedWriter(new OutputStreamWriter(memoryFinder.getOutputStream()));
+
+                int n = appList.size();
+                for (int i = 0; i < n; i++){
+
+                    BackupDataPacket packet = appList.get(i);
+
+                    long dataSize = 0, systemSize = 0;
+
+                    String apkPath = packet.PACKAGE_INFO.applicationInfo.sourceDir;
+                    String dataPath = "NULL";
+                    if (packet.DATA)
+                        dataPath = packet.PACKAGE_INFO.applicationInfo.dataDir;
+
+                    processWriter.write(duBinaryFilePath + " -s " + apkPath + "\n");
+                    processWriter.flush();
+                    String memoryReaderRes;
+                    try {
+                        long s;
+                        memoryReaderRes = processReader.readLine();
+                        s = Long.parseLong(memoryReaderRes.substring(0, memoryReaderRes.indexOf("/")).trim());
+                        if (apkPath.startsWith("/system"))
+                            systemSize += s;
+                        else dataSize += s;
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    if (!dataPath.equals("NULL")){
+                        processWriter.write( duBinaryFilePath + " -s " + dataPath + "\n");
+                        processWriter.flush();
+                        try {
+                            memoryReaderRes = processReader.readLine();
+                            dataSize += Long.parseLong(memoryReaderRes.substring(0, memoryReaderRes.indexOf("/")).trim());
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+                    totalBackupSize = totalBackupSize + dataSize + systemSize;
+
+                    publishProgress(getString(R.string.calculating_size),
+                            (i + 1) + " of " + n,
+                            getString(R.string.files_size) + " " + getHumanReadableStorageSpace(totalBackupSize) + "\n");
+
+                    appsWithSize.add(new BackupDataPacketWithSize(packet, dataSize, systemSize));
+
+                }
+
+                processWriter.write("exit\n");
+                processWriter.flush();
+
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                return new Object[]{false, getString(R.string.error_calculating_size), e.getMessage()};
+            }
+
+            publishProgress(getString(R.string.making_batches), "", "");
+
+            StatFs statFs = new StatFs(destination);
+            availableKb = statFs.getBlockSizeLong() * statFs.getAvailableBlocksLong();
+            availableKb = availableKb / 1024;
+
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new FileReader("/proc/meminfo"));
+
+                String line;
+                while ((line = bufferedReader.readLine()) != null){
+                    String parts[] = line.trim().split("\\s+");
+                    if (parts[0].equals("MemTotal:"))
+                    {
+                        totalMemory = Long.parseLong(parts[1]);
+                        break;
+                    }
+                }
+
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                return new Object[]{false, getString(R.string.error_detecting_memory), e.getMessage()};
+            }
+
+            if (totalMemory > MAX_TWRP_ZIP_SIZE)
+                totalMemory = MAX_TWRP_ZIP_SIZE;
+
+            totalSize = totalBackupSize;
+
+            if (totalBackupSize > availableKb){
+                return new Object[]{true};
+            }
+
+            parts = (int) Math.ceil((totalBackupSize*1.0)/totalMemory);
+
+            for (int i = 1; i <= parts; i++) {
+
+                Vector<BackupDataPacketWithSize> batchPackets = new Vector<>(0);
+                long batchSize = 0, dataSize = 0, systemSize = 0;
+
+                for (int j = 0; j < appsWithSize.size() && batchSize < totalMemory; j++){
+
+                    BackupDataPacketWithSize packetWithSize = appsWithSize.get(j);
+
+                    if (batchSize + packetWithSize.totalSize <= totalMemory){
+                        batchPackets.add(packetWithSize);
+                        batchSize += packetWithSize.totalSize;
+
+                        dataSize += packetWithSize.dataSize;
+                        systemSize += packetWithSize.systemSize;
+
+                        appsWithSize.remove(j);
+                        j--;
+                    }
+
+                }
+
+                if (batchSize == 0 && appsWithSize.size() != 0){
+                    // signifies that all apps were considered but none could be added to a batch due to memory constraints
+
+                    return new Object[]{false, getString(R.string.cannot_split), concatNames(appsWithSize)};
+                }
+                else {
+                    backupBatches.add(new BackupBatch(batchPackets, dataSize, systemSize));
+                }
+            }
+
+            backupSummaries = new Vector<>(0);
+
+            for (int j = 0; j < backupBatches.size(); j++){
+
+                File backupSummary = new File(getFilesDir(), "backup_summary_part"+j);
+                try {
+
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(backupSummary.getAbsolutePath()));
+
+                    Vector<BackupDataPacketWithSize> backupDataPacketWithSizes = backupBatches.get(j).appListWithSize;
+
+                    int n = backupDataPacketWithSizes.size();
+
+                    for (int i = 0; i < n; i++) {
+
+                        BackupDataPacket packet = backupDataPacketWithSizes.get(i).packet;
+
+                        if (packet.APP) {
+
+                            String appName = pm.getApplicationLabel(packet.PACKAGE_INFO.applicationInfo).toString();
+                            appName = appName.replace(' ', '_');
+
+                            String packageName = packet.PACKAGE_INFO.packageName;
+                            String apkPath = packet.PACKAGE_INFO.applicationInfo.sourceDir;
+                            String dataPath = "NULL";
+                            if (packet.DATA)
+                                dataPath = packet.PACKAGE_INFO.applicationInfo.dataDir;
+                            String versionName = packet.PACKAGE_INFO.versionName;
+
+                            String batchDisplay = (backupBatches.size() > 1)? getString(R.string.batch) + " " + (j+1) : "";
+                            publishProgress(getString(R.string.reading_data), batchDisplay, (i + 1) + " of " + n);
+
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            Bitmap icon = getBitmapFromDrawable(pm.getApplicationIcon(packet.PACKAGE_INFO.applicationInfo));
+                            icon.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                            String appIcon = byteToString(stream.toByteArray());
+
+                            String line = appName + " " + packageName + " " + apkPath + " " + dataPath + " " + appIcon + " " + versionName;
+
+                            writer.write(line + "\n");
+
+                        }
+
+                    }
+                    writer.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return new Object[]{false, getString(R.string.error_reading_backup_data), e.getMessage()};
+                }
+
+                backupSummaries.add(backupSummary);
+
+            }
+
+
+
+            /*try {
+
+                BufferedWriter writer = new BufferedWriter(new FileWriter(backupSummary.getAbsolutePath()));
+                int n = appList.size();
 
                 long max = 0;
 
@@ -182,45 +392,11 @@ public class ExtraBackups extends AppCompatActivity {
                             dataPath = appList.get(i).PACKAGE_INFO.applicationInfo.dataDir;
                         String versionName = appList.get(i).PACKAGE_INFO.versionName;
 
-                        processWriter.write(duBinaryFilePath + " -s " + apkPath + "\n");
-                        processWriter.flush();
-                        long size = 0;
-                        String memoryReaderRes;
-                        try {
-                            memoryReaderRes = processReader.readLine();
-                            size = Long.parseLong(memoryReaderRes.substring(0, memoryReaderRes.indexOf("/")).trim());
-                            if (apkPath.startsWith("/system")){
-                                systemRequiredSize += size;
-                            }
-                            else {
-                                dataRequiredSize += size;
-                            }
-                        }
-                        catch (Exception e){
-                            e.printStackTrace();
-                        }
 
-                        if (!dataPath.equals("NULL")){
-                            processWriter.write( duBinaryFilePath + " -s " + dataPath + "\n");
-                            processWriter.flush();
-                            long dl = 0;
-                            try {
-                                memoryReaderRes = processReader.readLine();
-                                dl = Long.parseLong(memoryReaderRes.substring(0, memoryReaderRes.indexOf("/")).trim());
-                                size += dl;
-                                dataRequiredSize += dl;
-                            }
-                            catch (Exception e){
-                                e.printStackTrace();
-                            }
-                        }
-
-                        if (size > max)
-                            max = size;
 
                         totalSize += size;
 
-                        publishProgress((i + 1) + " of " + n, getString(R.string.files_size) + " " + getHumanReadableStorageSpace(totalSize) + "\n");
+                        publishProgress(getString(R.string.reading_data), (i + 1) + " of " + n, getString(R.string.files_size) + " " + getHumanReadableStorageSpace(totalSize) + "\n");
 
                         ByteArrayOutputStream stream = new ByteArrayOutputStream();
                         Bitmap icon = getBitmapFromDrawable(pm.getApplicationIcon(appList.get(i).PACKAGE_INFO.applicationInfo));
@@ -234,8 +410,6 @@ public class ExtraBackups extends AppCompatActivity {
                     }
 
                 }
-                processWriter.write("exit\n");
-                processWriter.flush();
                 writer.close();
 
                 totalSize += max;
@@ -244,16 +418,31 @@ public class ExtraBackups extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
                 return new Object[]{false, e.getMessage()};
+            }*/
+
+            return new Object[]{true};
+        }
+
+        String concatNames(Vector<BackupDataPacketWithSize> backupDataPacketWithSizes){
+
+            String res = "";
+
+            for (BackupDataPacketWithSize backupDataPacketWithSize : backupDataPacketWithSizes){
+                res = res + pm.getApplicationLabel(backupDataPacketWithSize.packet.PACKAGE_INFO.applicationInfo) + "\n";
             }
+
+            return res.trim();
+
         }
 
         @Override
         protected void onProgressUpdate(String... strings) {
             super.onProgressUpdate(strings);
             waitingProgress.setVisibility(View.VISIBLE);
-            waitingProgress.setText(strings[0]);
             waitingDetails.setVisibility(View.VISIBLE);
-            waitingDetails.setText(strings[1]);
+            waitingHead.setText(strings[0].trim());
+            waitingProgress.setText(strings[1].trim());
+            waitingDetails.setText(strings[2].trim());
         }
 
         @SuppressLint("SetTextI18n")
@@ -261,21 +450,34 @@ public class ExtraBackups extends AppCompatActivity {
         protected void onPostExecute(Object[] o) {
             super.onPostExecute(o);
 
-            waitingHead.setText(R.string.just_a_minute);
+            /*waitingHead.setText(R.string.just_a_minute);
             waitingProgress.setText(R.string.starting_engine);
 
             cancel.setVisibility(View.GONE);
 
-            StatFs statFs = new StatFs(destination);
-            long availableKb = statFs.getBlockSizeLong() * statFs.getAvailableBlocksLong();
-            availableKb = availableKb / 1024;
-
             waitingDetails.setText(getString(R.string.files_size) + " " + getHumanReadableStorageSpace(totalSize) + "\n" +
-                    getString(R.string.available_space) + " " + getHumanReadableStorageSpace(availableKb));
+                    getString(R.string.available_space) + " " + getHumanReadableStorageSpace(availableKb));*/
 
-            if (availableKb > totalSize) {
+            if ((boolean) o[0] && availableKb < totalSize) {
 
-                if ((boolean) o[0]) {
+                try {
+                    ad.dismiss();
+                }
+                catch (Exception ignored){}
+
+                new AlertDialog.Builder(ExtraBackups.this)
+                        .setTitle(R.string.insufficient_storage)
+                        .setMessage(getString(R.string.files_size) + " " + getHumanReadableStorageSpace(totalSize) + "\n" +
+                                getString(R.string.available_space) + " " + getHumanReadableStorageSpace(availableKb) + "\n\n" +
+                                getString(R.string.required_storage) + " " + getHumanReadableStorageSpace(totalSize - availableKb) + "\n\n" +
+                                getString(R.string.will_be_compressed))
+                        .setNegativeButton(R.string.close, null)
+                        .setIcon(R.drawable.ic_combine)
+                        .show();
+
+
+
+                /*if ((boolean) o[0]) {
 
                     try {
                         contactsReader.cancel(true);
@@ -306,28 +508,28 @@ public class ExtraBackups extends AppCompatActivity {
 
                 } else {
                     Toast.makeText(ExtraBackups.this, (String) o[1], Toast.LENGTH_SHORT).show();
-                }
+                }*/
 
             }
-
-            else {
-
-                try {
-                    ad.dismiss();
-                }
-                catch (Exception ignored){}
+            else if (!(boolean) o[0]){
 
                 new AlertDialog.Builder(ExtraBackups.this)
-                        .setTitle(R.string.insufficient_storage)
-                        .setMessage(getString(R.string.files_size) + " " + getHumanReadableStorageSpace(totalSize) + "\n" +
-                                getString(R.string.available_space) + " " + getHumanReadableStorageSpace(availableKb) + "\n\n" +
-                                getString(R.string.required_storage) + " " + getHumanReadableStorageSpace(totalSize - availableKb) + "\n\n" +
-                                getString(R.string.will_be_compressed))
-                        .setNegativeButton(R.string.close, null)
-                        .setIcon(R.drawable.ic_combine)
+                        .setTitle((String) o[1])
+                        .setMessage((String) o[2])
+                        .setPositiveButton(R.string.close, null)
                         .show();
 
             }
+            else {
+
+                Intent bService = new Intent(ExtraBackups.this, BackupService.class);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(bService);
+                } else {
+                    startService(bService);
+                }
+            }
+
         }
 
         String getHumanReadableStorageSpace(long space){
@@ -1034,7 +1236,7 @@ public class ExtraBackups extends AppCompatActivity {
         startBackup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isAnyAppSelected || doBackupContacts.isChecked() || doBackupSms.isChecked() || doBackupCalls.isChecked())
+                if (totalSelectedApps > 0 || doBackupContacts.isChecked() || doBackupSms.isChecked() || doBackupCalls.isChecked())
                     askForBackupName();
             }
         });
@@ -1047,6 +1249,19 @@ public class ExtraBackups extends AppCompatActivity {
                 finish();
             }
         });
+
+        serviceStartedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                BackupService.getBackupBatches(backupBatches, backupName, destination, busyboxBinaryFile,
+                        contactsList, doBackupContacts.isChecked(),
+                        callsList, doBackupCalls.isChecked(),
+                        smsList, doBackupSms.isChecked(),
+                        backupSummaries);
+                LocalBroadcastManager.getInstance(ExtraBackups.this).sendBroadcast(new Intent("start batch backup"));
+            }
+        };
+        LocalBroadcastManager.getInstance(this).registerReceiver(serviceStartedReceiver, new IntentFilter("backup service started"));
 
         progressReceiver = new BroadcastReceiver() {
             @Override
@@ -1162,12 +1377,9 @@ public class ExtraBackups extends AppCompatActivity {
 
     }
 
-    static void setAppList(List<BackupDataPacket> al, boolean isDataAllSelected) {
+    static void setAppList(List<BackupDataPacket> al, boolean isDataAllSelected, int totalSelectedApp) {
         appList = al;
-        for (BackupDataPacket packet : appList) {
-            if (isAnyAppSelected = packet.APP)
-                break;
-        }
+        totalSelectedApps = totalSelectedApp;
         isAllAppSelected = isDataAllSelected;
     }
 
@@ -1228,7 +1440,7 @@ public class ExtraBackups extends AppCompatActivity {
                     .show();
         } else {
             alertDialog.dismiss();
-            startBackup(name);
+            startBackup(backupName = name);
         }
     }
 
@@ -1274,20 +1486,19 @@ public class ExtraBackups extends AppCompatActivity {
         super.onDestroy();
         try {
             ad.dismiss();
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(progressReceiver);
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
+        try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(serviceStartedReceiver);
+        } catch (Exception ignored) { }
         try {
             contactsReader.cancel(true);
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
         try {
             smsReader.cancel(true);
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) { }
     }
 
     @Override

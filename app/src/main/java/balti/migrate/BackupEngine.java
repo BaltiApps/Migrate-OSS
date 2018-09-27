@@ -85,6 +85,8 @@ public class BackupEngine {
 
     private CommonTools commonTools;
 
+    private File backupSummary;
+
     class StartBackup extends AsyncTask{
 
         boolean doBackupContacts;
@@ -116,7 +118,8 @@ public class BackupEngine {
         }
     }
 
-    BackupEngine(String backupName, int compressionLevel, String destination, String busyboxBinaryFilePath, Context context, long systemRequiredSize, long dataRequiredSize, boolean finalProcess) {
+    BackupEngine(String backupName, int compressionLevel, String destination, String busyboxBinaryFilePath,
+                 Context context, long systemRequiredSize, long dataRequiredSize, boolean finalProcess, File backupSummary) {
         this.backupName = backupName;
         this.destination = destination;
         this.compressionLevel = compressionLevel;
@@ -128,6 +131,7 @@ public class BackupEngine {
         this.systemRequiredSize = systemRequiredSize;
         this.dataRequiredSize = dataRequiredSize;
         this.finalProcess = finalProcess;
+        this.backupSummary = backupSummary;
 
         getNumberOfFiles = zipProcess = null;
 
@@ -547,7 +551,6 @@ public class BackupEngine {
         if (busyboxBinaryFilePath.equals("") || zipBinaryFilePath.equals(""))
             return new File[]{null, null};
 
-        File backupSummary = new File(context.getFilesDir(), "backup_summary");
         File script = new File(context.getFilesDir(), "script.sh");
         File updater_script = new File(context.getFilesDir(), "updater-script");
         File helper = new File(context.getFilesDir() + "/system/app/MigrateHelper", "MigrateHelper.apk");
