@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Migrate</string>
 
     <!--Version changes to be made in
@@ -13,8 +13,8 @@
     <string name="prs_label">Migrate\nversion 1.0</string>
 
     <!--changelog-->
-    <string name="version_1.0">Version 1.0</string>
-    <string name="version_1.0_content">\u2022 Initial release</string>
+    <string name="version_1.0" tools:ignore="ExtraTranslation">Version 1.0</string>
+    <string name="version_1.0_content" tools:ignore="ExtraTranslation">\u2022 Initial release</string>
 
     <!--activity_main.xml-->
     <string name="selectOperation">Select operation</string>
@@ -69,19 +69,23 @@
     <string name="error_detecting_memory">Error detecting device memory</string>
     <string name="cannot_split">Backup is not possible because these apps are too big!</string>
     <string name="making_batches">Making batches</string>
-    <string name="part">-part-</string>
+    <string name="part">Part</string>
+    <string name="parts">parts</string>
+    <string name="of">of</string>
+    <string name="split_desc">Due to system limitations, your backups are being split in different parts.\n\n
+    In TWRP, please install all the zips for full restore.
+    </string>
 
     <!--ExtraBackups.java-->
     <string name="not_recommended">Not recommended!</string>
     <string name="contacts_not_recommended">Contacts backup and restore is not recommended <b>if you intend to sign in with Google</b> on your next ROM. Restoring contacts will make unnecessary duplicates of same contact entries.</string>
     <string name="dont_backup">Don\'t backup</string>
     <string name="backup_contacts_anyway">Backup contacts anyway</string>
-    <string name="files_size">Estimated total size:</string>
+    <string name="files_size">Estimated total backup size:</string>
     <string name="available_space">Available space:</string>
     <string name="insufficient_storage">Insufficient storage!</string>
     <string name="required_storage">Migrate needs more free space:</string>
     <string name="will_be_compressed">We need the estimated size to copy the app files. The final package will take much less space than the estimated size due to compression.</string>
-    <string name="batch">Batch</string>
 
     <!--extra_item_selector.xml-->
     <string name="sms_selector_label">Select SMS</string>

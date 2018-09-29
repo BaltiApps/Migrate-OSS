@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
@@ -40,6 +41,9 @@ public class BackupEngine {
     public static final int NOTIFICATION_ID = 100;
 
     private String destination, backupName;
+    private String madePartName;
+    private int partNumber, totalParts;
+
     private Context context;
 
     SharedPreferences main;
@@ -73,6 +77,8 @@ public class BackupEngine {
     private long startMillis;
     private long endMillis;
 
+    private String errorTag;
+
     private String zipBinaryFilePath, busyboxBinaryFilePath;
 
     private final String TEMP_DIR_NAME = "/data/balti.migrate";
@@ -81,7 +87,6 @@ public class BackupEngine {
 
     private long systemRequiredSize = 0;
     private long dataRequiredSize = 0;
-    private boolean finalProcess = true;
 
     private CommonTools commonTools;
 
@@ -118,25 +123,43 @@ public class BackupEngine {
         }
     }
 
-    BackupEngine(String backupName, int compressionLevel, String destination, String busyboxBinaryFilePath,
-                 Context context, long systemRequiredSize, long dataRequiredSize, boolean finalProcess, File backupSummary) {
+    BackupEngine(String backupName, int partNumber, int totalParts, int compressionLevel, String destination, String busyboxBinaryFilePath,
+                 Context context, long systemRequiredSize, long dataRequiredSize, File backupSummary) {
         this.backupName = backupName;
         this.destination = destination;
-        this.compressionLevel = compressionLevel;
-        (new File(destination)).mkdirs();
-        this.context = context;
 
         this.busyboxBinaryFilePath = busyboxBinaryFilePath;
 
         this.systemRequiredSize = systemRequiredSize;
         this.dataRequiredSize = dataRequiredSize;
-        this.finalProcess = finalProcess;
         this.backupSummary = backupSummary;
+
+        if (totalParts > 1){
+            this.destination = this.destination + "/" + this.backupName;
+            this.madePartName = context.getString(R.string.part) + " " + partNumber + " " + context.getString(R.string.of) + " " + totalParts;
+            this.backupName = this.madePartName.replace(" ", "_");
+        }
+        else {
+            this.madePartName = "";
+        }
+
+        this.partNumber = partNumber;
+        this.totalParts = totalParts;
+
+        this.errorTag = "[" + partNumber + "/" + totalParts + "]";
+
+        this.compressionLevel = compressionLevel;
+        (new File(destination)).mkdirs();
+        this.context = context;
+
+        assert this.backupName != null;
+        if (this.backupName.endsWith(".zip")) this.backupName = this.backupName.substring(0, this.backupName.lastIndexOf("."));
 
         getNumberOfFiles = zipProcess = null;
 
         main = context.getSharedPreferences("main", Context.MODE_PRIVATE);
-        actualProgressBroadcast = new Intent("Migrate progress broadcast");
+        actualProgressBroadcast = new Intent("Migrate progress broadcast")
+                .putExtra("part_name", this.madePartName);
 
         errors = new ArrayList<>(0);
 
@@ -167,35 +190,6 @@ public class BackupEngine {
         return calendar.getTimeInMillis();
     }
 
-    String calendarDifference(long start, long end){
-        String diff = "";
-
-        try {
-
-            long longDiff = end - start;
-            longDiff = longDiff / 1000;
-
-            long d = longDiff / (60 * 60 * 24);
-            if (d != 0) diff = diff + d + "days ";
-            longDiff = longDiff % (60 * 60 * 24);
-
-            long h = longDiff / (60 * 60);
-            if (h != 0) diff = diff + h + "hrs ";
-            longDiff = longDiff % (60 * 60);
-
-            long m = longDiff / 60;
-            if (m != 0) diff = diff + m + "mins ";
-            longDiff = longDiff % 60;
-
-            long s = longDiff;
-            diff = diff + s + "secs";
-
-        }
-        catch (Exception ignored){}
-
-        return diff;
-    }
-
     void startBackup(boolean doBackupContacts, Vector<ContactsDataPacket> contactsDataPackets, boolean doBackupSms, Vector<SmsDataPacket> smsDataPackets,
             boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets){
         try {
@@ -221,7 +215,9 @@ public class BackupEngine {
                 .setContentTitle(context.getString(R.string.backingUp));
 
         Intent cancelIntent = new Intent("Migrate backup cancel broadcast");
-        Intent activityProgressIntent = new Intent(context, BackupProgressLayout.class);
+        Intent activityProgressIntent = new Intent(context, BackupProgressLayout.class)
+                .putExtra("part_number", this.partNumber).putExtra("total_parts", this.totalParts)
+                .putExtra("part_name", this.madePartName);
         PendingIntent cancelPendingIntent = PendingIntent.getBroadcast(context, 53, cancelIntent, 0);
         PendingIntent activityPendingIntent = PendingIntent.getActivity(context, 1, activityProgressIntent, 0);
 
@@ -238,78 +234,84 @@ public class BackupEngine {
 
                 makePackageData();
 
+
+                if (partNumber == 1){
+                    actualProgressBroadcast.putExtra("type", "ready")
+                            .putExtra("total_parts", totalParts);
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+                }
+
                 String contactsErr = backupContacts(notificationManager, progressNotif);
-                if (!contactsErr.equals("")) errors.add("CONTACTS: " + contactsErr);
+                if (!contactsErr.equals("")) errors.add("CONTACTS" + errorTag + ": " + contactsErr);
 
                 String smsErr = backupSms(notificationManager, progressNotif);
-                if (!smsErr.equals("")) errors.add("SMS: " + smsErr);
+                if (!smsErr.equals("")) errors.add("SMS" + errorTag + ": " + smsErr);
 
                 String callsErr = backupCalls(notificationManager, progressNotif);
-                if (!callsErr.equals("")) errors.add("CALLS: " + callsErr);
+                if (!callsErr.equals("")) errors.add("CALLS" + errorTag + ": " + callsErr);
 
                 if (isCancelled)
                     throw new InterruptedIOException();
 
-                    suProcess = Runtime.getRuntime().exec("su -c sh " + receivedFiles[0].getAbsolutePath());
-                    BufferedReader outputStream = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
-                    BufferedReader errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
-                    String line;
-                    int c = 0, p = 100;
+                suProcess = Runtime.getRuntime().exec("su -c sh " + receivedFiles[0].getAbsolutePath());
+                BufferedReader outputStream = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
+                BufferedReader errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
+                String line;
+                int c = 0, p = 100;
 
 
-                    String iconString;
+                String iconString;
 
-                    while ((line = outputStream.readLine()) != null) {
+                while ((line = outputStream.readLine()) != null) {
 
-                        line = line.trim();
+                    line = line.trim();
 
-                        actualProgressBroadcast.putExtra("type", "app_progress");
+                    actualProgressBroadcast.putExtra("type", "app_progress");
 
-                        if (line.startsWith("migrate status:")) {
-                            line = line.substring(16);
+                    if (line.startsWith("migrate status:")) {
+                        line = line.substring(16);
 
-                            if (line.contains("icon:")) {
-                                iconString = line.substring(line.lastIndexOf(' ') + 1);
-                                line = line.substring(0, line.indexOf("icon:"));
-                                actualProgressBroadcast.putExtra("app_icon", iconString);
-                                actualProgressBroadcast.putExtra("app_name", line);
-                            }
-                            else {
-                                actualProgressBroadcast.putExtra("app_name", line);
-                            }
-
-                            if (numberOfJobs != 0) p = c++ * 100 / numberOfJobs;
-                            actualProgressBroadcast.putExtra("progress", p);
-
-                            LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
-
-                            progressNotif.setContentTitle(context.getString(R.string.backingUp))
-                                    .setProgress(numberOfJobs, c, false)
-                                    .setContentText(line);
-                            notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
-
+                        if (line.contains("icon:")) {
+                            iconString = line.substring(line.lastIndexOf(' ') + 1);
+                            line = line.substring(0, line.indexOf("icon:"));
+                            actualProgressBroadcast.putExtra("app_icon", iconString);
+                            actualProgressBroadcast.putExtra("app_name", line);
+                        }
+                        else {
+                            actualProgressBroadcast.putExtra("app_name", line);
                         }
 
-                        actualProgressBroadcast.putExtra("app_log", line);
+                        if (numberOfJobs != 0) p = c++ * 100 / numberOfJobs;
+                        actualProgressBroadcast.putExtra("progress", p);
+
                         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
+                        progressNotif.setContentTitle(context.getString(R.string.backingUp) + " : " + madePartName)
+                                .setProgress(numberOfJobs, c, false)
+                                .setContentText(line);
+                        notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
                     }
 
+                    actualProgressBroadcast.putExtra("app_log", line);
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
-                    while ((line = errorStream.readLine()) != null) {
-                        errors.add("RUN: " + line);
-                    }
+                }
+
+
+                while ((line = errorStream.readLine()) != null) {
+                    errors.add("RUN" + errorTag + ": " + line);
+                }
 
             } else {
                 errors.add(context.getString(R.string.errorMakingScripts));
             }
 
             String zipErr = zipAll(notificationManager, progressNotif);
-            if (!zipErr.trim().equals("")) errors.add("ZIP: " + zipErr);
+            if (!zipErr.trim().equals("")) errors.add("ZIP" + errorTag + ": " + zipErr);
 
         } catch (Exception e) {
             if (!isCancelled){
-                errors.add("INIT: " + e.getMessage());
+                errors.add("INIT" + errorTag + ": " + e.getMessage());
             }
         }
 
@@ -327,10 +329,9 @@ public class BackupEngine {
 
         progressNotif.setContentTitle(finalMessage);
 
-        notificationManager.cancel(NOTIFICATION_ID);
 
         activityProgressIntent.putExtra("type", "finished").putExtra("finishedMessage", finalMessage.trim())
-                .putExtra("total_time", endMillis - startMillis).putExtra("final_process", finalProcess);
+                .putExtra("total_time", endMillis - startMillis).putExtra("final_process", partNumber == totalParts || isCancelled);
         if (errors.size() > 0)
             activityProgressIntent.putStringArrayListExtra("errors", errors);
         activityPendingIntent = PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -340,18 +341,25 @@ public class BackupEngine {
                 .setAutoCancel(true)
                 .mActions.clear();
 
-        notificationManager.notify(NOTIFICATION_ID + 1, progressNotif.build());
+        if (partNumber == totalParts || isCancelled) {
+
+            actualProgressBroadcast.putExtra("part_name", "");
+            activityProgressIntent.putExtra("part_name", "");
+
+            notificationManager.cancel(NOTIFICATION_ID);
+            notificationManager.notify(NOTIFICATION_ID + 1, progressNotif.build());
+        }
 
 
         actualProgressBroadcast.putExtra("type","finished").putExtra("finishedMessage", finalMessage.trim())
-                .putExtra("total_time", endMillis - startMillis).putExtra("final_process", finalProcess);
+                .putExtra("total_time", endMillis - startMillis).putExtra("final_process", partNumber == totalParts || isCancelled);
         if (errors.size() > 0) {
             actualProgressBroadcast.putStringArrayListExtra("errors", errors);
         }
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
-        if (finalProcess)
+        if (partNumber == totalParts || isCancelled)
             context.stopService(new Intent(context, BackupService.class));
     }
 
@@ -360,7 +368,7 @@ public class BackupEngine {
         String err = "";
         try {
 
-            progressNotif.setContentTitle(context.getString(R.string.combining))
+            progressNotif.setContentTitle(context.getString(R.string.combining) + " : " + madePartName)
                     .setProgress(0, 0, false)
                     .setContentText("");
             notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
@@ -593,6 +601,10 @@ public class BackupEngine {
             updater_writer.write("ui_print(\"---------------------------------\");\n");
             updater_writer.write("ui_print(\"      Migrate Flash package      \");\n");
             updater_writer.write("ui_print(\"---------------------------------\");\n");
+            if (!madePartName.trim().equals("")) {
+                updater_writer.write("ui_print(\"*** " + madePartName + " ***\");\n");
+                updater_writer.write("ui_print(\"---------------------------------\");\n");
+            }
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("ui_print(\"Mounting partition...\");\n");
             updater_writer.write("ui_print(\" \");\n");
@@ -755,7 +767,9 @@ public class BackupEngine {
             e.printStackTrace();
         }
         Toast.makeText(context, context.getString(R.string.deletingFiles), Toast.LENGTH_SHORT).show();
-        fullDelete(destination + "/" + backupName);
+        if (madePartName.trim().equals(""))
+            fullDelete(destination + "/" + backupName);
+        else fullDelete(destination);
         fullDelete(destination + "/" + backupName + ".zip");
 
         try {
@@ -766,7 +780,7 @@ public class BackupEngine {
 
     void fullDelete(String path){
         File file = new File(path);
-        if (file.exists()) {
+        if (file.exists() && !file.getAbsolutePath().equals(Environment.getExternalStorageDirectory().getAbsolutePath())) {
             if (!file.isDirectory())
                 file.delete();
             else {
@@ -824,7 +838,7 @@ public class BackupEngine {
         (new File(destination + "/" + backupName)).mkdirs();
 
 
-        progressNotif.setContentTitle(context.getString(R.string.backing_contacts))
+        progressNotif.setContentTitle(context.getString(R.string.backing_contacts) + " : " + madePartName)
                 .setProgress(0, 0, false)
                 .setContentText("");
         notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
@@ -995,7 +1009,7 @@ public class BackupEngine {
             smsDataPackets = new Vector<>(0);
 
 
-            progressNotif.setContentTitle(context.getString(R.string.reading_sms))
+            progressNotif.setContentTitle(context.getString(R.string.reading_sms) + " : " + madePartName)
                     .setProgress(0, 0, false)
                     .setContentText("");
             notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
@@ -1085,7 +1099,7 @@ public class BackupEngine {
 
         if (smsDataPackets != null || smsDataPackets.size() != 0) {
 
-            progressNotif.setContentTitle(context.getString(R.string.backing_sms))
+            progressNotif.setContentTitle(context.getString(R.string.backing_sms) + " : " + madePartName)
                     .setProgress(0, 0, false)
                     .setContentText("");
             notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
@@ -1183,7 +1197,7 @@ public class BackupEngine {
             callsDataPackets = new Vector<>(0);
 
 
-            progressNotif.setContentTitle(context.getString(R.string.reading_calls))
+            progressNotif.setContentTitle(context.getString(R.string.reading_calls) + " : " + madePartName)
                     .setProgress(0, 0, false)
                     .setContentText("");
             notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
@@ -1218,7 +1232,7 @@ public class BackupEngine {
 
         if (callsDataPackets != null || callsDataPackets.size() != 0) {
 
-            progressNotif.setContentTitle(context.getString(R.string.backing_calls))
+            progressNotif.setContentTitle(context.getString(R.string.backing_calls) + " : " + madePartName)
                     .setProgress(0, 0, false)
                     .setContentText("");
             notificationManager.notify(NOTIFICATION_ID, progressNotif.build());

@@ -48,6 +48,8 @@ public class BackupService extends Service {
 
     int runningBatchCount = 0;
 
+    boolean cancelAll = false;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -77,6 +79,7 @@ public class BackupService extends Service {
             @Override
             public void onReceive(Context context, Intent intent) {
                 try {
+                    cancelAll = true;
                     if (backupEngine != null)
                     backupEngine.cancelProcess();
                 } catch (Exception ignored) {
@@ -117,12 +120,16 @@ public class BackupService extends Service {
 
     void runNextBatch(){
 
-        String name = (batches.size() > 1)? backupName + getString(R.string.part) + (runningBatchCount+1) : backupName;
+        if (cancelAll) return;
 
-        backupEngine = new BackupEngine(name, main.getInt("compressionLevel", 0), destination, busyboxBinaryFile,
+        String partName = (batches.size() > 1)? getString(R.string.part) + (runningBatchCount+1) : "";
+
+        backupEngine = new BackupEngine(backupName, runningBatchCount+1, batches.size(), main.getInt("compressionLevel", 0), destination, busyboxBinaryFile,
                 this, batches.get(runningBatchCount).batchSystemSize, batches.get(runningBatchCount).batchDataSize,
-                runningBatchCount == batches.size()-1, backupSummaries.get(runningBatchCount));
-        backupEngine.startBackup(doBackupContacts, contactsList, doBackupSms, smsList, doBackupCalls, callsList);
+                backupSummaries.get(runningBatchCount));
+        if (runningBatchCount == 0)
+            backupEngine.startBackup(doBackupContacts, contactsList, doBackupSms, smsList, doBackupCalls, callsList);
+        else backupEngine.startBackup(false, null, false, null, false, null);
     }
 
     static void getBackupBatches(Vector<BackupBatch> batches, String backupName, String destination, String busyboxBinaryFile,

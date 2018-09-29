@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
 
+import static balti.migrate.Exclusions.EXCLUDE_DATA;
+import static balti.migrate.Exclusions.NOT_EXCLUDED;
+
 /**
  * Created by sayantan on 8/10/17.
  */
@@ -48,12 +51,14 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
     int totalApps = 0;
 
+    Exclusions exclusions;
+
     class AppUpdate extends AsyncTask{
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            setNextButtonEnabled(false);
+            nextButton.setEnabled(false);
             listView.setAdapter(null);
 
             appAllSelect.setEnabled(false);
@@ -84,10 +89,14 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             selectAll.setEnabled(true);
             clearAll.setEnabled(true);
 
+            nextButton.setEnabled(true);
+
             (findViewById(R.id.appLoadingView)).setVisibility(View.GONE);
             listView.setAdapter(adapter);
 
             dataAllSelect.setChecked(true);
+
+            totalApps = appList.size();
         }
     }
 
@@ -172,14 +181,11 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("get data"));
 
+        exclusions = new Exclusions(this);
+
     }
 
     void startExtraBackupsStartingActivity(){
-
-        if (appUpdate.getStatus() == AsyncTask.Status.RUNNING){
-            appUpdate.cancel(true);
-            appList = new Vector<>(0);
-        }
 
         Intent intent = new Intent(BackupActivity.this, ExtraBackups.class);
         startActivity(intent);
@@ -198,7 +204,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
         if (i == 2) {
             List<PackageInfo> tempAppList = pm.getInstalledPackages(0);
-            appList = new Vector<>(1);
+            appList = new Vector<>(0);
             for (int k = 0; k < tempAppList.size(); k++) {
                 BackupDataPacket packet = new BackupDataPacket();
                 packet.PACKAGE_INFO = tempAppList.get(k);
@@ -209,7 +215,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             adapter = new AppListAdapter(BackupActivity.this, appList);
         } else if (i == 1) {
             List<PackageInfo> tempAppList = pm.getInstalledPackages(0);
-            appList = new Vector<>(1);
+            appList = new Vector<>(0);
             for (int k = 0; k < tempAppList.size(); k++) {
                 if ((tempAppList.get(k).applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) > 0) {
                     BackupDataPacket packet = new BackupDataPacket();
@@ -222,7 +228,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             adapter = new AppListAdapter(BackupActivity.this, appList);
         } else if (i == 0) {
             List<PackageInfo> tempAppList = pm.getInstalledPackages(0);
-            appList = new Vector<>(1);
+            appList = new Vector<>(0);
             for (int k = 0; k < tempAppList.size(); k++) {
                 if ((tempAppList.get(k).applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) == 0) {
                     BackupDataPacket packet = new BackupDataPacket();
@@ -241,23 +247,26 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     public void onCheck(Vector<BackupDataPacket> backupDataPackets) {
         appList = backupDataPackets;
         boolean app, data;
-        boolean enable = false;
 
         totalApps = 0;
 
         if (appList.size() > 0)
             app = data = true;
         else app = data = false;
+
         for (int i = 0; i < backupDataPackets.size(); i++) {
             BackupDataPacket packet = appList.elementAt(i);
-            app = app && packet.APP;
-            data = data && packet.DATA;
-            enable = enable || packet.APP || packet.DATA;
+            int exclusionState = exclusions.returnExclusionState(packet.PACKAGE_INFO.packageName);
+            if (exclusionState == NOT_EXCLUDED) {
+                app = app && packet.APP;
+                data = data && packet.DATA;
+            }
+            else if (exclusionState == EXCLUDE_DATA) {
+                app = app && packet.APP;
+            }
             if (packet.APP || packet.DATA)
                 totalApps++;
         }
-
-        setNextButtonEnabled(enable);
 
         dataAllSelect.setOnCheckedChangeListener(null);
         dataAllSelect.setChecked(data);
@@ -287,13 +296,8 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             adapter.checkAllData(b);
             adapter.notifyDataSetChanged();
         }
-
-        setNextButtonEnabled(dataAllSelect.isChecked() || appAllSelect.isChecked());
     }
 
-    void setNextButtonEnabled(boolean isEnabled){
-        //nextButton.setEnabled(isEnabled);
-    }
 
     boolean isBackupRunning(){
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);

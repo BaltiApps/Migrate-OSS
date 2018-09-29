@@ -93,7 +93,7 @@ public class Exclusions {
     }
 
     int returnExclusionState(String packageName){
-        int p = 0;
+        int p = NOT_EXCLUDED;
         String dataExcluded = packageName + " " + EXCLUDE_DATA;
         String appDataExcluded = packageName + " " + EXCLUDE_APP_DATA;
         if (predefinedPackageNames.contains(dataExcluded) || manualPackageNames.contains(dataExcluded))

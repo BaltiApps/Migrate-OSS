@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
@@ -33,7 +34,7 @@ public class BackupProgressLayout extends AppCompatActivity {
     BroadcastReceiver progressReceiver;
     IntentFilter progressReceiverIF;
 
-    TextView task;
+    TextView task, partName;
     ImageView appIcon;
     TextView progress;
     TextView progressLog;
@@ -47,6 +48,8 @@ public class BackupProgressLayout extends AppCompatActivity {
     String lastType = "";
 
     ArrayList<String> allErrors;
+
+    long totalTasksTime = 0;
 
     class SetAppIcon extends AsyncTask<String, Void, Bitmap>{
 
@@ -92,6 +95,7 @@ public class BackupProgressLayout extends AppCompatActivity {
         allErrors = new ArrayList<>(0);
 
         task = findViewById(R.id.progressTask);
+        partName = findViewById(R.id.part_name);
         appIcon = findViewById(R.id.app_icon);
         progress = findViewById(R.id.progressPercent);
         progressBar = findViewById(R.id.progressBar);
@@ -143,20 +147,40 @@ public class BackupProgressLayout extends AppCompatActivity {
     void handleProgress(Intent intent){
         try {
             String type = "";
+            String partName = "";
 
             if (intent.hasExtra("type"))
                 type = intent.getStringExtra("type");
+
+            if (intent.hasExtra("part_name"))
+                partName = intent.getStringExtra("part_name");
+
+            this.partName.setText(partName);
 
             if (!type.equals(lastType)){
                 lastType = type;
                 progressLog.append("\n\n");
             }
 
-            if (type.equals("finished")){
+            if (type.equals("ready")){
+
+                int tp = intent.getIntExtra("total_parts", 1);
+                if (tp > 1) {
+                    new AlertDialog.Builder(this)
+                            .setTitle(tp + " " + getString(R.string.parts))
+                            .setMessage(R.string.split_desc)
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show();
+                }
+
+            }
+            else if (type.equals("finished")){
 
                 if (intent.hasExtra("errors")) {
                     allErrors.addAll(intent.getStringArrayListExtra("errors"));
                 }
+
+                totalTasksTime += intent.getLongExtra("total_time", 0);
 
                 if (intent.getBooleanExtra("final_process", true)) {
                     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -180,6 +204,8 @@ public class BackupProgressLayout extends AppCompatActivity {
                         progress.setText("100%");
                         appIcon.setImageResource(R.drawable.ic_finished);
                     }
+
+                    task.append("\n(" + calendarDifference(totalTasksTime) + ")");
 
                     actionButton.setText(getString(R.string.close));
                     actionButton.setBackground(getResources().getDrawable(R.drawable.log_action_button));
@@ -342,5 +368,33 @@ public class BackupProgressLayout extends AppCompatActivity {
         catch (IllegalArgumentException ignored){}
 
         finish();
+    }
+
+    String calendarDifference(long longDiff){
+        String diff = "";
+
+        try {
+
+            longDiff = longDiff / 1000;
+
+            long d = longDiff / (60 * 60 * 24);
+            if (d != 0) diff = diff + d + "days ";
+            longDiff = longDiff % (60 * 60 * 24);
+
+            long h = longDiff / (60 * 60);
+            if (h != 0) diff = diff + h + "hrs ";
+            longDiff = longDiff % (60 * 60);
+
+            long m = longDiff / 60;
+            if (m != 0) diff = diff + m + "mins ";
+            longDiff = longDiff % 60;
+
+            long s = longDiff;
+            diff = diff + s + "secs";
+
+        }
+        catch (Exception ignored){}
+
+        return diff;
     }
 }

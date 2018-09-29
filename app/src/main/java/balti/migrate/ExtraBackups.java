@@ -1,6 +1,7 @@
 package balti.migrate;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -161,6 +162,11 @@ public class ExtraBackups extends AppCompatActivity {
                     .create();
 
             ad.show();
+
+            NotificationManager manager = (NotificationManager)(getSystemService(NOTIFICATION_SERVICE));
+            assert manager != null;
+            manager.cancelAll();
+
         }
 
         @Override
@@ -315,8 +321,11 @@ public class ExtraBackups extends AppCompatActivity {
                 }
             }
 
+            publishProgress("show_parts_dialog", parts + " parts", "");
+
             backupSummaries = new Vector<>(0);
 
+            int c = 0;
             for (int j = 0; j < backupBatches.size(); j++){
 
                 File backupSummary = new File(getFilesDir(), "backup_summary_part"+j);
@@ -344,8 +353,8 @@ public class ExtraBackups extends AppCompatActivity {
                                 dataPath = packet.PACKAGE_INFO.applicationInfo.dataDir;
                             String versionName = packet.PACKAGE_INFO.versionName;
 
-                            String batchDisplay = (backupBatches.size() > 1)? getString(R.string.batch) + " " + (j+1) : "";
-                            publishProgress(getString(R.string.reading_data), batchDisplay, (i + 1) + " of " + n);
+                            publishProgress(getString(R.string.reading_data),
+                                    ++c + " " + getString(R.string.of) + " " + totalSelectedApps, "");
 
                             ByteArrayOutputStream stream = new ByteArrayOutputStream();
                             Bitmap icon = getBitmapFromDrawable(pm.getApplicationIcon(packet.PACKAGE_INFO.applicationInfo));
@@ -369,57 +378,6 @@ public class ExtraBackups extends AppCompatActivity {
 
             }
 
-
-
-            /*try {
-
-                BufferedWriter writer = new BufferedWriter(new FileWriter(backupSummary.getAbsolutePath()));
-                int n = appList.size();
-
-                long max = 0;
-
-                for (int i = 0; i < n; i++) {
-
-                    if (appList.get(i).APP) {
-
-                        String appName = pm.getApplicationLabel(appList.get(i).PACKAGE_INFO.applicationInfo).toString();
-                        appName = appName.replace(' ', '_');
-
-                        String packageName = appList.get(i).PACKAGE_INFO.packageName;
-                        String apkPath = appList.get(i).PACKAGE_INFO.applicationInfo.sourceDir;
-                        String dataPath = "NULL";
-                        if (appList.get(i).DATA)
-                            dataPath = appList.get(i).PACKAGE_INFO.applicationInfo.dataDir;
-                        String versionName = appList.get(i).PACKAGE_INFO.versionName;
-
-
-
-                        totalSize += size;
-
-                        publishProgress(getString(R.string.reading_data), (i + 1) + " of " + n, getString(R.string.files_size) + " " + getHumanReadableStorageSpace(totalSize) + "\n");
-
-                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                        Bitmap icon = getBitmapFromDrawable(pm.getApplicationIcon(appList.get(i).PACKAGE_INFO.applicationInfo));
-                        icon.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                        String appIcon = byteToString(stream.toByteArray());
-
-                        String line = appName + " " + packageName + " " + apkPath + " " + dataPath + " " + appIcon + " " + versionName;
-
-                        writer.write(line + "\n");
-
-                    }
-
-                }
-                writer.close();
-
-                totalSize += max;
-
-                return new Object[]{true};
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new Object[]{false, e.getMessage()};
-            }*/
-
             return new Object[]{true};
         }
 
@@ -438,11 +396,13 @@ public class ExtraBackups extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(String... strings) {
             super.onProgressUpdate(strings);
-            waitingProgress.setVisibility(View.VISIBLE);
-            waitingDetails.setVisibility(View.VISIBLE);
-            waitingHead.setText(strings[0].trim());
-            waitingProgress.setText(strings[1].trim());
-            waitingDetails.setText(strings[2].trim());
+
+                waitingProgress.setVisibility(View.VISIBLE);
+                waitingDetails.setVisibility(View.VISIBLE);
+                waitingHead.setText(strings[0].trim());
+                waitingProgress.setText(strings[1].trim());
+                waitingDetails.setText(strings[2].trim());
+
         }
 
         @SuppressLint("SetTextI18n")
@@ -450,13 +410,7 @@ public class ExtraBackups extends AppCompatActivity {
         protected void onPostExecute(Object[] o) {
             super.onPostExecute(o);
 
-            /*waitingHead.setText(R.string.just_a_minute);
-            waitingProgress.setText(R.string.starting_engine);
-
             cancel.setVisibility(View.GONE);
-
-            waitingDetails.setText(getString(R.string.files_size) + " " + getHumanReadableStorageSpace(totalSize) + "\n" +
-                    getString(R.string.available_space) + " " + getHumanReadableStorageSpace(availableKb));*/
 
             if ((boolean) o[0] && availableKb < totalSize) {
 
@@ -476,42 +430,12 @@ public class ExtraBackups extends AppCompatActivity {
                         .show();
 
 
-
-                /*if ((boolean) o[0]) {
-
-                    try {
-                        contactsReader.cancel(true);
-                    } catch (Exception ignored) {
-                    }
-
-                    try {
-                        smsReader.cancel(true);
-                    } catch (Exception ignored) {
-                    }
-
-                    Intent bService = new Intent(ExtraBackups.this, BackupService.class)
-                            .putExtra("backupName", backupName)
-                            .putExtra("compressionLevel", main.getInt("compressionLevel", 0))
-                            .putExtra("destination", destination);
-
-
-                    BackupService.backupEngine = new BackupEngine(backupName, main.getInt("compressionLevel", 0), destination, busyboxBinaryFile, ExtraBackups.this, systemRequiredSize, dataRequiredSize, true);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        startForegroundService(bService);
-                        BackupService.backupEngine.startBackup(doBackupContacts.isChecked(), contactsList, doBackupSms.isChecked(), smsList,
-                                doBackupCalls.isChecked(), callsList);
-                    } else {
-                        startService(bService);
-                        BackupService.backupEngine.startBackup(doBackupContacts.isChecked(), contactsList, doBackupSms.isChecked(), smsList,
-                                doBackupCalls.isChecked(), callsList);
-                    }
-
-                } else {
-                    Toast.makeText(ExtraBackups.this, (String) o[1], Toast.LENGTH_SHORT).show();
-                }*/
-
             }
             else if (!(boolean) o[0]){
+                try {
+                    ad.dismiss();
+                }
+                catch (Exception ignored){}
 
                 new AlertDialog.Builder(ExtraBackups.this)
                         .setTitle((String) o[1])
@@ -521,6 +445,10 @@ public class ExtraBackups extends AppCompatActivity {
 
             }
             else {
+
+                waitingHead.setText(R.string.just_a_minute);
+                waitingProgress.setText(R.string.starting_engine);
+                waitingDetails.setText("");
 
                 Intent bService = new Intent(ExtraBackups.this, BackupService.class);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
