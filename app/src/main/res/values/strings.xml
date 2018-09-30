@@ -72,9 +72,6 @@
     <string name="part">Part</string>
     <string name="parts">parts</string>
     <string name="of">of</string>
-    <string name="split_desc">Due to system limitations, your backups are being split in different parts.\n\n
-    In TWRP, please install all the zips for full restore.
-    </string>
 
     <!--ExtraBackups.java-->
     <string name="not_recommended">Not recommended!</string>
@@ -96,10 +93,18 @@
     <string name="loading">Loading…</string>
     <string name="start_backup">Start backup</string>
 
+    <!--BackupProgressLayout.java-->
+    <string name="split_desc">Due to huge backup size, your backup is being split in different parts.\n\n
+    In TWRP, please install all the zips for full restore.
+    </string>
+    <string name="force_stop_title">Force close app?</string>
+    <string name="force_stop_desc">If you see abnormality in the app and Cancel button does not help, you can force close the app.</string>
+    <string name="force_close">Force close</string>
+
     <!--BackupEngine.java-->
     <string name="failedToBackup">Backup failed! Please try again.</string>
     <string name="close">Close</string>
-    <string name="backingUp">Backing up</string>
+    <string name="backingUp">Backing up apps</string>
     <string name="noErrors">Finished! No errors.</string>
     <string name="combining">Combining all files</string>
     <string name="backing_contacts">Backing up contacts</string>

@@ -72,10 +72,6 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         @Override
         protected Object doInBackground(Object[] params) {
 
-            if (isBackupRunning()){
-                startActivity(new Intent(BackupActivity.this, BackupProgressLayout.class));
-                finish();
-            }
             updateAppsList((int)params[0]);
             return null;
         }

@@ -1,5 +1,6 @@
 package balti.migrate;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.res.AssetManager;
 
@@ -39,5 +40,14 @@ public class CommonTools {
         }
 
         return path;
+    }
+
+    boolean isServiceRunning(String name){
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+            if (name.equals(service.service.getClassName()))
+                return true;
+        }
+        return false;
     }
 }

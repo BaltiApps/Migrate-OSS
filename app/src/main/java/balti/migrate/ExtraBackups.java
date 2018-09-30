@@ -1181,7 +1181,7 @@ public class ExtraBackups extends AppCompatActivity {
         serviceStartedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                BackupService.getBackupBatches(backupBatches, backupName, destination, busyboxBinaryFile,
+                BackupService.setBackupBatches(backupBatches, backupName, destination, busyboxBinaryFile,
                         contactsList, doBackupContacts.isChecked(),
                         callsList, doBackupCalls.isChecked(),
                         smsList, doBackupSms.isChecked(),

@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Vector;
 
@@ -68,7 +69,10 @@ public class BackupService extends Service {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.hasExtra("type") && intent.getStringExtra("type").equals("finished")) {
-                    if (++runningBatchCount < batches.size()) runNextBatch();
+                    if ((runningBatchCount+1) < batches.size()) {
+                        runningBatchCount += 1;
+                        runNextBatch();
+                    }
                 }
                 toReturnIntent = intent;
             }
@@ -122,17 +126,34 @@ public class BackupService extends Service {
 
         if (cancelAll) return;
 
-        String partName = (batches.size() > 1)? getString(R.string.part) + (runningBatchCount+1) : "";
+        if (batches.size() == 0){
 
-        backupEngine = new BackupEngine(backupName, runningBatchCount+1, batches.size(), main.getInt("compressionLevel", 0), destination, busyboxBinaryFile,
-                this, batches.get(runningBatchCount).batchSystemSize, batches.get(runningBatchCount).batchDataSize,
-                backupSummaries.get(runningBatchCount));
+            File tempBackupSummary = new File(getFilesDir(), "backup_summary_part0");
+            try {
+                tempBackupSummary.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            backupEngine = new BackupEngine(backupName, 0, 0, main.getInt("compressionLevel", 0), destination, busyboxBinaryFile,
+                    this,
+                    0,
+                    0,
+                    tempBackupSummary);
+        }
+        else {
+            backupEngine = new BackupEngine(backupName, runningBatchCount + 1, batches.size(), main.getInt("compressionLevel", 0), destination, busyboxBinaryFile,
+                    this,
+                    batches.get(runningBatchCount).batchSystemSize,
+                    batches.get(runningBatchCount).batchDataSize,
+                    backupSummaries.get(runningBatchCount));
+        }
         if (runningBatchCount == 0)
             backupEngine.startBackup(doBackupContacts, contactsList, doBackupSms, smsList, doBackupCalls, callsList);
         else backupEngine.startBackup(false, null, false, null, false, null);
     }
 
-    static void getBackupBatches(Vector<BackupBatch> batches, String backupName, String destination, String busyboxBinaryFile,
+    static void setBackupBatches(Vector<BackupBatch> batches, String backupName, String destination, String busyboxBinaryFile,
                                  Vector<ContactsDataPacket> contactsList, boolean doBackupContacts,
                                  Vector<CallsDataPacket> callsList, boolean doBackupCalls,
                                  Vector<SmsDataPacket> smsList, boolean doBackupSms,

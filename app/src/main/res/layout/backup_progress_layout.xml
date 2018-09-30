@@ -127,7 +127,7 @@
         </ScrollView>
 
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -141,9 +141,19 @@
                 android:id="@+id/progressActionButton"
                 android:background="@drawable/cancel_backup"
                 android:foreground="?android:attr/selectableItemBackground"
+                android:layout_alignParentEnd="true"
                 />
 
-        </LinearLayout>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_force_close"
+                android:backgroundTint="@color/colorPrimary"
+                android:layout_centerVertical="true"
+                android:id="@+id/force_close"
+                />
+
+        </RelativeLayout>
     </LinearLayout>
 
 

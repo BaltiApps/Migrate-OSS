@@ -140,7 +140,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/home/sayantan/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_close_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/home/sayantan/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/alert/ic_warning_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -150,10 +150,12 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_close" />
+                            <entry key="color" value="d50000" />
+                            <entry key="height" value="30" />
+                            <entry key="outputName" value="ic_force_close" />
                             <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="$USER_HOME$/Downloads/migrate/app_bg.svg" />
+                            <entry key="width" value="30" />
                           </map>
                         </option>
                       </PersistentState>
