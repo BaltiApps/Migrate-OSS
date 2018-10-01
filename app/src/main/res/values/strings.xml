@@ -181,7 +181,7 @@
     <string name="step_2">Step 2 -\nFlash backup zip!</string>
     <string name="step_2_desc">
         By default, your created backup zip file should be under:\n
-        <b>Internal storage -> Migrate</b>\n\n
+        <b>Internal storage ->\nMigrate ->\n[backup_name.zip or backup_name -> parts.zip]</b>\n\n
         In TWRP main menu, click INSTALL -> navigate to the backup file zip and install it.
     </string>
 

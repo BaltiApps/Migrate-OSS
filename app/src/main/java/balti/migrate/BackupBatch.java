@@ -7,7 +7,7 @@ public class BackupBatch{
     long batchSize;
     long batchSystemSize, batchDataSize;
 
-    public BackupBatch(Vector<BackupDataPacketWithSize> appListWithSize, long batchSystemSize, long batchDataSize) {
+    public BackupBatch(Vector<BackupDataPacketWithSize> appListWithSize, long batchDataSize, long batchSystemSize) {
         this.appListWithSize = appListWithSize;
         this.batchDataSize = batchDataSize;
         this.batchSystemSize = batchSystemSize;
