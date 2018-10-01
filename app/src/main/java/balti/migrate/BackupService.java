@@ -29,7 +29,9 @@ public class BackupService extends Service {
     IntentFilter cancelReceiverIF, progressBroadcastIF, requestProgressIF;
 
     int p;
-    public static final String CHANNEL = "Backup notification";
+    public static final String BACKUP_START_NOTIFICATION = "Backup start notification";
+    public static final String BACKUP_END_NOTIFICATION = "Backup finished notification";
+    public static final String BACKUP_RUNNING_NOTIFICATION = "Backup running notification";
 
     BackupEngine backupEngine = null;
 
@@ -104,9 +106,17 @@ public class BackupService extends Service {
 
         Notification notification;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL, CHANNEL, NotificationManager.IMPORTANCE_DEFAULT);
-            ((NotificationManager) Objects.requireNonNull(getSystemService(NOTIFICATION_SERVICE))).createNotificationChannel(notificationChannel);
-            notification = new Notification.Builder(this, CHANNEL)
+
+            NotificationChannel notificationChannelStart = new NotificationChannel(BACKUP_START_NOTIFICATION, BACKUP_START_NOTIFICATION, NotificationManager.IMPORTANCE_DEFAULT);
+            ((NotificationManager) Objects.requireNonNull(getSystemService(NOTIFICATION_SERVICE))).createNotificationChannel(notificationChannelStart);
+
+            NotificationChannel notificationChannelEnd = new NotificationChannel(BACKUP_END_NOTIFICATION, BACKUP_END_NOTIFICATION, NotificationManager.IMPORTANCE_DEFAULT);
+            ((NotificationManager) Objects.requireNonNull(getSystemService(NOTIFICATION_SERVICE))).createNotificationChannel(notificationChannelEnd);
+
+            NotificationChannel notificationChannelRunning = new NotificationChannel(BACKUP_RUNNING_NOTIFICATION, BACKUP_RUNNING_NOTIFICATION, NotificationManager.IMPORTANCE_LOW);
+            ((NotificationManager) Objects.requireNonNull(getSystemService(NOTIFICATION_SERVICE))).createNotificationChannel(notificationChannelRunning);
+
+            notification = new Notification.Builder(this, BACKUP_START_NOTIFICATION)
                     .setContentTitle(getString(R.string.loading))
                     .setSmallIcon(R.drawable.ic_notification_icon)
                     .build();

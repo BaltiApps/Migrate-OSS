@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                NotificationChannel channel = new NotificationChannel(BackupService.CHANNEL, BackupService.CHANNEL, NotificationManager.IMPORTANCE_DEFAULT);
+                NotificationChannel channel = new NotificationChannel(BackupService.BACKUP_START_NOTIFICATION, BackupService.BACKUP_START_NOTIFICATION, NotificationManager.IMPORTANCE_DEFAULT);
                 channel.setSound(null, null);
                 assert notificationManager != null;
                 notificationManager.createNotificationChannel(channel);

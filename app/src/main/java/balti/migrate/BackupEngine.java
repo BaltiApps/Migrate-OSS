@@ -178,7 +178,7 @@ public class BackupEngine {
     NotificationCompat.Builder createNotificationBuilder(){
         NotificationCompat.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            builder = new NotificationCompat.Builder(context, BackupService.CHANNEL);
+            builder = new NotificationCompat.Builder(context, BackupService.BACKUP_RUNNING_NOTIFICATION);
         }
         else {
             builder = new NotificationCompat.Builder(context);
@@ -332,15 +332,15 @@ public class BackupEngine {
         endMillis = timeInMillis();
 
 
+        actualProgressBroadcast.putExtra("part_name", "");
+
+        actualProgressBroadcast.putExtra("type", "finished").putExtra("finishedMessage", finalMessage.trim())
+                .putExtra("total_time", endMillis - startMillis).putExtra("final_process", partNumber == totalParts || isCancelled);
+
+        if (errors.size() > 0)
+            actualProgressBroadcast.putStringArrayListExtra("errors", errors);
+
         if (partNumber == totalParts || isCancelled) {
-
-            actualProgressBroadcast.putExtra("part_name", "");
-
-            actualProgressBroadcast.putExtra("type", "finished").putExtra("finishedMessage", finalMessage.trim())
-                    .putExtra("total_time", endMillis - startMillis).putExtra("final_process", partNumber == totalParts || isCancelled);
-
-            if (errors.size() > 0)
-                actualProgressBroadcast.putStringArrayListExtra("errors", errors);
 
             activityProgressIntent.putExtras(actualProgressBroadcast);
 
