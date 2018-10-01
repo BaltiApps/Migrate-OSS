@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +31,9 @@ public class PermissionsScreen extends AppCompatActivity {
 
     TextView storagePerm, rootPerm, contactsAccess, smsAccess, callsAccess;
     Button grantPermissions;
+
+    LinearLayout header;
+    TextView permissionDesc;
 
     SharedPreferences main;
     SharedPreferences.Editor editor;
@@ -47,6 +52,9 @@ public class PermissionsScreen extends AppCompatActivity {
         smsAccess = findViewById(R.id.smsPermTextView);
         callsAccess = findViewById(R.id.callsPermTextView);
 
+        header = findViewById(R.id.permission_screen_header);
+        permissionDesc = findViewById(R.id.permission_explanation);
+
         grantPermissions = findViewById(R.id.grantPermissions);
         grantPermissions.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +66,16 @@ public class PermissionsScreen extends AppCompatActivity {
             }
         });
 
+        permissionDesc.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
+        permissionDesc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(PermissionsScreen.this)
+                        .setMessage(R.string.permissions_desc)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show();
+            }
+        });
 
     }
 
@@ -142,6 +160,7 @@ public class PermissionsScreen extends AppCompatActivity {
             else callsAccess.setVisibility(View.GONE);
 
             if (p[0] && p[1] && p[2] && p[3] && p[4]) {
+                header.setVisibility(View.GONE);
                 grantPermissions.setText(R.string.please_wait);
                 startMainActivity();
             }

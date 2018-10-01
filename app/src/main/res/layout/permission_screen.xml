@@ -7,15 +7,37 @@
     >
 
 
-
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/permissionsRequired"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:gravity="center"
-        android:padding="@dimen/large_padding_width"
-        />
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="30dp"
+        android:id="@+id/permission_screen_header"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/permissionsRequired"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:gravity="center"
+            android:padding="@dimen/large_padding_width"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/why_are_so_many_permissions_needed"
+            android:clickable="true"
+            android:focusable="true"
+            android:textColor="@color/colorAccent"
+            android:id="@+id/permission_explanation"
+            android:foreground="?android:attr/selectableItemBackground"
+            />
+
+    </LinearLayout>
+
 
     <TextView
         android:layout_width="wrap_content"
