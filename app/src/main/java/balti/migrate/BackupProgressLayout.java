@@ -183,9 +183,10 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                 int tp = intent.getIntExtra("total_parts", 1);
                 if (tp > 1) {
+                    String head;
                     new AlertDialog.Builder(this)
-                            .setTitle(tp + " " + getString(R.string.parts))
-                            .setMessage(R.string.split_desc)
+                            .setTitle(head = tp + " " + getString(R.string.parts))
+                            .setMessage(getString(R.string.split_desc_1) + " " + head + "\n\n" + getString(R.string.split_desc_2))
                             .setPositiveButton(android.R.string.ok, null)
                             .show();
                 }

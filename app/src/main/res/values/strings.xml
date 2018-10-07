@@ -103,9 +103,8 @@
     <string name="start_backup">Start backup</string>
 
     <!--BackupProgressLayout.java-->
-    <string name="split_desc">Due to huge backup size, your backup is being split in different parts.\n\n
-    In TWRP, please install all the zips for full restore.
-    </string>
+    <string name="split_desc_1">Due to huge backup size, your backup is being split in</string>
+    <string name="split_desc_2">In TWRP, please install all the zips for full restore.</string>
     <string name="force_stop_title">Force close app?</string>
     <string name="force_stop_desc">If you see abnormality in the app and Cancel button does not help, you can force close the app.</string>
     <string name="force_close">Force close</string>

@@ -82,14 +82,11 @@ then
 				echo "ui_print Free space (/system): $system_free KB" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Required space is $val KB" >> /proc/self/fd/$OUTFD;
 				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
-				echo "ui_print Restore cannot progress. You can try:" >> /proc/self/fd/$OUTFD;
+				echo "ui_print SOME SYSTEM APPS WILL NOT BE RESTORED. You can try:" >> /proc/self/fd/$OUTFD;
 				echo "ui_print * A new ROM" >> /proc/self/fd/$OUTFD;
 				echo "ui_print * A smaller GApps package" >> /proc/self/fd/$OUTFD;
 				echo "ui_print * If you are flashing a backup from a different device, it is not recommended." >> /proc/self/fd/$OUTFD;
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
-				umount /system
-				sleep 2s
-				exit 1
 			fi
 		elif [ "$key" = "sdk" ]; then
 			rom_sdk="$(cat /system/build.prop | grep ro.build.version.sdk | cut -d "=" -f2)"
