@@ -526,7 +526,7 @@ public class BackupEngine {
         script.setExecutable(true, false);
     }
 
-    void makeMetadataFile(String appName, String packageName, String apkName, String dataName, String icon, String version){
+    void makeMetadataFile(String appName, String packageName, String apkName, String dataName, String icon, String version, boolean permissions){
         String metadataFileName = packageName + ".json";
         String metadataLocation = destination + "/" + backupName + "/" + metadataFileName;
         File metadataFile = new File(metadataLocation);
@@ -545,6 +545,7 @@ public class BackupEngine {
                 "   \"data\" : \"" + dataName + "\",\n" +
                 "   \"icon\" : \"" + icon + "\",\n" +
                 "   \"version\" : \"" + version + "\"\n" +
+                "   \"permissions\" : " + permissions + "\n" +
                 "}\n";
 
         (new File(destination + "/" + backupName)).mkdirs();
@@ -664,6 +665,7 @@ public class BackupEngine {
                 String dataName = "NULL";
                 String appIcon = items[4];
                 String version = items[5];
+                boolean permissions = Boolean.parseBoolean(items[6]);
 
                 c++;
 
@@ -673,12 +675,18 @@ public class BackupEngine {
                 }
 
                 String echoCopyCommand = "echo \"migrate status: " + appName + " (" + c + "/" + numberOfJobs + ") icon: " + appIcon + "\"";
+                String permissionCommand = "";
 
                 String command;
 
                 command = "cd " + apkPath + "; cp " + apkName + " " + destination + "/" + backupName + "/" + packageName + ".apk" + "\n";
                 if (!dataPath.equals("NULL")){
                     command = command + "cd " + dataPath + "; " + busyboxBinaryFilePath + " tar -cvzpf " + destination + "/" + backupName + "/" + dataName + ".tar.gz " + dataName + "\n";
+                }
+
+                if (permissions){
+                    permissionCommand = "dumpsys package " + packageName + " | grep android.permission | grep granted=true > " +
+                            destination + "/" + backupName + "/" + packageName + ".perm" + "\n";
                 }
 
                 updater_writer.write("ui_print(\"" + appName + " (" + c + "/" + numberOfJobs + ")\");\n");
@@ -699,7 +707,10 @@ public class BackupEngine {
                     tempApkName = packageName;
                     updater_writer.write("package_extract_file(\"" + packageName + ".apk" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".apk" + "\");\n");
                 }
-                makeMetadataFile(appName, packageName, tempApkName, dataName, appIcon, version);
+                makeMetadataFile(appName, packageName, tempApkName, dataName, appIcon, version, permissions);
+
+                if (permissions)
+                    updater_writer.write("package_extract_file(\"" + packageName + ".perm" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".perm" + "\");\n");
 
                 if (!dataName.equals("NULL")) {
                     updater_writer.write("package_extract_file(\"" + dataName + ".tar.gz" + "\", \"" + TEMP_DIR_NAME + "/" + dataName + ".tar.gz" + "\");\n");
@@ -710,6 +721,7 @@ public class BackupEngine {
 
                 writer.write(echoCopyCommand + '\n', 0, echoCopyCommand.length() + 1);
                 writer.write(command, 0, command.length());
+                if (permissions) writer.write(permissionCommand, 0, permissionCommand.length());
             }
 
             if (doBackupContacts || doBackupSms || doBackupCalls) {

@@ -361,7 +361,15 @@ public class ExtraBackups extends AppCompatActivity {
                             icon.compress(Bitmap.CompressFormat.PNG, 100, stream);
                             String appIcon = byteToString(stream.toByteArray());
 
-                            String line = appName + " " + packageName + " " + apkPath + " " + dataPath + " " + appIcon + " " + versionName;
+                            String line = appName + " " + packageName + " " + apkPath + " " + dataPath + " " + appIcon + " " + versionName +
+                                    " " + packet.PERMISSIONS;
+
+                            /*Process permissionsRead = Runtime.getRuntime().exec("dumpsys package " + packageName + " | grep android.permission | grep granted=true");
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(permissionsRead.getInputStream()));
+                            String pLine;
+                            while ((pLine = reader.readLine()) != null){
+                                Log.d("migrate_engine", appName + " " + pLine.trim());
+                            }*/
 
                             writer.write(line + "\n");
 

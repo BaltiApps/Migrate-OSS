@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             p[1] = false;
         } else {
             try {
-                Process suRequest = Runtime.getRuntime().exec("su -c echo");
+                Process suRequest = Runtime.getRuntime().exec("su -c pm grant " + getPackageName() + " android.permission.DUMP && pm grant " + getPackageName() + " android.permission.PACKAGE_USAGE_STATS");
                 suRequest.waitFor();
                 if (suRequest.exitValue() == 0) p[1] = true;
                 else p[1] = false;
