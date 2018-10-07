@@ -140,6 +140,7 @@ public class BackupService extends Service {
 
             File tempBackupSummary = new File(getFilesDir(), "backup_summary_part0");
             try {
+                tempBackupSummary.delete();
                 tempBackupSummary.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
