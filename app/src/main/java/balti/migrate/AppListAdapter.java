@@ -126,7 +126,8 @@ public class AppListAdapter extends BaseAdapter {
             app.setChecked(true);
             app.setEnabled(false);
         }
-        else app.setEnabled(true);
+        else if (p != Exclusions.EXCLUDE_APP_DATA) app.setEnabled(true);
+
         data.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
