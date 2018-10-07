@@ -1,6 +1,5 @@
 package balti.migrate;
 
-import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -36,7 +35,7 @@ import static balti.migrate.Exclusions.NOT_EXCLUDED;
 public class BackupActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, OnCheck {
 
     ListView listView;
-    CheckBox appAllSelect, dataAllSelect;
+    CheckBox appAllSelect, dataAllSelect, permissionsAllSelect;
     Spinner appType;
     TextView nextButton;
     ImageButton selectAll, clearAll, backButton;
@@ -63,6 +62,8 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
             appAllSelect.setEnabled(false);
             dataAllSelect.setEnabled(false);
+            permissionsAllSelect.setEnabled(false);
+
             selectAll.setEnabled(false);
             clearAll.setEnabled(false);
 
@@ -82,6 +83,8 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
             appAllSelect.setEnabled(true);
             dataAllSelect.setEnabled(true);
+            permissionsAllSelect.setEnabled(true);
+
             selectAll.setEnabled(true);
             clearAll.setEnabled(true);
 
@@ -91,6 +94,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             listView.setAdapter(adapter);
 
             dataAllSelect.setChecked(true);
+            permissionsAllSelect.setChecked(true);
 
             totalApps = appList.size();
         }
@@ -107,6 +111,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
         appAllSelect = findViewById(R.id.appAllSelect);
         dataAllSelect = findViewById(R.id.dataAllSelect);
+        permissionsAllSelect = findViewById(R.id.permissionsAllSelect);
 
         nextButton = findViewById(R.id.backupActivityNext);
         selectAll = findViewById(R.id.selectAll);
@@ -128,6 +133,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
         appAllSelect.setOnCheckedChangeListener(this);
         dataAllSelect.setOnCheckedChangeListener(this);
+        permissionsAllSelect.setOnCheckedChangeListener(this);
 
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,6 +146,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             @Override
             public void onClick(View view) {
                 dataAllSelect.setChecked(true);
+                permissionsAllSelect.setChecked(true);
             }
         });
 
@@ -197,6 +204,9 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         dataAllSelect.setOnCheckedChangeListener(null);
         dataAllSelect.setChecked(false);
         dataAllSelect.setOnCheckedChangeListener(this);
+        permissionsAllSelect.setOnCheckedChangeListener(null);
+        permissionsAllSelect.setChecked(false);
+        permissionsAllSelect.setOnCheckedChangeListener(this);
 
         if (i == 2) {
             List<PackageInfo> tempAppList = pm.getInstalledPackages(0);
@@ -206,6 +216,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
                 packet.PACKAGE_INFO = tempAppList.get(k);
                 packet.APP = false;
                 packet.DATA = false;
+                packet.PERMISSIONS = false;
                 appList.add(packet);
             }
             adapter = new AppListAdapter(BackupActivity.this, appList);
@@ -218,6 +229,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
                     packet.PACKAGE_INFO = tempAppList.get(k);
                     packet.APP = false;
                     packet.DATA = false;
+                    packet.PERMISSIONS = false;
                     appList.add(packet);
                 }
             }
@@ -231,6 +243,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
                     packet.PACKAGE_INFO = tempAppList.get(k);
                     packet.APP = false;
                     packet.DATA = false;
+                    packet.PERMISSIONS = false;
                     appList.add(packet);
                 }
             }
@@ -242,13 +255,13 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     @Override
     public void onCheck(Vector<BackupDataPacket> backupDataPackets) {
         appList = backupDataPackets;
-        boolean app, data;
+        boolean app, data, permissions;
 
         totalApps = 0;
 
         if (appList.size() > 0)
-            app = data = true;
-        else app = data = false;
+            app = data = permissions = true;
+        else app = data = permissions = false;
 
         for (int i = 0; i < backupDataPackets.size(); i++) {
             BackupDataPacket packet = appList.elementAt(i);
@@ -260,28 +273,48 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             else if (exclusionState == EXCLUDE_DATA) {
                 app = app && packet.APP;
             }
-            if (packet.APP || packet.DATA)
+            permissions = permissions && packet.PERMISSIONS;
+            if (packet.APP || packet.DATA || packet.PERMISSIONS)
                 totalApps++;
         }
 
         dataAllSelect.setOnCheckedChangeListener(null);
         dataAllSelect.setChecked(data);
         dataAllSelect.setOnCheckedChangeListener(this);
+
         appAllSelect.setOnCheckedChangeListener(null);
         appAllSelect.setChecked(app);
         if (dataAllSelect.isChecked())
             appAllSelect.setEnabled(false);
         else appAllSelect.setEnabled(true);
         appAllSelect.setOnCheckedChangeListener(this);
+
+        permissionsAllSelect.setEnabled(app);
+
+        permissionsAllSelect.setOnCheckedChangeListener(null);
+        permissionsAllSelect.setChecked(permissions);
+        permissionsAllSelect.setOnCheckedChangeListener(this);
     }
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
-        if (compoundButton == appAllSelect) {
+        if (compoundButton == permissionsAllSelect){
+            adapter.checkAllPermissions(b);
+            adapter.notifyDataSetChanged();
+        }
+        else if (compoundButton == appAllSelect) {
+            if (!b){
+                permissionsAllSelect.setChecked(false);
+                permissionsAllSelect.setEnabled(false);
+            }
+            else {
+                permissionsAllSelect.setEnabled(true);
+            }
             adapter.checkAllApp(b);
             adapter.notifyDataSetChanged();
-        } else if (compoundButton == dataAllSelect) {
+        }
+        else if (compoundButton == dataAllSelect) {
             if (b){
                 appAllSelect.setChecked(true);
                 appAllSelect.setEnabled(false);
@@ -292,21 +325,9 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             adapter.checkAllData(b);
             adapter.notifyDataSetChanged();
         }
+
     }
 
-
-    boolean isBackupRunning(){
-        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        assert manager != null;
-        for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE))
-        {
-            if(serviceInfo.service.getClassName().equalsIgnoreCase("balti.migrate.BackupService"))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Override
     protected void onDestroy() {

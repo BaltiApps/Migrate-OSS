@@ -97,21 +97,16 @@ public class AppListAdapter extends BaseAdapter {
             }
         });
 
-        final CheckBox app, data;
+        final CheckBox app, data, permission;
 
         app = view.findViewById(R.id.appCheckbox);
         app.setChecked(appItem.APP);
 
-        app.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                appItem.APP = b;
-                onCheck.onCheck(appList);
-            }
-        });
-
         data = view.findViewById(R.id.dataCheckbox);
         data.setChecked(appItem.DATA);
+
+        permission = view.findViewById(R.id.permissionCheckbox);
+        permission.setChecked(appItem.PERMISSIONS);
 
         final int p = exclusions.returnExclusionState(appList.get(i).PACKAGE_INFO.packageName);
 
@@ -120,6 +115,7 @@ public class AppListAdapter extends BaseAdapter {
         else if (p == Exclusions.EXCLUDE_APP_DATA){
             app.setEnabled(false);
             data.setEnabled(false);
+            permission.setEnabled(false);
         }
 
         if (data.isChecked()) {
@@ -127,6 +123,29 @@ public class AppListAdapter extends BaseAdapter {
             app.setEnabled(false);
         }
         else if (p != Exclusions.EXCLUDE_APP_DATA) app.setEnabled(true);
+
+        permission.setEnabled(app.isChecked());
+
+        permission.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                appItem.PERMISSIONS = isChecked;
+                onCheck.onCheck(appList);
+            }
+        });
+
+        app.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                appItem.APP = b;
+                if (!b) {
+                    permission.setChecked(false);
+                    permission.setEnabled(false);
+                }
+                else permission.setEnabled(true);
+                onCheck.onCheck(appList);
+            }
+        });
 
         data.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -147,18 +166,21 @@ public class AppListAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (appItem.APP && appItem.DATA){
+                if (appItem.APP && appItem.DATA && appItem.PERMISSIONS){
                         data.setChecked(false);
                         app.setChecked(false);
+                        permission.setChecked(false);
                 }
                 else {
 
                     if (p == Exclusions.NOT_EXCLUDED) {
                         app.setChecked(true);
                         data.setChecked(true);
+                        permission.setChecked(true);
                     }
                     else if (p == Exclusions.EXCLUDE_DATA){
                         app.setChecked(true);
+                        permission.setChecked(true);
                     }
                 }
             }
@@ -184,6 +206,16 @@ public class AppListAdapter extends BaseAdapter {
         {
             int p = exclusions.returnExclusionState(appList.get(i).PACKAGE_INFO.packageName);
             if (p == Exclusions.NOT_EXCLUDED || p == Exclusions.EXCLUDE_DATA) appList.elementAt(i).APP = check;
+        }
+    }
+
+    void checkAllPermissions(boolean check){
+        for (int i = 0; i < appList.size(); i++)
+        {
+            if (check) {
+                if (appList.elementAt(i).APP) appList.elementAt(i).PERMISSIONS = true;
+            }
+            else appList.elementAt(i).PERMISSIONS = false;
         }
     }
 

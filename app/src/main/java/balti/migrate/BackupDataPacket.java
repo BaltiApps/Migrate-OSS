@@ -10,4 +10,5 @@ public class BackupDataPacket {
     PackageInfo PACKAGE_INFO;
     boolean APP;
     boolean DATA;
+    boolean PERMISSIONS;
 }

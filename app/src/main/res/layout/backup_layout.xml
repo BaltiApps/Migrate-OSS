@@ -114,6 +114,31 @@
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/permissionCheckboxView"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:paddingEnd="@dimen/large_padding_width"
+                    android:paddingStart="@dimen/large_padding_width"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/permission"
+                        />
+
+                    <CheckBox
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:id="@+id/permissionsAllSelect"
+                        android:gravity="bottom"
+                        />
+
+                </LinearLayout>
+
             </LinearLayout>
 
         </LinearLayout>
