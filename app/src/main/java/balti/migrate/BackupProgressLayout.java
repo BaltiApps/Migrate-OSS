@@ -203,8 +203,10 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                     if (intent.hasExtra("errors")) {
                         setError(intent.getStringArrayListExtra("errors"));
-                        appIcon.setImageResource(R.drawable.ic_error);
-                    } else if (intent.getStringExtra("finishedMessage").equals(getString(R.string.backupCancelled))) {
+                        if (intent.getStringArrayListExtra("errors").size() > 0) appIcon.setImageResource(R.drawable.ic_error);
+                    }
+
+                    if (intent.getStringExtra("finishedMessage").equals(getString(R.string.backupCancelled))) {
                         appIcon.setImageResource(R.drawable.ic_cancelled);
                     } else {
                         progressBar.setProgress(100);

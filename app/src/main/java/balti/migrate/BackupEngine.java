@@ -17,9 +17,11 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -32,6 +34,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Vector;
+import java.util.zip.CRC32;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by sayantan on 9/10/17.
@@ -80,7 +85,8 @@ public class BackupEngine {
 
     private String errorTag;
 
-    private String zipBinaryFilePath, busyboxBinaryFilePath;
+    private String busyboxBinaryFilePath;
+    //private String zipBinaryFilePath;
 
     private final String TEMP_DIR_NAME = "/data/balti.migrate";
 
@@ -164,7 +170,7 @@ public class BackupEngine {
 
         errors = new ArrayList<>(0);
 
-        zipBinaryFilePath = "";
+        //zipBinaryFilePath = "";
 
         timeStamp = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(Calendar.getInstance().getTime());
 
@@ -310,7 +316,7 @@ public class BackupEngine {
                 errors.add(context.getString(R.string.errorMakingScripts));
             }
 
-            String zipErr = zipAll(notificationManager, progressNotif, activityProgressIntent);
+            String zipErr = javaZipAll(notificationManager, progressNotif, activityProgressIntent);
             if (!zipErr.trim().equals("")) errors.add("ZIP" + errorTag + ": " + zipErr);
 
         } catch (Exception e) {
@@ -338,8 +344,7 @@ public class BackupEngine {
                 .putExtra("total_time", endMillis - startMillis).putExtra("final_process",
                 partNumber == totalParts || isCancelled || errors.size() > 0);
 
-        if (errors.size() > 0)
-            actualProgressBroadcast.putStringArrayListExtra("errors", errors);
+        actualProgressBroadcast.putStringArrayListExtra("errors", errors);
 
         if (partNumber == totalParts || isCancelled || errors.size() > 0) {
 
@@ -362,7 +367,7 @@ public class BackupEngine {
             context.stopService(new Intent(context, BackupService.class));
     }
 
-    private String zipAll(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+    /*private String zipAll(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
 
         String err = "";
         try {
@@ -441,11 +446,12 @@ public class BackupEngine {
                 int pr = c*100 / n;
                 if (pr == 100) pr = 99;
 
-                activityProgressIntent.putExtras(actualProgressBroadcast);
 
                 actualProgressBroadcast.putExtra("type", "zip_progress")
                         .putExtra("progress", pr)
                         .putExtra("zip_log", l);
+
+                activityProgressIntent.putExtras(actualProgressBroadcast);
 
                 LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
@@ -466,6 +472,154 @@ public class BackupEngine {
                 err = err + e.getMessage() + "\n";
         }
         return err;
+    }*/
+
+    private String javaZipAll(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+
+        String err = "";
+        try {
+
+            String title = (totalParts > 1)? context.getString(R.string.combining) + " : " + madePartName : context.getString(R.string.combining);
+            progressNotif.setContentTitle(title)
+                    .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                    .setProgress(0, 0, false)
+                    .setContentText("");
+            notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+            getNumberOfFiles = Runtime.getRuntime().exec("ls -l " + destination + "/" + backupName);
+            BufferedReader outputReader = new BufferedReader(new InputStreamReader(getNumberOfFiles.getInputStream()));
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(getNumberOfFiles.getErrorStream()));
+            getNumberOfFiles.waitFor();
+            String l; int n = 0;
+            while (outputReader.readLine() != null){
+                ++n;
+            }
+            --n;
+            while ((l = errorReader.readLine()) != null){
+                err = err + l + "\n";
+            }
+            (new File(destination + "/" + backupName + ".zip")).delete();
+            int c = 0;
+
+            File directory = new File(destination + "/" + backupName);
+            Vector<File> files = getAllFiles(directory, new Vector<File>(1));
+
+            File zipFile = new File(destination + "/" + backupName + ".zip");
+
+            FileOutputStream fileOutputStream = new FileOutputStream(zipFile);
+            ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
+
+
+            //int part = 0;
+
+            for (File file : files)
+            {
+
+                if (isCancelled) break;
+
+                String fn = file.getAbsolutePath();
+                fn = fn.substring(directory.getAbsolutePath().length() + 1);
+                ZipEntry zipEntry;
+
+
+
+                if (file.isDirectory()) {
+                    zipEntry = new ZipEntry(fn + "/");
+
+                    zipOutputStream.putNextEntry(zipEntry);
+                    zipOutputStream.closeEntry();
+                    continue;
+                }
+                else {
+                    zipEntry = new ZipEntry(fn);
+
+                    BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+                    byte[] buffer = new byte[4096];
+                    int read;
+
+                    CRC32 crc32 = new CRC32();
+
+                    while ((read = bis.read(buffer)) > 0)
+                    {
+                        crc32.update(buffer, 0, read);
+                    }
+
+                    bis.close();
+                    
+                    zipEntry.setSize(file.length());
+                    zipEntry.setCompressedSize(file.length());
+                    zipEntry.setCrc(crc32.getValue());
+                    zipEntry.setMethod(ZipEntry.STORED);
+
+                    zipOutputStream.putNextEntry(zipEntry);
+
+                    FileInputStream fileInputStream = new FileInputStream(file);
+                    buffer = new byte[4096];
+
+                    while ((read = fileInputStream.read(buffer)) > 0)
+                    {
+                        zipOutputStream.write(buffer, 0, read);
+                    }
+                    zipOutputStream.closeEntry();
+                    fileInputStream.close();
+                    file.delete();
+                }
+
+                /*if (zipFile.length() >= 1000000){
+                    zipOutputStream.close();
+                    zipFile = new File(destination + "/" + backupName + "_part" + ++part + ".zip");
+                    fileOutputStream = new FileOutputStream(zipFile);
+                    zipOutputStream = new ZipOutputStream(fileOutputStream);
+                }*/
+
+                int pr = c++*100 / n;
+                if (pr == 100) pr = 99;
+
+                actualProgressBroadcast.putExtra("type", "zip_progress")
+                        .putExtra("zip_log", "zipping: " + file.getName())
+                        .putExtra("progress", pr);
+
+                activityProgressIntent.putExtras(actualProgressBroadcast);
+
+                LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+
+                progressNotif.setProgress(n, c, false)
+                        .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+
+                notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+            }
+            zipOutputStream.close();
+            fullDelete(directory.getAbsolutePath());
+
+            while ((l = errorReader.readLine()) != null){
+                err = err + l + "\n";
+            }
+
+            if (c < n){
+                err += context.getString(R.string.notEnoughSpace) + "\n";
+            }
+
+        }
+        catch (Exception e) {
+            if (!isCancelled)
+                err = err + e.getMessage() + "\n";
+        }
+        return err;
+    }
+
+    Vector<File> getAllFiles(File directory, Vector<File> allFiles){
+        File files[] = directory.listFiles();
+        for (File f : files){
+            if (f.isFile())
+                allFiles.addElement(f);
+            else {
+                allFiles.addElement(f);
+                getAllFiles(f, allFiles);
+            }
+        }
+        return allFiles;
     }
 
     void makePackageData(){
@@ -568,9 +722,12 @@ public class BackupEngine {
 
     File[] makeScripts() {
 
-        zipBinaryFilePath = commonTools.unpackAssetToInternal("zip", "zip");
+        //zipBinaryFilePath = commonTools.unpackAssetToInternal("zip", "zip");
 
-        if (busyboxBinaryFilePath.equals("") || zipBinaryFilePath.equals(""))
+        /*if (busyboxBinaryFilePath.equals("") || zipBinaryFilePath.equals(""))
+            return new File[]{null, null};*/
+
+        if (busyboxBinaryFilePath.equals(""))
             return new File[]{null, null};
 
         File script = new File(context.getFilesDir(), "script.sh");
