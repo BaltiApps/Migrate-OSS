@@ -148,7 +148,14 @@ public class ExtraBackups extends AppCompatActivity {
             waitingProgress.setVisibility(View.GONE);
             waitingDetails.setVisibility(View.GONE);
 
-            busyboxBinaryFile = new CommonTools(ExtraBackups.this).unpackAssetToInternal("busybox", "busybox");
+            final String cpu_abi = Build.SUPPORTED_ABIS[0];
+
+            if (cpu_abi.equals("armeabi-v7a") || cpu_abi.equals("arm64-v8a")) {
+                busyboxBinaryFile = new CommonTools(ExtraBackups.this).unpackAssetToInternal("busybox", "busybox");
+            }
+            else if (cpu_abi.equals("x86") || cpu_abi.equals("x86_64")){
+                busyboxBinaryFile = new CommonTools(ExtraBackups.this).unpackAssetToInternal("busybox-x86", "busybox");
+            }
             duBinaryFilePath = busyboxBinaryFile + " du";
         }
 

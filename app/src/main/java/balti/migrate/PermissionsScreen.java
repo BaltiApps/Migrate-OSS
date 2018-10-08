@@ -85,7 +85,7 @@ public class PermissionsScreen extends AppCompatActivity {
 
         final String cpu_abi = Build.SUPPORTED_ABIS[0];
 
-        if (!(cpu_abi.equals("armeabi-v7a") || cpu_abi.equals("arm64-v8a"))){
+        if (!(cpu_abi.equals("armeabi-v7a") || cpu_abi.equals("arm64-v8a") || cpu_abi.equals("x86") || cpu_abi.equals("x86_64"))){
 
             grantPermissions.setVisibility(View.GONE);
 
