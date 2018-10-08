@@ -71,7 +71,7 @@ public class BackupService extends Service {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.hasExtra("type") && intent.getStringExtra("type").equals("finished")) {
-                    if ((runningBatchCount+1) < batches.size()) {
+                    if ((runningBatchCount+1) < batches.size() && intent.getStringArrayListExtra("errors").size() == 0) {
                         runningBatchCount += 1;
                         runNextBatch();
                     }

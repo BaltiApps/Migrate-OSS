@@ -335,12 +335,13 @@ public class BackupEngine {
         actualProgressBroadcast.putExtra("part_name", "");
 
         actualProgressBroadcast.putExtra("type", "finished").putExtra("finishedMessage", finalMessage.trim())
-                .putExtra("total_time", endMillis - startMillis).putExtra("final_process", partNumber == totalParts || isCancelled);
+                .putExtra("total_time", endMillis - startMillis).putExtra("final_process",
+                partNumber == totalParts || isCancelled || errors.size() > 0);
 
         if (errors.size() > 0)
             actualProgressBroadcast.putStringArrayListExtra("errors", errors);
 
-        if (partNumber == totalParts || isCancelled) {
+        if (partNumber == totalParts || isCancelled || errors.size() > 0) {
 
             activityProgressIntent.putExtras(actualProgressBroadcast);
 
@@ -357,7 +358,7 @@ public class BackupEngine {
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
-        if (partNumber == totalParts || isCancelled)
+        if (partNumber == totalParts || isCancelled || errors.size() > 0)
             context.stopService(new Intent(context, BackupService.class));
     }
 

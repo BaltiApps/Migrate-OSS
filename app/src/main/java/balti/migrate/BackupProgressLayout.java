@@ -52,8 +52,6 @@ public class BackupProgressLayout extends AppCompatActivity {
 
     String lastType = "";
 
-    ArrayList<String> allErrors;
-
     long totalTasksTime = 0;
 
     CommonTools commonTools;
@@ -98,8 +96,6 @@ public class BackupProgressLayout extends AppCompatActivity {
         setContentView(R.layout.backup_progress_layout);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        allErrors = new ArrayList<>(0);
 
         task = findViewById(R.id.progressTask);
         partName = findViewById(R.id.part_name);
@@ -194,10 +190,6 @@ public class BackupProgressLayout extends AppCompatActivity {
             }
             else if (type.equals("finished")){
 
-                if (intent.hasExtra("errors")) {
-                    allErrors.addAll(intent.getStringArrayListExtra("errors"));
-                }
-
                 totalTasksTime += intent.getLongExtra("total_time", 0);
 
                 if (intent.getBooleanExtra("final_process", true)) {
@@ -210,7 +202,7 @@ public class BackupProgressLayout extends AppCompatActivity {
                     }
 
                     if (intent.hasExtra("errors")) {
-                        setError(allErrors);
+                        setError(intent.getStringArrayListExtra("errors"));
                         appIcon.setImageResource(R.drawable.ic_error);
                     } else if (intent.getStringExtra("finishedMessage").equals(getString(R.string.backupCancelled))) {
                         appIcon.setImageResource(R.drawable.ic_cancelled);
