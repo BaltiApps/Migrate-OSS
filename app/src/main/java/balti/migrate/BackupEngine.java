@@ -544,7 +544,7 @@ public class BackupEngine {
                 "   \"apk\" : \"" + apkName + "\",\n" +
                 "   \"data\" : \"" + dataName + "\",\n" +
                 "   \"icon\" : \"" + icon + "\",\n" +
-                "   \"version\" : \"" + version + "\"\n" +
+                "   \"version\" : \"" + version + "\",\n" +
                 "   \"permissions\" : " + permissions + "\n" +
                 "}\n";
 
