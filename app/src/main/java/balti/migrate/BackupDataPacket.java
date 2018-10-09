@@ -11,4 +11,5 @@ public class BackupDataPacket {
     boolean APP;
     boolean DATA;
     boolean PERMISSIONS;
+    boolean IS_PERMISSIBLE;
 }

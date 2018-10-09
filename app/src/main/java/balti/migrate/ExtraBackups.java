@@ -1,5 +1,6 @@
 package balti.migrate;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -19,6 +20,9 @@ import android.os.Bundle;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -54,7 +58,7 @@ import java.util.Vector;
 
 import static android.os.Environment.getExternalStorageDirectory;
 
-public class ExtraBackups extends AppCompatActivity {
+public class ExtraBackups extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
 
 
     private String destination;
@@ -110,6 +114,11 @@ public class ExtraBackups extends AppCompatActivity {
     Vector<File> backupSummaries;
     String backupName = "generic_backup_name";
     String busyboxBinaryFile = "";
+
+    int CONTACT_PERMISSION = 933;
+    int SMS_PERMISSION = 944;
+    int CALLS_PERMISSION = 676;
+    int SMS_AND_CALLS_PERMISSION = 511;
 
     class MakeBackupSummary extends AsyncTask<Void, String, Object[]> {
 
@@ -1225,98 +1234,204 @@ public class ExtraBackups extends AppCompatActivity {
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("get data"));
 
-        doBackupContacts.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        doBackupContacts.setOnCheckedChangeListener(this);
+        doBackupSms.setOnCheckedChangeListener(this);
+        doBackupCalls.setOnCheckedChangeListener(this);
 
-                if (b) {
+        boolean isSmsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED;
+        boolean isCallsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED;
+        boolean isSmsAndCallsGranted = isSmsGranted && isCallsGranted;
 
-                    new AlertDialog.Builder(ExtraBackups.this)
-                            .setTitle(R.string.not_recommended)
-                            .setMessage(getText(R.string.contacts_not_recommended))
-                            .setPositiveButton(R.string.dont_backup, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    doBackupContacts.setChecked(false);
-                                }
-                            })
-                            .setNegativeButton(R.string.backup_contacts_anyway, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    try {
-                                        contactsReader = new ReadContacts();
-                                        contactsReader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            })
-                            .setCancelable(false)
-                            .show();
+        if (isSmsAndCallsGranted) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_SMS, Manifest.permission.READ_CALL_LOG}, SMS_AND_CALLS_PERMISSION);
+        }
+        else if (isSmsGranted) {
+            doBackupSms.setChecked(true);
+        }
+        else if (isCallsGranted) {
+            doBackupCalls.setChecked(true);
+        }
 
-                } else {
-                    contactsMainItem.setClickable(false);
-                    contactsReadProgressBar.setVisibility(View.GONE);
-                    contactsSelectedStatus.setVisibility(View.GONE);
-                    try {
-                        contactsReader.cancel(true);
-                    } catch (Exception ignored) {
-                    }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+        if (buttonView == doBackupContacts){
+
+            if (isChecked) {
+
+                new AlertDialog.Builder(ExtraBackups.this)
+                        .setTitle(R.string.not_recommended)
+                        .setMessage(getText(R.string.contacts_not_recommended))
+                        .setPositiveButton(R.string.dont_backup, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                doBackupContacts.setChecked(false);
+                            }
+                        })
+                        .setNegativeButton(R.string.backup_contacts_anyway, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                ActivityCompat.requestPermissions(ExtraBackups.this,
+                                        new String[]{Manifest.permission.READ_CONTACTS},
+                                        CONTACT_PERMISSION);
+
+                            }
+                        })
+                        .setCancelable(false)
+                        .show();
+
+            } else {
+                contactsMainItem.setClickable(false);
+                contactsReadProgressBar.setVisibility(View.GONE);
+                contactsSelectedStatus.setVisibility(View.GONE);
+                try {
+                    contactsReader.cancel(true);
+                } catch (Exception ignored) {
                 }
             }
-        });
 
-        doBackupSms.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
-                if (b) {
-                    try {
-                        smsReader = new ReadSms();
-                        smsReader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    smsMainItem.setClickable(false);
-                    smsReadProgressBar.setVisibility(View.GONE);
-                    smsSelectedStatus.setVisibility(View.GONE);
-                    try {
-                        smsReader.cancel(true);
-                    } catch (Exception ignored) {
-                    }
+        }
+        else if (buttonView == doBackupSms){
+
+            if (isChecked) {
+
+                ActivityCompat.requestPermissions(ExtraBackups.this,
+                        new String[]{Manifest.permission.READ_SMS},
+                        SMS_PERMISSION);
+
+            } else {
+                smsMainItem.setClickable(false);
+                smsReadProgressBar.setVisibility(View.GONE);
+                smsSelectedStatus.setVisibility(View.GONE);
+                try {
+                    smsReader.cancel(true);
+                } catch (Exception ignored) {
+                }
+            }
+
+        }
+        else if (buttonView == doBackupCalls){
+
+            if (isChecked) {
+
+                ActivityCompat.requestPermissions(ExtraBackups.this,
+                    new String[]{Manifest.permission.READ_CALL_LOG},
+                    CALLS_PERMISSION);
+
+
+            } else {
+                callsMainItem.setClickable(false);
+                callsReadProgressBar.setVisibility(View.GONE);
+                callsSelectedStatus.setVisibility(View.GONE);
+                try {
+                    callsReader.cancel(true);
+                } catch (Exception ignored) {
+                }
+            }
+
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == SMS_AND_CALLS_PERMISSION){
+
+            if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+
+                doBackupSms.setOnCheckedChangeListener(null);
+                doBackupCalls.setOnCheckedChangeListener(null);
+
+                doBackupSms.setChecked(true);
+                doBackupCalls.setChecked(true);
+
+                try {
+                    callsReader = new ReadCalls();
+                    callsReader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    smsReader = new ReadSms();
+                    smsReader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                doBackupSms.setOnCheckedChangeListener(this);
+                doBackupCalls.setOnCheckedChangeListener(this);
+
+            }
+
+        }
+        else if (requestCode == CONTACT_PERMISSION){
+
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+
+                try {
+                    contactsReader = new ReadContacts();
+                    contactsReader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+            else {
+
+                Snackbar.make(doBackupContacts, R.string.contacts_access_needed, Snackbar.LENGTH_SHORT).show();
+                doBackupContacts.setChecked(false);
+
+            }
+
+        }
+        else if (requestCode == SMS_PERMISSION){
+
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+
+                try {
+                    smsReader = new ReadSms();
+                    smsReader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
             }
-        });
+            else {
 
-        doBackupSms.setChecked(true);
+                Snackbar.make(doBackupSms, R.string.sms_access_needed, Snackbar.LENGTH_SHORT).show();
+                doBackupSms.setChecked(false);
 
-        doBackupCalls.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            }
 
-                if (isChecked) {
-                    try {
-                        callsReader = new ReadCalls();
-                        callsReader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    callsMainItem.setClickable(false);
-                    callsReadProgressBar.setVisibility(View.GONE);
-                    callsSelectedStatus.setVisibility(View.GONE);
-                    try {
-                        callsReader.cancel(true);
-                    } catch (Exception ignored) {
-                    }
+        }
+        else if (requestCode == CALLS_PERMISSION){
+
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+
+                try {
+                    callsReader = new ReadCalls();
+                    callsReader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
             }
-        });
+            else {
 
-        doBackupCalls.setChecked(true);
+                Snackbar.make(doBackupCalls, R.string.calls_access_needed, Snackbar.LENGTH_SHORT).show();
+                doBackupCalls.setChecked(false);
+
+            }
+
+        }
 
     }
 

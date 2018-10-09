@@ -116,6 +116,7 @@ public class AppListAdapter extends BaseAdapter {
             app.setEnabled(false);
             data.setEnabled(false);
             permission.setEnabled(false);
+            appItem.IS_PERMISSIBLE = false;
         }
 
         if (data.isChecked()) {
@@ -123,8 +124,6 @@ public class AppListAdapter extends BaseAdapter {
             app.setEnabled(false);
         }
         else if (p != Exclusions.EXCLUDE_APP_DATA) app.setEnabled(true);
-
-        permission.setEnabled(app.isChecked());
 
         permission.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -134,15 +133,29 @@ public class AppListAdapter extends BaseAdapter {
             }
         });
 
+        if (app.isChecked()) {
+            permission.setEnabled(true);
+            appItem.IS_PERMISSIBLE = true;
+        }
+        else {
+            permission.setEnabled(false);
+            permission.setChecked(false);
+            appItem.IS_PERMISSIBLE = false;
+        }
+
         app.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 appItem.APP = b;
                 if (!b) {
+                    appItem.IS_PERMISSIBLE = false;
                     permission.setChecked(false);
                     permission.setEnabled(false);
                 }
-                else permission.setEnabled(true);
+                else {
+                    appItem.IS_PERMISSIBLE = true;
+                    permission.setEnabled(true);
+                }
                 onCheck.onCheck(appList);
             }
         });
@@ -197,16 +210,23 @@ public class AppListAdapter extends BaseAdapter {
         for (int i = 0; i < appList.size(); i++)
         {
             int p = exclusions.returnExclusionState(appList.get(i).PACKAGE_INFO.packageName);
-            if (p == Exclusions.NOT_EXCLUDED) appList.elementAt(i).DATA = check;
+            if (p == Exclusions.NOT_EXCLUDED){
+                appList.elementAt(i).DATA = check;
+            }
         }
+        onCheck.onCheck(appList);
     }
 
     void checkAllApp(boolean check){
         for (int i = 0; i < appList.size(); i++)
         {
             int p = exclusions.returnExclusionState(appList.get(i).PACKAGE_INFO.packageName);
-            if (p == Exclusions.NOT_EXCLUDED || p == Exclusions.EXCLUDE_DATA) appList.elementAt(i).APP = check;
+            if (p == Exclusions.NOT_EXCLUDED || p == Exclusions.EXCLUDE_DATA){
+                appList.elementAt(i).APP = check;
+                appList.elementAt(i).IS_PERMISSIBLE = check;
+            }
         }
+        onCheck.onCheck(appList);
     }
 
     void checkAllPermissions(boolean check){
@@ -217,6 +237,7 @@ public class AppListAdapter extends BaseAdapter {
             }
             else appList.elementAt(i).PERMISSIONS = false;
         }
+        onCheck.onCheck(appList);
     }
 
     Vector<BackupDataPacket> sortByAppName(Vector<BackupDataPacket> appList){

@@ -23,12 +23,9 @@
 
     <!--permission_screen.xml-->
     <string name="permissionsRequired">Following permissions are required</string>
-    <string name="why_are_so_many_permissions_needed">Why so many permissions?</string>
+    <string name="why_these_permissions">Why these permissions?</string>
     <string name="storage">Storage access</string>
     <string name="rootAccess">Root access</string>
-    <string name="contactsAccess">Contacts access</string>
-    <string name="smsAccess">Sms access</string>
-    <string name="callsAccess">Call logs access</string>
     <string name="grantPermissions">Grant permissions</string>
     <string name="requesting">Requesting...</string>
 
@@ -37,11 +34,12 @@
     <string name="cpu_arch_is">Your CPU arch is:</string>
     <string name="currently_supported_cpu">Only <b>armeabi-v7a, arm64-v8a, x86, x86_64</b> CPU architectures are currently supported. Please contact via mail to help support your device.</string>
     <string name="permissions_desc">
-        <b>Storage access</b>: To store the backups.\n\n
-        <b>Contacts access</b>: To backup contacts.\n\n
-        <b>Sms access</b>: To backup text messages.\n\n
+        <b>Storage access</b>: To store the backups.\n
+        <b>Root access</b>: Necessary to backup app data.\n\n
+        In case you would like to backup contacts, sms or call logs, you will be requested to grant:\n\n
+        <b>Contacts access</b>: To backup contacts.\n
+        <b>Sms access</b>: To backup text messages.\n
         <b>Call logs access</b>: To backup call logs.\n\n
-        <b>Root access</b>: Necessary to backup app data.\n\n\n
         Some of the permissions are sensitive, and is not used other than backup purposes. All backups are locally stored, hence there is no chance of data leak from the app.
     </string>
 
@@ -93,6 +91,9 @@
     <string name="insufficient_storage">Insufficient storage!</string>
     <string name="required_storage">Migrate needs more free space:</string>
     <string name="will_be_compressed">We need the estimated size to copy the app files. The final package will take much less space than the estimated size due to compression.</string>
+    <string name="contacts_access_needed">Need to read contacts for contacts backup</string>
+    <string name="sms_access_needed">Need to read SMS for SMS messages backup</string>
+    <string name="calls_access_needed">Need to read call logs for calls backup</string>
 
     <!--extra_item_selector.xml-->
     <string name="sms_selector_label">Select SMS</string>

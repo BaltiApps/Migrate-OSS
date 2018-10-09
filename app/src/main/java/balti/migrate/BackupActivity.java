@@ -217,6 +217,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
                 packet.APP = false;
                 packet.DATA = false;
                 packet.PERMISSIONS = false;
+                packet.IS_PERMISSIBLE = false;
                 appList.add(packet);
             }
             adapter = new AppListAdapter(BackupActivity.this, appList);
@@ -230,6 +231,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
                     packet.APP = false;
                     packet.DATA = false;
                     packet.PERMISSIONS = false;
+                    packet.IS_PERMISSIBLE = false;
                     appList.add(packet);
                 }
             }
@@ -244,6 +246,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
                     packet.APP = false;
                     packet.DATA = false;
                     packet.PERMISSIONS = false;
+                    packet.IS_PERMISSIBLE = false;
                     appList.add(packet);
                 }
             }
@@ -255,13 +258,15 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     @Override
     public void onCheck(Vector<BackupDataPacket> backupDataPackets) {
         appList = backupDataPackets;
-        boolean app, data, permissions;
+        boolean app, data, permissions, isPermissible;
 
         totalApps = 0;
 
-        if (appList.size() > 0)
+        if (appList.size() > 0) {
             app = data = permissions = true;
-        else app = data = permissions = false;
+            isPermissible = appList.get(0).IS_PERMISSIBLE;
+        }
+        else app = data = permissions = isPermissible = false;
 
         for (int i = 0; i < backupDataPackets.size(); i++) {
             BackupDataPacket packet = appList.elementAt(i);
@@ -273,10 +278,15 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             else if (exclusionState == EXCLUDE_DATA) {
                 app = app && packet.APP;
             }
-            permissions = permissions && packet.PERMISSIONS;
+
+            isPermissible = isPermissible || packet.IS_PERMISSIBLE;
+            if (packet.IS_PERMISSIBLE) permissions = permissions && packet.PERMISSIONS;
+
             if (packet.APP || packet.DATA || packet.PERMISSIONS)
                 totalApps++;
         }
+
+        permissions = permissions && isPermissible;
 
         dataAllSelect.setOnCheckedChangeListener(null);
         dataAllSelect.setChecked(data);
@@ -289,7 +299,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         else appAllSelect.setEnabled(true);
         appAllSelect.setOnCheckedChangeListener(this);
 
-        permissionsAllSelect.setEnabled(app);
+        permissionsAllSelect.setEnabled(isPermissible);
 
         permissionsAllSelect.setOnCheckedChangeListener(null);
         permissionsAllSelect.setChecked(permissions);
@@ -304,13 +314,6 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             adapter.notifyDataSetChanged();
         }
         else if (compoundButton == appAllSelect) {
-            if (!b){
-                permissionsAllSelect.setChecked(false);
-                permissionsAllSelect.setEnabled(false);
-            }
-            else {
-                permissionsAllSelect.setEnabled(true);
-            }
             adapter.checkAllApp(b);
             adapter.notifyDataSetChanged();
         }
