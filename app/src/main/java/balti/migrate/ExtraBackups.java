@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -48,6 +47,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
@@ -97,6 +97,14 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
     private ReadCalls callsReader;
     private AlertDialog CallsSelectorDialog;
+
+    private LinearLayout dpiMainItem;
+    private TextView dpiSelectedStatus;
+    private CheckBox doBackupDpi;
+
+    String dpiText = "";
+
+    private ReadDpi dpiReader;
 
     private LayoutInflater layoutInflater;
 
@@ -1155,6 +1163,80 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         }
     }
 
+    class ReadDpi extends AsyncTask{
+
+        Process dpiReader;
+        BufferedReader outputReader;
+        BufferedReader errorReader;
+        String err;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dpiText = err = "";
+            dpiMainItem.setClickable(false);
+            doBackupDpi.setEnabled(false);
+            dpiSelectedStatus.setVisibility(View.GONE);
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+
+            try {
+                dpiReader = Runtime.getRuntime().exec("wm density");
+                outputReader = new BufferedReader(new InputStreamReader(dpiReader.getInputStream()));
+                errorReader = new BufferedReader(new InputStreamReader(dpiReader.getErrorStream()));
+
+                String line;
+                while ((line = outputReader.readLine()) != null){
+                    dpiText = dpiText + line + "\n";
+                }
+
+                while ((line = errorReader.readLine()) != null){
+                    err = err + line + "\n";
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+
+            doBackupDpi.setEnabled(true);
+
+            if (dpiText.equals(""))
+            {
+                doBackupDpi.setChecked(false);
+                new AlertDialog.Builder(ExtraBackups.this)
+                        .setTitle(R.string.error_reading_dpi)
+                        .setMessage(err)
+                        .setNegativeButton(R.string.close, null)
+                        .show();
+
+
+            }
+            else {
+                dpiSelectedStatus.setVisibility(View.VISIBLE);
+                dpiMainItem.setClickable(true);
+                dpiMainItem.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new AlertDialog.Builder(ExtraBackups.this)
+                                .setTitle(R.string.dpi_label)
+                                .setMessage(dpiText)
+                                .setNegativeButton(R.string.close, null)
+                                .show();
+                    }
+                });
+            }
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -1181,6 +1263,14 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         callsSelectedStatus = findViewById(R.id.calls_selected_status);
         callsReadProgressBar = findViewById(R.id.calls_read_progress);
         doBackupCalls = findViewById(R.id.do_backup_calls);
+
+        dpiMainItem = findViewById(R.id.extra_item_dpi);
+        dpiSelectedStatus = findViewById(R.id.dpi_selected_status);
+        doBackupDpi = findViewById(R.id.do_backup_dpi);
+
+        contactsMainItem.setClickable(false);
+        smsMainItem.setClickable(false);
+        callsMainItem.setClickable(false);
 
         startBackup = findViewById(R.id.startBackupButton);
 
@@ -1236,6 +1326,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         doBackupContacts.setOnCheckedChangeListener(this);
         doBackupSms.setOnCheckedChangeListener(this);
         doBackupCalls.setOnCheckedChangeListener(this);
+        doBackupDpi.setOnCheckedChangeListener(this);
 
         boolean isSmsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED;
         boolean isCallsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED;
@@ -1333,6 +1424,41 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             }
 
         }
+        else if (buttonView == doBackupDpi){
+
+            if (isChecked) {
+
+                new AlertDialog.Builder(ExtraBackups.this)
+                        .setTitle(R.string.dpi_backup_warning)
+                        .setMessage(R.string.dpi_backup_warning_desc)
+                        .setPositiveButton(R.string.go_ahead, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                dpiReader = new ReadDpi();
+                                dpiReader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                doBackupDpi.setChecked(false);
+                            }
+                        })
+                        .show();
+
+
+            } else {
+                dpiMainItem.setClickable(false);
+                dpiSelectedStatus.setVisibility(View.GONE);
+                try {
+                    dpiReader.cancel(true);
+                } catch (Exception ignored) {
+                }
+            }
+
+        }
 
     }
 
@@ -1385,7 +1511,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             }
             else {
 
-                Snackbar.make(doBackupContacts, R.string.contacts_access_needed, Snackbar.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.contacts_access_needed, Toast.LENGTH_SHORT).show();
                 doBackupContacts.setChecked(false);
 
             }
@@ -1405,7 +1531,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             }
             else {
 
-                Snackbar.make(doBackupSms, R.string.sms_access_needed, Snackbar.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.sms_access_needed, Toast.LENGTH_SHORT).show();
                 doBackupSms.setChecked(false);
 
             }
@@ -1425,7 +1551,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             }
             else {
 
-                Snackbar.make(doBackupCalls, R.string.calls_access_needed, Snackbar.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.calls_access_needed, Toast.LENGTH_SHORT).show();
                 doBackupCalls.setChecked(false);
 
             }
