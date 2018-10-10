@@ -271,6 +271,11 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
             publishProgress(getString(R.string.making_batches), "", "");
 
+            if (!new File(destination).mkdirs()){
+                return new Object[]{false, getString(R.string.could_not_create_destination),
+                        destination + "\n\n" + getString(R.string.make_sure_destination_exists)};
+            }
+
             StatFs statFs = new StatFs(destination);
             availableKb = statFs.getBlockSizeLong() * statFs.getAvailableBlocksLong();
             availableKb = availableKb / 1024;
@@ -379,13 +384,6 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                             String line = appName + " " + packageName + " " + apkPath + " " + dataPath + " " + appIcon + " " + versionName +
                                     " " + packet.PERMISSIONS;
-
-                            /*Process permissionsRead = Runtime.getRuntime().exec("dumpsys package " + packageName + " | grep android.permission | grep granted=true");
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(permissionsRead.getInputStream()));
-                            String pLine;
-                            while ((pLine = reader.readLine()) != null){
-                                Log.d("migrate_engine", appName + " " + pLine.trim());
-                            }*/
 
                             writer.write(line + "\n");
 
