@@ -1568,9 +1568,18 @@ public class BackupEngine {
 
         String dpiFilePath = destination + "/" + backupName + "/" + dpiBackupName;
 
+        BufferedReader reader;
+
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(dpiFilePath));
-            BufferedReader reader = new BufferedReader(new StringReader(dpiText));
+
+            if (dpiText != null && !dpiText.equals("")) {
+                reader = new BufferedReader(new StringReader(dpiText));
+            }
+            else {
+                Process dpiReader = Runtime.getRuntime().exec("wm density");
+                reader = new BufferedReader(new InputStreamReader(dpiReader.getInputStream()));
+            }
 
             String line;
             while ((line = reader.readLine()) != null){

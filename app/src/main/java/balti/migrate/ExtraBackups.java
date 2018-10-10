@@ -1170,10 +1170,12 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         BufferedReader errorReader;
         String err;
 
+        String localDpiText;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            dpiText = err = "";
+            dpiText = err = localDpiText = "";
             dpiMainItem.setClickable(false);
             doBackupDpi.setEnabled(false);
             dpiSelectedStatus.setVisibility(View.GONE);
@@ -1189,7 +1191,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                 String line;
                 while ((line = outputReader.readLine()) != null){
-                    dpiText = dpiText + line + "\n";
+                    localDpiText = localDpiText + line + "\n";
                 }
 
                 while ((line = errorReader.readLine()) != null){
@@ -1209,7 +1211,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
             doBackupDpi.setEnabled(true);
 
-            if (dpiText.equals(""))
+            if (localDpiText.equals(""))
             {
                 doBackupDpi.setChecked(false);
                 new AlertDialog.Builder(ExtraBackups.this)
@@ -1221,6 +1223,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
             }
             else {
+                dpiText = localDpiText;
                 dpiSelectedStatus.setVisibility(View.VISIBLE);
                 dpiMainItem.setClickable(true);
                 dpiMainItem.setOnClickListener(new View.OnClickListener() {
