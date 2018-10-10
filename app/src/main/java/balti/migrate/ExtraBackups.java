@@ -1447,6 +1447,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                                 doBackupDpi.setChecked(false);
                             }
                         })
+                        .setCancelable(false)
                         .show();
 
 

@@ -293,6 +293,8 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                     progressBar.setIndeterminate(true);
 
+                    progressLog.append(getString(R.string.backing_dpi));
+
                 } else if (type.equals("app_progress")) {
 
                     if (intent.hasExtra("app_name")) {
