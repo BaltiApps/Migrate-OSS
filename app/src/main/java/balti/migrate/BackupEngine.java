@@ -73,6 +73,10 @@ public class BackupEngine {
     private Vector<CallsDataPacket> callsDataPackets;
     private String callsBackupName;
 
+    private boolean doBackupDpi = false;
+    private String dpiText = "";
+    private String dpiBackupName;
+
     private Process getNumberOfFiles;
     private Process zipProcess;
 
@@ -109,14 +113,19 @@ public class BackupEngine {
         boolean doBackupCalls;
         Vector<CallsDataPacket> callsDataPackets;
 
+        boolean doBackupDpi;
+        String dpiText;
+
         public StartBackup(boolean doContactsBackup, Vector<ContactsDataPacket> contactsDataPackets, boolean doSmsBackup, Vector<SmsDataPacket> smsDataPackets,
-                boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets) {
+                boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets, boolean doBackupDpi, String dpiText) {
             this.doBackupContacts = doContactsBackup;
             this.contactsDataPackets = contactsDataPackets;
             this.doSmsBackup = doSmsBackup;
             this.smsDataPackets = smsDataPackets;
             this.doBackupCalls = doBackupCalls;
             this.callsDataPackets = callsDataPackets;
+            this.doBackupDpi = doBackupDpi;
+            this.dpiText = dpiText;
         }
 
         @Override
@@ -124,6 +133,7 @@ public class BackupEngine {
             setDoContactsBackup(doBackupContacts, contactsDataPackets);
             setDoSmsBackup(doSmsBackup, smsDataPackets);
             setDoCallsBackup(doBackupCalls, callsDataPackets);
+            setDoDpiBackup(doBackupDpi, dpiText);
             initiateBackup();
             return null;
         }
@@ -176,6 +186,7 @@ public class BackupEngine {
         contactsBackupName = "Contacts_" + timeStamp + ".vcf";
         smsBackupName = "Sms_" + timeStamp + ".sms.db";
         callsBackupName = "Calls_" + timeStamp + ".calls.db";
+        dpiBackupName = "screen.dpi";
 
         commonTools = new CommonTools(context);
     }
@@ -197,12 +208,12 @@ public class BackupEngine {
     }
 
     void startBackup(boolean doBackupContacts, Vector<ContactsDataPacket> contactsDataPackets, boolean doBackupSms, Vector<SmsDataPacket> smsDataPackets,
-            boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets){
+            boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets, boolean doBackupDpi, String dpiText){
         try {
             startBackupTask.cancel(true);
         }
         catch (Exception ignored){}
-        startBackupTask = new StartBackup(doBackupContacts, contactsDataPackets, doBackupSms, smsDataPackets, doBackupCalls, callsDataPackets);
+        startBackupTask = new StartBackup(doBackupContacts, contactsDataPackets, doBackupSms, smsDataPackets, doBackupCalls, callsDataPackets, doBackupDpi, dpiText);
         startBackupTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -254,6 +265,9 @@ public class BackupEngine {
 
                 String callsErr = backupCalls(notificationManager, progressNotif, activityProgressIntent);
                 if (!callsErr.equals("")) errors.add("CALLS" + errorTag + ": " + callsErr);
+
+                String dpiErr = backupDpi(notificationManager, progressNotif, activityProgressIntent);
+                if (!dpiErr.equals("")) errors.add("DPI" + errorTag + ": " + dpiErr);
 
                 if (isCancelled)
                     throw new InterruptedIOException();
@@ -881,7 +895,7 @@ public class BackupEngine {
                 if (permissions) writer.write(permissionCommand, 0, permissionCommand.length());
             }
 
-            if (doBackupContacts || doBackupSms || doBackupCalls) {
+            if (doBackupContacts || doBackupSms || doBackupCalls || doBackupDpi) {
                 updater_writer.write("ui_print(\" \");\n");
 
                 if (doBackupContacts) {
@@ -895,6 +909,10 @@ public class BackupEngine {
                 if (doBackupCalls) {
                     updater_writer.write("ui_print(\"Extracting call logs: " + callsBackupName + "\");\n");
                     updater_writer.write("package_extract_file(\"" + callsBackupName + "\", \"" + TEMP_DIR_NAME + "/" + callsBackupName + "\");\n");
+                }
+                if (doBackupDpi) {
+                    updater_writer.write("ui_print(\"Extracting dpi data: " + dpiBackupName + "\");\n");
+                    updater_writer.write("package_extract_file(\"" + dpiBackupName + "\", \"" + TEMP_DIR_NAME + "/" + dpiBackupName + "\");\n");
                 }
                 updater_writer.write("ui_print(\" \");\n");
             }
@@ -1010,6 +1028,12 @@ public class BackupEngine {
                 if (packet.selected)
                     this.callsDataPackets.add(packet);
         }
+    }
+
+    void setDoDpiBackup(boolean doBackupDpi, String dpiText){
+        this.doBackupDpi = doBackupDpi;
+        if (dpiText != null)
+            this.dpiText = dpiText;
     }
 
     String backupContacts(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
@@ -1199,15 +1223,15 @@ public class BackupEngine {
 
             smsDataPackets = new Vector<>(0);
 
+            actualProgressBroadcast.putExtra("type", "sms_reading");
+            activityProgressIntent.putExtras(actualProgressBroadcast);
+
             String title = (totalParts > 1)? context.getString(R.string.reading_sms) + " : " + madePartName : context.getString(R.string.reading_sms);
             progressNotif.setContentTitle(title)
                     .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                     .setProgress(0, 0, false)
                     .setContentText("");
             notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
-
-            actualProgressBroadcast.putExtra("type", "sms_reading");
-            activityProgressIntent.putExtras(actualProgressBroadcast);
 
             LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
@@ -1342,13 +1366,13 @@ public class BackupEngine {
 
                     db.insert("sms", null, contentValues);
 
+                    actualProgressBroadcast.putExtra("type", "sms_progress").putExtra("sms_address", dataPacket.smsAddress).putExtra("progress", (j*100/n));
+                    activityProgressIntent.putExtras(actualProgressBroadcast);
+
                     progressNotif.setProgress(n, j, false)
                             .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                             .setContentText(dataPacket.smsAddress);
                     notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
-
-                    actualProgressBroadcast.putExtra("type", "sms_progress").putExtra("sms_address", dataPacket.smsAddress).putExtra("progress", (j*100/n));
-                    activityProgressIntent.putExtras(actualProgressBroadcast);
 
                     LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
@@ -1395,15 +1419,15 @@ public class BackupEngine {
 
             callsDataPackets = new Vector<>(0);
 
+            actualProgressBroadcast.putExtra("type", "calls_reading");
+            activityProgressIntent.putExtras(actualProgressBroadcast);
+
             String title = (totalParts > 1)? context.getString(R.string.reading_calls) + " : " + madePartName : context.getString(R.string.reading_calls);
             progressNotif.setContentTitle(title)
                     .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                     .setProgress(0, 0, false)
                     .setContentText("");
             notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
-
-            actualProgressBroadcast.putExtra("type", "calls_reading");
-            activityProgressIntent.putExtras(actualProgressBroadcast);
 
             LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
@@ -1494,13 +1518,13 @@ public class BackupEngine {
                     if (dataPacket.callsCachedName != null && !dataPacket.callsCachedName.equals("")) display = dataPacket.callsCachedName;
                     else display = dataPacket.callsNumber;
 
+                    actualProgressBroadcast.putExtra("type", "calls_progress").putExtra("calls_name", display).putExtra("progress", (j*100/n));
+                    activityProgressIntent.putExtras(actualProgressBroadcast);
+
                     progressNotif.setProgress(n, j, false)
                             .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                             .setContentText(display);
                     notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
-
-                    actualProgressBroadcast.putExtra("type", "calls_progress").putExtra("calls_name", display).putExtra("progress", (j*100/n));
-                    activityProgressIntent.putExtras(actualProgressBroadcast);
 
                     LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
@@ -1519,6 +1543,47 @@ public class BackupEngine {
         }
 
         return errors.toString();
+    }
+
+    String backupDpi(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+
+        String errors = "";
+
+        if (!doBackupDpi || isCancelled)
+            return errors;
+
+        actualProgressBroadcast.putExtra("type", "dpi_progress");
+        activityProgressIntent.putExtras(actualProgressBroadcast);
+
+        String title = (totalParts > 1)? context.getString(R.string.backing_dpi) + " : " + madePartName : context.getString(R.string.backing_dpi);
+        progressNotif.setContentTitle(title)
+                .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setProgress(0, 0, true)
+                .setContentText("");
+        notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+        LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+        (new File(destination + "/" + backupName)).mkdirs();
+
+        String dpiFilePath = destination + "/" + backupName + "/" + dpiBackupName;
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(dpiFilePath));
+            BufferedReader reader = new BufferedReader(new StringReader(dpiText));
+
+            String line;
+            while ((line = reader.readLine()) != null){
+                writer.write(line.trim() + "\n");
+            }
+            writer.close();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            errors = e.getMessage();
+        }
+
+        return errors;
     }
 
 }

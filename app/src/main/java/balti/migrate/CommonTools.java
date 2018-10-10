@@ -12,6 +12,7 @@ import java.io.InputStream;
 public class CommonTools {
 
     Context context;
+    public static String DEBUG_TAG = "migrate_tag";
 
     public CommonTools(Context context) {
         this.context = context;

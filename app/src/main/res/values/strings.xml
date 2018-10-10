@@ -129,6 +129,7 @@
     <string name="backing_contacts">Backing up contacts</string>
     <string name="backing_sms">Backing up sms</string>
     <string name="backing_calls">Backing up calls</string>
+    <string name="backing_dpi">Backing up DPI</string>
     <string name="errorMakingScripts">Error making scripts</string>
     <string name="backupCancelled">Backup cancelled</string>
     <string name="deletingFiles">Deleting files</string>

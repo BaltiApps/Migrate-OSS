@@ -42,7 +42,8 @@ public class BackupService extends Service {
     static Vector<ContactsDataPacket> contactsList;
     static Vector<CallsDataPacket> callsList;
     static Vector<SmsDataPacket> smsList;
-    static boolean doBackupContacts, doBackupCalls, doBackupSms;
+    static String dpiText = "";
+    static boolean doBackupContacts, doBackupCalls, doBackupSms, doBackupDpi;
     static Vector<File> backupSummaries;
 
     BroadcastReceiver triggerBatchBackupReceiver;
@@ -160,14 +161,15 @@ public class BackupService extends Service {
                     backupSummaries.get(runningBatchCount));
         }
         if (runningBatchCount == 0)
-            backupEngine.startBackup(doBackupContacts, contactsList, doBackupSms, smsList, doBackupCalls, callsList);
-        else backupEngine.startBackup(false, null, false, null, false, null);
+            backupEngine.startBackup(doBackupContacts, contactsList, doBackupSms, smsList, doBackupCalls, callsList, doBackupDpi, dpiText);
+        else backupEngine.startBackup(false, null, false, null, false, null, false, "");
     }
 
     static void setBackupBatches(Vector<BackupBatch> batches, String backupName, String destination, String busyboxBinaryFile,
                                  Vector<ContactsDataPacket> contactsList, boolean doBackupContacts,
                                  Vector<CallsDataPacket> callsList, boolean doBackupCalls,
                                  Vector<SmsDataPacket> smsList, boolean doBackupSms,
+                                 String dpiText, boolean doBackupDpi,
                                  Vector<File> backupSummaries
                                  ){
 
@@ -181,6 +183,8 @@ public class BackupService extends Service {
         BackupService.doBackupCalls = doBackupCalls;
         BackupService.smsList = smsList;
         BackupService.doBackupSms = doBackupSms;
+        BackupService.dpiText = dpiText;
+        BackupService.doBackupDpi = doBackupDpi;
         BackupService.backupSummaries = backupSummaries;
 
     }

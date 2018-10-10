@@ -282,8 +282,9 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             isPermissible = isPermissible || packet.IS_PERMISSIBLE;
             if (packet.IS_PERMISSIBLE) permissions = permissions && packet.PERMISSIONS;
 
-            if (packet.APP || packet.DATA || packet.PERMISSIONS)
+            if (packet.APP || packet.DATA) {
                 totalApps++;
+            }
         }
 
         permissions = permissions && isPermissible;

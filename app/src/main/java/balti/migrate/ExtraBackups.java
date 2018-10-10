@@ -1277,7 +1277,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         startBackup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (totalSelectedApps > 0 || doBackupContacts.isChecked() || doBackupSms.isChecked() || doBackupCalls.isChecked())
+                if (totalSelectedApps > 0 || doBackupContacts.isChecked() || doBackupSms.isChecked() || doBackupCalls.isChecked() || doBackupDpi.isChecked())
                     askForBackupName();
             }
         });
@@ -1298,6 +1298,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                         contactsList, doBackupContacts.isChecked(),
                         callsList, doBackupCalls.isChecked(),
                         smsList, doBackupSms.isChecked(),
+                        dpiText, doBackupDpi.isChecked(),
                         backupSummaries);
                 LocalBroadcastManager.getInstance(ExtraBackups.this).sendBroadcast(new Intent("start batch backup"));
             }

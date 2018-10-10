@@ -285,6 +285,14 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                     addLog("calls_name", intent);
 
+                } else if (type.equals("dpi_progress")) {
+
+                    appIcon.setImageResource(R.drawable.ic_dpi_icon);
+
+                    task.setText(R.string.backing_dpi);
+
+                    progressBar.setIndeterminate(true);
+
                 } else if (type.equals("app_progress")) {
 
                     if (intent.hasExtra("app_name")) {
