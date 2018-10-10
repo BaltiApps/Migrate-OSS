@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
@@ -955,8 +954,6 @@ public class BackupEngine {
         }
         else {
             fullDelete(destination);
-            fullDelete(destination + ".zip");
-            Log.d("migrate", destination);
         }
 
         try {
