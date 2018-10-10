@@ -271,7 +271,8 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
             publishProgress(getString(R.string.making_batches), "", "");
 
-            if (!new File(destination).mkdirs()){
+            File d = new File(destination);
+            if (!d.exists() && !d.mkdirs() && !d.canWrite()){
                 return new Object[]{false, getString(R.string.could_not_create_destination),
                         destination + "\n\n" + getString(R.string.make_sure_destination_exists)};
             }
