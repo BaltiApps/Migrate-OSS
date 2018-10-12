@@ -1433,7 +1433,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             if (isChecked) {
 
                 new AlertDialog.Builder(ExtraBackups.this)
-                        .setTitle(R.string.dpi_backup_warning)
+                        .setTitle(R.string.dragons_ahead)
                         .setMessage(R.string.dpi_backup_warning_desc)
                         .setPositiveButton(R.string.go_ahead, new DialogInterface.OnClickListener() {
                             @Override

@@ -97,10 +97,10 @@
     <string name="parts">parts</string>
     <string name="of">of</string>
     <string name="error_reading_dpi">Error reading DPI</string>
-    <string name="dpi_backup_warning">Screen DPI restore on other device can be dangerous!</string>
+    <string name="dragons_ahead">Dragons ahead!</string>
     <string name="dpi_backup_warning_desc">
-        DPI or \"dots per inch\" value from one device, if restored on any other device may make the other device unusable.\n\n
-        However, restoring the value on this device itself is safe.
+        - Do not restore this backup in any other device.
+        - After DPI restore, your device will be rebooted.
     </string>
     <string name="go_ahead">Go ahead</string>
 
