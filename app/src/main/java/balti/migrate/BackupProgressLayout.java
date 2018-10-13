@@ -92,6 +92,8 @@ public class BackupProgressLayout extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        commonTools = new CommonTools(this);
+
         task = findViewById(R.id.progressTask);
         partName = findViewById(R.id.part_name);
         appIcon = findViewById(R.id.app_icon);
@@ -140,7 +142,6 @@ public class BackupProgressLayout extends AppCompatActivity {
         progressReceiverIF = new IntentFilter("Migrate progress broadcast");
         LocalBroadcastManager.getInstance(this).registerReceiver(progressReceiver, progressReceiverIF);
 
-        commonTools = new CommonTools(this);
     }
 
     void handleProgress(Intent intent){

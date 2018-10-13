@@ -79,7 +79,7 @@ public class CommonTools {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
-                            String body = new CommonTools(context).getDeviceSpecifications();
+                            String body = getDeviceSpecifications();
 
                             Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
                             emailIntent.setType("text/plain");

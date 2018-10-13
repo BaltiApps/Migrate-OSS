@@ -119,6 +119,7 @@
             android:text="@string/report"
             android:backgroundTint="@color/colorPrimary"
             android:textColor="@color/colorAccent"
+            android:visibility="gone"
             />
 
     </RelativeLayout>
