@@ -99,7 +99,7 @@
     <string name="error_reading_dpi">Error reading DPI</string>
     <string name="dragons_ahead">Dragons ahead!</string>
     <string name="dpi_backup_warning_desc">
-        - Do not restore this backup in any other device.
+        - Do not restore this backup in any other device.\n
         - After DPI restore, your device will be rebooted.
     </string>
     <string name="go_ahead">Go ahead</string>
@@ -116,9 +116,6 @@
     <!--BackupProgressLayout.java-->
     <string name="split_desc_1">Due to huge backup size, your backup is being split in</string>
     <string name="split_desc_2">In TWRP, please install all the zips for full restore.</string>
-    <string name="force_stop_title">Force close app?</string>
-    <string name="force_stop_desc">If you see abnormality in the app and Cancel button does not help, you can force close the app.</string>
-    <string name="force_close">Force close</string>
 
     <!--BackupEngine.java-->
     <string name="failedToBackup">Backup failed! Please try again.</string>
@@ -170,6 +167,25 @@
     <string name="uid">UID :</string>
     <string name="sourceDir">Source dir :</string>
     <string name="dataDir">Data dir :</string>
+
+    <!--error_report_layout.xml-->
+    <string name="share_progress_logs">Share progress logs</string>
+    <string name="share_error_logs">Share error logs</string>
+    <string name="agree_and_send">Agree and send</string>
+    <string name="error_report_disclaimer">Thanks for your interest in helping to improve this app. You agree to share:\n\n
+        - Some internal file structure of apps (this does not necessarily have any private data).\n
+        - The backup name.\n
+        - Some backup details like number of backup parts.\n
+        - Personal info like phone numbers <b><i>ARE NOT RECORDED</i></b>\n
+        - You may be contacted via email address if further follow up is needed.\n\n
+        Click \"Agree and send\" to proceed.
+    </string>
+    <string name="log_files_do_not_exist">Log files do not exist</string>
+    <string name="progress_log_does_not_exist">\"progressLog\" does not exist</string>
+    <string name="error_log_does_not_exist">\"errorLog\" does not exist</string>
+
+    <!--backup_progress_layout.xml-->
+    <string name="report">Report</string>
 
     <!--how_to_restore.xml-->
     <string name="prev">Previous</string>

@@ -14,8 +14,11 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Vector;
 
@@ -54,11 +57,22 @@ public class BackupService extends Service {
 
     boolean cancelAll = false;
 
+    BufferedWriter progressWriter, errorWriter;
+    String lastProgressLog = "";
+
     @Override
     public void onCreate() {
         super.onCreate();
 
         main = getSharedPreferences("main", MODE_PRIVATE);
+
+        try {
+
+            progressWriter = new BufferedWriter(new FileWriter(new File(getExternalCacheDir(), "progressLog")));
+            errorWriter = new BufferedWriter(new FileWriter(new File(getExternalCacheDir(), "errorLog")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         triggerBatchBackupReceiver = new BroadcastReceiver() {
             @Override
@@ -71,13 +85,56 @@ public class BackupService extends Service {
         progressBroadcast = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.hasExtra("type") && intent.getStringExtra("type").equals("finished")) {
-                    if ((runningBatchCount+1) < batches.size() && intent.getStringArrayListExtra("errors").size() == 0) {
-                        runningBatchCount += 1;
-                        runNextBatch();
+
+                toReturnIntent = intent;
+
+                if (intent.hasExtra("type")){
+
+                    if (intent.getStringExtra("type").equals("finished")){
+
+                        ArrayList<String> errors = intent.getStringArrayListExtra("errors");
+
+                        for (int i = 0; i < errors.size(); i++){
+                            try { errorWriter.write(errors.get(i) + "\n"); } catch (IOException e) { e.printStackTrace(); }
+                        }
+
+                        if (intent.getBooleanExtra("final_process", false)) {
+                            try {
+                                progressWriter.write("\n\n" + intent.getStringExtra("finishedMessage") + "\n\n\n");
+
+                                String backupName = intent.getStringExtra("backupName");
+
+                                if (backupName != null){
+                                    progressWriter.write("--->> " + backupName + " <<---\n");
+                                    errorWriter.write("\n\n--->> " + backupName + " <<---\n");
+                                }
+                                progressWriter.write("--- Total parts : " + intent.getIntExtra("total_parts", 1) + " ---\n");
+
+
+                                progressWriter.close();
+                                errorWriter.close();
+
+                            } catch (IOException e) { e.printStackTrace(); }
+                        }
+
+
+                        if ((runningBatchCount+1) < batches.size() && errors.size() == 0) {
+                            runningBatchCount += 1;
+                            runNextBatch();
+                        }
+                    }
+                    else if (intent.getStringExtra("type").equals("app_progress") && intent.hasExtra("app_log")
+                            && !intent.getStringExtra("app_log").equals(lastProgressLog)){
+
+                        try { progressWriter.write((lastProgressLog = intent.getStringExtra("app_log")) + "\n"); } catch (IOException ignored) {}
+
+                    }
+                    else if (intent.getStringExtra("type").equals("zip_progress") && intent.hasExtra("zip_log")){
+
+                        try { progressWriter.write(intent.getStringExtra("zip_log") + "\n"); } catch (IOException ignored) {}
+
                     }
                 }
-                toReturnIntent = intent;
             }
         };
         progressBroadcastIF = new IntentFilter("Migrate progress broadcast");
@@ -160,6 +217,9 @@ public class BackupService extends Service {
                     batches.get(runningBatchCount).batchDataSize,
                     backupSummaries.get(runningBatchCount));
         }
+
+        try { progressWriter.write("\n\n" + "--- Next batch backup: " + (runningBatchCount+1) + " ---\n\n"); } catch (IOException ignored) { }
+
         if (runningBatchCount == 0)
             backupEngine.startBackup(doBackupContacts, contactsList, doBackupSms, smsList, doBackupCalls, callsList, doBackupDpi, dpiText);
         else backupEngine.startBackup(false, null, false, null, false, null, false, "");
@@ -208,6 +268,13 @@ public class BackupService extends Service {
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(triggerBatchBackupReceiver);
         } catch (Exception ignored){}
+
+        try {
+            progressWriter.close();
+        }catch (Exception ignored){}
+        try {
+            errorWriter.close();
+        }catch (Exception ignored){}
     }
 
     @Nullable

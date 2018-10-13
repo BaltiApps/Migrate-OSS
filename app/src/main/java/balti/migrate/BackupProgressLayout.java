@@ -1,16 +1,13 @@
 package balti.migrate;
 
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Process;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
@@ -20,7 +17,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -44,8 +40,7 @@ public class BackupProgressLayout extends AppCompatActivity {
     TextView progressLog;
     TextView errorLog;
     ProgressBar progressBar;
-    Button actionButton;
-    ImageButton forceClose;
+    Button actionButton, reportLog;
 
     String lastLog = "";
     String lastIconString = "";
@@ -105,7 +100,9 @@ public class BackupProgressLayout extends AppCompatActivity {
         progressLog = findViewById(R.id.progressLogTextView);
         errorLog = findViewById(R.id.errorLogTextView);
         actionButton = findViewById(R.id.progressActionButton);
-        forceClose = findViewById(R.id.force_close);
+        reportLog = findViewById(R.id.reportLogButton);
+
+        reportLog.setVisibility(View.GONE);
 
         progressLog.setGravity(Gravity.BOTTOM);
         progressLog.setMovementMethod(new ScrollingMovementMethod());
@@ -116,6 +113,15 @@ public class BackupProgressLayout extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 LocalBroadcastManager.getInstance(BackupProgressLayout.this).sendBroadcast(new Intent("Migrate backup cancel broadcast"));
+            }
+        });
+
+        reportLog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                commonTools.reportLogs(true);
+
             }
         });
 
@@ -133,26 +139,6 @@ public class BackupProgressLayout extends AppCompatActivity {
 
         progressReceiverIF = new IntentFilter("Migrate progress broadcast");
         LocalBroadcastManager.getInstance(this).registerReceiver(progressReceiver, progressReceiverIF);
-
-
-        forceClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(BackupProgressLayout.this)
-                        .setTitle(R.string.force_stop_title)
-                        .setMessage(R.string.force_stop_desc)
-                        .setPositiveButton(R.string.force_close, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                stopService(new Intent(BackupProgressLayout.this, BackupService.class));
-                                ((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).cancelAll();
-                                Process.killProcess(Process.myPid());
-                            }
-                        })
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .show();
-            }
-        });
 
         commonTools = new CommonTools(this);
     }
@@ -195,15 +181,14 @@ public class BackupProgressLayout extends AppCompatActivity {
                 if (intent.getBooleanExtra("final_process", true)) {
                     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-                    try {
-                        task.setText(intent.getStringExtra("finishedMessage"));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    task.setText(intent.getStringExtra("finishedMessage"));
 
                     if (intent.hasExtra("errors")) {
                         setError(intent.getStringArrayListExtra("errors"));
-                        if (intent.getStringArrayListExtra("errors").size() > 0) appIcon.setImageResource(R.drawable.ic_error);
+                        if (intent.getStringArrayListExtra("errors").size() > 0) {
+                            appIcon.setImageResource(R.drawable.ic_error);
+                            reportLog.setVisibility(VISIBLE);
+                        }
                     }
 
                     if (intent.getStringExtra("finishedMessage").equals(getString(R.string.backupCancelled))) {

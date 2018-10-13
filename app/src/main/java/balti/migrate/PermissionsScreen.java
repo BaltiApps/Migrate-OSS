@@ -99,16 +99,7 @@ public class PermissionsScreen extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
-                            String body = "";
-
-                            body = body + "CPU_ABI: " + cpu_abi + "\n\n";
-                            body = body + "Brand: " + Build.BRAND + "\n";
-                            body = body + "Manufacturer: " + Build.MANUFACTURER + "\n";
-                            body = body + "Model: " + Build.MODEL + "\n";
-                            body = body + "Device: " + Build.DEVICE + "\n";
-                            body = body + "SDK: " + Build.VERSION.SDK_INT + "\n";
-                            body = body + "Board: " + Build.BOARD + "\n";
-                            body = body + "Hardware: " + Build.HARDWARE;
+                            String body = new CommonTools(PermissionsScreen.this).getDeviceSpecifications();
 
                             Intent email = new Intent(Intent.ACTION_SENDTO);
                             email.setData(Uri.parse("mailto:"));

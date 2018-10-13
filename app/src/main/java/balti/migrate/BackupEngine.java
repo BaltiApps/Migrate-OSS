@@ -144,11 +144,14 @@ public class BackupEngine {
         this.backupName = backupName;
         this.destination = destination;
 
+        String actualBackupName = backupName;
+
         this.busyboxBinaryFilePath = busyboxBinaryFilePath;
 
         this.systemRequiredSize = systemRequiredSize;
         this.dataRequiredSize = dataRequiredSize;
         this.backupSummary = backupSummary;
+
 
         if (totalParts > 1){
             this.destination = this.destination + "/" + this.backupName;
@@ -175,7 +178,7 @@ public class BackupEngine {
 
         main = context.getSharedPreferences("main", Context.MODE_PRIVATE);
         actualProgressBroadcast = new Intent("Migrate progress broadcast")
-                .putExtra("part_name", this.madePartName);
+                .putExtra("part_name", this.madePartName).putExtra("backupName", actualBackupName);
 
         errors = new ArrayList<>(0);
 
