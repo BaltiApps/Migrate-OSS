@@ -21,17 +21,11 @@ if [ -n "$res" ];
 then
 	echo "ui_print A/B device." >> /proc/self/fd/$OUTFD;
 	echo "ui_print !!! Experimental support !!!" >> /proc/self/fd/$OUTFD;
-	ab_device=true
+	echo "ui_print Bind mounting system..." >> /proc/self/fd/$OUTFD;
+    mount -o bind /system/system /system
 	sleep 2s
 else
-    ab_device=false
 	echo "ui_print Only-A device." >> /proc/self/fd/$OUTFD;
-fi
-
-if [ "$ab_device" = true ];
-then
-    echo "ui_print Bind mounting system..." >> /proc/self/fd/$OUTFD;
-    mount -o bind /system/system /system
 fi
 
 echo "ui_print  " >> /proc/self/fd/$OUTFD;
