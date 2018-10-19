@@ -252,7 +252,7 @@ public class BackupEngine {
                 progressNotif.addAction(cancelAction);
 
                 makePackageData();
-
+                makeExtrasData();
 
                 if (partNumber == 1){
                     actualProgressBroadcast.putExtra("type", "ready")
@@ -663,6 +663,35 @@ public class BackupEngine {
         }
     }
 
+    void makeExtrasData(){
+
+        File package_data = new File(destination + "/" + backupName + "/extras-data");
+        String contents = "";
+
+        package_data.getParentFile().mkdirs();
+
+        if (doBackupContacts) {
+            contents += contactsBackupName + "\n";
+        }
+        if (doBackupSms) {
+            contents += smsBackupName + "\n";
+        }
+        if (doBackupCalls) {
+            contents += callsBackupName + "\n";
+        }
+        if (doBackupDpi) {
+            contents += dpiBackupName + "\n";
+        }
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(package_data));
+            writer.write(contents);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     void systemAppInstallScript(String sysAppPackageName, String sysApkName, String sysAppPastingDir) {
 
         String scriptName = sysAppPackageName + ".sh";
@@ -752,6 +781,7 @@ public class BackupEngine {
 
         String update_binary = commonTools.unpackAssetToInternal("update-binary", "update-binary");
         String prepScript = commonTools.unpackAssetToInternal("prep.sh", "prep.sh");
+        String verifyScript = commonTools.unpackAssetToInternal("verify.sh", "verify.sh");
 
         AssetManager assetManager = context.getAssets();
         int read;
@@ -803,7 +833,7 @@ public class BackupEngine {
             updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/tmp/prep.sh" + "\");\n");
             updater_writer.write("run_program(\"" + "/tmp/prep.sh" + "\");\n");
 
-            updater_writer.write("ifelse(is_mounted(\"/data\") && is_mounted(\"/system\"), ui_print(\"Parameters checked!\") && sleep(2s), abort(\"Exiting...\"));\n");
+            updater_writer.write("ifelse(is_mounted(\"/data\"), ui_print(\"Parameters checked!\") && sleep(2s), abort(\"Exiting...\"));\n");
             updater_writer.write("ui_print(\" \");\n");
 
             updater_writer.write("ui_print(\"Restoring to Migrate cache...\");\n");
@@ -816,6 +846,7 @@ public class BackupEngine {
             writer.write("mv " + updater_script.getAbsolutePath() + " " + flashDirPath + "\n");
             writer.write("mv " + update_binary + " " + flashDirPath + "\n");
             writer.write("mv " + prepScript + " " + destination + "/" + backupName + "\n");
+            writer.write("mv " + verifyScript + " " + destination + "/" + backupName + "\n");
 
             writer.write("echo \"migrate status: " + "Including helper" + "\"\n");
             writer.write("cp -r " + context.getFilesDir() + "/system" + " " + destination + "/" + backupName + "\n");
@@ -927,13 +958,17 @@ public class BackupEngine {
             updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/system/app/MigrateHelper/" + "\");\n");
 
             updater_writer.write("set_progress(1.0000);\n");
-            updater_writer.write("ui_print(\" \");\n");
+
+            updater_writer.write("package_extract_file(\"" + "verify.sh" + "\", \"" + "/tmp/verify.sh" + "\");\n");
+            updater_writer.write("package_extract_file(\"" + "extras-data" + "\", \"" + "/tmp/extras-data" + "\");\n");
+            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/tmp/verify.sh" + "\");\n");
+            updater_writer.write("run_program(\"" + "/tmp/verify.sh" + "\");\n");
+            updater_writer.write("ifelse(is_mounted(\"/data\"), ui_print(\"Verification done!\") && sleep(2s), abort(\"Exiting...\"));\n");
 
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("ui_print(\"Unmounting partitions...\");\n");
             updater_writer.write("run_program(\"/sbin/busybox\", \"umount\", \"/system\");\n");
             updater_writer.write("run_program(\"/sbin/busybox\", \"umount\", \"/data\");\n");
-
 
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("ui_print(\"Finished!\");\n");

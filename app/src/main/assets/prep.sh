@@ -1,6 +1,6 @@
 #!sbin/sh
 
-export OUTFD="/dev/null"
+OUTFD="/dev/null"
 
 for FD in `ls /proc/$$/fd`; do
 	if readlink /proc/$$/fd/$FD | grep -q pipe; then
@@ -15,8 +15,28 @@ echo "ui_print  " >> /proc/self/fd/$OUTFD;
 echo "ui_print Checking parameters..." >> /proc/self/fd/$OUTFD;
 echo "ui_print  " >> /proc/self/fd/$OUTFD;
 
+res="$(cat /proc/cmdline | grep slot_suffix)";
 
-if [ -e /system/build.prop ]; then
+if [ -n "$res" ];
+then
+	echo "ui_print A/B device." >> /proc/self/fd/$OUTFD;
+	echo "ui_print !!! Experimental support !!!" >> /proc/self/fd/$OUTFD;
+	ab_device=true
+	sleep 2s
+else
+    ab_device=false
+	echo "ui_print Only-A device." >> /proc/self/fd/$OUTFD;
+fi
+
+if [ "$ab_device" = true ];
+then
+    echo "ui_print Bind mounting system..." >> /proc/self/fd/$OUTFD;
+    mount -o bind /system/system /system
+fi
+
+echo "ui_print  " >> /proc/self/fd/$OUTFD;
+
+if [ -e "/system/build.prop" ]; then
 	echo "ui_print ROM is present." >> /proc/self/fd/$OUTFD;
 else
     echo "ui_print  " >> /proc/self/fd/$OUTFD;
@@ -25,7 +45,7 @@ else
 	echo "ui_print Please flash a ROM first" >> /proc/self/fd/$OUTFD;
 	echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
 	echo "ui_print  " >> /proc/self/fd/$OUTFD;
-	umount /system
+	umount /data
 	sleep 2s
 	exit 1
 fi
@@ -39,7 +59,7 @@ then
 		if [ "$key" = "cpu_abi" ]; then
 			cpu_arch="$(getprop ro.product.cpu.abi)"
 			if [ "$cpu_arch" = "$val" ]; then
-				echo "ui_print CPU ABI is OK" >> /proc/self/fd/$OUTFD;
+				echo "ui_print CPU ABI is OK ($cpu_arch)" >> /proc/self/fd/$OUTFD;
 			else
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
 				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
@@ -52,7 +72,7 @@ then
 		elif [ "$key" = "data_required_size" ]; then
 			data_free=$(df -k /data | tail -1 | awk '{print $3}')
 			if [ $data_free -ge $val ]; then
-				echo "ui_print Free space (/data) is OK" >> /proc/self/fd/$OUTFD;
+				echo "ui_print Free space (/data) is OK ($data_free KB)" >> /proc/self/fd/$OUTFD;
 			else
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
 				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
@@ -75,7 +95,7 @@ then
 		elif [ "$key" = "system_required_size" ]; then
 			system_free=$(df -k /system | tail -1 | awk '{print $3}')
 			if [ $system_free -ge $val ]; then
-				echo "ui_print Free space (/system) is OK" >> /proc/self/fd/$OUTFD;
+				echo "ui_print Free space (/system) is OK ($system_free KB)" >> /proc/self/fd/$OUTFD;
 			else
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
 				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
@@ -91,7 +111,7 @@ then
 		elif [ "$key" = "sdk" ]; then
 			rom_sdk="$(cat /system/build.prop | grep ro.build.version.sdk | cut -d "=" -f2)"
 			if [ $rom_sdk = $val ]; then
-				echo "ui_print Android version is OK" >> /proc/self/fd/$OUTFD;
+				echo "ui_print Android version is OK (sdk $rom_sdk)" >> /proc/self/fd/$OUTFD;
 			else
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
 				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
