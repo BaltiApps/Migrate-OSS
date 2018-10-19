@@ -40,6 +40,9 @@ else
 	echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
 	echo "ui_print  " >> /proc/self/fd/$OUTFD;
 	umount /data
+	if [ -n "$res" ]; then
+	    umount /system
+	fi
 	sleep 2s
 	exit 1
 fi
@@ -83,6 +86,9 @@ then
 				echo "ui_print -- Delete the directory" >> /proc/self/fd/$OUTFD;
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
 				umount /data
+				if [ -n "$res" ]; then
+	                umount /system
+	            fi
 				sleep 2s
 				exit 1
 			fi
