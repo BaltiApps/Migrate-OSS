@@ -66,7 +66,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
     private static boolean isAllAppSelected = false;
     private static List<BackupDataPacket> appList;
 
-    private TextView startBackup;
+    private Button startBackup;
     private ImageButton back;
 
     private LinearLayout contactsMainItem;
@@ -112,6 +112,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
     private CheckBox doBackupKeyboard;
 
     String keyboardText = "";
+    boolean doBackupKeyboardBoolean = false;
 
     private LoadKeyboardForSelection keyboardSelector;
     private AlertDialog KeyboardSelectorDialog;
@@ -1267,6 +1268,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             doBackupKeyboard.setEnabled(false);
             keyboardSelectedStatus.setVisibility(View.GONE);
             enabledKeyboards = new ArrayList<>(0);
+            doBackupKeyboardBoolean = false;
         }
 
         @Override
@@ -1298,6 +1300,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             super.onPostExecute(o);
 
             doBackupKeyboard.setEnabled(true);
+            doBackupKeyboardBoolean = true;
 
             if (!err.trim().equals("")){
 
@@ -1403,7 +1406,6 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                         .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                keyboardText = "";
                                 doBackupKeyboard.setChecked(false);
                             }
                         })
@@ -1497,7 +1499,8 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         startBackup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (totalSelectedApps > 0 || doBackupContacts.isChecked() || doBackupSms.isChecked() || doBackupCalls.isChecked() || doBackupDpi.isChecked())
+                if (totalSelectedApps > 0 || doBackupContacts.isChecked() || doBackupSms.isChecked() ||
+                        doBackupCalls.isChecked() || doBackupDpi.isChecked() || doBackupKeyboardBoolean)
                     askForBackupName();
             }
         });
@@ -1519,6 +1522,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                         callsList, doBackupCalls.isChecked(),
                         smsList, doBackupSms.isChecked(),
                         dpiText, doBackupDpi.isChecked(),
+                        keyboardText, doBackupKeyboardBoolean,
                         backupSummaries);
                 LocalBroadcastManager.getInstance(ExtraBackups.this).sendBroadcast(new Intent("start batch backup"));
             }
@@ -1691,6 +1695,8 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
 
             } else {
+                keyboardText = "";
+                doBackupKeyboardBoolean = false;
                 keyboardMainItem.setClickable(false);
                 keyboardSelectedStatus.setVisibility(View.GONE);
                 try {

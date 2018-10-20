@@ -51,15 +51,15 @@ public class BackupEngine {
 
     private Context context;
 
-    SharedPreferences main;
+    private SharedPreferences main;
 
     private Process suProcess = null;
     private int compressionLevel;
-    int numberOfJobs = 0;
+    private int numberOfApps = 0;
     private String finalMessage = "";
     private ArrayList<String> errors;
 
-    String timeStamp = "";
+    private String timeStamp = "";
 
     private boolean doBackupContacts = false;
     private Vector<ContactsDataPacket> contactsDataPackets;
@@ -76,6 +76,10 @@ public class BackupEngine {
     private boolean doBackupDpi = false;
     private String dpiText = "";
     private String dpiBackupName;
+
+    private boolean doBackupKeyboard = false;
+    private String keyboardText = "";
+    private String keyboardBackupName;
 
     private Process getNumberOfFiles;
     private Process zipProcess;
@@ -116,8 +120,11 @@ public class BackupEngine {
         boolean doBackupDpi;
         String dpiText;
 
+        boolean doBackupKeyboard;
+        String keyboardText;
+
         public StartBackup(boolean doContactsBackup, Vector<ContactsDataPacket> contactsDataPackets, boolean doSmsBackup, Vector<SmsDataPacket> smsDataPackets,
-                boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets, boolean doBackupDpi, String dpiText) {
+                boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets, boolean doBackupDpi, String dpiText, boolean doBackupKeyboard, String keyboardText) {
             this.doBackupContacts = doContactsBackup;
             this.contactsDataPackets = contactsDataPackets;
             this.doSmsBackup = doSmsBackup;
@@ -126,6 +133,8 @@ public class BackupEngine {
             this.callsDataPackets = callsDataPackets;
             this.doBackupDpi = doBackupDpi;
             this.dpiText = dpiText;
+            this.doBackupKeyboard = doBackupKeyboard;
+            this.keyboardText = keyboardText;
         }
 
         @Override
@@ -134,17 +143,20 @@ public class BackupEngine {
             setDoSmsBackup(doSmsBackup, smsDataPackets);
             setDoCallsBackup(doBackupCalls, callsDataPackets);
             setDoDpiBackup(doBackupDpi, dpiText);
+            setDoKeyboardBackup(doBackupKeyboard, keyboardText);
             initiateBackup();
             return null;
         }
     }
 
     BackupEngine(String backupName, int partNumber, int totalParts, int compressionLevel, String destination, String busyboxBinaryFilePath,
-                 Context context, long systemRequiredSize, long dataRequiredSize, File backupSummary) {
+                 Context context, long systemRequiredSize, long dataRequiredSize, File backupSummary, int numberOfApps) {
         this.backupName = backupName;
         this.destination = destination;
 
         String actualBackupName = backupName;
+
+        this.numberOfApps = numberOfApps;
 
         this.busyboxBinaryFilePath = busyboxBinaryFilePath;
 
@@ -190,6 +202,7 @@ public class BackupEngine {
         smsBackupName = "Sms_" + timeStamp + ".sms.db";
         callsBackupName = "Calls_" + timeStamp + ".calls.db";
         dpiBackupName = "screen.dpi";
+        keyboardBackupName = "default.kyb";
 
         commonTools = new CommonTools(context);
     }
@@ -211,12 +224,12 @@ public class BackupEngine {
     }
 
     void startBackup(boolean doBackupContacts, Vector<ContactsDataPacket> contactsDataPackets, boolean doBackupSms, Vector<SmsDataPacket> smsDataPackets,
-            boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets, boolean doBackupDpi, String dpiText){
+            boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets, boolean doBackupDpi, String dpiText, boolean doBackupKeyboard, String keyboardText){
         try {
             startBackupTask.cancel(true);
         }
         catch (Exception ignored){}
-        startBackupTask = new StartBackup(doBackupContacts, contactsDataPackets, doBackupSms, smsDataPackets, doBackupCalls, callsDataPackets, doBackupDpi, dpiText);
+        startBackupTask = new StartBackup(doBackupContacts, contactsDataPackets, doBackupSms, smsDataPackets, doBackupCalls, callsDataPackets, doBackupDpi, dpiText, doBackupKeyboard, keyboardText);
         startBackupTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -272,6 +285,9 @@ public class BackupEngine {
                 String dpiErr = backupDpi(notificationManager, progressNotif, activityProgressIntent);
                 if (!dpiErr.equals("")) errors.add("DPI" + errorTag + ": " + dpiErr);
 
+                String keybErr = backupKeyboard(notificationManager, progressNotif, activityProgressIntent);
+                if (!keybErr.equals("")) errors.add("KEYBOARD" + errorTag + ": " + keybErr);
+
                 if (isCancelled)
                     throw new InterruptedIOException();
 
@@ -303,7 +319,8 @@ public class BackupEngine {
                             actualProgressBroadcast.putExtra("app_name", line);
                         }
 
-                        if (numberOfJobs != 0) p = c++ * 100 / numberOfJobs;
+                        if (numberOfApps != 0 && !line.equals("Making package Flash Ready") && !line.equals("Including helper"))
+                            p = ++c * 100 / numberOfApps;
                         actualProgressBroadcast.putExtra("progress", p);
 
                         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
@@ -313,7 +330,7 @@ public class BackupEngine {
                         String title = (totalParts > 1)? context.getString(R.string.backingUp) + " : " + madePartName : context.getString(R.string.backingUp);
                         progressNotif.setContentTitle(title)
                                 .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
-                                .setProgress(numberOfJobs, c, false)
+                                .setProgress(numberOfApps, c, false)
                                 .setContentText(line);
                         notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
                     }
@@ -682,6 +699,9 @@ public class BackupEngine {
         if (doBackupDpi) {
             contents += dpiBackupName + "\n";
         }
+        if (doBackupKeyboard) {
+            contents += keyboardBackupName + "\n";
+        }
 
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(package_data));
@@ -802,14 +822,6 @@ public class BackupEngine {
 
         try {
             BufferedReader backupSummaryReader = new BufferedReader(new FileReader(backupSummary));
-            while (backupSummaryReader.readLine() != null)
-                numberOfJobs++;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            BufferedReader backupSummaryReader = new BufferedReader(new FileReader(backupSummary));
             BufferedWriter writer = new BufferedWriter(new FileWriter(script));
             BufferedWriter updater_writer = new BufferedWriter(new FileWriter(updater_script));
 
@@ -879,7 +891,7 @@ public class BackupEngine {
                     dataPath = dataPath.substring(0, dataPath.lastIndexOf('/'));
                 }
 
-                String echoCopyCommand = "echo \"migrate status: " + appName + " (" + c + "/" + numberOfJobs + ") icon: " + appIcon + "\"";
+                String echoCopyCommand = "echo \"migrate status: " + appName + " (" + c + "/" + numberOfApps + ") icon: " + appIcon + "\"";
                 String permissionCommand = "";
 
                 String command;
@@ -894,7 +906,7 @@ public class BackupEngine {
                             destination + "/" + backupName + "/" + packageName + ".perm" + "\n";
                 }
 
-                updater_writer.write("ui_print(\"" + appName + " (" + c + "/" + numberOfJobs + ")\");\n");
+                updater_writer.write("ui_print(\"" + appName + " (" + c + "/" + numberOfApps + ")\");\n");
 
                 if (apkPath.startsWith("/system")){
                     updater_writer.write("package_extract_file(\"" + packageName + ".apk" + "\", \"/system/" + packageName + ".apk" + "\");\n");
@@ -922,14 +934,14 @@ public class BackupEngine {
                 }
                 updater_writer.write("package_extract_file(\"" + packageName + ".json" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".json" + "\");\n");
 
-                updater_writer.write("set_progress(" + String.format("%.4f", ((c * 1.0) / numberOfJobs)) + ");\n");
+                updater_writer.write("set_progress(" + String.format("%.4f", ((c * 1.0) / numberOfApps)) + ");\n");
 
                 writer.write(echoCopyCommand + '\n', 0, echoCopyCommand.length() + 1);
                 writer.write(command, 0, command.length());
                 if (permissions) writer.write(permissionCommand, 0, permissionCommand.length());
             }
 
-            if (doBackupContacts || doBackupSms || doBackupCalls || doBackupDpi) {
+            if (doBackupContacts || doBackupSms || doBackupCalls || doBackupDpi || doBackupKeyboard) {
                 updater_writer.write("ui_print(\" \");\n");
 
                 if (doBackupContacts) {
@@ -947,6 +959,10 @@ public class BackupEngine {
                 if (doBackupDpi) {
                     updater_writer.write("ui_print(\"Extracting dpi data: " + dpiBackupName + "\");\n");
                     updater_writer.write("package_extract_file(\"" + dpiBackupName + "\", \"" + TEMP_DIR_NAME + "/" + dpiBackupName + "\");\n");
+                }
+                if (doBackupKeyboard) {
+                    updater_writer.write("ui_print(\"Extracting keyboard data: " + keyboardBackupName + "\");\n");
+                    updater_writer.write("package_extract_file(\"" + keyboardBackupName + "\", \"" + TEMP_DIR_NAME + "/" + keyboardBackupName + "\");\n");
                 }
                 updater_writer.write("ui_print(\" \");\n");
             }
@@ -1072,6 +1088,12 @@ public class BackupEngine {
         this.doBackupDpi = doBackupDpi;
         if (dpiText != null)
             this.dpiText = dpiText;
+    }
+
+    void setDoKeyboardBackup(boolean doBackupKeyboard, String keyboardText){
+        this.doBackupKeyboard = doBackupKeyboard;
+        if (keyboardText != null)
+            this.keyboardText = keyboardText;
     }
 
     String backupContacts(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
@@ -1617,6 +1639,55 @@ public class BackupEngine {
             else {
                 Process dpiReader = Runtime.getRuntime().exec("wm density");
                 reader = new BufferedReader(new InputStreamReader(dpiReader.getInputStream()));
+            }
+
+            String line;
+            while ((line = reader.readLine()) != null){
+                writer.write(line.trim() + "\n");
+            }
+            writer.close();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            errors = e.getMessage();
+        }
+
+        return errors;
+    }
+
+    String backupKeyboard(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+
+        String errors = "";
+
+        if (!doBackupKeyboard || isCancelled)
+            return errors;
+
+        actualProgressBroadcast.putExtra("type", "keyboard_progress");
+        activityProgressIntent.putExtras(actualProgressBroadcast);
+
+        String title = (totalParts > 1)? context.getString(R.string.backing_keyboard) + " : " + madePartName : context.getString(R.string.backing_keyboard);
+        progressNotif.setContentTitle(title)
+                .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setProgress(0, 0, true)
+                .setContentText("");
+        notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+        LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+        (new File(destination + "/" + backupName)).mkdirs();
+
+        String keyboardFilePath = destination + "/" + backupName + "/" + keyboardBackupName;
+
+        BufferedReader reader;
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(keyboardFilePath));
+
+            if (keyboardText != null && !keyboardText.equals("")) {
+                reader = new BufferedReader(new StringReader(keyboardText));
+            }
+            else {
+                return context.getString(R.string.no_keyboard_data);
             }
 
             String line;

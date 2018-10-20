@@ -136,11 +136,13 @@
     <string name="backing_sms">Backing up sms</string>
     <string name="backing_calls">Backing up calls</string>
     <string name="backing_dpi">Backing up DPI</string>
+    <string name="backing_keyboard">Backing up keyboard</string>
     <string name="errorMakingScripts">Error making scripts</string>
     <string name="backupCancelled">Backup cancelled</string>
     <string name="deletingFiles">Deleting files</string>
     <string name="backupFinishedWithErrors">Backup finished with errors.</string>
     <string name="notEnoughSpace">Backup incomplete. Not enough storage space.</string>
+    <string name="no_keyboard_data">No keyboard data</string>
 
     <!--BackupActivity.java-->
     <string name="setBackupName">Set backup name</string>

@@ -424,7 +424,7 @@
         android:id="@+id/bottom_bar"
         >
 
-        <TextView
+        <Button
             android:layout_width="@dimen/next_button_width"
             android:layout_height="@dimen/next_button_height"
             android:layout_alignParentEnd="true"
