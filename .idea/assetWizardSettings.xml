@@ -140,7 +140,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/home/sayantan/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/image/ic_gradient_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/home/sayantan/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/device/ic_storage_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -151,11 +151,11 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="2c9d94" />
-                            <entry key="height" value="40" />
-                            <entry key="outputName" value="ic_dpi_icon" />
+                            <entry key="height" value="150" />
+                            <entry key="outputName" value="big_storage_icon" />
                             <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="$USER_HOME$/Downloads/migrate/app_bg.svg" />
-                            <entry key="width" value="40" />
+                            <entry key="width" value="150" />
                           </map>
                         </option>
                       </PersistentState>

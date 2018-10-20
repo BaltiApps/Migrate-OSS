@@ -31,6 +31,17 @@
                 android:paddingTop="20dp"
                 />
 
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="80dp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:src="@drawable/enjoy"
+                />
+
         </LinearLayout>
 
     </ScrollView>

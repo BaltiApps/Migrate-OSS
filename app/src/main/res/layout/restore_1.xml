@@ -15,6 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:gravity=""
             >
 
             <TextView
@@ -30,6 +31,16 @@
                 android:id="@+id/restore_1_text_view"
                 android:paddingTop="20dp"
                 android:text="@string/step_1_desc"
+                />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/large_padding_width" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:src="@drawable/flash_drawable"
                 />
 
         </LinearLayout>
