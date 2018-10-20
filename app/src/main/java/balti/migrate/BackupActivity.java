@@ -44,7 +44,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     Vector<BackupDataPacket> appList;
     AppListAdapter adapter;
 
-    BroadcastReceiver progressReceiver;
+    BroadcastReceiver progressReceiver, extraBackupsStartReceiver;
 
     AppUpdate appUpdate;
 
@@ -186,14 +186,21 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
         exclusions = new Exclusions(this);
 
+        extraBackupsStartReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                ExtraBackups.setAppList(appList, dataAllSelect.isChecked(), totalApps);
+                finish();
+            }
+        };
+        LocalBroadcastManager.getInstance(this).registerReceiver(extraBackupsStartReceiver, new IntentFilter("extraBackupsStarted"));
+
     }
 
     void startExtraBackupsStartingActivity(){
 
         Intent intent = new Intent(BackupActivity.this, ExtraBackups.class);
         startActivity(intent);
-        ExtraBackups.setAppList(appList, dataAllSelect.isChecked(), totalApps);
-        finish();
     }
 
 
@@ -338,6 +345,10 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         super.onDestroy();
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(progressReceiver);
+        }
+        catch (Exception ignored){}
+        try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(extraBackupsStartReceiver);
         }
         catch (Exception ignored){}
     }

@@ -1548,6 +1548,8 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("get data"));
 
+        LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("extraBackupsStarted"));
+
         doBackupContacts.setOnCheckedChangeListener(this);
         doBackupSms.setOnCheckedChangeListener(this);
         doBackupCalls.setOnCheckedChangeListener(this);
