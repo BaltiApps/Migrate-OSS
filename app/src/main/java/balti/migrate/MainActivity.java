@@ -270,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 message = getString(R.string.version_1_0_content);
                 changelog.setTitle(title)
                         .setMessage(message)
-                        .setPositiveButton("CLOSE", null)
+                        .setPositiveButton(R.string.close, null)
                         .show();
 
                 editor.putInt("version", 1);
@@ -279,13 +279,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else
         {
-            title = "Changelog";
+            title = getString(R.string.changelog);
             message = "";
             /*Add increasing versions here*/
-            message = message + "Version 1.0\n" + "\u2022" + " Initial release";
+            message = message + "\n" + getString(R.string.version_1_0) + "\n" + getString(R.string.version_1_0_content) + "\n";
             changelog.setTitle(title)
                     .setMessage(message)
-                    .setPositiveButton("CLOSE", null)
+                    .setPositiveButton(R.string.close, null)
                     .show();
         }
 
