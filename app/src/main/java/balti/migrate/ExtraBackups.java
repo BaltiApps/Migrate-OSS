@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
@@ -105,6 +106,15 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
     String dpiText = "";
 
     private ReadDpi dpiReader;
+
+    private LinearLayout keyboardMainItem;
+    private TextView keyboardSelectedStatus;
+    private CheckBox doBackupKeyboard;
+
+    String keyboardText = "";
+
+    private LoadKeyboardForSelection keyboardSelector;
+    private AlertDialog KeyboardSelectorDialog;
 
     private LayoutInflater layoutInflater;
 
@@ -1240,6 +1250,207 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         }
     }
 
+    class LoadKeyboardForSelection extends AsyncTask{
+
+        Process keyboardReader;
+        BufferedReader outputReader;
+        BufferedReader errorReader;
+        String err;
+
+        ArrayList<String> enabledKeyboards;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            keyboardText = err = "";
+            keyboardMainItem.setClickable(false);
+            doBackupKeyboard.setEnabled(false);
+            keyboardSelectedStatus.setVisibility(View.GONE);
+            enabledKeyboards = new ArrayList<>(0);
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+
+            try {
+                keyboardReader = Runtime.getRuntime().exec("ime list -s");
+                outputReader = new BufferedReader(new InputStreamReader(keyboardReader.getInputStream()));
+                errorReader = new BufferedReader(new InputStreamReader(keyboardReader.getErrorStream()));
+
+                String line;
+                while ((line = outputReader.readLine()) != null){
+                    enabledKeyboards.add(line);
+                }
+
+                while ((line = errorReader.readLine()) != null){
+                    err = err + line + "\n";
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+
+            doBackupKeyboard.setEnabled(true);
+
+            if (!err.trim().equals("")){
+
+                onKeyboardError(getString(R.string.error_reading_keyboard_list), err);
+
+            }
+            else if (enabledKeyboards.size() == 0){
+
+                onKeyboardError(getString(R.string.no_keyboard_enabled), getString(R.string.no_keyboard_enabled_desc));
+
+            }
+            else if (enabledKeyboards.size() == 1){
+
+                String packageName = enabledKeyboards.get(0);
+                if (packageName.contains("/")){
+                    packageName = packageName.split("/")[0];
+                }
+
+                try {
+                    String kName = pm.getApplicationLabel(pm.getApplicationInfo(packageName, 0)).toString();
+
+                    if (!isKeyboardInAppList(packageName)){
+
+                        onKeyboardError(kName + " " + getString(R.string.selected_keyboard_not_present_in_backup),
+                                getString(R.string.selected_keyboard_not_present_in_backup_desc));
+
+                    }
+                    else {
+                        keyboardSelectedStatus.setVisibility(View.VISIBLE);
+                        keyboardSelectedStatus.setText(kName);
+                        keyboardText = enabledKeyboards.get(0);
+                    }
+
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                    onKeyboardError(getString(R.string.error_reading_keyboard_list), e.getMessage());
+                }
+
+
+
+            }
+            else {
+
+                View kView = View.inflate(ExtraBackups.this, R.layout.keyboard_selector, null);
+                LinearLayout holder = kView.findViewById(R.id.keyboard_options_holder);
+
+                for (String packageName : enabledKeyboards){
+
+                    final String kText = packageName;
+
+                    if (packageName.contains("/")){
+                        packageName = packageName.split("/")[0];
+                    }
+
+                    View kItem = View.inflate(ExtraBackups.this, R.layout.keyboard_item, null);
+                    ImageView kIcon = kItem.findViewById(R.id.keyboard_icon);
+                    final TextView kName = kItem.findViewById(R.id.keyboard_name);
+                    TextView kPresent = kItem.findViewById(R.id.keyboard_present_in_backup_label);
+
+                    try {
+
+                        kIcon.setImageDrawable(pm.getApplicationIcon(packageName));
+                        kName.setText(pm.getApplicationLabel(pm.getApplicationInfo(packageName, 0)));
+
+                        if (isKeyboardInAppList(packageName))
+                            kPresent.setVisibility(View.VISIBLE);
+                        else kPresent.setVisibility(View.GONE);
+
+                        final String finalPackageName = packageName;
+                        kItem.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                if (!isKeyboardInAppList(finalPackageName)){
+
+                                    new AlertDialog.Builder(ExtraBackups.this)
+                                            .setTitle(kName.getText() + " " + getString(R.string.selected_keyboard_not_present_in_backup))
+                                            .setMessage(R.string.selected_keyboard_not_present_in_backup_desc)
+                                            .setNegativeButton(R.string.close, null)
+                                            .show();
+
+                                }
+                                else {
+                                    keyboardSelectedStatus.setVisibility(View.VISIBLE);
+                                    keyboardSelectedStatus.setText(kName.getText());
+                                    keyboardText = kText;
+                                    KeyboardSelectorDialog.dismiss();
+                                }
+
+                            }
+                        });
+
+                        holder.addView(kItem);
+
+                    } catch (PackageManager.NameNotFoundException e) {
+                        e.printStackTrace();
+                        onKeyboardError(getString(R.string.error_reading_keyboard_list), e.getMessage());
+                    }
+                }
+
+                KeyboardSelectorDialog = new AlertDialog.Builder(ExtraBackups.this)
+                        .setView(kView)
+                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                keyboardText = "";
+                                doBackupKeyboard.setChecked(false);
+                            }
+                        })
+                        .setCancelable(false)
+                        .create();
+
+                KeyboardSelectorDialog.show();
+
+                keyboardMainItem.setClickable(true);
+                keyboardMainItem.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            if (KeyboardSelectorDialog != null)
+                                KeyboardSelectorDialog.show();
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                            onKeyboardError(getString(R.string.error_reading_keyboard_list), e.getMessage());
+                        }
+                    }
+                });
+            }
+        }
+
+        boolean isKeyboardInAppList(String packageName){
+            for (BackupDataPacket packet : appList){
+                if (packet.PACKAGE_INFO.packageName.equals(packageName))
+                    return packet.APP;
+            }
+            return false;
+        }
+
+        void onKeyboardError(String title, String errorMessage){
+            doBackupKeyboard.setChecked(false);
+            keyboardSelectedStatus.setText("");
+            keyboardSelectedStatus.setVisibility(View.GONE);
+
+            new AlertDialog.Builder(ExtraBackups.this)
+                    .setTitle(title)
+                    .setMessage(errorMessage)
+                    .setNegativeButton(R.string.close, null)
+                    .show();
+        }
+    }
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -1271,9 +1482,15 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         dpiSelectedStatus = findViewById(R.id.dpi_selected_status);
         doBackupDpi = findViewById(R.id.do_backup_dpi);
 
+        keyboardMainItem = findViewById(R.id.extra_item_keyboard);
+        keyboardSelectedStatus = findViewById(R.id.keyboard_selected_status);
+        doBackupKeyboard = findViewById(R.id.do_backup_keyboard);
+
         contactsMainItem.setClickable(false);
         smsMainItem.setClickable(false);
         callsMainItem.setClickable(false);
+        dpiMainItem.setClickable(false);
+        keyboardMainItem.setClickable(false);
 
         startBackup = findViewById(R.id.startBackupButton);
 
@@ -1331,6 +1548,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         doBackupSms.setOnCheckedChangeListener(this);
         doBackupCalls.setOnCheckedChangeListener(this);
         doBackupDpi.setOnCheckedChangeListener(this);
+        doBackupKeyboard.setOnCheckedChangeListener(this);
 
         boolean isSmsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED;
         boolean isCallsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED;
@@ -1459,6 +1677,24 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 dpiSelectedStatus.setVisibility(View.GONE);
                 try {
                     dpiReader.cancel(true);
+                } catch (Exception ignored) {
+                }
+            }
+
+        }
+        else if (buttonView == doBackupKeyboard){
+
+            if (isChecked) {
+
+                keyboardSelector = new LoadKeyboardForSelection();
+                keyboardSelector.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+
+            } else {
+                keyboardMainItem.setClickable(false);
+                keyboardSelectedStatus.setVisibility(View.GONE);
+                try {
+                    keyboardSelector.cancel(true);
                 } catch (Exception ignored) {
                 }
             }

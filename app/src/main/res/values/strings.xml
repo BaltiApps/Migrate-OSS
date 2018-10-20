@@ -62,6 +62,7 @@
     <string name="contacts_label">Contacts</string>
     <string name="sms_label">SMS messages</string>
     <string name="call_log_label">Call logs</string>
+    <string name="keyboard_label">Default keyboard</string>
     <string name="dpi_label">Screen DPI</string>
     <string name="filtering_duplicates">Filtering\nduplicates</string>
     <string name="reading_sms">Reading sms</string>
@@ -103,6 +104,14 @@
         - After DPI restore, your device will be rebooted.
     </string>
     <string name="go_ahead">Go ahead</string>
+    <string name="error_reading_keyboard_list">Error reading keyboard list</string>
+    <string name="no_keyboard_enabled">No keyboard enabled!</string>
+    <string name="no_keyboard_enabled_desc">Please go to\n
+        Settings -> System -> Languages &amp; input -> Virtual keyboard -> Manage keyboards\n
+        to enable a keyboard
+    </string>
+    <string name="selected_keyboard_not_present_in_backup">is not present in backup</string>
+    <string name="selected_keyboard_not_present_in_backup_desc">Backup app list does not have the selected keyboard. Please go back to \"Select apps\" page and select the keyboard app.</string>
 
     <!--extra_item_selector.xml-->
     <string name="sms_selector_label">Select SMS</string>
@@ -167,6 +176,10 @@
     <string name="uid">UID :</string>
     <string name="sourceDir">Source dir :</string>
     <string name="dataDir">Data dir :</string>
+    
+    <!--keyboard_selector.xml-->
+    <string name="select_default_keyboard_from_enabled">Select default keyboard from enabled keyboards</string>
+    <string name="present_in_backup">Present in backup</string>
 
     <!--error_report_layout.xml-->
     <string name="share_progress_logs">Share progress logs</string>

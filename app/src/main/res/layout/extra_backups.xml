@@ -350,6 +350,66 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/small_padding_width"
+                android:background="@color/extraItemBg"
+                android:elevation="10dp"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="@dimen/large_padding_width"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:paddingTop="@dimen/extra_items_padding"
+                android:paddingBottom="@dimen/extra_items_padding"
+                android:id="@+id/extra_item_keyboard"
+                >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_keyboard_icon"
+                    android:padding="@dimen/extra_items_padding"
+                    />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/keyboard_label"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="@color/colorAccent"
+                        android:id="@+id/keyboard_selected_status"
+                        android:text="@string/tap_to_see_values"
+                        android:visibility="gone"
+                        android:gravity="center_horizontal"
+                        />
+
+                </LinearLayout>
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/small_padding_width"
+                    android:gravity="center"
+                    android:id="@+id/do_backup_keyboard"
+                    />
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>
