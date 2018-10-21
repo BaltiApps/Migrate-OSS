@@ -275,6 +275,33 @@
     <string name="other_options">Other options</string>
     <string name="other_apps">Other apps</string>
     <string name="contact">Contact by email</string>
+    
+    <!--help_page.xml-->
+    <string name="q1">What is the Perm label in app backup?</string>
+    <string name="a1"><i>Perm</i> means permissions of an app. Migrate can backup the granular permissions granted to an app for Android Marshmallow (6.0) and above.\n
+    Selecting the option will allow you to restore the app permissions when the app is restored.
+    </string>
+    <string name="q2">How is this app different from Titanium Backup?</string>
+    <string name="a2">This app is a ROM migration tool. This app can:\n
+        \u2022 Combines all app and data to TWRP flashable zip\n
+        \u2022 Backup different extras like contacts, sms, call logs etc\n
+        \u2022 Higher portability because you have to carry only few zip files\n
+        \u2022 Backups, if needed, can be flashed on another device.\n
+    </string>
+    <string name="q3">But why not use nandroid backup instead?</string>
+    <string name="a3">Nandroid backup is the safest backup option available. However you cannot restore apps from one nandroid backup to a new ROM.\n
+    This app is necessarily a ROM migration tool. Nandroid backup cannot do that job.
+    </string>
+    <string name="q4">Why can\'t all the apps and data be restored from the recovery itself?</string>
+    <string name="a4">Recovery is a different environment from Android OS. Imaging installing a Windows game from a Linux distro.\n\n
+    So a helper app is injected into the system partition, which fires up on system boot. It takes root permission and automatically restores app and data.
+    </string>
+    <string name="q5">Do I need to download the Migrate app from Play Store to restore the backup zip?</string>
+    <string name="a5">
+        Absolutely not!\n\n
+        All you need is that your new ROM be rooted. While flashing backup zip, a helper app is injected into system, which takes up the app restore process.
+    </string>
+    <string name="more_questions">More questions? Feel free to contact.</string>
 
     <!--other_apps.xml-->
     <string name="instamean">Systemwide online dictionary</string>
