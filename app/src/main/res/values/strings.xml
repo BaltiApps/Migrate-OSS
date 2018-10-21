@@ -299,7 +299,12 @@
     <string name="q5">Do I need to download the Migrate app from Play Store to restore the backup zip?</string>
     <string name="a5">
         Absolutely not!\n\n
-        All you need is that your new ROM be rooted. While flashing backup zip, a helper app is injected into system, which takes up the app restore process.
+        All you need is TWRP recovery and that your new ROM be rooted. While flashing backup zip, a helper app is injected into system, which takes up the app restore process.
+    </string>
+    <string name="q6">Is TWRP necessary? Can\'t I restore backup without it?</string>
+    <string name="a6">
+        TWRP recovery is needed to flash the backup zip. Without that, you cannot restore a backup. Other recoveries may work, but is not tested.\n\n
+        Currently Migrate does not support restoring zips from the app itself. But that is something which can be added in future.
     </string>
     <string name="more_questions">More questions? Feel free to contact.</string>
 

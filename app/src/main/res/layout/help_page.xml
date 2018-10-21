@@ -131,6 +131,23 @@
                 android:padding="@dimen/large_padding_width"
                 />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/q6"
+                android:padding="@dimen/large_padding_width"
+                android:background="@color/colorPrimary"
+                android:textColor="@color/colorAccent"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/a6"
+                android:padding="@dimen/large_padding_width"
+                />
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
