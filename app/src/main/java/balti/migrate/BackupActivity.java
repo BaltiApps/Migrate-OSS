@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -38,7 +39,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     CheckBox appAllSelect, dataAllSelect, permissionsAllSelect;
     Spinner appType;
     TextView nextButton;
-    ImageButton selectAll, clearAll, backButton;
+    ImageButton selectAll, clearAll, backButton, helpButton;
 
     PackageManager pm;
     Vector<BackupDataPacket> appList;
@@ -113,6 +114,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         selectAll = findViewById(R.id.selectAll);
         clearAll = findViewById(R.id.clearAll);
         backButton = findViewById(R.id.backupLayoutBackButton);
+        helpButton = findViewById(R.id.backup_activity_help);
 
         appType = findViewById(R.id.appType);
         appType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -159,6 +161,16 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             @Override
             public void onClick(View view) {
                 finish();
+            }
+        });
+
+        helpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(BackupActivity.this)
+                        .setMessage(R.string.backup_activity_help)
+                        .setPositiveButton(R.string.close, null)
+                        .show();
             }
         });
 

@@ -5,11 +5,10 @@
     android:background="@drawable/app_list_bg"
     >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
         android:padding="@dimen/large_padding_width"
         android:background="@color/colorPrimary"
         >
@@ -22,6 +21,8 @@
             android:padding="@dimen/large_padding_width"
             android:foreground="?android:attr/selectableItemBackground"
             android:id="@+id/extraBackupsBackButton"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             />
 
         <TextView
@@ -30,9 +31,24 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/extras"
             android:padding="@dimen/small_padding_width"
+            android:layout_toEndOf="@id/extraBackupsBackButton"
+            android:layout_centerVertical="true"
             />
 
-    </LinearLayout>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_help"
+            android:background="@android:color/transparent"
+            android:layout_alignParentEnd="true"
+            android:padding="@dimen/large_padding_width"
+            android:layout_centerVertical="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:id="@+id/extra_backups_help"
+            />
+
+    </RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"

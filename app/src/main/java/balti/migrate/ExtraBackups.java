@@ -67,7 +67,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
     private static List<BackupDataPacket> appList;
 
     private Button startBackup;
-    private ImageButton back;
+    private ImageButton back, helpButton;
 
     private LinearLayout contactsMainItem;
     private ProgressBar contactsReadProgressBar;
@@ -1513,6 +1513,17 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             public void onClick(View view) {
                 startActivity(new Intent(ExtraBackups.this, BackupActivity.class));
                 finish();
+            }
+        });
+
+        helpButton = findViewById(R.id.extra_backups_help);
+        helpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(ExtraBackups.this)
+                        .setMessage(R.string.extra_backups_help)
+                        .setPositiveButton(R.string.close, null)
+                        .show();
             }
         });
 
