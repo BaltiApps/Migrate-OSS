@@ -9,4 +9,8 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="DarkAlert" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+
 </resources>

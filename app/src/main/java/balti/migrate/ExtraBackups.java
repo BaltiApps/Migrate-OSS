@@ -1401,7 +1401,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                     }
                 }
 
-                KeyboardSelectorDialog = new AlertDialog.Builder(ExtraBackups.this)
+                KeyboardSelectorDialog = new AlertDialog.Builder(ExtraBackups.this, R.style.DarkAlert)
                         .setView(kView)
                         .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
