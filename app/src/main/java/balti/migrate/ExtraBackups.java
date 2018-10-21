@@ -209,6 +209,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
             int length = appList.size();
             publishProgress(getString(R.string.filtering_apps), "", "");
+
             for (int i = 0, c = 0; i < length; i++){
                 BackupDataPacket packet = appList.get(c);
                 if (packet.APP || packet.DATA){
@@ -218,6 +219,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                     appList.remove(c);
                 }
             }
+
 
             Vector<BackupDataPacketWithSize> appsWithSize = new Vector<>(0);
             long totalBackupSize = 0;
@@ -230,8 +232,8 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 BufferedReader processReader = new BufferedReader( new InputStreamReader(memoryFinder.getInputStream()));
                 BufferedWriter processWriter = new BufferedWriter(new OutputStreamWriter(memoryFinder.getOutputStream()));
 
-                int n = appList.size();
-                for (int i = 0; i < n; i++){
+                totalSelectedApps = appList.size();
+                for (int i = 0; i < totalSelectedApps; i++){
 
                     BackupDataPacket packet = appList.get(i);
 
@@ -272,7 +274,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                     totalBackupSize = totalBackupSize + dataSize + systemSize;
 
                     publishProgress(getString(R.string.calculating_size),
-                            (i + 1) + " of " + n,
+                            (i + 1) + " of " + totalSelectedApps,
                             getString(R.string.files_size) + " " + getHumanReadableStorageSpace(totalBackupSize) + "\n");
 
                     appsWithSize.add(new BackupDataPacketWithSize(packet, dataSize, systemSize));
@@ -1809,9 +1811,8 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
     }
 
-    static void setAppList(List<BackupDataPacket> al, boolean isDataAllSelected, int totalSelectedApp) {
+    static void setAppList(List<BackupDataPacket> al, boolean isDataAllSelected) {
         appList = al;
-        totalSelectedApps = totalSelectedApp;
         isAllAppSelected = isDataAllSelected;
     }
 

@@ -48,8 +48,6 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
     AppUpdate appUpdate;
 
-    int totalApps = 0;
-
     Exclusions exclusions;
 
     class AppUpdate extends AsyncTask{
@@ -95,8 +93,6 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
             dataAllSelect.setChecked(true);
             permissionsAllSelect.setChecked(true);
-
-            totalApps = appList.size();
         }
     }
 
@@ -189,7 +185,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         extraBackupsStartReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                ExtraBackups.setAppList(appList, dataAllSelect.isChecked(), totalApps);
+                ExtraBackups.setAppList(appList, dataAllSelect.isChecked());
                 finish();
             }
         };
@@ -267,8 +263,6 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         appList = backupDataPackets;
         boolean app, data, permissions, isPermissible;
 
-        totalApps = 0;
-
         if (appList.size() > 0) {
             app = data = permissions = true;
             isPermissible = appList.get(0).IS_PERMISSIBLE;
@@ -289,9 +283,6 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             isPermissible = isPermissible || packet.IS_PERMISSIBLE;
             if (packet.IS_PERMISSIBLE) permissions = permissions && packet.PERMISSIONS;
 
-            if (packet.APP || packet.DATA) {
-                totalApps++;
-            }
         }
 
         permissions = permissions && isPermissible;
