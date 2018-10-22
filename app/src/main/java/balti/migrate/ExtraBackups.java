@@ -101,6 +101,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
     private AlertDialog CallsSelectorDialog;
 
     private LinearLayout dpiMainItem;
+    private ProgressBar dpiReadProgressBar;
     private TextView dpiSelectedStatus;
     private CheckBox doBackupDpi;
 
@@ -1191,13 +1192,14 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             dpiMainItem.setClickable(false);
             doBackupDpi.setEnabled(false);
             dpiSelectedStatus.setVisibility(View.GONE);
+            dpiReadProgressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected Object doInBackground(Object[] objects) {
 
             try {
-                dpiReader = Runtime.getRuntime().exec("wm density");
+                dpiReader = Runtime.getRuntime().exec("su -c wm density");
                 outputReader = new BufferedReader(new InputStreamReader(dpiReader.getInputStream()));
                 errorReader = new BufferedReader(new InputStreamReader(dpiReader.getErrorStream()));
 
@@ -1222,8 +1224,9 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             super.onPostExecute(o);
 
             doBackupDpi.setEnabled(true);
+            dpiReadProgressBar.setVisibility(View.GONE);
 
-            if (localDpiText.equals(""))
+            if (!err.equals(""))
             {
                 doBackupDpi.setChecked(false);
                 new AlertDialog.Builder(ExtraBackups.this)
@@ -1482,6 +1485,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         doBackupCalls = findViewById(R.id.do_backup_calls);
 
         dpiMainItem = findViewById(R.id.extra_item_dpi);
+        dpiReadProgressBar = findViewById(R.id.dpi_read_progress);
         dpiSelectedStatus = findViewById(R.id.dpi_selected_status);
         doBackupDpi = findViewById(R.id.do_backup_dpi);
 
@@ -1693,6 +1697,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             } else {
                 dpiMainItem.setClickable(false);
                 dpiSelectedStatus.setVisibility(View.GONE);
+                dpiReadProgressBar.setVisibility(View.GONE);
                 try {
                     dpiReader.cancel(true);
                 } catch (Exception ignored) {

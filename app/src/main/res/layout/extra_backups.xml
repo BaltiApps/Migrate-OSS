@@ -354,6 +354,18 @@
                         android:gravity="center_horizontal"
                         />
 
+
+                    <ProgressBar
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:id="@+id/dpi_read_progress"
+                        android:paddingStart="@dimen/small_padding_width"
+                        android:paddingEnd="@dimen/small_padding_width"
+                        android:visibility="gone"
+                        android:indeterminate="true"
+                        />
+
                 </LinearLayout>
 
                 <CheckBox

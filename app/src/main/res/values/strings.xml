@@ -98,10 +98,10 @@
     <string name="parts">parts</string>
     <string name="of">of</string>
     <string name="error_reading_dpi">Error reading DPI</string>
-    <string name="dragons_ahead">Dragons ahead!</string>
+    <string name="dragons_ahead">Dragons ahead! May fail in Samsung, Huawei, Xiaomi.</string>
     <string name="dpi_backup_warning_desc">
         - Do not restore this backup in any other device.\n
-        - After DPI restore, your device will be rebooted.
+        - After DPI restore, your device will be rebooted.\n
     </string>
     <string name="go_ahead">Go ahead</string>
     <string name="error_reading_keyboard_list">Error reading keyboard list</string>
