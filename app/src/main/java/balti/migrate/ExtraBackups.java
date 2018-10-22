@@ -64,6 +64,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
     private String destination;
     private static boolean isAllAppSelected = false;
+    private static boolean isAnyAppSelected = false;
     private static List<BackupDataPacket> appList;
 
     private Button startBackup;
@@ -1501,7 +1502,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         startBackup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (totalSelectedApps > 0 || doBackupContacts.isChecked() || doBackupSms.isChecked() ||
+                if (isAnyAppSelected || doBackupContacts.isChecked() || doBackupSms.isChecked() ||
                         doBackupCalls.isChecked() || doBackupDpi.isChecked() || doBackupKeyboardBoolean)
                     askForBackupName();
             }
@@ -1822,16 +1823,17 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
     }
 
-    static void setAppList(List<BackupDataPacket> al, boolean isDataAllSelected) {
+    static void setAppList(List<BackupDataPacket> al, boolean isDataAllSelected, boolean anyAppSelected) {
         appList = al;
         isAllAppSelected = isDataAllSelected;
+        isAnyAppSelected = anyAppSelected;
     }
 
     void askForBackupName() {
         final EditText editText = new EditText(this);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
-        if (isAllAppSelected && doBackupSms.isChecked())
+        if (isAllAppSelected && doBackupSms.isChecked() && doBackupCalls.isChecked())
             editText.setText(getString(R.string.fullBackupLabel) + "_" + sdf.format(Calendar.getInstance().getTime()));
         else
             editText.setText(getString(R.string.backupLabel) + "_" + sdf.format(Calendar.getInstance().getTime()));

@@ -11,6 +11,10 @@
         android:icon="@drawable/ic_help"
         android:title="@string/help"/>
 
+    <item android:id="@+id/lastLog"
+        android:icon="@drawable/ic_log"
+        android:title="@string/lastLog"/>
+
 
     <item android:title="@string/aboutThisApp"
         >

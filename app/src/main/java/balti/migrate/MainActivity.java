@@ -24,6 +24,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.io.File;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     SharedPreferences main;
@@ -53,7 +55,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                NotificationChannel channel = new NotificationChannel(BackupService.BACKUP_START_NOTIFICATION, BackupService.BACKUP_START_NOTIFICATION, NotificationManager.IMPORTANCE_DEFAULT);
+                NotificationChannel channel = new NotificationChannel(BackupService.BACKUP_START_NOTIFICATION,
+                        BackupService.BACKUP_START_NOTIFICATION, NotificationManager.IMPORTANCE_DEFAULT);
                 channel.setSound(null, null);
                 assert notificationManager != null;
                 notificationManager.createNotificationChannel(channel);
@@ -92,14 +95,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     boolean[] isPermissionGranted() {
         boolean[] p = new boolean[]{false, false};
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
             p[0] = true;
 
         if (main.getBoolean("initialRoot", true)) {
             p[1] = false;
         } else {
             try {
-                Process suRequest = Runtime.getRuntime().exec("su -c pm grant " + getPackageName() + " android.permission.DUMP && pm grant " + getPackageName() + " android.permission.PACKAGE_USAGE_STATS");
+                Process suRequest = Runtime.getRuntime().exec("su -c pm grant " + getPackageName() + " android.permission.DUMP " +
+                        "&& pm grant " + getPackageName() + " android.permission.PACKAGE_USAGE_STATS " +
+                        "&& pm grant " + getPackageName() + " android.permission.WRITE_SECURE_SETTINGS"
+                );
                 suRequest.waitFor();
                 if (suRequest.exitValue() == 0) p[1] = true;
                 else p[1] = false;
@@ -179,6 +186,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.changelog:
                 showChangeLog(false);
+                break;
+
+            case R.id.lastLog:
+                reportLog();
                 break;
 
             case R.id.thanks:
@@ -387,5 +398,57 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             rate.setNegativeButton("Cancel", null);
         }
         rate.show();
+    }
+
+    void reportLog(){
+        View lView = View.inflate(this, R.layout.last_log_report, null);
+        Button pLog = lView.findViewById(R.id.view_progress_log);
+        Button eLog = lView.findViewById(R.id.view_error_log);
+        Button report = lView.findViewById(R.id.report_logs);
+
+        final AlertDialog ad = new AlertDialog.Builder(this, R.style.DarkAlert)
+                .setTitle(R.string.lastLog)
+                .setIcon(R.drawable.ic_log)
+                .setView(lView)
+                .setNegativeButton(R.string.close, null)
+                .create();
+
+        pLog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                File f = new File(getExternalCacheDir(), "progressLog");
+                if (f.exists())
+                    startActivity(
+                            new Intent(MainActivity.this, SimpleLogDisplay.class)
+                                    .putExtra("head", getString(R.string.progressLog))
+                                    .putExtra("filePath", f.getAbsolutePath())
+                    );
+                else Toast.makeText(MainActivity.this, getString(R.string.progress_log_does_not_exist), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        eLog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                File f = new File(getExternalCacheDir(), "errorLog");
+                if (f.exists())
+                    startActivity(
+                            new Intent(MainActivity.this, SimpleLogDisplay.class)
+                                    .putExtra("head", getString(R.string.errorLog))
+                                    .putExtra("filePath", f.getAbsolutePath())
+                    );
+                else Toast.makeText(MainActivity.this, getString(R.string.error_log_does_not_exist), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        report.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new CommonTools(MainActivity.this).reportLogs(false);
+                ad.dismiss();
+            }
+        });
+
+        ad.show();
     }
 }

@@ -44,6 +44,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     PackageManager pm;
     Vector<BackupDataPacket> appList;
     AppListAdapter adapter;
+    boolean isAnyAppSelected = false;
 
     BroadcastReceiver progressReceiver, extraBackupsStartReceiver;
 
@@ -197,7 +198,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         extraBackupsStartReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                ExtraBackups.setAppList(appList, dataAllSelect.isChecked());
+                ExtraBackups.setAppList(appList, dataAllSelect.isChecked(), isAnyAppSelected);
                 finish();
             }
         };
@@ -275,6 +276,8 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         appList = backupDataPackets;
         boolean app, data, permissions, isPermissible;
 
+        isAnyAppSelected = false;
+
         if (appList.size() > 0) {
             app = data = permissions = true;
             isPermissible = appList.get(0).IS_PERMISSIBLE;
@@ -294,6 +297,9 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
             isPermissible = isPermissible || packet.IS_PERMISSIBLE;
             if (packet.IS_PERMISSIBLE) permissions = permissions && packet.PERMISSIONS;
+
+            if (packet.DATA || packet.APP)
+                isAnyAppSelected = true;
 
         }
 

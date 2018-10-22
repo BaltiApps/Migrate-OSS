@@ -57,7 +57,14 @@ public class CommonTools {
         final File progressLog = new File(context.getExternalCacheDir(), "progressLog");
         final File errorLog = new File(context.getExternalCacheDir(), "errorLog");
 
-        if (errorLog.exists() && progressLog.exists()) {
+        if (isErrorLogMandatory && !errorLog.exists()){
+            new AlertDialog.Builder(context)
+                    .setTitle(R.string.log_files_do_not_exist)
+                    .setMessage(context.getString(R.string.error_log_does_not_exist))
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
+        }
+        else if (errorLog.exists() || progressLog.exists()) {
 
             View errorReportView = View.inflate(context, R.layout.error_report_layout, null);
 
@@ -65,11 +72,25 @@ public class CommonTools {
             shareProgress = errorReportView.findViewById(R.id.share_progress_checkbox);
             shareErrors = errorReportView.findViewById(R.id.share_errors_checkbox);
 
-            if (isErrorLogMandatory){
+            if (!progressLog.exists()){
+                shareProgress.setChecked(false);
+                shareProgress.setEnabled(false);
+            }
+            else {
+                shareProgress.setEnabled(true);
+                shareProgress.setChecked(true);
+            }
+
+            if (isErrorLogMandatory && errorLog.exists()){
                 shareErrors.setChecked(true);
                 shareErrors.setEnabled(false);
             }
+            else if (!errorLog.exists()){
+                shareErrors.setChecked(false);
+                shareErrors.setEnabled(false);
+            }
             else {
+                shareErrors.setChecked(true);
                 shareErrors.setEnabled(true);
             }
 

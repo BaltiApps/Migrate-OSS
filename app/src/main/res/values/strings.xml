@@ -270,6 +270,7 @@
     <string name="help">Help</string>
     <string name="preferences">Preferences</string>
     <string name="changelog">Changelog</string>
+    <string name="lastLog">Last logs</string>
     <string name="specialThanks">Special thanks</string>
     <string name="rateTheApp">Rate the app</string>
     <string name="other_options">Other options</string>
@@ -307,6 +308,18 @@
         Currently Migrate does not support restoring zips from the app itself. But that is something which can be added in future.
     </string>
     <string name="more_questions">More questions? Feel free to contact.</string>
+
+    <!--last_log_report.xml-->
+    <string name="seeProgressLog">See Progress log</string>
+    <string name="seeErrorLog">See Error log</string>
+    <string name="report_logs">Report logs</string>
+    <string name="progressLog">Progress log</string>
+    <string name="errorLog">Error log</string>
+
+    <!--SimpleLogDisplay.java-->
+    <string name="no_header">No header</string>
+    <string name="no_filepath">No filepath</string>
+    <string name="log_reading_error">Log reading error</string>
 
     <!--other_apps.xml-->
     <string name="instamean">Systemwide online dictionary</string>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/large_padding_width">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="70dp"
+            android:text="@string/seeProgressLog"
+            android:backgroundTint="@color/grey_bg"
+            android:textAllCaps="false"
+            android:id="@+id/view_progress_log"
+            />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="70dp"
+            android:text="@string/seeErrorLog"
+            android:backgroundTint="@color/grey_bg"
+            android:textAllCaps="false"
+            android:id="@+id/view_error_log"
+            />
+
+    </LinearLayout>
+
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:text="@string/report_logs"
+        android:backgroundTint="@color/grey_bg"
+        android:id="@+id/report_logs"
+        android:textColor="@color/colorAccent"
+        android:drawableEnd="@drawable/ic_send"
+        />
+
+</LinearLayout>
