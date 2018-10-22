@@ -35,6 +35,18 @@
             android:id="@+id/logViewHeader"
             />
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_send"
+            android:background="@android:color/transparent"
+            android:padding="@dimen/large_padding_width"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:id="@+id/logSendButton"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            />
+
     </RelativeLayout>
 
     <ScrollView

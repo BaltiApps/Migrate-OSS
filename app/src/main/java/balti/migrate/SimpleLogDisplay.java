@@ -17,7 +17,7 @@ import java.io.FileReader;
 
 public class SimpleLogDisplay extends AppCompatActivity {
 
-    ImageButton back;
+    ImageButton back, send;
     TextView header;
     TextView logBody;
     ProgressBar progressBar;
@@ -32,6 +32,7 @@ public class SimpleLogDisplay extends AppCompatActivity {
         setContentView(R.layout.simple_log_display);
 
         back = findViewById(R.id.logViewBackButton);
+        send = findViewById(R.id.logSendButton);
         header = findViewById(R.id.logViewHeader);
         logBody = findViewById(R.id.logBody);
         progressBar = findViewById(R.id.log_view_progress_bar);
@@ -40,6 +41,13 @@ public class SimpleLogDisplay extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new CommonTools(SimpleLogDisplay.this).reportLogs(false);
             }
         });
 
