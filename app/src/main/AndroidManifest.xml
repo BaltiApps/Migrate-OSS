@@ -37,7 +37,7 @@
 
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleInstance"/>
 
         <activity android:name=".BackupActivity"
             android:screenOrientation="portrait"

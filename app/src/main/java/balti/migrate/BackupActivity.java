@@ -169,7 +169,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             @Override
             public void onClick(View v) {
                 new AlertDialog.Builder(BackupActivity.this)
-                        .setMessage(R.string.backup_activity_help)
+                        .setView(View.inflate(BackupActivity.this, R.layout.backup_activity_help, null))
                         .setPositiveButton(R.string.close, null)
                         .show();
             }

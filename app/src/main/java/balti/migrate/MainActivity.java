@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     DrawerLayout drawer;
     NavigationView navigationView;
 
+    CommonTools commonTools;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         main = getSharedPreferences("main", MODE_PRIVATE);
         editor = main.edit();
+
+        commonTools = new CommonTools(this);
 
         drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigationDrawer);
@@ -192,6 +196,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 reportLog();
                 break;
 
+
+            case R.id.appIntro:
+                startActivity(new Intent(this, InitialGuide.class).putExtra("manual", true));
+                break;
+
             case R.id.thanks:
                 AlertDialog.Builder specialThanks = new AlertDialog.Builder(this);
                 specialThanks.setMessage(getString(R.string.thanksToAll) + "\n\n" +
@@ -233,6 +242,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 email.setData(Uri.parse("mailto:"));
                                 email.putExtra(Intent.EXTRA_EMAIL, new String[]{"help.baltiapps@gmail.com"});
                                 email.putExtra(Intent.EXTRA_SUBJECT, "Bug report for Migrate");
+                                email.putExtra(Intent.EXTRA_TEXT, commonTools.getDeviceSpecifications());
+
                                 try {
                                     startActivity(Intent.createChooser(email, getString(R.string.select_mail)));
                                 }
@@ -444,7 +455,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         report.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new CommonTools(MainActivity.this).reportLogs(false);
+                commonTools.reportLogs(false);
                 ad.dismiss();
             }
         });

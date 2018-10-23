@@ -55,6 +55,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/rootAccess"
+        android:drawableStart="@drawable/root"
         android:gravity="center_vertical"
         android:padding="@dimen/small_padding_width"
         android:id="@+id/rootPermTextView"

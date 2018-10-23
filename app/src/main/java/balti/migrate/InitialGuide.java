@@ -3,6 +3,7 @@ package balti.migrate;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
@@ -11,12 +12,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 public class InitialGuide extends AppCompatActivity {
     Button previous, next;
 
     ViewPager viewPager;
     View.OnClickListener scrollNext, scrollPrevious;
+
+    ImageView splashLogo;
+    RelativeLayout buttonBar;
 
     int TOTAL_LAYOUTS = 0;
 
@@ -31,24 +37,37 @@ public class InitialGuide extends AppCompatActivity {
         main = getSharedPreferences("main", MODE_PRIVATE);
         editor = main.edit();
 
-        if (!main.getBoolean("firstRun", true) && !getIntent().getBooleanExtra("manual", false)){
-            startActivity(new Intent(InitialGuide.this, MainActivity.class));
-            finish();
-        }
-
+        splashLogo = findViewById(R.id.splash_logo);
         next = findViewById(R.id.initial_guide_next);
         previous = findViewById(R.id.initial_guide_prev);
+        buttonBar = findViewById(R.id.initial_guide_button_bar);
+        viewPager = findViewById(R.id.initial_guide_view_pager);
+
+        if (!main.getBoolean("firstRun", true) && !getIntent().getBooleanExtra("manual", false)){
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    finishGuide(false);
+                }
+            }, 1000);
+        }
+        else {
+            splashLogo.setVisibility(View.GONE);
+            buttonBar.setVisibility(View.VISIBLE);
+            viewPager.setVisibility(View.VISIBLE);
+        }
 
 
         final int arrLayouts[] = new int[]{
                 R.layout.initial_guide_0,
-                R.layout.initial_guide_1
+                R.layout.initial_guide_1,
+                R.layout.initial_guide_2,
+                R.layout.initial_guide_3
         };
 
         TOTAL_LAYOUTS = arrLayouts.length;
 
-
-        viewPager = findViewById(R.id.initial_guide_view_pager);
         viewPager.setAdapter(new PagerAdapter() {
             @Override
             public int getCount() {
@@ -81,7 +100,7 @@ public class InitialGuide extends AppCompatActivity {
                     viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
                 }
                 else {
-                    finishGuide();
+                    finishGuide(true);
                 }
             }
         };
@@ -93,7 +112,7 @@ public class InitialGuide extends AppCompatActivity {
                     viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
                 }
                 else {
-                    finishGuide();
+                    finishGuide(false);
                 }
             }
         };
@@ -109,7 +128,7 @@ public class InitialGuide extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                if (position == TOTAL_LAYOUTS-1) next.setText(R.string.got_it);
+                if (position == TOTAL_LAYOUTS-1) next.setText(R.string.accept);
                 else next.setText(R.string.next);
 
                 if (position == 0) previous.setText(R.string.skip);
@@ -123,8 +142,8 @@ public class InitialGuide extends AppCompatActivity {
         });
     }
 
-    void finishGuide(){
-        if (editor != null){
+    void finishGuide(boolean write){
+        if (write && editor != null){
             editor.putBoolean("firstRun", false);
             editor.commit();
         }

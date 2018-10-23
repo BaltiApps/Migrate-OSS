@@ -162,7 +162,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/home/sayantan/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/hardware/ic_keyboard_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/home/sayantan/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/image/ic_assistant_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -173,7 +173,7 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="2c9d94" />
-                            <entry key="outputName" value="ic_keyboard_small" />
+                            <entry key="outputName" value="ic_initial_guide" />
                             <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="$USER_HOME$/Downloads/migrate/app_bg.svg" />
                           </map>

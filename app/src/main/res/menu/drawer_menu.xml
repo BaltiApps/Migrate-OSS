@@ -16,6 +16,11 @@
         android:title="@string/lastLog"/>
 
 
+    <item android:id="@+id/appIntro"
+        android:icon="@drawable/ic_initial_guide"
+        android:title="@string/app_intro"/>
+
+
     <item android:title="@string/aboutThisApp"
         >
 

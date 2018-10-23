@@ -160,10 +160,13 @@
     <string name="yes">Yes</string>
     <string name="rename">No, rename</string>
     <string name="empty">Backup name cannot be empty</string>
-    <string name="backup_activity_help">
+    <string name="backup_activity_help_0">
         <b>App</b> : Backup the apk\n
         <b>Data</b> : Backup all private data\n
-        <b>Perm</b> : Backup all granted permissions\n
+        <b>Perm</b> : Backup all granular permissions\n
+        \n<i>Following is an example of granular permissions from the Google Photos app</i>\n
+    </string>
+    <string name="backup_activity_help_1">
         \n
         Selecting <i>Data</i> of an app necessarily means you have to backup the <i>App</i> also. <i>Perm</i>(permission) can be selected only if the apk or data is selected to be backed up.
     </string>
@@ -220,6 +223,7 @@
     
     <!--initial_guide.xml-->
     <string name="skip">Skip</string>
+    <string name="accept">Accept</string>
     
     <!--initial_guide_0.xml-->
     <string name="greet1">Welcome to migrate!</string>
@@ -236,6 +240,14 @@
     <string name="greet3">Flash with the ROM!</string>
     <string name="body_2_0">Migrate backup packages are TWRP flashable zip files.\n\nA helper app takes over the app restoration process once you boot up your new ROM.</string>
     <string name="body_2_1">After boot up, you will be automatically prompted to continue restore</string>
+
+    <!--initial_guide_3.xml-->
+    <string name="greet4">Few things before you start...</string>
+    <string name="body_3_0">This app is still in its infancy. As a result, there might be bugs.\n\n
+        Migrate is a root based app.\n\n
+        BY USING THIS APP YOU ACCEPT THAT YOU KNOW THE HAZARDS OF ROOTING AND THEREBY USING A ROOT BASED APP. YOU ACKNOWLEDGE THAT THE DEVELOPER WILL NOT BE HELD RESPONSIBLE FOR BRICKED DEVICES OR DEAD HARDWARE, AND THAT ANY LOSS THAT MIGHT HAPPEN TO YOUR DATA IS COMPLETELY UNINTENTIONAL.\n\n
+        A nandroid backup is the safest backup method compared to any app based backup method. In case of any issues, please contact the developer.
+    </string>
 
     <!--how_to_restore.xml-->
     <string name="prev">Previous</string>
@@ -288,6 +300,7 @@
     <string name="about">About</string>
     <string name="help">Help</string>
     <string name="preferences">Preferences</string>
+    <string name="app_intro">App intro</string>
     <string name="changelog">Changelog</string>
     <string name="lastLog">Last logs</string>
     <string name="specialThanks">Special thanks</string>

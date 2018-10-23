@@ -5,12 +5,21 @@
     android:background="@color/colorPrimary"
     >
 
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_launcher_round_web"
+        android:layout_centerInParent="true"
+        android:id="@+id/splash_logo"
+        />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:id="@+id/initial_guide_button_bar"
         android:layout_margin="@dimen/small_padding_width"
+        android:visibility="gone"
         >
 
         <Button
@@ -39,6 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/initial_guide_button_bar"
         android:id="@+id/initial_guide_view_pager"
+        android:visibility="gone"
         />
 
 </RelativeLayout>
