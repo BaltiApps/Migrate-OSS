@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/initial_guide_button_bar"
+        android:layout_margin="@dimen/small_padding_width"
+        >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/skip"
+            android:layout_alignParentStart="true"
+            android:id="@+id/initial_guide_prev"
+            android:backgroundTint="@color/colorPrimary"
+            android:textColor="@color/colorAccent"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/next"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/initial_guide_next"
+            android:backgroundTint="@color/colorButtons"
+            />
+
+    </RelativeLayout>
+
+    <android.support.v4.view.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/initial_guide_button_bar"
+        android:id="@+id/initial_guide_view_pager"
+        />
+
+</RelativeLayout>

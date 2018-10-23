@@ -18,6 +18,28 @@
                                 <PersistentState>
                                   <option name="children">
                                     <map>
+                                      <entry key="clipArt">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="paddingPercent" value="10" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                      <entry key="clipartAsset">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="url" value="jar:file:/home/sayantan/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/communication/ic_contact_phone_black_24dp.xml" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
                                       <entry key="image">
                                         <value>
                                           <PersistentState>
@@ -33,10 +55,10 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="assetType" value="IMAGE" />
                                       <entry key="imageAsset" value="$USER_HOME$/Downloads/migrate/migrate_notification_icon.png" />
-                                      <entry key="outputName" value="ic_notification_icon" />
-                                      <entry key="theme" value="HOLO_DARK" />
+                                      <entry key="outputName" value="temp_icon" />
+                                      <entry key="theme" value="CUSTOM" />
+                                      <entry key="themeColor" value="2c9d94" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -114,7 +136,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputIconType" value="NOTIFICATION" />
+                            <entry key="outputIconType" value="ACTIONBAR" />
                           </map>
                         </option>
                       </PersistentState>
@@ -140,7 +162,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/home/sayantan/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/content/ic_send_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/home/sayantan/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/hardware/ic_keyboard_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -151,7 +173,7 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="2c9d94" />
-                            <entry key="outputName" value="ic_send" />
+                            <entry key="outputName" value="ic_keyboard_small" />
                             <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="$USER_HOME$/Downloads/migrate/app_bg.svg" />
                           </map>

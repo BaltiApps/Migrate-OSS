@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/guide_layouts_padding"
     >
@@ -8,7 +8,6 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/restore_2_scroll_view"
         >
 
         <LinearLayout
@@ -20,25 +19,35 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/step_2"
+                android:text="@string/greet1"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/step_2_desc"
+                android:text="@string/body_0_0"
                 android:paddingTop="20dp"
                 />
 
             <Space
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/large_padding_width" />
+                android:layout_height="@dimen/guide_layouts_padding" />
 
             <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/rom_logos"
+                />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/guide_layouts_padding" />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/restore_2_screen"
+                android:text="@string/body_0_1"
                 />
 
         </LinearLayout>

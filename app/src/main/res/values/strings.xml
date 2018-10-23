@@ -217,6 +217,25 @@
 
     <!--backup_progress_layout.xml-->
     <string name="report">Report</string>
+    
+    <!--initial_guide.xml-->
+    <string name="skip">Skip</string>
+    
+    <!--initial_guide_0.xml-->
+    <string name="greet1">Welcome to migrate!</string>
+    <string name="body_0_0">Migrate is a custom ROM migration tool.\n\nIt helps you to transfer your apps, data, contacts, sms and much more.</string>
+    <string name="body_0_1">Press Next for a short tour.</string>
+    
+    <!--initial_guide_1.xml-->
+    <string name="greet2">Backup everything!</string>
+    <string name="body_1_0">Backup all applications</string>
+    <string name="body_1_1">Apps\nApp data\nApp permissions</string>
+    <string name="body_1_2">Other extras</string>
+    
+    <!--initial_guide_2.xml-->
+    <string name="greet3">Flash with the ROM!</string>
+    <string name="body_2_0">Migrate backup packages are TWRP flashable zip files.\n\nA helper app takes over the app restoration process once you boot up your new ROM.</string>
+    <string name="body_2_1">After boot up, you will be automatically prompted to continue restore</string>
 
     <!--how_to_restore.xml-->
     <string name="prev">Previous</string>

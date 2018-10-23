@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        boolean[] p = isPermissionGranted();
+        boolean p[] = isPermissionGranted();
         if (!(p[0] && p[1])) {
             startActivity(new Intent(this, PermissionsScreen.class));
             finish();

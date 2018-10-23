@@ -24,7 +24,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity"
+        <activity android:name=".InitialGuide"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             >
@@ -34,6 +34,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop"/>
 
         <activity android:name=".BackupActivity"
             android:screenOrientation="portrait"
