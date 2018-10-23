@@ -150,6 +150,7 @@
     <string name="backupCancelled">Backup cancelled</string>
     <string name="deletingFiles">Deleting files</string>
     <string name="backupFinishedWithErrors">Backup finished with errors.</string>
+    <string name="backupInterruptedWithErrors">Backup interrupted with errors.</string>
     <string name="notEnoughSpace">Backup incomplete. Not enough storage space.</string>
     <string name="no_keyboard_data">No keyboard data</string>
 

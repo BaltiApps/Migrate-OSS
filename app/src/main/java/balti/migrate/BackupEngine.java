@@ -20,6 +20,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -80,9 +81,6 @@ public class BackupEngine {
     private boolean doBackupKeyboard = false;
     private String keyboardText = "";
     private String keyboardBackupName;
-
-    private Process getNumberOfFiles;
-    private Process zipProcess;
 
     private Intent actualProgressBroadcast;
 
@@ -180,13 +178,11 @@ public class BackupEngine {
         this.errorTag = "[" + partNumber + "/" + totalParts + "]";
 
         this.compressionLevel = compressionLevel;
-        (new File(destination)).mkdirs();
+        (new File(this.destination)).mkdirs();
         this.context = context;
 
         assert this.backupName != null;
         if (this.backupName.endsWith(".zip")) this.backupName = this.backupName.substring(0, this.backupName.lastIndexOf("."));
-
-        getNumberOfFiles = zipProcess = null;
 
         main = context.getSharedPreferences("main", Context.MODE_PRIVATE);
         actualProgressBroadcast = new Intent("Migrate progress broadcast")
@@ -338,6 +334,9 @@ public class BackupEngine {
                     actualProgressBroadcast.putExtra("app_log", line);
                     LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
+                    if (line.equals("--- Migrate app files copied ---"))
+                        break;
+
                 }
 
 
@@ -364,22 +363,26 @@ public class BackupEngine {
         if (isCancelled) finalMessage = context.getString(R.string.backupCancelled);
         else if (errors.size() == 0) finalMessage = context.getString(R.string.noErrors);
         else {
-            finalMessage = context.getString(R.string.backupFinishedWithErrors);
+            if (partNumber == totalParts)
+                finalMessage = context.getString(R.string.backupFinishedWithErrors);
+            else
+                finalMessage = context.getString(R.string.backupInterruptedWithErrors);
             progressNotif.setContentText(errors.get(0));
         }
 
         endMillis = timeInMillis();
 
+        boolean finalProcess = partNumber == totalParts || isCancelled || errors.size() > 0;
 
         actualProgressBroadcast.putExtra("part_name", "");
 
         actualProgressBroadcast.putExtra("type", "finished").putExtra("finishedMessage", finalMessage.trim())
                 .putExtra("total_time", endMillis - startMillis).putExtra("final_process",
-                partNumber == totalParts || isCancelled || errors.size() > 0);
+                finalProcess);
 
         actualProgressBroadcast.putStringArrayListExtra("errors", errors);
 
-        if (partNumber == totalParts || isCancelled || errors.size() > 0) {
+        if (finalProcess) {
 
             activityProgressIntent.putExtras(actualProgressBroadcast);
 
@@ -396,7 +399,7 @@ public class BackupEngine {
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
-        if (partNumber == totalParts || isCancelled || errors.size() > 0)
+        if (finalProcess)
             context.stopService(new Intent(context, BackupService.class));
     }
 
@@ -519,18 +522,15 @@ public class BackupEngine {
                     .setContentText("");
             notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
 
-            getNumberOfFiles = Runtime.getRuntime().exec("ls -l " + destination + "/" + backupName);
-            BufferedReader outputReader = new BufferedReader(new InputStreamReader(getNumberOfFiles.getInputStream()));
-            BufferedReader errorReader = new BufferedReader(new InputStreamReader(getNumberOfFiles.getErrorStream()));
-            getNumberOfFiles.waitFor();
-            String l; int n = 0;
-            while (outputReader.readLine() != null){
-                ++n;
-            }
-            --n;
-            while ((l = errorReader.readLine()) != null){
-                err = err + l + "\n";
-            }
+            File f = new File(destination + "/" + backupName);
+            int n = f.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    return pathname.isFile();
+                }
+            }).length;
+            n += 2;
+
             (new File(destination + "/" + backupName + ".zip")).delete();
             int c = 0;
 
@@ -541,7 +541,6 @@ public class BackupEngine {
 
             FileOutputStream fileOutputStream = new FileOutputStream(zipFile);
             ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream);
-
 
             //int part = 0;
 
@@ -625,10 +624,6 @@ public class BackupEngine {
             }
             zipOutputStream.close();
             fullDelete(directory.getAbsolutePath());
-
-            while ((l = errorReader.readLine()) != null){
-                err = err + l + "\n";
-            }
 
             if (c < n){
                 err += context.getString(R.string.notEnoughSpace) + "\n";
@@ -773,7 +768,6 @@ public class BackupEngine {
         BufferedReader reader = new BufferedReader(new StringReader(metadataContent));
 
         try {
-            metadataFile.createNewFile();
             BufferedWriter writer = new BufferedWriter(new FileWriter(metadataFile));
             String line;
             while ((line = reader.readLine()) != null) {
@@ -891,20 +885,27 @@ public class BackupEngine {
                     dataPath = dataPath.substring(0, dataPath.lastIndexOf('/'));
                 }
 
-                String echoCopyCommand = "echo \"migrate status: " + appName + " (" + c + "/" + numberOfApps + ") icon: " + appIcon + "\"";
+                String echoCopyCommand = "echo \"migrate status: " + appName + " (" + c + "/" + numberOfApps + ") icon: " + appIcon + "\"\n";
                 String permissionCommand = "";
-
-                String command;
-
-                command = "cd " + apkPath + "; cp " + apkName + " " + destination + "/" + backupName + "/" + packageName + ".apk" + "\n";
-                if (!dataPath.equals("NULL")){
-                    command = command + "cd " + dataPath + "; " + busyboxBinaryFilePath + " tar -cvzpf " + destination + "/" + backupName + "/" + dataName + ".tar.gz " + dataName + "\n";
-                }
 
                 if (permissions){
                     permissionCommand = "dumpsys package " + packageName + " | grep android.permission | grep granted=true > " +
                             destination + "/" + backupName + "/" + packageName + ".perm" + "\n";
                 }
+
+                String command = "cd " + apkPath + "; cp " + apkName + " " + destination + "/" + backupName + "/" + packageName + ".apk" + "\n";
+                if (!dataPath.equals("NULL")){
+                    command = command + "if [ -e " + dataPath + "/" + dataName + " ]; then\n";
+                    command = command + "   cd " + dataPath + "; " + busyboxBinaryFilePath + " tar -cvzpf " + destination + "/" + backupName + "/" + dataName + ".tar.gz " + dataName + "\n";
+                    command = command + "else\n";
+                    command = command + "   echo \"dataPath : " + dataPath + "/" + dataName + " does not exist\"\n";
+                    command = command + "fi\n";
+                }
+
+                if (permissions) writer.write(permissionCommand, 0, permissionCommand.length());
+                writer.write(echoCopyCommand, 0, echoCopyCommand.length());
+                writer.write(command, 0, command.length());
+
 
                 updater_writer.write("ui_print(\"" + appName + " (" + c + "/" + numberOfApps + ")\");\n");
 
@@ -936,9 +937,6 @@ public class BackupEngine {
 
                 updater_writer.write("set_progress(" + String.format("%.4f", ((c * 1.0) / numberOfApps)) + ");\n");
 
-                writer.write(echoCopyCommand + '\n', 0, echoCopyCommand.length() + 1);
-                writer.write(command, 0, command.length());
-                if (permissions) writer.write(permissionCommand, 0, permissionCommand.length());
             }
 
             if (doBackupContacts || doBackupSms || doBackupCalls || doBackupDpi || doBackupKeyboard) {
@@ -998,6 +996,7 @@ public class BackupEngine {
 
             updater_writer.close();
 
+            writer.write("echo \"--- Migrate app files copied ---\"\n");
             writer.close();
 
         } catch (Exception e) {
@@ -1014,8 +1013,6 @@ public class BackupEngine {
         isCancelled = true;
         try {
             suProcess.destroy();
-            if (getNumberOfFiles != null) getNumberOfFiles.destroy();
-            if (zipProcess != null) zipProcess.destroy();
         } catch (Exception e) {
             e.printStackTrace();
         }

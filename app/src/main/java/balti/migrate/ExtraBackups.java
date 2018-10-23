@@ -178,15 +178,6 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             waitingProgress.setVisibility(View.GONE);
             waitingDetails.setVisibility(View.GONE);
 
-            final String cpu_abi = Build.SUPPORTED_ABIS[0];
-
-            if (cpu_abi.equals("armeabi-v7a") || cpu_abi.equals("arm64-v8a")) {
-                busyboxBinaryFile = new CommonTools(ExtraBackups.this).unpackAssetToInternal("busybox", "busybox");
-            }
-            else if (cpu_abi.equals("x86") || cpu_abi.equals("x86_64")){
-                busyboxBinaryFile = new CommonTools(ExtraBackups.this).unpackAssetToInternal("busybox-x86", "busybox");
-            }
-            duBinaryFilePath = busyboxBinaryFile + " du";
         }
 
         @Override
@@ -208,6 +199,16 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
         @Override
         protected Object[] doInBackground(Void... voids) {
+
+            final String cpu_abi = Build.SUPPORTED_ABIS[0];
+
+            if (cpu_abi.equals("armeabi-v7a") || cpu_abi.equals("arm64-v8a")) {
+                busyboxBinaryFile = new CommonTools(ExtraBackups.this).unpackAssetToInternal("busybox", "busybox");
+            }
+            else if (cpu_abi.equals("x86") || cpu_abi.equals("x86_64")){
+                busyboxBinaryFile = new CommonTools(ExtraBackups.this).unpackAssetToInternal("busybox-x86", "busybox");
+            }
+            duBinaryFilePath = busyboxBinaryFile + " du";
 
             int length = appList.size();
             publishProgress(getString(R.string.filtering_apps), "", "");
