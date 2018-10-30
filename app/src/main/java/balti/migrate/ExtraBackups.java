@@ -1196,7 +1196,12 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         protected Object doInBackground(Object[] objects) {
 
             try {
-                dpiReader = Runtime.getRuntime().exec("su -c wm density");
+                dpiReader = Runtime.getRuntime().exec("su");
+                BufferedWriter w = new BufferedWriter(new OutputStreamWriter(dpiReader.getOutputStream()));
+                w.write("wm density\n");
+                w.write("exit\n");
+                w.flush();
+
                 outputReader = new BufferedReader(new InputStreamReader(dpiReader.getInputStream()));
                 errorReader = new BufferedReader(new InputStreamReader(dpiReader.getErrorStream()));
 

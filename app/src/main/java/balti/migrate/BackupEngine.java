@@ -1687,7 +1687,12 @@ public class BackupEngine {
                 reader = new BufferedReader(new StringReader(dpiText));
             }
             else {
-                Process dpiReader = Runtime.getRuntime().exec("su -c wm density");
+                Process dpiReader = Runtime.getRuntime().exec("su");
+                BufferedWriter w = new BufferedWriter(new OutputStreamWriter(dpiReader.getOutputStream()));
+                w.write("wm density\n");
+                w.write("exit\n");
+                w.flush();
+
                 reader = new BufferedReader(new InputStreamReader(dpiReader.getInputStream()));
             }
 
