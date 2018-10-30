@@ -116,7 +116,7 @@ then
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
 				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Original Android version was: $val" >> /proc/self/fd/$OUTFD;
-				echo "ui_print Current ROM Android version: $cpu_arch" >> /proc/self/fd/$OUTFD;
+				echo "ui_print Current ROM Android version: $rom_sdk" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Restoration of some apps MAY FAIL!" >> /proc/self/fd/$OUTFD;
 				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
