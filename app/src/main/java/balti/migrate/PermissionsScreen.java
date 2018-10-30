@@ -38,6 +38,8 @@ public class PermissionsScreen extends AppCompatActivity {
     SharedPreferences main;
     SharedPreferences.Editor editor;
 
+    CommonTools commonTools;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +47,8 @@ public class PermissionsScreen extends AppCompatActivity {
 
         main = getSharedPreferences("main", MODE_PRIVATE);
         editor = main.edit();
+
+        commonTools = new CommonTools(this);
 
         storagePerm = findViewById(R.id.storagePermTextView);
         rootPerm = findViewById(R.id.rootPermTextView);
@@ -155,7 +159,7 @@ public class PermissionsScreen extends AppCompatActivity {
             p[1] = false;
         } else {
             try {
-                p[1] = suEcho();
+                p[1] = commonTools.suEcho();
             } catch (Exception e) {
                 p[1] = false;
             }
@@ -163,15 +167,19 @@ public class PermissionsScreen extends AppCompatActivity {
 
         return p;
     }
-
+/*
     boolean suEcho() throws IOException, InterruptedException {
         boolean result;
-        Process suRequest = Runtime.getRuntime().exec("su -c pm grant " + getPackageName() + " android.permission.DUMP && pm grant " + getPackageName() + " android.permission.PACKAGE_USAGE_STATS");
+        Process suRequest = Runtime.getRuntime().exec("su");
+        BufferedWriter requestWriter = new BufferedWriter(new OutputStreamWriter(suRequest.getOutputStream()));
+        requestWriter.write("pm grant " + getPackageName() + " android.permission.DUMP && pm grant " + getPackageName() + " android.permission.PACKAGE_USAGE_STATS\n");
+        requestWriter.write("exit\n");
+        requestWriter.flush();
         suRequest.waitFor();
         if (suRequest.exitValue() == 0) result = true;
         else result = false;
         return result;
-    }
+    }*/
 
     void requestPermissions() {
         ActivityCompat.requestPermissions(this, new String[]{
@@ -187,7 +195,7 @@ public class PermissionsScreen extends AppCompatActivity {
             boolean p1 = false;
 
             try {
-                p1 = suEcho();
+                p1 = commonTools.suEcho();
 
                 if (!p1)
                     new AlertDialog.Builder(this)
@@ -206,6 +214,8 @@ public class PermissionsScreen extends AppCompatActivity {
 
             grantPermissions.setText(getString(R.string.grantPermissions));
             grantPermissions.setEnabled(true);
+
+            onResume();
         }
     }
 

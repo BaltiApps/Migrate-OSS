@@ -6,7 +6,12 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.Launcher" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
     </style>
 
     <style name="DarkAlert" parent="Theme.AppCompat.Dialog.Alert">

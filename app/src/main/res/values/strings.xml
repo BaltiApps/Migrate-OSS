@@ -17,7 +17,7 @@
     <string name="version_1.0_content" tools:ignore="ExtraTranslation">\u2022 Initial release</string>
 
     <!--activity_main.xml-->
-    <string name="selectOperation">Select operation</string>
+    <string name="checking_permissions">Checking permissions</string>
     <string name="backupButton">Backup</string>
     <string name="restoreButton">Restore</string>
 
@@ -151,7 +151,7 @@
     <string name="deletingFiles">Deleting files</string>
     <string name="backupFinishedWithErrors">Backup finished with errors.</string>
     <string name="backupInterruptedWithErrors">Backup interrupted with errors.</string>
-    <string name="notEnoughSpace">Backup incomplete. Not enough storage space.</string>
+    <string name="incompleteZip">Not all files could be combined.</string>
     <string name="no_keyboard_data">No keyboard data</string>
 
     <!--BackupActivity.java-->
@@ -185,7 +185,9 @@
     <string name="starting_engine">Starting backup engine</string>
 
     <string name="root_permission_denied">Root permission denied!</string>
-    <string name="root_permission_denied_desc">Please make sure that your device is rooted and you have allowed root permission</string>
+    <string name="root_permission_denied_desc">Please make sure that your device is rooted and you have allowed root permission.\n\n
+    If your ROM was pre-rooted, try flashing Magisk.
+    </string>
     <string name="rate_dialog_title">Your opinion is important</string>
     <string name="rate_dialog_message">If this app has helped you, please consider giving a rating and/or a review.</string>
     <string name="sure">Sure</string>
@@ -228,7 +230,7 @@
     
     <!--initial_guide_0.xml-->
     <string name="greet1">Welcome to migrate!</string>
-    <string name="body_0_0">Migrate is a custom ROM migration tool.\n\nIt helps you to transfer your apps, data, contacts, sms and much more.</string>
+    <string name="body_0_0">Migrate is a vital tool to jump between various custom ROMs with ease.\n\nIt helps you to transfer your apps, data, contacts, sms and much more.</string>
     <string name="body_0_1">Press Next for a short tour.</string>
     
     <!--initial_guide_1.xml-->
@@ -375,9 +377,21 @@
     <string name="disable_battery_optimisation">Disable battery optimisation</string>
     <string name="battery_optimisation_already_disabled">Battery optimisation already disabled</string>
 
-    <!--thanks-->
-    <string name="thanksToAll">Thanks to everyone who contributed in the making of this app. Special thanks to:</string>
-    <string name="logoAndDesign">Logo and design</string>
-    <string name="tester">Testers</string>
+    <!--thanks_layout.xml-->
+    <string name="thanks_to_stericson">Huge thanks to Stephen (stericdroid) for allowing me to liberally use his busybox libraries</string>
+    <string name="thanks_to_magisk">Without topjohnwu\'s Magisk, this app would not be possible. I learned a lot from Magisk installer scripts.</string>
+    <string name="thanks_1">Tireless help for Xiaomi Mi A1:\n@ishubhamsingh\n@su_bin</string>
+    <string name="thanks_2">Huge bug hunters:\n@akshayrohida\n@raj3303</string>
+    <string name="thanks_3">The app wouldn\'t be possible without the whole group of tester:\n\n
+    @akshay\n
+        @TusharG03\n
+        @arghyac35\n
+        @Johnkator\n
+        @samirkushwaha\n
+        Pranay\n
+        @Sachith_Hedge\n
+        @Akianonymus\n
+        @SubhrajyotiSen\n
+    </string>
 
 </resources>

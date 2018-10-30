@@ -61,9 +61,13 @@ public class BackupService extends Service {
     BufferedWriter progressWriter, errorWriter;
     String lastProgressLog = "";
 
+    static ArrayList<String> allErrors;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        allErrors = new ArrayList<>(0);
 
         main = getSharedPreferences("main", MODE_PRIVATE);
 
@@ -95,8 +99,15 @@ public class BackupService extends Service {
 
                         ArrayList<String> errors = intent.getStringArrayListExtra("errors");
 
-                        for (int i = 0; i < errors.size(); i++){
-                            try { errorWriter.write(errors.get(i) + "\n"); } catch (IOException e) { e.printStackTrace(); }
+                        if (errors != null) {
+                            allErrors.addAll(errors);
+                            for (int i = 0; i < errors.size(); i++) {
+                                try {
+                                    errorWriter.write(errors.get(i) + "\n");
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
 
                         if (intent.getBooleanExtra("final_process", false)) {
@@ -119,7 +130,7 @@ public class BackupService extends Service {
                         }
 
 
-                        if ((runningBatchCount+1) < batches.size() && errors.size() == 0) {
+                        if ((runningBatchCount+1) < batches.size()) {
                             runningBatchCount += 1;
                             runNextBatch();
                         }

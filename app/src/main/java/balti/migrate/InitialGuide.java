@@ -3,7 +3,6 @@ package balti.migrate;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
@@ -12,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 public class InitialGuide extends AppCompatActivity {
@@ -21,7 +19,6 @@ public class InitialGuide extends AppCompatActivity {
     ViewPager viewPager;
     View.OnClickListener scrollNext, scrollPrevious;
 
-    ImageView splashLogo;
     RelativeLayout buttonBar;
 
     int TOTAL_LAYOUTS = 0;
@@ -37,27 +34,10 @@ public class InitialGuide extends AppCompatActivity {
         main = getSharedPreferences("main", MODE_PRIVATE);
         editor = main.edit();
 
-        splashLogo = findViewById(R.id.splash_logo);
         next = findViewById(R.id.initial_guide_next);
         previous = findViewById(R.id.initial_guide_prev);
         buttonBar = findViewById(R.id.initial_guide_button_bar);
         viewPager = findViewById(R.id.initial_guide_view_pager);
-
-        if (!main.getBoolean("firstRun", true) && !getIntent().getBooleanExtra("manual", false)){
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    finishGuide(false);
-                }
-            }, 1000);
-        }
-        else {
-            splashLogo.setVisibility(View.GONE);
-            buttonBar.setVisibility(View.VISIBLE);
-            viewPager.setVisibility(View.VISIBLE);
-        }
-
 
         final int arrLayouts[] = new int[]{
                 R.layout.initial_guide_0,
@@ -147,7 +127,7 @@ public class InitialGuide extends AppCompatActivity {
             editor.putBoolean("firstRun", false);
             editor.commit();
         }
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, PermissionsScreen.class));
         finish();
     }
 }

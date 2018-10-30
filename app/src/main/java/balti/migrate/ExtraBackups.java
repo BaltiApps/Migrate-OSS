@@ -57,8 +57,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
 
-import static android.os.Environment.getExternalStorageDirectory;
-
 public class ExtraBackups extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
 
 
@@ -366,8 +364,6 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                     backupBatches.add(new BackupBatch(batchPackets, dataSize, systemSize));
                 }
             }
-
-            publishProgress("show_parts_dialog", parts + " parts", "");
 
             backupSummaries = new Vector<>(0);
 
@@ -1466,7 +1462,8 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         pm = getPackageManager();
 
         main = getSharedPreferences("main", MODE_PRIVATE);
-        destination = main.getString("defaultBackupPath", getExternalStorageDirectory() + "/Migrate");
+
+        destination = main.getString("defaultBackupPath", "/sdcard/Migrate");
 
         layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 

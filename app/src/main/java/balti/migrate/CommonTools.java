@@ -13,10 +13,12 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 public class CommonTools {
@@ -167,5 +169,19 @@ public class CommonTools {
                 return true;
         }
         return false;
+    }
+
+    boolean suEcho() throws IOException, InterruptedException {
+        Process suRequest = Runtime.getRuntime().exec("su");
+
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(suRequest.getOutputStream()));
+
+        writer.write("pm grant " + context.getPackageName() + " android.permission.DUMP\n" );
+        writer.write("pm grant " + context.getPackageName() + " android.permission.PACKAGE_USAGE_STATS\n" );
+        writer.write("exit\n");
+        writer.flush();
+
+        suRequest.waitFor();
+        return suRequest.exitValue() == 0;
     }
 }

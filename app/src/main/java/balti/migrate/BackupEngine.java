@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,6 +39,8 @@ import java.util.Vector;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import static balti.migrate.CommonTools.DEBUG_TAG;
 
 /**
  * Created by sayantan on 9/10/17.
@@ -61,6 +65,8 @@ public class BackupEngine {
     private ArrayList<String> errors;
 
     private String timeStamp = "";
+
+    private String MIGRATE_STATUS = "migrate_status";
 
     private boolean doBackupContacts = false;
     private Vector<ContactsDataPacket> contactsDataPackets;
@@ -87,6 +93,8 @@ public class BackupEngine {
     private boolean isCancelled = false;
     private long startMillis;
     private long endMillis;
+
+    String GEN_ICON_STR = "";
 
     private String errorTag;
 
@@ -254,9 +262,10 @@ public class BackupEngine {
         NotificationCompat.Action cancelAction = new NotificationCompat.Action(0, context.getString(android.R.string.cancel), cancelPendingIntent);
 
         try {
-            File receivedFiles[] = makeScripts();
+            Vector<File> scriptFiles = makeScripts();
+
             if (isCancelled) throw new InterruptedIOException();
-            if (receivedFiles[0] != null && receivedFiles[1] != null) {
+            if (scriptFiles.size() > 1) {
 
                 progressNotif.addAction(cancelAction);
 
@@ -287,62 +296,74 @@ public class BackupEngine {
                 if (isCancelled)
                     throw new InterruptedIOException();
 
-                suProcess = Runtime.getRuntime().exec("su -c sh " + receivedFiles[0].getAbsolutePath());
-                BufferedReader outputStream = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
-                BufferedReader errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
-                String line;
                 int c = 0, p = 100;
 
+                for (int scriptNumber = 0; scriptNumber < scriptFiles.size() && !isCancelled; scriptNumber++) {
 
-                String iconString;
+                    File scriptFile = scriptFiles.get(scriptNumber);
 
-                while ((line = outputStream.readLine()) != null) {
+                    suProcess = Runtime.getRuntime().exec("su");
+                    BufferedWriter inputStream = new BufferedWriter(new OutputStreamWriter(suProcess.getOutputStream()));
+                    BufferedReader outputStream = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
+                    BufferedReader errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
 
-                    line = line.trim();
+                    inputStream.write("sh " + scriptFile.getAbsolutePath() + "\n");
+                    inputStream.write("exit\n");
+                    inputStream.flush();
 
-                    actualProgressBroadcast.putExtra("type", "app_progress");
+                    String line;
 
-                    if (line.startsWith("migrate status:")) {
-                        line = line.substring(16);
+                    String iconString;
 
-                        if (line.contains("icon:")) {
-                            iconString = line.substring(line.lastIndexOf(' ') + 1);
-                            line = line.substring(0, line.indexOf("icon:"));
-                            actualProgressBroadcast.putExtra("app_icon", iconString);
-                            actualProgressBroadcast.putExtra("app_name", line);
+                    while ((line = outputStream.readLine()) != null) {
+
+                        line = line.trim();
+
+                        actualProgressBroadcast.putExtra("type", "app_progress");
+
+                        if (line.startsWith(MIGRATE_STATUS)) {
+                            line = line.substring(16);
+
+                            if (line.contains("icon:")) {
+                                iconString = line.substring(line.lastIndexOf(' ') + 1);
+                                line = line.substring(0, line.indexOf("icon:"));
+                                iconString = iconString.trim();
+                                actualProgressBroadcast.putExtra("app_icon", iconString);
+                                actualProgressBroadcast.putExtra("app_name", line);
+                            } else {
+                                actualProgressBroadcast.putExtra("app_name", line);
+                            }
+
+                            if (numberOfApps != 0 && !line.equals("Making package Flash Ready") && !line.equals("Including helper"))
+                                p = ++c * 100 / numberOfApps;
+                            actualProgressBroadcast.putExtra("progress", p);
+
+                            LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+                            activityProgressIntent.putExtras(actualProgressBroadcast);
+
+                            String title = (totalParts > 1) ? context.getString(R.string.backingUp) + " : " + madePartName : context.getString(R.string.backingUp);
+                            progressNotif.setContentTitle(title)
+                                    .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                                    .setProgress(numberOfApps, c, false)
+                                    .setContentText(line);
+                            notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
                         }
-                        else {
-                            actualProgressBroadcast.putExtra("app_name", line);
-                        }
 
-                        if (numberOfApps != 0 && !line.equals("Making package Flash Ready") && !line.equals("Including helper"))
-                            p = ++c * 100 / numberOfApps;
-                        actualProgressBroadcast.putExtra("progress", p);
-
+                        actualProgressBroadcast.putExtra("app_log", line);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
-                        activityProgressIntent.putExtras(actualProgressBroadcast);
+                        if (line.equals("--- App files copied ---"))
+                            break;
 
-                        String title = (totalParts > 1)? context.getString(R.string.backingUp) + " : " + madePartName : context.getString(R.string.backingUp);
-                        progressNotif.setContentTitle(title)
-                                .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
-                                .setProgress(numberOfApps, c, false)
-                                .setContentText(line);
-                        notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
                     }
 
-                    actualProgressBroadcast.putExtra("app_log", line);
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
-                    if (line.equals("--- Migrate app files copied ---"))
-                        break;
-
+                    while ((line = errorStream.readLine()) != null) {
+                        errors.add("RUN_" + scriptNumber + errorTag + ": " + line);
+                    }
                 }
 
-
-                while ((line = errorStream.readLine()) != null) {
-                    errors.add("RUN" + errorTag + ": " + line);
-                }
 
             } else {
                 errors.add(context.getString(R.string.errorMakingScripts));
@@ -372,7 +393,7 @@ public class BackupEngine {
 
         endMillis = timeInMillis();
 
-        boolean finalProcess = partNumber == totalParts || isCancelled || errors.size() > 0;
+        boolean finalProcess = (partNumber == totalParts) || isCancelled;
 
         actualProgressBroadcast.putExtra("part_name", "");
 
@@ -382,8 +403,18 @@ public class BackupEngine {
 
         actualProgressBroadcast.putStringArrayListExtra("errors", errors);
 
+        Log.d(DEBUG_TAG, "partNumber " + partNumber);
+        Log.d(DEBUG_TAG, "totalParts " + totalParts);
+        Log.d(DEBUG_TAG, "finalProcess " + finalProcess);
+
         if (finalProcess) {
 
+            ArrayList<String> allErr = new ArrayList<>(0);
+            if (BackupService.allErrors != null)
+                allErr.addAll(BackupService.allErrors);
+            allErr.addAll(errors);
+
+            actualProgressBroadcast.putStringArrayListExtra("allErrors", allErr);
             activityProgressIntent.putExtras(actualProgressBroadcast);
 
             progressNotif
@@ -395,6 +426,12 @@ public class BackupEngine {
 
             notificationManager.cancel(NOTIFICATION_ID);
             notificationManager.notify(NOTIFICATION_ID + 1, progressNotif.build());
+
+            /*for (File f : context.getFilesDir().listFiles()){
+                f.delete();
+            }*/
+
+            Log.d(DEBUG_TAG, "in final process");
         }
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
@@ -626,7 +663,7 @@ public class BackupEngine {
             fullDelete(directory.getAbsolutePath());
 
             if (c < n){
-                err += context.getString(R.string.notEnoughSpace) + "\n";
+                err += context.getString(R.string.incompleteZip) + "\n";
             }
 
         }
@@ -779,7 +816,7 @@ public class BackupEngine {
         }
     }
 
-    File[] makeScripts() {
+    Vector<File> makeScripts() {
 
         //zipBinaryFilePath = commonTools.unpackAssetToInternal("zip", "zip");
 
@@ -787,15 +824,16 @@ public class BackupEngine {
             return new File[]{null, null};*/
 
         if (busyboxBinaryFilePath.equals(""))
-            return new File[]{null, null};
+            return new Vector<>(0);
 
-        File script = new File(context.getFilesDir(), "script.sh");
+        File pre_script = new File(context.getFilesDir(), "pre_script.sh");
         File updater_script = new File(context.getFilesDir(), "updater-script");
         File helper = new File(context.getFilesDir() + "/system/app/MigrateHelper", "MigrateHelper.apk");
 
         String update_binary = commonTools.unpackAssetToInternal("update-binary", "update-binary");
         String prepScript = commonTools.unpackAssetToInternal("prep.sh", "prep.sh");
         String verifyScript = commonTools.unpackAssetToInternal("verify.sh", "verify.sh");
+        String appAndDataBackupScript = commonTools.unpackAssetToInternal("backup_app_and_data.sh", "backup_app_and_data.sh");
 
         AssetManager assetManager = context.getAssets();
         int read;
@@ -814,9 +852,12 @@ public class BackupEngine {
             e.printStackTrace();
         }
 
+        Vector<File> allScripts = new Vector<>(0);
+
         try {
+
             BufferedReader backupSummaryReader = new BufferedReader(new FileReader(backupSummary));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(script));
+            BufferedWriter pre_writer = new BufferedWriter(new FileWriter(pre_script));
             BufferedWriter updater_writer = new BufferedWriter(new FileWriter(updater_script));
 
             updater_writer.write("show_progress(0, 0);\n");
@@ -847,24 +888,31 @@ public class BackupEngine {
 
             String flashDirPath = destination + "/" + backupName + "/META-INF/com/google/android/";
 
-            writer.write("echo \"migrate status: " + "Making package Flash Ready" + "\"\n");
-            writer.write("mkdir -p " + flashDirPath + "\n");
-            writer.write("mv " + updater_script.getAbsolutePath() + " " + flashDirPath + "\n");
-            writer.write("mv " + update_binary + " " + flashDirPath + "\n");
-            writer.write("mv " + prepScript + " " + destination + "/" + backupName + "\n");
-            writer.write("mv " + verifyScript + " " + destination + "/" + backupName + "\n");
+            pre_writer.write("echo \"" + MIGRATE_STATUS + ": " + "Making package Flash Ready" + "\"\n");
+            pre_writer.write("mkdir -p " + flashDirPath + "\n");
+            pre_writer.write("mv " + updater_script.getAbsolutePath() + " " + flashDirPath + "\n");
+            pre_writer.write("mv " + update_binary + " " + flashDirPath + "\n");
+            pre_writer.write("mv " + prepScript + " " + destination + "/" + backupName + "\n");
+            pre_writer.write("mv " + verifyScript + " " + destination + "/" + backupName + "\n");
 
-            writer.write("echo \"migrate status: " + "Including helper" + "\"\n");
-            writer.write("cp -r " + context.getFilesDir() + "/system" + " " + destination + "/" + backupName + "\n");
-            writer.write("rm -r " + context.getFilesDir() + "/system" + "\n");
+            pre_writer.write("echo \"migrate status: " + "Including helper" + "\"\n");
+            pre_writer.write("cp -r " + context.getFilesDir() + "/system" + " " + destination + "/" + backupName + "\n");
+            pre_writer.write("rm -r " + context.getFilesDir() + "/system" + "\n");
 
-            String line;
+            pre_writer.write("mkdir -p " + destination + "/" + backupName + "/\n");
 
-            String mkdirCommand = "mkdir -p " + destination + "/" + backupName + "/";
-            writer.write(mkdirCommand + '\n', 0, mkdirCommand.length() + 1);
+            pre_writer.close();
+
+            pre_script.setExecutable(true);
+
+            allScripts.add(pre_script);
 
             int c = 0;
 
+            File scriptFile = new File(context.getFilesDir(), "app_script.sh");
+            BufferedWriter scriptWriter = new BufferedWriter(new FileWriter(scriptFile));
+
+            String line;
             while ((line = backupSummaryReader.readLine()) != null) {
 
                 String items[] = line.split(" ");
@@ -885,8 +933,8 @@ public class BackupEngine {
                     dataPath = dataPath.substring(0, dataPath.lastIndexOf('/'));
                 }
 
-                String echoCopyCommand = "echo \"migrate status: " + appName + " (" + c + "/" + numberOfApps + ") icon: " + appIcon + "\"\n";
-                String permissionCommand = "";
+                String echoCopyCommand = "echo \"" + MIGRATE_STATUS + ": " + appName + " (" + c + "/" + numberOfApps + ") icon: " + appIcon + "\"\n";
+                /*String permissionCommand = "";
 
                 if (permissions){
                     permissionCommand = "dumpsys package " + packageName + " | grep android.permission | grep granted=true > " +
@@ -900,11 +948,15 @@ public class BackupEngine {
                     command = command + "else\n";
                     command = command + "   echo \"dataPath : " + dataPath + "/" + dataName + " does not exist\"\n";
                     command = command + "fi\n";
-                }
+                }*/
 
-                if (permissions) writer.write(permissionCommand, 0, permissionCommand.length());
-                writer.write(echoCopyCommand, 0, echoCopyCommand.length());
-                writer.write(command, 0, command.length());
+                GEN_ICON_STR = appIcon;
+
+                String scriptCommand = "sh " + appAndDataBackupScript + " " + packageName + " " + destination+"/"+backupName + " " +
+                        apkPath + " " + apkName + " " + dataPath + " " + dataName + " " + busyboxBinaryFilePath + " " + permissions + "\n";
+
+                scriptWriter.write(echoCopyCommand, 0, echoCopyCommand.length());
+                scriptWriter.write(scriptCommand, 0, scriptCommand.length());
 
 
                 updater_writer.write("ui_print(\"" + appName + " (" + c + "/" + numberOfApps + ")\");\n");
@@ -938,6 +990,12 @@ public class BackupEngine {
                 updater_writer.write("set_progress(" + String.format("%.4f", ((c * 1.0) / numberOfApps)) + ");\n");
 
             }
+
+            scriptWriter.write("echo \"--- App files copied ---\"\n");
+            scriptWriter.close();
+
+            scriptFile.setExecutable(true);
+            allScripts.add(scriptFile);
 
             if (doBackupContacts || doBackupSms || doBackupCalls || doBackupDpi || doBackupKeyboard) {
                 updater_writer.write("ui_print(\" \");\n");
@@ -996,17 +1054,12 @@ public class BackupEngine {
 
             updater_writer.close();
 
-            writer.write("echo \"--- Migrate app files copied ---\"\n");
-            writer.close();
-
         } catch (Exception e) {
+            errors.add("SCRIPT" + errorTag + ": " + e.getMessage());
             e.printStackTrace();
-            script.delete();
             updater_script.delete();
-            updater_script = null;
-            script = null;
         }
-        return new File[]{script, updater_script};
+        return allScripts;
     }
 
     void cancelProcess() {

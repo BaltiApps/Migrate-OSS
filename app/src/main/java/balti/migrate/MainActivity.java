@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -65,6 +66,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 assert notificationManager != null;
                 notificationManager.createNotificationChannel(channel);
             }
+
+            startActivity(new Intent(this, InitialGuide.class));
+            finish();
         }
         else showChangeLog(true);
 
@@ -94,47 +98,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView.setNavigationItemSelectedListener(this);
 
-    }
 
-    boolean[] isPermissionGranted() {
-        boolean[] p = new boolean[]{false, false};
+        if (!main.getBoolean("firstRun", true)) {
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-            p[0] = true;
+            boolean p[] = isPermissionGranted();
 
-        if (main.getBoolean("initialRoot", true)) {
-            p[1] = false;
-        } else {
-            try {
-                Process suRequest = Runtime.getRuntime().exec("su -c pm grant " + getPackageName() + " android.permission.DUMP " +
-                        "&& pm grant " + getPackageName() + " android.permission.PACKAGE_USAGE_STATS " +
-                        "&& pm grant " + getPackageName() + " android.permission.WRITE_SECURE_SETTINGS"
-                );
-                suRequest.waitFor();
-                if (suRequest.exitValue() == 0) p[1] = true;
-                else p[1] = false;
-            } catch (Exception e) {
-                p[1] = false;
+            if (!(p[0] && p[1])) {
+                startActivity(new Intent(MainActivity.this, PermissionsScreen.class));
+                finish();
+
             }
         }
-
-        return p;
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        boolean p[] = isPermissionGranted();
-        if (!(p[0] && p[1])) {
-            startActivity(new Intent(this, PermissionsScreen.class));
-            finish();
-        }
         else {
-
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P && !main.getBoolean("android_version_warning", false)){
-                new AlertDialog.Builder(this)
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P && !main.getBoolean("android_version_warning", false))
+            {
+                new AlertDialog.Builder(MainActivity.this)
                         .setTitle(R.string.too_fast)
                         .setMessage(R.string.too_fast_desc)
                         .setPositiveButton(android.R.string.ok, null)
@@ -148,18 +126,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .show();
             }
         }
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        boolean p[] = isPermissionGranted();
-        if (p[0] && p[1]) {
-            if (main.getBoolean("firstRun", true)) {
-                editor.putBoolean("firstRun", false);
-                editor.commit();
-            }
-        }
     }
 
     @Override
@@ -203,20 +181,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.thanks:
                 AlertDialog.Builder specialThanks = new AlertDialog.Builder(this);
-                specialThanks.setMessage(getString(R.string.thanksToAll) + "\n\n" +
-                        getString(R.string.tester) + "\n\n" +
-                        "@akshayrohida\n" +
-                        "@TusharG03\n" +
-                        "@raj3303\n" +
-                        "@arghyac35\n" +
-                        "@Johnkator\n" +
-                        "@samirkushwaha\n" +
-                        "@su_bin\n" +
-                        "Pranay\n" +
-                        "@ishubhamsingh\n" +
-                        "@Sachith_Hedge\n" +
-                        "@Akianonymus\n" +
-                        "@SubhrajyotiSen\n")
+                specialThanks.setView(View.inflate(MainActivity.this, R.layout.thanks_layout, null))
                         .setPositiveButton(android.R.string.ok, null)
                         .show();
                 break;
@@ -276,6 +241,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(Gravity.START);
 
         return true;
+    }
+
+
+
+    boolean[] isPermissionGranted() {
+        boolean[] p = new boolean[]{false, false};
+
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+            p[0] = true;
+
+        if (main.getBoolean("initialRoot", true)) {
+            p[1] = false;
+        } else {
+            try {
+                p[1] = commonTools.suEcho();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+                p[1] = false;
+            }
+        }
+
+        return p;
     }
 
 

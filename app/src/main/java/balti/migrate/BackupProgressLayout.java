@@ -184,9 +184,9 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                     task.setText(intent.getStringExtra("finishedMessage"));
 
-                    if (intent.hasExtra("errors")) {
-                        setError(intent.getStringArrayListExtra("errors"));
-                        if (intent.getStringArrayListExtra("errors").size() > 0) {
+                    if (intent.hasExtra("allErrors")) {
+                        setError(intent.getStringArrayListExtra("allErrors"));
+                        if (intent.getStringArrayListExtra("allErrors").size() > 0) {
                             appIcon.setImageResource(R.drawable.ic_error);
                             reportLog.setVisibility(VISIBLE);
                         }
