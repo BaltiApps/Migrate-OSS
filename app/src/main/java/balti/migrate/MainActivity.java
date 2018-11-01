@@ -12,7 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -39,6 +40,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     NavigationView navigationView;
 
     CommonTools commonTools;
+
+    AlertDialog loadingDialog;
+    int REQUEST_CODE = 43;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +80,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         backup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, BackupActivity.class));
+
+                View v = View.inflate(MainActivity.this, R.layout.please_wait, null);
+                Button cancel = v.findViewById(R.id.waiting_cancel);
+                v.findViewById(R.id.waiting_details).setVisibility(View.GONE);
+                TextView details = v.findViewById(R.id.waiting_progress);
+                cancel.setVisibility(View.GONE);
+
+                details.setText(R.string.checking_permissions);
+
+                loadingDialog = new AlertDialog.Builder(MainActivity.this)
+                        .setView(v)
+                        .create();
+
+                loadingDialog.show();
+
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
+
             }
         });
 
@@ -98,46 +119,90 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView.setNavigationItemSelectedListener(this);
 
+        final String cpu_abi = Build.SUPPORTED_ABIS[0];
 
-        if (!main.getBoolean("firstRun", true)) {
+        if (!(cpu_abi.equals("armeabi-v7a") || cpu_abi.equals("arm64-v8a") || cpu_abi.equals("x86") || cpu_abi.equals("x86_64"))){
 
-            boolean p[] = isPermissionGranted();
+            backup.setVisibility(View.GONE);
 
-            if (!(p[0] && p[1])) {
-                startActivity(new Intent(MainActivity.this, PermissionsScreen.class));
-                finish();
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.unsupported_device)
+                    .setMessage(getString(R.string.cpu_arch_is) + "\n" + cpu_abi + "\n\n" + getString(R.string.currently_supported_cpu))
+                    .setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .setNegativeButton(R.string.contact, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
 
-            }
-        }
-        else {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P && !main.getBoolean("android_version_warning", false))
-            {
-                new AlertDialog.Builder(MainActivity.this)
-                        .setTitle(R.string.too_fast)
-                        .setMessage(R.string.too_fast_desc)
-                        .setPositiveButton(android.R.string.ok, null)
-                        .setNegativeButton(R.string.dont_show_again, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                editor.putBoolean("android_version_warning", true);
-                                editor.commit();
+                            String body = commonTools.getDeviceSpecifications();
+
+                            Intent email = new Intent(Intent.ACTION_SENDTO);
+                            email.setData(Uri.parse("mailto:"));
+                            email.putExtra(Intent.EXTRA_EMAIL, new String[]{"help.baltiapps@gmail.com"});
+                            email.putExtra(Intent.EXTRA_SUBJECT, "Unsupported device");
+                            email.putExtra(Intent.EXTRA_TEXT, body);
+
+                            try {
+                                startActivity(Intent.createChooser(email, getString(R.string.select_mail)));
                             }
-                        })
+                            catch (Exception e)
+                            {
+                                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
+        }
+        else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P && !main.getBoolean("android_version_warning", false))
+        {
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle(R.string.too_fast)
+                    .setMessage(R.string.too_fast_desc)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setNegativeButton(R.string.dont_show_again, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            editor.putBoolean("android_version_warning", true);
+                            editor.commit();
+                        }
+                    })
+                    .show();
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_CODE && grantResults.length == 2){
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                if (isRootPermissionGranted()) {
+                    startActivity(new Intent(MainActivity.this, BackupActivity.class));
+                }
+                else {
+                    new AlertDialog.Builder(this)
+                            .setTitle(R.string.root_permission_denied)
+                            .setMessage(R.string.root_permission_denied_desc)
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show();
+                }
+            }
+            else {
+                new AlertDialog.Builder(this)
+                        .setMessage(R.string.storage_access_required)
+                        .setPositiveButton(android.R.string.ok, null)
                         .show();
             }
+            try {
+                loadingDialog.dismiss();
+            }catch (Exception ignored){}
         }
-
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     @Override
@@ -171,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case R.id.lastLog:
-                reportLog();
+                showLog();
                 break;
 
 
@@ -245,22 +310,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
 
-    boolean[] isPermissionGranted() {
-        boolean[] p = new boolean[]{false, false};
+    boolean isRootPermissionGranted() {
 
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-            p[0] = true;
+        boolean p = false;
 
-        if (main.getBoolean("initialRoot", true)) {
-            p[1] = false;
-        } else {
-            try {
-                p[1] = commonTools.suEcho();
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-                p[1] = false;
-            }
+        try {
+            p = commonTools.suEcho();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            p = false;
         }
 
         return p;
@@ -399,7 +457,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         rate.show();
     }
 
-    void reportLog(){
+    void showLog(){
         View lView = View.inflate(this, R.layout.last_log_report, null);
         Button pLog = lView.findViewById(R.id.view_progress_log);
         Button eLog = lView.findViewById(R.id.view_error_log);

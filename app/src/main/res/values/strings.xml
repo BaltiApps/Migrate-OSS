@@ -17,31 +17,9 @@
     <string name="version_1.0_content" tools:ignore="ExtraTranslation">\u2022 Initial release</string>
 
     <!--activity_main.xml-->
-    <string name="checking_permissions">Checking permissions</string>
     <string name="backupButton">Backup</string>
     <string name="restoreButton">Restore</string>
 
-    <!--permission_screen.xml-->
-    <string name="permissionsRequired">Following permissions are required</string>
-    <string name="why_these_permissions">Why these permissions?</string>
-    <string name="storage">Storage access</string>
-    <string name="rootAccess">Root access</string>
-    <string name="grantPermissions">Grant permissions</string>
-    <string name="requesting">Requesting...</string>
-
-    <!--PermissionScreen.java-->
-    <string name="unsupported_device">Unsupported device.</string>
-    <string name="cpu_arch_is">Your CPU arch is:</string>
-    <string name="currently_supported_cpu">Only <b>armeabi-v7a, arm64-v8a, x86, x86_64</b> CPU architectures are currently supported. Please contact via mail to help support your device.</string>
-    <string name="permissions_desc">
-        <b>Storage access</b>: To store the backups.\n
-        <b>Root access</b>: Necessary to backup app data.\n\n
-        In case you would like to backup contacts, sms or call logs, you will be requested to grant:\n\n
-        <b>Contacts access</b>: To backup contacts.\n
-        <b>Sms access</b>: To backup text messages.\n
-        <b>Call logs access</b>: To backup call logs.\n\n
-        Some of the permissions are sensitive, and is not used other than backup purposes. All backups are locally stored, hence there is no chance of data leak from the app.
-    </string>
 
     <!--backup_layout.xml-->
     <string name="select_apps">Select apps</string>
@@ -183,16 +161,20 @@
     <string name="reading_data">Reading backup data</string>
     <string name="just_a_minute">Just a minute...</string>
     <string name="starting_engine">Starting backup engine</string>
-
     <string name="root_permission_denied">Root permission denied!</string>
     <string name="root_permission_denied_desc">Please make sure that your device is rooted and you have allowed root permission.\n\n
     If your ROM was pre-rooted, try flashing Magisk.
     </string>
+    <string name="storage_access_required">Please grant storage access to write backups.</string>
+    <string name="checking_permissions">Checking Storage and Root access</string>
     <string name="rate_dialog_title">Your opinion is important</string>
     <string name="rate_dialog_message">If this app has helped you, please consider giving a rating and/or a review.</string>
     <string name="sure">Sure</string>
     <string name="later">Later</string>
     <string name="never_show">Never show</string>
+    <string name="unsupported_device">Unsupported device.</string>
+    <string name="cpu_arch_is">Your CPU arch is:</string>
+    <string name="currently_supported_cpu">Only <b>armeabi-v7a, arm64-v8a, x86, x86_64</b> CPU architectures are currently supported. Please contact via mail to help support your device.</string>
 
     <!--AppListAdapter.java-->
     <string name="packageName">Package :</string>

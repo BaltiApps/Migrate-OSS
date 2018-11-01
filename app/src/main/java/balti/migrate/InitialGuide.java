@@ -127,7 +127,7 @@ public class InitialGuide extends AppCompatActivity {
             editor.putBoolean("firstRun", false);
             editor.commit();
         }
-        startActivity(new Intent(this, PermissionsScreen.class));
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 }

@@ -53,10 +53,6 @@
             android:screenOrientation="portrait"
             />
 
-        <activity android:name=".PermissionsScreen"
-            android:screenOrientation="portrait"
-            />
-
         <activity android:name=".BackupProgressLayout"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"
