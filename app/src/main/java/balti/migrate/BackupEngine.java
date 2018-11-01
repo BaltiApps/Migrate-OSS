@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
@@ -39,8 +38,6 @@ import java.util.Vector;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import static balti.migrate.CommonTools.DEBUG_TAG;
 
 /**
  * Created by sayantan on 9/10/17.
@@ -403,10 +400,6 @@ public class BackupEngine {
 
         actualProgressBroadcast.putStringArrayListExtra("errors", errors);
 
-        Log.d(DEBUG_TAG, "partNumber " + partNumber);
-        Log.d(DEBUG_TAG, "totalParts " + totalParts);
-        Log.d(DEBUG_TAG, "finalProcess " + finalProcess);
-
         if (finalProcess) {
 
             ArrayList<String> allErr = new ArrayList<>(0);
@@ -427,11 +420,9 @@ public class BackupEngine {
             notificationManager.cancel(NOTIFICATION_ID);
             notificationManager.notify(NOTIFICATION_ID + 1, progressNotif.build());
 
-            /*for (File f : context.getFilesDir().listFiles()){
+            for (File f : context.getFilesDir().listFiles()){
                 f.delete();
-            }*/
-
-            Log.d(DEBUG_TAG, "in final process");
+            }
         }
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
@@ -1047,7 +1038,7 @@ public class BackupEngine {
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("ui_print(\"Files have been restored to Migrate cache.\");\n");
             updater_writer.write("ui_print(\"---------------------------------\");\n");
-            updater_writer.write("ui_print(\"PLEASE MAKE SURE THAT YOUR ROM IS ROOTED.\");\n");
+            updater_writer.write("ui_print(\"PLEASE ROOT YOUR ROM WITH MAGISK.\");\n");
             updater_writer.write("ui_print(\"YOU WILL BE PROMPTED TO CONTINUE RESTORE AFTER STARTUP!!\");\n");
             updater_writer.write("ui_print(\"---------------------------------\");\n");
             updater_writer.write("ui_print(\" \");\n");

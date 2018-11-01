@@ -37,8 +37,8 @@
                 />
 
             <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="@dimen/third_party_logo_width"
+                android:layout_height="@dimen/third_party_logo_width"
                 android:src="@drawable/stericson_busybox_logo"
                 />
 
@@ -51,8 +51,8 @@
                 />
 
             <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="@dimen/third_party_logo_width"
+                android:layout_height="@dimen/third_party_logo_width"
                 android:src="@drawable/magisk_logo"
                 />
 

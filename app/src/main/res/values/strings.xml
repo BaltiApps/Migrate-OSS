@@ -246,7 +246,8 @@
 
     <!--initial_guide_3.xml-->
     <string name="greet4">Few things before you start...</string>
-    <string name="body_3_0">This app is still in its infancy. As a result, there might be bugs.\n\n
+    <string name="body_3_0"><b>PLEASE USE MAGISK</b>. Lineage OS su addon causes unexpected behavior.</string>
+    <string name="body_3_1">This app is still in its infancy. As a result, there might be bugs.\n\n
         Migrate is a root based app.\n\n
         BY USING THIS APP YOU ACCEPT THAT YOU KNOW THE HAZARDS OF ROOTING AND THEREBY USING A ROOT BASED APP. YOU ACKNOWLEDGE THAT THE DEVELOPER WILL NOT BE HELD RESPONSIBLE FOR BRICKED DEVICES OR DEAD HARDWARE, AND THAT ANY LOSS THAT MIGHT HAPPEN TO YOUR DATA IS COMPLETELY UNINTENTIONAL.\n\n
         A nandroid backup is the safest backup method compared to any app based backup method. In case of any issues, please contact the developer.
@@ -341,6 +342,10 @@
     <string name="a6">
         TWRP recovery is needed to flash the backup zip. Without that, you cannot restore a backup. Other recoveries may work, but is not tested.\n\n
         Currently Migrate does not support restoring zips from the app itself. But that is something which can be added in future.
+    </string>
+    <string name="q7">Is it necessary to use Magisk?</string>
+    <string name="a7">
+        This app works best with Magisk. SuperSU has not been tested. Lineage OS su addon sometimes work but sometimes give very weird errors. So please use Magisk.
     </string>
     <string name="more_questions">More questions? Feel free to contact.</string>
 

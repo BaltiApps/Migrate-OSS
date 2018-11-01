@@ -48,6 +48,22 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/q7"
+                android:padding="@dimen/large_padding_width"
+                android:background="@color/colorPrimary"
+                android:textColor="@color/colorAccent"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/a7"
+                android:padding="@dimen/large_padding_width"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/q1"
                 android:padding="@dimen/large_padding_width"
                 android:background="@color/colorPrimary"
@@ -154,6 +170,7 @@
                 android:text="@string/more_questions"
                 android:id="@+id/more_questions_feedback"
                 android:textAllCaps="false"
+                android:backgroundTint="@color/colorPrimary"
                 />
         </LinearLayout>
     </ScrollView>
