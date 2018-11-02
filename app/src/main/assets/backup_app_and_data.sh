@@ -12,8 +12,7 @@ chmod +w $2 2>/dev/null
 
 # backup permission
 if [ "$8" = true ]; then
-    touch "$2/$1.perm" 2>/dev/null
-    dumpsys package $2 | grep android.permission | grep granted=true > "$2/$1.perm"
+    dumpsys package $1 | grep android.permission | grep granted=true > "$2/$1.perm"
 fi
 
 # backup apk
