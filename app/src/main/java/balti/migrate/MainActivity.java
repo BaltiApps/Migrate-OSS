@@ -84,13 +84,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 View v = View.inflate(MainActivity.this, R.layout.please_wait, null);
                 Button cancel = v.findViewById(R.id.waiting_cancel);
                 v.findViewById(R.id.waiting_details).setVisibility(View.GONE);
-                TextView details = v.findViewById(R.id.waiting_progress);
+                TextView head = v.findViewById(R.id.waiting_progress);
                 cancel.setVisibility(View.GONE);
 
-                details.setText(R.string.checking_permissions);
+                head.setText(R.string.checking_permissions);
 
                 loadingDialog = new AlertDialog.Builder(MainActivity.this)
                         .setView(v)
+                        .setCancelable(false)
                         .create();
 
                 loadingDialog.show();

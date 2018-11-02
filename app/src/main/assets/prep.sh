@@ -110,16 +110,30 @@ then
 			fi
 		elif [ "$key" = "sdk" ]; then
 			rom_sdk="$(cat /system/build.prop | grep ro.build.version.sdk | cut -d "=" -f2)"
-			if [ $rom_sdk = $val ]; then
-				echo "ui_print Android version is OK (sdk $rom_sdk)" >> /proc/self/fd/$OUTFD;
+			if [ $rom_sdk -ge 21 ]; then
+			    if [ $rom_sdk = $val ]; then
+				    echo "ui_print Android version is OK (sdk $rom_sdk)" >> /proc/self/fd/$OUTFD;
+			    else
+				    echo "ui_print  " >> /proc/self/fd/$OUTFD;
+				    echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
+				    echo "ui_print Original Android version was: $val" >> /proc/self/fd/$OUTFD;
+				    echo "ui_print Current ROM Android version: $rom_sdk" >> /proc/self/fd/$OUTFD;
+				    echo "ui_print Restoration of some apps MAY FAIL!" >> /proc/self/fd/$OUTFD;
+				    echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
+				    echo "ui_print  " >> /proc/self/fd/$OUTFD;
+			    fi
 			else
-				echo "ui_print  " >> /proc/self/fd/$OUTFD;
-				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
-				echo "ui_print Original Android version was: $val" >> /proc/self/fd/$OUTFD;
-				echo "ui_print Current ROM Android version: $rom_sdk" >> /proc/self/fd/$OUTFD;
-				echo "ui_print Restoration of some apps MAY FAIL!" >> /proc/self/fd/$OUTFD;
-				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
-				echo "ui_print  " >> /proc/self/fd/$OUTFD;
+			    echo "ui_print ---------------------!!!!!---------------------" >> /proc/self/fd/$OUTFD;
+			    echo "ui_print        Migrate cannot be flashed below:" >> /proc/self/fd/$OUTFD;
+			    echo "ui_print          Android Lollipop (sdk 21)" >> /proc/self/fd/$OUTFD;
+			    echo "ui_print      Your current ROM version is sdk $rom_sdk" >> /proc/self/fd/$OUTFD;
+			    echo "ui_print ---------------------!!!!!---------------------" >> /proc/self/fd/$OUTFD;
+			    umount /data
+				if [ -n "$res" ]; then
+	                umount /system
+	            fi
+				sleep 2s
+				exit 1
 			fi
 		fi
 	done < "$pd"

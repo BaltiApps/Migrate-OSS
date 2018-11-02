@@ -205,6 +205,7 @@
 
     <!--backup_progress_layout.xml-->
     <string name="report">Report</string>
+    <string name="minimizing_may_decrease_speed">Minimizing this screen may decrease backup speed!</string>
     
     <!--initial_guide.xml-->
     <string name="skip">Skip</string>

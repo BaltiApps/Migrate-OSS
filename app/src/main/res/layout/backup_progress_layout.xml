@@ -88,7 +88,6 @@
 
         </LinearLayout>
 
-
     </LinearLayout>
 
 
@@ -127,6 +126,16 @@
                 />
 
         </ScrollView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/minimizing_may_decrease_speed"
+            android:drawableStart="@drawable/ic_warning"
+            android:drawablePadding="@dimen/small_padding_width"
+            android:textSize="13sp"
+            android:gravity="center_vertical"
+            />
 
     </LinearLayout>
 
