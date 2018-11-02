@@ -1589,6 +1589,19 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             doBackupCalls.setChecked(true);
         }
 
+
+        /*final AdView adView = findViewById(R.id.extra_backups_activity_adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+
+        adView.setAdListener(new AdListener(){
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+                adView.setVisibility(View.GONE);
+            }
+        });*/
+
     }
 
     @Override

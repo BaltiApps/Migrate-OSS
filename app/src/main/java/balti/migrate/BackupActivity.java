@@ -204,6 +204,18 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         };
         LocalBroadcastManager.getInstance(this).registerReceiver(extraBackupsStartReceiver, new IntentFilter("extraBackupsStarted"));
 
+
+        /*final AdView adView = findViewById(R.id.backup_activity_adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+
+        adView.setAdListener(new AdListener(){
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+                adView.setVisibility(View.GONE);
+            }
+        });*/
     }
 
     void startExtraBackupsStartingActivity(){

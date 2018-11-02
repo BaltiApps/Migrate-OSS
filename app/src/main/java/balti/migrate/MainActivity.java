@@ -174,6 +174,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .show();
         }
 
+
+        /*final AdView adView = findViewById(R.id.main_activity_adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+
+        adView.setAdListener(new AdListener(){
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+                adView.setVisibility(View.GONE);
+            }
+        });*/
+
     }
 
     @Override

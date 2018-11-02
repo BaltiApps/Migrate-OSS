@@ -26,6 +26,13 @@ public class CommonTools {
     Context context;
     public static String DEBUG_TAG = "migrate_tag";
 
+    static String MAIN_ACTIVITY_AD_ID = "ca-app-pub-6582325651261661/6749792408";
+    static String BACKUP_ACTIVITY_AD_ID = "ca-app-pub-6582325651261661/5791933954";
+    static String EXTRA_BACKUPS_ACTIVITY_AD_ID = "ca-app-pub-6582325651261661/5217218882";
+    static String BACKUP_PROGRESS_ACTIVITY_AD_ID = "ca-app-pub-6582325651261661/2755664936";
+
+    static String UNIVERSAL_TEST_ID = "ca-app-pub-3940256099942544/6300978111";
+
     public CommonTools(Context context) {
         this.context = context;
     }

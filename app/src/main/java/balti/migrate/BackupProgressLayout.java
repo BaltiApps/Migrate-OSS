@@ -142,6 +142,18 @@ public class BackupProgressLayout extends AppCompatActivity {
         progressReceiverIF = new IntentFilter("Migrate progress broadcast");
         LocalBroadcastManager.getInstance(this).registerReceiver(progressReceiver, progressReceiverIF);
 
+
+        /*final AdView adView = findViewById(R.id.backups_progress_activity_adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+
+        adView.setAdListener(new AdListener(){
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+                adView.setVisibility(View.GONE);
+            }
+        });*/
     }
 
     void handleProgress(Intent intent){

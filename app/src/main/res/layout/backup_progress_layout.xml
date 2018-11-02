@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -12,7 +12,6 @@
         android:orientation="vertical"
         android:background="@color/colorPrimary"
         android:padding="20dp"
-        android:layout_alignParentTop="true"
         android:id="@+id/backup_progress_top_status_bar"
         >
 
@@ -92,45 +91,13 @@
 
     </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/backup_progress_bottom_button_bar"
-        >
-
-        <Button
-            android:layout_width="@dimen/log_button_width"
-            android:layout_height="@dimen/button_height"
-            android:layout_gravity="end"
-            android:id="@+id/progressActionButton"
-            android:background="@drawable/cancel_backup"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:layout_alignParentEnd="true"
-            />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@id/progressActionButton"
-            android:layout_gravity="end"
-            android:id="@+id/reportLogButton"
-            android:text="@string/report"
-            android:backgroundTint="@color/colorPrimary"
-            android:textColor="@color/colorAccent"
-            android:visibility="gone"
-            />
-
-    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical"
         android:padding="@dimen/large_padding_width"
-        android:layout_below="@id/backup_progress_top_status_bar"
-        android:layout_above="@id/backup_progress_bottom_button_bar"
         >
 
         <TextView
@@ -163,6 +130,47 @@
 
     </LinearLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/backup_progress_bottom_button_bar"
+        android:paddingBottom="@dimen/large_padding_width"
+        >
+
+        <Button
+            android:layout_width="@dimen/log_button_width"
+            android:layout_height="@dimen/button_height"
+            android:layout_gravity="end"
+            android:id="@+id/progressActionButton"
+            android:background="@drawable/cancel_backup"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:layout_alignParentEnd="true"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/progressActionButton"
+            android:layout_gravity="end"
+            android:id="@+id/reportLogButton"
+            android:text="@string/report"
+            android:backgroundTint="@color/colorPrimary"
+            android:textColor="@color/colorAccent"
+            android:visibility="gone"
+            />
+
+    </RelativeLayout>
 
 
-</RelativeLayout>
+    <!--<com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/backups_progress_activity_adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
+        />-->
+
+</LinearLayout>
