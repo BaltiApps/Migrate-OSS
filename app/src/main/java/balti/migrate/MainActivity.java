@@ -191,6 +191,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        boolean authetic = getPackageName().equals("balti.migrate");
+
+        if (!authetic){
+            android.app.AlertDialog.Builder ad = new android.app.AlertDialog.Builder(this);
+            ad.setTitle(R.string.copied_app);
+            ad.setMessage(R.string.copied_app_exp);
+            ad.setCancelable(false);
+            ad.setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            });
+            ad.setPositiveButton(R.string.install, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent playStorePage = new Intent(Intent.ACTION_VIEW);
+                    playStorePage.setData(Uri.parse("market://details?id=balti.migrate"));
+                    startActivity(playStorePage);
+                }
+            });
+            ad.show();
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
