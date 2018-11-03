@@ -1895,6 +1895,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                     .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            backupName = name;
                             if (dir.exists()) dirDelete(dir.getAbsolutePath());
                             if (zip.exists()) zip.delete();
                             alertDialog.dismiss();
@@ -1905,7 +1906,8 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                     .show();
         } else {
             alertDialog.dismiss();
-            startBackup(backupName = name);
+            backupName = name;
+            startBackup(backupName);
         }
     }
 
