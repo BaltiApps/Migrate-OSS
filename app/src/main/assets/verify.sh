@@ -14,6 +14,8 @@ done
 echo "ui_print  " >> /proc/self/fd/$OUTFD;
 echo "ui_print Verifying extras..." >> /proc/self/fd/$OUTFD;
 
+mv /tmp/package-data /data/balti.migrate/package-data
+
 res="$(cat /proc/cmdline | grep slot_suffix)";
 
 if [ ! -e /system/app/MigrateHelper/MigrateHelper.apk ]; then
