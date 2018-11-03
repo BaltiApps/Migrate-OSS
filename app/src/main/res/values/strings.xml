@@ -127,7 +127,7 @@
     <string name="errorMakingScripts">Error making scripts</string>
     <string name="backupCancelled">Backup cancelled</string>
     <string name="deletingFiles">Deleting files</string>
-    <string name="backupFinishedWithErrors">Backup finished with errors.</string>
+    <string name="backupFinishedWithErrors">Errors found! Please retry.</string>
     <string name="backupInterruptedWithErrors">Backup interrupted with errors.</string>
     <string name="incompleteZip">Not all files could be combined.</string>
     <string name="no_keyboard_data">No keyboard data</string>
