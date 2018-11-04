@@ -10,11 +10,13 @@
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
-    <string name="prs_label">Migrate\nversion 1.0</string>
+    <string name="prs_label">Migrate\nversion 1.0.1</string>
 
     <!--changelog-->
     <string name="version_1.0" tools:ignore="ExtraTranslation">Version 1.0</string>
     <string name="version_1.0_content" tools:ignore="ExtraTranslation">\u2022 Initial release</string>
+    <string name="version_1.0.1" tools:ignore="ExtraTranslation">Version 1.0.1</string>
+    <string name="version_1.0.1_content" tools:ignore="ExtraTranslation">\u2022 Fixed app intro SKIP button</string>
 
     <!--activity_main.xml-->
     <string name="backupButton">Backup</string>

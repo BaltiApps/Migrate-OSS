@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (main.getBoolean("firstRun", true)) {
 
-            editor.putInt("version", 1);
+            editor.putInt("version", 2);
             editor.commit();
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -377,14 +377,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (onlyLatest) {
             if (currVer < 1) {
                 /*Put only the latest version here*/
-                title = getString(R.string.version_1_0);
-                message = getString(R.string.version_1_0_content);
+                title = getString(R.string.version_1_0_1);
+                message = getString(R.string.version_1_0_1_content);
                 changelog.setTitle(title)
                         .setMessage(message)
                         .setPositiveButton(R.string.close, null)
                         .show();
 
-                editor.putInt("version", 1);
+                editor.putInt("version", 2);
                 editor.commit();
             }
         }
@@ -393,7 +393,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             title = getString(R.string.changelog);
             message = "";
             /*Add increasing versions here*/
-            message = message + "\n" + getString(R.string.version_1_0) + "\n" + getString(R.string.version_1_0_content) + "\n";
+            message = message + "\n" + getString(R.string.version_1_0) + "\n" + getString(R.string.version_1_0_content) + "\n" +
+                    "\n" + getString(R.string.version_1_0_1) + "\n" + getString(R.string.version_1_0_1_content) + "\n";
             changelog.setTitle(title)
                     .setMessage(message)
                     .setPositiveButton(R.string.close, null)
