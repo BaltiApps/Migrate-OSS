@@ -367,10 +367,10 @@
     <string name="battery_optimisation_already_disabled">Battery optimisation already disabled</string>
 
     <!--thanks_layout.xml-->
-    <string name="thanks_to_stericson">Huge thanks to Stephen (stericdroid) for allowing me to liberally use his busybox libraries</string>
+    <string name="thanks_to_stericson">Huge thanks to Stephen (stericdroid) for allowing me to liberally use his busybox builds</string>
     <string name="thanks_to_magisk">Without topjohnwu\'s Magisk, this app would not be possible. I learned a lot from Magisk installer scripts.</string>
     <string name="thanks_1">Tireless help for Xiaomi Mi A1:\n@ishubhamsingh\n@su_bin</string>
-    <string name="thanks_2">Huge bug hunters:\n@akshayrohida\n@raj3303</string>
+    <string name="thanks_2">Huge bug hunters:\n@akshayrohida\n@raj3303\nMy classmate Shivam</string>
     <string name="thanks_3">The app wouldn\'t be possible without the whole group of tester:\n\n
     @akshay\n
         @TusharG03\n

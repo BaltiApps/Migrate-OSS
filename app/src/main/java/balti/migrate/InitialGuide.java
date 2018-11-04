@@ -92,7 +92,7 @@ public class InitialGuide extends AppCompatActivity {
                     viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
                 }
                 else {
-                    finishGuide(false);
+                    finishGuide(true);
                 }
             }
         };
