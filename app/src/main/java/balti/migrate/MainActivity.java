@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     AlertDialog loadingDialog;
     int REQUEST_CODE = 43;
 
+    int THIS_VERSION = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (main.getBoolean("firstRun", true)) {
 
-            editor.putInt("version", 2);
+            editor.putInt("version", THIS_VERSION);
             editor.commit();
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -375,7 +377,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String message = "";
         String title = "";
         if (onlyLatest) {
-            if (currVer < 1) {
+            if (currVer < THIS_VERSION) {
                 /*Put only the latest version here*/
                 title = getString(R.string.version_1_0_1);
                 message = getString(R.string.version_1_0_1_content);
@@ -384,7 +386,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .setPositiveButton(R.string.close, null)
                         .show();
 
-                editor.putInt("version", 2);
+                editor.putInt("version", THIS_VERSION);
                 editor.commit();
             }
         }
