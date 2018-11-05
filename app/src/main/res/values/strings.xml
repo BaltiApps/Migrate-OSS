@@ -194,6 +194,7 @@
     <!--error_report_layout.xml-->
     <string name="share_progress_logs">Share progress logs</string>
     <string name="share_error_logs">Share error logs</string>
+    <string name="share_script">Share script</string>
     <string name="agree_and_send">Agree and send</string>
     <string name="error_report_disclaimer">Thanks for your interest in helping to improve this app. You agree to share:\n\n
         - Some internal file structure of apps (this does not necessarily have any private data).\n
@@ -206,6 +207,7 @@
     <string name="log_files_do_not_exist">Log files do not exist</string>
     <string name="progress_log_does_not_exist">\"progressLog\" does not exist</string>
     <string name="error_log_does_not_exist">\"errorLog\" does not exist</string>
+    <string name="backup_script_does_not_exist">\"the_backup_script.sh\" does not exist</string>
 
     <!--backup_progress_layout.xml-->
     <string name="report">Report</string>

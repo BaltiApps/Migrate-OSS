@@ -65,6 +65,7 @@ public class CommonTools {
     void reportLogs(boolean isErrorLogMandatory){
         final File progressLog = new File(context.getExternalCacheDir(), "progressLog");
         final File errorLog = new File(context.getExternalCacheDir(), "errorLog");
+        final File theBackupScript = new File(context.getExternalCacheDir(), "the_backup_script.sh");
 
         if (isErrorLogMandatory && !errorLog.exists()){
             new AlertDialog.Builder(context)
@@ -73,13 +74,14 @@ public class CommonTools {
                     .setNegativeButton(android.R.string.cancel, null)
                     .show();
         }
-        else if (errorLog.exists() || progressLog.exists()) {
+        else if (errorLog.exists() || progressLog.exists() || theBackupScript.exists()) {
 
             View errorReportView = View.inflate(context, R.layout.error_report_layout, null);
 
-            final CheckBox shareProgress, shareErrors;
+            final CheckBox shareProgress, shareScript, shareErrors;
             shareProgress = errorReportView.findViewById(R.id.share_progress_checkbox);
             shareErrors = errorReportView.findViewById(R.id.share_errors_checkbox);
+            shareScript = errorReportView.findViewById(R.id.share_script_checkbox);
 
             if (!progressLog.exists()){
                 shareProgress.setChecked(false);
@@ -88,6 +90,15 @@ public class CommonTools {
             else {
                 shareProgress.setEnabled(true);
                 shareProgress.setChecked(true);
+            }
+
+            if (!theBackupScript.exists()){
+                shareScript.setChecked(false);
+                shareScript.setEnabled(false);
+            }
+            else {
+                shareScript.setEnabled(true);
+                shareScript.setChecked(true);
             }
 
             if (isErrorLogMandatory && errorLog.exists()){
@@ -122,15 +133,19 @@ public class CommonTools {
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                 if (shareErrors.isChecked())
-                                    uris.add(FileProvider.getUriForFile(context, "migrate.helper.provider", errorLog));
+                                    uris.add(FileProvider.getUriForFile(context, "migrate.provider", errorLog));
                                 if (shareProgress.isChecked())
-                                    uris.add(FileProvider.getUriForFile(context, "migrate.helper.provider", progressLog));
+                                    uris.add(FileProvider.getUriForFile(context, "migrate.provider", progressLog));
+                                if (shareScript.isChecked())
+                                    uris.add(FileProvider.getUriForFile(context, "migrate.provider", theBackupScript));
                             }
                             else {
                                 if (shareErrors.isChecked())
                                     uris.add(Uri.fromFile(errorLog));
                                 if (shareProgress.isChecked())
                                     uris.add(Uri.fromFile(progressLog));
+                                if (shareScript.isChecked())
+                                    uris.add(Uri.fromFile(theBackupScript));
                             }
 
                             emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
@@ -152,6 +167,8 @@ public class CommonTools {
                 msg += context.getString(R.string.progress_log_does_not_exist) + "\n";
             if (!errorLog.exists())
                 msg += context.getString(R.string.error_log_does_not_exist) + "\n";
+            if (!theBackupScript.exists())
+                msg += context.getString(R.string.backup_script_does_not_exist) + "\n";
 
             new AlertDialog.Builder(context)
                     .setTitle(R.string.log_files_do_not_exist)

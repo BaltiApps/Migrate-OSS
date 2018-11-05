@@ -39,6 +39,7 @@ public class Exclusions {
         predefinedPackageNames.addElement("com.koushikdutta.superuser " + EXCLUDE_DATA);
         predefinedPackageNames.addElement("de.robv.android.xposed.installer " + EXCLUDE_DATA);
         predefinedPackageNames.addElement("balti.migratehelper " + EXCLUDE_APP_DATA);
+        predefinedPackageNames.addElement("android " + EXCLUDE_APP_DATA);
         readManuallyExcludedPackages();
     }
 

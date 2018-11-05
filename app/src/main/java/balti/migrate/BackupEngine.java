@@ -259,10 +259,10 @@ public class BackupEngine {
         NotificationCompat.Action cancelAction = new NotificationCompat.Action(0, context.getString(android.R.string.cancel), cancelPendingIntent);
 
         try {
-            Vector<File> scriptFiles = makeScripts();
+            File[] scriptFiles = makeScripts();
 
             if (isCancelled) throw new InterruptedIOException();
-            if (scriptFiles.size() > 1) {
+            if (scriptFiles.length > 1) {
 
                 progressNotif.addAction(cancelAction);
 
@@ -295,9 +295,9 @@ public class BackupEngine {
 
                 int c = 0, p = 100;
 
-                for (int scriptNumber = 0; scriptNumber < scriptFiles.size() && !isCancelled; scriptNumber++) {
+                for (int scriptNumber = 0; scriptNumber < scriptFiles.length && !isCancelled; scriptNumber++) {
 
-                    File scriptFile = scriptFiles.get(scriptNumber);
+                    File scriptFile = scriptFiles[scriptNumber];
 
                     suProcess = Runtime.getRuntime().exec("su");
                     BufferedWriter inputStream = new BufferedWriter(new OutputStreamWriter(suProcess.getOutputStream()));
@@ -563,7 +563,7 @@ public class BackupEngine {
             int c = 0;
 
             File directory = new File(destination + "/" + backupName);
-            Vector<File> files = getAllFiles(directory, new Vector<File>(1));
+            Vector<File> files = getAllFiles(directory, new Vector<File>(0));
 
             File zipFile = new File(destination + "/" + backupName + ".zip");
 
@@ -807,7 +807,7 @@ public class BackupEngine {
         }
     }
 
-    Vector<File> makeScripts() {
+    File[] makeScripts() {
 
         //zipBinaryFilePath = commonTools.unpackAssetToInternal("zip", "zip");
 
@@ -815,9 +815,10 @@ public class BackupEngine {
             return new File[]{null, null};*/
 
         if (busyboxBinaryFilePath.equals(""))
-            return new Vector<>(0);
+            return new File[0];
 
         File pre_script = new File(context.getFilesDir(), "pre_script.sh");
+        File scriptFile = new File(context.getFilesDir(), "the_backup_script.sh");
         File updater_script = new File(context.getFilesDir(), "updater-script");
         File helper = new File(context.getFilesDir() + "/system/app/MigrateHelper", "MigrateHelper.apk");
 
@@ -900,7 +901,6 @@ public class BackupEngine {
 
             int c = 0;
 
-            File scriptFile = new File(context.getFilesDir(), "app_script.sh");
             BufferedWriter scriptWriter = new BufferedWriter(new FileWriter(scriptFile));
 
             String line;
@@ -983,6 +983,7 @@ public class BackupEngine {
             }
 
             scriptWriter.write("echo \"--- App files copied ---\"\n");
+            scriptWriter.write("mv " + scriptFile.getAbsolutePath() + " " + context.getExternalCacheDir() + "/\n");
             scriptWriter.close();
 
             scriptFile.setExecutable(true);
@@ -1050,7 +1051,8 @@ public class BackupEngine {
             e.printStackTrace();
             updater_script.delete();
         }
-        return allScripts;
+
+        return new File[]{pre_script, scriptFile};
     }
 
     void cancelProcess() {
