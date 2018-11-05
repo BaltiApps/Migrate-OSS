@@ -216,7 +216,7 @@
     <string name="log_files_do_not_exist">Log files do not exist</string>
     <string name="progress_log_does_not_exist">\"progressLog\" does not exist</string>
     <string name="error_log_does_not_exist">\"errorLog\" does not exist</string>
-    <string name="backup_script_does_not_exist">\"the_backup_script.sh\" does not exist</string>
+    <string name="backup_script_does_not_exist">Backup scripts do not exist</string>
 
     <!--backup_progress_layout.xml-->
     <string name="report">Report</string>

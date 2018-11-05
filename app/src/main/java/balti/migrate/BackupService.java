@@ -120,7 +120,7 @@ public class BackupService extends Service {
                                     progressWriter.write("--->> " + backupName + " <<---\n");
                                     errorWriter.write("\n\n--->> " + backupName + " <<---\n");
                                 }
-                                progressWriter.write("--- Total parts : " + intent.getIntExtra("total_parts", 1) + " ---\n");
+                                progressWriter.write("--- Total parts : " + batches.size() + " ---\n");
 
 
                                 progressWriter.close();

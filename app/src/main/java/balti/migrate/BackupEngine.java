@@ -259,6 +259,33 @@ public class BackupEngine {
         NotificationCompat.Action cancelAction = new NotificationCompat.Action(0, context.getString(android.R.string.cancel), cancelPendingIntent);
 
         try {
+
+
+            if (partNumber == 1) {
+
+                // delete previous backup scripts
+
+                File previousBackupScripts[] = context.getFilesDir().listFiles(new FileFilter() {
+                    @Override
+                    public boolean accept(File f) {
+                        return f.getName().startsWith("the_backup_script_") && f.getName().endsWith(".sh");
+                    }
+                });
+
+                for (File f : previousBackupScripts)
+                    f.delete();
+
+                previousBackupScripts = context.getExternalCacheDir().listFiles(new FileFilter() {
+                    @Override
+                    public boolean accept(File f) {
+                        return f.getName().startsWith("the_backup_script_") && f.getName().endsWith(".sh");
+                    }
+                });
+
+                for (File f : previousBackupScripts)
+                    f.delete();
+            }
+
             File[] scriptFiles = makeScripts();
 
             if (isCancelled) throw new InterruptedIOException();
@@ -818,7 +845,7 @@ public class BackupEngine {
             return new File[0];
 
         File pre_script = new File(context.getFilesDir(), "pre_script.sh");
-        File scriptFile = new File(context.getFilesDir(), "the_backup_script.sh");
+        File scriptFile = new File(context.getFilesDir(), "the_backup_script_"+ partNumber + ".sh");
         File updater_script = new File(context.getFilesDir(), "updater-script");
         File helper = new File(context.getFilesDir() + "/system/app/MigrateHelper", "MigrateHelper.apk");
 
