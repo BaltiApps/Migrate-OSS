@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     AlertDialog loadingDialog;
     int REQUEST_CODE = 43;
 
-    int THIS_VERSION = 3;
+    int THIS_VERSION = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -379,8 +379,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (onlyLatest) {
             if (currVer < THIS_VERSION) {
                 /*Put only the latest version here*/
-                title = getString(R.string.version_1_0_2);
-                message = getString(R.string.version_1_0_2_content);
+                title = getString(R.string.version_1_0_3);
+                message = getString(R.string.version_1_0_3_content);
                 changelog.setTitle(title)
                         .setMessage(message)
                         .setPositiveButton(R.string.close, null)
@@ -397,7 +397,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             /*Add increasing versions here*/
             message = message + "\n" + getString(R.string.version_1_0) + "\n" + getString(R.string.version_1_0_content) + "\n"
                     + "\n" + getString(R.string.version_1_0_1) + "\n" + getString(R.string.version_1_0_1_content) + "\n"
-                    + "\n" + getString(R.string.version_1_0_2) + "\n" + getString(R.string.version_1_0_2_content) + "\n";
+                    + "\n" + getString(R.string.version_1_0_2) + "\n" + getString(R.string.version_1_0_2_content) + "\n"
+                    + "\n" + getString(R.string.version_1_0_3) + "\n" + getString(R.string.version_1_0_3_content) + "\n";
             changelog.setTitle(title)
                     .setMessage(message)
                     .setPositiveButton(R.string.close, null)

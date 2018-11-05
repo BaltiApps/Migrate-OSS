@@ -10,7 +10,7 @@
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
-    <string name="prs_label">Migrate\nversion 1.0.2</string>
+    <string name="prs_label">Migrate\nversion 1.0.3</string>
 
     <!--changelog-->
     <string name="version_1.0" tools:ignore="ExtraTranslation">Version 1.0</string>
@@ -19,6 +19,12 @@
     <string name="version_1.0.1_content" tools:ignore="ExtraTranslation">\u2022 Fixed app intro SKIP button</string>
     <string name="version_1.0.2" tools:ignore="ExtraTranslation">Version 1.0.2</string>
     <string name="version_1.0.2_content" tools:ignore="ExtraTranslation">\u2022 Added more names in thanks list</string>
+    <string name="version_1.0.3" tools:ignore="ExtraTranslation">Version 1.0.3</string>
+    <string name="version_1.0.3_content" tools:ignore="ExtraTranslation">
+        \u2022 Fixed log sharing\n
+        \u2022 Also share script file in log\n
+        \u2022 Blacklist Android system from backup list (prevents tar socket error)
+    </string>
 
     <!--activity_main.xml-->
     <string name="backupButton">Backup</string>
