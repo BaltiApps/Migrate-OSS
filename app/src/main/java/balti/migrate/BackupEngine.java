@@ -384,7 +384,10 @@ public class BackupEngine {
 
 
                     while ((line = errorStream.readLine()) != null) {
-                        errors.add("RUN_" + scriptNumber + errorTag + ": " + line);
+                        line = line.trim();
+                        if (!line.endsWith("socket ignored")) {
+                            errors.add("RUN_" + scriptNumber + errorTag + ": " + line);
+                        }
                     }
                 }
 

@@ -26,7 +26,12 @@
         \u2022 Blacklist Android system from backup list (prevents tar socket error)
     </string>
     <string name="version_1.0.4" tools:ignore="ExtraTranslation">Version 1.0.4 (beta)</string>
-    <string name="version_1.0.4_content" tools:ignore="ExtraTranslation">\u2022 Improvements to logging</string>
+    <string name="version_1.0.4_content" tools:ignore="ExtraTranslation">
+        \u2022 Improvements to logging\n
+        \u2022 Ignore tar socket warnings\n
+        \u2022 Fix for apps without a version name\n
+        \u2022 New update-binary should prevent TWRP error 3 issue
+    </string>
 
     <!--activity_main.xml-->
     <string name="backupButton">Backup</string>
@@ -400,6 +405,8 @@
         @SubhrajyotiSen\n
         @rm_rfasterisk\n
         @facumo\n
+        \n
+        XDA member @djseltus for pointing to a new update-binary
     </string>
 
 </resources>

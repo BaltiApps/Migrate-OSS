@@ -91,6 +91,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 head.setText(R.string.checking_permissions);
 
+                try {
+                    loadingDialog.dismiss();
+                }catch (Exception ignored){}
+
                 loadingDialog = new AlertDialog.Builder(MainActivity.this)
                         .setView(v)
                         .setCancelable(false)
@@ -556,5 +560,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         ad.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            loadingDialog.dismiss();
+        }catch (Exception ignored){}
     }
 }

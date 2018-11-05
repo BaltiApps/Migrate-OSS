@@ -391,7 +391,11 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                             String dataPath = "NULL";
                             if (packet.DATA)
                                 dataPath = packet.PACKAGE_INFO.applicationInfo.dataDir;
-                            String versionName = packet.PACKAGE_INFO.versionName.replace(' ', '_');
+                            String versionName = packet.PACKAGE_INFO.versionName;
+                            if (versionName == null)
+                                versionName = "_";
+                            else
+                                versionName.replace(' ', '_');
 
                             publishProgress(getString(R.string.reading_data),
                                     ++c + " " + getString(R.string.of) + " " + totalSelectedApps, "");
