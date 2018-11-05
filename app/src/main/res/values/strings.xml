@@ -153,6 +153,9 @@
         \n
         Selecting <i>Data</i> of an app necessarily means you have to backup the <i>App</i> also. <i>Perm</i>(permission) can be selected only if the apk or data is selected to be backed up.
     </string>
+    <string name="bootloop_warning">Bootloop warning!</string>
+    <string name="bootloop_warning_desc">Backing up and restoring system apps may result in a bootloop. Please proceed with caution.</string>
+
     
     <!--BackupService.java-->
     <string name="error_loading_engine">Error loading engine</string>

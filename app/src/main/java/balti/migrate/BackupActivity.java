@@ -2,8 +2,10 @@ package balti.migrate;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -117,11 +119,30 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         backButton = findViewById(R.id.backupLayoutBackButton);
         helpButton = findViewById(R.id.backup_activity_help);
 
+        final SharedPreferences main = getSharedPreferences("main", MODE_PRIVATE);
+        final SharedPreferences.Editor editor = main.edit();
+
         appType = findViewById(R.id.appType);
         appType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 appUpdate = new AppUpdate();
+
+                if (i > 0 && main.getBoolean("system_apps_warning", true)){
+                    new AlertDialog.Builder(BackupActivity.this)
+                            .setTitle(R.string.bootloop_warning)
+                            .setMessage(R.string.bootloop_warning_desc)
+                            .setPositiveButton(android.R.string.ok, null)
+                            .setNegativeButton(R.string.dont_show_again, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    editor.putBoolean("system_apps_warning", false);
+                                    editor.commit();
+                                }
+                            })
+                            .show();
+                }
+
                 appUpdate.execute(i);
             }
 
