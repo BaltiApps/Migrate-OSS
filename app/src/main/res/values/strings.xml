@@ -30,7 +30,8 @@
         \u2022 Improvements to logging\n
         \u2022 Ignore tar socket warnings\n
         \u2022 Fix for apps without a version name\n
-        \u2022 New update-binary should prevent TWRP error 3 issue
+        \u2022 New update-binary should prevent TWRP error 3 issue\n
+        \u2022 Should fix an issue of null String
     </string>
 
     <!--activity_main.xml-->
