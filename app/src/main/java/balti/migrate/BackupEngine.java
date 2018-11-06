@@ -397,8 +397,10 @@ public class BackupEngine {
 
                     }
                     catch (Exception e){
-                        e.printStackTrace();
-                        errors.add("RUN_CODE_ERROR_" + scriptNumber + errorTag + ": " + e.getMessage());
+                        if (!isCancelled) {
+                            e.printStackTrace();
+                            errors.add("RUN_CODE_ERROR_" + scriptNumber + errorTag + ": " + e.getMessage());
+                        }
                     }
                 }
 
@@ -407,12 +409,14 @@ public class BackupEngine {
                 errors.add(context.getString(R.string.errorMakingScripts));
             }
 
-            String zipErr = javaZipAll(notificationManager, progressNotif, activityProgressIntent);
-            if (!zipErr.trim().equals("")) errors.add("ZIP" + errorTag + ": " + zipErr);
+            if (!isCancelled) {
+                String zipErr = javaZipAll(notificationManager, progressNotif, activityProgressIntent);
+                if (!zipErr.trim().equals("")) errors.add("ZIP" + errorTag + ": " + zipErr);
+            }
 
         } catch (Exception e) {
-            e.printStackTrace();
             if (!isCancelled){
+                e.printStackTrace();
                 errors.add("INIT" + errorTag + ": " + e.getMessage());
             }
         }
