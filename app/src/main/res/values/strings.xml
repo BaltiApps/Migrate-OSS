@@ -10,6 +10,8 @@
 
     -->
 
+    <!--please also update last tested version in MainActivity-->
+
     <string name="app_name">Migrate</string>
     <string name="current_version_name">1.0.5(beta)</string>
 

@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .setCancelable(false)
                     .show();
         }
-        else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P && !main.getBoolean("android_version_warning", false))
+        else if (Build.VERSION.SDK_INT > 28 && !main.getBoolean("android_version_warning", false))
         {
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle(R.string.too_fast)
