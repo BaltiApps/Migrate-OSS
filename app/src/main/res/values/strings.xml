@@ -1,31 +1,36 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Migrate</string>
 
     <!--Version changes to be made in
+
+    current_version_name (must not have blank spaces)
     about_app.xml
     changelog
     build.gradle
     MainActivity.java
+
     -->
+
+    <string name="app_name">Migrate</string>
+    <string name="current_version_name">1.0.5(beta)</string>
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
-    <string name="prs_label">Migrate\nversion 1.0.4 (beta)</string>
+    <string name="prs_label">Migrate\nversion 1.0.4(beta)</string>
 
     <!--changelog-->
-    <string name="version_1.0" tools:ignore="ExtraTranslation">Version 1.0 (beta)</string>
+    <string name="version_1.0" tools:ignore="ExtraTranslation">Version 1.0(beta)</string>
     <string name="version_1.0_content" tools:ignore="ExtraTranslation">\u2022 Initial release</string>
-    <string name="version_1.0.1" tools:ignore="ExtraTranslation">Version 1.0.1 (beta)</string>
+    <string name="version_1.0.1" tools:ignore="ExtraTranslation">Version 1.0.1(beta)</string>
     <string name="version_1.0.1_content" tools:ignore="ExtraTranslation">\u2022 Fixed app intro SKIP button</string>
-    <string name="version_1.0.2" tools:ignore="ExtraTranslation">Version 1.0.2 (beta)</string>
+    <string name="version_1.0.2" tools:ignore="ExtraTranslation">Version 1.0.2(beta)</string>
     <string name="version_1.0.2_content" tools:ignore="ExtraTranslation">\u2022 Added more names in thanks list</string>
-    <string name="version_1.0.3" tools:ignore="ExtraTranslation">Version 1.0.3 (beta)</string>
+    <string name="version_1.0.3" tools:ignore="ExtraTranslation">Version 1.0.3(beta)</string>
     <string name="version_1.0.3_content" tools:ignore="ExtraTranslation">
         \u2022 Fixed log sharing\n
         \u2022 Also share script file in log\n
         \u2022 Blacklist Android system from backup list (prevents tar socket error)
     </string>
-    <string name="version_1.0.4" tools:ignore="ExtraTranslation">Version 1.0.4 (beta)</string>
+    <string name="version_1.0.4" tools:ignore="ExtraTranslation">Version 1.0.4(beta)</string>
     <string name="version_1.0.4_content" tools:ignore="ExtraTranslation">
         \u2022 Improvements to logging\n
         \u2022 Ignore tar socket warnings\n

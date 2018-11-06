@@ -91,8 +91,6 @@ public class BackupEngine {
     private long startMillis;
     private long endMillis;
 
-    String GEN_ICON_STR = "";
-
     private String errorTag;
 
     private String busyboxBinaryFilePath;
@@ -286,10 +284,10 @@ public class BackupEngine {
                     f.delete();
             }
 
-            File[] scriptFiles = makeScripts();
+            String[] scriptFilesPaths = makeScripts();
 
             if (isCancelled) throw new InterruptedIOException();
-            if (scriptFiles.length > 1) {
+            if (scriptFilesPaths.length > 1) {
 
                 progressNotif.addAction(cancelAction);
 
@@ -322,72 +320,104 @@ public class BackupEngine {
 
                 int c = 0, p = 100;
 
-                for (int scriptNumber = 0; scriptNumber < scriptFiles.length && !isCancelled; scriptNumber++) {
+                Intent iconBroadcast = new Intent("Migrate progress broadcast");
+                iconBroadcast.putExtra("type", "app_icon");
 
-                    File scriptFile = scriptFiles[scriptNumber];
+                for (int scriptNumber = 0; scriptNumber < scriptFilesPaths.length && !isCancelled; scriptNumber++) {
 
-                    suProcess = Runtime.getRuntime().exec("su");
-                    BufferedWriter inputStream = new BufferedWriter(new OutputStreamWriter(suProcess.getOutputStream()));
-                    BufferedReader outputStream = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
-                    BufferedReader errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
+                    try {
 
-                    inputStream.write("sh " + scriptFile.getAbsolutePath() + "\n");
-                    inputStream.write("exit\n");
-                    inputStream.flush();
+                        File scriptFile = new File(scriptFilesPaths[scriptNumber]);
 
-                    String line;
+                        suProcess = Runtime.getRuntime().exec("su");
+                        BufferedWriter inputStream = new BufferedWriter(new OutputStreamWriter(suProcess.getOutputStream()));
+                        BufferedReader outputStream = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
+                        BufferedReader errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
 
-                    String iconString;
+                        inputStream.write("sh " + scriptFile.getAbsolutePath() + "\n");
+                        inputStream.write("exit\n");
+                        inputStream.flush();
 
-                    while ((line = outputStream.readLine()) != null) {
+                        String line;
 
-                        line = line.trim();
+                        String iconString;
 
-                        actualProgressBroadcast.putExtra("type", "app_progress");
+                        while ((line = outputStream.readLine()) != null) {
 
-                        if (line.startsWith(MIGRATE_STATUS)) {
-                            line = line.substring(16);
+                            line = line.trim();
 
-                            if (line.contains("icon:")) {
-                                iconString = line.substring(line.lastIndexOf(' ') + 1);
-                                line = line.substring(0, line.indexOf("icon:"));
-                                iconString = iconString.trim();
-                                actualProgressBroadcast.putExtra("app_icon", iconString);
-                                actualProgressBroadcast.putExtra("app_name", line);
-                            } else {
-                                actualProgressBroadcast.putExtra("app_name", line);
+                            actualProgressBroadcast.putExtra("type", "app_progress");
+
+                            if (line.startsWith(MIGRATE_STATUS)) {
+                                line = line.substring(16);
+
+                                if (line.contains("icon:")) {
+
+                                    iconString = line.substring(line.lastIndexOf(' ') + 1);
+                                    line = line.substring(0, line.indexOf("icon:"));
+                                    iconString = iconString.trim();
+
+                                    try {
+
+                                        //send icon in a different intent
+
+                                        iconBroadcast.putExtra("icon_string", iconString);
+                                        LocalBroadcastManager.getInstance(context).sendBroadcast(iconBroadcast);
+
+                                    } catch (Exception e) {
+
+                                        // if failed, try to send a blank icon string
+
+                                        try {
+                                            iconBroadcast.putExtra("icon_string", "_");
+                                            LocalBroadcastManager.getInstance(context).sendBroadcast(iconBroadcast);
+                                        }
+                                        catch (Exception ignored){}
+
+                                        e.printStackTrace();
+                                    }
+
+                                    actualProgressBroadcast.putExtra("app_name", line);
+                                } else {
+                                    actualProgressBroadcast.putExtra("app_name", line);
+                                }
+
+                                if (numberOfApps != 0 && !line.equals("Making package Flash Ready") && !line.equals("Including helper"))
+                                    p = ++c * 100 / numberOfApps;
+                                actualProgressBroadcast.putExtra("progress", p);
+
+                                LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+                                activityProgressIntent.putExtras(actualProgressBroadcast);
+
+                                String title = (totalParts > 1) ? context.getString(R.string.backingUp) + " : " + madePartName : context.getString(R.string.backingUp);
+                                progressNotif.setContentTitle(title)
+                                        .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                                        .setProgress(numberOfApps, c, false)
+                                        .setContentText(line);
+                                notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
                             }
 
-                            if (numberOfApps != 0 && !line.equals("Making package Flash Ready") && !line.equals("Including helper"))
-                                p = ++c * 100 / numberOfApps;
-                            actualProgressBroadcast.putExtra("progress", p);
-
+                            actualProgressBroadcast.putExtra("app_log", line);
                             LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
-                            activityProgressIntent.putExtras(actualProgressBroadcast);
+                            if (line.equals("--- App files copied ---"))
+                                break;
 
-                            String title = (totalParts > 1) ? context.getString(R.string.backingUp) + " : " + madePartName : context.getString(R.string.backingUp);
-                            progressNotif.setContentTitle(title)
-                                    .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
-                                    .setProgress(numberOfApps, c, false)
-                                    .setContentText(line);
-                            notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
                         }
 
-                        actualProgressBroadcast.putExtra("app_log", line);
-                        LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
-                        if (line.equals("--- App files copied ---"))
-                            break;
+                        while ((line = errorStream.readLine()) != null) {
+                            line = line.trim();
+                            if (!line.endsWith("socket ignored")) {
+                                errors.add("RUN_" + scriptNumber + errorTag + ": " + line);
+                            }
+                        }
 
                     }
-
-
-                    while ((line = errorStream.readLine()) != null) {
-                        line = line.trim();
-                        if (!line.endsWith("socket ignored")) {
-                            errors.add("RUN_" + scriptNumber + errorTag + ": " + line);
-                        }
+                    catch (Exception e){
+                        e.printStackTrace();
+                        errors.add("RUN_CODE_ERROR_" + scriptNumber + errorTag + ": " + e.getMessage());
                     }
                 }
 
@@ -400,6 +430,7 @@ public class BackupEngine {
             if (!zipErr.trim().equals("")) errors.add("ZIP" + errorTag + ": " + zipErr);
 
         } catch (Exception e) {
+            e.printStackTrace();
             if (!isCancelled){
                 errors.add("INIT" + errorTag + ": " + e.getMessage());
             }
@@ -723,6 +754,7 @@ public class BackupEngine {
         contents += "cpu_abi " + Build.SUPPORTED_ABIS[0] + "\n";
         contents += "data_required_size " + dataRequiredSize + "\n";
         contents += "system_required_size " + systemRequiredSize + "\n";
+        contents += "migrate_version " + context.getString(R.string.current_version_name) + "\n";
 
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(package_data));
@@ -837,7 +869,7 @@ public class BackupEngine {
         }
     }
 
-    File[] makeScripts() {
+    String[] makeScripts() {
 
         //zipBinaryFilePath = commonTools.unpackAssetToInternal("zip", "zip");
 
@@ -845,7 +877,7 @@ public class BackupEngine {
             return new File[]{null, null};*/
 
         if (busyboxBinaryFilePath.equals(""))
-            return new File[0];
+            return new String[0];
 
         File pre_script = new File(context.getFilesDir(), "pre_script.sh");
         File scriptFile = new File(context.getFilesDir(), "the_backup_script_"+ partNumber + ".sh");
@@ -971,8 +1003,6 @@ public class BackupEngine {
                     command = command + "fi\n";
                 }*/
 
-                GEN_ICON_STR = appIcon;
-
                 String scriptCommand = "sh " + appAndDataBackupScript + " " + packageName + " " + destination+"/"+backupName + " " +
                         apkPath + " " + apkName + " " + dataPath + " " + dataName + " " + busyboxBinaryFilePath + " " + permissions + "\n";
 
@@ -1082,7 +1112,7 @@ public class BackupEngine {
             updater_script.delete();
         }
 
-        return new File[]{pre_script, scriptFile};
+        return new String[]{pre_script.getAbsolutePath(), scriptFile.getAbsolutePath()};
     }
 
     void cancelProcess() {

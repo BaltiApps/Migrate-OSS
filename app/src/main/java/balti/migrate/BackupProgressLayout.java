@@ -309,10 +309,16 @@ public class BackupProgressLayout extends AppCompatActivity {
                         task.setText(intent.getStringExtra("app_name"));
                     }
 
-                    if (intent.hasExtra("app_icon")) {
+                    setProgress("progress", intent);
+
+                    addLog("app_log", intent);
+
+                } else if (type.equals("app_icon")) {
+
+                    if (intent.hasExtra("icon_string")) {
                         String iconString = "";
                         try {
-                            iconString = intent.getStringExtra("app_icon");
+                            iconString = intent.getStringExtra("icon_string");
                         } catch (Exception ignored) {
                         }
                         if (!iconString.equals("") && !iconString.equals(lastIconString)) {
@@ -324,11 +330,9 @@ public class BackupProgressLayout extends AppCompatActivity {
                         appIcon.setImageResource(R.drawable.ic_backup);
                     }
 
-                    setProgress("progress", intent);
+                }
 
-                    addLog("app_log", intent);
-
-                } else if (type.equals("zip_progress")) {
+                else if (type.equals("zip_progress")) {
 
                     appIcon.setImageResource(R.drawable.ic_combine);
 

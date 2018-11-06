@@ -121,9 +121,11 @@ public class BackupService extends Service {
                                     errorWriter.write("\n\n--->> " + backupName + " <<---\n");
                                 }
                                 progressWriter.write("--- Total parts : " + batches.size() + " ---\n");
-
+                                progressWriter.write("--- Migrate version " + context.getString(R.string.current_version_name) + " ---\n");
 
                                 progressWriter.close();
+
+                                errorWriter.write("--- Migrate version " + context.getString(R.string.current_version_name) + " ---\n");
                                 errorWriter.close();
 
                             } catch (IOException e) { e.printStackTrace(); }
