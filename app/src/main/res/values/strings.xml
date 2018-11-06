@@ -15,7 +15,7 @@
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
-    <string name="prs_label">Migrate\nversion 1.0.4(beta)</string>
+    <string name="prs_label">Migrate\nversion 1.0.5(beta)</string>
 
     <!--changelog-->
     <string name="version_1.0" tools:ignore="ExtraTranslation">Version 1.0(beta)</string>
@@ -36,6 +36,13 @@
         \u2022 Ignore tar socket warnings\n
         \u2022 New update-binary should prevent TWRP error 3 issue\n
         \u2022 Should fix an issue of null String while reading backup data
+    </string>
+    <string name="version_1.0.5" tools:ignore="ExtraTranslation">Version 1.0.5(beta)</string>
+    <string name="version_1.0.5_content" tools:ignore="ExtraTranslation">
+        \u2022 Probable fix to \"android.os.TransactionTooLargeException\"\n
+        \u2022 Better in app protection to prevent zips from not being made\n
+        \u2022 App version is now written in logs\n
+        \u2022 App now targets Oreo instead of Pie to potentially avoid some crashes
     </string>
 
     <!--activity_main.xml-->
