@@ -107,6 +107,8 @@ public class BackupEngine {
 
     private File backupSummary;
 
+    static String ICON_STRING = "";
+
     class StartBackup extends AsyncTask{
 
         boolean doBackupContacts;
@@ -320,9 +322,6 @@ public class BackupEngine {
 
                 int c = 0, p = 100;
 
-                Intent iconBroadcast = new Intent("Migrate progress broadcast");
-                iconBroadcast.putExtra("type", "app_icon");
-
                 for (int scriptNumber = 0; scriptNumber < scriptFilesPaths.length && !isCancelled; scriptNumber++) {
 
                     try {
@@ -357,25 +356,7 @@ public class BackupEngine {
                                     line = line.substring(0, line.indexOf("icon:"));
                                     iconString = iconString.trim();
 
-                                    try {
-
-                                        //send icon in a different intent
-
-                                        iconBroadcast.putExtra("icon_string", iconString);
-                                        LocalBroadcastManager.getInstance(context).sendBroadcast(iconBroadcast);
-
-                                    } catch (Exception e) {
-
-                                        // if failed, try to send a blank icon string
-
-                                        try {
-                                            iconBroadcast.putExtra("icon_string", "_");
-                                            LocalBroadcastManager.getInstance(context).sendBroadcast(iconBroadcast);
-                                        }
-                                        catch (Exception ignored){}
-
-                                        e.printStackTrace();
-                                    }
+                                    ICON_STRING = iconString;
 
                                     actualProgressBroadcast.putExtra("app_name", line);
                                 } else {

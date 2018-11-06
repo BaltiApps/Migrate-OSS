@@ -43,13 +43,14 @@ public class BackupProgressLayout extends AppCompatActivity {
     Button actionButton, reportLog;
 
     String lastLog = "";
-    String lastIconString = "";
-
     String lastType = "";
 
     long totalTasksTime = 0;
 
     CommonTools commonTools;
+
+    String lastIcon = "";
+    SetAppIcon setAppIcon;
 
     class SetAppIcon extends AsyncTask<String, Void, Bitmap>{
 
@@ -154,6 +155,8 @@ public class BackupProgressLayout extends AppCompatActivity {
                 adView.setVisibility(View.GONE);
             }
         });*/
+
+        trySettingAppIcon();
     }
 
     void handleProgress(Intent intent){
@@ -313,26 +316,9 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                     addLog("app_log", intent);
 
-                } else if (type.equals("app_icon")) {
+                    trySettingAppIcon();
 
-                    if (intent.hasExtra("icon_string")) {
-                        String iconString = "";
-                        try {
-                            iconString = intent.getStringExtra("icon_string");
-                        } catch (Exception ignored) {
-                        }
-                        if (!iconString.equals("") && !iconString.equals(lastIconString)) {
-                            SetAppIcon obj = new SetAppIcon();
-                            lastIconString = iconString;
-                            obj.execute(lastIconString);
-                        }
-                    } else {
-                        appIcon.setImageResource(R.drawable.ic_backup);
-                    }
-
-                }
-
-                else if (type.equals("zip_progress")) {
+                } else if (type.equals("zip_progress")) {
 
                     appIcon.setImageResource(R.drawable.ic_combine);
 
@@ -405,6 +391,22 @@ public class BackupProgressLayout extends AppCompatActivity {
             startActivity(new Intent(BackupProgressLayout.this, MainActivity.class));
         }
         finish();
+    }
+
+    void trySettingAppIcon(){
+            try {
+                if (BackupEngine.ICON_STRING != null && !lastIcon.equals(BackupEngine.ICON_STRING)) {
+
+                    try {
+                        setAppIcon.cancel(true);
+                    }catch (Exception ignored){}
+
+                    setAppIcon = new SetAppIcon();
+                    lastIcon = BackupEngine.ICON_STRING;
+                    setAppIcon.execute(lastIcon);
+                }
+            }
+            catch (Exception ignored){}
     }
 
     String calendarDifference(long longDiff){
