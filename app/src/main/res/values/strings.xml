@@ -44,7 +44,8 @@
         \u2022 Probable fix to \"android.os.TransactionTooLargeException\"\n
         \u2022 Better in app protection to prevent zips from not being made\n
         \u2022 App version is now written in logs\n
-        \u2022 App now targets Oreo instead of Pie to potentially avoid some crashes
+        \u2022 App now targets Oreo instead of Pie to potentially avoid some crashes\n
+        \u2022 Fixed unexpected \'(\' in restore process
     </string>
 
     <!--activity_main.xml-->
@@ -411,8 +412,9 @@
         @raj3303\n
         My classmate Shivam\n
         \n
-        XDA member @djseltus for pointing to a new update-binary\n
-        Vinyas N S for \"android.os.TransactionTooLargeException\" issue
+        XDA member @djseltus, for pointing to a new update-binary\n
+        Vinyas N S, for \"android.os.TransactionTooLargeException\" issue\n
+        C Tab, helped to find an issue with the helper app
     </string>
     <string name="thanks_3">The app wouldn\'t be possible without the whole group of tester:\n\n
         @TusharG03\n
