@@ -19,9 +19,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -399,10 +401,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             title = getString(R.string.changelog);
 
             int padding = 20;
+
+            ScrollView scrollView = new ScrollView(this);
+            scrollView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
             TextView allVersions = new TextView(this);
             allVersions.setPadding(padding,padding,padding,padding);
             allVersions.setText("");
             allVersions.setTextSize(15);
+
+            scrollView.addView(allVersions);
 
             /*Add increasing versions here*/
 
@@ -414,7 +422,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             allVersions.append("\n" + getString(R.string.version_1_0) + "\n" + getString(R.string.version_1_0_content) + "\n");
 
             changelog.setTitle(title)
-                    .setView(allVersions)
+                    .setView(scrollView)
                     .setPositiveButton(R.string.close, null)
                     .show();
         }
