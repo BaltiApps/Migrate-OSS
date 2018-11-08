@@ -155,8 +155,6 @@ public class BackupProgressLayout extends AppCompatActivity {
                 adView.setVisibility(View.GONE);
             }
         });*/
-
-        trySettingAppIcon();
     }
 
     void handleProgress(Intent intent){
@@ -249,6 +247,14 @@ public class BackupProgressLayout extends AppCompatActivity {
                     setProgress("progress", intent);
 
                     addLog("contact_name", intent);
+
+                } else if (type.equals("making_package_flash_ready")) {
+
+                    appIcon.setImageResource(R.drawable.ic_combine);
+
+                    task.setText(R.string.making_package_flash_ready);
+
+                    progressBar.setIndeterminate(true);
 
                 } else if (type.equals("sms_reading")) {
 

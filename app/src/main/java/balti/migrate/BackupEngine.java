@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -26,7 +25,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
@@ -167,7 +165,6 @@ public class BackupEngine {
         this.dataRequiredSize = dataRequiredSize;
         this.backupSummary = backupSummary;
 
-
         if (totalParts > 1){
             this.destination = this.destination + "/" + this.backupName;
             this.madePartName = context.getString(R.string.part) + " " + partNumber + " " + context.getString(R.string.of) + " " + totalParts;
@@ -286,10 +283,10 @@ public class BackupEngine {
                     f.delete();
             }
 
-            String[] scriptFilesPaths = makeScripts();
+            String scriptFilePath = makeScripts();
 
             if (isCancelled) throw new InterruptedIOException();
-            if (scriptFilesPaths.length > 1) {
+            if (scriptFilePath != null) {
 
                 progressNotif.addAction(cancelAction);
 
@@ -301,6 +298,9 @@ public class BackupEngine {
                             .putExtra("total_parts", totalParts);
                     LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
                 }
+
+                String makePackageFlashReadyErr = makePackageFlashReady(notificationManager, progressNotif, activityProgressIntent);
+                if (!makePackageFlashReadyErr.equals("")) errors.add(makePackageFlashReadyErr);
 
                 String contactsErr = backupContacts(notificationManager, progressNotif, activityProgressIntent);
                 if (!contactsErr.equals("")) errors.add("CONTACTS" + errorTag + ": " + contactsErr);
@@ -322,85 +322,85 @@ public class BackupEngine {
 
                 int c = 0, p = 100;
 
-                for (int scriptNumber = 0; scriptNumber < scriptFilesPaths.length && !isCancelled; scriptNumber++) {
+                try {
 
-                    try {
+                    File scriptFile = new File(scriptFilePath);
 
-                        File scriptFile = new File(scriptFilesPaths[scriptNumber]);
+                    suProcess = Runtime.getRuntime().exec("su");
+                    BufferedWriter inputStream = new BufferedWriter(new OutputStreamWriter(suProcess.getOutputStream()));
+                    BufferedReader outputStream = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
+                    BufferedReader errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
 
-                        suProcess = Runtime.getRuntime().exec("su");
-                        BufferedWriter inputStream = new BufferedWriter(new OutputStreamWriter(suProcess.getOutputStream()));
-                        BufferedReader outputStream = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
-                        BufferedReader errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
+                    inputStream.write("sh " + scriptFile.getAbsolutePath() + "\n");
+                    inputStream.write("exit\n");
+                    inputStream.flush();
 
-                        inputStream.write("sh " + scriptFile.getAbsolutePath() + "\n");
-                        inputStream.write("exit\n");
-                        inputStream.flush();
+                    String line;
 
-                        String line;
+                    String iconString;
 
-                        String iconString;
+                    while ((line = outputStream.readLine()) != null) {
 
-                        while ((line = outputStream.readLine()) != null) {
+                        line = line.trim();
 
-                            line = line.trim();
+                        actualProgressBroadcast.putExtra("type", "app_progress");
 
-                            actualProgressBroadcast.putExtra("type", "app_progress");
+                        if (line.startsWith(MIGRATE_STATUS)) {
+                            line = line.substring(16);
 
-                            if (line.startsWith(MIGRATE_STATUS)) {
-                                line = line.substring(16);
+                            if (line.contains("icon:")) {
 
-                                if (line.contains("icon:")) {
+                                iconString = line.substring(line.lastIndexOf(' ') + 1);
+                                line = line.substring(0, line.indexOf("icon:"));
+                                iconString = iconString.trim();
 
-                                    iconString = line.substring(line.lastIndexOf(' ') + 1);
-                                    line = line.substring(0, line.indexOf("icon:"));
-                                    iconString = iconString.trim();
+                                ICON_STRING = iconString;
 
-                                    ICON_STRING = iconString;
-
-                                    actualProgressBroadcast.putExtra("app_name", line);
-                                } else {
-                                    actualProgressBroadcast.putExtra("app_name", line);
-                                }
-
-                                if (numberOfApps != 0 && !line.equals("Making package Flash Ready") && !line.equals("Including helper"))
-                                    p = ++c * 100 / numberOfApps;
-                                actualProgressBroadcast.putExtra("progress", p);
-
-                                LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
-
-                                activityProgressIntent.putExtras(actualProgressBroadcast);
-
-                                String title = (totalParts > 1) ? context.getString(R.string.backingUp) + " : " + madePartName : context.getString(R.string.backingUp);
-                                progressNotif.setContentTitle(title)
-                                        .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
-                                        .setProgress(numberOfApps, c, false)
-                                        .setContentText(line);
-                                notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+                                actualProgressBroadcast.putExtra("app_name", line);
+                            } else {
+                                actualProgressBroadcast.putExtra("app_name", line);
                             }
 
-                            actualProgressBroadcast.putExtra("app_log", line);
+                            if (numberOfApps != 0 && !line.equals("Making package Flash Ready") && !line.equals("Including helper"))
+                                p = ++c * 100 / numberOfApps;
+                            actualProgressBroadcast.putExtra("progress", p);
+
                             LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
-                            if (line.equals("--- App files copied ---"))
-                                break;
+                            activityProgressIntent.putExtras(actualProgressBroadcast);
 
+                            String title = (totalParts > 1) ? context.getString(R.string.backingUp) + " : " + madePartName : context.getString(R.string.backingUp);
+                            progressNotif.setContentTitle(title)
+                                    .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                                    .setProgress(numberOfApps, c, false)
+                                    .setContentText(line);
+                            notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
                         }
 
+                        actualProgressBroadcast.putExtra("app_log", line);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
-                        while ((line = errorStream.readLine()) != null) {
-                            line = line.trim();
-                            if (!line.endsWith("socket ignored")) {
-                                errors.add("RUN_" + scriptNumber + errorTag + ": " + line);
-                            }
-                        }
+                        if (line.equals("--- App files copied ---"))
+                            break;
 
                     }
-                    catch (Exception e){
-                        if (!isCancelled) {
-                            e.printStackTrace();
-                            errors.add("RUN_CODE_ERROR_" + scriptNumber + errorTag + ": " + e.getMessage());
+
+                    try {
+                        suProcess.waitFor();
+                    } catch (Exception ignored) {
+                    }
+
+                    while ((line = errorStream.readLine()) != null) {
+                        line = line.trim();
+                        if (!line.endsWith("socket ignored")) {
+                            errors.add("RUN" + errorTag + ": " + line);
                         }
+                    }
+
+                } catch (Exception e) {
+                    if (!isCancelled) {
+                        e.printStackTrace();
+                        errors.add("RUN_CODE_ERROR" + errorTag + ": " + e.getMessage());
                     }
                 }
 
@@ -424,24 +424,13 @@ public class BackupEngine {
         progressNotif = createNotificationBuilder();
         progressNotif.setSmallIcon(R.drawable.ic_notification_icon);
 
-        if (isCancelled) finalMessage = context.getString(R.string.backupCancelled);
-        else if (errors.size() == 0) finalMessage = context.getString(R.string.noErrors);
-        else {
-            if (partNumber == totalParts)
-                finalMessage = context.getString(R.string.backupFinishedWithErrors);
-            else
-                finalMessage = context.getString(R.string.backupInterruptedWithErrors);
-            progressNotif.setContentText(errors.get(0));
-        }
-
         endMillis = timeInMillis();
 
         boolean finalProcess = (partNumber == totalParts) || isCancelled;
 
         actualProgressBroadcast.putExtra("part_name", "");
 
-        actualProgressBroadcast.putExtra("type", "finished").putExtra("finishedMessage", finalMessage.trim())
-                .putExtra("total_time", endMillis - startMillis).putExtra("final_process",
+        actualProgressBroadcast.putExtra("type", "finished").putExtra("total_time", endMillis - startMillis).putExtra("final_process",
                 finalProcess);
 
         actualProgressBroadcast.putStringArrayListExtra("errors", errors);
@@ -449,11 +438,21 @@ public class BackupEngine {
         if (finalProcess) {
 
             ArrayList<String> allErr = new ArrayList<>(0);
-            if (BackupService.allErrors != null)
-                allErr.addAll(BackupService.allErrors);
+            if (BackupService.previousErrors != null)
+                allErr.addAll(BackupService.previousErrors);
             allErr.addAll(errors);
 
-            actualProgressBroadcast.putStringArrayListExtra("allErrors", allErr);
+            if (isCancelled) finalMessage = context.getString(R.string.backupCancelled);
+            else if (allErr.size() == 0) finalMessage = context.getString(R.string.noErrors);
+            else {
+                if (partNumber == totalParts)
+                    finalMessage = context.getString(R.string.backupFinishedWithErrors);
+                else
+                    finalMessage = context.getString(R.string.backupInterruptedWithErrors);
+                progressNotif.setContentText(errors.get(0));
+            }
+
+            actualProgressBroadcast.putExtra("finishedMessage", finalMessage.trim()).putStringArrayListExtra("allErrors", allErr);
             activityProgressIntent.putExtras(actualProgressBroadcast);
 
             progressNotif
@@ -466,9 +465,9 @@ public class BackupEngine {
             notificationManager.cancel(NOTIFICATION_ID);
             notificationManager.notify(NOTIFICATION_ID + 1, progressNotif.build());
 
-            for (File f : context.getFilesDir().listFiles()){
+            /*for (File f : context.getFilesDir().listFiles()){
                 f.delete();
-            }
+            }*/
         }
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
@@ -854,27 +853,17 @@ public class BackupEngine {
         }
     }
 
-    String[] makeScripts() {
+    String makeScripts() {
 
         //zipBinaryFilePath = commonTools.unpackAssetToInternal("zip", "zip");
 
         /*if (busyboxBinaryFilePath.equals("") || zipBinaryFilePath.equals(""))
             return new File[]{null, null};*/
 
-        if (busyboxBinaryFilePath.equals(""))
-            return new String[0];
-
-        File pre_script = new File(context.getFilesDir(), "pre_script.sh");
-        File scriptFile = new File(context.getFilesDir(), "the_backup_script_"+ partNumber + ".sh");
-        File updater_script = new File(context.getFilesDir(), "updater-script");
-        File helper = new File(context.getFilesDir() + "/system/app/MigrateHelper", "MigrateHelper.apk");
-
-        String update_binary = commonTools.unpackAssetToInternal("update-binary", "update-binary");
-        String prepScript = commonTools.unpackAssetToInternal("prep.sh", "prep.sh");
-        String verifyScript = commonTools.unpackAssetToInternal("verify.sh", "verify.sh");
-        String appAndDataBackupScript = commonTools.unpackAssetToInternal("backup_app_and_data.sh", "backup_app_and_data.sh");
-
-        AssetManager assetManager = context.getAssets();
+        //File pre_script = new File(context.getFilesDir(), "pre_script.sh");
+        //File helper = new File(context.getFilesDir() + "/system/app/MigrateHelper", "MigrateHelper.apk");
+        //String verifyScript = commonTools.unpackAssetToInternal("verify.sh", "verify.sh");
+        /*AssetManager assetManager = context.getAssets();
         int read;
         byte buffer[] = new byte[4096];
 
@@ -889,14 +878,22 @@ public class BackupEngine {
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
-        Vector<File> allScripts = new Vector<>(0);
+        if (busyboxBinaryFilePath.equals(""))
+            return null;
+
+        File scriptFile = new File(context.getFilesDir(), "the_backup_script_"+ partNumber + ".sh");
+        File updater_script = new File(context.getExternalCacheDir(), "updater-script");
+
+        String appAndDataBackupScript = commonTools.unpackAssetToInternal("backup_app_and_data.sh", "backup_app_and_data.sh", false);
+
+
 
         try {
+            //BufferedWriter pre_writer = new BufferedWriter(new FileWriter(pre_script));
 
             BufferedReader backupSummaryReader = new BufferedReader(new FileReader(backupSummary));
-            BufferedWriter pre_writer = new BufferedWriter(new FileWriter(pre_script));
             BufferedWriter updater_writer = new BufferedWriter(new FileWriter(updater_script));
 
             updater_writer.write("show_progress(0, 0);\n");
@@ -925,53 +922,65 @@ public class BackupEngine {
             updater_writer.write("ui_print(\"Restoring to Migrate cache...\");\n");
             updater_writer.write("ui_print(\" \");\n");
 
-            String flashDirPath = destination + "/" + backupName + "/META-INF/com/google/android/";
+            /*try {
 
-            pre_writer.write("echo \"" + MIGRATE_STATUS + ": " + "Making package Flash Ready" + "\"\n");
-            pre_writer.write("mkdir -p " + flashDirPath + "\n");
-            pre_writer.write("mv " + updater_script.getAbsolutePath() + " " + flashDirPath + "\n");
-            pre_writer.write("mv " + update_binary + " " + flashDirPath + "\n");
-            pre_writer.write("mv " + prepScript + " " + destination + "/" + backupName + "\n");
-            pre_writer.write("mv " + verifyScript + " " + destination + "/" + backupName + "\n");
+                pre_writer.write("echo \"" + MIGRATE_STATUS + ": " + "Making package Flash Ready" + "\"\n");
+                pre_writer.write("mkdir -p " + flashDirPath + "\n");
+                pre_writer.write("mv " + updater_script.getAbsolutePath() + " " + flashDirPath + "\n");
+                pre_writer.write("mv " + update_binary + " " + flashDirPath + "\n");
+                pre_writer.write("mv " + prepScript + " " + destination + "/" + backupName + "\n");
+                pre_writer.write("mv " + verifyScript + " " + destination + "/" + backupName + "\n");
 
-            pre_writer.write("echo \"migrate status: " + "Including helper" + "\"\n");
-            pre_writer.write("cp -r " + context.getFilesDir() + "/system" + " " + destination + "/" + backupName + "\n");
-            pre_writer.write("rm -r " + context.getFilesDir() + "/system" + "\n");
+                pre_writer.write("echo \"migrate status: " + "Including helper" + "\"\n");
+                pre_writer.write("cp -r " + context.getFilesDir() + "/system" + " " + destination + "/" + backupName + "\n");
+                pre_writer.write("rm -r " + context.getFilesDir() + "/system" + "\n");
 
-            pre_writer.write("mkdir -p " + destination + "/" + backupName + "/\n");
+                pre_writer.close();
 
-            pre_writer.close();
-
-            pre_script.setExecutable(true);
-
-            allScripts.add(pre_script);
+                pre_script.setExecutable(true);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                errors.add("PRE_SCRIPT_ERROR" + errorTag + ": " + e.getMessage());
+            }*/
 
             int c = 0;
 
             BufferedWriter scriptWriter = new BufferedWriter(new FileWriter(scriptFile));
 
+            scriptWriter.write("cp " + scriptFile.getAbsolutePath() + " " + context.getExternalCacheDir() + "/\n");
+
             String line;
             while ((line = backupSummaryReader.readLine()) != null) {
 
-                String items[] = line.split(" ");
-                String appName = items[0];
-                String packageName = items[1];
-                String apkPath = items[2].substring(0, items[2].lastIndexOf('/'));
-                String apkName = items[2].substring(items[2].lastIndexOf('/')+1);       //has .apk extension
-                String dataPath = items[3].trim();
-                String dataName = "NULL";
-                String appIcon = items[4];
-                String version = items[5];
-                boolean permissions = Boolean.parseBoolean(items[6]);
+                try {
 
-                c++;
+                    String items[] = line.split(" ");
 
-                if (!dataPath.equals("NULL")) {
-                    dataName = dataPath.substring(dataPath.lastIndexOf('/') + 1);
-                    dataPath = dataPath.substring(0, dataPath.lastIndexOf('/'));
-                }
+                    if (items.length != 7){
+                        errors.add("UNKNOWN_LINE" + errorTag + ": PARAMS: " + items.length + " LINE: '" + line + "'");
+                        c++;
+                        continue;
+                    }
 
-                String echoCopyCommand = "echo \"" + MIGRATE_STATUS + ": " + appName + " (" + c + "/" + numberOfApps + ") icon: " + appIcon + "\"\n";
+                    String appName = items[0].replace('`', '\'').replace('"', '\'');
+                    String packageName = items[1];
+                    String apkPath = items[2].replace('`', '\'').substring(0, items[2].lastIndexOf('/'));
+                    String apkName = items[2].replace('`', '\'').substring(items[2].lastIndexOf('/') + 1);       //has .apk extension
+                    String dataPath = items[3].trim();
+                    String dataName = "NULL";
+                    String appIcon = items[4];
+                    String version = items[5].replace('`', '\'').replace('"', '\'');
+                    boolean permissions = Boolean.parseBoolean(items[6]);
+
+                    c++;
+
+                    if (!dataPath.equals("NULL")) {
+                        dataName = dataPath.substring(dataPath.lastIndexOf('/') + 1);
+                        dataPath = dataPath.substring(0, dataPath.lastIndexOf('/'));
+                    }
+
+                    String echoCopyCommand = "echo \"" + MIGRATE_STATUS + ": " + appName + " (" + c + "/" + numberOfApps + ") icon: " + appIcon + "\"\n";
                 /*String permissionCommand = "";
 
                 if (permissions){
@@ -988,51 +997,55 @@ public class BackupEngine {
                     command = command + "fi\n";
                 }*/
 
-                String scriptCommand = "sh " + appAndDataBackupScript + " " + packageName + " " + destination+"/"+backupName + " " +
-                        apkPath + " " + apkName + " " + dataPath + " " + dataName + " " + busyboxBinaryFilePath + " " + permissions + "\n";
+                    String scriptCommand = "sh " + appAndDataBackupScript + " " + packageName + " " + destination + "/" + backupName + " " +
+                            apkPath + " " + apkName + " " + dataPath + " " + dataName + " " + busyboxBinaryFilePath + " " + permissions + "\n";
 
-                scriptWriter.write(echoCopyCommand, 0, echoCopyCommand.length());
-                scriptWriter.write(scriptCommand, 0, scriptCommand.length());
+                    scriptWriter.write(echoCopyCommand, 0, echoCopyCommand.length());
+                    scriptWriter.write(scriptCommand, 0, scriptCommand.length());
+
+                    updater_writer.write("ui_print(\"" + appName + " (" + c + "/" + numberOfApps + ")\");\n");
+
+                    if (apkPath.startsWith("/system")) {
+                        updater_writer.write("package_extract_file(\"" + packageName + ".apk" + "\", \"/system/" + packageName + ".apk" + "\");\n");
+                        systemAppInstallScript(packageName, appName, apkPath);
+                        updater_writer.write("package_extract_file(\"" + packageName + ".sh" + "\", \"/system/" + packageName + ".sh" + "\");\n");
+                        updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"/system/" + packageName + ".sh" + "\");\n");
+                        updater_writer.write("run_program(\"/system/" + packageName + ".sh" + "\");\n");
+                    }
 
 
-                updater_writer.write("ui_print(\"" + appName + " (" + c + "/" + numberOfApps + ")\");\n");
+                    String tempApkName;
+                    if (apkPath.startsWith("/system")) {
+                        tempApkName = "NULL";
+                    } else {
+                        tempApkName = packageName;
+                        updater_writer.write("package_extract_file(\"" + packageName + ".apk" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".apk" + "\");\n");
+                    }
+                    makeMetadataFile(appName, packageName, tempApkName, dataName, appIcon, version, permissions);
 
-                if (apkPath.startsWith("/system")){
-                    updater_writer.write("package_extract_file(\"" + packageName + ".apk" + "\", \"/system/" + packageName + ".apk" + "\");\n");
-                    systemAppInstallScript(packageName, appName, apkPath);
-                    updater_writer.write("package_extract_file(\"" + packageName + ".sh" + "\", \"/system/" + packageName + ".sh" + "\");\n");
-                    updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"/system/" + packageName + ".sh" + "\");\n");
-                    updater_writer.write("run_program(\"/system/" + packageName + ".sh" + "\");\n");
+                    if (permissions)
+                        updater_writer.write("package_extract_file(\"" + packageName + ".perm" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".perm" + "\");\n");
+
+                    if (!dataName.equals("NULL")) {
+                        updater_writer.write("package_extract_file(\"" + dataName + ".tar.gz" + "\", \"" + TEMP_DIR_NAME + "/" + dataName + ".tar.gz" + "\");\n");
+                    }
+                    updater_writer.write("package_extract_file(\"" + packageName + ".json" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".json" + "\");\n");
+
+                    String pString = String.format("%.4f", ((c * 1.0) / numberOfApps));
+                    pString = pString.replace(",", ".");
+                    updater_writer.write("set_progress(" + pString + ");\n");
+
                 }
-
-
-                String tempApkName;
-                if (apkPath.startsWith("/system")) {
-                    tempApkName = "NULL";
-                } else {
-                    tempApkName = packageName;
-                    updater_writer.write("package_extract_file(\"" + packageName + ".apk" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".apk" + "\");\n");
+                catch (Exception e){
+                    e.printStackTrace();
+                    errors.add("APP_READ" + errorTag + ": " + e.getMessage());
                 }
-                makeMetadataFile(appName, packageName, tempApkName, dataName, appIcon, version, permissions);
-
-                if (permissions)
-                    updater_writer.write("package_extract_file(\"" + packageName + ".perm" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".perm" + "\");\n");
-
-                if (!dataName.equals("NULL")) {
-                    updater_writer.write("package_extract_file(\"" + dataName + ".tar.gz" + "\", \"" + TEMP_DIR_NAME + "/" + dataName + ".tar.gz" + "\");\n");
-                }
-                updater_writer.write("package_extract_file(\"" + packageName + ".json" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".json" + "\");\n");
-
-                updater_writer.write("set_progress(" + String.format("%.4f", ((c * 1.0) / numberOfApps)) + ");\n");
-
             }
 
             scriptWriter.write("echo \"--- App files copied ---\"\n");
-            scriptWriter.write("mv " + scriptFile.getAbsolutePath() + " " + context.getExternalCacheDir() + "/\n");
             scriptWriter.close();
 
             scriptFile.setExecutable(true);
-            allScripts.add(scriptFile);
 
             if (doBackupContacts || doBackupSms || doBackupCalls || doBackupDpi || doBackupKeyboard) {
                 updater_writer.write("ui_print(\" \");\n");
@@ -1094,10 +1107,110 @@ public class BackupEngine {
         } catch (Exception e) {
             errors.add("SCRIPT" + errorTag + ": " + e.getMessage());
             e.printStackTrace();
-            updater_script.delete();
         }
 
-        return new String[]{pre_script.getAbsolutePath(), scriptFile.getAbsolutePath()};
+        //return new String[]{pre_script.getAbsolutePath(), scriptFile.getAbsolutePath()};
+        return scriptFile.getAbsolutePath();
+    }
+
+    String makePackageFlashReady(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+
+
+        String title = (totalParts > 1)?
+                context.getString(R.string.making_package_flash_ready) + " : " + madePartName : context.getString(R.string.making_package_flash_ready);
+
+        actualProgressBroadcast.putExtra("type", "making_package_flash_ready");
+        activityProgressIntent.putExtras(actualProgressBroadcast);
+
+        progressNotif.setContentTitle(title)
+                .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setProgress(0, 0, false)
+                .setContentText("");
+        notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+        LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+        String err = "";
+
+        String flashDirPath = destination + "/" + backupName + "/META-INF/com/google/android/";
+        new File(flashDirPath).mkdirs();
+
+        File updater_script_destination = new File(flashDirPath + "updater-script");
+
+        File updater_script = new File(context.getExternalCacheDir(), "updater-script");
+        if (updater_script.exists()){
+            updater_script.renameTo(updater_script_destination);
+        }
+        else {
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "updater-script was not made" + "\n";
+        }
+
+        if (!updater_script_destination.exists()){
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "updater-script could not be moved" + "\n";
+        }
+
+        File update_binary = new File(commonTools.unpackAssetToInternal("update-binary", "update-binary", false));
+
+        File update_binary_destination = new File(flashDirPath + "update-binary");
+        if (update_binary.exists()){
+            update_binary.renameTo(update_binary_destination);
+        }
+        else {
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "update-binary could not be unpacked" + "\n";
+        }
+
+        if (!update_binary_destination.exists()){
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "update-binary could not be moved" + "\n";
+        }
+
+
+        File prepScript = new File(commonTools.unpackAssetToInternal("prep.sh", "prep.sh", false));
+
+        File prepScript_destination = new File(destination + "/" + backupName + "/prep.sh");
+        if (prepScript.exists()){
+            prepScript.renameTo(prepScript_destination);
+        }
+        else {
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "prep.sh could not be unpacked" + "\n";
+        }
+
+        if (!prepScript_destination.exists()){
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "prep.sh could not be moved" + "\n";
+        }
+
+
+        File verifyScript = new File(commonTools.unpackAssetToInternal("verify.sh", "verify.sh", false));
+
+        File verifyScript_destination = new File(destination + "/" + backupName + "/verify.sh");
+        if (verifyScript.exists()){
+            verifyScript.renameTo(verifyScript_destination);
+        }
+        else {
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "verify.sh could not be unpacked" + "\n";
+        }
+
+        if (!verifyScript_destination.exists()){
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "verify.sh could not be moved" + "\n";
+        }
+
+        File helper = new File(commonTools.unpackAssetToInternal("helper.apk", "helper.apk", false));
+
+        File helper_destination = new File(destination + "/" + backupName + "/system/app/MigrateHelper/MigrateHelper.apk");
+        new File(destination + "/" + backupName + "/system/app/MigrateHelper").mkdirs();
+
+        if (helper.exists()){
+            helper.renameTo(helper_destination);
+        }
+        else {
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "Helper app could not be unpacked" + "\n";
+        }
+
+        if (!helper_destination.exists()){
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "Helper app could not be moved" + "\n";
+        }
+
+        return err;
+
     }
 
     void cancelProcess() {

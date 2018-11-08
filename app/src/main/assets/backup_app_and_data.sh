@@ -8,8 +8,6 @@ if [ ! -e "$2" ]; then
     mkdir -p $2 2>/dev/null
 fi
 
-chmod +w $2 2>/dev/null
-
 # backup permission
 if [ "$8" = true ]; then
     dumpsys package $1 | grep android.permission | grep granted=true > "$2/$1.perm"
@@ -24,7 +22,6 @@ fi
 # backup data
 if [ ! "$6" = "NULL" ]; then
     if [ -e "$5/$6" ]; then
-        chmod +r $5/$6 2>/dev/null
         cd "$5"
         $7 tar -vczpf "$2/$1.tar.gz" "$6"
     else

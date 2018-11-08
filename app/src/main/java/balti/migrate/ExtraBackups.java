@@ -25,9 +25,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -201,10 +203,10 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             final String cpu_abi = Build.SUPPORTED_ABIS[0];
 
             if (cpu_abi.equals("armeabi-v7a") || cpu_abi.equals("arm64-v8a")) {
-                busyboxBinaryFile = new CommonTools(ExtraBackups.this).unpackAssetToInternal("busybox", "busybox");
+                busyboxBinaryFile = new CommonTools(ExtraBackups.this).unpackAssetToInternal("busybox", "busybox", true);
             }
             else if (cpu_abi.equals("x86") || cpu_abi.equals("x86_64")){
-                busyboxBinaryFile = new CommonTools(ExtraBackups.this).unpackAssetToInternal("busybox-x86", "busybox");
+                busyboxBinaryFile = new CommonTools(ExtraBackups.this).unpackAssetToInternal("busybox-x86", "busybox", true);
             }
             duBinaryFilePath = busyboxBinaryFile + " du";
 
@@ -395,7 +397,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                             if (versionName == null)
                                 versionName = "_";
                             else
-                                versionName.replace(' ', '_');
+                                versionName = versionName.replace(' ', '_');
 
                             publishProgress(getString(R.string.reading_data),
                                     ++c + " " + getString(R.string.of) + " " + totalSelectedApps, "");
@@ -1854,6 +1856,8 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
     void askForBackupName() {
         final EditText editText = new EditText(this);
+        editText.setSingleLine(true);
+        editText.setPadding(20,20,20,20);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
         if (isAllAppSelected && doBackupSms.isChecked() && doBackupCalls.isChecked())
@@ -1869,6 +1873,24 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 .setCancelable(false)
                 .create();
 
+        editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        editText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_DONE){
+                    String backupName = editText.getText().toString().trim()
+                            .replaceAll("[\\\\/:*?\"'<>|]", " ")
+                            .replace(' ', '_');
+                    if (!backupName.equals(""))
+                        checkOverwrite(backupName, alertDialog);
+                    else
+                        Toast.makeText(ExtraBackups.this, getString(R.string.empty), Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                else return false;
+            }
+        });
+
         alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
@@ -1876,7 +1898,9 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 okButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String backupName = editText.getText().toString().trim().replace(' ', '_');
+                        String backupName = editText.getText().toString().trim()
+                                .replaceAll("[\\\\/:*?\"'<>|]", " ")
+                                .replace(' ', '_');
                         if (!backupName.equals(""))
                             checkOverwrite(backupName, alertDialog);
                         else

@@ -61,13 +61,13 @@ public class BackupService extends Service {
     BufferedWriter progressWriter, errorWriter;
     String lastProgressLog = "";
 
-    static ArrayList<String> allErrors;
+    static ArrayList<String> previousErrors;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        allErrors = new ArrayList<>(0);
+        previousErrors = new ArrayList<>(0);
 
         main = getSharedPreferences("main", MODE_PRIVATE);
 
@@ -98,17 +98,7 @@ public class BackupService extends Service {
                     if (intent.getStringExtra("type").equals("finished")){
 
                         ArrayList<String> errors = intent.getStringArrayListExtra("errors");
-
-                        if (errors != null) {
-                            allErrors.addAll(errors);
-                            for (int i = 0; i < errors.size(); i++) {
-                                try {
-                                    errorWriter.write(errors.get(i) + "\n");
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
+                        if (errors!= null) previousErrors.addAll(errors);
 
                         if (intent.getBooleanExtra("final_process", false)) {
                             try {
@@ -124,6 +114,17 @@ public class BackupService extends Service {
                                 progressWriter.write("--- Migrate version " + context.getString(R.string.current_version_name) + " ---\n");
 
                                 progressWriter.close();
+
+                                ArrayList<String> finalErrors = intent.getStringArrayListExtra("allErrors");
+                                if (finalErrors != null) {
+                                    for (int i = 0; i < finalErrors.size(); i++) {
+                                        try {
+                                            errorWriter.write(errors.get(i) + "\n");
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
 
                                 errorWriter.write("--- Migrate version " + context.getString(R.string.current_version_name) + " ---\n");
                                 errorWriter.close();

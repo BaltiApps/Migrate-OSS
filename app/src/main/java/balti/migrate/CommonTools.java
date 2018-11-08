@@ -38,10 +38,13 @@ public class CommonTools {
         this.context = context;
     }
 
-    String unpackAssetToInternal(String assetFileName, String targetFileName){
+    String unpackAssetToInternal(String assetFileName, String targetFileName, boolean toInternal){
 
         AssetManager assetManager = context.getAssets();
-        File unpackFile = new File(context.getFilesDir(), targetFileName);
+        File unpackFile = null;
+        if (toInternal)
+            unpackFile = new File(context.getFilesDir(), targetFileName);
+        else unpackFile = new File(context.getExternalCacheDir(), targetFileName);
         String path = "";
 
         int read;
