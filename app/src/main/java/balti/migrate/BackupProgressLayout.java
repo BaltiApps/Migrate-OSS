@@ -256,6 +256,16 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                     progressBar.setIndeterminate(true);
 
+                } else if (type.equals("reading_backup_data")) {
+
+                    appIcon.setImageResource(R.drawable.ic_reading_data);
+
+                    task.setText(R.string.reading_data);
+
+                    setProgress("progress", intent);
+
+                    addLog("app_name", intent);
+
                 } else if (type.equals("sms_reading")) {
 
                     appIcon.setImageResource(R.drawable.ic_sms_icon);
