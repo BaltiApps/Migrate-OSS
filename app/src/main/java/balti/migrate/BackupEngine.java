@@ -1044,12 +1044,18 @@ public class BackupEngine {
                     else
                         versionName = versionName.replace(' ', '_').replace('`', '\'').replace('"', '\'');
 
-
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    Bitmap icon = getBitmapFromDrawable(pm.getApplicationIcon(packet.PACKAGE_INFO.applicationInfo));
-                    icon.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                    String appIcon = byteToString(stream.toByteArray());
+                    String appIcon = "_";
                     boolean permissions = packet.PERMISSIONS;
+
+                    try {
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        Bitmap icon = getBitmapFromDrawable(pm.getApplicationIcon(packet.PACKAGE_INFO.applicationInfo));
+                        icon.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        appIcon = byteToString(stream.toByteArray());
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
 
                     c = packetCount + 1;
 
