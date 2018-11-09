@@ -407,10 +407,10 @@ public class BackupEngine {
 
                     }
 
-                    /*try {
+                    try {
                         suProcess.waitFor();
                     } catch (Exception ignored) {
-                    }*/
+                    }
 
                     while ((line = errorStream.readLine()) != null) {
                         line = line.trim();
@@ -1314,6 +1314,12 @@ public class BackupEngine {
             writer.flush();
 
             killProcess.waitFor();
+
+            try {
+                suProcess.waitFor();
+            }
+            catch (Exception ignored){}
+
         } catch (Exception e) {
             e.printStackTrace();
         }
