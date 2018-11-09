@@ -48,7 +48,6 @@ public class BackupService extends Service {
     static String dpiText = "";
     static String keyboardText = "";
     static boolean doBackupContacts, doBackupCalls, doBackupSms, doBackupDpi, doBackupKeyboard;
-    static Vector<File> backupSummaries;
 
     BroadcastReceiver triggerBatchBackupReceiver;
 
@@ -211,26 +210,22 @@ public class BackupService extends Service {
 
         if (batches.size() == 0){
 
-            File tempBackupSummary = new File(getFilesDir(), "backup_summary_part0");
+            /*File tempBackupSummary = new File(getFilesDir(), "backup_summary_part0");
             try {
                 tempBackupSummary.delete();
                 tempBackupSummary.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+            }*/
 
-            backupEngine = new BackupEngine(backupName, 0, 0, main.getInt("compressionLevel", 0), destination, busyboxBinaryFile,
-                    this,
-                    0,
-                    0,
-                    tempBackupSummary, 0);
+            BackupBatch tempBackupBatch = new BackupBatch(new Vector<BackupDataPacketWithSize>(0), 0, 0);
+
+            backupEngine = new BackupEngine(tempBackupBatch, backupName, 0, 0, main.getInt("compressionLevel", 0),
+                    destination, busyboxBinaryFile, this);
         }
         else {
-            backupEngine = new BackupEngine(backupName, runningBatchCount + 1, batches.size(), main.getInt("compressionLevel", 0), destination, busyboxBinaryFile,
-                    this,
-                    batches.get(runningBatchCount).batchSystemSize,
-                    batches.get(runningBatchCount).batchDataSize,
-                    backupSummaries.get(runningBatchCount), batches.get(runningBatchCount).appCount);
+            backupEngine = new BackupEngine(batches.get(runningBatchCount), backupName, runningBatchCount + 1,
+                    batches.size(), main.getInt("compressionLevel", 0), destination, busyboxBinaryFile, this);
         }
 
         try { progressWriter.write("\n\n" + "--- Next batch backup: " + (runningBatchCount+1) + " ---\n\n"); } catch (IOException ignored) { }
@@ -247,8 +242,7 @@ public class BackupService extends Service {
                                  Vector<CallsDataPacket> callsList, boolean doBackupCalls,
                                  Vector<SmsDataPacket> smsList, boolean doBackupSms,
                                  String dpiText, boolean doBackupDpi,
-                                 String keyboardText, boolean doBackupKeyboard,
-                                 Vector<File> backupSummaries
+                                 String keyboardText, boolean doBackupKeyboard
                                  ){
 
         BackupService.batches = batches;
@@ -265,7 +259,6 @@ public class BackupService extends Service {
         BackupService.doBackupDpi = doBackupDpi;
         BackupService.keyboardText = keyboardText;
         BackupService.doBackupKeyboard = doBackupKeyboard;
-        BackupService.backupSummaries = backupSummaries;
 
     }
 

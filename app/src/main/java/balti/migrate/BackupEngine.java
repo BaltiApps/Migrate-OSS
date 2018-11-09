@@ -6,11 +6,16 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
@@ -18,11 +23,11 @@ import android.widget.Toast;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -48,12 +53,16 @@ public class BackupEngine {
     private String destination, backupName;
     private String madePartName;
     private int partNumber, totalParts;
+    private BackupBatch backupBatch;
 
     private Context context;
+    private PackageManager pm;
 
     private SharedPreferences main;
 
     private Process suProcess = null;
+    BufferedWriter suInputStream;
+
     private int compressionLevel;
     private int numberOfApps = 0;
     private String finalMessage = "";
@@ -103,9 +112,10 @@ public class BackupEngine {
 
     private CommonTools commonTools;
 
-    private File backupSummary;
+    //private File backupSummary;
 
     static String ICON_STRING = "";
+    static int PID;
 
     class StartBackup extends AsyncTask{
 
@@ -150,20 +160,27 @@ public class BackupEngine {
         }
     }
 
-    BackupEngine(String backupName, int partNumber, int totalParts, int compressionLevel, String destination, String busyboxBinaryFilePath,
-                 Context context, long systemRequiredSize, long dataRequiredSize, File backupSummary, int numberOfApps) {
+    BackupEngine(BackupBatch backupBatch, String backupName, int partNumber, int totalParts, int compressionLevel, String destination, String busyboxBinaryFilePath,
+                 Context context) {
+
+        this.backupBatch = backupBatch;
+
         this.backupName = backupName;
         this.destination = destination;
 
         String actualBackupName = backupName;
 
-        this.numberOfApps = numberOfApps;
 
         this.busyboxBinaryFilePath = busyboxBinaryFilePath;
 
-        this.systemRequiredSize = systemRequiredSize;
-        this.dataRequiredSize = dataRequiredSize;
-        this.backupSummary = backupSummary;
+        this.systemRequiredSize = backupBatch.batchSystemSize;
+        this.dataRequiredSize = backupBatch.batchDataSize;
+        this.numberOfApps = backupBatch.appCount;
+        //this.backupSummary = backupSummary;
+
+
+        this.partNumber = partNumber;
+        this.totalParts = totalParts;
 
         if (totalParts > 1){
             this.destination = this.destination + "/" + this.backupName;
@@ -173,9 +190,6 @@ public class BackupEngine {
         else {
             this.madePartName = "";
         }
-
-        this.partNumber = partNumber;
-        this.totalParts = totalParts;
 
         this.errorTag = "[" + partNumber + "/" + totalParts + "]";
 
@@ -188,7 +202,8 @@ public class BackupEngine {
 
         main = context.getSharedPreferences("main", Context.MODE_PRIVATE);
         actualProgressBroadcast = new Intent("Migrate progress broadcast")
-                .putExtra("part_name", this.madePartName).putExtra("backupName", actualBackupName);
+                .putExtra("part_name", this.madePartName).putExtra("backupName", actualBackupName)
+                .putExtra("total_parts", totalParts);
 
         errors = new ArrayList<>(0);
 
@@ -203,6 +218,7 @@ public class BackupEngine {
         keyboardBackupName = "default.kyb";
 
         commonTools = new CommonTools(context);
+        pm = context.getPackageManager();
     }
 
     NotificationCompat.Builder createNotificationBuilder(){
@@ -283,7 +299,7 @@ public class BackupEngine {
                     f.delete();
             }
 
-            String scriptFilePath = makeScripts();
+            String scriptFilePath = makeScripts(notificationManager, progressNotif, activityProgressIntent);
 
             if (isCancelled) throw new InterruptedIOException();
             if (scriptFilePath != null) {
@@ -293,11 +309,6 @@ public class BackupEngine {
                 makePackageData();
                 makeExtrasData();
 
-                if (partNumber == 1){
-                    actualProgressBroadcast.putExtra("type", "ready")
-                            .putExtra("total_parts", totalParts);
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
-                }
 
                 String makePackageFlashReadyErr = makePackageFlashReady(notificationManager, progressNotif, activityProgressIntent);
                 if (!makePackageFlashReadyErr.equals("")) errors.add(makePackageFlashReadyErr);
@@ -327,13 +338,13 @@ public class BackupEngine {
                     File scriptFile = new File(scriptFilePath);
 
                     suProcess = Runtime.getRuntime().exec("su");
-                    BufferedWriter inputStream = new BufferedWriter(new OutputStreamWriter(suProcess.getOutputStream()));
+                    suInputStream = new BufferedWriter(new OutputStreamWriter(suProcess.getOutputStream()));
                     BufferedReader outputStream = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
                     BufferedReader errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
 
-                    inputStream.write("sh " + scriptFile.getAbsolutePath() + "\n");
-                    inputStream.write("exit\n");
-                    inputStream.flush();
+                    suInputStream.write("sh " + scriptFile.getAbsolutePath() + "\n");
+                    suInputStream.write("exit\n");
+                    suInputStream.flush();
 
                     String line;
 
@@ -341,9 +352,20 @@ public class BackupEngine {
 
                     while ((line = outputStream.readLine()) != null) {
 
+                        if (isCancelled) throw new InterruptedIOException();
+
                         line = line.trim();
 
                         actualProgressBroadcast.putExtra("type", "app_progress");
+
+                        if (line.startsWith("--- PID:")){
+                            try {
+                                PID = Integer.parseInt(line.substring(line.lastIndexOf(" ") + 1));
+                            }
+                            catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
 
                         if (line.startsWith(MIGRATE_STATUS)) {
                             line = line.substring(16);
@@ -361,7 +383,7 @@ public class BackupEngine {
                                 actualProgressBroadcast.putExtra("app_name", line);
                             }
 
-                            if (numberOfApps != 0 && !line.equals("Making package Flash Ready") && !line.equals("Including helper"))
+                            if (numberOfApps != 0)
                                 p = ++c * 100 / numberOfApps;
                             actualProgressBroadcast.putExtra("progress", p);
 
@@ -385,10 +407,10 @@ public class BackupEngine {
 
                     }
 
-                    try {
+                    /*try {
                         suProcess.waitFor();
                     } catch (Exception ignored) {
-                    }
+                    }*/
 
                     while ((line = errorStream.readLine()) != null) {
                         line = line.trim();
@@ -464,6 +486,7 @@ public class BackupEngine {
 
             notificationManager.cancel(NOTIFICATION_ID);
             notificationManager.notify(NOTIFICATION_ID + 1, progressNotif.build());
+
         }
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
@@ -849,7 +872,23 @@ public class BackupEngine {
         }
     }
 
-    String makeScripts() {
+    String byteToString(byte[] bytes) {
+        StringBuilder res = new StringBuilder();
+        for (byte b : bytes) {
+            res.append(b).append("_");
+        }
+        return res.toString();
+    }
+
+    private Bitmap getBitmapFromDrawable(@NonNull Drawable drawable) {
+        final Bitmap bmp = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bmp);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bmp;
+    }
+
+    String makeScripts(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent) {
 
         //zipBinaryFilePath = commonTools.unpackAssetToInternal("zip", "zip");
 
@@ -876,6 +915,21 @@ public class BackupEngine {
             e.printStackTrace();
         }*/
 
+        String title = (totalParts > 1)? context.getString(R.string.reading_data) + " : " + madePartName : context.getString(R.string.reading_data);
+
+        actualProgressBroadcast.putExtra("type", "reading_backup_data");
+        actualProgressBroadcast.putExtra("app_name", "");
+        actualProgressBroadcast.putExtra("progress", 0);
+        activityProgressIntent.putExtras(actualProgressBroadcast);
+
+        progressNotif.setContentTitle(title)
+                .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setProgress(0, 0, false)
+                .setContentText("");
+        notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+        LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
         if (busyboxBinaryFilePath.equals(""))
             return null;
 
@@ -889,7 +943,7 @@ public class BackupEngine {
         try {
             //BufferedWriter pre_writer = new BufferedWriter(new FileWriter(pre_script));
 
-            BufferedReader backupSummaryReader = new BufferedReader(new FileReader(backupSummary));
+            //BufferedReader backupSummaryReader = new BufferedReader(new FileReader(backupSummary));
             BufferedWriter updater_writer = new BufferedWriter(new FileWriter(updater_script));
 
             updater_writer.write("show_progress(0, 0);\n");
@@ -944,22 +998,23 @@ public class BackupEngine {
 
             BufferedWriter scriptWriter = new BufferedWriter(new FileWriter(scriptFile));
 
+            scriptWriter.write("echo \"--- PID: $$\"\n");
             scriptWriter.write("cp " + scriptFile.getAbsolutePath() + " " + context.getExternalCacheDir() + "/\n");
 
-            String line;
-            while ((line = backupSummaryReader.readLine()) != null) {
+            //String line;
+            for (int packetCount = 0; packetCount < numberOfApps && !isCancelled; packetCount++) {
 
                 try {
 
-                    String items[] = line.split(" ");
+                    //String items[] = line.split(" ");
 
-                    if (items.length != 7){
+                    /*if (items.length != 7){
                         errors.add("UNKNOWN_LINE" + errorTag + ": PARAMS: " + items.length + " LINE: '" + line + "'");
                         c++;
                         continue;
-                    }
+                    }*/
 
-                    String appName = items[0].replace('`', '\'').replace('"', '\'');
+                    /*String appName = items[0].replace('`', '\'').replace('"', '\'');
                     String packageName = items[1];
                     String apkPath = items[2].replace('`', '\'').substring(0, items[2].lastIndexOf('/'));
                     String apkName = items[2].replace('`', '\'').substring(items[2].lastIndexOf('/') + 1);       //has .apk extension
@@ -967,14 +1022,54 @@ public class BackupEngine {
                     String dataName = "NULL";
                     String appIcon = items[4];
                     String version = items[5].replace('`', '\'').replace('"', '\'');
-                    boolean permissions = Boolean.parseBoolean(items[6]);
+                    boolean permissions = Boolean.parseBoolean(items[6]);*/
 
-                    c++;
+                    BackupDataPacket packet = backupBatch.appListWithSize.get(packetCount).packet;
 
-                    if (!dataPath.equals("NULL")) {
+                    String appName = pm.getApplicationLabel(packet.PACKAGE_INFO.applicationInfo).toString().replace(' ', '_').replace('`', '\'').replace('"', '\'');
+                    String packageName = packet.PACKAGE_INFO.packageName;
+                    String apkPath = packet.PACKAGE_INFO.applicationInfo.sourceDir;
+                    String apkName = apkPath.substring(apkPath.lastIndexOf('/') + 1);       //has .apk extension
+                    apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'));
+                    String dataPath = "NULL";
+                    String dataName = "NULL";
+                    if (packet.DATA) {
+                        dataPath = packet.PACKAGE_INFO.applicationInfo.dataDir;
                         dataName = dataPath.substring(dataPath.lastIndexOf('/') + 1);
                         dataPath = dataPath.substring(0, dataPath.lastIndexOf('/'));
                     }
+                    String versionName = packet.PACKAGE_INFO.versionName;
+                    if (versionName == null || versionName.equals(""))
+                        versionName = "_";
+                    else
+                        versionName = versionName.replace(' ', '_').replace('`', '\'').replace('"', '\'');
+
+
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    Bitmap icon = getBitmapFromDrawable(pm.getApplicationIcon(packet.PACKAGE_INFO.applicationInfo));
+                    icon.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    String appIcon = byteToString(stream.toByteArray());
+                    boolean permissions = packet.PERMISSIONS;
+
+                    c = packetCount + 1;
+
+                    actualProgressBroadcast.putExtra("type", "reading_backup_data")
+                            .putExtra("app_name", appName)
+                            .putExtra("progress", (c*100/numberOfApps));
+                    activityProgressIntent.putExtras(actualProgressBroadcast);
+
+                    progressNotif.setProgress(numberOfApps, packetCount, false)
+                            .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                            .setContentText(appName);
+                    notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+
+                    /*if (!dataPath.equals("NULL")) {
+                        dataName = dataPath.substring(dataPath.lastIndexOf('/') + 1);
+                        dataPath = dataPath.substring(0, dataPath.lastIndexOf('/'));
+                    }*/
 
                     String echoCopyCommand = "echo \"" + MIGRATE_STATUS + ": " + appName + " (" + c + "/" + numberOfApps + ") icon: " + appIcon + "\"\n";
                 /*String permissionCommand = "";
@@ -1017,7 +1112,7 @@ public class BackupEngine {
                         tempApkName = packageName;
                         updater_writer.write("package_extract_file(\"" + packageName + ".apk" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".apk" + "\");\n");
                     }
-                    makeMetadataFile(appName, packageName, tempApkName, dataName, appIcon, version, permissions);
+                    makeMetadataFile(appName, packageName, tempApkName, dataName, appIcon, versionName, permissions);
 
                     if (permissions)
                         updater_writer.write("package_extract_file(\"" + packageName + ".perm" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".perm" + "\");\n");
@@ -1210,13 +1305,23 @@ public class BackupEngine {
     }
 
     void cancelProcess() {
-        isCancelled = true;
         try {
-            suProcess.destroy();
+            Process killProcess = Runtime.getRuntime().exec("su");
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(killProcess.getOutputStream()));
+            writer.write("kill -9 " + PID + "\n");
+            writer.write("kill -15 " + PID + "\n");
+            writer.write("exit\n");
+            writer.flush();
+
+            killProcess.waitFor();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        isCancelled = true;
+
         Toast.makeText(context, context.getString(R.string.deletingFiles), Toast.LENGTH_SHORT).show();
+
         if (madePartName.trim().equals("")) {
             fullDelete(destination + "/" + backupName);
             fullDelete(destination + "/" + backupName + ".zip");
@@ -1224,11 +1329,6 @@ public class BackupEngine {
         else {
             fullDelete(destination);
         }
-
-        try {
-            startBackupTask.cancel(true);
-        }
-        catch (Exception ignored){}
     }
 
     void fullDelete(String path){

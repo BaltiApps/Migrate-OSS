@@ -11,9 +11,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,10 +42,8 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -132,7 +127,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
     static int totalSelectedApps = 0;
 
     Vector<BackupBatch> backupBatches;
-    Vector<File> backupSummaries;
+    //Vector<File> backupSummaries;
     String backupName = "generic_backup_name";
     String busyboxBinaryFile = "";
 
@@ -195,11 +190,12 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             assert manager != null;
             manager.cancelAll();
 
+
             for (File f : getFilesDir().listFiles()){
                 f.delete();
             }
 
-            for (File f : Objects.requireNonNull(getExternalCacheDir()).listFiles()){
+            for (File f : getExternalCacheDir().listFiles()){
                 f.delete();
             }
         }
@@ -374,7 +370,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 }
             }
 
-            backupSummaries = new Vector<>(0);
+            /*backupSummaries = new Vector<>(0);
 
             int c = 0;
             for (int j = 0; j < backupBatches.size(); j++){
@@ -430,7 +426,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                 backupSummaries.add(backupSummary);
 
-            }
+            }*/
 
             return new Object[]{true};
         }
@@ -1554,8 +1550,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                         callsList, doBackupCalls.isChecked(),
                         smsList, doBackupSms.isChecked(),
                         dpiText, doBackupDpi.isChecked(),
-                        keyboardText, doBackupKeyboardBoolean,
-                        backupSummaries);
+                        keyboardText, doBackupKeyboardBoolean);
                 LocalBroadcastManager.getInstance(ExtraBackups.this).sendBroadcast(new Intent("start batch backup"));
             }
         };
@@ -1964,23 +1959,6 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 file.delete();
             }
         }
-    }
-
-
-    String byteToString(byte[] bytes) {
-        StringBuilder res = new StringBuilder();
-        for (byte b : bytes) {
-            res.append(b).append("_");
-        }
-        return res.toString();
-    }
-
-    private Bitmap getBitmapFromDrawable(@NonNull Drawable drawable) {
-        final Bitmap bmp = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        final Canvas canvas = new Canvas(bmp);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bmp;
     }
 
     @Override

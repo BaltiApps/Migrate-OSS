@@ -52,6 +52,8 @@ public class BackupProgressLayout extends AppCompatActivity {
     String lastIcon = "";
     SetAppIcon setAppIcon;
 
+    int tp = 1;
+
     class SetAppIcon extends AsyncTask<String, Void, Bitmap>{
 
 
@@ -130,6 +132,9 @@ public class BackupProgressLayout extends AppCompatActivity {
 
         if (getIntent().getExtras() != null){
             handleProgress(getIntent());
+            if (getIntent().hasExtra("total_parts")){
+                tp = getIntent().getIntExtra("total_parts", 1);
+            }
         }
 
         progressReceiver = new BroadcastReceiver() {
@@ -155,6 +160,15 @@ public class BackupProgressLayout extends AppCompatActivity {
                 adView.setVisibility(View.GONE);
             }
         });*/
+
+        if (tp > 1) {
+            String head;
+            new AlertDialog.Builder(this)
+                    .setTitle(head = tp + " " + getString(R.string.parts))
+                    .setMessage(getString(R.string.split_desc_1) + " " + head + "\n\n" + getString(R.string.split_desc_2))
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+        }
     }
 
     void handleProgress(Intent intent){
@@ -175,20 +189,7 @@ public class BackupProgressLayout extends AppCompatActivity {
                 progressLog.append("\n\n");
             }
 
-            if (type.equals("ready")){
-
-                int tp = intent.getIntExtra("total_parts", 1);
-                if (tp > 1) {
-                    String head;
-                    new AlertDialog.Builder(this)
-                            .setTitle(head = tp + " " + getString(R.string.parts))
-                            .setMessage(getString(R.string.split_desc_1) + " " + head + "\n\n" + getString(R.string.split_desc_2))
-                            .setPositiveButton(android.R.string.ok, null)
-                            .show();
-                }
-
-            }
-            else if (type.equals("finished")){
+            if (type.equals("finished")){
 
                 totalTasksTime += intent.getLongExtra("total_time", 0);
 
@@ -255,6 +256,16 @@ public class BackupProgressLayout extends AppCompatActivity {
                     task.setText(R.string.making_package_flash_ready);
 
                     progressBar.setIndeterminate(true);
+
+                } else if (type.equals("reading_backup_data")) {
+
+                    appIcon.setImageResource(R.drawable.ic_reading_data);
+
+                    task.setText(R.string.reading_data);
+
+                    setProgress("progress", intent);
+
+                    addLog("app_name", intent);
 
                 } else if (type.equals("sms_reading")) {
 
