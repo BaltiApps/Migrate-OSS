@@ -13,12 +13,14 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
@@ -218,7 +220,7 @@ public class CommonTools {
         return false;
     }
 
-    boolean suEcho() throws IOException, InterruptedException {
+    Object[] suEcho() throws IOException, InterruptedException {
         Process suRequest = Runtime.getRuntime().exec("su");
 
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(suRequest.getOutputStream()));
@@ -228,7 +230,21 @@ public class CommonTools {
         writer.write("exit\n");
         writer.flush();
 
+        BufferedReader errorReader = new BufferedReader(new InputStreamReader(suRequest.getErrorStream()));
+        BufferedReader outputReader = new BufferedReader(new InputStreamReader(suRequest.getInputStream()));
+
+        String line;
+        String errorMessage = "";
+
+        while ((line = outputReader.readLine()) != null){
+            errorMessage = errorMessage + line + "\n";
+        }
+        errorMessage = errorMessage + "Error:\n\n";
+        while ((line = errorReader.readLine()) != null){
+            errorMessage = errorMessage + line + "\n";
+        }
+
         suRequest.waitFor();
-        return suRequest.exitValue() == 0;
+        return new Object[]{suRequest.exitValue() == 0, errorMessage};
     }
 }

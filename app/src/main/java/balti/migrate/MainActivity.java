@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     int THIS_VERSION = 7;
 
+    String rootErrorMessage = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -239,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 else {
                     new AlertDialog.Builder(this)
                             .setTitle(R.string.root_permission_denied)
-                            .setMessage(R.string.root_permission_denied_desc)
+                            .setMessage(getString(R.string.root_permission_denied_desc) + "\n\n" + rootErrorMessage)
                             .setPositiveButton(android.R.string.ok, null)
                             .show();
                 }
@@ -366,7 +368,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         boolean p = false;
 
         try {
-            p = commonTools.suEcho();
+            Object r[] = commonTools.suEcho();
+            p = (boolean) r[0];
+            rootErrorMessage = (String) r[1];
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             p = false;
