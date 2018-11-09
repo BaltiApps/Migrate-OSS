@@ -61,6 +61,8 @@ public class BackupEngine {
     private SharedPreferences main;
 
     private Process suProcess = null;
+    BufferedWriter suInputStream;
+
     private int compressionLevel;
     private int numberOfApps = 0;
     private String finalMessage = "";
@@ -113,6 +115,7 @@ public class BackupEngine {
     //private File backupSummary;
 
     static String ICON_STRING = "";
+    static int PID;
 
     class StartBackup extends AsyncTask{
 
@@ -199,7 +202,8 @@ public class BackupEngine {
 
         main = context.getSharedPreferences("main", Context.MODE_PRIVATE);
         actualProgressBroadcast = new Intent("Migrate progress broadcast")
-                .putExtra("part_name", this.madePartName).putExtra("backupName", actualBackupName);
+                .putExtra("part_name", this.madePartName).putExtra("backupName", actualBackupName)
+                .putExtra("total_parts", totalParts);
 
         errors = new ArrayList<>(0);
 
@@ -295,12 +299,6 @@ public class BackupEngine {
                     f.delete();
             }
 
-            if (partNumber == 1){
-                actualProgressBroadcast.putExtra("type", "ready")
-                        .putExtra("total_parts", totalParts);
-                LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
-            }
-
             String scriptFilePath = makeScripts(notificationManager, progressNotif, activityProgressIntent);
 
             if (isCancelled) throw new InterruptedIOException();
@@ -340,13 +338,13 @@ public class BackupEngine {
                     File scriptFile = new File(scriptFilePath);
 
                     suProcess = Runtime.getRuntime().exec("su");
-                    BufferedWriter inputStream = new BufferedWriter(new OutputStreamWriter(suProcess.getOutputStream()));
+                    suInputStream = new BufferedWriter(new OutputStreamWriter(suProcess.getOutputStream()));
                     BufferedReader outputStream = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
                     BufferedReader errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
 
-                    inputStream.write("sh " + scriptFile.getAbsolutePath() + "\n");
-                    inputStream.write("exit\n");
-                    inputStream.flush();
+                    suInputStream.write("sh " + scriptFile.getAbsolutePath() + "\n");
+                    suInputStream.write("exit\n");
+                    suInputStream.flush();
 
                     String line;
 
@@ -354,9 +352,20 @@ public class BackupEngine {
 
                     while ((line = outputStream.readLine()) != null) {
 
+                        if (isCancelled) throw new InterruptedIOException();
+
                         line = line.trim();
 
                         actualProgressBroadcast.putExtra("type", "app_progress");
+
+                        if (line.startsWith("--- PID:")){
+                            try {
+                                PID = Integer.parseInt(line.substring(line.lastIndexOf(" ") + 1));
+                            }
+                            catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
 
                         if (line.startsWith(MIGRATE_STATUS)) {
                             line = line.substring(16);
@@ -478,9 +487,6 @@ public class BackupEngine {
             notificationManager.cancel(NOTIFICATION_ID);
             notificationManager.notify(NOTIFICATION_ID + 1, progressNotif.build());
 
-            for (File f : context.getFilesDir().listFiles()){
-                f.delete();
-            }
         }
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
@@ -992,6 +998,7 @@ public class BackupEngine {
 
             BufferedWriter scriptWriter = new BufferedWriter(new FileWriter(scriptFile));
 
+            scriptWriter.write("echo \"--- PID: $$\"\n");
             scriptWriter.write("cp " + scriptFile.getAbsolutePath() + " " + context.getExternalCacheDir() + "/\n");
 
             //String line;
@@ -1298,13 +1305,23 @@ public class BackupEngine {
     }
 
     void cancelProcess() {
-        isCancelled = true;
         try {
-            suProcess.destroy();
+            Process killProcess = Runtime.getRuntime().exec("su");
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(killProcess.getOutputStream()));
+            writer.write("kill -9 " + PID + "\n");
+            writer.write("kill -15 " + PID + "\n");
+            writer.write("exit\n");
+            writer.flush();
+
+            killProcess.waitFor();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        isCancelled = true;
+
         Toast.makeText(context, context.getString(R.string.deletingFiles), Toast.LENGTH_SHORT).show();
+
         if (madePartName.trim().equals("")) {
             fullDelete(destination + "/" + backupName);
             fullDelete(destination + "/" + backupName + ".zip");
@@ -1312,11 +1329,6 @@ public class BackupEngine {
         else {
             fullDelete(destination);
         }
-
-        try {
-            startBackupTask.cancel(true);
-        }
-        catch (Exception ignored){}
     }
 
     void fullDelete(String path){

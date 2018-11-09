@@ -118,7 +118,7 @@ public class BackupService extends Service {
                                 if (finalErrors != null) {
                                     for (int i = 0; i < finalErrors.size(); i++) {
                                         try {
-                                            errorWriter.write(errors.get(i) + "\n");
+                                            errorWriter.write(finalErrors.get(i) + "\n");
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
