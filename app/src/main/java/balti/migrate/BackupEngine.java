@@ -417,7 +417,8 @@ public class BackupEngine {
                     while ((line = errorStream.readLine()) != null) {
                         line = line.trim();
                         if (!line.endsWith("socket ignored")
-                                && !line.endsWith("No such file or directory")) {
+                                && !line.endsWith("No such file or directory")
+                                && !line.endsWith("error exit delayed from previous errors")) {
                             errors.add("RUN" + errorTag + ": " + line);
                         }
                     }
