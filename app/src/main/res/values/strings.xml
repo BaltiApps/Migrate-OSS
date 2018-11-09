@@ -55,7 +55,7 @@
         \u2022 Fix to \"set_progress()\" in recovery\n
         \u2022 Probable fix to \"Failed to change locale for db\"\n
         \u2022 Probable fix to missing updater-script\n
-        \u2022 Probable solution to some \"Operation not permitted\" issues\n
+        \u2022 Probable fix to some \"Operation not permitted\" issues\n
         \u2022 Remove illegal characters from backup name\n
         \u2022 \"Share scripts\" option should now work properly.
     </string>
@@ -164,7 +164,7 @@
     <string name="noErrors">Finished! No errors.</string>
     <string name="combining">Combining all files</string>
     <string name="making_package_flash_ready">Making package flash ready</string>
-    <string name="verifying_backups">Verifying backups</string>
+    <string name="verifying_backups">Verifying backup</string>
     <string name="correcting_errors">Correcting errors</string>
     <string name="backing_contacts">Backing up contacts</string>
     <string name="backing_sms">Backing up sms</string>
@@ -427,9 +427,9 @@
     <string name="thanks_to_magisk">Without topjohnwu\'s Magisk, this app would not be possible. I learned a lot from Magisk installer scripts.</string>
     <string name="thanks_1">Tireless help for Xiaomi Mi A1:\n@ishubhamsingh\n@su_bin</string>
     <string name="thanks_2">Huge bug hunters:\n
+        My classmate <b>Shivam</b> has tested the app more than me!\n
         @akshayrohida\n
         @raj3303\n
-        My classmate Shivam\n
         \n
         XDA member <b>djseltus</b>, for pointing to a new update-binary\n
         <b>Vinyas N S</b>, for \"android.os.TransactionTooLargeException\" issue\n
