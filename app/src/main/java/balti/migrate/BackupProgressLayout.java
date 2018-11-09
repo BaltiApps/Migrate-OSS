@@ -323,6 +323,31 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                     progressLog.append(getString(R.string.backing_keyboard));
 
+                } else if (type.equals("verifying_backups")) {
+
+                    appIcon.setImageResource(R.drawable.ic_verify);
+
+                    task.setText(R.string.verifying_backups);
+
+                    setProgress("progress", intent);
+
+                    addLog("app_name", intent);
+
+                } else if (type.equals("correcting_errors")) {
+
+                    appIcon.setImageResource(R.drawable.ic_retry);
+
+                    if (intent.hasExtra("defect_number")) {
+                        task.setText(getString(R.string.correcting_errors) + " " + intent.getIntExtra("defect_number", 0));
+                    }
+                    else {
+                        task.setText(getString(R.string.correcting_errors));
+                    }
+
+                    setProgress("progress", intent);
+
+                    addLog("retry_log", intent);
+
                 } else if (type.equals("app_progress")) {
 
                     if (intent.hasExtra("app_name")) {

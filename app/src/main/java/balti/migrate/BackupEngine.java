@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -115,7 +116,8 @@ public class BackupEngine {
     //private File backupSummary;
 
     static String ICON_STRING = "";
-    static int PID;
+    private static int PID = -9999999;
+    private static int CORRECTING_PID = -9999999;
 
     class StartBackup extends AsyncTask{
 
@@ -414,9 +416,17 @@ public class BackupEngine {
 
                     while ((line = errorStream.readLine()) != null) {
                         line = line.trim();
-                        if (!line.endsWith("socket ignored")) {
+                        if (!line.endsWith("socket ignored")
+                                && !line.endsWith("No such file or directory")) {
                             errors.add("RUN" + errorTag + ": " + line);
                         }
+                    }
+
+                    if (!isCancelled && numberOfApps > 0){
+
+                        ArrayList<String> defects = verifyBackups(notificationManager, progressNotif, activityProgressIntent);
+                        if (!isCancelled) tryingToCorrect(defects, notificationManager, progressNotif, activityProgressIntent);
+
                     }
 
                 } catch (Exception e) {
@@ -493,6 +503,226 @@ public class BackupEngine {
 
         if (finalProcess)
             context.stopService(new Intent(context, BackupService.class));
+    }
+
+    ArrayList<String> verifyBackups(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+
+        ArrayList<String> allRecovery = new ArrayList<>(0);
+
+        if (numberOfApps == 0)
+            return allRecovery;
+
+        String title = (totalParts > 1)?
+                context.getString(R.string.verifying_backups) + " : " + madePartName : context.getString(R.string.verifying_backups);
+
+        actualProgressBroadcast.putExtra("type", "verifying_backups");
+        actualProgressBroadcast.putExtra("app_name", "");
+        actualProgressBroadcast.putExtra("progress", 0);
+        activityProgressIntent.putExtras(actualProgressBroadcast);
+
+        progressNotif.setContentTitle(title)
+                .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setProgress(0, 0, false)
+                .setContentText("");
+        notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+        LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+        int c = 0;
+
+        try {
+            for (BackupDataPacketWithSize packetWithSize : backupBatch.appListWithSize){
+
+                if (isCancelled) break;
+
+                BackupDataPacket packet = packetWithSize.packet;
+
+                PackageInfo pi = packet.PACKAGE_INFO;
+
+                String apkName = pi.packageName + ".apk";
+                String dataName = pi.packageName + ".tar.gz";
+                String permName = pi.packageName + ".perm";
+
+                File backupApk = new File(destination + "/" + backupName + "/" + apkName);
+                File backupData = new File(destination + "/" + backupName + "/" + dataName);
+                File backupPerm = new File(destination + "/" + backupName + "/" + permName);
+
+                if (packet.APP && (!backupApk.exists() || backupApk.length() == 0)){
+
+                    String apkSource = pi.applicationInfo.sourceDir;
+                    allRecovery.add("echo \"Copy apk: " + apkName +"\" && cp " + apkSource + " " + backupApk.getAbsolutePath() + "\n\n");
+
+                }
+
+                if (packet.DATA && (!backupData.exists() || backupData.length() == 0)){
+
+                    String fullDataPath = pi.applicationInfo.dataDir;
+                    String actualDataName = fullDataPath.substring(fullDataPath.lastIndexOf('/') + 1);
+                    String dataPathParent = fullDataPath.substring(0, fullDataPath.lastIndexOf('/'));
+
+                    String backupDataCommand = "" +
+                            "if [ -e " + fullDataPath + " ]; then\n" +
+                            "   cd " + dataPathParent + "\n" +
+                            "   echo \"Copy data: " + dataName + "\" && " + busyboxBinaryFilePath + " tar -vczpf " + backupData.getAbsolutePath() + " " + actualDataName + "\n" +
+                            "fi\n\n";
+
+                    allRecovery.add(backupDataCommand);
+                }
+
+                if (packet.PERMISSIONS && (!backupPerm.exists() || backupPerm.length() == 0)){
+                    allRecovery.add("echo \"Copy permission: " + permName + "\" && dumpsys package " + pi.packageName + " | grep android.permission | grep granted=true > " + backupPerm.getAbsolutePath() + "\n\n");
+                }
+
+                String appName = pm.getApplicationLabel(pi.applicationInfo).toString();
+
+                actualProgressBroadcast.putExtra("type", "verifying_backups")
+                        .putExtra("app_name", "verifying: " + appName)
+                        .putExtra("progress", (++c*100/numberOfApps));
+                activityProgressIntent.putExtras(actualProgressBroadcast);
+
+                progressNotif.setProgress(numberOfApps, c, false)
+                        .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                        .setContentText(appName);
+                notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+                LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return allRecovery;
+    }
+
+    void tryingToCorrect(ArrayList<String> defects, NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+
+
+        if (numberOfApps == 0 || defects.size() == 0)
+            return;
+
+
+        String title = (totalParts > 1)?
+                context.getString(R.string.correcting_errors) + " : " + madePartName : context.getString(R.string.correcting_errors);
+
+        actualProgressBroadcast.putExtra("type", "correcting_errors");
+        actualProgressBroadcast.putExtra("defect_number", defects.size());
+        actualProgressBroadcast.putExtra("progress", 0);
+        activityProgressIntent.putExtras(actualProgressBroadcast);
+
+        progressNotif.setContentTitle(title)
+                .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setProgress(0, 0, false)
+                .setContentText("");
+        notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+        LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+        File retryScript = new File(context.getFilesDir(), "retry_script_" + partNumber + ".sh");
+        try {
+            BufferedWriter scriptWriter = new BufferedWriter(new FileWriter(retryScript));
+
+            scriptWriter.write("echo \"--- RECOVERY PID: $$\"\n");
+            scriptWriter.write("cp " + retryScript.getAbsolutePath() + " " + context.getExternalCacheDir() + "/\n");
+
+            int totalRemainingDefects = defects.size();
+
+            for (String defect : defects){
+
+                if (isCancelled) break;
+
+                scriptWriter.write("echo \"--- DEFECT: " + totalRemainingDefects + "\"\n");
+                scriptWriter.write(defect);
+                totalRemainingDefects--;
+            }
+
+            scriptWriter.write("echo \"--- Retry complete ---\"\n");
+            scriptWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+
+            suProcess = Runtime.getRuntime().exec("su");
+            suInputStream = new BufferedWriter(new OutputStreamWriter(suProcess.getOutputStream()));
+            BufferedReader outputStream = new BufferedReader(new InputStreamReader(suProcess.getInputStream()));
+            BufferedReader errorStream = new BufferedReader(new InputStreamReader(suProcess.getErrorStream()));
+
+
+            suInputStream.write("sh " + retryScript.getAbsolutePath() + "\n");
+            suInputStream.write("exit\n");
+            suInputStream.flush();
+
+            String line;
+
+            int done = 0;
+
+            while ((line = outputStream.readLine()) != null) {
+
+                if (isCancelled) throw new InterruptedIOException();
+
+                line = line.trim();
+
+                actualProgressBroadcast.putExtra("type", "correcting_errors");
+
+                if (line.startsWith("--- RECOVERY PID:")) {
+                    try {
+                        CORRECTING_PID = Integer.parseInt(line.substring(line.lastIndexOf(" ") + 1));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if (line.startsWith("--- DEFECT:")){
+                    try {
+
+                        int defectNumber = Integer.parseInt(line.substring(line.lastIndexOf(" ") + 1));
+
+                        done = defects.size() - defectNumber;
+                        actualProgressBroadcast.putExtra("defect_number", defectNumber);
+                        actualProgressBroadcast.putExtra("progress", (done*100)/defects.size());
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                activityProgressIntent.putExtras(actualProgressBroadcast);
+
+                progressNotif.setProgress(defects.size(), done, false)
+                        .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+                LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+                actualProgressBroadcast.putExtra("retry_log", line);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+                if (line.equals("--- Retry complete ---"))
+                    break;
+
+            }
+
+
+            try {
+                suProcess.waitFor();
+            } catch (Exception ignored) {
+            }
+
+            while ((line = errorStream.readLine()) != null) {
+                line = line.trim();
+                if (!line.endsWith("socket ignored")) {
+                    errors.add("RETRY" + errorTag + ": " + line);
+                }
+            }
+
+        } catch (Exception e) {
+            if (!isCancelled) {
+                e.printStackTrace();
+                errors.add("RETRY_CODE_ERROR" + errorTag + ": " + e.getMessage());
+            }
+        }
+
     }
 
     /*private String zipAll(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
@@ -1316,6 +1546,8 @@ public class BackupEngine {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(killProcess.getOutputStream()));
             writer.write("kill -9 " + PID + "\n");
             writer.write("kill -15 " + PID + "\n");
+            writer.write("kill -9 " + CORRECTING_PID + "\n");
+            writer.write("kill -15 " + CORRECTING_PID + "\n");
             writer.write("exit\n");
             writer.flush();
 

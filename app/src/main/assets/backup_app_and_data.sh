@@ -10,7 +10,12 @@ fi
 
 # backup permission
 if [ "$8" = true ]; then
-    dumpsys package $1 | grep android.permission | grep granted=true > "$2/$1.perm"
+    perms="$(dumpsys package $1 | grep android.permission | grep granted=true)"
+    if [ -n "$perms" ]; then
+        echo "$perms" > "$2/$1.perm"
+    else
+        echo "no_permissions_granted" > "$2/$1.perm"
+    fi
 fi
 
 # backup apk

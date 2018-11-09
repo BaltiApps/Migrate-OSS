@@ -49,6 +49,7 @@
     </string>
     <string name="version_1.1" tools:ignore="ExtraTranslation">Version 1.1(beta)</string>
     <string name="version_1.1_content" tools:ignore="ExtraTranslation">
+        \u2022 [New] Backup verification before zipping\n
         \u2022 Major code refactoring and under-the-hood changes\n
         \u2022 CANCEL button now kills the backup process\n
         \u2022 Fix to \"set_progress()\" in recovery\n
@@ -163,6 +164,8 @@
     <string name="noErrors">Finished! No errors.</string>
     <string name="combining">Combining all files</string>
     <string name="making_package_flash_ready">Making package flash ready</string>
+    <string name="verifying_backups">Verifying backups</string>
+    <string name="correcting_errors">Correcting errors</string>
     <string name="backing_contacts">Backing up contacts</string>
     <string name="backing_sms">Backing up sms</string>
     <string name="backing_calls">Backing up calls</string>

@@ -148,6 +148,16 @@ public class BackupService extends Service {
                         try { progressWriter.write(intent.getStringExtra("zip_log") + "\n"); } catch (IOException ignored) {}
 
                     }
+                    else if (intent.getStringExtra("type").equals("verifying_backups") && intent.hasExtra("app_name")){
+
+                        try { progressWriter.write(intent.getStringExtra("app_name") + "\n"); } catch (IOException ignored) {}
+
+                    }
+                    else if (intent.getStringExtra("type").equals("correcting_errors") && intent.hasExtra("retry_log")){
+
+                        try { progressWriter.write(intent.getStringExtra("retry_log") + "\n"); } catch (IOException ignored) {}
+
+                    }
                 }
             }
         };

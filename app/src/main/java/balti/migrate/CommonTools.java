@@ -73,7 +73,7 @@ public class CommonTools {
         final File[] backupScripts = context.getExternalCacheDir().listFiles(new FileFilter() {
             @Override
             public boolean accept(File f) {
-                return f.getName().startsWith("the_backup_script_") && f.getName().endsWith(".sh");
+                return (f.getName().startsWith("the_backup_script_") || f.getName().startsWith("retry_script_")) && f.getName().endsWith(".sh");
             }
         });
 
