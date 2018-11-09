@@ -471,7 +471,7 @@ public class BackupEngine {
                     finalMessage = context.getString(R.string.backupFinishedWithErrors);
                 else
                     finalMessage = context.getString(R.string.backupInterruptedWithErrors);
-                progressNotif.setContentText(errors.get(0));
+                progressNotif.setContentText(allErr.get(0));
             }
 
             actualProgressBroadcast.putExtra("finishedMessage", finalMessage.trim()).putStringArrayListExtra("allErrors", allErr);
@@ -700,7 +700,7 @@ public class BackupEngine {
                 if (pr == 100) pr = 99;
 
                 actualProgressBroadcast.putExtra("type", "zip_progress")
-                        .putExtra("zip_log", "zipping: " + file.getName())
+                        .putExtra("zip_log", "zipped: " + file.getName())
                         .putExtra("progress", pr);
 
                 activityProgressIntent.putExtras(actualProgressBroadcast);
