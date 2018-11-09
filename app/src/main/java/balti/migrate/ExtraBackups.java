@@ -195,6 +195,13 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             assert manager != null;
             manager.cancelAll();
 
+            for (File f : getFilesDir().listFiles()){
+                f.delete();
+            }
+
+            for (File f : Objects.requireNonNull(getExternalCacheDir()).listFiles()){
+                f.delete();
+            }
         }
 
         @Override

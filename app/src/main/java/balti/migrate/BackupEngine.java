@@ -464,10 +464,6 @@ public class BackupEngine {
 
             notificationManager.cancel(NOTIFICATION_ID);
             notificationManager.notify(NOTIFICATION_ID + 1, progressNotif.build());
-
-            /*for (File f : context.getFilesDir().listFiles()){
-                f.delete();
-            }*/
         }
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
