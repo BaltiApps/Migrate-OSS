@@ -1320,9 +1320,7 @@ public class BackupEngine {
             }
             catch (Exception ignored){}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception ignored) {}
 
         isCancelled = true;
 
@@ -1693,6 +1691,9 @@ public class BackupEngine {
             try {
                 n = smsDataPackets.size();
                 db = SQLiteDatabase.openOrCreateDatabase(smsDBFilePath, null);
+                if (android.os.Build.VERSION.SDK_INT >= 27) {
+                    db = SQLiteDatabase.openDatabase(smsDBFilePath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READWRITE);
+                }
                 db.execSQL(DROP_TABLE);
                 db.execSQL(CREATE_TABLE);
             }catch (Exception e){
@@ -1834,6 +1835,9 @@ public class BackupEngine {
             try {
                 n = callsDataPackets.size();
                 db = SQLiteDatabase.openOrCreateDatabase(callsDBFilePath, null);
+                if (android.os.Build.VERSION.SDK_INT >= 27) {
+                    db = SQLiteDatabase.openDatabase(callsDBFilePath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READWRITE);
+                }
                 db.execSQL(DROP_TABLE);
                 db.execSQL(CREATE_TABLE);
             }catch (Exception e){

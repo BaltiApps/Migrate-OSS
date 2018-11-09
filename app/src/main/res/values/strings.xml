@@ -49,7 +49,10 @@
     </string>
     <string name="version_1.1" tools:ignore="ExtraTranslation">Version 1.1(beta)</string>
     <string name="version_1.1_content" tools:ignore="ExtraTranslation">
+        \u2022 Major code refactoring and under-the-hood changes\n
+        \u2022 CANCEL button now kills the backup process\n
         \u2022 Fix to \"set_progress()\" in recovery\n
+        \u2022 Probable fix to \"Failed to change locale for db\"\n
         \u2022 Probable fix to missing updater-script\n
         \u2022 Probable solution to some \"Operation not permitted\" issues\n
         \u2022 Remove illegal characters from backup name\n
