@@ -13,11 +13,11 @@
     <!--please also update last tested version in MainActivity-->
 
     <string name="app_name">Migrate</string>
-    <string name="current_version_name">1.1(beta)</string>
+    <string name="current_version_name">1.1.1(beta)</string>
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
-    <string name="prs_label">Migrate\nversion 1.1(beta)</string>
+    <string name="prs_label">Migrate\nversion 1.1.1(beta)</string>
 
     <!--changelog-->
     <string name="version_1.0" tools:ignore="ExtraTranslation">Version 1.0(beta)</string>
@@ -58,6 +58,24 @@
         \u2022 Probable fix to some \"Operation not permitted\" issues\n
         \u2022 Remove illegal characters from backup name\n
         \u2022 \"Share scripts\" option should now work properly.
+    </string>
+    <string name="version_1.1.1" tools:ignore="ExtraTranslation">Version 1.1.1(beta)</string>
+    <string name="version_1.1.1_content" tools:ignore="ExtraTranslation">
+        v1.1\n\n
+    \u2022 [New] Backup verification before zipping\n
+    \u2022 Major code refactoring and under-the-hood changes\n
+    \u2022 CANCEL button now kills the backup process\n
+    \u2022 Fix to \"set_progress()\" in recovery\n
+    \u2022 Probable fix to \"Failed to change locale for db\"\n
+    \u2022 Probable fix to missing updater-script\n
+    \u2022 Probable fix to some \"Operation not permitted\" issues\n
+    \u2022 Remove illegal characters from backup name\n
+    \u2022 \"Share scripts\" option should now work properly.\n\n
+    v1.1.1\n\n
+    \u2022 Fixed an issue of no-closing-quote in helper
+    </string>
+    <string name="version_1.1.1_only_content" tools:ignore="ExtraTranslation">
+    \u2022 Fixed an issue of no-closing-quote in helper
     </string>
 
     <!--activity_main.xml-->
