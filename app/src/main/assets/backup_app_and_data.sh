@@ -9,14 +9,19 @@ if [ ! -e "$2" ]; then
 fi
 
 # backup permission
-if [ "$8" = true ]; then
-    perms="$(dumpsys package $1 | grep android.permission | grep granted=true)"
-    if [ -n "$perms" ]; then
-        echo "$perms" > "$2/$1.perm"
-    else
-        echo "no_permissions_granted" > "$2/$1.perm"
-    fi
-fi
+
+#   |   Starting version 1.2
+#   |   permissions are backed up using
+#   |   Java based methods
+
+#if [ "$8" = true ]; then
+#    perms="$(dumpsys package $1 | grep android.permission | grep granted=true)"
+#    if [ -n "$perms" ]; then
+#        echo "$perms" > "$2/$1.perm"
+#    else
+#        echo "no_permissions_granted" > "$2/$1.perm"
+#    fi
+#fi
 
 # backup apk
 cd $3; cp $4 "$2/$1.apk"

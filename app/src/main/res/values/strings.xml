@@ -13,11 +13,11 @@
     <!--please also update last tested version in MainActivity-->
 
     <string name="app_name">Migrate</string>
-    <string name="current_version_name">1.1.1(beta)</string>
+    <string name="current_version_name">1.2(beta)</string>
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
-    <string name="prs_label">Migrate\nversion 1.1.1(beta)</string>
+    <string name="prs_label">Migrate\nversion 1.2(beta)</string>
 
     <!--changelog-->
     <string name="version_1.0" tools:ignore="ExtraTranslation">Version 1.0(beta)</string>
@@ -76,6 +76,12 @@
     </string>
     <string name="version_1.1.1_only_content" tools:ignore="ExtraTranslation">
     \u2022 Fixed an issue of no-closing-quote in helper
+    </string>
+    <string name="version_1.2" tools:ignore="ExtraTranslation">Version 1.2(beta)</string>
+    <string name="version_1.2_content" tools:ignore="ExtraTranslation">
+    \u2022 Completely avoid "dumpsys" while backing app permissions\n
+    \u2022 Now app data in tar.gz is unpacked in /data/data\n
+        (probable fix to Operation not permitted issues in Google Pixel)
     </string>
 
     <!--activity_main.xml-->
@@ -182,6 +188,7 @@
     <string name="noErrors">Finished! No errors.</string>
     <string name="combining">Combining all files</string>
     <string name="making_package_flash_ready">Making package flash ready</string>
+    <string name="backing_app_permissions">Backing app permissions</string>
     <string name="verifying_backups">Verifying backup</string>
     <string name="correcting_errors">Correcting errors</string>
     <string name="backing_contacts">Backing up contacts</string>

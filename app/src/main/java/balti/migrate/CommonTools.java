@@ -225,8 +225,8 @@ public class CommonTools {
 
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(suRequest.getOutputStream()));
 
-        writer.write("pm grant " + context.getPackageName() + " android.permission.DUMP\n" );
-        writer.write("pm grant " + context.getPackageName() + " android.permission.PACKAGE_USAGE_STATS\n" );
+        /*writer.write("pm grant " + context.getPackageName() + " android.permission.DUMP\n" );
+        writer.write("pm grant " + context.getPackageName() + " android.permission.PACKAGE_USAGE_STATS\n" );*/
         writer.write("exit\n");
         writer.flush();
 

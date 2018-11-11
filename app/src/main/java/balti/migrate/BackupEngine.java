@@ -330,6 +330,8 @@ public class BackupEngine {
                 String keybErr = backupKeyboard(notificationManager, progressNotif, activityProgressIntent);
                 if (!keybErr.equals("")) errors.add("KEYBOARD" + errorTag + ": " + keybErr);
 
+                backupAppPermissions(false, notificationManager, progressNotif, activityProgressIntent);
+
                 if (isCancelled)
                     throw new InterruptedIOException();
 
@@ -571,7 +573,7 @@ public class BackupEngine {
                 }
 
                 if (packet.PERMISSIONS && (!backupPerm.exists() || backupPerm.length() == 0)){
-                    allRecovery.add("echo \"Copy permission: " + permName + "\" && dumpsys package " + pi.packageName + " | grep android.permission | grep granted=true > " + backupPerm.getAbsolutePath() + "\n\n");
+                    writeGrantedPermissions(packet.PACKAGE_INFO.packageName, true);
                 }
 
                 String appName = pm.getApplicationLabel(pi.applicationInfo).toString();
@@ -1161,8 +1163,12 @@ public class BackupEngine {
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
-        if (busyboxBinaryFilePath.equals(""))
+        if (busyboxBinaryFilePath.equals("")) {
+            errors.add("EMPTY_BUSYBOX_FILEPATH");
             return null;
+        }
+
+        (new File(destination + "/" + backupName)).mkdirs();
 
         File scriptFile = new File(context.getFilesDir(), "the_backup_script_"+ partNumber + ".sh");
         File updater_script = new File(context.getExternalCacheDir(), "updater-script");
@@ -1355,7 +1361,7 @@ public class BackupEngine {
                         updater_writer.write("package_extract_file(\"" + packageName + ".perm" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".perm" + "\");\n");
 
                     if (!dataName.equals("NULL")) {
-                        updater_writer.write("package_extract_file(\"" + dataName + ".tar.gz" + "\", \"" + TEMP_DIR_NAME + "/" + dataName + ".tar.gz" + "\");\n");
+                        updater_writer.write("package_extract_file(\"" + dataName + ".tar.gz" + "\", \"" + "/data/data/" + dataName + ".tar.gz" + "\");\n");
                     }
                     updater_writer.write("package_extract_file(\"" + packageName + ".json" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".json" + "\");\n");
 
@@ -1585,6 +1591,111 @@ public class BackupEngine {
                     fullDelete(files[i].getAbsolutePath());
                 file.delete();
             }
+        }
+    }
+
+    void backupAppPermissions(boolean retry, NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+
+        String title = (totalParts > 1)?
+                context.getString(R.string.backing_app_permissions) + " : " + madePartName : context.getString(R.string.backing_app_permissions);
+
+        actualProgressBroadcast.putExtra("type", "backing_app_permissions");
+        actualProgressBroadcast.putExtra("app_name", "");
+        actualProgressBroadcast.putExtra("progress", 0);
+        activityProgressIntent.putExtras(actualProgressBroadcast);
+
+        progressNotif.setContentTitle(title)
+                .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                .setProgress(0, 0, false)
+                .setContentText("");
+        notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+        LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+
+        int c = 0;
+        String appName = "";
+
+        for (BackupDataPacketWithSize packetWithSize : backupBatch.appListWithSize) {
+
+            if (isCancelled) break;
+
+            BackupDataPacket packet = packetWithSize.packet;
+
+            actualProgressBroadcast.putExtra("progress", (++c*100/numberOfApps))
+                    .putExtra("type", "backing_app_permissions");
+
+            if (packet.PERMISSIONS) {
+
+                appName = pm.getApplicationLabel(packet.PACKAGE_INFO.applicationInfo).toString();
+
+                writeGrantedPermissions(packet.PACKAGE_INFO.packageName, retry);
+            }
+            else {
+                appName = "";
+            }
+
+            actualProgressBroadcast.putExtra("app_name", "Permissions: " + appName);
+
+            activityProgressIntent.putExtras(actualProgressBroadcast);
+
+            progressNotif.setProgress(numberOfApps, c, false)
+                    .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                    .setContentText(appName);
+            notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
+
+            LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
+        }
+
+    }
+
+    void writeGrantedPermissions(String packageName, boolean retry) {
+        /*ArrayList<String> grantedPerms = new ArrayList<>(0);
+        try {
+            PackageInfo pi = pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS);
+            if (pi.requestedPermissions == null){
+                grantedPerms.add("no_permissions_granted");
+            }
+            else {
+                for (int i = 0; i < pi.requestedPermissions.length; i++) {
+                    if ((pi.requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
+                        String p = pi.requestedPermissions[i].trim();
+                        if (p.startsWith("android.permission"))
+                            grantedPerms.add(p);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            errors.add("READ_PERMISSION_ERROR" + errorTag + ": PACKAGE: " + packageName + " ERROR: " + e.getMessage());
+        }
+        return grantedPerms;*/
+
+        File backupPerm = new File(destination + "/" + backupName + "/" + packageName + ".perm");
+        try {
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(backupPerm));
+
+            //ArrayList<String> grantedPerms = getGrantedPermissions(packet.PACKAGE_INFO.packageName);
+            PackageInfo pi = pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS);
+            if (pi.requestedPermissions == null){
+                writer.write("no_permissions_granted");
+            }
+            else {
+                for (int i = 0; i < pi.requestedPermissions.length; i++) {
+                    if ((pi.requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
+                        String p = pi.requestedPermissions[i].trim();
+                        if (p.startsWith("android.permission"))
+                            writer.write(p + "\n");
+                    }
+                }
+            }
+
+            writer.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (!retry && !e.getMessage().endsWith("No such file or directory"))
+                errors.add("PERM_FILE_MAKE_ERROR" + errorTag + ": PACKAGE: " + packageName + " ERROR: " + e.getMessage());
         }
     }
 

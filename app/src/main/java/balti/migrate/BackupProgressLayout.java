@@ -333,6 +333,16 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                     addLog("app_name", intent);
 
+                } else if (type.equals("backing_app_permissions")) {
+
+                    appIcon.setImageResource(R.drawable.ic_permissions);
+
+                    task.setText(R.string.backing_app_permissions);
+
+                    setProgress("progress", intent);
+
+                    addLog("app_name", intent);
+
                 } else if (type.equals("correcting_errors")) {
 
                     appIcon.setImageResource(R.drawable.ic_retry);
