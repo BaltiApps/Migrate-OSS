@@ -330,7 +330,7 @@ public class BackupEngine {
                 String keybErr = backupKeyboard(notificationManager, progressNotif, activityProgressIntent);
                 if (!keybErr.equals("")) errors.add("KEYBOARD" + errorTag + ": " + keybErr);
 
-                backupAppPermissions(false, notificationManager, progressNotif, activityProgressIntent);
+                backupAppPermissions(notificationManager, progressNotif, activityProgressIntent);
 
                 if (isCancelled)
                     throw new InterruptedIOException();
@@ -465,12 +465,13 @@ public class BackupEngine {
 
         actualProgressBroadcast.putExtra("part_name", "");
 
-        actualProgressBroadcast.putExtra("type", "finished").putExtra("total_time", endMillis - startMillis).putExtra("final_process",
-                finalProcess);
+        actualProgressBroadcast.putExtra("type", "finished").putExtra("final_process", finalProcess);
 
         actualProgressBroadcast.putStringArrayListExtra("errors", errors);
 
         if (finalProcess) {
+
+            actualProgressBroadcast.putExtra("complete_time", BackupService.PREVIOUS_TIME + (endMillis-startMillis));
 
             ArrayList<String> allErr = new ArrayList<>(0);
             if (BackupService.previousErrors != null)
@@ -500,6 +501,9 @@ public class BackupEngine {
             notificationManager.cancel(NOTIFICATION_ID);
             notificationManager.notify(NOTIFICATION_ID + 1, progressNotif.build());
 
+        }
+        else {
+            actualProgressBroadcast.putExtra("total_time", endMillis - startMillis);
         }
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
@@ -1594,7 +1598,7 @@ public class BackupEngine {
         }
     }
 
-    void backupAppPermissions(boolean retry, NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+    void backupAppPermissions(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
 
         String title = (totalParts > 1)?
                 context.getString(R.string.backing_app_permissions) + " : " + madePartName : context.getString(R.string.backing_app_permissions);
@@ -1628,7 +1632,7 @@ public class BackupEngine {
 
                 appName = pm.getApplicationLabel(packet.PACKAGE_INFO.applicationInfo).toString();
 
-                writeGrantedPermissions(packet.PACKAGE_INFO.packageName, retry);
+                writeGrantedPermissions(packet.PACKAGE_INFO.packageName, false);
             }
             else {
                 appName = "";

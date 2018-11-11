@@ -60,6 +60,8 @@ public class BackupService extends Service {
     BufferedWriter progressWriter, errorWriter;
     String lastProgressLog = "";
 
+    static long PREVIOUS_TIME = 0;
+
     static ArrayList<String> previousErrors;
 
     @Override
@@ -129,6 +131,9 @@ public class BackupService extends Service {
                                 errorWriter.close();
 
                             } catch (IOException e) { e.printStackTrace(); }
+                        }
+                        else {
+                            PREVIOUS_TIME += intent.getLongExtra("total_time", 0);
                         }
 
 

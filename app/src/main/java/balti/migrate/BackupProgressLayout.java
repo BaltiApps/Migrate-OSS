@@ -45,7 +45,7 @@ public class BackupProgressLayout extends AppCompatActivity {
     String lastLog = "";
     String lastType = "";
 
-    long totalTasksTime = 0;
+    //long totalTasksTime = 0;
 
     CommonTools commonTools;
 
@@ -191,8 +191,6 @@ public class BackupProgressLayout extends AppCompatActivity {
 
             if (type.equals("finished")){
 
-                totalTasksTime += intent.getLongExtra("total_time", 0);
-
                 if (intent.getBooleanExtra("final_process", true)) {
                     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -216,7 +214,9 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                     addLog("finishedMessage", intent);
 
-                    task.append("\n(" + calendarDifference(totalTasksTime) + ")");
+                    if (intent.hasExtra("complete_time")) {
+                        task.append("\n(" + calendarDifference(intent.getLongExtra("complete_time", 0)) + ")");
+                    }
 
                     actionButton.setText(getString(R.string.close));
                     actionButton.setBackground(getResources().getDrawable(R.drawable.log_action_button));
