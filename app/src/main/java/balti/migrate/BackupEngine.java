@@ -552,7 +552,7 @@ public class BackupEngine {
 
                 String backupApkDirPath = destination + "/" + backupName + "/" + pi.packageName + ".app";
 
-                if (packet.APP && (!new File(backupApkDirPath).exists() || getDirLength(backupApkDirPath) == 0)){
+                if (packet.APP && (!new File(backupApkDirPath).exists() || commonTools.getDirLength(backupApkDirPath) == 0)){
 
                     String apkPath = pi.applicationInfo.sourceDir;
                     apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'));
@@ -604,22 +604,6 @@ public class BackupEngine {
         }
 
         return allRecovery;
-    }
-
-    long getDirLength(String directoryPath){
-        File file = new File(directoryPath);
-        if (file.exists()) {
-            if (!file.isDirectory())
-                return file.length();
-            else {
-                File files[] = file.listFiles();
-                long sum = 0;
-                for (int i = 0; i < files.length; i++)
-                    sum += getDirLength(files[i].getAbsolutePath());
-                return sum;
-            }
-        }
-        else return 0;
     }
 
     void tryingToCorrect(ArrayList<String> defects, NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){

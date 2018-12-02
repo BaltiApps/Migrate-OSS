@@ -3,17 +3,22 @@ package balti.migrate;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationManager;
+import android.app.usage.StorageStats;
+import android.app.usage.StorageStatsManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.IPackageStatsObserver;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageStats;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,6 +27,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +53,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,8 +61,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
 
+import static balti.migrate.CommonTools.DEBUG_TAG;
+
 public class ExtraBackups extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
 
+    private CommonTools commonTools;
 
     private String destination;
     private static boolean isAllAppSelected = false;
@@ -206,10 +216,10 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             final String cpu_abi = Build.SUPPORTED_ABIS[0];
 
             if (cpu_abi.equals("armeabi-v7a") || cpu_abi.equals("arm64-v8a")) {
-                busyboxBinaryFile = new CommonTools(ExtraBackups.this).unpackAssetToInternal("busybox", "busybox", true);
+                busyboxBinaryFile = commonTools.unpackAssetToInternal("busybox", "busybox", true);
             }
             else if (cpu_abi.equals("x86") || cpu_abi.equals("x86_64")){
-                busyboxBinaryFile = new CommonTools(ExtraBackups.this).unpackAssetToInternal("busybox-x86", "busybox", true);
+                busyboxBinaryFile = commonTools.unpackAssetToInternal("busybox-x86", "busybox", true);
             }
             duBinaryFilePath = busyboxBinaryFile + " du";
 
@@ -234,61 +244,174 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                 publishProgress(getString(R.string.calculating_size), "", "");
 
-                Process memoryFinder = Runtime.getRuntime().exec("su");
-                BufferedReader processReader = new BufferedReader( new InputStreamReader(memoryFinder.getInputStream()));
-                BufferedWriter processWriter = new BufferedWriter(new OutputStreamWriter(memoryFinder.getOutputStream()));
-
                 totalSelectedApps = appList.size();
-                for (int i = 0; i < totalSelectedApps; i++){
 
-                    BackupDataPacket packet = appList.get(i);
+                int method = main.getInt("calculating_size_method", 2);
+                if (method == 1)
+                {
 
-                    long dataSize = 0, systemSize = 0;
+                    Process memoryFinder = Runtime.getRuntime().exec("su");
+                    BufferedReader processReader = new BufferedReader( new InputStreamReader(memoryFinder.getInputStream()));
+                    BufferedWriter processWriter = new BufferedWriter(new OutputStreamWriter(memoryFinder.getOutputStream()));
+                    for (int i = 0; i < totalSelectedApps; i++) {
 
-                    String apkPath = packet.PACKAGE_INFO.applicationInfo.sourceDir;
-                    String dataPath = "NULL";
-                    if (packet.DATA)
-                        dataPath = packet.PACKAGE_INFO.applicationInfo.dataDir;
+                        BackupDataPacket packet = appList.get(i);
 
-                    processWriter.write(duBinaryFilePath + " -s " + apkPath + "\n");
-                    processWriter.flush();
-                    String memoryReaderRes;
-                    try {
-                        long s;
-                        memoryReaderRes = processReader.readLine();
-                        s = Long.parseLong(memoryReaderRes.substring(0, memoryReaderRes.indexOf("/")).trim());
-                        if (apkPath.startsWith("/system"))
-                            systemSize += s;
-                        else dataSize += s;
-                    }
-                    catch (Exception e){
-                        e.printStackTrace();
-                    }
+                        long dataSize = 0, systemSize = 0;
 
-                    if (!dataPath.equals("NULL")){
-                        processWriter.write( duBinaryFilePath + " -s " + dataPath + "\n");
+                        String apkPath = packet.PACKAGE_INFO.applicationInfo.sourceDir;
+                        String dataPath = "NULL";
+                        if (packet.DATA)
+                            dataPath = packet.PACKAGE_INFO.applicationInfo.dataDir;
+
+                        processWriter.write(duBinaryFilePath + " -s " + apkPath + "\n");
                         processWriter.flush();
+                        String memoryReaderRes;
                         try {
+                            long s;
                             memoryReaderRes = processReader.readLine();
-                            dataSize += Long.parseLong(memoryReaderRes.substring(0, memoryReaderRes.indexOf("/")).trim());
-                        }
-                        catch (Exception e){
+                            s = Long.parseLong(memoryReaderRes.substring(0, memoryReaderRes.indexOf("/")).trim());
+                            if (apkPath.startsWith("/system"))
+                                systemSize += s;
+                            else dataSize += s;
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
+
+                        if (!dataPath.equals("NULL")) {
+                            processWriter.write(duBinaryFilePath + " -s " + dataPath + "\n");
+                            processWriter.flush();
+                            try {
+                                memoryReaderRes = processReader.readLine();
+                                dataSize += Long.parseLong(memoryReaderRes.substring(0, memoryReaderRes.indexOf("/")).trim());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        totalBackupSize = totalBackupSize + dataSize + systemSize;
+
+                        publishProgress(getString(R.string.calculating_size),
+                                (i + 1) + " of " + totalSelectedApps,
+                                getString(R.string.files_size) + " " + getHumanReadableStorageSpace(totalBackupSize) + "\n");
+
+                        appsWithSize.add(new BackupDataPacketWithSize(packet, dataSize, systemSize));
+
                     }
 
-                    totalBackupSize = totalBackupSize + dataSize + systemSize;
+                    processWriter.write("exit\n");
+                    processWriter.flush();
+                }
+                else if (method == 2){
 
-                    publishProgress(getString(R.string.calculating_size),
-                            (i + 1) + " of " + totalSelectedApps,
-                            getString(R.string.files_size) + " " + getHumanReadableStorageSpace(totalBackupSize) + "\n");
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                        Method getPackageSizeInfo = pm.getClass().getMethod(
+                                "getPackageSizeInfo", String.class, IPackageStatsObserver.class);
 
-                    appsWithSize.add(new BackupDataPacketWithSize(packet, dataSize, systemSize));
+                        for (int i = 0; i < totalSelectedApps; i++) {
+
+                            final BackupDataPacket packet = appList.get(i);
+
+                            final int finalI = i;
+                            final long finalTotalBackupSize[] = new long[]{0};
+
+                            final long dataSize[] = new long[]{0}, systemSize[] = new long[]{0};
+
+                            getPackageSizeInfo.invoke(pm, packet.PACKAGE_INFO.packageName,
+                                    new IPackageStatsObserver.Stub() {
+
+                                        public void onGetStatsCompleted(PackageStats pStats, boolean succeeded)
+                                                throws RemoteException {
+
+
+                                            String apkPath = packet.PACKAGE_INFO.applicationInfo.sourceDir;
+                                            if (apkPath.startsWith("/system")) {
+                                                dataSize[0] += pStats.codeSize;
+                                            } else {
+                                                systemSize[0] += pStats.codeSize;
+                                            }
+
+                                            dataSize[0] += pStats.dataSize;
+
+                                            finalTotalBackupSize[0] = finalTotalBackupSize[0] + dataSize[0] + systemSize[0];
+
+                                            publishProgress(getString(R.string.calculating_size),
+                                                    (finalI + 1) + " of " + totalSelectedApps,
+                                                    getString(R.string.files_size) + " " + getHumanReadableStorageSpace(finalTotalBackupSize[0]) + "\n");
+
+                                        }
+                                    });
+
+                            appsWithSize.add(new BackupDataPacketWithSize(packet, dataSize[0], systemSize[0]));
+                        }
+                    }
+                    else {
+
+                        StorageStatsManager storageStatsManager = (StorageStatsManager) getSystemService(Context.STORAGE_STATS_SERVICE);
+
+                        for (int i = 0; i < totalSelectedApps; i++) {
+
+                            BackupDataPacket packet = appList.get(i);
+                            long dataSize = 0, systemSize = 0;
+
+                            StorageStats storageStats =
+                                    storageStatsManager.queryStatsForUid(packet.PACKAGE_INFO.applicationInfo.storageUuid, packet.PACKAGE_INFO.applicationInfo.uid);
+                            //cacheSize = storageStats.getCacheBytes();
+
+                            String apkPath = packet.PACKAGE_INFO.applicationInfo.sourceDir;
+                            String dataPath = "NULL";
+                            if (packet.DATA)
+                                dataPath = packet.PACKAGE_INFO.applicationInfo.dataDir;
+
+                            File obbPath = new File("/sdcard/Android/obb/" + packet.PACKAGE_INFO.packageName);
+                            File externalData = new File("/sdcard/Android/data/" + packet.PACKAGE_INFO.packageName);
+                            File externalMedia = new File("/sdcard/Android/media/" + packet.PACKAGE_INFO.packageName);
+
+                            long ignoreSize = 0;
+
+                            if (obbPath.exists() && obbPath.canRead()){
+                                ignoreSize = commonTools.getDirLength(obbPath.getAbsolutePath());
+                            }
+                            ignoreSize = ignoreSize / 1024;
+
+                            //Log.d(DEBUG_TAG, "ignored apk:" + ignoreSize);
+
+                            File apkFile = new File(apkPath);
+                            if (apkPath.startsWith("/system")) {
+                                systemSize += (apkFile.length() - ignoreSize) / 1024;
+                            } else {
+                                dataSize += (apkFile.length() - ignoreSize) / 1024;
+                                //Log.d(DEBUG_TAG, "apksize: " + dataSize);
+                            }
+
+                            if (!dataPath.equals("NULL")) {
+                                ignoreSize = 0;
+                                if (externalData.exists() && externalData.canRead()) {
+                                    ignoreSize += commonTools.getDirLength(externalData.getAbsolutePath());
+                                }
+                                if (externalMedia.exists() && externalMedia.exists()) {
+                                    ignoreSize += commonTools.getDirLength(externalMedia.getAbsolutePath());
+                                }
+                                ignoreSize = ignoreSize / 1024;
+
+                                //Log.d(DEBUG_TAG, "ignored data:" + ignoreSize);
+
+                                dataSize += (storageStats.getDataBytes() / 1024) - ignoreSize;
+                                //Log.d(DEBUG_TAG, "apk+data size: " + dataSize);
+                            }
+
+                            totalBackupSize = totalBackupSize + dataSize + systemSize;
+
+                            publishProgress(getString(R.string.calculating_size),
+                                    (i + 1) + " of " + totalSelectedApps,
+                                    getString(R.string.files_size) + " " + getHumanReadableStorageSpace(totalBackupSize) + "\n");
+
+                            appsWithSize.add(new BackupDataPacketWithSize(packet, dataSize, systemSize));
+                        }
+
+                    }
 
                 }
-
-                processWriter.write("exit\n");
-                processWriter.flush();
 
             }
             catch (Exception e){
@@ -331,6 +454,8 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 totalMemory = MAX_TWRP_ZIP_SIZE;
 
             totalSize = totalBackupSize;
+
+            Log.i(DEBUG_TAG, "totalSize: " + totalSize);
 
             if (totalBackupSize > availableKb){
                 return new Object[]{true};
@@ -1473,13 +1598,12 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.extra_backups);
 
-        pm = getPackageManager();
-
         main = getSharedPreferences("main", MODE_PRIVATE);
-
         destination = main.getString("defaultBackupPath", "/sdcard/Migrate");
 
         layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        commonTools = new CommonTools(this);
+        pm = getPackageManager();
 
         contactsMainItem = findViewById(R.id.extra_item_contacts);
         contactsSelectedStatus = findViewById(R.id.contacts_selected_status);

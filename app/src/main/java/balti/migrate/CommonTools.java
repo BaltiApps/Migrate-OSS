@@ -225,8 +225,8 @@ public class CommonTools {
 
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(suRequest.getOutputStream()));
 
-        /*writer.write("pm grant " + context.getPackageName() + " android.permission.DUMP\n" );
-        writer.write("pm grant " + context.getPackageName() + " android.permission.PACKAGE_USAGE_STATS\n" );*/
+        /*writer.write("pm grant " + context.getPackageName() + " android.permission.DUMP\n" );*/
+        writer.write("pm grant " + context.getPackageName() + " android.permission.PACKAGE_USAGE_STATS\n" );
         writer.write("exit\n");
         writer.flush();
 
@@ -246,5 +246,22 @@ public class CommonTools {
 
         suRequest.waitFor();
         return new Object[]{suRequest.exitValue() == 0, errorMessage};
+    }
+
+
+    long getDirLength(String directoryPath){
+        File file = new File(directoryPath);
+        if (file.exists()) {
+            if (!file.isDirectory())
+                return file.length();
+            else {
+                File files[] = file.listFiles();
+                long sum = 0;
+                for (int i = 0; i < files.length; i++)
+                    sum += getDirLength(files[i].getAbsolutePath());
+                return sum;
+            }
+        }
+        else return 0;
     }
 }
