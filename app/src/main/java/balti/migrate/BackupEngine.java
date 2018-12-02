@@ -418,9 +418,7 @@ public class BackupEngine {
 
                     while ((line = errorStream.readLine()) != null) {
                         line = line.trim();
-                        if (!line.endsWith("socket ignored")
-                                && !line.endsWith("No such file or directory")
-                                && !line.endsWith("error exit delayed from previous errors")) {
+                        if (!line.endsWith("socket ignored")) {
                             errors.add("RUN" + errorTag + ": " + line);
                         }
                     }
@@ -546,18 +544,24 @@ public class BackupEngine {
 
                 PackageInfo pi = packet.PACKAGE_INFO;
 
-                String apkName = pi.packageName + ".apk";
                 String dataName = pi.packageName + ".tar.gz";
                 String permName = pi.packageName + ".perm";
 
-                File backupApk = new File(destination + "/" + backupName + "/" + apkName);
                 File backupData = new File(destination + "/" + backupName + "/" + dataName);
                 File backupPerm = new File(destination + "/" + backupName + "/" + permName);
 
-                if (packet.APP && (!backupApk.exists() || backupApk.length() == 0)){
+                String backupApkDirPath = destination + "/" + backupName + "/" + pi.packageName + ".app";
 
-                    String apkSource = pi.applicationInfo.sourceDir;
-                    allRecovery.add("echo \"Copy apk: " + apkName +"\" && cp " + apkSource + " " + backupApk.getAbsolutePath() + "\n\n");
+                if (packet.APP && (!new File(backupApkDirPath).exists() || getDirLength(backupApkDirPath) == 0)){
+
+                    String apkPath = pi.applicationInfo.sourceDir;
+                    apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'));
+                    allRecovery.add("echo \"Copy apk(s): " + pi.packageName + "\"\n" +
+                            "mkdir -p " + backupApkDirPath + "\n" +
+                            "cd " + apkPath + "\n" +
+                            "cp *.apk " + backupApkDirPath + "/\n\n" +
+                            "mv " + backupApkDirPath + "/base.apk " + backupApkDirPath + "/" + pi.packageName + "\n"
+                    );
 
                 }
 
@@ -600,6 +604,22 @@ public class BackupEngine {
         }
 
         return allRecovery;
+    }
+
+    long getDirLength(String directoryPath){
+        File file = new File(directoryPath);
+        if (file.exists()) {
+            if (!file.isDirectory())
+                return file.length();
+            else {
+                File files[] = file.listFiles();
+                long sum = 0;
+                for (int i = 0; i < files.length; i++)
+                    sum += getDirLength(files[i].getAbsolutePath());
+                return sum;
+            }
+        }
+        else return 0;
     }
 
     void tryingToCorrect(ArrayList<String> defects, NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
@@ -1037,7 +1057,7 @@ public class BackupEngine {
         }
     }
 
-    void systemAppInstallScript(String sysAppPackageName, String sysApkName, String sysAppPastingDir) {
+    void systemAppInstallScript(String sysAppPackageName, String sysAppPastingDir, String appDir) {
 
         String scriptName = sysAppPackageName + ".sh";
         String scriptLocation = destination + "/" + backupName + "/" + scriptName;
@@ -1048,9 +1068,10 @@ public class BackupEngine {
         scriptText = scriptText +
                 "mkdir -p " + sysAppPastingDir + "\n" +
                 "cd " + sysAppPastingDir + "\n" +
-                "mv /system/" + sysAppPackageName + ".apk " + sysApkName + ".apk" + "\n" +
-                "cd /system/" + "\n" +
-                "rm " + scriptName + "\n";
+                "mv /tmp/" + appDir + "/*.apk " + sysAppPastingDir + "/" + "\n" +
+                "cd /tmp/" + "\n" +
+                "rm -rf " + appDir + "\n" +
+                "rm -rf " + scriptName + "\n";;
 
 
         (new File(destination + "/" + backupName)).mkdirs();
@@ -1344,10 +1365,10 @@ public class BackupEngine {
                     updater_writer.write("ui_print(\"" + appName + " (" + c + "/" + numberOfApps + ")\");\n");
 
                     if (apkPath.startsWith("/system")) {
-                        updater_writer.write("package_extract_file(\"" + packageName + ".apk" + "\", \"/system/" + packageName + ".apk" + "\");\n");
-                        systemAppInstallScript(packageName, appName, apkPath);
-                        updater_writer.write("package_extract_file(\"" + packageName + ".sh" + "\", \"/system/" + packageName + ".sh" + "\");\n");
-                        updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"/system/" + packageName + ".sh" + "\");\n");
+                        updater_writer.write("package_extract_dir(\"" + packageName + ".app" + "\", \"/tmp/" + packageName + ".app" + "\");\n");
+                        systemAppInstallScript(packageName, apkPath, packageName + ".app");
+                        updater_writer.write("package_extract_file(\"" + packageName + ".sh" + "\", \"/tmp/" + packageName + ".sh" + "\");\n");
+                        updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"/tmp/" + packageName + ".sh" + "\");\n");
                         updater_writer.write("run_program(\"/system/" + packageName + ".sh" + "\");\n");
                     }
 
@@ -1357,7 +1378,7 @@ public class BackupEngine {
                         tempApkName = "NULL";
                     } else {
                         tempApkName = packageName;
-                        updater_writer.write("package_extract_file(\"" + packageName + ".apk" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".apk" + "\");\n");
+                        updater_writer.write("package_extract_dir(\"" + packageName + ".app" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".app" + "\");\n");
                     }
                     makeMetadataFile(appName, packageName, tempApkName, dataName, appIcon, versionName, permissions);
 

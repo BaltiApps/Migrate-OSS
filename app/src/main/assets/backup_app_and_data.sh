@@ -23,11 +23,21 @@ fi
 #    fi
 #fi
 
+# starting version 1.3 all apks are backed up in <packageName>.app directory
+# these include split apks also
+
+# make app directory
+appDir="$2/$1.app"
+mkdir -p ${appDir}
+
 # backup apk
-cd $3; cp $4 "$2/$1.apk"
-if [ -e "$2/$1.apk" ]; then
+cd $3; cp $4 "${appDir}/$1.apk"
+if [ -e "$2/$1.app/$1.apk" ]; then
     echo "Apk copied"
 fi
+
+# copy split apks (new in v1.3)
+cp $3/split_*.apk "${appDir}/" 2>/dev/null && echo "Copied split apks"
 
 # backup data
 if [ ! "$6" = "NULL" ]; then
