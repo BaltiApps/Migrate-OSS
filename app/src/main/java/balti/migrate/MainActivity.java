@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     public void onClick(DialogInterface dialog, int which) {
                                         Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
                                         startActivity(intent);
-                                        Toast.makeText(MainActivity.this, R.string.usage_permission_toast, Toast.LENGTH_SHORT);
+                                        Toast.makeText(MainActivity.this, R.string.usage_permission_toast, Toast.LENGTH_SHORT).show();
                                     }
                                 })
                                 .setNegativeButton(android.R.string.cancel, null)
