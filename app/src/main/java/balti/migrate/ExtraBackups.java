@@ -250,6 +250,9 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 if (method == 1)
                 {
 
+
+                    Log.d(DEBUG_TAG, "Method 1");
+
                     Process memoryFinder = Runtime.getRuntime().exec("su");
                     BufferedReader processReader = new BufferedReader( new InputStreamReader(memoryFinder.getInputStream()));
                     BufferedWriter processWriter = new BufferedWriter(new OutputStreamWriter(memoryFinder.getOutputStream()));
@@ -303,6 +306,8 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                     processWriter.flush();
                 }
                 else if (method == 2){
+
+                    Log.d(DEBUG_TAG, "Method 2");
 
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                         Method getPackageSizeInfo = pm.getClass().getMethod(
@@ -374,14 +379,11 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                             }
                             ignoreSize = ignoreSize / 1024;
 
-                            //Log.d(DEBUG_TAG, "ignored apk:" + ignoreSize);
-
                             File apkFile = new File(apkPath);
                             if (apkPath.startsWith("/system")) {
                                 systemSize += (apkFile.length() - ignoreSize) / 1024;
                             } else {
                                 dataSize += (apkFile.length() - ignoreSize) / 1024;
-                                //Log.d(DEBUG_TAG, "apksize: " + dataSize);
                             }
 
                             if (!dataPath.equals("NULL")) {
@@ -394,10 +396,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                                 }
                                 ignoreSize = ignoreSize / 1024;
 
-                                //Log.d(DEBUG_TAG, "ignored data:" + ignoreSize);
-
                                 dataSize += (storageStats.getDataBytes() / 1024) - ignoreSize;
-                                //Log.d(DEBUG_TAG, "apk+data size: " + dataSize);
                             }
 
                             totalBackupSize = totalBackupSize + dataSize + systemSize;
@@ -416,7 +415,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             }
             catch (Exception e){
                 e.printStackTrace();
-                return new Object[]{false, getString(R.string.error_calculating_size), e.getMessage()};
+                return new Object[]{false, getString(R.string.error_calculating_size), e.getMessage() + "\n\n" + getString(R.string.change_size_calculation_method)};
             }
 
             publishProgress(getString(R.string.making_batches), "", "");
@@ -454,8 +453,6 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 totalMemory = MAX_TWRP_ZIP_SIZE;
 
             totalSize = totalBackupSize;
-
-            Log.i(DEBUG_TAG, "totalSize: " + totalSize);
 
             if (totalBackupSize > availableKb){
                 return new Object[]{true};

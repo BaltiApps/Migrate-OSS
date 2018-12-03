@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-<Preference
-    android:title="@string/disable_battery_optimisation"
-    android:key="disable_battery_optimisation"
-    />
+    <Preference
+        android:key="disable_battery_optimisation"
+        android:title="@string/disable_battery_optimisation" />
+
+    <CheckBoxPreference
+        android:key="use_new_sizing_method"
+        android:title="@string/use_new_sizing_method"/>
 
 </PreferenceScreen>

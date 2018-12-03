@@ -1,15 +1,19 @@
 package balti.migrate;
 
 import android.Manifest;
+import android.app.AppOpsManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -236,7 +240,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (requestCode == REQUEST_CODE && grantResults.length == 2){
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
                 if (isRootPermissionGranted()) {
-                    startActivity(new Intent(MainActivity.this, BackupActivity.class));
+                    if (isUsageAccessGranted())
+                        startActivity(new Intent(MainActivity.this, BackupActivity.class));
+                    else {
+                        new AlertDialog.Builder(this)
+                                .setTitle(R.string.usage_access_permission_needed)
+                                .setMessage(R.string.usage_access_permission_needed_desc)
+                                .setPositiveButton(R.string.proceed, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+                                        startActivity(intent);
+                                        Toast.makeText(MainActivity.this, R.string.usage_permission_toast, Toast.LENGTH_SHORT);
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.cancel, null)
+                                .show();
+                    }
                 }
                 else {
                     new AlertDialog.Builder(this)
@@ -377,6 +397,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         return p;
+    }
+
+    private boolean isUsageAccessGranted() {
+        try {
+            PackageManager packageManager = getPackageManager();
+            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(getPackageName(), 0);
+            AppOpsManager appOpsManager = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
+            int mode  = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
+                    applicationInfo.uid, applicationInfo.packageName);
+
+            return (mode == AppOpsManager.MODE_ALLOWED);
+
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 
 

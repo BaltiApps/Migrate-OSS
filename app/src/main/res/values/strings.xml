@@ -167,6 +167,7 @@
         \n
         After ticking a checkbox on an item, click on the item for further options.
     </string>
+    <string name="change_size_calculation_method">You can try going to the main screen of the app -> click top left green icon -> \"Preferences\" -> \"Use new method to calculate size\"</string>
 
     <!--extra_item_selector.xml-->
     <string name="sms_selector_label">Select SMS</string>
@@ -240,6 +241,8 @@
     <string name="root_permission_denied_desc">Please make sure that your device is rooted and you have allowed root permission.\n\n
     If your ROM was pre-rooted, try flashing Magisk.
     </string>
+    <string name="usage_access_permission_needed">Usage access permission needed</string>
+    <string name="usage_access_permission_needed_desc">A new, faster and more reliable method has been added to calculate size of apps before backup.\n\nPlease click Proceed, Scroll and select \"Migrate\" then click \"Permit usage access\"</string>
     <string name="storage_access_required">Please grant storage access to write backups.</string>
     <string name="checking_permissions">Checking Storage and Root access</string>
     <string name="rate_dialog_title">Your opinion is important</string>
@@ -250,6 +253,8 @@
     <string name="unsupported_device">Unsupported device.</string>
     <string name="cpu_arch_is">Your CPU arch is:</string>
     <string name="currently_supported_cpu">Only <b>armeabi-v7a, arm64-v8a, x86, x86_64</b> CPU architectures are currently supported. Please contact via mail to help support your device.</string>
+    <string name="proceed">Proceed</string>
+    <string name="usage_permission_toast">Scroll and select \"Migrate\" and click \"Permit usage access\"!</string>
 
     <!--AppListAdapter.java-->
     <string name="packageName">Package :</string>
@@ -446,6 +451,9 @@
     <!--preference.xml-->
     <string name="disable_battery_optimisation">Disable battery optimisation</string>
     <string name="battery_optimisation_already_disabled">Battery optimisation already disabled</string>
+    <string name="use_new_sizing_method">Use new method to calculate size</string>
+    <string name="new_method_will_be_used">Use StorageStats or reflection</string>
+    <string name="old_method_will_be_used">Use terminal based method</string>
 
     <!--thanks_layout.xml-->
     <string name="thanks_to_stericson">Huge thanks to Stephen (stericdroid) for allowing me to liberally use his busybox builds</string>
