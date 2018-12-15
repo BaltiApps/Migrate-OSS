@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     AlertDialog loadingDialog;
     int REQUEST_CODE = 43;
 
-    int THIS_VERSION = 9;
+    int THIS_VERSION = 10;
 
     String rootErrorMessage = "";
 
@@ -485,8 +485,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (onlyLatest) {
             if (currVer < THIS_VERSION) {
                 /*Put only the latest version here*/
-                title = getString(R.string.version_1_2);
-                message = getString(R.string.version_1_2_content);
+                title = getString(R.string.version_2_0);
+                message = getString(R.string.version_2_0_content);
                 changelog.setTitle(title)
                         .setMessage(message)
                         .setPositiveButton(R.string.close, null)
@@ -514,6 +514,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             /*Add increasing versions here*/
 
+            allVersions.append("\n" + getString(R.string.version_2_0) + "\n" + getString(R.string.version_2_0_content) + "\n");
             allVersions.append("\n" + getString(R.string.version_1_2) + "\n" + getString(R.string.version_1_2_content) + "\n");
             allVersions.append("\n" + getString(R.string.version_1_1_1) + "\n" + getString(R.string.version_1_1_1_only_content) + "\n");
             allVersions.append("\n" + getString(R.string.version_1_1) + "\n" + getString(R.string.version_1_1_content) + "\n");

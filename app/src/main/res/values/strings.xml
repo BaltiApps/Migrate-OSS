@@ -13,11 +13,11 @@
     <!--please also update last tested version in MainActivity-->
 
     <string name="app_name">Migrate</string>
-    <string name="current_version_name">1.2(beta)</string>
+    <string name="current_version_name">2.0(christmas_beta)</string>
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
-    <string name="prs_label">Migrate\nversion 1.2(beta)</string>
+    <string name="prs_label">Migrate\nversion 2.0(christmas_beta)</string>
 
     <!--changelog-->
     <string name="version_1.0" tools:ignore="ExtraTranslation">Version 1.0(beta)</string>
@@ -82,6 +82,14 @@
     \u2022 Completely avoid "dumpsys" while backing app permissions\n
     \u2022 Now app data in tar.gz is unpacked in /data/data\n
         (probable fix to Operation not permitted issues in Google Pixel)
+    </string>
+    <string name="version_2.0" tools:ignore="ExtraTranslation">Version 2.0(christmas_beta)</string>
+    <string name="version_2.0_content" tools:ignore="ExtraTranslation">
+    \u2022 SD card support (with Magisk module)\n
+    \u2022 Support for split apks\n
+    \u2022 A new alternative method to calculate app size.\n
+        (probable fix to freezing in calculating app size)\n
+    \u2022 Now every migrate zip package has a busybox binary as a fallback\n
     </string>
 
     <!--activity_main.xml-->
@@ -466,7 +474,7 @@
         \n
         XDA member <b>djseltus</b>, for pointing to a new update-binary\n
         <b>Vinyas N S</b>, for \"android.os.TransactionTooLargeException\" issue\n
-        <b>C Tab</b>, helped to find an issue with the helper app
+        <b>C Tab</b>, helped to find an issue with the helper app\n
         XDA member <b>SevenSlevin</b> for detecting updater_script issue
     </string>
     <string name="thanks_3">The app wouldn\'t be possible without the whole group of tester:\n\n
