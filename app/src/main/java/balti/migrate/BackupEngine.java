@@ -43,6 +43,8 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static balti.migrate.BackupService.BACKUP_END_NOTIFICATION;
+
 /**
  * Created by sayantan on 9/10/17.
  */
@@ -494,6 +496,7 @@ public class BackupEngine {
                     .setContentTitle(finalMessage)
                     .setProgress(0, 0, false)
                     .setAutoCancel(true)
+                    .setChannelId(BACKUP_END_NOTIFICATION)
                     .mActions.clear();
 
             notificationManager.cancel(NOTIFICATION_ID);
@@ -990,7 +993,6 @@ public class BackupEngine {
 
         package_data.getParentFile().mkdirs();
 
-        contents += "version 1.0" + "\n";
         contents += "backup_name " + backupName + "\n";
         contents += "timestamp " + timeStamp + "\n";
         contents += "device " + Build.DEVICE + "\n";
@@ -1201,11 +1203,21 @@ public class BackupEngine {
                 updater_writer.write("ui_print(\"*** " + madePartName + " ***\");\n");
                 updater_writer.write("ui_print(\"---------------------------------\");\n");
             }
+
+            updater_writer.write("package_extract_file(\"" + "busybox" + "\", \"" + "/tmp/busybox" + "\");\n");
+            updater_writer.write("package_extract_file(\"" + "mount_using_self_busybox.sh" + "\", \"" + "/tmp/mount_using_self_busybox.sh" + "\");\n");
+            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/tmp/mount_using_self_busybox.sh" + "\");\n");
+
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("ui_print(\"Mounting partition...\");\n");
-            updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("run_program(\"/sbin/busybox\", \"mount\", \"/system\");\n");
             updater_writer.write("run_program(\"/sbin/busybox\", \"mount\", \"/data\");\n");
+
+            updater_writer.write("ifelse(is_mounted(\"/data\") && is_mounted(\"/system\"), ui_print(\"\"), " +
+                    "ui_print(\"Mounting using self busybox...\") && " +
+                    "run_program(\"/tmp/mount_using_self_busybox.sh\", \"m\"));\n");
+
+            updater_writer.write("ifelse(is_mounted(\"/data\") && is_mounted(\"/system\"), ui_print(\"Mounted!\"), abort(\"Mount failed! Exiting...\"));\n");
 
             updater_writer.write("package_extract_file(\"" + "prep.sh" + "\", \"" + "/tmp/prep.sh" + "\");\n");
             updater_writer.write("package_extract_file(\"" + "package-data" + "\", \"" + "/tmp/package-data" + "\");\n");
@@ -1246,6 +1258,7 @@ public class BackupEngine {
 
             scriptWriter.write("echo \"--- PID: $$\"\n");
             scriptWriter.write("cp " + scriptFile.getAbsolutePath() + " " + context.getExternalCacheDir() + "/\n");
+            scriptWriter.write("cp " + busyboxBinaryFilePath + " " + destination + "/" + backupName + "/\n");
 
             //String line;
             for (int packetCount = 0; packetCount < numberOfApps && !isCancelled; packetCount++) {
@@ -1435,6 +1448,9 @@ public class BackupEngine {
             updater_writer.write("run_program(\"/sbin/busybox\", \"umount\", \"/system\");\n");
             updater_writer.write("run_program(\"/sbin/busybox\", \"umount\", \"/data\");\n");
 
+            updater_writer.write("ifelse(is_mounted(\"/data\") && is_mounted(\"/system\"), ui_print(\"\"), " +
+                    "run_program(\"/tmp/mount_using_self_busybox.sh\", \"u\"));\n");
+
             updater_writer.write("ui_print(\" \");\n");
             updater_writer.write("ui_print(\"Finished!\");\n");
             updater_writer.write("ui_print(\" \");\n");
@@ -1534,6 +1550,20 @@ public class BackupEngine {
 
         if (!verifyScript_destination.exists()){
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "verify.sh could not be moved" + "\n";
+        }
+
+        File mountScript = new File(commonTools.unpackAssetToInternal("mount_using_self_busybox.sh", "mount_using_self_busybox.sh", false));
+
+        File mountScript_destination = new File(destination + "/" + backupName + "/mount_using_self_busybox.sh");
+        if (mountScript.exists()){
+            mountScript.renameTo(mountScript_destination);
+        }
+        else {
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "mount_using_self_busybox.sh could not be unpacked" + "\n";
+        }
+
+        if (!verifyScript_destination.exists()){
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "mount_using_self_busybox.sh could not be moved" + "\n";
         }
 
         File helper = new File(commonTools.unpackAssetToInternal("helper.apk", "helper.apk", false));

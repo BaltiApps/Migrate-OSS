@@ -197,7 +197,7 @@ public class BackupService extends Service {
             NotificationChannel notificationChannelStart = new NotificationChannel(BACKUP_START_NOTIFICATION, BACKUP_START_NOTIFICATION, NotificationManager.IMPORTANCE_DEFAULT);
             ((NotificationManager) Objects.requireNonNull(getSystemService(NOTIFICATION_SERVICE))).createNotificationChannel(notificationChannelStart);
 
-            NotificationChannel notificationChannelEnd = new NotificationChannel(BACKUP_END_NOTIFICATION, BACKUP_END_NOTIFICATION, NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel notificationChannelEnd = new NotificationChannel(BACKUP_END_NOTIFICATION, BACKUP_END_NOTIFICATION, NotificationManager.IMPORTANCE_HIGH);
             ((NotificationManager) Objects.requireNonNull(getSystemService(NOTIFICATION_SERVICE))).createNotificationChannel(notificationChannelEnd);
 
             NotificationChannel notificationChannelRunning = new NotificationChannel(BACKUP_RUNNING_NOTIFICATION, BACKUP_RUNNING_NOTIFICATION, NotificationManager.IMPORTANCE_LOW);

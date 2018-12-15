@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StatFs;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -27,12 +28,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
+
+import static android.os.Environment.getExternalStorageDirectory;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -41,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     Button backup, restore;
     ImageButton drawerButton;
+    LinearLayout internalStorageUse, sdCardStorageUse;
+    ProgressBar internalStorageBar, sdCardStorageBar;
+    TextView internalStorageText, sdCardStorageText, sdCardName;
 
     DrawerLayout drawer;
     NavigationView navigationView;
@@ -132,6 +140,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        internalStorageUse = findViewById(R.id.internal_storage_use_view);
+        internalStorageBar = findViewById(R.id.internal_storage_bar);
+        internalStorageText = findViewById(R.id.internal_storage_text);
+
+        sdCardStorageUse = findViewById(R.id.sd_card_storage_use_view);
+        sdCardStorageBar = findViewById(R.id.sd_card_storage_bar);
+        sdCardStorageText = findViewById(R.id.sc_card_storage_text);
+        sdCardName = findViewById(R.id.sd_card_name);
+
+
         navigationView.setNavigationItemSelectedListener(this);
 
         final String cpu_abi = Build.SUPPORTED_ABIS[0];
@@ -204,6 +222,47 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    void refreshStorageSizes(){
+        StatFs statFs = new StatFs(getExternalStorageDirectory().getAbsolutePath());
+
+        long availableKb = statFs.getBlockSizeLong() * statFs.getAvailableBlocksLong();
+        availableKb = availableKb / 1024;
+        long fullKb = statFs.getBlockSizeLong() * statFs.getBlockCountLong();
+        fullKb = fullKb / 1024;
+        internalStorageBar.setProgress((int) (((fullKb - availableKb) * 100)/fullKb));
+        internalStorageText.setText(commonTools.getHumanReadableStorageSpace(availableKb) + "/" + commonTools.getHumanReadableStorageSpace(fullKb));
+
+        File sdCardRoot = null;
+        final File storage = new File("/storage/");
+        if (storage.exists() && storage.canRead()){
+            File[] f = storage.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    return pathname.isDirectory() && pathname.canRead() && !pathname.getAbsolutePath().equals(getExternalStorageDirectory().getAbsolutePath());
+                }
+            });
+            if (f.length == 1)
+                sdCardRoot = new File("/mnt/media_rw/" + f[0].getName());
+        }
+
+        if (sdCardRoot != null && sdCardRoot.canWrite()) {
+
+            sdCardStorageUse.setVisibility(View.VISIBLE);
+
+            statFs = new StatFs(sdCardRoot.getAbsolutePath());
+            availableKb = statFs.getBlockSizeLong() * statFs.getAvailableBlocksLong();
+            availableKb = availableKb / 1024;
+            fullKb = statFs.getBlockSizeLong() * statFs.getBlockCountLong();
+            fullKb = fullKb / 1024;
+            sdCardName.setText(sdCardRoot.getName());
+            sdCardStorageBar.setProgress((int) (((fullKb - availableKb) * 100) / fullKb));
+            sdCardStorageText.setText(commonTools.getHumanReadableStorageSpace(availableKb) + "/" + commonTools.getHumanReadableStorageSpace(fullKb));
+        }
+        else {
+            sdCardStorageUse.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -231,6 +290,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
             ad.show();
         }
+
+        refreshStorageSizes();
     }
 
     @Override

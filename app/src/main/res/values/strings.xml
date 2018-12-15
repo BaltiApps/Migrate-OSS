@@ -87,7 +87,7 @@
     <!--activity_main.xml-->
     <string name="backupButton">Backup</string>
     <string name="restoreButton">Restore</string>
-
+    <string name="internal_storage">Internal storage</string>
 
     <!--backup_layout.xml-->
     <string name="select_apps">Select apps</string>

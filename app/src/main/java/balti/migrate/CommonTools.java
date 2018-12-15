@@ -264,4 +264,21 @@ public class CommonTools {
         }
         else return 0;
     }
+
+    String getHumanReadableStorageSpace(long space){
+        String res = "KB";
+
+        double s = space;
+
+        if (s > 1024) {
+            s = s / 1024.0;
+            res = "MB";
+        }
+        if (s > 1024) {
+            s = s / 1024.0;
+            res = "GB";
+        }
+
+        return String.format("%.2f", s) + " " + res;
+    }
 }

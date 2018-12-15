@@ -296,7 +296,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                         publishProgress(getString(R.string.calculating_size),
                                 (i + 1) + " of " + totalSelectedApps,
-                                getString(R.string.files_size) + " " + getHumanReadableStorageSpace(totalBackupSize) + "\n");
+                                getString(R.string.files_size) + " " + commonTools.getHumanReadableStorageSpace(totalBackupSize) + "\n");
 
                         appsWithSize.add(new BackupDataPacketWithSize(packet, dataSize, systemSize));
 
@@ -342,7 +342,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                                             publishProgress(getString(R.string.calculating_size),
                                                     (finalI + 1) + " of " + totalSelectedApps,
-                                                    getString(R.string.files_size) + " " + getHumanReadableStorageSpace(finalTotalBackupSize[0]) + "\n");
+                                                    getString(R.string.files_size) + " " + commonTools.getHumanReadableStorageSpace(finalTotalBackupSize[0]) + "\n");
 
                                         }
                                     });
@@ -403,7 +403,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                             publishProgress(getString(R.string.calculating_size),
                                     (i + 1) + " of " + totalSelectedApps,
-                                    getString(R.string.files_size) + " " + getHumanReadableStorageSpace(totalBackupSize) + "\n");
+                                    getString(R.string.files_size) + " " + commonTools.getHumanReadableStorageSpace(totalBackupSize) + "\n");
 
                             appsWithSize.add(new BackupDataPacketWithSize(packet, dataSize, systemSize));
                         }
@@ -593,9 +593,9 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                 new AlertDialog.Builder(ExtraBackups.this)
                         .setTitle(R.string.insufficient_storage)
-                        .setMessage(getString(R.string.files_size) + " " + getHumanReadableStorageSpace(totalSize) + "\n" +
-                                getString(R.string.available_space) + " " + getHumanReadableStorageSpace(availableKb) + "\n\n" +
-                                getString(R.string.required_storage) + " " + getHumanReadableStorageSpace(totalSize - availableKb) + "\n\n" +
+                        .setMessage(getString(R.string.files_size) + " " + commonTools.getHumanReadableStorageSpace(totalSize) + "\n" +
+                                getString(R.string.available_space) + " " + commonTools.getHumanReadableStorageSpace(availableKb) + "\n\n" +
+                                getString(R.string.required_storage) + " " + commonTools.getHumanReadableStorageSpace(totalSize - availableKb) + "\n\n" +
                                 getString(R.string.will_be_compressed))
                         .setNegativeButton(R.string.close, null)
                         .setIcon(R.drawable.ic_combine)
@@ -632,22 +632,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
         }
 
-        String getHumanReadableStorageSpace(long space){
-            String res = "KB";
 
-            double s = space;
-
-            if (s > 1024) {
-                s = s / 1024.0;
-                res = "MB";
-            }
-            if (s > 1024) {
-                s = s / 1024.0;
-                res = "GB";
-            }
-
-            return String.format("%.2f", s) + " " + res;
-        }
     }
 
     class ReadContacts extends AsyncTask<Void, Object, Vector<ContactsDataPacket>> {
