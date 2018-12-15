@@ -24,6 +24,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
+import static android.os.Environment.getExternalStorageDirectory;
+
 public class CommonTools {
 
     Context context;
@@ -35,6 +37,8 @@ public class CommonTools {
     static String BACKUP_PROGRESS_ACTIVITY_AD_ID = "ca-app-pub-6582325651261661/2755664936";
 
     static String UNIVERSAL_TEST_ID = "ca-app-pub-3940256099942544/6300978111";
+
+    static String DEFAULT_INTERNAL_STORAGE_DIR = "/sdcard/Migrate";
 
     public CommonTools(Context context) {
         this.context = context;
@@ -280,5 +284,28 @@ public class CommonTools {
         }
 
         return String.format("%.2f", s) + " " + res;
+    }
+
+    String[] getSdCardPaths(){
+        String possibleSDCards[] = new String[0];
+        File storage = new File("/storage/");
+        if (storage.exists() && storage.canRead()){
+            File[] files = storage.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    return pathname.isDirectory() && pathname.canRead()
+                            && !pathname.getAbsolutePath().equals(getExternalStorageDirectory().getAbsolutePath());
+                }
+            });
+            possibleSDCards = new String[files.length];
+            for (int i = 0; i < files.length; i++){
+                File file = files[i];
+                File sd_dir = new File("/mnt/media_rw/" + file.getName());
+                if (sd_dir.exists() && sd_dir.isDirectory() && sd_dir.canWrite())
+                    possibleSDCards[i] = sd_dir.getAbsolutePath();
+                else possibleSDCards[i] = "";
+            }
+        }
+        return possibleSDCards;
     }
 }

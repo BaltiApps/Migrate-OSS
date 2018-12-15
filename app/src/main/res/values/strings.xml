@@ -111,6 +111,10 @@
     </string-array>
     <string name="next">Next</string>
 
+    <!--ask_for_backup_name.xml-->
+    <string name="enter_backup_name">Enter backup name</string>
+    <string name="sd_card">SD card</string>
+
     <!--extra_backups-->
     <string name="extras">Extras</string>
     <string name="contacts_label">Contacts</string>
@@ -176,6 +180,13 @@
         After ticking a checkbox on an item, click on the item for further options.
     </string>
     <string name="change_size_calculation_method">You can try going to the main screen of the app -> click top left green icon -> \"Preferences\" -> \"Use new method to calculate size\"</string>
+    <string name="no_sd_card_detected">No SD card detected.</string>
+    <string name="no_sd_card_detected_exp">Please make sure that you have mounted an external SD card (if supported by your device)\n
+    Also make sure that you install the \"ExSDCard Access Enabler\" magisk module.
+    </string>
+    <string name="please_select_sd_card">Please select sd card</string>
+    <string name="sd_card_not_rw">SD Card may not be mounted in R/W</string>
+    <string name="sd_card_not_rw_exp">External SD card may not be accessible. Make sure that \"ExSDCard Access Enabler\" module is installed in Magisk.</string>
 
     <!--extra_item_selector.xml-->
     <string name="sms_selector_label">Select SMS</string>

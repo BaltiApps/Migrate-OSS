@@ -42,6 +42,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,6 +64,7 @@ import java.util.Objects;
 import java.util.Vector;
 
 import static balti.migrate.CommonTools.DEBUG_TAG;
+import static balti.migrate.CommonTools.DEFAULT_INTERNAL_STORAGE_DIR;
 
 public class ExtraBackups extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
 
@@ -127,6 +130,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
     private LayoutInflater layoutInflater;
 
     private SharedPreferences main;
+    private SharedPreferences.Editor editor;
     private BroadcastReceiver progressReceiver, serviceStartedReceiver;
     private AlertDialog ad;
     private PackageManager pm;
@@ -1581,7 +1585,9 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         setContentView(R.layout.extra_backups);
 
         main = getSharedPreferences("main", MODE_PRIVATE);
-        destination = main.getString("defaultBackupPath", "/sdcard/Migrate");
+        editor = main.edit();
+
+        destination = main.getString("defaultBackupPath", DEFAULT_INTERNAL_STORAGE_DIR);
 
         layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         commonTools = new CommonTools(this);
@@ -1962,31 +1968,145 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         isAnyAppSelected = anyAppSelected;
     }
 
+    void setDestination(String path, TextView label){
+
+        destination = path;
+        label.setText(destination);
+        editor.putString("defaultBackupPath", destination);
+        editor.commit();
+    }
+
     void askForBackupName() {
-        final EditText editText = new EditText(this);
-        editText.setSingleLine(true);
-        editText.setPadding(20,20,20,20);
+
+        View mainView = View.inflate(this, R.layout.ask_for_backup_name, null);
+
+        final EditText backupNameEditText = mainView.findViewById(R.id.backup_name_edit_text);
+        backupNameEditText.setSingleLine(true);
+
+        final TextView sdCardLabel = mainView.findViewById(R.id.ask_for_backup_name_sd_card_name);
+
+        final RadioGroup storageSelect = mainView.findViewById(R.id.storage_select_radio_group);
+        final RadioButton internalButton = mainView.findViewById(R.id.internal_storage_radio_button);
+        final RadioButton sdButton = mainView.findViewById(R.id.sd_card_radio_button);
+
+        sdCardLabel.setText(destination);
+
+
+        if (main.getString("defaultBackupPath", DEFAULT_INTERNAL_STORAGE_DIR).equals(DEFAULT_INTERNAL_STORAGE_DIR) ||
+                !(new File(main.getString("defaultBackupPath", DEFAULT_INTERNAL_STORAGE_DIR)).canWrite()))
+        {
+            storageSelect.check(internalButton.getId());
+            setDestination(DEFAULT_INTERNAL_STORAGE_DIR, sdCardLabel);
+        }
+        else {
+            storageSelect.check(sdButton.getId());
+        }
+
+
+
+        storageSelect.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                ImageView imageView = new ImageView(ExtraBackups.this);
+                imageView.setImageResource(R.drawable.ex_sd_card_enabler);
+                imageView.setPadding(10, 10, 10, 10);
+
+                if (checkedId == R.id.internal_storage_radio_button) {
+                    setDestination(DEFAULT_INTERNAL_STORAGE_DIR, sdCardLabel);
+                } else if (checkedId == R.id.sd_card_radio_button) {
+
+                    String sdCardProbableDirs[] = commonTools.getSdCardPaths();
+                    final ArrayList<String> sdCardPaths = new ArrayList<>(0);
+                    for (String sdDir : sdCardProbableDirs) {
+                        if (!sdDir.equals(""))
+                            sdCardPaths.add(sdDir);
+                    }
+
+                    if (sdCardProbableDirs.length == 0) {
+                        new AlertDialog.Builder(ExtraBackups.this)
+                                .setTitle(R.string.no_sd_card_detected)
+                                .setMessage(R.string.no_sd_card_detected_exp)
+                                .setPositiveButton(R.string.close, null)
+                                .setView(imageView)
+                                .show();
+                        internalButton.setChecked(true);
+                    } else if (sdCardPaths.size() == 1) {
+                        setDestination(sdCardPaths.get(0) + "/Migrate", sdCardLabel);
+                    } else if (sdCardPaths.size() > 0) {
+
+                        final RadioGroup sdGroup = new RadioGroup(ExtraBackups.this);
+                        sdGroup.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        sdGroup.setPadding(20, 20, 20, 20);
+
+                        for (int i = 0; i < sdCardPaths.size(); i++) {
+
+                            final File sdFile = new File(sdCardPaths.get(i));
+
+                            RadioButton button = new RadioButton(ExtraBackups.this);
+                            button.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            button.setText(sdFile.getName());
+                            button.setId(i);
+
+                            sdGroup.addView(button);
+                        }
+
+                        sdGroup.check(0);
+
+                        new AlertDialog.Builder(ExtraBackups.this)
+                                .setTitle(R.string.please_select_sd_card)
+                                .setView(sdGroup)
+                                .setCancelable(false)
+                                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        internalButton.setChecked(true);
+                                        setDestination(DEFAULT_INTERNAL_STORAGE_DIR, sdCardLabel);
+                                    }
+                                })
+                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        setDestination(sdCardPaths.get(sdGroup.getCheckedRadioButtonId()) + "/Migrate", sdCardLabel);
+                                    }
+                                })
+                                .show();
+
+                    } else {
+                        new AlertDialog.Builder(ExtraBackups.this)
+                                .setTitle(R.string.sd_card_not_rw)
+                                .setMessage(R.string.sd_card_not_rw_exp)
+                                .setPositiveButton(R.string.close, null)
+                                .setView(imageView)
+                                .show();
+                        internalButton.setChecked(true);
+                    }
+                }
+            }
+        });
+
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
         if (isAllAppSelected && doBackupSms.isChecked() && doBackupCalls.isChecked())
-            editText.setText(getString(R.string.fullBackupLabel) + "_" + sdf.format(Calendar.getInstance().getTime()));
+            backupNameEditText.setText(getString(R.string.fullBackupLabel) + "_" + sdf.format(Calendar.getInstance().getTime()));
         else
-            editText.setText(getString(R.string.backupLabel) + "_" + sdf.format(Calendar.getInstance().getTime()));
+            backupNameEditText.setText(getString(R.string.backupLabel) + "_" +
+                    sdf.format(Calendar.getInstance().getTime()));
 
         final AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.setBackupName))
-                .setView(editText)
+                .setView(mainView)
                 .setPositiveButton(getString(android.R.string.ok), null)
                 .setNegativeButton(getString(android.R.string.cancel), null)
                 .setCancelable(false)
                 .create();
 
-        editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        editText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+        backupNameEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        backupNameEditText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE){
-                    String backupName = editText.getText().toString().trim()
+                    String backupName = backupNameEditText.getText().toString().trim()
                             .replaceAll("[\\\\/:*?\"'<>|]", " ")
                             .replace(' ', '_');
                     if (!backupName.equals(""))
@@ -2006,7 +2126,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 okButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String backupName = editText.getText().toString().trim()
+                        String backupName = backupNameEditText.getText().toString().trim()
                                 .replaceAll("[\\\\/:*?\"'<>|]", " ")
                                 .replace(' ', '_');
                         if (!backupName.equals(""))

@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StatFs;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -30,14 +31,15 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 
 import static android.os.Environment.getExternalStorageDirectory;
+import static balti.migrate.CommonTools.DEFAULT_INTERNAL_STORAGE_DIR;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     Button backup, restore;
     ImageButton drawerButton;
-    LinearLayout internalStorageUse, sdCardStorageUse;
+    TableRow internalStorageUse, sdCardStorageUse;
     ProgressBar internalStorageBar, sdCardStorageBar;
     TextView internalStorageText, sdCardStorageText, sdCardName;
 
@@ -61,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     int THIS_VERSION = 10;
 
     String rootErrorMessage = "";
+
+    Handler storageHandler;
+    Runnable storageRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -220,32 +225,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });*/
 
+        refreshStorageSizes();
+
+        storageHandler = new Handler();
+        storageRunnable = new Runnable() {
+            @Override
+            public void run() {
+                refreshStorageSizes();
+                storageHandler.postDelayed(storageRunnable, 1000);
+            }
+        };
+
+        storageHandler.post(storageRunnable);
     }
 
-    void refreshStorageSizes(){
+    void refreshStorageSizes() {
         StatFs statFs = new StatFs(getExternalStorageDirectory().getAbsolutePath());
 
         long availableKb = statFs.getBlockSizeLong() * statFs.getAvailableBlocksLong();
         availableKb = availableKb / 1024;
         long fullKb = statFs.getBlockSizeLong() * statFs.getBlockCountLong();
         fullKb = fullKb / 1024;
-        internalStorageBar.setProgress((int) (((fullKb - availableKb) * 100)/fullKb));
+        internalStorageBar.setProgress((int) (((fullKb - availableKb) * 100) / fullKb));
         internalStorageText.setText(commonTools.getHumanReadableStorageSpace(availableKb) + "/" + commonTools.getHumanReadableStorageSpace(fullKb));
 
+        String defaultPath = main.getString("defaultBackupPath", DEFAULT_INTERNAL_STORAGE_DIR);
+
         File sdCardRoot = null;
-        final File storage = new File("/storage/");
-        if (storage.exists() && storage.canRead()){
-            File[] f = storage.listFiles(new FileFilter() {
-                @Override
-                public boolean accept(File pathname) {
-                    return pathname.isDirectory() && pathname.canRead() && !pathname.getAbsolutePath().equals(getExternalStorageDirectory().getAbsolutePath());
-                }
-            });
-            if (f.length == 1)
-                sdCardRoot = new File("/mnt/media_rw/" + f[0].getName());
+
+        if (!defaultPath.equals(DEFAULT_INTERNAL_STORAGE_DIR) && new File(defaultPath).canWrite()) {
+
+            sdCardRoot = new File(defaultPath).getParentFile();
+
+        } else {
+            String sdCardPaths[] = commonTools.getSdCardPaths();
+            if (sdCardPaths.length == 1 && new File(sdCardPaths[0]).canWrite()) {
+                sdCardRoot = new File(sdCardPaths[0]);
+            }
         }
 
-        if (sdCardRoot != null && sdCardRoot.canWrite()) {
+        if (sdCardRoot != null){
 
             sdCardStorageUse.setVisibility(View.VISIBLE);
 
@@ -290,8 +309,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
             ad.show();
         }
-
-        refreshStorageSizes();
     }
 
     @Override
@@ -688,6 +705,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onDestroy();
         try {
             loadingDialog.dismiss();
+        }catch (Exception ignored){}
+        try {
+            storageHandler.removeCallbacks(storageRunnable);
         }catch (Exception ignored){}
     }
 }

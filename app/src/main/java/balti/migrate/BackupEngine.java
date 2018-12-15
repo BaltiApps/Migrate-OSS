@@ -251,6 +251,28 @@ public class BackupEngine {
         startBackupTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+
+    String moveFile(File source, File destination) {
+        try {
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(source));
+            FileOutputStream fileOutputStream = new FileOutputStream(destination);
+
+            byte[] buffer = new byte[2048];
+            int read;
+
+            while ((read = bufferedInputStream.read(buffer)) > 0) {
+                fileOutputStream.write(buffer, 0, read);
+            }
+            fileOutputStream.close();
+            source.delete();
+            return "";
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
+
     void initiateBackup() {
 
         startMillis = timeInMillis();
@@ -1490,6 +1512,7 @@ public class BackupEngine {
         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
         String err = "";
+        String moveErr = "";
 
         String flashDirPath = destination + "/" + backupName + "/META-INF/com/google/android/";
         new File(flashDirPath).mkdirs();
@@ -1498,28 +1521,30 @@ public class BackupEngine {
 
         File updater_script = new File(context.getExternalCacheDir(), "updater-script");
         if (updater_script.exists()){
-            updater_script.renameTo(updater_script_destination);
+            moveErr = moveFile(updater_script, updater_script_destination);
+            //updater_script.renameTo(updater_script_destination);
         }
         else {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "updater-script was not made" + "\n";
         }
 
         if (!updater_script_destination.exists()){
-            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "updater-script could not be moved" + "\n";
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "updater-script could not be moved " + moveErr + "\n";
         }
 
         File update_binary = new File(commonTools.unpackAssetToInternal("update-binary", "update-binary", false));
 
         File update_binary_destination = new File(flashDirPath + "update-binary");
         if (update_binary.exists()){
-            update_binary.renameTo(update_binary_destination);
+            moveErr = moveFile(update_binary, update_binary_destination);
+            //update_binary.renameTo(update_binary_destination);
         }
         else {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "update-binary could not be unpacked" + "\n";
         }
 
         if (!update_binary_destination.exists()){
-            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "update-binary could not be moved" + "\n";
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "update-binary could not be moved " + moveErr + "\n";
         }
 
 
@@ -1527,14 +1552,15 @@ public class BackupEngine {
 
         File prepScript_destination = new File(destination + "/" + backupName + "/prep.sh");
         if (prepScript.exists()){
-            prepScript.renameTo(prepScript_destination);
+            moveErr = moveFile(prepScript, prepScript_destination);
+            //prepScript.renameTo(prepScript_destination);
         }
         else {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "prep.sh could not be unpacked" + "\n";
         }
 
         if (!prepScript_destination.exists()){
-            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "prep.sh could not be moved" + "\n";
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "prep.sh could not be moved " + moveErr + "\n";
         }
 
 
@@ -1542,28 +1568,30 @@ public class BackupEngine {
 
         File verifyScript_destination = new File(destination + "/" + backupName + "/verify.sh");
         if (verifyScript.exists()){
-            verifyScript.renameTo(verifyScript_destination);
+            moveErr = moveFile(verifyScript, verifyScript_destination);
+            //verifyScript.renameTo(verifyScript_destination);
         }
         else {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "verify.sh could not be unpacked" + "\n";
         }
 
         if (!verifyScript_destination.exists()){
-            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "verify.sh could not be moved" + "\n";
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "verify.sh could not be moved " + moveErr + "\n";
         }
 
         File mountScript = new File(commonTools.unpackAssetToInternal("mount_using_self_busybox.sh", "mount_using_self_busybox.sh", false));
 
         File mountScript_destination = new File(destination + "/" + backupName + "/mount_using_self_busybox.sh");
         if (mountScript.exists()){
-            mountScript.renameTo(mountScript_destination);
+            moveErr = moveFile(mountScript, mountScript_destination);
+            //mountScript.renameTo(mountScript_destination);
         }
         else {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "mount_using_self_busybox.sh could not be unpacked" + "\n";
         }
 
         if (!verifyScript_destination.exists()){
-            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "mount_using_self_busybox.sh could not be moved" + "\n";
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "mount_using_self_busybox.sh could not be moved " + moveErr + "\n";
         }
 
         File helper = new File(commonTools.unpackAssetToInternal("helper.apk", "helper.apk", false));
@@ -1572,14 +1600,15 @@ public class BackupEngine {
         new File(destination + "/" + backupName + "/system/app/MigrateHelper").mkdirs();
 
         if (helper.exists()){
-            helper.renameTo(helper_destination);
+            moveErr = moveFile(helper, helper_destination);
+            //helper.renameTo(helper_destination);
         }
         else {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "Helper app could not be unpacked" + "\n";
         }
 
         if (!helper_destination.exists()){
-            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "Helper app could not be moved" + "\n";
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "Helper app could not be moved " + moveErr + "\n";
         }
 
         return err;

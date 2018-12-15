@@ -101,7 +101,12 @@
                 android:layout_gravity="bottom"
                 >
 
-                <LinearLayout
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+
+                <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -113,6 +118,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:layout_column="1"
                         >
 
                         <TextView
@@ -139,24 +145,26 @@
                         android:id="@+id/internal_storage_bar"
                         android:padding="@dimen/large_padding_width"
                         android:max="100"
+                        android:layout_column="2"
                         />
 
 
-                </LinearLayout>
+                </TableRow>
 
-                <LinearLayout
+                <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:visibility="gone"
                     android:id="@+id/sd_card_storage_use_view"
+                    android:visibility="gone"
                     >
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:layout_column="1"
                         >
 
                         <TextView
@@ -183,9 +191,13 @@
                         android:id="@+id/sd_card_storage_bar"
                         android:padding="@dimen/large_padding_width"
                         android:max="100"
+                        android:layout_column="2"
                         />
 
-                </LinearLayout>
+                </TableRow>
+
+
+                </TableLayout>
 
             </LinearLayout>
 
