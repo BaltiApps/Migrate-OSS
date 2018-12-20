@@ -149,6 +149,6 @@ rm -r /system/app/PermissionFixer/
 rm -r /data/data/balti.migratehelper/
 
 mkdir -p /data/balti.migrate
-mv /tmp/package-data /data/balti.migrate/package-data
+mv /tmp/package-data* /data/balti.migrate/package-data*
 
 rm /tmp/prep.sh

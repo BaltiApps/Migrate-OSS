@@ -59,6 +59,7 @@ public class BackupService extends Service {
 
     BufferedWriter progressWriter, errorWriter;
     String lastProgressLog = "";
+    String lastZipLog = "";
 
     static long PREVIOUS_TIME = 0;
 
@@ -74,8 +75,8 @@ public class BackupService extends Service {
 
         try {
 
-            progressWriter = new BufferedWriter(new FileWriter(new File(getExternalCacheDir(), "progressLog")));
-            errorWriter = new BufferedWriter(new FileWriter(new File(getExternalCacheDir(), "errorLog")));
+            progressWriter = new BufferedWriter(new FileWriter(new File(getExternalCacheDir(), "progressLog.txt")));
+            errorWriter = new BufferedWriter(new FileWriter(new File(getExternalCacheDir(), "errorLog.txt")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -148,9 +149,10 @@ public class BackupService extends Service {
                         try { progressWriter.write((lastProgressLog = intent.getStringExtra("app_log")) + "\n"); } catch (IOException ignored) {}
 
                     }
-                    else if (intent.getStringExtra("type").equals("zip_progress") && intent.hasExtra("zip_log")){
+                    else if (intent.getStringExtra("type").equals("zip_progress") && intent.hasExtra("zip_log")
+                            && !intent.getStringExtra("zip_log").equals(lastZipLog)){
 
-                        try { progressWriter.write(intent.getStringExtra("zip_log") + "\n"); } catch (IOException ignored) {}
+                        try { progressWriter.write((lastZipLog = intent.getStringExtra("zip_log")) + "\n"); } catch (IOException ignored) {}
 
                     }
                     else if (intent.getStringExtra("type").equals("verifying_backups") && intent.hasExtra("app_name")){

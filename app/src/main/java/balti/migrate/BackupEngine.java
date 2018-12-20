@@ -213,11 +213,11 @@ public class BackupEngine {
 
         //zipBinaryFilePath = "";
 
-        timeStamp = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(Calendar.getInstance().getTime());
+        timeStamp = "_" + new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(Calendar.getInstance().getTime());
 
-        contactsBackupName = "Contacts_" + timeStamp + ".vcf";
-        smsBackupName = "Sms_" + timeStamp + ".sms.db";
-        callsBackupName = "Calls_" + timeStamp + ".calls.db";
+        contactsBackupName = "Contacts" + timeStamp + ".vcf";
+        smsBackupName = "Sms" + timeStamp + ".sms.db";
+        callsBackupName = "Calls" + timeStamp + ".calls.db";
         dpiBackupName = "screen.dpi";
         keyboardBackupName = "default.kyb";
 
@@ -1010,7 +1010,7 @@ public class BackupEngine {
 
     void makePackageData(){
 
-        File package_data = new File(destination + "/" + backupName + "/package-data");
+        File package_data = new File(destination + "/" + backupName + "/package-data" + timeStamp + ".txt");
         String contents = "";
 
         package_data.getParentFile().mkdirs();
@@ -1242,7 +1242,7 @@ public class BackupEngine {
             updater_writer.write("ifelse(is_mounted(\"/data\") && is_mounted(\"/system\"), ui_print(\"Mounted!\"), abort(\"Mount failed! Exiting...\"));\n");
 
             updater_writer.write("package_extract_file(\"" + "prep.sh" + "\", \"" + "/tmp/prep.sh" + "\");\n");
-            updater_writer.write("package_extract_file(\"" + "package-data" + "\", \"" + "/tmp/package-data" + "\");\n");
+            updater_writer.write("package_extract_file(\"" + "package-data" + timeStamp + ".txt" + "\", \"" + "/tmp/package-data" + timeStamp + ".txt" + "\");\n");
             updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/tmp/prep.sh" + "\");\n");
             updater_writer.write("run_program(\"" + "/tmp/prep.sh" + "\");\n");
 

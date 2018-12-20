@@ -73,8 +73,8 @@ public class CommonTools {
     }
 
     void reportLogs(boolean isErrorLogMandatory){
-        final File progressLog = new File(context.getExternalCacheDir(), "progressLog");
-        final File errorLog = new File(context.getExternalCacheDir(), "errorLog");
+        final File progressLog = new File(context.getExternalCacheDir(), "progressLog.txt");
+        final File errorLog = new File(context.getExternalCacheDir(), "errorLog.txt");
         //final File theBackupScript = new File(context.getExternalCacheDir(), "the_backup_script.sh");
         final File[] backupScripts = context.getExternalCacheDir().listFiles(new FileFilter() {
             @Override
