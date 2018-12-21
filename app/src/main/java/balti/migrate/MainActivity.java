@@ -664,7 +664,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         pLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File f = new File(getExternalCacheDir(), "progressLog");
+                File f = new File(getExternalCacheDir(), "progressLog.txt");
                 if (f.exists())
                     startActivity(
                             new Intent(MainActivity.this, SimpleLogDisplay.class)
@@ -678,7 +678,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         eLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File f = new File(getExternalCacheDir(), "errorLog");
+                File f = new File(getExternalCacheDir(), "errorLog.txt");
                 if (f.exists())
                     startActivity(
                             new Intent(MainActivity.this, SimpleLogDisplay.class)
