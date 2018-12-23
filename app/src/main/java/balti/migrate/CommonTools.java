@@ -39,6 +39,7 @@ public class CommonTools {
     static String UNIVERSAL_TEST_ID = "ca-app-pub-3940256099942544/6300978111";
 
     static String DEFAULT_INTERNAL_STORAGE_DIR = "/sdcard/Migrate";
+    static final String TEMP_DIR_NAME = "/data/local/tmp/migrate_cache";
 
     public CommonTools(Context context) {
         this.context = context;

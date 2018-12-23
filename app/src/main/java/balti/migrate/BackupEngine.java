@@ -44,6 +44,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static balti.migrate.BackupService.BACKUP_END_NOTIFICATION;
+import static balti.migrate.CommonTools.TEMP_DIR_NAME;
+import static balti.migrate.MainActivity.THIS_VERSION;
 
 /**
  * Created by sayantan on 9/10/17.
@@ -105,8 +107,6 @@ public class BackupEngine {
 
     private String busyboxBinaryFilePath;
     //private String zipBinaryFilePath;
-
-    private final String TEMP_DIR_NAME = "/data/balti.migrate";
 
     StartBackup startBackupTask;
 
@@ -1010,7 +1010,7 @@ public class BackupEngine {
 
     void makePackageData(){
 
-        File package_data = new File(destination + "/" + backupName + "/package-data" + timeStamp + ".txt");
+        File package_data = new File(destination + "/" + backupName + "/package-data.txt");
         String contents = "";
 
         package_data.getParentFile().mkdirs();
@@ -1241,10 +1241,13 @@ public class BackupEngine {
 
             updater_writer.write("ifelse(is_mounted(\"/data\") && is_mounted(\"/system\"), ui_print(\"Mounted!\"), abort(\"Mount failed! Exiting...\"));\n");
 
+            updater_writer.write("package_extract_file(\"helper.apk\", \"/tmp/helper.apk\");\n");
+            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777, \"" + "/tmp/helper.apk" + "\");\n");
+
             updater_writer.write("package_extract_file(\"" + "prep.sh" + "\", \"" + "/tmp/prep.sh" + "\");\n");
-            updater_writer.write("package_extract_file(\"" + "package-data" + timeStamp + ".txt" + "\", \"" + "/tmp/package-data" + timeStamp + ".txt" + "\");\n");
+            updater_writer.write("package_extract_file(\"" + "package-data.txt" + "\", \"" + "/tmp/package-data.txt" + "\");\n");
             updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/tmp/prep.sh" + "\");\n");
-            updater_writer.write("run_program(\"" + "/tmp/prep.sh" + "\");\n");
+            updater_writer.write("run_program(\"/tmp/prep.sh\", \"" + TEMP_DIR_NAME + "\", \"" + THIS_VERSION + "\", \"" + timeStamp + "\");\n");
 
             updater_writer.write("ifelse(is_mounted(\"/data\"), ui_print(\"Parameters checked!\") && sleep(2s), abort(\"Exiting...\"));\n");
             updater_writer.write("ui_print(\" \");\n");
@@ -1451,18 +1454,12 @@ public class BackupEngine {
                 updater_writer.write("ui_print(\" \");\n");
             }
 
-
-            updater_writer.write("ui_print(\" \");\n");
-            updater_writer.write("ui_print(\"Unpacking helper\");\n");
-            updater_writer.write("package_extract_dir(\"system\", \"/system\");\n");
-            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/system/app/MigrateHelper/" + "\");\n");
-
             updater_writer.write("set_progress(1.0000);\n");
 
             updater_writer.write("package_extract_file(\"" + "verify.sh" + "\", \"" + "/tmp/verify.sh" + "\");\n");
             updater_writer.write("package_extract_file(\"" + "extras-data" + "\", \"" + "/tmp/extras-data" + "\");\n");
             updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/tmp/verify.sh" + "\");\n");
-            updater_writer.write("run_program(\"" + "/tmp/verify.sh" + "\");\n");
+            updater_writer.write("run_program(\"/tmp/verify.sh\", \"" + TEMP_DIR_NAME + "\");\n");
             updater_writer.write("ifelse(is_mounted(\"/data\"), ui_print(\"Verification done!\") && sleep(2s), abort(\"Exiting...\"));\n");
 
             updater_writer.write("ui_print(\" \");\n");
@@ -1596,8 +1593,8 @@ public class BackupEngine {
 
         File helper = new File(commonTools.unpackAssetToInternal("helper.apk", "helper.apk", false));
 
-        File helper_destination = new File(destination + "/" + backupName + "/system/app/MigrateHelper/MigrateHelper.apk");
-        new File(destination + "/" + backupName + "/system/app/MigrateHelper").mkdirs();
+        File helper_destination = new File(destination + "/" + backupName + "/helper.apk");
+        //new File(destination + "/" + backupName + "/system/app/MigrateHelper").mkdirs();
 
         if (helper.exists()){
             moveErr = moveFile(helper, helper_destination);

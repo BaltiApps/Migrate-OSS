@@ -1,5 +1,9 @@
 #!sbin/sh
 
+# parameters
+
+# TEMP_DIR_NAME
+
 OUTFD="/dev/null"
 
 for FD in `ls /proc/$$/fd`; do
@@ -14,7 +18,8 @@ done
 echo "ui_print  " >> /proc/self/fd/$OUTFD;
 echo "ui_print Verifying extras..." >> /proc/self/fd/$OUTFD;
 
-mv /tmp/package-data /data/balti.migrate/package-data
+# Removed in v2.0. This is now done by prep.sh
+# mv /tmp/package-data /data/balti.migrate/package-data
 
 res="$(cat /proc/cmdline | grep slot_suffix)";
 
@@ -28,7 +33,7 @@ if [ ! -e /system/app/MigrateHelper/MigrateHelper.apk ]; then
     echo "ui_print **********************************" >> /proc/self/fd/$OUTFD;
     echo "ui_print  " >> /proc/self/fd/$OUTFD;
     rm -rf /system/app/MigrateHelper
-    rm -rf /data/balti.migrate
+    rm -rf $1
     unsuccessful_unpack=true
     sleep 2s
 else
@@ -39,7 +44,7 @@ if [ -e /tmp/extras-data ] && [ "$unsuccessful_unpack" = false ]
 then
 	ed=/tmp/extras-data
 	while read -r line || [[ -n "$line" ]]; do
-        if [ ! -e /data/balti.migrate/${line} ]; then
+        if [ ! -e $1/${line} ]; then
             echo "ui_print $line was not unpacked" >> /proc/self/fd/$OUTFD;
         fi
     done < "$ed"

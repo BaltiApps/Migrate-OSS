@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     AlertDialog loadingDialog;
     int REQUEST_CODE = 43;
 
-    int THIS_VERSION = 10;
+    static int THIS_VERSION = 10;
 
     String rootErrorMessage = "";
 
@@ -81,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView = findViewById(R.id.navigationDrawer);
 
         if (main.getBoolean("firstRun", true)) {
+
+            getExternalCacheDir();
 
             editor.putInt("version", THIS_VERSION);
             editor.commit();

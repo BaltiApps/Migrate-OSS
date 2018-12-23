@@ -225,7 +225,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         };
         LocalBroadcastManager.getInstance(this).registerReceiver(extraBackupsStartReceiver, new IntentFilter("extraBackupsStarted"));
 
-        if (!main.getBoolean("sem_apology", false)){
+        /*if (!main.getBoolean("sem_apology", false)){
             new AlertDialog.Builder(this)
                     .setTitle(R.string.sem_apology)
                     .setMessage(R.string.sem_apology_desc)
@@ -233,7 +233,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
                     .show();
             editor.putBoolean("sem_apology", true);
             editor.commit();
-        }
+        }*/
 
         /*final AdView adView = findViewById(R.id.backup_activity_adView);
         AdRequest adRequest = new AdRequest.Builder().build();

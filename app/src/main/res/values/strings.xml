@@ -1,12 +1,12 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <!--Version changes to be made in
 
     current_version_name (must not have blank spaces)
-    about_app.xml
     changelog
     build.gradle
-    MainActivity.java
+    MainActivity.java [int THIS_VERSION and showChangeLog()]
+    build.gradle version in Migrate helper
 
     -->
 
@@ -17,38 +17,37 @@
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
-    <string name="prs_label">Migrate\nversion 2.0(christmas_beta)</string>
 
     <!--changelog-->
-    <string name="version_1.0" tools:ignore="ExtraTranslation">Version 1.0(beta)</string>
-    <string name="version_1.0_content" tools:ignore="ExtraTranslation">\u2022 Initial release</string>
-    <string name="version_1.0.1" tools:ignore="ExtraTranslation">Version 1.0.1(beta)</string>
-    <string name="version_1.0.1_content" tools:ignore="ExtraTranslation">\u2022 Fixed app intro SKIP button</string>
-    <string name="version_1.0.2" tools:ignore="ExtraTranslation">Version 1.0.2(beta)</string>
-    <string name="version_1.0.2_content" tools:ignore="ExtraTranslation">\u2022 Added more names in thanks list</string>
-    <string name="version_1.0.3" tools:ignore="ExtraTranslation">Version 1.0.3(beta)</string>
-    <string name="version_1.0.3_content" tools:ignore="ExtraTranslation">
+    <string name="version_1.0" >Version 1.0(beta)</string>
+    <string name="version_1.0_content">\u2022 Initial release</string>
+    <string name="version_1.0.1">Version 1.0.1(beta)</string>
+    <string name="version_1.0.1_content">\u2022 Fixed app intro SKIP button</string>
+    <string name="version_1.0.2">Version 1.0.2(beta)</string>
+    <string name="version_1.0.2_content">\u2022 Added more names in thanks list</string>
+    <string name="version_1.0.3">Version 1.0.3(beta)</string>
+    <string name="version_1.0.3_content">
         \u2022 Fixed log sharing\n
         \u2022 Also share script file in log\n
         \u2022 Blacklist Android system from backup list (prevents tar socket error)
     </string>
-    <string name="version_1.0.4" tools:ignore="ExtraTranslation">Version 1.0.4(beta)</string>
-    <string name="version_1.0.4_content" tools:ignore="ExtraTranslation">
+    <string name="version_1.0.4">Version 1.0.4(beta)</string>
+    <string name="version_1.0.4_content">
         \u2022 Improvements to logging\n
         \u2022 Ignore tar socket warnings\n
         \u2022 New update-binary should prevent TWRP error 3 issue\n
         \u2022 Should fix an issue of null String while reading backup data
     </string>
-    <string name="version_1.0.5" tools:ignore="ExtraTranslation">Version 1.0.5(beta)</string>
-    <string name="version_1.0.5_content" tools:ignore="ExtraTranslation">
+    <string name="version_1.0.5">Version 1.0.5(beta)</string>
+    <string name="version_1.0.5_content">
         \u2022 Probable fix to \"android.os.TransactionTooLargeException\"\n
         \u2022 Better in app protection to prevent zips from not being made\n
         \u2022 App version is now written in logs\n
         \u2022 App now targets Oreo instead of Pie to potentially avoid some crashes\n
         \u2022 Fixed unexpected \'(\' in restore process
     </string>
-    <string name="version_1.1" tools:ignore="ExtraTranslation">Version 1.1(beta)</string>
-    <string name="version_1.1_content" tools:ignore="ExtraTranslation">
+    <string name="version_1.1">Version 1.1(beta)</string>
+    <string name="version_1.1_content">
         \u2022 [New] Backup verification before zipping\n
         \u2022 Major code refactoring and under-the-hood changes\n
         \u2022 CANCEL button now kills the backup process\n
@@ -59,8 +58,8 @@
         \u2022 Remove illegal characters from backup name\n
         \u2022 \"Share scripts\" option should now work properly.
     </string>
-    <string name="version_1.1.1" tools:ignore="ExtraTranslation">Version 1.1.1(beta)</string>
-    <string name="version_1.1.1_content" tools:ignore="ExtraTranslation">
+    <string name="version_1.1.1">Version 1.1.1(beta)</string>
+    <string name="version_1.1.1_content">
         v1.1\n\n
     \u2022 [New] Backup verification before zipping\n
     \u2022 Major code refactoring and under-the-hood changes\n
@@ -74,22 +73,25 @@
     v1.1.1\n\n
     \u2022 Fixed an issue of no-closing-quote in helper
     </string>
-    <string name="version_1.1.1_only_content" tools:ignore="ExtraTranslation">
+    <string name="version_1.1.1_only_content">
     \u2022 Fixed an issue of no-closing-quote in helper
     </string>
-    <string name="version_1.2" tools:ignore="ExtraTranslation">Version 1.2(beta)</string>
-    <string name="version_1.2_content" tools:ignore="ExtraTranslation">
+    <string name="version_1.2">Version 1.2(beta)</string>
+    <string name="version_1.2_content">
     \u2022 Completely avoid "dumpsys" while backing app permissions\n
     \u2022 Now app data in tar.gz is unpacked in /data/data\n
         (probable fix to Operation not permitted issues in Google Pixel)
     </string>
-    <string name="version_2.0" tools:ignore="ExtraTranslation">Version 2.0(christmas_beta)</string>
-    <string name="version_2.0_content" tools:ignore="ExtraTranslation">
+    <string name="version_2.0">Version 2.0(christmas_beta)</string>
+    <string name="version_2.0_content">
+        Merry Christmas and Happy New Year!!\n\n
     \u2022 SD card support (with Magisk module)\n
     \u2022 Support for split apks\n
+    \u2022 Apks are now unpacked under /data/local/tmp/migrate_cache\n
     \u2022 A new alternative method to calculate app size.\n
         (probable fix to freezing in calculating app size)\n
     \u2022 Now every migrate zip package has a busybox binary as a fallback\n
+    \u2022 Migrate helper gets new Temporary Disable option.\n
     </string>
 
     <!--activity_main.xml-->
@@ -458,10 +460,10 @@
     <string name="sure_to_mail_exp">Please only contact if you are sure of a bug. To avoid unnecessary emails, please read the Help page first.\n
         Your email address will not be used for anything else other than if it is necessary to mail back.</string>
     <string name="select_mail">Select mailing app, example Gmail.</string>
-    <string name="sem_apology">Semester apology!</string>
+    <!--<string name="sem_apology">Semester apology!</string>
     <string name="sem_apology_desc">Due to upcoming semesters, I will not be able to focus on the app development for a month or so. I am sorry.\n\n
     Meanwhile, please continue using the app and share bug reports. Your love and support means a lot to me. Thanks!\n\n
-    - SayantanRC</string>
+    - SayantanRC</string>-->
 
     <string name="copied_app">This app has been copied and is fake.</string>
     <string name="copied_app_exp">Please get the original app from BaltiApps by clicking the Install button.</string>
