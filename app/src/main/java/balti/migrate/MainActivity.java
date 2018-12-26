@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     TableRow internalStorageUse, sdCardStorageUse;
     ProgressBar internalStorageBar, sdCardStorageBar;
     TextView internalStorageText, sdCardStorageText, sdCardName;
+    TextView learnAboutSdCardSupport;
 
     DrawerLayout drawer;
     NavigationView navigationView;
@@ -155,6 +157,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         sdCardStorageBar = findViewById(R.id.sd_card_storage_bar);
         sdCardStorageText = findViewById(R.id.sc_card_storage_text);
         sdCardName = findViewById(R.id.sd_card_name);
+
+        learnAboutSdCardSupport = findViewById(R.id.learn_sd_card_support);
+        learnAboutSdCardSupport.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
 
 
         navigationView.setNavigationItemSelectedListener(this);

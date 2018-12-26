@@ -99,7 +99,11 @@
                 android:layout_margin="@dimen/large_padding_width"
                 android:gravity="end"
                 android:text="@string/learn_about_sd_card_support"
-                android:textColor="@color/colorAccent" />
+                android:textColor="@color/colorAccent"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                />
 
         </LinearLayout>
 
