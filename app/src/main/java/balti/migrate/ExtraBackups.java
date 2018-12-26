@@ -162,6 +162,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         int parts = 1;
 
         String duBinaryFilePath = "";
+        Vector<BackupDataPacketWithSize> appsWithSize = new Vector<>(0);
 
         MakeBackupSummary(String backupName) {
             this.backupName = backupName;
@@ -186,7 +187,6 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
             waitingProgress.setVisibility(View.GONE);
             waitingDetails.setVisibility(View.GONE);
-
         }
 
         @Override
@@ -238,9 +238,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 }
             }
 
-
-            Vector<BackupDataPacketWithSize> appsWithSize = new Vector<>(0);
-            long totalBackupSize = 0;
+            //long totalBackupSize = 0;
 
             try {
 
@@ -275,9 +273,12 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                             long s;
                             memoryReaderRes = processReader.readLine();
                             s = Long.parseLong(memoryReaderRes.substring(0, memoryReaderRes.indexOf("/")).trim());
-                            if (apkPath.startsWith("/system"))
+                            if (apkPath.startsWith("/system")) {
                                 systemSize += s;
-                            else dataSize += s;
+                            }
+                            else {
+                                dataSize += s;
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -293,11 +294,12 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                             }
                         }
 
-                        totalBackupSize = totalBackupSize + dataSize + systemSize;
+                        //totalBackupSize = totalBackupSize + dataSize + systemSize;
+                        totalSize = totalSize + dataSize + systemSize;
 
                         publishProgress(getString(R.string.calculating_size),
                                 (i + 1) + " of " + totalSelectedApps,
-                                getString(R.string.files_size) + " " + commonTools.getHumanReadableStorageSpace(totalBackupSize) + "\n");
+                                getString(R.string.files_size) + " " + commonTools.getHumanReadableStorageSpace(totalSize) + "\n");
 
                         appsWithSize.add(new BackupDataPacketWithSize(packet, dataSize, systemSize));
 
@@ -320,7 +322,6 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                             final int finalI = i;
                             final long finalTotalBackupSize[] = new long[]{0};
 
-                            final long dataSize[] = new long[]{0}, systemSize[] = new long[]{0};
 
                             getPackageSizeInfo.invoke(pm, packet.PACKAGE_INFO.packageName,
                                     new IPackageStatsObserver.Stub() {
@@ -328,27 +329,44 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                                         public void onGetStatsCompleted(PackageStats pStats, boolean succeeded)
                                                 throws RemoteException {
 
+                                            long dataSize = 0, systemSize = 0;
+                                            String dataPath = "NULL";
+                                            if (packet.DATA)
+                                                dataPath = packet.PACKAGE_INFO.applicationInfo.dataDir;
 
                                             String apkPath = packet.PACKAGE_INFO.applicationInfo.sourceDir;
+                                            File actualApk = new File(apkPath);
                                             if (apkPath.startsWith("/system")) {
-                                                dataSize[0] += pStats.codeSize;
+                                                systemSize += actualApk.length();
                                             } else {
-                                                systemSize[0] += pStats.codeSize;
+                                                dataSize += actualApk.length();
                                             }
 
-                                            dataSize[0] += pStats.dataSize;
+                                            if (!dataPath.equals("NULL")) {
+                                                dataSize += pStats.dataSize + pStats.cacheSize;
+                                            }
 
-                                            finalTotalBackupSize[0] = finalTotalBackupSize[0] + dataSize[0] + systemSize[0];
+                                            dataSize = dataSize / 1024;
+                                            systemSize = systemSize / 1024;
+
+                                            finalTotalBackupSize[0] = finalTotalBackupSize[0] + dataSize + systemSize;
 
                                             publishProgress(getString(R.string.calculating_size),
                                                     (finalI + 1) + " of " + totalSelectedApps,
                                                     getString(R.string.files_size) + " " + commonTools.getHumanReadableStorageSpace(finalTotalBackupSize[0]) + "\n");
 
+                                            totalSize = totalSize + dataSize + systemSize;
+
+                                            appsWithSize.add(new BackupDataPacketWithSize(packet, dataSize, systemSize));
                                         }
                                     });
 
-                            appsWithSize.add(new BackupDataPacketWithSize(packet, dataSize[0], systemSize[0]));
                         }
+
+                        while (appsWithSize.size() < totalSelectedApps){
+                            Thread.sleep(100);
+                        }
+
                     } else {
 
                         StorageStatsManager storageStatsManager = (StorageStatsManager) getSystemService(Context.STORAGE_STATS_SERVICE);
@@ -367,26 +385,19 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                             if (packet.DATA)
                                 dataPath = packet.PACKAGE_INFO.applicationInfo.dataDir;
 
-                            File obbPath = new File("/sdcard/Android/obb/" + packet.PACKAGE_INFO.packageName);
+                            //File obbPath = new File("/sdcard/Android/obb/" + packet.PACKAGE_INFO.packageName);
                             File externalData = new File("/sdcard/Android/data/" + packet.PACKAGE_INFO.packageName);
                             File externalMedia = new File("/sdcard/Android/media/" + packet.PACKAGE_INFO.packageName);
 
-                            long ignoreSize = 0;
-
-                            if (obbPath.exists() && obbPath.canRead()) {
-                                ignoreSize = commonTools.getDirLength(obbPath.getAbsolutePath());
-                            }
-                            ignoreSize = ignoreSize / 1024;
-
                             File apkFile = new File(apkPath);
                             if (apkPath.startsWith("/system")) {
-                                systemSize += (apkFile.length() - ignoreSize) / 1024;
+                                systemSize += apkFile.length() / 1024;
                             } else {
-                                dataSize += (apkFile.length() - ignoreSize) / 1024;
+                                dataSize += apkFile.length() / 1024;
                             }
 
                             if (!dataPath.equals("NULL")) {
-                                ignoreSize = 0;
+                                long ignoreSize = 0;
                                 if (externalData.exists() && externalData.canRead()) {
                                     ignoreSize += commonTools.getDirLength(externalData.getAbsolutePath());
                                 }
@@ -398,11 +409,11 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                                 dataSize += (storageStats.getDataBytes() / 1024) - ignoreSize;
                             }
 
-                            totalBackupSize = totalBackupSize + dataSize + systemSize;
+                            totalSize = totalSize + dataSize + systemSize;
 
                             publishProgress(getString(R.string.calculating_size),
                                     (i + 1) + " of " + totalSelectedApps,
-                                    getString(R.string.files_size) + " " + commonTools.getHumanReadableStorageSpace(totalBackupSize) + "\n");
+                                    getString(R.string.files_size) + " " + commonTools.getHumanReadableStorageSpace(totalSize) + "\n");
 
                             appsWithSize.add(new BackupDataPacketWithSize(packet, dataSize, systemSize));
                         }
@@ -448,13 +459,13 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             if (totalMemory > MAX_TWRP_ZIP_SIZE)
                 totalMemory = MAX_TWRP_ZIP_SIZE;
 
-            totalSize = totalBackupSize;
+            //totalSize = totalBackupSize;
 
-            if (totalBackupSize > availableKb) {
+            if (totalSize > availableKb) {
                 return new Object[]{true};
             }
 
-            parts = (int) Math.ceil((totalBackupSize * 1.0) / totalMemory);
+            parts = (int) Math.ceil((totalSize * 1.0) / totalMemory);
 
             for (int i = 1; i <= parts; i++) {
 

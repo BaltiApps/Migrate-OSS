@@ -126,7 +126,7 @@
     <string name="p3">3. Because of the above reason, SD card option may or may not work depending on device, ROM and Android version.</string>
     <string name="p4">4. If the current implementation does not work for you, please wait till the module developer rewrites a new module or I find any other alternative. Thanks for your patience.</string>
     <string name="p5">To try to get SD card support, download and install the \"ExSDCard Access Enabler\" magisk module and reboot\n
-    This module is not made by me.
+    This module is made by developer Romain.
     </string>
 
     <!--extra_backups-->
@@ -197,12 +197,13 @@
     <string name="no_sd_card_detected">No SD card detected.</string>
     <string name="no_sd_card_detected_exp">Please make sure that you have mounted an external SD card (if supported by your device)\n
     Also make sure that you install the \"ExSDCard Access Enabler\" magisk module.\n\n
-    [huge thanks to developer Romain]
+    [module made by developer Romain.]
     </string>
     <string name="please_select_sd_card">Please select sd card</string>
     <string name="sd_card_not_rw">SD Card may not be mounted in R/W</string>
     <string name="sd_card_not_rw_exp">External SD card may not be accessible. Make sure that \"ExSDCard Access Enabler\" module is installed in Magisk.\n\n
-    [huge thanks to developer Romain]</string>
+    [module made by developer Romain.]
+    </string>
 
     <!--extra_item_selector.xml-->
     <string name="sms_selector_label">Select SMS</string>

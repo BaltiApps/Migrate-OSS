@@ -254,8 +254,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         availableKb = availableKb / 1024;
         long fullKb = statFs.getBlockSizeLong() * statFs.getBlockCountLong();
         fullKb = fullKb / 1024;
-        internalStorageBar.setProgress((int) (((fullKb - availableKb) * 100) / fullKb));
-        internalStorageText.setText(commonTools.getHumanReadableStorageSpace(availableKb) + "/" + commonTools.getHumanReadableStorageSpace(fullKb));
+        long consumedKb = fullKb - availableKb;
+        internalStorageBar.setProgress((int) ((consumedKb * 100) / fullKb));
+        internalStorageText.setText(commonTools.getHumanReadableStorageSpace(consumedKb) + "/" + commonTools.getHumanReadableStorageSpace(fullKb));
 
         String defaultPath = main.getString("defaultBackupPath", DEFAULT_INTERNAL_STORAGE_DIR);
 
@@ -281,9 +282,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             availableKb = availableKb / 1024;
             fullKb = statFs.getBlockSizeLong() * statFs.getBlockCountLong();
             fullKb = fullKb / 1024;
+            consumedKb = fullKb - availableKb;
             sdCardName.setText(sdCardRoot.getName());
-            sdCardStorageBar.setProgress((int) (((fullKb - availableKb) * 100) / fullKb));
-            sdCardStorageText.setText(commonTools.getHumanReadableStorageSpace(availableKb) + "/" + commonTools.getHumanReadableStorageSpace(fullKb));
+            sdCardStorageBar.setProgress((int) ((consumedKb * 100) / fullKb));
+            sdCardStorageText.setText(commonTools.getHumanReadableStorageSpace(consumedKb) + "/" + commonTools.getHumanReadableStorageSpace(fullKb));
         } else {
             sdCardStorageUse.setVisibility(View.GONE);
         }
@@ -325,9 +327,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (requestCode == REQUEST_CODE && grantResults.length == 2) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 if (isRootPermissionGranted()) {
-                    if (isUsageAccessGranted())
-                        startActivity(new Intent(MainActivity.this, BackupActivity.class));
-                    else {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isUsageAccessGranted()) {
                         new AlertDialog.Builder(this)
                                 .setTitle(R.string.usage_access_permission_needed)
                                 .setMessage(R.string.usage_access_permission_needed_desc)
@@ -341,6 +341,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 })
                                 .setNegativeButton(android.R.string.cancel, null)
                                 .show();
+                    }
+                    else {
+                        startActivity(new Intent(MainActivity.this, BackupActivity.class));
                     }
                 } else {
                     new AlertDialog.Builder(this)
@@ -481,6 +484,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private boolean isUsageAccessGranted() {
         try {
+
             PackageManager packageManager = getPackageManager();
             ApplicationInfo applicationInfo = packageManager.getApplicationInfo(getPackageName(), 0);
             AppOpsManager appOpsManager = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
