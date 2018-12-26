@@ -48,16 +48,16 @@
         </menu>
     </item>
 
-    <item android:title="@string/other_options"
+    <item android:id="@+id/otherApps"
+        android:title="@string/other_apps"
+        android:icon="@drawable/ic_other_apps"/>
+
+    <item android:title="@string/contact_options"
         >
 
         <menu>
-            <group android:id="@+id/others_group"
+            <group android:id="@+id/contact_group"
                 >
-
-                <item android:id="@+id/otherApps"
-                    android:title="@string/other_apps"
-                    android:icon="@drawable/ic_other_apps"/>
 
                 <item android:id="@+id/contact"
                     android:title="@string/contact"

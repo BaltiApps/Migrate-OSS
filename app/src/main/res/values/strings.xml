@@ -98,6 +98,7 @@
     <string name="backupButton">Backup</string>
     <string name="restoreButton">Restore</string>
     <string name="internal_storage">Internal storage</string>
+    <string name="learn_about_sd_card_support">Learn about SD card support</string>
 
     <!--backup_layout.xml-->
     <string name="select_apps">Select apps</string>
@@ -184,11 +185,13 @@
     <string name="change_size_calculation_method">You can try going to the main screen of the app -> click top left green icon -> \"Preferences\" -> \"Use new method to calculate size\"</string>
     <string name="no_sd_card_detected">No SD card detected.</string>
     <string name="no_sd_card_detected_exp">Please make sure that you have mounted an external SD card (if supported by your device)\n
-    Also make sure that you install the \"ExSDCard Access Enabler\" magisk module.
+    Also make sure that you install the \"ExSDCard Access Enabler\" magisk module.\n\n
+    [huge thanks to developer Romain]
     </string>
     <string name="please_select_sd_card">Please select sd card</string>
     <string name="sd_card_not_rw">SD Card may not be mounted in R/W</string>
-    <string name="sd_card_not_rw_exp">External SD card may not be accessible. Make sure that \"ExSDCard Access Enabler\" module is installed in Magisk.</string>
+    <string name="sd_card_not_rw_exp">External SD card may not be accessible. Make sure that \"ExSDCard Access Enabler\" module is installed in Magisk.\n\n
+    [huge thanks to developer Romain]</string>
 
     <!--extra_item_selector.xml-->
     <string name="sms_selector_label">Select SMS</string>
@@ -395,7 +398,7 @@
     <string name="lastLog">Last logs</string>
     <string name="specialThanks">Special thanks</string>
     <string name="rateTheApp">Rate the app</string>
-    <string name="other_options">Other options</string>
+    <string name="contact_options">Contact options</string>
     <string name="other_apps">Other apps</string>
     <string name="contact">Contact by email</string>
     

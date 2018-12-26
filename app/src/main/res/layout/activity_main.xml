@@ -96,6 +96,16 @@
                     android:foreground="?android:attr/selectableItemBackground"
                     android:text="@string/restoreButton" />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/learn_about_sd_card_support"
+                    android:gravity="end"
+                    android:layout_margin="@dimen/large_padding_width"
+                    android:textColor="@color/colorAccent"
+                    android:id="@+id/learn_sd_card_support"
+                    />
+
             </LinearLayout>
 
             <LinearLayout

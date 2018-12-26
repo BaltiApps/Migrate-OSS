@@ -658,6 +658,9 @@ public class BackupEngine {
         try {
             BufferedWriter scriptWriter = new BufferedWriter(new FileWriter(retryScript));
 
+            scriptWriter.write("#!sbin/sh\n\n");
+            scriptWriter.write("echo \" \"\n");
+            scriptWriter.write("sleep 1s\n");
             scriptWriter.write("echo \"--- RECOVERY PID: $$\"\n");
             scriptWriter.write("cp " + retryScript.getAbsolutePath() + " " + context.getExternalCacheDir() + "/\n");
 
@@ -1281,6 +1284,9 @@ public class BackupEngine {
 
             BufferedWriter scriptWriter = new BufferedWriter(new FileWriter(scriptFile));
 
+            scriptWriter.write("#!sbin/sh\n\n");
+            scriptWriter.write("echo \" \"\n");
+            scriptWriter.write("sleep 1s\n");
             scriptWriter.write("echo \"--- PID: $$\"\n");
             scriptWriter.write("cp " + scriptFile.getAbsolutePath() + " " + context.getExternalCacheDir() + "/\n");
             scriptWriter.write("cp " + busyboxBinaryFilePath + " " + destination + "/" + backupName + "/\n");
