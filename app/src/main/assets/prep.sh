@@ -3,7 +3,6 @@
 # parameters:
 
 # TEMP_DIR_NAME
-# version
 # timeStamp
 
 OUTFD="/dev/null"
@@ -152,42 +151,7 @@ mkdir -p /system/priv-app/
 mkdir -p /data/app/
 mkdir -p /data/data/
 
-helper_apk_dir=/system/app/MigrateHelper
-
-if [ -e ${helper_apk_dir}/MigrateHelper.apk ]; then
-
-    if [ -e ${helper_apk_dir}/v ]; then
-        last_helper_version="$(cat ${helper_apk_dir}/v)"
-        echo "ui_print Last helper version: $last_helper_version" >> /proc/self/fd/$OUTFD;
-    else
-        last_helper_version="0"
-    fi
-
-    if [ ${last_helper_version} -lt $2 ]; then
-        echo "ui_print Upgrading helper." >> /proc/self/fd/$OUTFD;
-        rm -r ${helper_apk_dir}
-        rm -r /data/data/balti.migratehelper/
-        mkdir -p ${helper_apk_dir}
-        mv -f /tmp/helper.apk ${helper_apk_dir}/MigrateHelper.apk
-        echo "$2" > ${helper_apk_dir}/v
-    else
-        echo "ui_print Helper already present. Skipping helper injection." >> /proc/self/fd/$OUTFD;
-    fi
-else
-    echo "ui_print Injecting helper." >> /proc/self/fd/$OUTFD;
-    rm -r ${helper_apk_dir}
-    rm -r /data/data/balti.migratehelper/
-    mkdir -p ${helper_apk_dir}
-    mv -f /tmp/helper.apk ${helper_apk_dir}/MigrateHelper.apk
-    touch ${helper_apk_dir}/v
-    echo "$2" > ${helper_apk_dir}/v
-fi
-
-if [ -e $1 ] && [ -f $1 ]; then
-    mv $1 $1.bak
-fi
-
 mkdir -p $1
-cp /tmp/package-data.txt $1/package-data${3}.txt
+cp /tmp/package-data.txt $1/package-data${2}.txt
 
 rm /tmp/prep.sh

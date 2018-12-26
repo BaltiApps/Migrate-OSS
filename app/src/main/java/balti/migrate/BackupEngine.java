@@ -657,7 +657,7 @@ public class BackupEngine {
 
             scriptWriter.write("#!sbin/sh\n\n");
             scriptWriter.write("echo \" \"\n");
-            scriptWriter.write("sleep 1s\n");
+            scriptWriter.write("sleep 1\n");
             scriptWriter.write("echo \"--- RECOVERY PID: $$\"\n");
             scriptWriter.write("cp " + retryScript.getAbsolutePath() + " " + context.getExternalCacheDir() + "/\n");
 
@@ -879,20 +879,12 @@ public class BackupEngine {
                     .setContentText("");
             notificationManager.notify(NOTIFICATION_ID, progressNotif.build());
 
-            File f = new File(destination + "/" + backupName);
-            int n = f.listFiles(new FileFilter() {
-                @Override
-                public boolean accept(File pathname) {
-                    return pathname.isFile();
-                }
-            }).length;
-            n += 2;
-
             (new File(destination + "/" + backupName + ".zip")).delete();
             int c = 0;
 
             File directory = new File(destination + "/" + backupName);
             Vector<File> files = getAllFiles(directory, new Vector<File>(0));
+            int n = files.size();
 
             File zipFile = new File(destination + "/" + backupName + ".zip");
 
@@ -915,6 +907,7 @@ public class BackupEngine {
 
                     zipOutputStream.putNextEntry(zipEntry);
                     zipOutputStream.closeEntry();
+                    c++;
                     continue;
                 } else {
                     zipEntry = new ZipEntry(fn);
@@ -1234,13 +1227,13 @@ public class BackupEngine {
 
             updater_writer.write("ifelse(is_mounted(\"/data\") && is_mounted(\"/system\"), ui_print(\"Mounted!\"), abort(\"Mount failed! Exiting...\"));\n");
 
-            updater_writer.write("package_extract_file(\"helper.apk\", \"/tmp/helper.apk\");\n");
-            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777, \"" + "/tmp/helper.apk" + "\");\n");
+            /*updater_writer.write("package_extract_file(\"helper.apk\", \"/tmp/helper.apk\");\n");
+            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777, \"" + "/tmp/helper.apk" + "\");\n");*/
 
             updater_writer.write("package_extract_file(\"" + "prep.sh" + "\", \"" + "/tmp/prep.sh" + "\");\n");
             updater_writer.write("package_extract_file(\"" + "package-data.txt" + "\", \"" + "/tmp/package-data.txt" + "\");\n");
             updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/tmp/prep.sh" + "\");\n");
-            updater_writer.write("run_program(\"/tmp/prep.sh\", \"" + TEMP_DIR_NAME + "\", \"" + THIS_VERSION + "\", \"" + timeStamp + "\");\n");
+            updater_writer.write("run_program(\"/tmp/prep.sh\", \"" + TEMP_DIR_NAME + "\", \"" + timeStamp + "\");\n");
 
             updater_writer.write("ifelse(is_mounted(\"/data\"), ui_print(\"Parameters checked!\") && sleep(2s), abort(\"Exiting...\"));\n");
             updater_writer.write("ui_print(\" \");\n");
@@ -1276,7 +1269,7 @@ public class BackupEngine {
 
             scriptWriter.write("#!sbin/sh\n\n");
             scriptWriter.write("echo \" \"\n");
-            scriptWriter.write("sleep 1s\n");
+            scriptWriter.write("sleep 1\n");
             scriptWriter.write("echo \"--- PID: $$\"\n");
             scriptWriter.write("cp " + scriptFile.getAbsolutePath() + " " + context.getExternalCacheDir() + "/\n");
             scriptWriter.write("cp " + busyboxBinaryFilePath + " " + destination + "/" + backupName + "/\n");
@@ -1445,8 +1438,15 @@ public class BackupEngine {
                     updater_writer.write("ui_print(\"Extracting keyboard data: " + keyboardBackupName + "\");\n");
                     updater_writer.write("package_extract_file(\"" + keyboardBackupName + "\", \"" + TEMP_DIR_NAME + "/" + keyboardBackupName + "\");\n");
                 }
-                updater_writer.write("ui_print(\" \");\n");
             }
+
+            updater_writer.write("ui_print(\" \");\n");
+            updater_writer.write("ui_print(\"Unpacking helper\");\n");
+            updater_writer.write("package_extract_dir(\"system\", \"/system\");\n");
+            updater_writer.write("package_extract_file(\"" + "helper_unpacking_script.sh" + "\", \"" + "/tmp/helper_unpacking_script.sh" + "\");\n");
+            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/tmp/helper_unpacking_script.sh" + "\");\n");
+            updater_writer.write("run_program(\"/tmp/helper_unpacking_script.sh\", \"/system/app/helper\", \"" + THIS_VERSION + "\");\n");
+            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"" + "/system/app/MigrateHelper" + "\");\n");
 
             updater_writer.write("set_progress(1.0000);\n");
 
@@ -1552,6 +1552,21 @@ public class BackupEngine {
         }
 
 
+        File unpackerScript = new File(commonTools.unpackAssetToInternal("helper_unpacking_script.sh", "helper_unpacking_script.sh", false));
+
+        File unpackerScript_destination = new File(destination + "/" + backupName + "/helper_unpacking_script.sh");
+        if (unpackerScript.exists()) {
+            moveErr = moveFile(unpackerScript, unpackerScript_destination);
+            //prepScript.renameTo(prepScript_destination);
+        } else {
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "helper_unpacking_script.sh could not be unpacked" + "\n";
+        }
+
+        if (!unpackerScript_destination.exists()) {
+            err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "helper_unpacking_script.sh could not be moved " + moveErr + "\n";
+        }
+
+
         File verifyScript = new File(commonTools.unpackAssetToInternal("verify.sh", "verify.sh", false));
 
         File verifyScript_destination = new File(destination + "/" + backupName + "/verify.sh");
@@ -1582,7 +1597,8 @@ public class BackupEngine {
 
         File helper = new File(commonTools.unpackAssetToInternal("helper.apk", "helper.apk", false));
 
-        File helper_destination = new File(destination + "/" + backupName + "/helper.apk");
+        File helper_destination = new File(destination + "/" + backupName + "/system/app/helper/MigrateHelper.apk");
+        helper_destination.getParentFile().mkdirs();
         //new File(destination + "/" + backupName + "/system/app/MigrateHelper").mkdirs();
 
         if (helper.exists()) {
