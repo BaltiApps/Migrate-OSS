@@ -1,156 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_list_bg">
+    android:background="@drawable/app_list_bg"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
         android:orientation="vertical"
+        android:paddingStart="@dimen/large_padding_width"
         android:paddingTop="@dimen/large_padding_width"
         android:paddingEnd="@dimen/large_padding_width"
-        android:paddingStart="@dimen/large_padding_width"
-        android:paddingBottom="@dimen/small_padding_width"
-        android:background="@color/colorPrimary"
-        >
+        android:paddingBottom="@dimen/small_padding_width">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
+            android:orientation="horizontal">
 
             <ImageButton
+                android:id="@+id/backupLayoutBackButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_back"
-                android:background="@android:color/transparent"
-                android:padding="@dimen/large_padding_width"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:id="@+id/backupLayoutBackButton"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                />
+                android:background="@android:color/transparent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:padding="@dimen/large_padding_width"
+                android:src="@drawable/ic_arrow_back" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/select_apps"
-                android:paddingStart="@dimen/small_padding_width"
-                android:layout_toEndOf="@id/backupLayoutBackButton"
                 android:layout_centerVertical="true"
-                />
+                android:layout_toEndOf="@id/backupLayoutBackButton"
+                android:paddingStart="@dimen/small_padding_width"
+                android:text="@string/select_apps"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <ImageButton
+                android:id="@+id/backup_activity_help"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_help"
-                android:background="@android:color/transparent"
                 android:layout_alignParentEnd="true"
-                android:padding="@dimen/large_padding_width"
                 android:layout_centerVertical="true"
+                android:background="@android:color/transparent"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:id="@+id/backup_activity_help"
-                />
+                android:padding="@dimen/large_padding_width"
+                android:src="@drawable/ic_help" />
 
         </RelativeLayout>
 
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize">
+            android:layout_height="?android:attr/actionBarSize"
+            android:orientation="horizontal">
 
             <Spinner
+                android:id="@+id/appType"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:id="@+id/appType"
-                android:entries="@array/appTypeList"
-                />
+                android:entries="@array/appTypeList" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_weight="1"
                 android:gravity="end"
-                >
+                android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:id="@+id/appCheckboxView"
-                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:paddingEnd="@dimen/large_padding_width"
+                    android:orientation="vertical"
                     android:paddingStart="@dimen/large_padding_width"
-                    >
+                    android:paddingEnd="@dimen/large_padding_width">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/app"
-                        />
+                        android:text="@string/app" />
 
                     <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
                         android:id="@+id/appAllSelect"
-                        android:gravity="bottom"
-                        />
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="bottom" />
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:id="@+id/dataCheckboxView"
-                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:paddingEnd="@dimen/large_padding_width"
+                    android:orientation="vertical"
                     android:paddingStart="@dimen/large_padding_width"
-                    >
+                    android:paddingEnd="@dimen/large_padding_width">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/data"
-                        />
+                        android:text="@string/data" />
 
                     <CheckBox
+                        android:id="@+id/dataAllSelect"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:id="@+id/dataAllSelect"
-                        android:gravity="bottom"
-                        />
+                        android:gravity="bottom" />
 
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/permissionCheckboxView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/permissionCheckboxView"
-                    android:orientation="vertical"
                     android:gravity="center_horizontal"
-                    android:paddingEnd="@dimen/large_padding_width"
+                    android:orientation="vertical"
                     android:paddingStart="@dimen/large_padding_width"
-                    >
+                    android:paddingEnd="@dimen/large_padding_width">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/permission"
-                        />
+                        android:text="@string/permission" />
 
                     <CheckBox
+                        android:id="@+id/permissionsAllSelect"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:id="@+id/permissionsAllSelect"
-                        android:gravity="bottom"
-                        />
+                        android:gravity="bottom" />
 
                 </LinearLayout>
 
@@ -165,73 +149,66 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <ProgressBar
+            android:id="@+id/appLoadingView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:id="@+id/appLoadingView"
-            />
+            android:layout_centerVertical="true" />
 
         <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
             android:id="@+id/appBackupList"
-            />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
-        android:padding="10dp"
         android:gravity="center_vertical"
-        android:id="@+id/bottom_bar"
-        >
+        android:padding="10dp">
 
         <TextView
+            android:id="@+id/backupActivityNext"
             android:layout_width="@dimen/next_button_width"
             android:layout_height="@dimen/next_button_height"
             android:layout_alignParentEnd="true"
-            android:padding="@dimen/large_padding_width"
             android:background="@drawable/next"
-            android:gravity="center"
             android:clickable="true"
+            android:drawableEnd="@drawable/ic_next"
             android:focusable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            android:id="@+id/backupActivityNext"
-            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:padding="@dimen/large_padding_width"
             android:text="@string/next"
-            android:drawableEnd="@drawable/ic_next"
             android:textAllCaps="true"
-            />
+            android:textColor="@android:color/white" />
 
         <ImageButton
+            android:id="@+id/clearAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_clear_all"
-            android:background="@android:color/transparent"
-            android:padding="10dp"
-            android:id="@+id/clearAll"
             android:layout_alignTop="@id/backupActivityNext"
             android:layout_alignBottom="@id/backupActivityNext"
-            />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_select_all"
             android:background="@android:color/transparent"
             android:padding="10dp"
+            android:src="@drawable/ic_clear_all" />
+
+        <ImageButton
             android:id="@+id/selectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignTop="@id/backupActivityNext"
             android:layout_alignBottom="@id/backupActivityNext"
             android:layout_toEndOf="@id/clearAll"
-            />
+            android:background="@android:color/transparent"
+            android:padding="10dp"
+            android:src="@drawable/ic_select_all" />
 
     </RelativeLayout>
 

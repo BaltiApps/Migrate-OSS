@@ -1,57 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/main_bg_portrait"
-    >
+    android:background="@drawable/main_bg_portrait">
 
     <ImageButton
+        android:id="@+id/how_to_restore_close_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_close"
-        android:background="@android:color/transparent"
-        android:padding="@dimen/large_padding_width"
-        android:layout_margin="@dimen/large_padding_width"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:id="@+id/how_to_restore_close_button"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        />
+        android:layout_margin="@dimen/large_padding_width"
+        android:background="@android:color/transparent"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="@dimen/large_padding_width"
+        android:src="@drawable/ic_close" />
 
     <RelativeLayout
+        android:id="@+id/how_to_restore_button_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:id="@+id/how_to_restore_button_bar"
-        android:layout_margin="@dimen/small_padding_width"
-        >
+        android:layout_margin="@dimen/small_padding_width">
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/close"
-            android:layout_alignParentStart="true"
             android:id="@+id/how_to_restore_prev"
-            android:backgroundTint="@color/colorButtons"
-            />
-
-        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/next"
-            android:layout_alignParentEnd="true"
-            android:id="@+id/how_to_restore_next"
+            android:layout_alignParentStart="true"
             android:backgroundTint="@color/colorButtons"
-            />
+            android:text="@string/close" />
+
+        <Button
+            android:id="@+id/how_to_restore_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:backgroundTint="@color/colorButtons"
+            android:text="@string/next" />
 
     </RelativeLayout>
 
     <android.support.v4.view.ViewPager
+        android:id="@+id/how_to_restore_view_pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/how_to_restore_close_button"
         android:layout_above="@id/how_to_restore_button_bar"
-        android:id="@+id/how_to_restore_view_pager"
-        />
+        android:layout_below="@id/how_to_restore_close_button" />
 
 </RelativeLayout>

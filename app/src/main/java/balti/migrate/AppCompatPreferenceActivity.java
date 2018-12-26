@@ -108,5 +108,4 @@ public class AppCompatPreferenceActivity extends PreferenceActivity {
     }
 
 
-
 }

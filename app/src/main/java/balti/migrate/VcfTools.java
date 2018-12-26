@@ -22,14 +22,14 @@ public class VcfTools {
         this.context = context;
     }
 
-    public Cursor getContactsCursor(){
+    public Cursor getContactsCursor() {
         Cursor cursor = null;
         try {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
                 cursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
             }
+        } catch (Exception e) {
         }
-        catch (Exception e){}
         return cursor;
     }
 
@@ -46,10 +46,9 @@ public class VcfTools {
             FileInputStream fis = fd.createInputStream();
             byte[] buf = readBytes(fis);
             fis.read(buf);
-            vcardstring= new String(buf);
+            vcardstring = new String(buf);
             fullName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-        } catch (Exception e1)
-        {
+        } catch (Exception e1) {
             e1.printStackTrace();
             fullName = "";
             vcardstring = "";
@@ -61,7 +60,7 @@ public class VcfTools {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         int len;
         byte[] buffer = new byte[2048];
-        while ((len = stream.read(buffer)) != -1){
+        while ((len = stream.read(buffer)) != -1) {
             byteArrayOutputStream.write(buffer, 0, len);
         }
         return byteArrayOutputStream.toByteArray();

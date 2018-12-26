@@ -1,47 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/large_padding_width"
-    >
+    android:orientation="vertical"
+    android:padding="@dimen/large_padding_width">
 
     <EditText
+        android:id="@+id/backup_name_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/enter_backup_name"
-        android:id="@+id/backup_name_edit_text"
-        />
+        android:hint="@string/enter_backup_name" />
 
     <RadioGroup
+        android:id="@+id/storage_select_radio_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/large_padding_width"
-        android:id="@+id/storage_select_radio_group"
-        >
+        android:padding="@dimen/large_padding_width">
 
         <RadioButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:id="@+id/internal_storage_radio_button"
-            android:text="@string/internal_storage"
-            />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/internal_storage" />
 
 
         <RadioButton
+            android:id="@+id/sd_card_radio_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/sd_card_radio_button"
-            android:text="@string/sd_card"
-            />
+            android:text="@string/sd_card" />
 
         <TextView
+            android:id="@+id/ask_for_backup_name_sd_card_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="30dp"
             android:text="SD card name"
-            android:textColor="@color/colorAccent"
-            android:id="@+id/ask_for_backup_name_sd_card_name"
-            />
+            android:textColor="@color/colorAccent" />
 
     </RadioGroup>
 

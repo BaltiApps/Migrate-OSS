@@ -43,17 +43,17 @@ public class Exclusions {
         readManuallyExcludedPackages();
     }
 
-    void addNewExclusion(String packageName, int mode){
+    void addNewExclusion(String packageName, int mode) {
         manualPackageNames.addElement(packageName + " " + mode);
     }
 
-    private void readManuallyExcludedPackages(){
+    private void readManuallyExcludedPackages() {
         File exclusions = new File(context.getFilesDir().getAbsolutePath(), EXCLUSION_FILE_NAME);
-        if (exclusions.exists()){
+        if (exclusions.exists()) {
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(exclusions));
                 String line;
-                while ((line = reader.readLine()) != null){
+                while ((line = reader.readLine()) != null) {
                     manualPackageNames.addElement(line);
                 }
             } catch (IOException e) {
@@ -62,15 +62,14 @@ public class Exclusions {
         }
     }
 
-    void changeExclusion(String packageName, int mode){
-        for (int i = 0; i < manualPackageNames.size(); i++){
+    void changeExclusion(String packageName, int mode) {
+        for (int i = 0; i < manualPackageNames.size(); i++) {
             String l = manualPackageNames.elementAt(i);
-            if (l.indexOf(' ') != -1 && l.substring(0, l.indexOf(' ')).equals(packageName)){
-                if (mode != REMOVE_EXCLUSION){
+            if (l.indexOf(' ') != -1 && l.substring(0, l.indexOf(' ')).equals(packageName)) {
+                if (mode != REMOVE_EXCLUSION) {
                     manualPackageNames.remove(i);
                     manualPackageNames.insertElementAt(packageName + " " + mode, i);
-                }
-                else manualPackageNames.remove(i);
+                } else manualPackageNames.remove(i);
                 break;
             }
         }
@@ -93,7 +92,7 @@ public class Exclusions {
 
     }
 
-    int returnExclusionState(String packageName){
+    int returnExclusionState(String packageName) {
         int p = NOT_EXCLUDED;
         String dataExcluded = packageName + " " + EXCLUDE_DATA;
         String appDataExcluded = packageName + " " + EXCLUDE_APP_DATA;

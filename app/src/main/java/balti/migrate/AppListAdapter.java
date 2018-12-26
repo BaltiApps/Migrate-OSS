@@ -32,12 +32,11 @@ public class AppListAdapter extends BaseAdapter {
     OnCheck onCheck;
     Exclusions exclusions;
 
-    AppListAdapter(Context context, Vector<BackupDataPacket> appList)
-    {
+    AppListAdapter(Context context, Vector<BackupDataPacket> appList) {
         packageManager = context.getPackageManager();
         this.context = context;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        onCheck = (OnCheck)context;
+        onCheck = (OnCheck) context;
         this.appList = sortByAppName(appList);
         exclusions = new Exclusions(context);
     }
@@ -112,7 +111,7 @@ public class AppListAdapter extends BaseAdapter {
 
         if (p == Exclusions.EXCLUDE_DATA)
             data.setEnabled(false);
-        else if (p == Exclusions.EXCLUDE_APP_DATA){
+        else if (p == Exclusions.EXCLUDE_APP_DATA) {
             app.setEnabled(false);
             data.setEnabled(false);
             permission.setEnabled(false);
@@ -122,8 +121,7 @@ public class AppListAdapter extends BaseAdapter {
         if (data.isChecked()) {
             app.setChecked(true);
             app.setEnabled(false);
-        }
-        else if (p != Exclusions.EXCLUDE_APP_DATA) app.setEnabled(true);
+        } else if (p != Exclusions.EXCLUDE_APP_DATA) app.setEnabled(true);
 
         permission.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -136,8 +134,7 @@ public class AppListAdapter extends BaseAdapter {
         if (app.isChecked()) {
             permission.setEnabled(true);
             appItem.IS_PERMISSIBLE = true;
-        }
-        else {
+        } else {
             permission.setEnabled(false);
             permission.setChecked(false);
             appItem.IS_PERMISSIBLE = false;
@@ -151,8 +148,7 @@ public class AppListAdapter extends BaseAdapter {
                     appItem.IS_PERMISSIBLE = false;
                     permission.setChecked(false);
                     permission.setEnabled(false);
-                }
-                else {
+                } else {
                     appItem.IS_PERMISSIBLE = true;
                     permission.setEnabled(true);
                 }
@@ -164,12 +160,10 @@ public class AppListAdapter extends BaseAdapter {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 appItem.DATA = b;
-                if (b)
-                {
+                if (b) {
                     app.setChecked(true);
                     app.setEnabled(false);
-                }
-                else {
+                } else {
                     app.setEnabled(true);
                 }
                 onCheck.onCheck(appList);
@@ -179,19 +173,17 @@ public class AppListAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (appItem.APP && appItem.DATA && appItem.PERMISSIONS){
-                        data.setChecked(false);
-                        app.setChecked(false);
-                        permission.setChecked(false);
-                }
-                else {
+                if (appItem.APP && appItem.DATA && appItem.PERMISSIONS) {
+                    data.setChecked(false);
+                    app.setChecked(false);
+                    permission.setChecked(false);
+                } else {
 
                     if (p == Exclusions.NOT_EXCLUDED) {
                         app.setChecked(true);
                         data.setChecked(true);
                         permission.setChecked(true);
-                    }
-                    else if (p == Exclusions.EXCLUDE_DATA){
+                    } else if (p == Exclusions.EXCLUDE_DATA) {
                         app.setChecked(true);
                         permission.setChecked(true);
                     }
@@ -205,23 +197,20 @@ public class AppListAdapter extends BaseAdapter {
         return view;
     }
 
-    void checkAllData(boolean check)
-    {
-        for (int i = 0; i < appList.size(); i++)
-        {
+    void checkAllData(boolean check) {
+        for (int i = 0; i < appList.size(); i++) {
             int p = exclusions.returnExclusionState(appList.get(i).PACKAGE_INFO.packageName);
-            if (p == Exclusions.NOT_EXCLUDED){
+            if (p == Exclusions.NOT_EXCLUDED) {
                 appList.elementAt(i).DATA = check;
             }
         }
         onCheck.onCheck(appList);
     }
 
-    void checkAllApp(boolean check){
-        for (int i = 0; i < appList.size(); i++)
-        {
+    void checkAllApp(boolean check) {
+        for (int i = 0; i < appList.size(); i++) {
             int p = exclusions.returnExclusionState(appList.get(i).PACKAGE_INFO.packageName);
-            if (p == Exclusions.NOT_EXCLUDED || p == Exclusions.EXCLUDE_DATA){
+            if (p == Exclusions.NOT_EXCLUDED || p == Exclusions.EXCLUDE_DATA) {
                 appList.elementAt(i).APP = check;
                 appList.elementAt(i).IS_PERMISSIBLE = check;
             }
@@ -229,18 +218,16 @@ public class AppListAdapter extends BaseAdapter {
         onCheck.onCheck(appList);
     }
 
-    void checkAllPermissions(boolean check){
-        for (int i = 0; i < appList.size(); i++)
-        {
+    void checkAllPermissions(boolean check) {
+        for (int i = 0; i < appList.size(); i++) {
             if (check) {
                 if (appList.elementAt(i).APP) appList.elementAt(i).PERMISSIONS = true;
-            }
-            else appList.elementAt(i).PERMISSIONS = false;
+            } else appList.elementAt(i).PERMISSIONS = false;
         }
         onCheck.onCheck(appList);
     }
 
-    Vector<BackupDataPacket> sortByAppName(Vector<BackupDataPacket> appList){
+    Vector<BackupDataPacket> sortByAppName(Vector<BackupDataPacket> appList) {
         Vector<BackupDataPacket> sortedAppList = appList;
         Collections.sort(sortedAppList, new Comparator<BackupDataPacket>() {
             @Override

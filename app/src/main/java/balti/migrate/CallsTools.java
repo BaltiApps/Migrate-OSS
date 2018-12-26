@@ -21,14 +21,13 @@ public class CallsTools {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED) {
                 cursor = context.getContentResolver().query(CallLog.Calls.CONTENT_URI, null, null, null, null);
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return cursor;
     }
 
-    public CallsDataPacket getCallsPacket(Cursor cursor, boolean selected){
+    public CallsDataPacket getCallsPacket(Cursor cursor, boolean selected) {
 
         String callsCachedFormattedNumber, callsCachedLookupUri, callsCachedMatchedNumber, callsCachedName, callsCachedNormalizedNumber,
                 callsCachedNumberLabel, callsCachedNumberType, callsCachedPhotoId,
@@ -73,8 +72,7 @@ public class CallsTools {
             callsDuration = cursor.getLong(cursor.getColumnIndex(CallLog.Calls.DURATION));
             callsNew = cursor.getLong(cursor.getColumnIndex(CallLog.Calls.NEW));
 
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

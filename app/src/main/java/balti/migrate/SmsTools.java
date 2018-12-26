@@ -14,47 +14,47 @@ public class SmsTools {
         this.context = context;
     }
 
-    public Cursor getSmsInboxCursor(){
+    public Cursor getSmsInboxCursor() {
         Cursor cursor = null;
         try {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED) {
                 cursor = context.getContentResolver().query(Telephony.Sms.Inbox.CONTENT_URI, null, null, null, null);
             }
+        } catch (Exception e) {
         }
-        catch (Exception e){}
         return cursor;
     }
 
-    public Cursor getSmsOutboxCursor(){
+    public Cursor getSmsOutboxCursor() {
         Cursor cursor = null;
         try {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED) {
                 cursor = context.getContentResolver().query(Telephony.Sms.Outbox.CONTENT_URI, null, null, null, null);
             }
+        } catch (Exception e) {
         }
-        catch (Exception e){}
         return cursor;
     }
 
-    public Cursor getSmsSentCursor(){
+    public Cursor getSmsSentCursor() {
         Cursor cursor = null;
         try {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED) {
                 cursor = context.getContentResolver().query(Telephony.Sms.Sent.CONTENT_URI, null, null, null, null);
             }
+        } catch (Exception e) {
         }
-        catch (Exception e){}
         return cursor;
     }
 
-    public Cursor getSmsDraftCursor(){
+    public Cursor getSmsDraftCursor() {
         Cursor cursor = null;
         try {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED) {
                 cursor = context.getContentResolver().query(Telephony.Sms.Draft.CONTENT_URI, null, null, null, null);
             }
+        } catch (Exception e) {
         }
-        catch (Exception e){}
         return cursor;
     }
 
@@ -84,8 +84,7 @@ public class SmsTools {
             smsRead = cursor.getInt(cursor.getColumnIndex(Telephony.Sms.READ));
             smsLocked = cursor.getInt(cursor.getColumnIndex(Telephony.Sms.LOCKED));
             smsReplyPathPresent = cursor.getInt(cursor.getColumnIndex(Telephony.Sms.REPLY_PATH_PRESENT));
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

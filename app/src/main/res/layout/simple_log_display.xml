@@ -1,74 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
 
     <RelativeLayout
+        android:id="@+id/log_view_top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="@dimen/large_padding_width"
         android:background="@color/colorPrimary"
-        android:id="@+id/log_view_top_bar"
-        >
+        android:orientation="horizontal"
+        android:padding="@dimen/large_padding_width">
 
         <ImageButton
+            android:id="@+id/logViewBackButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_back"
-            android:background="@android:color/transparent"
-            android:padding="@dimen/large_padding_width"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:id="@+id/logViewBackButton"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            />
+            android:background="@android:color/transparent"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:padding="@dimen/large_padding_width"
+            android:src="@drawable/ic_arrow_back" />
 
         <TextView
+            android:id="@+id/logViewHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:padding="@dimen/small_padding_width"
-            android:layout_toEndOf="@id/logViewBackButton"
             android:layout_centerVertical="true"
-            android:id="@+id/logViewHeader"
-            />
+            android:layout_toEndOf="@id/logViewBackButton"
+            android:padding="@dimen/small_padding_width"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <ImageButton
+            android:id="@+id/logSendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_send"
-            android:background="@android:color/transparent"
-            android:padding="@dimen/large_padding_width"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:id="@+id/logSendButton"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            />
+            android:background="@android:color/transparent"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:padding="@dimen/large_padding_width"
+            android:src="@drawable/ic_send" />
 
     </RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/log_view_top_bar"
-        >
+        android:layout_below="@id/log_view_top_bar">
 
         <TextView
+            android:id="@+id/logBody"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/logBody"
-            android:padding="@dimen/large_padding_width"
-            />
+            android:padding="@dimen/large_padding_width" />
 
     </ScrollView>
 
     <ProgressBar
+        android:id="@+id/log_view_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:id="@+id/log_view_progress_bar"
-        />
+        android:layout_centerInParent="true" />
 
 </RelativeLayout>

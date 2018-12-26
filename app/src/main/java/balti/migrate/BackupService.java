@@ -95,12 +95,12 @@ public class BackupService extends Service {
 
                 toReturnIntent = intent;
 
-                if (intent.hasExtra("type")){
+                if (intent.hasExtra("type")) {
 
-                    if (intent.getStringExtra("type").equals("finished")){
+                    if (intent.getStringExtra("type").equals("finished")) {
 
                         ArrayList<String> errors = intent.getStringArrayListExtra("errors");
-                        if (errors!= null) previousErrors.addAll(errors);
+                        if (errors != null) previousErrors.addAll(errors);
 
                         if (intent.getBooleanExtra("final_process", false)) {
                             try {
@@ -108,7 +108,7 @@ public class BackupService extends Service {
 
                                 String backupName = intent.getStringExtra("backupName");
 
-                                if (backupName != null){
+                                if (backupName != null) {
                                     progressWriter.write("--->> " + backupName + " <<---\n");
                                     errorWriter.write("\n\n--->> " + backupName + " <<---\n");
                                 }
@@ -131,38 +131,47 @@ public class BackupService extends Service {
                                 errorWriter.write("--- Migrate version " + context.getString(R.string.current_version_name) + " ---\n");
                                 errorWriter.close();
 
-                            } catch (IOException e) { e.printStackTrace(); }
-                        }
-                        else {
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
                             PREVIOUS_TIME += intent.getLongExtra("total_time", 0);
                         }
 
 
-                        if ((runningBatchCount+1) < batches.size()) {
+                        if ((runningBatchCount + 1) < batches.size()) {
                             runningBatchCount += 1;
                             runNextBatch();
                         }
-                    }
-                    else if (intent.getStringExtra("type").equals("app_progress") && intent.hasExtra("app_log")
-                            && !intent.getStringExtra("app_log").equals(lastProgressLog)){
+                    } else if (intent.getStringExtra("type").equals("app_progress") && intent.hasExtra("app_log")
+                            && !intent.getStringExtra("app_log").equals(lastProgressLog)) {
 
-                        try { progressWriter.write((lastProgressLog = intent.getStringExtra("app_log")) + "\n"); } catch (IOException ignored) {}
+                        try {
+                            progressWriter.write((lastProgressLog = intent.getStringExtra("app_log")) + "\n");
+                        } catch (IOException ignored) {
+                        }
 
-                    }
-                    else if (intent.getStringExtra("type").equals("zip_progress") && intent.hasExtra("zip_log")
-                            && !intent.getStringExtra("zip_log").equals(lastZipLog)){
+                    } else if (intent.getStringExtra("type").equals("zip_progress") && intent.hasExtra("zip_log")
+                            && !intent.getStringExtra("zip_log").equals(lastZipLog)) {
 
-                        try { progressWriter.write((lastZipLog = intent.getStringExtra("zip_log")) + "\n"); } catch (IOException ignored) {}
+                        try {
+                            progressWriter.write((lastZipLog = intent.getStringExtra("zip_log")) + "\n");
+                        } catch (IOException ignored) {
+                        }
 
-                    }
-                    else if (intent.getStringExtra("type").equals("verifying_backups") && intent.hasExtra("app_name")){
+                    } else if (intent.getStringExtra("type").equals("verifying_backups") && intent.hasExtra("app_name")) {
 
-                        try { progressWriter.write(intent.getStringExtra("app_name") + "\n"); } catch (IOException ignored) {}
+                        try {
+                            progressWriter.write(intent.getStringExtra("app_name") + "\n");
+                        } catch (IOException ignored) {
+                        }
 
-                    }
-                    else if (intent.getStringExtra("type").equals("correcting_errors") && intent.hasExtra("retry_log")){
+                    } else if (intent.getStringExtra("type").equals("correcting_errors") && intent.hasExtra("retry_log")) {
 
-                        try { progressWriter.write(intent.getStringExtra("retry_log") + "\n"); } catch (IOException ignored) {}
+                        try {
+                            progressWriter.write(intent.getStringExtra("retry_log") + "\n");
+                        } catch (IOException ignored) {
+                        }
 
                     }
                 }
@@ -176,7 +185,7 @@ public class BackupService extends Service {
                 try {
                     cancelAll = true;
                     if (backupEngine != null)
-                    backupEngine.cancelProcess();
+                        backupEngine.cancelProcess();
                 } catch (Exception ignored) {
                 }
             }
@@ -221,11 +230,11 @@ public class BackupService extends Service {
         LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent("backup service started"));
     }
 
-    void runNextBatch(){
+    void runNextBatch() {
 
         if (cancelAll) return;
 
-        if (batches.size() == 0){
+        if (batches.size() == 0) {
 
             /*File tempBackupSummary = new File(getFilesDir(), "backup_summary_part0");
             try {
@@ -239,13 +248,15 @@ public class BackupService extends Service {
 
             backupEngine = new BackupEngine(tempBackupBatch, backupName, 0, 0, main.getInt("compressionLevel", 0),
                     destination, busyboxBinaryFile, this);
-        }
-        else {
+        } else {
             backupEngine = new BackupEngine(batches.get(runningBatchCount), backupName, runningBatchCount + 1,
                     batches.size(), main.getInt("compressionLevel", 0), destination, busyboxBinaryFile, this);
         }
 
-        try { progressWriter.write("\n\n" + "--- Next batch backup: " + (runningBatchCount+1) + " ---\n\n"); } catch (IOException ignored) { }
+        try {
+            progressWriter.write("\n\n" + "--- Next batch backup: " + (runningBatchCount + 1) + " ---\n\n");
+        } catch (IOException ignored) {
+        }
 
         if (runningBatchCount == 0)
             backupEngine.startBackup(doBackupContacts, contactsList, doBackupSms, smsList, doBackupCalls, callsList, doBackupDpi, dpiText,
@@ -260,7 +271,7 @@ public class BackupService extends Service {
                                  Vector<SmsDataPacket> smsList, boolean doBackupSms,
                                  String dpiText, boolean doBackupDpi,
                                  String keyboardText, boolean doBackupKeyboard
-                                 ){
+    ) {
 
         BackupService.batches = batches;
         BackupService.backupName = backupName;
@@ -285,26 +296,33 @@ public class BackupService extends Service {
         super.onDestroy();
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(cancelReceiver);
-        } catch (Exception ignored){}
+        } catch (Exception ignored) {
+        }
         try {
             unregisterReceiver(cancelReceiver);
-        } catch (Exception ignored){}
+        } catch (Exception ignored) {
+        }
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(progressBroadcast);
-        } catch (Exception ignored){}
+        } catch (Exception ignored) {
+        }
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(requestProgress);
-        } catch (Exception ignored){}
+        } catch (Exception ignored) {
+        }
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(triggerBatchBackupReceiver);
-        } catch (Exception ignored){}
+        } catch (Exception ignored) {
+        }
 
         try {
             progressWriter.close();
-        }catch (Exception ignored){}
+        } catch (Exception ignored) {
+        }
         try {
             errorWriter.close();
-        }catch (Exception ignored){}
+        } catch (Exception ignored) {
+        }
     }
 
     @Nullable

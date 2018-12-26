@@ -1,62 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="@dimen/large_padding_width"
     android:background="@color/grey_bg"
-    >
+    android:orientation="vertical"
+    android:padding="@dimen/large_padding_width">
 
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        />
+        android:layout_gravity="center_horizontal" />
 
     <TextView
+        android:id="@+id/waiting_head"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/please_wait"
         android:layout_gravity="center_horizontal"
-        android:textAppearance="?android:attr/textAppearanceLarge"
         android:padding="@dimen/large_padding_width"
-        android:id="@+id/waiting_head"
-        />
+        android:text="@string/please_wait"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 
     <TextView
+        android:id="@+id/waiting_progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:gravity="center_horizontal"
         android:paddingBottom="@dimen/large_padding_width"
-        android:id="@+id/waiting_progress"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center_vertical"
-        >
+        android:orientation="horizontal">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/small_padding_width"
             android:id="@+id/waiting_details"
-            />
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingBottom="@dimen/small_padding_width" />
 
         <Button
+            android:id="@+id/waiting_cancel"
             android:layout_width="100dp"
             android:layout_height="40dp"
-            android:background="@drawable/cancel_backup"
-            android:text="@android:string/cancel"
             android:layout_gravity="end"
-            android:id="@+id/waiting_cancel"
+            android:background="@drawable/cancel_backup"
             android:foreground="?android:attr/selectableItemBackground"
-            />
+            android:text="@android:string/cancel" />
 
     </LinearLayout>
 

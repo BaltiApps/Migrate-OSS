@@ -98,8 +98,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             startActivity(new Intent(this, InitialGuide.class));
             finish();
-        }
-        else showChangeLog(true);
+        } else showChangeLog(true);
 
         backup = findViewById(R.id.backupMain);
         backup.setOnClickListener(new View.OnClickListener() {
@@ -116,7 +115,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 try {
                     loadingDialog.dismiss();
-                }catch (Exception ignored){}
+                } catch (Exception ignored) {
+                }
 
                 loadingDialog = new AlertDialog.Builder(MainActivity.this)
                         .setView(v)
@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         final String cpu_abi = Build.SUPPORTED_ABIS[0];
 
-        if (!(cpu_abi.equals("armeabi-v7a") || cpu_abi.equals("arm64-v8a") || cpu_abi.equals("x86") || cpu_abi.equals("x86_64"))){
+        if (!(cpu_abi.equals("armeabi-v7a") || cpu_abi.equals("arm64-v8a") || cpu_abi.equals("x86") || cpu_abi.equals("x86_64"))) {
 
             backup.setVisibility(View.GONE);
 
@@ -188,18 +188,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                             try {
                                 startActivity(Intent.createChooser(email, getString(R.string.select_mail)));
-                            }
-                            catch (Exception e)
-                            {
+                            } catch (Exception e) {
                                 Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
                     })
                     .setCancelable(false)
                     .show();
-        }
-        else if (Build.VERSION.SDK_INT > 28 && !main.getBoolean("android_version_warning", false))
-        {
+        } else if (Build.VERSION.SDK_INT > 28 && !main.getBoolean("android_version_warning", false)) {
             new AlertDialog.Builder(MainActivity.this)
                     .setTitle(R.string.too_fast)
                     .setMessage(R.string.too_fast_desc)
@@ -266,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 
-        if (sdCardRoot != null){
+        if (sdCardRoot != null) {
 
             sdCardStorageUse.setVisibility(View.VISIBLE);
 
@@ -278,8 +274,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             sdCardName.setText(sdCardRoot.getName());
             sdCardStorageBar.setProgress((int) (((fullKb - availableKb) * 100) / fullKb));
             sdCardStorageText.setText(commonTools.getHumanReadableStorageSpace(availableKb) + "/" + commonTools.getHumanReadableStorageSpace(fullKb));
-        }
-        else {
+        } else {
             sdCardStorageUse.setVisibility(View.GONE);
         }
     }
@@ -290,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         boolean authetic = getPackageName().equals("balti.migrate");
 
-        if (!authetic){
+        if (!authetic) {
             android.app.AlertDialog.Builder ad = new android.app.AlertDialog.Builder(this);
             ad.setTitle(R.string.copied_app);
             ad.setMessage(R.string.copied_app_exp);
@@ -317,8 +312,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == REQUEST_CODE && grantResults.length == 2){
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == REQUEST_CODE && grantResults.length == 2) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 if (isRootPermissionGranted()) {
                     if (isUsageAccessGranted())
                         startActivity(new Intent(MainActivity.this, BackupActivity.class));
@@ -337,16 +332,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 .setNegativeButton(android.R.string.cancel, null)
                                 .show();
                     }
-                }
-                else {
+                } else {
                     new AlertDialog.Builder(this)
                             .setTitle(R.string.root_permission_denied)
                             .setMessage(getString(R.string.root_permission_denied_desc) + "\n\n" + rootErrorMessage)
                             .setPositiveButton(android.R.string.ok, null)
                             .show();
                 }
-            }
-            else {
+            } else {
                 new AlertDialog.Builder(this)
                         .setMessage(R.string.storage_access_required)
                         .setPositiveButton(android.R.string.ok, null)
@@ -354,7 +347,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             try {
                 loadingDialog.dismiss();
-            }catch (Exception ignored){}
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -369,8 +363,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        switch (id)
-        {
+        switch (id) {
             case R.id.about:
                 AlertDialog.Builder about = new AlertDialog.Builder(this);
                 View v = getLayoutInflater().inflate(R.layout.about_app, null);
@@ -429,9 +422,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                                 try {
                                     startActivity(Intent.createChooser(email, getString(R.string.select_mail)));
-                                }
-                                catch (Exception e)
-                                {
+                                } catch (Exception e) {
                                     Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -462,7 +453,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-
     boolean isRootPermissionGranted() {
 
         boolean p = false;
@@ -484,7 +474,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             PackageManager packageManager = getPackageManager();
             ApplicationInfo applicationInfo = packageManager.getApplicationInfo(getPackageName(), 0);
             AppOpsManager appOpsManager = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
-            int mode  = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
+            int mode = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
                     applicationInfo.uid, applicationInfo.packageName);
 
             return (mode == AppOpsManager.MODE_ALLOWED);
@@ -495,10 +485,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    void showChangeLog(boolean onlyLatest)
-    {
+    void showChangeLog(boolean onlyLatest) {
         int currVer = main.getInt("version", 1);
-        android.support.v7.app.AlertDialog.Builder changelog  = new android.support.v7.app.AlertDialog.Builder(this);
+        android.support.v7.app.AlertDialog.Builder changelog = new android.support.v7.app.AlertDialog.Builder(this);
         String message = "";
         String title = "";
         if (onlyLatest) {
@@ -514,9 +503,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 editor.putInt("version", THIS_VERSION);
                 editor.commit();
             }
-        }
-        else
-        {
+        } else {
             title = getString(R.string.changelog);
 
             int padding = 20;
@@ -525,7 +512,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             scrollView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
             TextView allVersions = new TextView(this);
-            allVersions.setPadding(padding,padding,padding,padding);
+            allVersions.setPadding(padding, padding, padding, padding);
             allVersions.setText("");
             allVersions.setTextSize(15);
 
@@ -552,60 +539,59 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    public void otherAppsClickManager(View layout)
-    {
+    public void otherAppsClickManager(View layout) {
         //other apps links
 
-        LinearLayout mdh = layout.findViewById(R.id.motodisplay_handwave) ;
+        LinearLayout mdh = layout.findViewById(R.id.motodisplay_handwave);
 
         mdh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent mdhPage = new Intent (Intent.ACTION_VIEW);
+                Intent mdhPage = new Intent(Intent.ACTION_VIEW);
                 mdhPage.setData(Uri.parse("market://details?id=sayantanrc.motodisplayhandwave"));
                 startActivity(mdhPage);
             }
         });
 
-        LinearLayout instamean = layout.findViewById(R.id.instamean) ;
+        LinearLayout instamean = layout.findViewById(R.id.instamean);
 
         instamean.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent instameanPage = new Intent (Intent.ACTION_VIEW);
+                Intent instameanPage = new Intent(Intent.ACTION_VIEW);
                 instameanPage.setData(Uri.parse("market://details?id=balti.instamean"));
                 startActivity(instameanPage);
             }
         });
 
-        LinearLayout bg_video = layout.findViewById(R.id.bg_video) ;
+        LinearLayout bg_video = layout.findViewById(R.id.bg_video);
 
         bg_video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent bgvideoPage = new Intent (Intent.ACTION_VIEW);
+                Intent bgvideoPage = new Intent(Intent.ACTION_VIEW);
                 bgvideoPage.setData(Uri.parse("market://details?id=balti.bgvideo"));
                 startActivity(bgvideoPage);
             }
         });
 
-        LinearLayout opc8085 = layout.findViewById(R.id.opcode_8085) ;
+        LinearLayout opc8085 = layout.findViewById(R.id.opcode_8085);
 
         opc8085.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent opc8085Page = new Intent (Intent.ACTION_VIEW);
+                Intent opc8085Page = new Intent(Intent.ACTION_VIEW);
                 opc8085Page.setData(Uri.parse("market://details?id=balti.opcode8085"));
                 startActivity(opc8085Page);
             }
         });
 
-        LinearLayout prs = layout.findViewById(R.id.pickRingStop) ;
+        LinearLayout prs = layout.findViewById(R.id.pickRingStop);
 
         prs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent prsIntent = new Intent (Intent.ACTION_VIEW);
+                Intent prsIntent = new Intent(Intent.ACTION_VIEW);
                 prsIntent.setData(Uri.parse("market://details?id=balti.pickringstop"));
                 startActivity(prsIntent);
             }
@@ -650,7 +636,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         rate.show();
     }
 
-    void showLog(){
+    void showLog() {
         View lView = View.inflate(this, R.layout.last_log_report, null);
         Button pLog = lView.findViewById(R.id.view_progress_log);
         Button eLog = lView.findViewById(R.id.view_error_log);
@@ -673,7 +659,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     .putExtra("head", getString(R.string.progressLog))
                                     .putExtra("filePath", f.getAbsolutePath())
                     );
-                else Toast.makeText(MainActivity.this, getString(R.string.progress_log_does_not_exist), Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(MainActivity.this, getString(R.string.progress_log_does_not_exist), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -687,7 +674,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     .putExtra("head", getString(R.string.errorLog))
                                     .putExtra("filePath", f.getAbsolutePath())
                     );
-                else Toast.makeText(MainActivity.this, getString(R.string.error_log_does_not_exist), Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(MainActivity.this, getString(R.string.error_log_does_not_exist), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -707,9 +695,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onDestroy();
         try {
             loadingDialog.dismiss();
-        }catch (Exception ignored){}
+        } catch (Exception ignored) {
+        }
         try {
             storageHandler.removeCallbacks(storageRunnable);
-        }catch (Exception ignored){}
+        } catch (Exception ignored) {
+        }
     }
 }

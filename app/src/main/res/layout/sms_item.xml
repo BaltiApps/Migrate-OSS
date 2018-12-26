@@ -1,53 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:padding="@dimen/large_padding_width"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    >
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/large_padding_width">
 
     <ImageView
+        android:id="@+id/sms_item_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_incoming_sms"
         android:layout_margin="@dimen/small_padding_width"
         android:paddingEnd="@dimen/large_padding_width"
-        android:id="@+id/sms_item_icon"
-        />
+        android:src="@drawable/ic_incoming_sms" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:padding="@dimen/small_padding_width"
-        >
+        android:padding="@dimen/small_padding_width">
 
         <TextView
+            android:id="@+id/sms_item_sender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="JZ-1004"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/sms_item_sender"
-            />
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
+            android:id="@+id/sms_item_body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="body"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:id="@+id/sms_item_body"
-            />
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
     </LinearLayout>
 
     <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/sms_item_checkbox"
-        />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

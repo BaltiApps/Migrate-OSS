@@ -54,7 +54,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
     Exclusions exclusions;
 
-    class AppUpdate extends AsyncTask{
+    class AppUpdate extends AsyncTask {
 
         @Override
         protected void onPreExecute() {
@@ -75,7 +75,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         @Override
         protected Object doInBackground(Object[] params) {
 
-            updateAppsList((int)params[0]);
+            updateAppsList((int) params[0]);
             return null;
         }
 
@@ -128,7 +128,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 appUpdate = new AppUpdate();
 
-                if (i > 0 && main.getBoolean("system_apps_warning", true)){
+                if (i > 0 && main.getBoolean("system_apps_warning", true)) {
                     new AlertDialog.Builder(BackupActivity.this)
                             .setTitle(R.string.bootloop_warning)
                             .setMessage(R.string.bootloop_warning_desc)
@@ -206,7 +206,9 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
 
                 try {
                     LocalBroadcastManager.getInstance(BackupActivity.this).unregisterReceiver(progressReceiver);
-                }catch (Exception e){e.printStackTrace();}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 finish();
             }
         };
@@ -248,7 +250,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         });*/
     }
 
-    void startExtraBackupsStartingActivity(){
+    void startExtraBackupsStartingActivity() {
 
         Intent intent = new Intent(BackupActivity.this, ExtraBackups.class);
         startActivity(intent);
@@ -323,8 +325,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         if (appList.size() > 0) {
             app = data = permissions = true;
             isPermissible = appList.get(0).IS_PERMISSIBLE;
-        }
-        else app = data = permissions = isPermissible = false;
+        } else app = data = permissions = isPermissible = false;
 
         for (int i = 0; i < backupDataPackets.size(); i++) {
             BackupDataPacket packet = appList.elementAt(i);
@@ -332,8 +333,7 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
             if (exclusionState == NOT_EXCLUDED) {
                 app = app && packet.APP;
                 data = data && packet.DATA;
-            }
-            else if (exclusionState == EXCLUDE_DATA) {
+            } else if (exclusionState == EXCLUDE_DATA) {
                 app = app && packet.APP;
             }
 
@@ -368,20 +368,17 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
-        if (compoundButton == permissionsAllSelect){
+        if (compoundButton == permissionsAllSelect) {
             adapter.checkAllPermissions(b);
             adapter.notifyDataSetChanged();
-        }
-        else if (compoundButton == appAllSelect) {
+        } else if (compoundButton == appAllSelect) {
             adapter.checkAllApp(b);
             adapter.notifyDataSetChanged();
-        }
-        else if (compoundButton == dataAllSelect) {
-            if (b){
+        } else if (compoundButton == dataAllSelect) {
+            if (b) {
                 appAllSelect.setChecked(true);
                 appAllSelect.setEnabled(false);
-            }
-            else {
+            } else {
                 appAllSelect.setEnabled(true);
             }
             adapter.checkAllData(b);
@@ -396,11 +393,11 @@ public class BackupActivity extends AppCompatActivity implements CompoundButton.
         super.onDestroy();
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(progressReceiver);
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored){}
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(extraBackupsStartReceiver);
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored){}
     }
 }

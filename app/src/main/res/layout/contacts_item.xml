@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    >
+    android:orientation="horizontal">
 
     <CheckBox
+        android:id="@+id/contacts_item_checkbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/contacts_item_checkbox"
-        android:padding="15dp"
-        android:text="name"
-        android:textStyle="italic"
-        android:textColor="@color/colorAccent"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:foreground="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        />
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="15dp"
+        android:text="name"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/colorAccent"
+        android:textStyle="italic" />
 
 </LinearLayout>

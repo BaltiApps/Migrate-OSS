@@ -69,17 +69,16 @@ public class InitialGuide extends AppCompatActivity {
 
             @Override
             public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-                container.removeView((View)object);
+                container.removeView((View) object);
             }
         });
 
         scrollNext = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (viewPager.getCurrentItem() < TOTAL_LAYOUTS-1) {
+                if (viewPager.getCurrentItem() < TOTAL_LAYOUTS - 1) {
                     viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
-                }
-                else {
+                } else {
                     finishGuide(true);
                 }
             }
@@ -90,8 +89,7 @@ public class InitialGuide extends AppCompatActivity {
             public void onClick(View v) {
                 if (viewPager.getCurrentItem() > 0) {
                     viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
-                }
-                else {
+                } else {
                     finishGuide(true);
                 }
             }
@@ -108,7 +106,7 @@ public class InitialGuide extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                if (position == TOTAL_LAYOUTS-1) next.setText(R.string.accept);
+                if (position == TOTAL_LAYOUTS - 1) next.setText(R.string.accept);
                 else next.setText(R.string.next);
 
                 if (position == 0) previous.setText(R.string.skip);
@@ -122,8 +120,8 @@ public class InitialGuide extends AppCompatActivity {
         });
     }
 
-    void finishGuide(boolean write){
-        if (write && editor != null){
+    void finishGuide(boolean write) {
+        if (write && editor != null) {
             editor.putBoolean("firstRun", false);
             editor.commit();
         }

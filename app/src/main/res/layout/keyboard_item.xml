@@ -1,44 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    >
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
 
     <ImageView
+        android:id="@+id/keyboard_icon"
         android:layout_width="@dimen/small_icon_wh"
         android:layout_height="@dimen/small_icon_wh"
-        android:id="@+id/keyboard_icon"
-        android:src="@drawable/ic_keyboard_icon"
         android:layout_margin="@dimen/small_padding_width"
-        />
+        android:src="@drawable/ic_keyboard_icon" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/small_padding_width"
-        >
+        android:padding="@dimen/small_padding_width">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/keyboard_name"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            />
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
             android:id="@+id/keyboard_present_in_backup_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/present_in_backup"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/colorAccent"
-            android:text="@string/present_in_backup"
-            android:visibility="gone"
-            />
+            android:visibility="gone" />
 
     </LinearLayout>
 

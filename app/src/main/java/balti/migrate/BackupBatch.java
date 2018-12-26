@@ -2,7 +2,7 @@ package balti.migrate;
 
 import java.util.Vector;
 
-public class BackupBatch{
+public class BackupBatch {
     Vector<BackupDataPacketWithSize> appListWithSize;
     int appCount;
     long batchSystemSize, batchDataSize;

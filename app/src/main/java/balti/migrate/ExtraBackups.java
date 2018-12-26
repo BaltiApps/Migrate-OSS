@@ -179,8 +179,8 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                     cancel(true);
                     try {
                         ad.dismiss();
+                    } catch (Exception ignored) {
                     }
-                    catch (Exception ignored){}
                 }
             });
 
@@ -200,16 +200,16 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
             ad.show();
 
-            NotificationManager manager = (NotificationManager)(getSystemService(NOTIFICATION_SERVICE));
+            NotificationManager manager = (NotificationManager) (getSystemService(NOTIFICATION_SERVICE));
             assert manager != null;
             manager.cancelAll();
 
 
-            for (File f : getFilesDir().listFiles()){
+            for (File f : getFilesDir().listFiles()) {
                 f.delete();
             }
 
-            for (File f : getExternalCacheDir().listFiles()){
+            for (File f : getExternalCacheDir().listFiles()) {
                 f.delete();
             }
         }
@@ -221,8 +221,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
             if (cpu_abi.equals("armeabi-v7a") || cpu_abi.equals("arm64-v8a")) {
                 busyboxBinaryFile = commonTools.unpackAssetToInternal("busybox", "busybox", true);
-            }
-            else if (cpu_abi.equals("x86") || cpu_abi.equals("x86_64")){
+            } else if (cpu_abi.equals("x86") || cpu_abi.equals("x86_64")) {
                 busyboxBinaryFile = commonTools.unpackAssetToInternal("busybox-x86", "busybox", true);
             }
             duBinaryFilePath = busyboxBinaryFile + " du";
@@ -230,12 +229,11 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             int length = appList.size();
             publishProgress(getString(R.string.filtering_apps), "", "");
 
-            for (int i = 0, c = 0; i < length; i++){
+            for (int i = 0, c = 0; i < length; i++) {
                 BackupDataPacket packet = appList.get(c);
-                if (packet.APP || packet.DATA){
+                if (packet.APP || packet.DATA) {
                     c++;
-                }
-                else {
+                } else {
                     appList.remove(c);
                 }
             }
@@ -251,14 +249,13 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 totalSelectedApps = appList.size();
 
                 int method = main.getInt("calculating_size_method", 2);
-                if (method == 1)
-                {
+                if (method == 1) {
 
 
                     Log.d(DEBUG_TAG, "Method 1");
 
                     Process memoryFinder = Runtime.getRuntime().exec("su");
-                    BufferedReader processReader = new BufferedReader( new InputStreamReader(memoryFinder.getInputStream()));
+                    BufferedReader processReader = new BufferedReader(new InputStreamReader(memoryFinder.getInputStream()));
                     BufferedWriter processWriter = new BufferedWriter(new OutputStreamWriter(memoryFinder.getOutputStream()));
                     for (int i = 0; i < totalSelectedApps; i++) {
 
@@ -308,8 +305,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                     processWriter.write("exit\n");
                     processWriter.flush();
-                }
-                else if (method == 2){
+                } else if (method == 2) {
 
                     Log.d(DEBUG_TAG, "Method 2");
 
@@ -353,8 +349,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                             appsWithSize.add(new BackupDataPacketWithSize(packet, dataSize[0], systemSize[0]));
                         }
-                    }
-                    else {
+                    } else {
 
                         StorageStatsManager storageStatsManager = (StorageStatsManager) getSystemService(Context.STORAGE_STATS_SERVICE);
 
@@ -378,7 +373,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                             long ignoreSize = 0;
 
-                            if (obbPath.exists() && obbPath.canRead()){
+                            if (obbPath.exists() && obbPath.canRead()) {
                                 ignoreSize = commonTools.getDirLength(obbPath.getAbsolutePath());
                             }
                             ignoreSize = ignoreSize / 1024;
@@ -416,8 +411,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                 }
 
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 return new Object[]{false, getString(R.string.error_calculating_size), e.getMessage() + "\n\n" + getString(R.string.change_size_calculation_method)};
             }
@@ -425,7 +419,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             publishProgress(getString(R.string.making_batches), "", "");
 
             File d = new File(destination);
-            if (!d.exists() && !d.mkdirs() && !d.canWrite()){
+            if (!d.exists() && !d.mkdirs() && !d.canWrite()) {
                 return new Object[]{false, getString(R.string.could_not_create_destination),
                         destination + "\n\n" + getString(R.string.make_sure_destination_exists)};
             }
@@ -438,17 +432,15 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 BufferedReader bufferedReader = new BufferedReader(new FileReader("/proc/meminfo"));
 
                 String line;
-                while ((line = bufferedReader.readLine()) != null){
+                while ((line = bufferedReader.readLine()) != null) {
                     String parts[] = line.trim().split("\\s+");
-                    if (parts[0].equals("MemTotal:"))
-                    {
+                    if (parts[0].equals("MemTotal:")) {
                         totalMemory = Long.parseLong(parts[1]);
                         break;
                     }
                 }
 
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 return new Object[]{false, getString(R.string.error_detecting_memory), e.getMessage()};
             }
@@ -458,22 +450,22 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
             totalSize = totalBackupSize;
 
-            if (totalBackupSize > availableKb){
+            if (totalBackupSize > availableKb) {
                 return new Object[]{true};
             }
 
-            parts = (int) Math.ceil((totalBackupSize*1.0)/totalMemory);
+            parts = (int) Math.ceil((totalBackupSize * 1.0) / totalMemory);
 
             for (int i = 1; i <= parts; i++) {
 
                 Vector<BackupDataPacketWithSize> batchPackets = new Vector<>(0);
                 long batchSize = 0, dataSize = 0, systemSize = 0;
 
-                for (int j = 0; j < appsWithSize.size() && batchSize < totalMemory; j++){
+                for (int j = 0; j < appsWithSize.size() && batchSize < totalMemory; j++) {
 
                     BackupDataPacketWithSize packetWithSize = appsWithSize.get(j);
 
-                    if (batchSize + packetWithSize.totalSize <= totalMemory){
+                    if (batchSize + packetWithSize.totalSize <= totalMemory) {
                         batchPackets.add(packetWithSize);
                         batchSize += packetWithSize.totalSize;
 
@@ -486,12 +478,11 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                 }
 
-                if (batchSize == 0 && appsWithSize.size() != 0){
+                if (batchSize == 0 && appsWithSize.size() != 0) {
                     // signifies that all apps were considered but none could be added to a batch due to memory constraints
 
                     return new Object[]{false, getString(R.string.cannot_split), concatNames(appsWithSize)};
-                }
-                else {
+                } else {
                     backupBatches.add(new BackupBatch(batchPackets, dataSize, systemSize));
                 }
             }
@@ -557,11 +548,11 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             return new Object[]{true};
         }
 
-        String concatNames(Vector<BackupDataPacketWithSize> backupDataPacketWithSizes){
+        String concatNames(Vector<BackupDataPacketWithSize> backupDataPacketWithSizes) {
 
             String res = "";
 
-            for (BackupDataPacketWithSize backupDataPacketWithSize : backupDataPacketWithSizes){
+            for (BackupDataPacketWithSize backupDataPacketWithSize : backupDataPacketWithSizes) {
                 res = res + pm.getApplicationLabel(backupDataPacketWithSize.packet.PACKAGE_INFO.applicationInfo) + "\n";
             }
 
@@ -573,11 +564,11 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         protected void onProgressUpdate(String... strings) {
             super.onProgressUpdate(strings);
 
-                waitingProgress.setVisibility(View.VISIBLE);
-                waitingDetails.setVisibility(View.VISIBLE);
-                waitingHead.setText(strings[0].trim());
-                waitingProgress.setText(strings[1].trim());
-                waitingDetails.setText(strings[2].trim());
+            waitingProgress.setVisibility(View.VISIBLE);
+            waitingDetails.setVisibility(View.VISIBLE);
+            waitingHead.setText(strings[0].trim());
+            waitingProgress.setText(strings[1].trim());
+            waitingDetails.setText(strings[2].trim());
 
         }
 
@@ -592,8 +583,8 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                 try {
                     ad.dismiss();
+                } catch (Exception ignored) {
                 }
-                catch (Exception ignored){}
 
                 new AlertDialog.Builder(ExtraBackups.this)
                         .setTitle(R.string.insufficient_storage)
@@ -606,12 +597,11 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                         .show();
 
 
-            }
-            else if (!(boolean) o[0]){
+            } else if (!(boolean) o[0]) {
                 try {
                     ad.dismiss();
+                } catch (Exception ignored) {
                 }
-                catch (Exception ignored){}
 
                 new AlertDialog.Builder(ExtraBackups.this)
                         .setTitle((String) o[1])
@@ -619,8 +609,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                         .setPositiveButton(R.string.close, null)
                         .show();
 
-            }
-            else {
+            } else {
 
                 waitingHead.setText(R.string.just_a_minute);
                 waitingProgress.setText(R.string.starting_engine);
@@ -1293,7 +1282,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         }
     }
 
-    class ReadDpi extends AsyncTask{
+    class ReadDpi extends AsyncTask {
 
         Process dpiReader;
         BufferedReader outputReader;
@@ -1326,11 +1315,11 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 errorReader = new BufferedReader(new InputStreamReader(dpiReader.getErrorStream()));
 
                 String line;
-                while ((line = outputReader.readLine()) != null){
+                while ((line = outputReader.readLine()) != null) {
                     localDpiText = localDpiText + line + "\n";
                 }
 
-                while ((line = errorReader.readLine()) != null){
+                while ((line = errorReader.readLine()) != null) {
                     err = err + line + "\n";
                 }
 
@@ -1348,8 +1337,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             doBackupDpi.setEnabled(true);
             dpiReadProgressBar.setVisibility(View.GONE);
 
-            if (!err.equals(""))
-            {
+            if (!err.equals("")) {
                 doBackupDpi.setChecked(false);
                 new AlertDialog.Builder(ExtraBackups.this)
                         .setTitle(R.string.error_reading_dpi)
@@ -1358,8 +1346,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                         .show();
 
 
-            }
-            else {
+            } else {
                 dpiText = localDpiText;
                 dpiSelectedStatus.setVisibility(View.VISIBLE);
                 dpiMainItem.setClickable(true);
@@ -1377,7 +1364,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         }
     }
 
-    class LoadKeyboardForSelection extends AsyncTask{
+    class LoadKeyboardForSelection extends AsyncTask {
 
         Process keyboardReader;
         BufferedReader outputReader;
@@ -1406,11 +1393,11 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 errorReader = new BufferedReader(new InputStreamReader(keyboardReader.getErrorStream()));
 
                 String line;
-                while ((line = outputReader.readLine()) != null){
+                while ((line = outputReader.readLine()) != null) {
                     enabledKeyboards.add(line);
                 }
 
-                while ((line = errorReader.readLine()) != null){
+                while ((line = errorReader.readLine()) != null) {
                     err = err + line + "\n";
                 }
 
@@ -1428,33 +1415,30 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             doBackupKeyboard.setEnabled(true);
             doBackupKeyboardBoolean = true;
 
-            if (!err.trim().equals("")){
+            if (!err.trim().equals("")) {
 
                 onKeyboardError(getString(R.string.error_reading_keyboard_list), err);
 
-            }
-            else if (enabledKeyboards.size() == 0){
+            } else if (enabledKeyboards.size() == 0) {
 
                 onKeyboardError(getString(R.string.no_keyboard_enabled), getString(R.string.no_keyboard_enabled_desc));
 
-            }
-            else if (enabledKeyboards.size() == 1){
+            } else if (enabledKeyboards.size() == 1) {
 
                 String packageName = enabledKeyboards.get(0);
-                if (packageName.contains("/")){
+                if (packageName.contains("/")) {
                     packageName = packageName.split("/")[0];
                 }
 
                 try {
                     String kName = pm.getApplicationLabel(pm.getApplicationInfo(packageName, 0)).toString();
 
-                    if (!isKeyboardInAppList(packageName)){
+                    if (!isKeyboardInAppList(packageName)) {
 
                         onKeyboardError(kName + " " + getString(R.string.selected_keyboard_not_present_in_backup),
                                 getString(R.string.selected_keyboard_not_present_in_backup_desc));
 
-                    }
-                    else {
+                    } else {
                         keyboardSelectedStatus.setVisibility(View.VISIBLE);
                         keyboardSelectedStatus.setText(kName);
                         keyboardText = enabledKeyboards.get(0);
@@ -1466,18 +1450,16 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 }
 
 
-
-            }
-            else {
+            } else {
 
                 View kView = View.inflate(ExtraBackups.this, R.layout.keyboard_selector, null);
                 LinearLayout holder = kView.findViewById(R.id.keyboard_options_holder);
 
-                for (String packageName : enabledKeyboards){
+                for (String packageName : enabledKeyboards) {
 
                     final String kText = packageName;
 
-                    if (packageName.contains("/")){
+                    if (packageName.contains("/")) {
                         packageName = packageName.split("/")[0];
                     }
 
@@ -1500,7 +1482,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                             @Override
                             public void onClick(View v) {
 
-                                if (!isKeyboardInAppList(finalPackageName)){
+                                if (!isKeyboardInAppList(finalPackageName)) {
 
                                     new AlertDialog.Builder(ExtraBackups.this)
                                             .setTitle(kName.getText() + " " + getString(R.string.selected_keyboard_not_present_in_backup))
@@ -1508,8 +1490,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                                             .setNegativeButton(R.string.close, null)
                                             .show();
 
-                                }
-                                else {
+                                } else {
                                     keyboardSelectedStatus.setVisibility(View.VISIBLE);
                                     keyboardSelectedStatus.setText(kName.getText());
                                     keyboardText = kText;
@@ -1547,8 +1528,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                         try {
                             if (KeyboardSelectorDialog != null)
                                 KeyboardSelectorDialog.show();
-                        }
-                        catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                             onKeyboardError(getString(R.string.error_reading_keyboard_list), e.getMessage());
                         }
@@ -1557,15 +1537,15 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             }
         }
 
-        boolean isKeyboardInAppList(String packageName){
-            for (BackupDataPacket packet : appList){
+        boolean isKeyboardInAppList(String packageName) {
+            for (BackupDataPacket packet : appList) {
                 if (packet.PACKAGE_INFO.packageName.equals(packageName))
                     return packet.APP;
             }
             return false;
         }
 
-        void onKeyboardError(String title, String errorMessage){
+        void onKeyboardError(String title, String errorMessage) {
             doBackupKeyboard.setChecked(false);
             keyboardSelectedStatus.setText("");
             keyboardSelectedStatus.setVisibility(View.GONE);
@@ -1701,11 +1681,9 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
         if (isSmsAndCallsGranted) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_SMS, Manifest.permission.READ_CALL_LOG}, SMS_AND_CALLS_PERMISSION);
-        }
-        else if (isSmsGranted) {
+        } else if (isSmsGranted) {
             doBackupSms.setChecked(true);
-        }
-        else if (isCallsGranted) {
+        } else if (isCallsGranted) {
             doBackupCalls.setChecked(true);
         }
 
@@ -1727,7 +1705,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-        if (buttonView == doBackupContacts){
+        if (buttonView == doBackupContacts) {
 
             if (isChecked) {
 
@@ -1764,8 +1742,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             }
 
 
-        }
-        else if (buttonView == doBackupSms){
+        } else if (buttonView == doBackupSms) {
 
             if (isChecked) {
 
@@ -1783,14 +1760,13 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 }
             }
 
-        }
-        else if (buttonView == doBackupCalls){
+        } else if (buttonView == doBackupCalls) {
 
             if (isChecked) {
 
                 ActivityCompat.requestPermissions(ExtraBackups.this,
-                    new String[]{Manifest.permission.READ_CALL_LOG},
-                    CALLS_PERMISSION);
+                        new String[]{Manifest.permission.READ_CALL_LOG},
+                        CALLS_PERMISSION);
 
 
             } else {
@@ -1803,8 +1779,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 }
             }
 
-        }
-        else if (buttonView == doBackupDpi){
+        } else if (buttonView == doBackupDpi) {
 
             if (isChecked) {
 
@@ -1840,8 +1815,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 }
             }
 
-        }
-        else if (buttonView == doBackupKeyboard){
+        } else if (buttonView == doBackupKeyboard) {
 
             if (isChecked) {
 
@@ -1868,9 +1842,9 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == SMS_AND_CALLS_PERMISSION){
+        if (requestCode == SMS_AND_CALLS_PERMISSION) {
 
-            if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+            if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
 
                 doBackupSms.setOnCheckedChangeListener(null);
                 doBackupCalls.setOnCheckedChangeListener(null);
@@ -1897,10 +1871,9 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
             }
 
-        }
-        else if (requestCode == CONTACT_PERMISSION){
+        } else if (requestCode == CONTACT_PERMISSION) {
 
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 try {
                     contactsReader = new ReadContacts();
@@ -1910,18 +1883,16 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 }
 
 
-            }
-            else {
+            } else {
 
                 Toast.makeText(this, R.string.contacts_access_needed, Toast.LENGTH_SHORT).show();
                 doBackupContacts.setChecked(false);
 
             }
 
-        }
-        else if (requestCode == SMS_PERMISSION){
+        } else if (requestCode == SMS_PERMISSION) {
 
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 try {
                     smsReader = new ReadSms();
@@ -1930,18 +1901,16 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                     e.printStackTrace();
                 }
 
-            }
-            else {
+            } else {
 
                 Toast.makeText(this, R.string.sms_access_needed, Toast.LENGTH_SHORT).show();
                 doBackupSms.setChecked(false);
 
             }
 
-        }
-        else if (requestCode == CALLS_PERMISSION){
+        } else if (requestCode == CALLS_PERMISSION) {
 
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 try {
                     callsReader = new ReadCalls();
@@ -1950,8 +1919,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                     e.printStackTrace();
                 }
 
-            }
-            else {
+            } else {
 
                 Toast.makeText(this, R.string.calls_access_needed, Toast.LENGTH_SHORT).show();
                 doBackupCalls.setChecked(false);
@@ -1968,7 +1936,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         isAnyAppSelected = anyAppSelected;
     }
 
-    void setDestination(String path, TextView label){
+    void setDestination(String path, TextView label) {
 
         destination = path;
         label.setText(destination);
@@ -1993,15 +1961,12 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
 
         if (main.getString("defaultBackupPath", DEFAULT_INTERNAL_STORAGE_DIR).equals(DEFAULT_INTERNAL_STORAGE_DIR) ||
-                !(new File(main.getString("defaultBackupPath", DEFAULT_INTERNAL_STORAGE_DIR)).canWrite()))
-        {
+                !(new File(main.getString("defaultBackupPath", DEFAULT_INTERNAL_STORAGE_DIR)).canWrite())) {
             storageSelect.check(internalButton.getId());
             setDestination(DEFAULT_INTERNAL_STORAGE_DIR, sdCardLabel);
-        }
-        else {
+        } else {
             storageSelect.check(sdButton.getId());
         }
-
 
 
         storageSelect.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -2105,7 +2070,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         backupNameEditText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_DONE){
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
                     String backupName = backupNameEditText.getText().toString().trim()
                             .replaceAll("[\\\\/:*?\"'<>|]", " ")
                             .replace(' ', '_');
@@ -2114,8 +2079,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                     else
                         Toast.makeText(ExtraBackups.this, getString(R.string.empty), Toast.LENGTH_SHORT).show();
                     return true;
-                }
-                else return false;
+                } else return false;
             }
         });
 
@@ -2192,19 +2156,24 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         super.onDestroy();
         try {
             ad.dismiss();
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(progressReceiver);
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(serviceStartedReceiver);
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
         try {
             contactsReader.cancel(true);
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
         try {
             smsReader.cancel(true);
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
     }
 
     @Override

@@ -45,7 +45,7 @@ public class CommonTools {
         this.context = context;
     }
 
-    String unpackAssetToInternal(String assetFileName, String targetFileName, boolean toInternal){
+    String unpackAssetToInternal(String assetFileName, String targetFileName, boolean toInternal) {
 
         AssetManager assetManager = context.getAssets();
         File unpackFile = null;
@@ -73,7 +73,7 @@ public class CommonTools {
         return path;
     }
 
-    void reportLogs(boolean isErrorLogMandatory){
+    void reportLogs(boolean isErrorLogMandatory) {
         final File progressLog = new File(context.getExternalCacheDir(), "progressLog.txt");
         final File errorLog = new File(context.getExternalCacheDir(), "errorLog.txt");
         //final File theBackupScript = new File(context.getExternalCacheDir(), "the_backup_script.sh");
@@ -84,14 +84,13 @@ public class CommonTools {
             }
         });
 
-        if (isErrorLogMandatory && !errorLog.exists()){
+        if (isErrorLogMandatory && !errorLog.exists()) {
             new AlertDialog.Builder(context)
                     .setTitle(R.string.log_files_do_not_exist)
                     .setMessage(context.getString(R.string.error_log_does_not_exist))
                     .setNegativeButton(android.R.string.cancel, null)
                     .show();
-        }
-        else if (errorLog.exists() || progressLog.exists() || backupScripts.length > 0) {
+        } else if (errorLog.exists() || progressLog.exists() || backupScripts.length > 0) {
 
             View errorReportView = View.inflate(context, R.layout.error_report_layout, null);
 
@@ -100,33 +99,29 @@ public class CommonTools {
             shareErrors = errorReportView.findViewById(R.id.share_errors_checkbox);
             shareScript = errorReportView.findViewById(R.id.share_script_checkbox);
 
-            if (!progressLog.exists()){
+            if (!progressLog.exists()) {
                 shareProgress.setChecked(false);
                 shareProgress.setEnabled(false);
-            }
-            else {
+            } else {
                 shareProgress.setEnabled(true);
                 shareProgress.setChecked(true);
             }
 
-            if (backupScripts.length == 0){
+            if (backupScripts.length == 0) {
                 shareScript.setChecked(false);
                 shareScript.setEnabled(false);
-            }
-            else {
+            } else {
                 shareScript.setEnabled(true);
                 shareScript.setChecked(true);
             }
 
-            if (isErrorLogMandatory && errorLog.exists()){
+            if (isErrorLogMandatory && errorLog.exists()) {
                 shareErrors.setChecked(true);
                 shareErrors.setEnabled(false);
-            }
-            else if (!errorLog.exists()){
+            } else if (!errorLog.exists()) {
                 shareErrors.setChecked(false);
                 shareErrors.setEnabled(false);
-            }
-            else {
+            } else {
                 shareErrors.setChecked(true);
                 shareErrors.setEnabled(true);
             }
@@ -153,17 +148,16 @@ public class CommonTools {
                                     uris.add(FileProvider.getUriForFile(context, "migrate.provider", errorLog));
                                 if (shareProgress.isChecked())
                                     uris.add(FileProvider.getUriForFile(context, "migrate.provider", progressLog));
-                                if (shareScript.isChecked()){
+                                if (shareScript.isChecked()) {
                                     for (File f : backupScripts)
                                         uris.add(FileProvider.getUriForFile(context, "migrate.provider", f));
                                 }
-                            }
-                            else {
+                            } else {
                                 if (shareErrors.isChecked())
                                     uris.add(Uri.fromFile(errorLog));
                                 if (shareProgress.isChecked())
                                     uris.add(Uri.fromFile(progressLog));
-                                if (shareScript.isChecked()){
+                                if (shareScript.isChecked()) {
                                     for (File f : backupScripts)
                                         uris.add(Uri.fromFile(f));
                                 }
@@ -174,14 +168,15 @@ public class CommonTools {
                             try {
                                 context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.select_mail)));
                                 Toast.makeText(context, context.getString(R.string.select_mail), Toast.LENGTH_SHORT).show();
-                            } catch (Exception e) { Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show(); }
+                            } catch (Exception e) {
+                                Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
 
                         }
                     })
                     .setNegativeButton(android.R.string.cancel, null)
                     .show();
-        }
-        else {
+        } else {
 
             String msg = "";
             if (!progressLog.exists())
@@ -200,7 +195,7 @@ public class CommonTools {
 
     }
 
-    String getDeviceSpecifications(){
+    String getDeviceSpecifications() {
 
         String body = "";
 
@@ -216,9 +211,9 @@ public class CommonTools {
         return body;
     }
 
-    boolean isServiceRunning(String name){
+    boolean isServiceRunning(String name) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)){
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (name.equals(service.service.getClassName()))
                 return true;
         }
@@ -241,11 +236,11 @@ public class CommonTools {
         String line;
         String errorMessage = "";
 
-        while ((line = outputReader.readLine()) != null){
+        while ((line = outputReader.readLine()) != null) {
             errorMessage = errorMessage + line + "\n";
         }
         errorMessage = errorMessage + "Error:\n\n";
-        while ((line = errorReader.readLine()) != null){
+        while ((line = errorReader.readLine()) != null) {
             errorMessage = errorMessage + line + "\n";
         }
 
@@ -254,7 +249,7 @@ public class CommonTools {
     }
 
 
-    long getDirLength(String directoryPath){
+    long getDirLength(String directoryPath) {
         File file = new File(directoryPath);
         if (file.exists()) {
             if (!file.isDirectory())
@@ -266,11 +261,10 @@ public class CommonTools {
                     sum += getDirLength(files[i].getAbsolutePath());
                 return sum;
             }
-        }
-        else return 0;
+        } else return 0;
     }
 
-    String getHumanReadableStorageSpace(long space){
+    String getHumanReadableStorageSpace(long space) {
         String res = "KB";
 
         double s = space;
@@ -287,10 +281,10 @@ public class CommonTools {
         return String.format("%.2f", s) + " " + res;
     }
 
-    String[] getSdCardPaths(){
+    String[] getSdCardPaths() {
         String possibleSDCards[] = new String[0];
         File storage = new File("/storage/");
-        if (storage.exists() && storage.canRead()){
+        if (storage.exists() && storage.canRead()) {
             File[] files = storage.listFiles(new FileFilter() {
                 @Override
                 public boolean accept(File pathname) {
@@ -299,7 +293,7 @@ public class CommonTools {
                 }
             });
             possibleSDCards = new String[files.length];
-            for (int i = 0; i < files.length; i++){
+            for (int i = 0; i < files.length; i++) {
                 File file = files[i];
                 File sd_dir = new File("/mnt/media_rw/" + file.getName());
                 if (sd_dir.exists() && sd_dir.isDirectory() && sd_dir.canWrite())

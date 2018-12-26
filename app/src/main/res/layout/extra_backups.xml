@@ -1,132 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/app_list_bg"
-    >
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="@dimen/large_padding_width"
         android:background="@color/colorPrimary"
-        >
+        android:orientation="horizontal"
+        android:padding="@dimen/large_padding_width">
 
         <ImageButton
+            android:id="@+id/extraBackupsBackButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_back"
-            android:background="@android:color/transparent"
-            android:padding="@dimen/large_padding_width"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:id="@+id/extraBackupsBackButton"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            />
+            android:background="@android:color/transparent"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:padding="@dimen/large_padding_width"
+            android:src="@drawable/ic_arrow_back" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/extras"
-            android:padding="@dimen/small_padding_width"
-            android:layout_toEndOf="@id/extraBackupsBackButton"
             android:layout_centerVertical="true"
-            />
+            android:layout_toEndOf="@id/extraBackupsBackButton"
+            android:padding="@dimen/small_padding_width"
+            android:text="@string/extras"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
 
         <ImageButton
+            android:id="@+id/extra_backups_help"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_help"
-            android:background="@android:color/transparent"
             android:layout_alignParentEnd="true"
-            android:padding="@dimen/large_padding_width"
             android:layout_centerVertical="true"
+            android:background="@android:color/transparent"
             android:foreground="?android:attr/selectableItemBackground"
-            android:id="@+id/extra_backups_help"
-            />
+            android:padding="@dimen/large_padding_width"
+            android:src="@drawable/ic_help" />
 
     </RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        >
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/large_padding_width"
-            >
+            android:padding="@dimen/large_padding_width">
 
             <LinearLayout
+                android:id="@+id/extra_item_contacts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="@dimen/small_padding_width"
-                android:background="@color/extraItemBg"
-                android:elevation="10dp"
-                android:gravity="center_vertical"
                 android:layout_marginBottom="@dimen/large_padding_width"
+                android:background="@color/extraItemBg"
                 android:clickable="true"
+                android:elevation="10dp"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/small_padding_width"
                 android:paddingTop="@dimen/extra_items_padding"
-                android:paddingBottom="@dimen/extra_items_padding"
-                android:id="@+id/extra_item_contacts"
-                >
+                android:paddingBottom="@dimen/extra_items_padding">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_contacts_icon"
                     android:padding="@dimen/extra_items_padding"
-                    />
+                    android:src="@drawable/ic_contacts_icon" />
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    >
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/contacts_label"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        />
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        >
+                        android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/contacts_selected_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="12sp"
-                            android:textColor="@color/colorAccent"
-                            android:id="@+id/contacts_selected_status"
-                            android:visibility="gone"
                             android:gravity="center_horizontal"
-                            />
+                            android:textColor="@color/colorAccent"
+                            android:textSize="12sp"
+                            android:visibility="gone" />
 
                         <ProgressBar
+                            android:id="@+id/contacts_read_progress"
+                            style="?android:attr/progressBarStyleHorizontal"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:id="@+id/contacts_read_progress"
                             android:paddingStart="@dimen/small_padding_width"
                             android:paddingEnd="@dimen/small_padding_width"
-                            android:visibility="gone"
-                            />
+                            android:visibility="gone" />
 
                     </LinearLayout>
 
@@ -135,79 +122,71 @@
 
 
                 <CheckBox
+                    android:id="@+id/do_backup_contacts"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/small_padding_width"
                     android:gravity="center"
-                    android:id="@+id/do_backup_contacts"
-                    />
+                    android:padding="@dimen/small_padding_width" />
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/extra_item_sms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="@dimen/small_padding_width"
-                android:background="@color/extraItemBg"
-                android:elevation="10dp"
-                android:gravity="center_vertical"
                 android:layout_marginBottom="@dimen/large_padding_width"
+                android:background="@color/extraItemBg"
                 android:clickable="true"
+                android:elevation="10dp"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/small_padding_width"
                 android:paddingTop="@dimen/extra_items_padding"
-                android:paddingBottom="@dimen/extra_items_padding"
-                android:id="@+id/extra_item_sms"
-                >
+                android:paddingBottom="@dimen/extra_items_padding">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_sms_icon"
                     android:padding="@dimen/extra_items_padding"
-                    />
+                    android:src="@drawable/ic_sms_icon" />
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    >
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/sms_label"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        />
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        >
+                        android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/sms_selected_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="12sp"
-                            android:textColor="@color/colorAccent"
-                            android:id="@+id/sms_selected_status"
-                            android:visibility="gone"
                             android:gravity="center_horizontal"
-                            />
+                            android:textColor="@color/colorAccent"
+                            android:textSize="12sp"
+                            android:visibility="gone" />
 
                         <ProgressBar
+                            android:id="@+id/sms_read_progress"
+                            style="?android:attr/progressBarStyleHorizontal"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:id="@+id/sms_read_progress"
                             android:paddingStart="@dimen/small_padding_width"
                             android:paddingEnd="@dimen/small_padding_width"
-                            android:visibility="gone"
-                            />
+                            android:visibility="gone" />
 
                     </LinearLayout>
 
@@ -216,79 +195,71 @@
 
 
                 <CheckBox
+                    android:id="@+id/do_backup_sms"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/small_padding_width"
                     android:gravity="center"
-                    android:id="@+id/do_backup_sms"
-                    />
+                    android:padding="@dimen/small_padding_width" />
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/extra_item_calls"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="@dimen/small_padding_width"
-                android:background="@color/extraItemBg"
-                android:elevation="10dp"
-                android:gravity="center_vertical"
                 android:layout_marginBottom="@dimen/large_padding_width"
+                android:background="@color/extraItemBg"
                 android:clickable="true"
+                android:elevation="10dp"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/small_padding_width"
                 android:paddingTop="@dimen/extra_items_padding"
-                android:paddingBottom="@dimen/extra_items_padding"
-                android:id="@+id/extra_item_calls"
-                >
+                android:paddingBottom="@dimen/extra_items_padding">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_call_log_icon"
                     android:padding="@dimen/extra_items_padding"
-                    />
+                    android:src="@drawable/ic_call_log_icon" />
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    >
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/call_log_label"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        />
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        >
+                        android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/calls_selected_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="12sp"
-                            android:textColor="@color/colorAccent"
-                            android:id="@+id/calls_selected_status"
-                            android:visibility="gone"
                             android:gravity="center_horizontal"
-                            />
+                            android:textColor="@color/colorAccent"
+                            android:textSize="12sp"
+                            android:visibility="gone" />
 
                         <ProgressBar
+                            android:id="@+id/calls_read_progress"
+                            style="?android:attr/progressBarStyleHorizontal"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:id="@+id/calls_read_progress"
                             android:paddingStart="@dimen/small_padding_width"
                             android:paddingEnd="@dimen/small_padding_width"
-                            android:visibility="gone"
-                            />
+                            android:visibility="gone" />
 
                     </LinearLayout>
 
@@ -297,45 +268,41 @@
 
 
                 <CheckBox
+                    android:id="@+id/do_backup_calls"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/small_padding_width"
                     android:gravity="center"
-                    android:id="@+id/do_backup_calls"
-                    />
+                    android:padding="@dimen/small_padding_width" />
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/extra_item_dpi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="@dimen/small_padding_width"
-                android:background="@color/extraItemBg"
-                android:elevation="10dp"
-                android:gravity="center_vertical"
                 android:layout_marginBottom="@dimen/large_padding_width"
+                android:background="@color/extraItemBg"
                 android:clickable="true"
+                android:elevation="10dp"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/small_padding_width"
                 android:paddingTop="@dimen/extra_items_padding"
-                android:paddingBottom="@dimen/extra_items_padding"
-                android:id="@+id/extra_item_dpi"
-                >
+                android:paddingBottom="@dimen/extra_items_padding">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_dpi_icon"
                     android:padding="@dimen/extra_items_padding"
-                    />
+                    android:src="@drawable/ic_dpi_icon" />
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    >
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -344,70 +311,64 @@
                         android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <TextView
+                        android:id="@+id/dpi_selected_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="12sp"
-                        android:textColor="@color/colorAccent"
-                        android:id="@+id/dpi_selected_status"
-                        android:text="@string/tap_to_see_values"
-                        android:visibility="gone"
                         android:gravity="center_horizontal"
-                        />
+                        android:text="@string/tap_to_see_values"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
 
 
                     <ProgressBar
+                        android:id="@+id/dpi_read_progress"
+                        style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:id="@+id/dpi_read_progress"
+                        android:indeterminate="true"
                         android:paddingStart="@dimen/small_padding_width"
                         android:paddingEnd="@dimen/small_padding_width"
-                        android:visibility="gone"
-                        android:indeterminate="true"
-                        />
+                        android:visibility="gone" />
 
                 </LinearLayout>
 
                 <CheckBox
+                    android:id="@+id/do_backup_dpi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/small_padding_width"
                     android:gravity="center"
-                    android:id="@+id/do_backup_dpi"
-                    />
+                    android:padding="@dimen/small_padding_width" />
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/extra_item_keyboard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="@dimen/small_padding_width"
-                android:background="@color/extraItemBg"
-                android:elevation="10dp"
-                android:gravity="center_vertical"
                 android:layout_marginBottom="@dimen/large_padding_width"
+                android:background="@color/extraItemBg"
                 android:clickable="true"
+                android:elevation="10dp"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/small_padding_width"
                 android:paddingTop="@dimen/extra_items_padding"
-                android:paddingBottom="@dimen/extra_items_padding"
-                android:id="@+id/extra_item_keyboard"
-                >
+                android:paddingBottom="@dimen/extra_items_padding">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_keyboard_icon"
                     android:padding="@dimen/extra_items_padding"
-                    />
+                    android:src="@drawable/ic_keyboard_icon" />
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    >
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -416,25 +377,23 @@
                         android:textAppearance="?android:attr/textAppearanceLarge" />
 
                     <TextView
+                        android:id="@+id/keyboard_selected_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="12sp"
-                        android:textColor="@color/colorAccent"
-                        android:id="@+id/keyboard_selected_status"
-                        android:text="@string/tap_to_see_values"
-                        android:visibility="gone"
                         android:gravity="center_horizontal"
-                        />
+                        android:text="@string/tap_to_see_values"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
 
                 </LinearLayout>
 
                 <CheckBox
+                    android:id="@+id/do_backup_keyboard"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/small_padding_width"
                     android:gravity="center"
-                    android:id="@+id/do_backup_keyboard"
-                    />
+                    android:padding="@dimen/small_padding_width" />
 
             </LinearLayout>
 
@@ -444,30 +403,28 @@
 
 
     <RelativeLayout
+        android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
-        android:padding="10dp"
         android:gravity="center_vertical"
-        android:id="@+id/bottom_bar"
-        >
+        android:padding="10dp">
 
         <Button
+            android:id="@+id/startBackupButton"
             android:layout_width="@dimen/next_button_width"
             android:layout_height="@dimen/next_button_height"
             android:layout_alignParentEnd="true"
-            android:padding="@dimen/large_padding_width"
             android:background="@drawable/next"
-            android:gravity="center"
             android:clickable="true"
+            android:drawableEnd="@drawable/ic_next"
             android:focusable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            android:id="@+id/startBackupButton"
-            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:padding="@dimen/large_padding_width"
             android:text="@string/start_backup"
-            android:drawableEnd="@drawable/ic_next"
             android:textAllCaps="true"
-            />
+            android:textColor="@android:color/white" />
 
     </RelativeLayout>
 

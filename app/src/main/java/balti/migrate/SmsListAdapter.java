@@ -21,7 +21,7 @@ public class SmsListAdapter extends BaseAdapter {
 
     Vector<SmsDataPacket> smsList;
 
-    SmsListAdapter(Context context, Vector<SmsDataPacket> smsList){
+    SmsListAdapter(Context context, Vector<SmsDataPacket> smsList) {
         this.smsList = smsList;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         Collections.sort(smsList, new Comparator<SmsDataPacket>() {
@@ -110,8 +110,8 @@ public class SmsListAdapter extends BaseAdapter {
         return view;
     }
 
-    void checkAll(boolean b){
-        for (SmsDataPacket dataPacket : smsList){
+    void checkAll(boolean b) {
+        for (SmsDataPacket dataPacket : smsList) {
             dataPacket.selected = b;
         }
     }

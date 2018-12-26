@@ -19,7 +19,7 @@ public class ContactListAdapter extends BaseAdapter {
 
     Vector<ContactsDataPacket> contactsList;
 
-    ContactListAdapter(Context context, Vector<ContactsDataPacket> contactsList){
+    ContactListAdapter(Context context, Vector<ContactsDataPacket> contactsList) {
         this.contactsList = contactsList;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         Collections.sort(contactsList, new Comparator<ContactsDataPacket>() {
@@ -75,8 +75,8 @@ public class ContactListAdapter extends BaseAdapter {
     }
 
 
-    void checkAll(boolean b){
-        for (ContactsDataPacket dataPacket : contactsList){
+    void checkAll(boolean b) {
+        for (ContactsDataPacket dataPacket : contactsList) {
             dataPacket.selected = b;
         }
     }

@@ -1,6 +1,6 @@
 package balti.migrate;
 
-public class BackupDataPacketWithSize{
+public class BackupDataPacketWithSize {
     BackupDataPacket packet;
     long dataSize;
     long systemSize;

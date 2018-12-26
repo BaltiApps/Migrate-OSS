@@ -54,7 +54,7 @@ public class BackupProgressLayout extends AppCompatActivity {
 
     int tp = 1;
 
-    class SetAppIcon extends AsyncTask<String, Void, Bitmap>{
+    class SetAppIcon extends AsyncTask<String, Void, Bitmap> {
 
 
         @Override
@@ -69,8 +69,7 @@ public class BackupProgressLayout extends AppCompatActivity {
                     imageData[i] = Byte.parseByte(bytes[i]);
                 }
                 bmp = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return bmp;
@@ -81,8 +80,7 @@ public class BackupProgressLayout extends AppCompatActivity {
             super.onPostExecute(bitmap);
             if (bitmap != null) {
                 appIcon.setImageBitmap(bitmap);
-            }
-            else {
+            } else {
                 appIcon.setImageResource(R.drawable.ic_backup);
             }
         }
@@ -130,9 +128,9 @@ public class BackupProgressLayout extends AppCompatActivity {
             }
         });
 
-        if (getIntent().getExtras() != null){
+        if (getIntent().getExtras() != null) {
             handleProgress(getIntent());
-            if (getIntent().hasExtra("total_parts")){
+            if (getIntent().hasExtra("total_parts")) {
                 tp = getIntent().getIntExtra("total_parts", 1);
             }
         }
@@ -171,7 +169,7 @@ public class BackupProgressLayout extends AppCompatActivity {
         }
     }
 
-    void handleProgress(Intent intent){
+    void handleProgress(Intent intent) {
         try {
             String type = "";
             String partName = "";
@@ -184,12 +182,12 @@ public class BackupProgressLayout extends AppCompatActivity {
 
             this.partName.setText(partName);
 
-            if (!type.equals(lastType)){
+            if (!type.equals(lastType)) {
                 lastType = type;
                 progressLog.append("\n\n");
             }
 
-            if (type.equals("finished")){
+            if (type.equals("finished")) {
 
                 if (intent.getBooleanExtra("final_process", true)) {
                     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -228,8 +226,7 @@ public class BackupProgressLayout extends AppCompatActivity {
                     });
                 }
 
-            }
-            else {
+            } else {
 
                 actionButton.setText(getString(android.R.string.cancel));
                 actionButton.setOnClickListener(new View.OnClickListener() {
@@ -349,8 +346,7 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                     if (intent.hasExtra("defect_number")) {
                         task.setText(getString(R.string.correcting_errors) + " " + intent.getIntExtra("defect_number", 0));
-                    }
-                    else {
+                    } else {
                         task.setText(getString(R.string.correcting_errors));
                     }
 
@@ -383,13 +379,12 @@ public class BackupProgressLayout extends AppCompatActivity {
                 }
             }
 
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    void addLog(String key, Intent intent){
+    void addLog(String key, Intent intent) {
         try {
 
             if (!intent.hasExtra(key))
@@ -405,7 +400,7 @@ public class BackupProgressLayout extends AppCompatActivity {
         }
     }
 
-    void setProgress(String key, Intent intent){
+    void setProgress(String key, Intent intent) {
 
         if (!intent.hasExtra(key))
             return;
@@ -417,7 +412,7 @@ public class BackupProgressLayout extends AppCompatActivity {
     }
 
 
-    void setError(ArrayList<String> errors){
+    void setError(ArrayList<String> errors) {
         if (errors.size() > 0) {
             errorLog.setVisibility(VISIBLE);
             for (int i = 0; i < errors.size(); i++) {
@@ -432,36 +427,38 @@ public class BackupProgressLayout extends AppCompatActivity {
     }
 
 
-    void finishThis(){
+    void finishThis() {
         try {
-            if (progressReceiver != null) LocalBroadcastManager.getInstance(this).unregisterReceiver(progressReceiver);
+            if (progressReceiver != null)
+                LocalBroadcastManager.getInstance(this).unregisterReceiver(progressReceiver);
+        } catch (IllegalArgumentException ignored) {
         }
-        catch (IllegalArgumentException ignored){}
 
 
-        if (!commonTools.isServiceRunning(BackupService.class.getName())){
+        if (!commonTools.isServiceRunning(BackupService.class.getName())) {
             startActivity(new Intent(BackupProgressLayout.this, MainActivity.class));
         }
         finish();
     }
 
-    void trySettingAppIcon(){
-            try {
-                if (BackupEngine.ICON_STRING != null && !lastIcon.equals(BackupEngine.ICON_STRING)) {
+    void trySettingAppIcon() {
+        try {
+            if (BackupEngine.ICON_STRING != null && !lastIcon.equals(BackupEngine.ICON_STRING)) {
 
-                    try {
-                        setAppIcon.cancel(true);
-                    }catch (Exception ignored){}
-
-                    setAppIcon = new SetAppIcon();
-                    lastIcon = BackupEngine.ICON_STRING;
-                    setAppIcon.execute(lastIcon);
+                try {
+                    setAppIcon.cancel(true);
+                } catch (Exception ignored) {
                 }
+
+                setAppIcon = new SetAppIcon();
+                lastIcon = BackupEngine.ICON_STRING;
+                setAppIcon.execute(lastIcon);
             }
-            catch (Exception ignored){}
+        } catch (Exception ignored) {
+        }
     }
 
-    String calendarDifference(long longDiff){
+    String calendarDifference(long longDiff) {
         String diff = "";
 
         try {
@@ -483,8 +480,8 @@ public class BackupProgressLayout extends AppCompatActivity {
             long s = longDiff;
             diff = diff + s + "secs";
 
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored){}
 
         return diff;
     }

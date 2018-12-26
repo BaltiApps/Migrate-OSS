@@ -121,7 +121,7 @@ public class BackupEngine {
     private static int PID = -9999999;
     private static int CORRECTING_PID = -9999999;
 
-    class StartBackup extends AsyncTask{
+    class StartBackup extends AsyncTask {
 
         boolean doBackupContacts;
         Vector<ContactsDataPacket> contactsDataPackets;
@@ -139,7 +139,7 @@ public class BackupEngine {
         String keyboardText;
 
         public StartBackup(boolean doContactsBackup, Vector<ContactsDataPacket> contactsDataPackets, boolean doSmsBackup, Vector<SmsDataPacket> smsDataPackets,
-                boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets, boolean doBackupDpi, String dpiText, boolean doBackupKeyboard, String keyboardText) {
+                           boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets, boolean doBackupDpi, String dpiText, boolean doBackupKeyboard, String keyboardText) {
             this.doBackupContacts = doContactsBackup;
             this.contactsDataPackets = contactsDataPackets;
             this.doSmsBackup = doSmsBackup;
@@ -186,12 +186,11 @@ public class BackupEngine {
         this.partNumber = partNumber;
         this.totalParts = totalParts;
 
-        if (totalParts > 1){
+        if (totalParts > 1) {
             this.destination = this.destination + "/" + this.backupName;
             this.madePartName = context.getString(R.string.part) + " " + partNumber + " " + context.getString(R.string.of) + " " + totalParts;
             this.backupName = this.madePartName.replace(" ", "_");
-        }
-        else {
+        } else {
             this.madePartName = "";
         }
 
@@ -202,7 +201,8 @@ public class BackupEngine {
         this.context = context;
 
         assert this.backupName != null;
-        if (this.backupName.endsWith(".zip")) this.backupName = this.backupName.substring(0, this.backupName.lastIndexOf("."));
+        if (this.backupName.endsWith(".zip"))
+            this.backupName = this.backupName.substring(0, this.backupName.lastIndexOf("."));
 
         main = context.getSharedPreferences("main", Context.MODE_PRIVATE);
         actualProgressBroadcast = new Intent("Migrate progress broadcast")
@@ -225,28 +225,27 @@ public class BackupEngine {
         pm = context.getPackageManager();
     }
 
-    NotificationCompat.Builder createNotificationBuilder(){
+    NotificationCompat.Builder createNotificationBuilder() {
         NotificationCompat.Builder builder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder = new NotificationCompat.Builder(context, BackupService.BACKUP_RUNNING_NOTIFICATION);
-        }
-        else {
+        } else {
             builder = new NotificationCompat.Builder(context);
         }
         return builder;
     }
 
-    long timeInMillis(){
+    long timeInMillis() {
         Calendar calendar = Calendar.getInstance();
         return calendar.getTimeInMillis();
     }
 
     void startBackup(boolean doBackupContacts, Vector<ContactsDataPacket> contactsDataPackets, boolean doBackupSms, Vector<SmsDataPacket> smsDataPackets,
-            boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets, boolean doBackupDpi, String dpiText, boolean doBackupKeyboard, String keyboardText){
+                     boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets, boolean doBackupDpi, String dpiText, boolean doBackupKeyboard, String keyboardText) {
         try {
             startBackupTask.cancel(true);
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored){}
         startBackupTask = new StartBackup(doBackupContacts, contactsDataPackets, doBackupSms, smsDataPackets, doBackupCalls, callsDataPackets, doBackupDpi, dpiText, doBackupKeyboard, keyboardText);
         startBackupTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -266,8 +265,7 @@ public class BackupEngine {
             fileOutputStream.close();
             source.delete();
             return "";
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
         }
@@ -386,11 +384,10 @@ public class BackupEngine {
 
                         actualProgressBroadcast.putExtra("type", "app_progress");
 
-                        if (line.startsWith("--- PID:")){
+                        if (line.startsWith("--- PID:")) {
                             try {
                                 PID = Integer.parseInt(line.substring(line.lastIndexOf(" ") + 1));
-                            }
-                            catch (Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -447,10 +444,11 @@ public class BackupEngine {
                         }
                     }
 
-                    if (!isCancelled && numberOfApps > 0){
+                    if (!isCancelled && numberOfApps > 0) {
 
                         ArrayList<String> defects = verifyBackups(notificationManager, progressNotif, activityProgressIntent);
-                        if (!isCancelled) tryingToCorrect(defects, notificationManager, progressNotif, activityProgressIntent);
+                        if (!isCancelled)
+                            tryingToCorrect(defects, notificationManager, progressNotif, activityProgressIntent);
 
                     }
 
@@ -472,7 +470,7 @@ public class BackupEngine {
             }
 
         } catch (Exception e) {
-            if (!isCancelled){
+            if (!isCancelled) {
                 e.printStackTrace();
                 errors.add("INIT" + errorTag + ": " + e.getMessage());
             }
@@ -493,7 +491,7 @@ public class BackupEngine {
 
         if (finalProcess) {
 
-            actualProgressBroadcast.putExtra("complete_time", BackupService.PREVIOUS_TIME + (endMillis-startMillis));
+            actualProgressBroadcast.putExtra("complete_time", BackupService.PREVIOUS_TIME + (endMillis - startMillis));
 
             ArrayList<String> allErr = new ArrayList<>(0);
             if (BackupService.previousErrors != null)
@@ -524,8 +522,7 @@ public class BackupEngine {
             notificationManager.cancel(NOTIFICATION_ID);
             notificationManager.notify(NOTIFICATION_ID + 1, progressNotif.build());
 
-        }
-        else {
+        } else {
             actualProgressBroadcast.putExtra("total_time", endMillis - startMillis);
         }
 
@@ -535,14 +532,14 @@ public class BackupEngine {
             context.stopService(new Intent(context, BackupService.class));
     }
 
-    ArrayList<String> verifyBackups(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+    ArrayList<String> verifyBackups(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent) {
 
         ArrayList<String> allRecovery = new ArrayList<>(0);
 
         if (numberOfApps == 0)
             return allRecovery;
 
-        String title = (totalParts > 1)?
+        String title = (totalParts > 1) ?
                 context.getString(R.string.verifying_backups) + " : " + madePartName : context.getString(R.string.verifying_backups);
 
         actualProgressBroadcast.putExtra("type", "verifying_backups");
@@ -561,7 +558,7 @@ public class BackupEngine {
         int c = 0;
 
         try {
-            for (BackupDataPacketWithSize packetWithSize : backupBatch.appListWithSize){
+            for (BackupDataPacketWithSize packetWithSize : backupBatch.appListWithSize) {
 
                 if (isCancelled) break;
 
@@ -577,7 +574,7 @@ public class BackupEngine {
 
                 String backupApkDirPath = destination + "/" + backupName + "/" + pi.packageName + ".app";
 
-                if (packet.APP && (!new File(backupApkDirPath).exists() || commonTools.getDirLength(backupApkDirPath) == 0)){
+                if (packet.APP && (!new File(backupApkDirPath).exists() || commonTools.getDirLength(backupApkDirPath) == 0)) {
 
                     String apkPath = pi.applicationInfo.sourceDir;
                     apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'));
@@ -590,7 +587,7 @@ public class BackupEngine {
 
                 }
 
-                if (packet.DATA && (!backupData.exists() || backupData.length() == 0)){
+                if (packet.DATA && (!backupData.exists() || backupData.length() == 0)) {
 
                     String fullDataPath = pi.applicationInfo.dataDir;
                     String actualDataName = fullDataPath.substring(fullDataPath.lastIndexOf('/') + 1);
@@ -605,7 +602,7 @@ public class BackupEngine {
                     allRecovery.add(backupDataCommand);
                 }
 
-                if (packet.PERMISSIONS && (!backupPerm.exists() || backupPerm.length() == 0)){
+                if (packet.PERMISSIONS && (!backupPerm.exists() || backupPerm.length() == 0)) {
                     writeGrantedPermissions(packet.PACKAGE_INFO.packageName, true);
                 }
 
@@ -613,7 +610,7 @@ public class BackupEngine {
 
                 actualProgressBroadcast.putExtra("type", "verifying_backups")
                         .putExtra("app_name", "verifying: " + appName)
-                        .putExtra("progress", (++c*100/numberOfApps));
+                        .putExtra("progress", (++c * 100 / numberOfApps));
                 activityProgressIntent.putExtras(actualProgressBroadcast);
 
                 progressNotif.setProgress(numberOfApps, c, false)
@@ -631,14 +628,14 @@ public class BackupEngine {
         return allRecovery;
     }
 
-    void tryingToCorrect(ArrayList<String> defects, NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+    void tryingToCorrect(ArrayList<String> defects, NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent) {
 
 
         if (numberOfApps == 0 || defects.size() == 0)
             return;
 
 
-        String title = (totalParts > 1)?
+        String title = (totalParts > 1) ?
                 context.getString(R.string.correcting_errors) + " : " + madePartName : context.getString(R.string.correcting_errors);
 
         actualProgressBroadcast.putExtra("type", "correcting_errors");
@@ -666,7 +663,7 @@ public class BackupEngine {
 
             int totalRemainingDefects = defects.size();
 
-            for (String defect : defects){
+            for (String defect : defects) {
 
                 if (isCancelled) break;
 
@@ -711,15 +708,14 @@ public class BackupEngine {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }
-                else if (line.startsWith("--- DEFECT:")){
+                } else if (line.startsWith("--- DEFECT:")) {
                     try {
 
                         int defectNumber = Integer.parseInt(line.substring(line.lastIndexOf(" ") + 1));
 
                         done = defects.size() - defectNumber;
                         actualProgressBroadcast.putExtra("defect_number", defectNumber);
-                        actualProgressBroadcast.putExtra("progress", (done*100)/defects.size());
+                        actualProgressBroadcast.putExtra("progress", (done * 100) / defects.size());
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -871,12 +867,12 @@ public class BackupEngine {
         return err;
     }*/
 
-    private String javaZipAll(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+    private String javaZipAll(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent) {
 
         String err = "";
         try {
 
-            String title = (totalParts > 1)? context.getString(R.string.combining) + " : " + madePartName : context.getString(R.string.combining);
+            String title = (totalParts > 1) ? context.getString(R.string.combining) + " : " + madePartName : context.getString(R.string.combining);
             progressNotif.setContentTitle(title)
                     .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                     .setProgress(0, 0, false)
@@ -905,8 +901,7 @@ public class BackupEngine {
 
             //int part = 0;
 
-            for (File file : files)
-            {
+            for (File file : files) {
 
                 if (isCancelled) break;
 
@@ -915,15 +910,13 @@ public class BackupEngine {
                 ZipEntry zipEntry;
 
 
-
                 if (file.isDirectory()) {
                     zipEntry = new ZipEntry(fn + "/");
 
                     zipOutputStream.putNextEntry(zipEntry);
                     zipOutputStream.closeEntry();
                     continue;
-                }
-                else {
+                } else {
                     zipEntry = new ZipEntry(fn);
 
                     BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
@@ -932,13 +925,12 @@ public class BackupEngine {
 
                     CRC32 crc32 = new CRC32();
 
-                    while ((read = bis.read(buffer)) > 0)
-                    {
+                    while ((read = bis.read(buffer)) > 0) {
                         crc32.update(buffer, 0, read);
                     }
 
                     bis.close();
-                    
+
                     zipEntry.setSize(file.length());
                     zipEntry.setCompressedSize(file.length());
                     zipEntry.setCrc(crc32.getValue());
@@ -949,8 +941,7 @@ public class BackupEngine {
                     FileInputStream fileInputStream = new FileInputStream(file);
                     buffer = new byte[4096];
 
-                    while ((read = fileInputStream.read(buffer)) > 0)
-                    {
+                    while ((read = fileInputStream.read(buffer)) > 0) {
                         zipOutputStream.write(buffer, 0, read);
                     }
                     zipOutputStream.closeEntry();
@@ -965,7 +956,7 @@ public class BackupEngine {
                     zipOutputStream = new ZipOutputStream(fileOutputStream);
                 }*/
 
-                int pr = c++*100 / n;
+                int pr = c++ * 100 / n;
                 if (pr == 100) pr = 99;
 
                 actualProgressBroadcast.putExtra("type", "zip_progress")
@@ -986,21 +977,20 @@ public class BackupEngine {
             zipOutputStream.close();
             fullDelete(directory.getAbsolutePath());
 
-            if (c < n){
+            if (c < n) {
                 err += context.getString(R.string.incompleteZip) + "\n";
             }
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             if (!isCancelled)
                 err = err + e.getMessage() + "\n";
         }
         return err;
     }
 
-    Vector<File> getAllFiles(File directory, Vector<File> allFiles){
+    Vector<File> getAllFiles(File directory, Vector<File> allFiles) {
         File files[] = directory.listFiles();
-        for (File f : files){
+        for (File f : files) {
             if (f.isFile())
                 allFiles.addElement(f);
             else {
@@ -1011,7 +1001,7 @@ public class BackupEngine {
         return allFiles;
     }
 
-    void makePackageData(){
+    void makePackageData() {
 
         File package_data = new File(destination + "/" + backupName + "/package-data.txt");
         String contents = "";
@@ -1036,7 +1026,7 @@ public class BackupEngine {
         }
     }
 
-    void makeExtrasData(){
+    void makeExtrasData() {
 
         File package_data = new File(destination + "/" + backupName + "/extras-data");
         String contents = "";
@@ -1082,7 +1072,8 @@ public class BackupEngine {
                 "mv /tmp/" + appDir + "/*.apk " + sysAppPastingDir + "/" + "\n" +
                 "cd /tmp/" + "\n" +
                 "rm -rf " + appDir + "\n" +
-                "rm -rf " + scriptName + "\n";;
+                "rm -rf " + scriptName + "\n";
+        ;
 
 
         (new File(destination + "/" + backupName)).mkdirs();
@@ -1103,7 +1094,7 @@ public class BackupEngine {
         script.setExecutable(true, false);
     }
 
-    void makeMetadataFile(String appName, String packageName, String apkName, String dataName, String icon, String version, boolean permissions){
+    void makeMetadataFile(String appName, String packageName, String apkName, String dataName, String icon, String version, boolean permissions) {
         String metadataFileName = packageName + ".json";
         String metadataLocation = destination + "/" + backupName + "/" + metadataFileName;
         File metadataFile = new File(metadataLocation);
@@ -1184,7 +1175,7 @@ public class BackupEngine {
             e.printStackTrace();
         }*/
 
-        String title = (totalParts > 1)? context.getString(R.string.reading_data) + " : " + madePartName : context.getString(R.string.reading_data);
+        String title = (totalParts > 1) ? context.getString(R.string.reading_data) + " : " + madePartName : context.getString(R.string.reading_data);
 
         actualProgressBroadcast.putExtra("type", "reading_backup_data");
         actualProgressBroadcast.putExtra("app_name", "");
@@ -1206,11 +1197,10 @@ public class BackupEngine {
 
         (new File(destination + "/" + backupName)).mkdirs();
 
-        File scriptFile = new File(context.getFilesDir(), "the_backup_script_"+ partNumber + ".sh");
+        File scriptFile = new File(context.getFilesDir(), "the_backup_script_" + partNumber + ".sh");
         File updater_script = new File(context.getExternalCacheDir(), "updater-script");
 
         String appAndDataBackupScript = commonTools.unpackAssetToInternal("backup_app_and_data.sh", "backup_app_and_data.sh", false);
-
 
 
         try {
@@ -1342,8 +1332,7 @@ public class BackupEngine {
                         Bitmap icon = getBitmapFromDrawable(pm.getApplicationIcon(packet.PACKAGE_INFO.applicationInfo));
                         icon.compress(Bitmap.CompressFormat.PNG, 100, stream);
                         appIcon = byteToString(stream.toByteArray());
-                    }
-                    catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
@@ -1351,7 +1340,7 @@ public class BackupEngine {
 
                     actualProgressBroadcast.putExtra("type", "reading_backup_data")
                             .putExtra("app_name", appName)
-                            .putExtra("progress", (c*100/numberOfApps));
+                            .putExtra("progress", (c * 100 / numberOfApps));
                     activityProgressIntent.putExtras(actualProgressBroadcast);
 
                     progressNotif.setProgress(numberOfApps, packetCount, false)
@@ -1422,8 +1411,7 @@ public class BackupEngine {
                     pString = pString.replace(",", ".");
                     updater_writer.write("set_progress(" + pString + ");\n");
 
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                     errors.add("APP_READ" + errorTag + ": " + e.getMessage());
                 }
@@ -1497,10 +1485,10 @@ public class BackupEngine {
         return scriptFile.getAbsolutePath();
     }
 
-    String makePackageFlashReady(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+    String makePackageFlashReady(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent) {
 
 
-        String title = (totalParts > 1)?
+        String title = (totalParts > 1) ?
                 context.getString(R.string.making_package_flash_ready) + " : " + madePartName : context.getString(R.string.making_package_flash_ready);
 
         actualProgressBroadcast.putExtra("type", "making_package_flash_ready");
@@ -1523,30 +1511,28 @@ public class BackupEngine {
         File updater_script_destination = new File(flashDirPath + "updater-script");
 
         File updater_script = new File(context.getExternalCacheDir(), "updater-script");
-        if (updater_script.exists()){
+        if (updater_script.exists()) {
             moveErr = moveFile(updater_script, updater_script_destination);
             //updater_script.renameTo(updater_script_destination);
-        }
-        else {
+        } else {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "updater-script was not made" + "\n";
         }
 
-        if (!updater_script_destination.exists()){
+        if (!updater_script_destination.exists()) {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "updater-script could not be moved " + moveErr + "\n";
         }
 
         File update_binary = new File(commonTools.unpackAssetToInternal("update-binary", "update-binary", false));
 
         File update_binary_destination = new File(flashDirPath + "update-binary");
-        if (update_binary.exists()){
+        if (update_binary.exists()) {
             moveErr = moveFile(update_binary, update_binary_destination);
             //update_binary.renameTo(update_binary_destination);
-        }
-        else {
+        } else {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "update-binary could not be unpacked" + "\n";
         }
 
-        if (!update_binary_destination.exists()){
+        if (!update_binary_destination.exists()) {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "update-binary could not be moved " + moveErr + "\n";
         }
 
@@ -1554,15 +1540,14 @@ public class BackupEngine {
         File prepScript = new File(commonTools.unpackAssetToInternal("prep.sh", "prep.sh", false));
 
         File prepScript_destination = new File(destination + "/" + backupName + "/prep.sh");
-        if (prepScript.exists()){
+        if (prepScript.exists()) {
             moveErr = moveFile(prepScript, prepScript_destination);
             //prepScript.renameTo(prepScript_destination);
-        }
-        else {
+        } else {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "prep.sh could not be unpacked" + "\n";
         }
 
-        if (!prepScript_destination.exists()){
+        if (!prepScript_destination.exists()) {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "prep.sh could not be moved " + moveErr + "\n";
         }
 
@@ -1570,30 +1555,28 @@ public class BackupEngine {
         File verifyScript = new File(commonTools.unpackAssetToInternal("verify.sh", "verify.sh", false));
 
         File verifyScript_destination = new File(destination + "/" + backupName + "/verify.sh");
-        if (verifyScript.exists()){
+        if (verifyScript.exists()) {
             moveErr = moveFile(verifyScript, verifyScript_destination);
             //verifyScript.renameTo(verifyScript_destination);
-        }
-        else {
+        } else {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "verify.sh could not be unpacked" + "\n";
         }
 
-        if (!verifyScript_destination.exists()){
+        if (!verifyScript_destination.exists()) {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "verify.sh could not be moved " + moveErr + "\n";
         }
 
         File mountScript = new File(commonTools.unpackAssetToInternal("mount_using_self_busybox.sh", "mount_using_self_busybox.sh", false));
 
         File mountScript_destination = new File(destination + "/" + backupName + "/mount_using_self_busybox.sh");
-        if (mountScript.exists()){
+        if (mountScript.exists()) {
             moveErr = moveFile(mountScript, mountScript_destination);
             //mountScript.renameTo(mountScript_destination);
-        }
-        else {
+        } else {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "mount_using_self_busybox.sh could not be unpacked" + "\n";
         }
 
-        if (!verifyScript_destination.exists()){
+        if (!verifyScript_destination.exists()) {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "mount_using_self_busybox.sh could not be moved " + moveErr + "\n";
         }
 
@@ -1602,15 +1585,14 @@ public class BackupEngine {
         File helper_destination = new File(destination + "/" + backupName + "/helper.apk");
         //new File(destination + "/" + backupName + "/system/app/MigrateHelper").mkdirs();
 
-        if (helper.exists()){
+        if (helper.exists()) {
             moveErr = moveFile(helper, helper_destination);
             //helper.renameTo(helper_destination);
-        }
-        else {
+        } else {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "Helper app could not be unpacked" + "\n";
         }
 
-        if (!helper_destination.exists()){
+        if (!helper_destination.exists()) {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "Helper app could not be moved " + moveErr + "\n";
         }
 
@@ -1633,10 +1615,11 @@ public class BackupEngine {
 
             try {
                 suProcess.waitFor();
+            } catch (Exception ignored) {
             }
-            catch (Exception ignored){}
 
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         isCancelled = true;
 
@@ -1645,13 +1628,12 @@ public class BackupEngine {
         if (madePartName.trim().equals("")) {
             fullDelete(destination + "/" + backupName);
             fullDelete(destination + "/" + backupName + ".zip");
-        }
-        else {
+        } else {
             fullDelete(destination);
         }
     }
 
-    void fullDelete(String path){
+    void fullDelete(String path) {
         File file = new File(path);
         if (file.exists() && !file.getAbsolutePath().equals(Environment.getExternalStorageDirectory().getAbsolutePath())) {
             if (!file.isDirectory())
@@ -1665,9 +1647,9 @@ public class BackupEngine {
         }
     }
 
-    void backupAppPermissions(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+    void backupAppPermissions(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent) {
 
-        String title = (totalParts > 1)?
+        String title = (totalParts > 1) ?
                 context.getString(R.string.backing_app_permissions) + " : " + madePartName : context.getString(R.string.backing_app_permissions);
 
         actualProgressBroadcast.putExtra("type", "backing_app_permissions");
@@ -1692,7 +1674,7 @@ public class BackupEngine {
 
             BackupDataPacket packet = packetWithSize.packet;
 
-            actualProgressBroadcast.putExtra("progress", (++c*100/numberOfApps))
+            actualProgressBroadcast.putExtra("progress", (++c * 100 / numberOfApps))
                     .putExtra("type", "backing_app_permissions");
 
             if (packet.PERMISSIONS) {
@@ -1700,8 +1682,7 @@ public class BackupEngine {
                 appName = pm.getApplicationLabel(packet.PACKAGE_INFO.applicationInfo).toString();
 
                 writeGrantedPermissions(packet.PACKAGE_INFO.packageName, false);
-            }
-            else {
+            } else {
                 appName = "";
             }
 
@@ -1748,10 +1729,9 @@ public class BackupEngine {
 
             //ArrayList<String> grantedPerms = getGrantedPermissions(packet.PACKAGE_INFO.packageName);
             PackageInfo pi = pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS);
-            if (pi.requestedPermissions == null){
+            if (pi.requestedPermissions == null) {
                 writer.write("no_permissions_granted");
-            }
-            else {
+            } else {
                 for (int i = 0; i < pi.requestedPermissions.length; i++) {
                     if ((pi.requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0) {
                         String p = pi.requestedPermissions[i].trim();
@@ -1770,7 +1750,7 @@ public class BackupEngine {
         }
     }
 
-    void setDoContactsBackup(boolean doBackupContacts, Vector<ContactsDataPacket> contactList){
+    void setDoContactsBackup(boolean doBackupContacts, Vector<ContactsDataPacket> contactList) {
         this.doBackupContacts = doBackupContacts;
         if (contactList == null)
             contactsDataPackets = null;
@@ -1782,7 +1762,7 @@ public class BackupEngine {
         }
     }
 
-    void setDoSmsBackup(boolean doBackupSms, Vector<SmsDataPacket> smsDataPackets){
+    void setDoSmsBackup(boolean doBackupSms, Vector<SmsDataPacket> smsDataPackets) {
         this.doBackupSms = doBackupSms;
         if (smsDataPackets == null)
             this.smsDataPackets = null;
@@ -1794,7 +1774,7 @@ public class BackupEngine {
         }
     }
 
-    void setDoCallsBackup(boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets){
+    void setDoCallsBackup(boolean doBackupCalls, Vector<CallsDataPacket> callsDataPackets) {
         this.doBackupCalls = doBackupCalls;
         if (callsDataPackets == null)
             this.callsDataPackets = null;
@@ -1806,19 +1786,19 @@ public class BackupEngine {
         }
     }
 
-    void setDoDpiBackup(boolean doBackupDpi, String dpiText){
+    void setDoDpiBackup(boolean doBackupDpi, String dpiText) {
         this.doBackupDpi = doBackupDpi;
         if (dpiText != null)
             this.dpiText = dpiText;
     }
 
-    void setDoKeyboardBackup(boolean doBackupKeyboard, String keyboardText){
+    void setDoKeyboardBackup(boolean doBackupKeyboard, String keyboardText) {
         this.doBackupKeyboard = doBackupKeyboard;
         if (keyboardText != null)
             this.keyboardText = keyboardText;
     }
 
-    String backupContacts(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+    String backupContacts(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent) {
 
         StringBuilder errors = new StringBuilder();
 
@@ -1827,7 +1807,7 @@ public class BackupEngine {
 
         (new File(destination + "/" + backupName)).mkdirs();
 
-        String title = (totalParts > 1)? context.getString(R.string.backing_contacts) + " : " + madePartName : context.getString(R.string.backing_contacts);
+        String title = (totalParts > 1) ? context.getString(R.string.backing_contacts) + " : " + madePartName : context.getString(R.string.backing_contacts);
         progressNotif.setContentTitle(title)
                 .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                 .setProgress(0, 0, false)
@@ -1839,7 +1819,7 @@ public class BackupEngine {
         File vcfFile = new File(vcfFilePath);
         if (vcfFile.exists()) vcfFile.delete();
 
-        if (contactsDataPackets != null){
+        if (contactsDataPackets != null) {
 
             int n = contactsDataPackets.size();
 
@@ -1865,7 +1845,7 @@ public class BackupEngine {
 
                     bufferedWriter.write(thisPacket.vcfData + "\n");
 
-                    actualProgressBroadcast.putExtra("type", "contact_progress").putExtra("contact_name", thisPacket.fullName).putExtra("progress", (j*100/n));
+                    actualProgressBroadcast.putExtra("type", "contact_progress").putExtra("contact_name", thisPacket.fullName).putExtra("progress", (j * 100 / n));
                     activityProgressIntent.putExtras(actualProgressBroadcast);
 
                     progressNotif.setProgress(n, j, false)
@@ -1888,9 +1868,7 @@ public class BackupEngine {
                 e.printStackTrace();
                 errors.append(e.getMessage()).append("\n");
             }
-        }
-
-        else {
+        } else {
 
             VcfTools vcfTools = new VcfTools(context);
             Cursor cursor = vcfTools.getContactsCursor();
@@ -1902,8 +1880,7 @@ public class BackupEngine {
             try {
                 n = cursor.getCount();
                 cursor.moveToFirst();
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 errors.append(e.getMessage()).append("\n");
             }
@@ -1937,7 +1914,7 @@ public class BackupEngine {
                     if (!isDuplicate(data, vcfDatas)) {
                         bufferedWriter.write(data[1] + "\n");
 
-                        actualProgressBroadcast.putExtra("type", "contact_progress").putExtra("contact_name", data[0]).putExtra("progress", (j*100/n));
+                        actualProgressBroadcast.putExtra("type", "contact_progress").putExtra("contact_name", data[0]).putExtra("progress", (j * 100 / n));
                         activityProgressIntent.putExtras(actualProgressBroadcast);
 
                         LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
@@ -1979,15 +1956,15 @@ public class BackupEngine {
         return errors.toString();
     }
 
-    boolean isDuplicate(String data[], Vector<String[]> vcfDatas){
-        for (String vcfData[] : vcfDatas){
+    boolean isDuplicate(String data[], Vector<String[]> vcfDatas) {
+        for (String vcfData[] : vcfDatas) {
             if (data[0].equals(vcfData[0]) && data[1].equals(vcfData[1]))
                 return true;
         }
         return false;
     }
 
-    String backupSms(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+    String backupSms(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent) {
 
         StringBuilder errors = new StringBuilder();
 
@@ -2001,14 +1978,14 @@ public class BackupEngine {
         String DROP_TABLE = "DROP TABLE IF EXISTS sms";
         String CREATE_TABLE = "CREATE TABLE sms ( id INTEGER PRIMARY KEY, smsAddress TEXT, smsBody TEXT, smsType TEXT, smsDate TEXT, smsDateSent TEXT, smsCreator TEXT, smsPerson TEXT, smsProtocol TEXT, smsSeen TEXT, smsServiceCenter TEXT, smsStatus TEXT, smsSubject TEXT, smsThreadId TEXT, smsError INTEGER, smsRead INTEGER, smsLocked INTEGER, smsReplyPathPresent INTEGER )";
 
-        if (smsDataPackets == null){
+        if (smsDataPackets == null) {
 
             smsDataPackets = new Vector<>(0);
 
             actualProgressBroadcast.putExtra("type", "sms_reading");
             activityProgressIntent.putExtras(actualProgressBroadcast);
 
-            String title = (totalParts > 1)? context.getString(R.string.reading_sms) + " : " + madePartName : context.getString(R.string.reading_sms);
+            String title = (totalParts > 1) ? context.getString(R.string.reading_sms) + " : " + madePartName : context.getString(R.string.reading_sms);
             progressNotif.setContentTitle(title)
                     .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                     .setProgress(0, 0, false)
@@ -2038,8 +2015,7 @@ public class BackupEngine {
                     }
                     while (inboxCursor.moveToNext());
                 }
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 errors.append(e.getMessage()).append("\n");
             }
@@ -2055,8 +2031,7 @@ public class BackupEngine {
                     }
                     while (outboxCursor.moveToNext());
                 }
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 errors.append(e.getMessage()).append("\n");
             }
@@ -2072,8 +2047,7 @@ public class BackupEngine {
                     }
                     while (sentCursor.moveToNext());
                 }
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 errors.append(e.getMessage()).append("\n");
             }
@@ -2089,8 +2063,7 @@ public class BackupEngine {
                     }
                     while (draftCursor.moveToNext());
                 }
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 errors.append(e.getMessage()).append("\n");
             }
@@ -2099,7 +2072,7 @@ public class BackupEngine {
 
         if (smsDataPackets != null || smsDataPackets.size() != 0) {
 
-            String title = (totalParts > 1)? context.getString(R.string.backing_sms) + " : " + madePartName : context.getString(R.string.backing_sms);
+            String title = (totalParts > 1) ? context.getString(R.string.backing_sms) + " : " + madePartName : context.getString(R.string.backing_sms);
             progressNotif.setContentTitle(title)
                     .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                     .setProgress(0, 0, false)
@@ -2117,12 +2090,12 @@ public class BackupEngine {
                 }
                 db.execSQL(DROP_TABLE);
                 db.execSQL(CREATE_TABLE);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 errors.append(e.getMessage()).append("\n");
             }
 
-            for (int j = 0; j < n; j++){
+            for (int j = 0; j < n; j++) {
 
                 try {
 
@@ -2151,7 +2124,7 @@ public class BackupEngine {
 
                     db.insert("sms", null, contentValues);
 
-                    actualProgressBroadcast.putExtra("type", "sms_progress").putExtra("sms_address", dataPacket.smsAddress).putExtra("progress", (j*100/n));
+                    actualProgressBroadcast.putExtra("type", "sms_progress").putExtra("sms_address", dataPacket.smsAddress).putExtra("progress", (j * 100 / n));
                     activityProgressIntent.putExtras(actualProgressBroadcast);
 
                     progressNotif.setProgress(n, j, false)
@@ -2161,8 +2134,7 @@ public class BackupEngine {
 
                     LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                     errors.append(e.getMessage()).append("\n");
                 }
@@ -2171,7 +2143,8 @@ public class BackupEngine {
 
             try {
                 db.close();
-            } catch (Exception ignored){}
+            } catch (Exception ignored) {
+            }
 
         }
 
@@ -2181,7 +2154,7 @@ public class BackupEngine {
         return errors.toString();
     }
 
-    String backupCalls(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+    String backupCalls(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent) {
 
         StringBuilder errors = new StringBuilder();
 
@@ -2200,14 +2173,14 @@ public class BackupEngine {
                 "callsType TEXT, callsVoicemailUri TEXT," +
                 "callsDate INTEGER, callsDuration INTEGER, callsNew INTEGER )";
 
-        if (callsDataPackets == null){
+        if (callsDataPackets == null) {
 
             callsDataPackets = new Vector<>(0);
 
             actualProgressBroadcast.putExtra("type", "calls_reading");
             activityProgressIntent.putExtras(actualProgressBroadcast);
 
-            String title = (totalParts > 1)? context.getString(R.string.reading_calls) + " : " + madePartName : context.getString(R.string.reading_calls);
+            String title = (totalParts > 1) ? context.getString(R.string.reading_calls) + " : " + madePartName : context.getString(R.string.reading_calls);
             progressNotif.setContentTitle(title)
                     .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                     .setProgress(0, 0, false)
@@ -2233,8 +2206,7 @@ public class BackupEngine {
                     }
                     while (callsCursor.moveToNext());
                 }
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 errors.append(e.getMessage()).append("\n");
             }
@@ -2243,7 +2215,7 @@ public class BackupEngine {
 
         if (callsDataPackets != null || callsDataPackets.size() != 0) {
 
-            String title = (totalParts > 1)? context.getString(R.string.backing_calls) + " : " + madePartName : context.getString(R.string.backing_calls);
+            String title = (totalParts > 1) ? context.getString(R.string.backing_calls) + " : " + madePartName : context.getString(R.string.backing_calls);
             progressNotif.setContentTitle(title)
                     .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                     .setProgress(0, 0, false)
@@ -2261,12 +2233,12 @@ public class BackupEngine {
                 }
                 db.execSQL(DROP_TABLE);
                 db.execSQL(CREATE_TABLE);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 errors.append(e.getMessage()).append("\n");
             }
 
-            for (int j = 0; j < n; j++){
+            for (int j = 0; j < n; j++) {
 
                 try {
 
@@ -2303,10 +2275,11 @@ public class BackupEngine {
                     db.insert("calls", null, contentValues);
 
                     String display;
-                    if (dataPacket.callsCachedName != null && !dataPacket.callsCachedName.equals("")) display = dataPacket.callsCachedName;
+                    if (dataPacket.callsCachedName != null && !dataPacket.callsCachedName.equals(""))
+                        display = dataPacket.callsCachedName;
                     else display = dataPacket.callsNumber;
 
-                    actualProgressBroadcast.putExtra("type", "calls_progress").putExtra("calls_name", display).putExtra("progress", (j*100/n));
+                    actualProgressBroadcast.putExtra("type", "calls_progress").putExtra("calls_name", display).putExtra("progress", (j * 100 / n));
                     activityProgressIntent.putExtras(actualProgressBroadcast);
 
                     progressNotif.setProgress(n, j, false)
@@ -2316,8 +2289,7 @@ public class BackupEngine {
 
                     LocalBroadcastManager.getInstance(context).sendBroadcast(actualProgressBroadcast);
 
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                     errors.append(e.getMessage()).append("\n");
                 }
@@ -2326,14 +2298,15 @@ public class BackupEngine {
 
             try {
                 db.close();
-            } catch (Exception ignored){}
+            } catch (Exception ignored) {
+            }
 
         }
 
         return errors.toString();
     }
 
-    String backupDpi(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+    String backupDpi(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent) {
 
         String errors = "";
 
@@ -2343,7 +2316,7 @@ public class BackupEngine {
         actualProgressBroadcast.putExtra("type", "dpi_progress");
         activityProgressIntent.putExtras(actualProgressBroadcast);
 
-        String title = (totalParts > 1)? context.getString(R.string.backing_dpi) + " : " + madePartName : context.getString(R.string.backing_dpi);
+        String title = (totalParts > 1) ? context.getString(R.string.backing_dpi) + " : " + madePartName : context.getString(R.string.backing_dpi);
         progressNotif.setContentTitle(title)
                 .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                 .setProgress(0, 0, true)
@@ -2363,8 +2336,7 @@ public class BackupEngine {
 
             if (dpiText != null && !dpiText.equals("")) {
                 reader = new BufferedReader(new StringReader(dpiText));
-            }
-            else {
+            } else {
                 Process dpiReader = Runtime.getRuntime().exec("su");
                 BufferedWriter w = new BufferedWriter(new OutputStreamWriter(dpiReader.getOutputStream()));
                 w.write("wm density\n");
@@ -2375,12 +2347,11 @@ public class BackupEngine {
             }
 
             String line;
-            while ((line = reader.readLine()) != null){
+            while ((line = reader.readLine()) != null) {
                 writer.write(line.trim() + "\n");
             }
             writer.close();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             errors = e.getMessage();
         }
@@ -2388,7 +2359,7 @@ public class BackupEngine {
         return errors;
     }
 
-    String backupKeyboard(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent){
+    String backupKeyboard(NotificationManager notificationManager, NotificationCompat.Builder progressNotif, Intent activityProgressIntent) {
 
         String errors = "";
 
@@ -2398,7 +2369,7 @@ public class BackupEngine {
         actualProgressBroadcast.putExtra("type", "keyboard_progress");
         activityProgressIntent.putExtras(actualProgressBroadcast);
 
-        String title = (totalParts > 1)? context.getString(R.string.backing_keyboard) + " : " + madePartName : context.getString(R.string.backing_keyboard);
+        String title = (totalParts > 1) ? context.getString(R.string.backing_keyboard) + " : " + madePartName : context.getString(R.string.backing_keyboard);
         progressNotif.setContentTitle(title)
                 .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                 .setProgress(0, 0, true)
@@ -2418,18 +2389,16 @@ public class BackupEngine {
 
             if (keyboardText != null && !keyboardText.equals("")) {
                 reader = new BufferedReader(new StringReader(keyboardText));
-            }
-            else {
+            } else {
                 return context.getString(R.string.no_keyboard_data);
             }
 
             String line;
-            while ((line = reader.readLine()) != null){
+            while ((line = reader.readLine()) != null) {
                 writer.write(line.trim() + "\n");
             }
             writer.close();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             errors = e.getMessage();
         }

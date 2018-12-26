@@ -24,7 +24,7 @@ public class CallsListAdapter extends BaseAdapter {
 
     Vector<CallsDataPacket> callsList;
 
-    CallsListAdapter(Context context, Vector<CallsDataPacket> callsList){
+    CallsListAdapter(Context context, Vector<CallsDataPacket> callsList) {
         this.callsList = callsList;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         Collections.sort(callsList, new Comparator<CallsDataPacket>() {
@@ -85,8 +85,7 @@ public class CallsListAdapter extends BaseAdapter {
             displayName.setText(name);
             displayNumber.setVisibility(View.VISIBLE);
             displayNumber.setText(number);
-        }
-        else {
+        } else {
             displayNumber.setVisibility(View.GONE);
             displayName.setText(number);
         }
@@ -123,18 +122,18 @@ public class CallsListAdapter extends BaseAdapter {
     }
 
 
-    void checkAll(boolean b){
-        for (CallsDataPacket dataPacket : callsList){
+    void checkAll(boolean b) {
+        for (CallsDataPacket dataPacket : callsList) {
             dataPacket.selected = b;
         }
     }
 
-    String getDate(long l){
+    String getDate(long l) {
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         return df.format(new Date(l));
     }
 
-    String getDuration(long l){
+    String getDuration(long l) {
         String duration = "";
 
         try {
@@ -154,8 +153,8 @@ public class CallsListAdapter extends BaseAdapter {
             long s = l;
             duration = duration + s + " secs";
 
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored){}
 
         return duration;
     }

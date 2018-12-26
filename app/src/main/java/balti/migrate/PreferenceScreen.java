@@ -47,11 +47,10 @@ public class PreferenceScreen extends balti.migrate.AppCompatPreferenceActivity 
         useNewSizingMethod = (CheckBoxPreference) findPreference("use_new_sizing_method");
 
         int method = main.getInt("calculating_size_method", 2);
-        if (method == 2){
+        if (method == 2) {
             useNewSizingMethod.setChecked(true);
             useNewSizingMethod.setSummary(R.string.new_method_will_be_used);
-        }
-        else {
+        } else {
             useNewSizingMethod.setChecked(false);
             useNewSizingMethod.setSummary(R.string.old_method_will_be_used);
         }
@@ -60,11 +59,10 @@ public class PreferenceScreen extends balti.migrate.AppCompatPreferenceActivity 
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
 
-                if ((boolean) newValue){
+                if ((boolean) newValue) {
                     editor.putInt("calculating_size_method", 2);
                     useNewSizingMethod.setSummary(R.string.new_method_will_be_used);
-                }
-                else {
+                } else {
                     editor.putInt("calculating_size_method", 1);
                     useNewSizingMethod.setSummary(R.string.old_method_will_be_used);
                 }
@@ -76,15 +74,14 @@ public class PreferenceScreen extends balti.migrate.AppCompatPreferenceActivity 
 
     }
 
-    boolean isBatteryOptimisationDisabled(){
+    boolean isBatteryOptimisationDisabled() {
         PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return Objects.requireNonNull(pm).isIgnoringBatteryOptimizations(getPackageName());
-        }
-        else return false;
+        } else return false;
     }
 
-    void askToDisbleBattery(){
+    void askToDisbleBattery() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Intent intent = new Intent();
             intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
