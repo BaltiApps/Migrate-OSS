@@ -85,13 +85,15 @@
     <string name="version_2.0">Version 2.0(christmas_beta)</string>
     <string name="version_2.0_content">
         Merry Christmas and Happy New Year!!\n\n
-    \u2022 SD card support (with Magisk module)\n
+    \u2022 Some under the hood changes.\n
+    \u2022 Experimental SD card support (with Magisk module)\n
     \u2022 Support for split apks\n
     \u2022 Apks are now unpacked under /data/local/tmp/migrate_cache\n
     \u2022 A new alternative method to calculate app size.\n
         (probable fix to freezing in calculating app size)\n
     \u2022 Now every migrate zip package has a busybox binary as a fallback\n
     \u2022 Migrate helper gets new Temporary Disable option.\n
+    \u2022 Migrate helper gets new Abort option.\n
     </string>
 
     <!--activity_main.xml-->
@@ -117,6 +119,15 @@
     <!--ask_for_backup_name.xml-->
     <string name="enter_backup_name">Enter backup name</string>
     <string name="sd_card">SD card</string>
+
+    <!--learn_about_sd_card.xml-->
+    <string name="p1">1. SD card support is experimental, and requires a magisk module.</string>
+    <string name="p2">2. The current implementation requires your ROM to support FUSE, which has been replaced by SDCARDFS in recent android versions. FUSE is still in place for legacy support in some ROMs.</string>
+    <string name="p3">3. Because of the above reason, SD card option may or may not work depending on device, ROM and Android version.</string>
+    <string name="p4">4. If the current implementation does not work for you, please wait till the module developer rewrites a new module or I find any other alternative. Thanks for your patience.</string>
+    <string name="p5">To try to get SD card support, download and install the \"ExSDCard Access Enabler\" magisk module and reboot\n
+    This module is not made by me.
+    </string>
 
     <!--extra_backups-->
     <string name="extras">Extras</string>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/large_padding_width"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        android:text="@string/p1"
+        />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/large_padding_width" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        android:text="@string/p2"
+        />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/large_padding_width" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        android:text="@string/p3"
+        />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/large_padding_width" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        android:text="@string/p4"
+        />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/large_padding_width" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/p5"
+        android:textStyle="bold"
+        />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/large_padding_width" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ex_sd_card_enabler"
+        />
+
+</LinearLayout>

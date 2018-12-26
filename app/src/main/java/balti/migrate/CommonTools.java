@@ -303,4 +303,12 @@ public class CommonTools {
         }
         return possibleSDCards;
     }
+
+    void showSdCardSupportDialog(){
+        View view = View.inflate(context, R.layout.learn_about_sd_card, null);
+        new AlertDialog.Builder(context)
+                .setView(view)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
+    }
 }

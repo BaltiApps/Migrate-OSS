@@ -1993,6 +1993,12 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                                 .setTitle(R.string.no_sd_card_detected)
                                 .setMessage(R.string.no_sd_card_detected_exp)
                                 .setPositiveButton(R.string.close, null)
+                                .setNegativeButton(R.string.learn_about_sd_card_support, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        commonTools.showSdCardSupportDialog();
+                                    }
+                                })
                                 .setView(imageView)
                                 .show();
                         internalButton.setChecked(true);
@@ -2042,6 +2048,12 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                                 .setTitle(R.string.sd_card_not_rw)
                                 .setMessage(R.string.sd_card_not_rw_exp)
                                 .setPositiveButton(R.string.close, null)
+                                .setNegativeButton(R.string.learn_about_sd_card_support, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        commonTools.showSdCardSupportDialog();
+                                    }
+                                })
                                 .setView(imageView)
                                 .show();
                         internalButton.setChecked(true);

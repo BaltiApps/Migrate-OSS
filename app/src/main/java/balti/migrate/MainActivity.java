@@ -160,7 +160,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         learnAboutSdCardSupport = findViewById(R.id.learn_sd_card_support);
         learnAboutSdCardSupport.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
-
+        learnAboutSdCardSupport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                commonTools.showSdCardSupportDialog();
+            }
+        });
 
         navigationView.setNavigationItemSelectedListener(this);
 
