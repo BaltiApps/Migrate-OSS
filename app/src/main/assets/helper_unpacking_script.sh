@@ -17,6 +17,7 @@ for FD in `ls /proc/$$/fd`; do
 done
 
 helper_apk_dir=/system/app/MigrateHelper
+ext_helper_apk_dir=/sdcard/Android/data/balti.migratehelper/helper
 
 if [ -e ${helper_apk_dir}/MigrateHelper.apk ]; then
 
@@ -33,6 +34,8 @@ if [ -e ${helper_apk_dir}/MigrateHelper.apk ]; then
         rm -r /data/data/balti.migratehelper/
         mv $1 ${helper_apk_dir}
         echo "$2" > ${helper_apk_dir}/v
+        mkdir -p ${ext_helper_apk_dir}
+        cp ${helper_apk_dir}/MigrateHelper.apk ${ext_helper_apk_dir}/MigrateHelper.apk
     else
         echo "ui_print Helper already present. Skipping helper injection." >> /proc/self/fd/$OUTFD;
         rm -r $1
@@ -44,6 +47,8 @@ else
     mv $1 ${helper_apk_dir}
     touch ${helper_apk_dir}/v
     echo "$2" > ${helper_apk_dir}/v
+    mkdir -p ${ext_helper_apk_dir}
+    cp ${helper_apk_dir}/MigrateHelper.apk ${ext_helper_apk_dir}/MigrateHelper.apk
 fi
 
 if [ -e $1 ] && [ -f $1 ]; then

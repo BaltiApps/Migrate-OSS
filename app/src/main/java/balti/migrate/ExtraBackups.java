@@ -2,6 +2,7 @@ package balti.migrate;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.app.usage.StorageStats;
 import android.app.usage.StorageStatsManager;
@@ -51,7 +52,6 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -135,7 +135,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
     private AlertDialog ad;
     private PackageManager pm;
 
-    private long MAX_TWRP_ZIP_SIZE = 4194300;
+    static long MAX_TWRP_ZIP_SIZE = 4194300;
 
     MakeBackupSummary makeBackupSummary;
     static int totalSelectedApps = 0;
@@ -440,7 +440,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             availableKb = availableKb / 1024;
 
             try {
-                BufferedReader bufferedReader = new BufferedReader(new FileReader("/proc/meminfo"));
+                /*BufferedReader bufferedReader = new BufferedReader(new FileReader("/proc/meminfo"));
 
                 String line;
                 while ((line = bufferedReader.readLine()) != null) {
@@ -449,7 +449,15 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                         totalMemory = Long.parseLong(parts[1]);
                         break;
                     }
-                }
+                }*/
+
+                ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+                ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+                assert activityManager != null;
+                activityManager.getMemoryInfo(memoryInfo);
+                totalMemory = memoryInfo.totalMem / 1024;
+
+                Log.d(DEBUG_TAG, "totalMemory: " + totalMemory);
 
             } catch (Exception e) {
                 e.printStackTrace();
