@@ -311,9 +311,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ad.setPositiveButton(R.string.install, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Intent playStorePage = new Intent(Intent.ACTION_VIEW);
-                    playStorePage.setData(Uri.parse("market://details?id=balti.migrate"));
-                    startActivity(playStorePage);
+                    commonTools.openWeblink("market://details?id=balti.migrate");
                 }
             });
             ad.show();
@@ -398,6 +396,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 showLog();
                 break;
 
+            case R.id.older_builds:
+                commonTools.openWeblink("https://www.androidfilehost.com/?w=files&flid=285270");
+                break;
 
             case R.id.appIntro:
                 startActivity(new Intent(this, InitialGuide.class).putExtra("manual", true));
@@ -448,6 +449,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }
                         })
                         .show();
+                break;
+
+            case R.id.contact_telegram:
+                commonTools.openWeblink("https://t.me/SayantanRC");
+                break;
+
+            case R.id.xda_thread:
+                commonTools.openWeblink("https://forum.xda-developers.com/android/apps-games/app-migrate-custom-rom-migration-tool-t3862763");
                 break;
 
             case R.id.otherApps:
@@ -561,9 +570,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mdh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent mdhPage = new Intent(Intent.ACTION_VIEW);
-                mdhPage.setData(Uri.parse("market://details?id=sayantanrc.motodisplayhandwave"));
-                startActivity(mdhPage);
+                commonTools.openWeblink("market://details?id=sayantanrc.motodisplayhandwave");
             }
         });
 
@@ -572,9 +579,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         instamean.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent instameanPage = new Intent(Intent.ACTION_VIEW);
-                instameanPage.setData(Uri.parse("market://details?id=balti.instamean"));
-                startActivity(instameanPage);
+                commonTools.openWeblink("market://details?id=balti.instamean");
             }
         });
 
@@ -583,9 +588,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bg_video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent bgvideoPage = new Intent(Intent.ACTION_VIEW);
-                bgvideoPage.setData(Uri.parse("market://details?id=balti.bgvideo"));
-                startActivity(bgvideoPage);
+                commonTools.openWeblink("market://details?id=balti.bgvideo");
             }
         });
 
@@ -594,9 +597,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         opc8085.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent opc8085Page = new Intent(Intent.ACTION_VIEW);
-                opc8085Page.setData(Uri.parse("market://details?id=balti.opcode8085"));
-                startActivity(opc8085Page);
+                commonTools.openWeblink("market://details?id=balti.opcode8085");
             }
         });
 
@@ -605,9 +606,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         prs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent prsIntent = new Intent(Intent.ACTION_VIEW);
-                prsIntent.setData(Uri.parse("market://details?id=balti.pickringstop"));
-                startActivity(prsIntent);
+                commonTools.openWeblink("market://details?id=balti.pickringstop");
             }
         });
     }

@@ -311,4 +311,10 @@ public class CommonTools {
                 .setPositiveButton(android.R.string.ok, null)
                 .show();
     }
+
+    void openWeblink(String url){
+        Intent page = new Intent(Intent.ACTION_VIEW);
+        page.setData(Uri.parse(url));
+        context.startActivity(page);
+    }
 }

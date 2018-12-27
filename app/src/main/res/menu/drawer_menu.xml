@@ -44,24 +44,36 @@
                     android:title="@string/rateTheApp"
                     android:icon="@drawable/ic_rate"/>
 
+
+                <item android:id="@+id/older_builds"
+                    android:title="@string/older_builds"
+                    android:icon="@drawable/ic_archive"/>
+
             </group>
         </menu>
     </item>
 
-    <item android:id="@+id/otherApps"
-        android:title="@string/other_apps"
-        android:icon="@drawable/ic_other_apps"/>
 
-    <item android:title="@string/contact_options"
+    <item android:title="@string/other_options"
         >
 
         <menu>
             <group android:id="@+id/contact_group"
                 >
+                <item android:id="@+id/otherApps"
+                    android:title="@string/other_apps"
+                    android:icon="@drawable/ic_other_apps"/>
 
                 <item android:id="@+id/contact"
                     android:title="@string/contact"
                     android:icon="@drawable/ic_email"/>
+
+                <item android:id="@+id/contact_telegram"
+                    android:title="@string/contact_over_telegram"
+                    />
+
+                <item android:id="@+id/xda_thread"
+                    android:title="@string/xda_thread"/>
 
             </group>
         </menu>

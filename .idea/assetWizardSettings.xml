@@ -162,7 +162,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/home/sayantan/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/hardware/ic_security_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/home/sayantan/android-studio/plugins/android/lib/android.jar!/images/material_design_icons/content/ic_archive_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -173,11 +173,9 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="2c9d94" />
-                            <entry key="height" value="40" />
-                            <entry key="outputName" value="ic_permissions" />
+                            <entry key="outputName" value="ic_archive" />
                             <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="$USER_HOME$/Downloads/migrate/app_bg.svg" />
-                            <entry key="width" value="40" />
                           </map>
                         </option>
                       </PersistentState>

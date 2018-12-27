@@ -410,9 +410,12 @@
     <string name="lastLog">Last logs</string>
     <string name="specialThanks">Special thanks</string>
     <string name="rateTheApp">Rate the app</string>
-    <string name="contact_options">Contact options</string>
+    <string name="xda_thread">XDA thread</string>
+    <string name="other_options">Other options</string>
     <string name="other_apps">Other apps</string>
     <string name="contact">Contact by email</string>
+    <string name="contact_over_telegram">Telegram (@SayantanRC)</string>
+    <string name="older_builds">Older builds on AFH</string>
     
     <!--help_page.xml-->
     <string name="q1">What is the Perm label in app backup?</string>
@@ -503,11 +506,13 @@
         XDA member <b>djseltus</b>, for pointing to a new update-binary\n
         <b>Vinyas N S</b>, for \"android.os.TransactionTooLargeException\" issue\n
         <b>C Tab</b>, helped to find an issue with the helper app\n
-        XDA member <b>SevenSlevin</b> for detecting updater_script issue
+        XDA member <b>SevenSlevin</b> for detecting updater_script issue\n
+        XDA member <b>kdrag0n</b> for a number of helpful suggestions\n
     </string>
     <string name="thanks_3">The app wouldn\'t be possible without the whole group of tester:\n\n
         @TusharG03\n
         @arghyac35\n
+        @pavanjadhaw\n
         @Johnkator\n
         @samirkushwaha\n
         Pranay\n
