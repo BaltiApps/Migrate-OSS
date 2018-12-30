@@ -13,7 +13,7 @@
     <!--please also update last tested version in MainActivity-->
 
     <string name="app_name">Migrate</string>
-    <string name="current_version_name">2.0(christmas_beta)</string>
+    <string name="current_version_name">2.0.1(christmas_beta)</string>
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
@@ -94,6 +94,10 @@
     \u2022 Now every migrate zip package has a busybox binary as a fallback\n
     \u2022 Migrate helper gets new Temporary Disable option.\n
     \u2022 Migrate helper gets new Abort option.\n
+    </string>
+    <string name="version_2.0.1">Version 2.0.1(christmas_beta)</string>
+    <string name="version_2.0.1_content">
+    \u2022 Fixed a probable crash in Migrate helper.\n
     </string>
 
     <!--activity_main.xml-->

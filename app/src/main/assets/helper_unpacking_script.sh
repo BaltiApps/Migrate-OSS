@@ -24,6 +24,7 @@ if [ -e ${helper_apk_dir}/MigrateHelper.apk ]; then
     if [ -e ${helper_apk_dir}/v ]; then
         last_helper_version="$(cat ${helper_apk_dir}/v)"
         echo "ui_print Last helper version: $last_helper_version" >> /proc/self/fd/$OUTFD;
+        echo "ui_print Current helper version: $2" >> /proc/self/fd/$OUTFD;
     else
         last_helper_version="0"
     fi
