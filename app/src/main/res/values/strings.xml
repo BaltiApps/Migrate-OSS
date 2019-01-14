@@ -13,7 +13,7 @@
     <!--please also update last tested version in MainActivity-->
 
     <string name="app_name">Migrate</string>
-    <string name="current_version_name">2.0.1(christmas_beta)</string>
+    <string name="current_version_name">2.0.2</string>
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
@@ -99,10 +99,17 @@
     <string name="version_2.0.1_content">
     \u2022 Fixed a probable crash in Migrate helper.\n
     </string>
+    <string name="version_2.0.2">Version 2.0.2</string>
+    <string name="version_2.0.2_content">
+    \u2022 Fixed a long standing wrong /data space calculation in TWRP.\n
+    \u2022 Probable fix in some apps not being backed up.\n
+    \u2022 Migrate helper no longer uninstalls app before installing.\n
+    \u2022 Add Telegram group link!\n
+    </string>
 
     <!--activity_main.xml-->
     <string name="backupButton">Backup</string>
-    <string name="restoreButton">Restore</string>
+    <string name="restoreButton">How to restore</string>
     <string name="internal_storage">Internal storage</string>
     <string name="learn_about_sd_card_support">Learn about SD card support</string>
 
@@ -370,8 +377,8 @@
     <string name="step_1">Step 1 -\nFlash a new ROM</string>
     <string name="step_1_desc">
         1. Boot into TWRP\n
-        2. Flash your new ROM + GApps (optional)\n
-        3. Wipe data <b>(Strongly recommended!)</b>\n
+        2. Wipe data <b>(Strongly recommended!)</b>\n
+        3. Flash your new ROM + GApps (optional)\n
         4. <b>Important: Flash root!</b> Magisk is recommended.\n
     </string>
 
@@ -380,7 +387,8 @@
     <string name="step_2_desc">
         By default, your created backup zip file should be under:\n
         <b>Internal storage ->\nMigrate ->\n[backup_name.zip or backup_name -> parts.zip]</b>\n\n
-        In TWRP main menu, click INSTALL -> navigate to the backup file zip and install it.
+        In TWRP main menu, click INSTALL -> navigate to the backup file zip and install it.\n\n
+        <b>Important:</b> Please do not wipe data after flashing the backup zips.
     </string>
 
     <!--restore_3.xml-->
@@ -418,7 +426,7 @@
     <string name="other_options">Other options</string>
     <string name="other_apps">Other apps</string>
     <string name="contact">Contact by email</string>
-    <string name="contact_over_telegram">Telegram (@SayantanRC)</string>
+    <string name="contact_over_telegram">Telegram group</string>
     <string name="older_builds">Older builds on AFH</string>
     
     <!--help_page.xml-->

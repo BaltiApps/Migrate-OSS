@@ -39,10 +39,10 @@ if [ -e "/system/build.prop" ]; then
 	echo "ui_print ROM is present." >> /proc/self/fd/$OUTFD;
 else
     echo "ui_print  " >> /proc/self/fd/$OUTFD;
-	echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
+	echo "ui_print ------------!!!!!!!!!!------------" >> /proc/self/fd/$OUTFD;
 	echo "ui_print No ROM is detected" >> /proc/self/fd/$OUTFD;
 	echo "ui_print Please flash a ROM first" >> /proc/self/fd/$OUTFD;
-	echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
+	echo "ui_print ------------!!!!!!!!!!------------" >> /proc/self/fd/$OUTFD;
 	echo "ui_print  " >> /proc/self/fd/$OUTFD;
 	umount /data
 	if [ -n "$res" ]; then
@@ -64,23 +64,29 @@ then
 				echo "ui_print CPU ABI is OK ($cpu_arch)" >> /proc/self/fd/$OUTFD;
 			else
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
-				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
+				echo "ui_print ----------------------------------" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Original CPU ABI was $val" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Found: $cpu_arch" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Restoration of some apps MAY FAIL!" >> /proc/self/fd/$OUTFD;
-				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
+				echo "ui_print ----------------------------------" >> /proc/self/fd/$OUTFD;
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
 			fi
 		elif [ "$key" = "data_required_size" ]; then
-			data_free=$(df -k /data | tail -1 | awk '{print $3}')
+			data_free=$(df -k /data | tail -1 | awk '{print $4}')
+			case $data_free in
+	            *%)
+				echo "ui_print Using third argument..." >> /proc/self/fd/$OUTFD;
+				data_free=$(df -k /data | tail -1 | awk '{print $3}')
+				;;
+			esac
 			if [ $data_free -ge $val ]; then
 				echo "ui_print Free space (/data) is OK ($data_free KB)" >> /proc/self/fd/$OUTFD;
 			else
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
-				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
+				echo "ui_print ------------!!!!!!!!!!------------" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Free space (/data): $data_free KB" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Required space is $val KB" >> /proc/self/fd/$OUTFD;
-				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
+				echo "ui_print ------------!!!!!!!!!!------------" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Restore cannot progress. You can try:" >> /proc/self/fd/$OUTFD;
 				echo "ui_print * Wiping data" >> /proc/self/fd/$OUTFD;
 				echo "ui_print * If you are flashing a backup from a different device, it is not recommended." >> /proc/self/fd/$OUTFD;
@@ -98,15 +104,21 @@ then
 				exit 1
 			fi
 		elif [ "$key" = "system_required_size" ]; then
-			system_free=$(df -k /system | tail -1 | awk '{print $3}')
+			system_free=$(df -k /system | tail -1 | awk '{print $4}')
+			case $system_free in
+	            *%)
+				echo "ui_print Using third argument..." >> /proc/self/fd/$OUTFD;
+				system_free=$(df -k /system | tail -1 | awk '{print $3}')
+				;;
+			esac
 			if [ $system_free -ge $val ]; then
 				echo "ui_print Free space (/system) is OK ($system_free KB)" >> /proc/self/fd/$OUTFD;
 			else
 				echo "ui_print  " >> /proc/self/fd/$OUTFD;
-				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
+				echo "ui_print ----------------------------------" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Free space (/system): $system_free KB" >> /proc/self/fd/$OUTFD;
 				echo "ui_print Required space is $val KB" >> /proc/self/fd/$OUTFD;
-				echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
+				echo "ui_print ----------------------------------" >> /proc/self/fd/$OUTFD;
 				echo "ui_print SOME SYSTEM APPS WILL NOT BE RESTORED. You can try:" >> /proc/self/fd/$OUTFD;
 				echo "ui_print * A new ROM" >> /proc/self/fd/$OUTFD;
 				echo "ui_print * A smaller GApps package" >> /proc/self/fd/$OUTFD;
@@ -120,19 +132,19 @@ then
 				    echo "ui_print Android version is OK (sdk $rom_sdk)" >> /proc/self/fd/$OUTFD;
 			    else
 				    echo "ui_print  " >> /proc/self/fd/$OUTFD;
-				    echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
+				    echo "ui_print ----------------------------------" >> /proc/self/fd/$OUTFD;
 				    echo "ui_print Original Android version was: $val" >> /proc/self/fd/$OUTFD;
 				    echo "ui_print Current ROM Android version: $rom_sdk" >> /proc/self/fd/$OUTFD;
 				    echo "ui_print Restoration of some apps MAY FAIL!" >> /proc/self/fd/$OUTFD;
-				    echo "ui_print ---------------------------------" >> /proc/self/fd/$OUTFD;
+				    echo "ui_print ----------------------------------" >> /proc/self/fd/$OUTFD;
 				    echo "ui_print  " >> /proc/self/fd/$OUTFD;
 			    fi
 			else
-			    echo "ui_print ---------------------!!!!!---------------------" >> /proc/self/fd/$OUTFD;
-			    echo "ui_print        Migrate cannot be flashed below:" >> /proc/self/fd/$OUTFD;
-			    echo "ui_print          Android Lollipop (sdk 21)" >> /proc/self/fd/$OUTFD;
-			    echo "ui_print      Your current ROM version is sdk $rom_sdk" >> /proc/self/fd/$OUTFD;
-			    echo "ui_print ---------------------!!!!!---------------------" >> /proc/self/fd/$OUTFD;
+			    echo "ui_print ------------!!!!!!!!!!------------" >> /proc/self/fd/$OUTFD;
+			    echo "ui_print Migrate cannot be flashed below:" >> /proc/self/fd/$OUTFD;
+			    echo "ui_print     Android Lollipop (sdk 21)" >> /proc/self/fd/$OUTFD;
+			    echo "ui_print Your current ROM version is sdk $rom_sdk" >> /proc/self/fd/$OUTFD;
+			    echo "ui_print ------------!!!!!!!!!!------------" >> /proc/self/fd/$OUTFD;
 			    umount /data
 				if [ -n "$res" ]; then
 	                umount /system

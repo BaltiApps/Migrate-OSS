@@ -7,8 +7,8 @@ android {
         applicationId "balti.migrate"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 11
-        versionName "2.0.1(christmas_beta)"
+        versionCode 12
+        versionName "2.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

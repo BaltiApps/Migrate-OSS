@@ -38,6 +38,7 @@ import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Vector;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
@@ -578,6 +579,8 @@ public class BackupEngine {
 
                     String apkPath = pi.applicationInfo.sourceDir;
                     apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'));
+                    if (apkPath.endsWith(":")) apkPath = apkPath.substring(0, apkPath.length()-1);
+
                     allRecovery.add("echo \"Copy apk(s): " + pi.packageName + "\"\n" +
                             "mkdir -p " + backupApkDirPath + "\n" +
                             "cd " + apkPath + "\n" +
@@ -1304,6 +1307,9 @@ public class BackupEngine {
                     String apkPath = packet.PACKAGE_INFO.applicationInfo.sourceDir;
                     String apkName = apkPath.substring(apkPath.lastIndexOf('/') + 1);       //has .apk extension
                     apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'));
+
+                    if (apkPath.endsWith(":")) apkPath = apkPath.substring(0, apkPath.length()-1);
+
                     String dataPath = "NULL";
                     String dataName = "NULL";
                     if (packet.DATA) {
@@ -1400,7 +1406,7 @@ public class BackupEngine {
                     }
                     updater_writer.write("package_extract_file(\"" + packageName + ".json" + "\", \"" + TEMP_DIR_NAME + "/" + packageName + ".json" + "\");\n");
 
-                    String pString = String.format("%.4f", ((c * 1.0) / numberOfApps));
+                    String pString = String.format(Locale.ENGLISH, "%.4f", ((c * 1.0) / numberOfApps));
                     pString = pString.replace(",", ".");
                     updater_writer.write("set_progress(" + pString + ");\n");
 
