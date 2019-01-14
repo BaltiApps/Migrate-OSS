@@ -13,7 +13,7 @@
     <!--please also update last tested version in MainActivity-->
 
     <string name="app_name">Migrate</string>
-    <string name="current_version_name">2.0.2</string>
+    <string name="current_version_name">2.1</string>
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
@@ -99,12 +99,15 @@
     <string name="version_2.0.1_content">
     \u2022 Fixed a probable crash in Migrate helper.\n
     </string>
-    <string name="version_2.0.2">Version 2.0.2</string>
-    <string name="version_2.0.2_content">
+    <string name="version_2.1">Version 2.1</string>
+    <string name="version_2.1_content">
+    \u2022 Minor errors are now suppressed, but recorded in log.\n
+    \u2022 Fixed a bug in error correction mechanism.\n
+    \u2022 Probable fix for some apps not being backed up.\n
+    \u2022 Fix for error 6 in TWRP for some locales.\n
     \u2022 Fixed a long standing wrong /data space calculation in TWRP.\n
-    \u2022 Probable fix in some apps not being backed up.\n
     \u2022 Migrate helper no longer uninstalls app before installing.\n
-    \u2022 Add Telegram group link!\n
+    \u2022 Added Telegram group link!\n
     </string>
 
     <!--activity_main.xml-->
@@ -230,7 +233,6 @@
     <string name="split_desc_2">In TWRP, please install all the zips for full restore.</string>
 
     <!--BackupEngine.java-->
-    <string name="failedToBackup">Backup failed! Please try again.</string>
     <string name="close">Close</string>
     <string name="backingUp">Backing up apps</string>
     <string name="noErrors">Finished! No errors.</string>
@@ -248,7 +250,7 @@
     <string name="backupCancelled">Backup cancelled</string>
     <string name="deletingFiles">Deleting files</string>
     <string name="backupFinishedWithErrors">Errors found! Please retry.</string>
-    <string name="backupInterruptedWithErrors">Backup interrupted with errors.</string>
+    <string name="backupPartHadErrors">Backup part had errors.</string>
     <string name="incompleteZip">Not all files could be combined.</string>
     <string name="no_keyboard_data">No keyboard data</string>
 

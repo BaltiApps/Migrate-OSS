@@ -3,6 +3,8 @@
 # PARAMETERS: packageName destination apkPath apkName dataParentPath dataName busyboxBinaryPath isPermission
 #                   1           2        3       4          5           6              7              8
 
+echo " "
+
 if [ ! -e "$2" ]; then
     echo "Destination for package $1: $2 does not exist. Making..."
     mkdir -p $2 2>/dev/null
@@ -31,12 +33,12 @@ appDir="$2/$1.app"
 mkdir -p ${appDir}
 
 # backup apk
-cd $3; cp $4 "${appDir}/$1.apk"
+cd $3; cp "$4" "${appDir}/$1.apk"
 if [ -e "$2/$1.app/$1.apk" ]; then
     echo "Apk copied"
 fi
 
-# copy split apks (new in v1.3)
+# copy split apks (new in v2.0)
 cp $3/split_*.apk "${appDir}/" 2>/dev/null && echo "Copied split apks"
 
 # backup data

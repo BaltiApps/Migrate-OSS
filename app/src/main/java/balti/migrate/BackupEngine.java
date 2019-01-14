@@ -440,8 +440,11 @@ public class BackupEngine {
 
                     while ((line = errorStream.readLine()) != null) {
                         line = line.trim();
-                        if (!line.endsWith("socket ignored")) {
+                        if (!line.endsWith("socket ignored") && !line.endsWith("No such file or directory")) {
                             errors.add("RUN" + errorTag + ": " + line);
+                        }
+                        else {
+                            errors.add("SUPPRESSED_RUN" + errorTag + ": " + line);
                         }
                     }
 
@@ -499,14 +502,24 @@ public class BackupEngine {
                 allErr.addAll(BackupService.previousErrors);
             allErr.addAll(errors);
 
+            boolean isErr = false;
+            String toShowError = "";
+            for (String e : allErr) {
+                if (!e.startsWith("SUPPRESSED")) {
+                    toShowError = e;
+                    isErr = true;
+                    break;
+                }
+            }
+
             if (isCancelled) finalMessage = context.getString(R.string.backupCancelled);
-            else if (allErr.size() == 0) finalMessage = context.getString(R.string.noErrors);
+            else if (!isErr) finalMessage = context.getString(R.string.noErrors);
             else {
                 if (partNumber == totalParts)
                     finalMessage = context.getString(R.string.backupFinishedWithErrors);
                 else
-                    finalMessage = context.getString(R.string.backupInterruptedWithErrors);
-                progressNotif.setContentText(allErr.get(0));
+                    finalMessage = context.getString(R.string.backupPartHadErrors);
+                progressNotif.setContentText(toShowError);
             }
 
             actualProgressBroadcast.putExtra("finishedMessage", finalMessage.trim()).putStringArrayListExtra("allErrors", allErr);
@@ -578,14 +591,17 @@ public class BackupEngine {
                 if (packet.APP && (!new File(backupApkDirPath).exists() || commonTools.getDirLength(backupApkDirPath) == 0)) {
 
                     String apkPath = pi.applicationInfo.sourceDir;
+                    String apkName = apkPath.substring(apkPath.lastIndexOf('/') + 1);
                     apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'));
                     if (apkPath.endsWith(":")) apkPath = apkPath.substring(0, apkPath.length()-1);
+
+                    apkName = commonTools.applyNamingCorrectionForShell(apkName);
 
                     allRecovery.add("echo \"Copy apk(s): " + pi.packageName + "\"\n" +
                             "mkdir -p " + backupApkDirPath + "\n" +
                             "cd " + apkPath + "\n" +
                             "cp *.apk " + backupApkDirPath + "/\n\n" +
-                            "mv " + backupApkDirPath + "/base.apk " + backupApkDirPath + "/" + pi.packageName + "\n"
+                            "mv " + backupApkDirPath + "/" + apkName + " " + backupApkDirPath + "/" + pi.packageName + ".apk\n"
                     );
 
                 }
@@ -751,6 +767,9 @@ public class BackupEngine {
                 line = line.trim();
                 if (!line.endsWith("socket ignored")) {
                     errors.add("RETRY" + errorTag + ": " + line);
+                }
+                else {
+                    errors.add("SUPPRESSED_RETRY" + errorTag + ": " + line);
                 }
             }
 
@@ -1308,6 +1327,8 @@ public class BackupEngine {
                     String apkName = apkPath.substring(apkPath.lastIndexOf('/') + 1);       //has .apk extension
                     apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'));
 
+                    apkName = commonTools.applyNamingCorrectionForShell(apkName);
+
                     if (apkPath.endsWith(":")) apkPath = apkPath.substring(0, apkPath.length()-1);
 
                     String dataPath = "NULL";
@@ -1767,8 +1788,12 @@ public class BackupEngine {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (!retry && !e.getMessage().endsWith("No such file or directory"))
+            if (!retry && !e.getMessage().endsWith("No such file or directory")) {
                 errors.add("PERM_FILE_MAKE_ERROR" + errorTag + ": PACKAGE: " + packageName + " ERROR: " + e.getMessage());
+            }
+            else {
+                errors.add("SUPPRESSED_PERM_FILE_MAKE_ERROR" + errorTag + ": PACKAGE: " + packageName + " ERROR: " + e.getMessage());
+            }
         }
     }
 

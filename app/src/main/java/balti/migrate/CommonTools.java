@@ -317,4 +317,11 @@ public class CommonTools {
         page.setData(Uri.parse(url));
         context.startActivity(page);
     }
+
+    String applyNamingCorrectionForShell(String name){
+        name = name.replace("(", "\\(");
+        name = name.replace(")", "\\)");
+        name = name.replace(" ", "\\ ");
+        return name;
+    }
 }

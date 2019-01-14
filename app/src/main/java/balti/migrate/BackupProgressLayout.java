@@ -195,6 +195,16 @@ public class BackupProgressLayout extends AppCompatActivity {
                     task.setText(intent.getStringExtra("finishedMessage"));
 
                     if (intent.hasExtra("allErrors")) {
+
+                        ArrayList<String> errors = intent.getStringArrayListExtra("allErrors");
+                        for (int i = 0; i < errors.size(); i++){
+                            String e = errors.get(i);
+                            if (e.startsWith("SUPPRESSED")) {
+                                errors.remove(i);
+                                i--;
+                            }
+                        }
+
                         setError(intent.getStringArrayListExtra("allErrors"));
                         if (intent.getStringArrayListExtra("allErrors").size() > 0) {
                             appIcon.setImageResource(R.drawable.ic_error);
