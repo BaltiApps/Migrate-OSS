@@ -457,8 +457,6 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 activityManager.getMemoryInfo(memoryInfo);
                 totalMemory = memoryInfo.totalMem / 1024;
 
-                Log.d(DEBUG_TAG, "totalMemory: " + totalMemory);
-
             } catch (Exception e) {
                 e.printStackTrace();
                 return new Object[]{false, getString(R.string.error_detecting_memory), e.getMessage()};

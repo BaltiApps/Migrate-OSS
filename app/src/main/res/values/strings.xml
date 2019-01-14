@@ -102,6 +102,8 @@
     <string name="version_2.1">Version 2.1</string>
     <string name="version_2.1_content">
     \u2022 Minor errors are now suppressed, but recorded in log.\n
+    \u2022 Fix icon retention form previous backup.\n
+    \u2022 Fix wrong backup duration display.\n
     \u2022 Fixed a bug in error correction mechanism.\n
     \u2022 Probable fix for some apps not being backed up.\n
     \u2022 Fix for error 6 in TWRP for some locales.\n

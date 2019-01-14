@@ -60,6 +60,8 @@ public class BackupService extends Service {
     BufferedWriter progressWriter, errorWriter;
     String lastProgressLog = "";
     String lastZipLog = "";
+    String lastVerify = "";
+    String lastCorrection = "";
 
     static long PREVIOUS_TIME = 0;
 
@@ -134,6 +136,9 @@ public class BackupService extends Service {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
+
+                            PREVIOUS_TIME = 0;
+
                         } else {
                             PREVIOUS_TIME += intent.getLongExtra("total_time", 0);
                         }
@@ -159,17 +164,19 @@ public class BackupService extends Service {
                         } catch (IOException ignored) {
                         }
 
-                    } else if (intent.getStringExtra("type").equals("verifying_backups") && intent.hasExtra("app_name")) {
+                    } else if (intent.getStringExtra("type").equals("verifying_backups") && intent.hasExtra("app_name")
+                            && !intent.getStringExtra("app_name").equals(lastVerify)) {
 
                         try {
-                            progressWriter.write(intent.getStringExtra("app_name") + "\n");
+                            progressWriter.write(lastVerify = intent.getStringExtra("app_name") + "\n");
                         } catch (IOException ignored) {
                         }
 
-                    } else if (intent.getStringExtra("type").equals("correcting_errors") && intent.hasExtra("retry_log")) {
+                    } else if (intent.getStringExtra("type").equals("correcting_errors") && intent.hasExtra("retry_log")
+                            && !intent.getStringExtra("retry_log").equals(lastCorrection)) {
 
                         try {
-                            progressWriter.write(intent.getStringExtra("retry_log") + "\n");
+                            progressWriter.write(lastCorrection = intent.getStringExtra("retry_log") + "\n");
                         } catch (IOException ignored) {
                         }
 

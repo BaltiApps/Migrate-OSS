@@ -183,6 +183,7 @@ public class BackupEngine {
         this.numberOfApps = backupBatch.appCount;
         //this.backupSummary = backupSummary;
 
+        ICON_STRING = "";
 
         this.partNumber = partNumber;
         this.totalParts = totalParts;
