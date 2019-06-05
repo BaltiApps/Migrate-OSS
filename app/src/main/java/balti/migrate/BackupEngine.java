@@ -481,9 +481,6 @@ public class BackupEngine {
             }
         }
 
-        progressNotif = createNotificationBuilder();
-        progressNotif.setSmallIcon(R.drawable.ic_notification_icon);
-
         endMillis = timeInMillis();
 
         boolean finalProcess = (partNumber == totalParts) || isCancelled;
@@ -495,6 +492,9 @@ public class BackupEngine {
         actualProgressBroadcast.putStringArrayListExtra("errors", errors);
 
         if (finalProcess) {
+
+            progressNotif = createNotificationBuilder();
+            progressNotif.setSmallIcon(R.drawable.ic_notification_icon);
 
             actualProgressBroadcast.putExtra("complete_time", BackupService.PREVIOUS_TIME + (endMillis - startMillis));
 
@@ -531,8 +531,7 @@ public class BackupEngine {
                     .setContentTitle(finalMessage)
                     .setProgress(0, 0, false)
                     .setAutoCancel(true)
-                    .setChannelId(BACKUP_END_NOTIFICATION)
-                    .mActions.clear();
+                    .setChannelId(BACKUP_END_NOTIFICATION);
 
             notificationManager.cancel(NOTIFICATION_ID);
             notificationManager.notify(NOTIFICATION_ID + 1, progressNotif.build());

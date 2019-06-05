@@ -39,6 +39,8 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 
+import balti.migrate.inAppRestore.ZipPicker;
+
 import static android.os.Environment.getExternalStorageDirectory;
 import static balti.migrate.CommonTools.DEFAULT_INTERNAL_STORAGE_DIR;
 
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     SharedPreferences main;
     SharedPreferences.Editor editor;
 
-    Button backup, restore;
+    Button backup, restore, inAppRestore;
     ImageButton drawerButton;
     TableRow internalStorageUse, sdCardStorageUse;
     ProgressBar internalStorageBar, sdCardStorageBar;
@@ -61,8 +63,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     AlertDialog loadingDialog;
     int REQUEST_CODE = 43;
+    int RESTORE_STORAGE_ACCESS_CODE = 5443;
 
-    static int THIS_VERSION = 12;
+    static int THIS_VERSION = 13;
 
     String rootErrorMessage = "";
 
@@ -138,6 +141,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, HowToRestore.class));
+            }
+        });
+
+        inAppRestore = findViewById(R.id.inAppRestore);
+        inAppRestore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE}, RESTORE_STORAGE_ACCESS_CODE);
             }
         });
 
@@ -322,8 +334,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == REQUEST_CODE && grantResults.length == 2) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == REQUEST_CODE) {
+
+            if (grantResults.length == 2 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+
                 if (isRootPermissionGranted()) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isUsageAccessGranted()) {
                         new AlertDialog.Builder(this)
@@ -339,8 +354,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 })
                                 .setNegativeButton(android.R.string.cancel, null)
                                 .show();
-                    }
-                    else {
+                    } else {
                         startActivity(new Intent(MainActivity.this, BackupActivity.class));
                     }
                 } else {
@@ -360,8 +374,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 loadingDialog.dismiss();
             } catch (Exception ignored) {
             }
+        } else if (requestCode == RESTORE_STORAGE_ACCESS_CODE) {
+            if (grantResults.length == 2 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                startActivity(new Intent(this, ZipPicker.class));
+            }
+            else {
+                new AlertDialog.Builder(this)
+                        .setMessage(R.string.storage_access_required_restore)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show();
+            }
         }
     }
+
 
     @Override
     public void onBackPressed() {
@@ -516,8 +542,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (onlyLatest) {
             if (currVer < THIS_VERSION) {
                 /*Put only the latest version here*/
-                title = getString(R.string.version_2_1);
-                message = getString(R.string.version_2_1_content);
+                title = getString(R.string.version_3_0);
+                message = getString(R.string.version_3_0_content);
                 changelog.setTitle(title)
                         .setMessage(message)
                         .setPositiveButton(R.string.close, null)
@@ -543,6 +569,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             /*Add increasing versions here*/
 
+            allVersions.append("\n" + getString(R.string.version_3_0) + "\n" + getString(R.string.version_3_0_content) + "\n");
             allVersions.append("\n" + getString(R.string.version_2_1) + "\n" + getString(R.string.version_2_1_content) + "\n");
             allVersions.append("\n" + getString(R.string.version_2_0_1) + "\n" + getString(R.string.version_2_0_1_content) + "\n");
             allVersions.append("\n" + getString(R.string.version_2_0) + "\n" + getString(R.string.version_2_0_content) + "\n");

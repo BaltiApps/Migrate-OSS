@@ -32,9 +32,9 @@ if [ ! -e /system/app/MigrateHelper/MigrateHelper.apk ]; then
     echo "ui_print Deleting migrate cache..." >> /proc/self/fd/$OUTFD;
     echo "ui_print ------------!!!!!!!!!!------------" >> /proc/self/fd/$OUTFD;
     echo "ui_print  " >> /proc/self/fd/$OUTFD;
-    rm -rf /system/app/MigrateHelper
-    rm -rf $1
-    unsuccessful_unpack=true
+    #rm -rf /system/app/MigrateHelper
+    #rm -rf $1
+    unsuccessful_unpack=false
     sleep 2s
 else
     unsuccessful_unpack=false

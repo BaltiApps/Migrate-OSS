@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:padding="@dimen/large_padding_width"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    >
+
+    <ImageView
+        android:layout_width="@dimen/small_icon_wh"
+        android:layout_height="@dimen/small_icon_wh"
+        android:src="@drawable/ic_close"
+        android:layout_margin="@dimen/small_padding_width"
+        android:id="@+id/zip_item_icon"
+        />
+
+    <Space
+        android:layout_width="@dimen/large_padding_width"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/zip_item_name"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Filename"
+        />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/zip_item_checkbox"
+        />
+
+</LinearLayout>

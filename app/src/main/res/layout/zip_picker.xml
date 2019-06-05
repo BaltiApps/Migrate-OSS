@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/app_list_bg"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal"
+        android:padding="@dimen/large_padding_width">
+
+        <ImageButton
+            android:id="@+id/zipPickerBackButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@android:color/transparent"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:padding="@dimen/large_padding_width"
+            android:src="@drawable/ic_arrow_back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/zipPickerBackButton"
+            android:padding="@dimen/small_padding_width"
+            android:text="@string/zip_picker"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="@dimen/large_padding_width"
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/small_padding_width"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_storage"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/colorAccent"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/expected_zip_location"
+                />
+
+        </LinearLayout>
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/zipPickerStorageSelectorRadioGroup"
+            >
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/internal_storage"
+                android:id="@+id/zipPickerInternal"
+                />
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sd_card"
+                android:id="@+id/zipPickerExternal"
+                />
+
+        </RadioGroup>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/large_padding_width" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:id="@+id/zipPickerUpButton"
+            android:foreground="?android:attr/selectableItemBackground"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_zip_picker_back"
+                android:padding="@dimen/large_padding_width" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/small_padding_width"
+                android:text="@string/up_one_dir"
+                />
+
+        </LinearLayout>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/zip_list"
+            />
+
+        <Button
+            android:id="@+id/zipPickerNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorButtons"
+            android:text="@string/next"
+            android:layout_gravity="end"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

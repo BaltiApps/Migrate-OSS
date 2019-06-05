@@ -25,7 +25,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        >
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
@@ -76,6 +77,14 @@
 
 
         <activity android:name=".SimpleLogDisplay"
+            android:screenOrientation="portrait"
+            />
+
+        <activity android:name=".inAppRestore.ZipPicker"
+            android:screenOrientation="portrait"
+            />
+
+        <activity android:name=".inAppRestore.InAppRestore"
             android:screenOrientation="portrait"
             />
 

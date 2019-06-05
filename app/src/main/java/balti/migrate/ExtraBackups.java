@@ -127,6 +127,14 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
     private LoadKeyboardForSelection keyboardSelector;
     private AlertDialog KeyboardSelectorDialog;
 
+    private ProgressBar adbReadProgressBar;
+    private TextView adbSelectedStatus;
+    private CheckBox doBackupAdb;
+
+    int adbState = 1;
+
+    //private ReadAdb adbReader;
+
     private LayoutInflater layoutInflater;
 
     private SharedPreferences main;
@@ -854,6 +862,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         int smsCount = 0;
         Cursor inboxCursor, outboxCursor, sentCursor, draftCursor;
         SmsTools smsTools;
+        boolean isSmsChecked = false;
 
         ReadSms() {
             smsTools = new SmsTools(ExtraBackups.this);
@@ -894,6 +903,8 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             }
             smsMainItem.setClickable(false);
             smsList = null;
+
+            isSmsChecked = doBackupSms.isChecked();
         }
 
         @Override
@@ -910,7 +921,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 if (inboxCursor != null && inboxCursor.getCount() > 0) {
                     inboxCursor.moveToFirst();
                     do {
-                        tempSmsStorage.add(smsTools.getSmsPacket(inboxCursor, doBackupSms.isChecked()));
+                        tempSmsStorage.add(smsTools.getSmsPacket(inboxCursor, isSmsChecked));
                         publishProgress(c, getString(R.string.reading_sms) + "\n" + c++);
                     }
                     while (inboxCursor.moveToNext());
@@ -919,7 +930,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 if (outboxCursor != null && outboxCursor.getCount() > 0) {
                     outboxCursor.moveToFirst();
                     do {
-                        tempSmsStorage.add(smsTools.getSmsPacket(outboxCursor, doBackupSms.isChecked()));
+                        tempSmsStorage.add(smsTools.getSmsPacket(outboxCursor, isSmsChecked));
                         publishProgress(c, getString(R.string.reading_sms) + "\n" + c++);
                     }
                     while (outboxCursor.moveToNext());
@@ -928,7 +939,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 if (sentCursor != null && sentCursor.getCount() > 0) {
                     sentCursor.moveToFirst();
                     do {
-                        tempSmsStorage.add(smsTools.getSmsPacket(sentCursor, doBackupSms.isChecked()));
+                        tempSmsStorage.add(smsTools.getSmsPacket(sentCursor, isSmsChecked));
                         publishProgress(c, getString(R.string.reading_sms) + "\n" + c++);
                     }
                     while (sentCursor.moveToNext());
@@ -937,7 +948,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                 if (draftCursor != null && draftCursor.getCount() > 0) {
                     draftCursor.moveToFirst();
                     do {
-                        tempSmsStorage.add(smsTools.getSmsPacket(draftCursor, doBackupSms.isChecked()));
+                        tempSmsStorage.add(smsTools.getSmsPacket(draftCursor, isSmsChecked));
                         publishProgress(c, getString(R.string.reading_sms) + "\n" + c++);
                     }
                     while (draftCursor.moveToNext());
@@ -1114,6 +1125,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         int callsCount = 0;
         Cursor callsCursor;
         CallsTools callsTools;
+        boolean isCallsChecked = false;
 
         ReadCalls() {
             callsTools = new CallsTools(ExtraBackups.this);
@@ -1137,6 +1149,8 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
             }
             callsMainItem.setClickable(false);
             callsList = null;
+
+            isCallsChecked = doBackupCalls.isChecked();
         }
 
         @Override
@@ -1153,7 +1167,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                     callsCursor.moveToFirst();
                     do {
-                        tempCallsStorage.add(callsTools.getCallsPacket(callsCursor, doBackupCalls.isChecked()));
+                        tempCallsStorage.add(callsTools.getCallsPacket(callsCursor, isCallsChecked));
                         publishProgress(c, getString(R.string.reading_calls) + "\n" + c++);
                     }
                     while (callsCursor.moveToNext());
@@ -1955,6 +1969,9 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
     void setDestination(String path, TextView label) {
 
+        File d = new File(destination);
+        if (!d.exists()) d.mkdirs();
+
         destination = path;
         label.setText(destination);
         editor.putString("defaultBackupPath", destination);
@@ -2106,7 +2123,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                     if (!backupName.equals(""))
                         checkOverwrite(backupName, alertDialog);
                     else
-                        Toast.makeText(ExtraBackups.this, getString(R.string.empty), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ExtraBackups.this, getString(R.string.backupNameCannotBeEmpty), Toast.LENGTH_SHORT).show();
                     return true;
                 } else return false;
             }
@@ -2125,7 +2142,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                         if (!backupName.equals(""))
                             checkOverwrite(backupName, alertDialog);
                         else
-                            Toast.makeText(ExtraBackups.this, getString(R.string.empty), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ExtraBackups.this, getString(R.string.backupNameCannotBeEmpty), Toast.LENGTH_SHORT).show();
                     }
                 });
             }

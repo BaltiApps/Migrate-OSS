@@ -38,7 +38,7 @@ public class CommonTools {
 
     static String UNIVERSAL_TEST_ID = "ca-app-pub-3940256099942544/6300978111";
 
-    static String DEFAULT_INTERNAL_STORAGE_DIR = "/sdcard/Migrate";
+    public static String DEFAULT_INTERNAL_STORAGE_DIR = "/sdcard/Migrate";
     static final String TEMP_DIR_NAME = "/data/local/tmp/migrate_cache";
 
     public CommonTools(Context context) {
@@ -281,7 +281,7 @@ public class CommonTools {
         return String.format("%.2f", s) + " " + res;
     }
 
-    String[] getSdCardPaths() {
+    public String[] getSdCardPaths() {
         String possibleSDCards[] = new String[0];
         File storage = new File("/storage/");
         if (storage.exists() && storage.canRead()) {
@@ -304,7 +304,7 @@ public class CommonTools {
         return possibleSDCards;
     }
 
-    void showSdCardSupportDialog(){
+    public void showSdCardSupportDialog(){
         View view = View.inflate(context, R.layout.learn_about_sd_card, null);
         new AlertDialog.Builder(context)
                 .setView(view)
