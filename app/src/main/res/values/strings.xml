@@ -1,4 +1,5 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="ExtraTranslation">
 
     <!--Version changes to be made in
 
@@ -113,7 +114,7 @@
     </string>
     <string name="version_3.0">Version 3.0</string>
     <string name="version_3.0_content">
-
+        \u2022 No compulsion to use grant usage access permission.\n
     </string>
 
     <!--activity_main.xml-->
@@ -307,7 +308,9 @@
     <string name="root_permission_denied_desc">Please make sure that your device is rooted and you have allowed root permission.\n\n
     If your ROM was pre-rooted, try flashing Magisk.
     </string>
-    <string name="usage_access_permission_needed">Usage access permission needed</string>
+    <string name="use_reflection">Use reflection?</string>
+    <string name="use_reflection_exp">Reflection is an experimental way of calculating size in Nougat and below. This might provide a better way of calculating size. Recommended: Yes</string>
+    <string name="use_usage_access_permission">Grant usage access permission?</string>
     <string name="usage_access_permission_needed_desc">A new, faster and more reliable method has been added to calculate size of apps before backup.\n\nPlease click Proceed, Scroll and select \"Migrate\" then click \"Permit usage access\"</string>
     <string name="storage_access_required">Please grant storage access to write backups.</string>
     <string name="storage_access_required_restore">Please grant storage access to read backups.</string>

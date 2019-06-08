@@ -73,7 +73,7 @@ public class CommonTools {
         return path;
     }
 
-    void reportLogs(boolean isErrorLogMandatory) {
+    public void reportLogs(boolean isErrorLogMandatory) {
         final File progressLog = new File(context.getExternalCacheDir(), "progressLog.txt");
         final File errorLog = new File(context.getExternalCacheDir(), "errorLog.txt");
         //final File theBackupScript = new File(context.getExternalCacheDir(), "the_backup_script.sh");
@@ -195,7 +195,7 @@ public class CommonTools {
 
     }
 
-    String getDeviceSpecifications() {
+    public String getDeviceSpecifications() {
 
         String body = "";
 
@@ -220,7 +220,7 @@ public class CommonTools {
         return false;
     }
 
-    Object[] suEcho() throws IOException, InterruptedException {
+    public Object[] suEcho() throws IOException, InterruptedException {
         Process suRequest = Runtime.getRuntime().exec("su");
 
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(suRequest.getOutputStream()));
@@ -264,7 +264,7 @@ public class CommonTools {
         } else return 0;
     }
 
-    String getHumanReadableStorageSpace(long space) {
+    public String getHumanReadableStorageSpace(long space) {
         String res = "KB";
 
         double s = space;
@@ -312,10 +312,12 @@ public class CommonTools {
                 .show();
     }
 
-    void openWeblink(String url){
-        Intent page = new Intent(Intent.ACTION_VIEW);
-        page.setData(Uri.parse(url));
-        context.startActivity(page);
+    public void openWeblink(String url){
+        if (!url.equals("")) {
+            Intent page = new Intent(Intent.ACTION_VIEW);
+            page.setData(Uri.parse(url));
+            context.startActivity(page);
+        }
     }
 
     String applyNamingCorrectionForShell(String name){

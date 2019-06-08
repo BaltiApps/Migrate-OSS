@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Runnable storageRunnable;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) { //ok
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         sdCardStorageUse = findViewById(R.id.sd_card_storage_use_view);
         sdCardStorageBar = findViewById(R.id.sd_card_storage_bar);
-        sdCardStorageText = findViewById(R.id.sc_card_storage_text);
+        sdCardStorageText = findViewById(R.id.sd_card_storage_text);
         sdCardName = findViewById(R.id.sd_card_name);
 
         learnAboutSdCardSupport = findViewById(R.id.learn_sd_card_support);
@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         storageHandler.post(storageRunnable);
     }
 
-    void refreshStorageSizes() {
+    void refreshStorageSizes() { //ok
         StatFs statFs = new StatFs(getExternalStorageDirectory().getAbsolutePath());
 
         long availableKb = statFs.getBlockSizeLong() * statFs.getAvailableBlocksLong();
@@ -304,13 +304,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    protected void onResume() {
+    protected void onResume() { //ok
         super.onResume();
 
         boolean authetic = getPackageName().equals("balti.migrate");
 
         if (!authetic) {
-            android.app.AlertDialog.Builder ad = new android.app.AlertDialog.Builder(this);
+            AlertDialog.Builder ad = new AlertDialog.Builder(this);
             ad.setTitle(R.string.copied_app);
             ad.setMessage(R.string.copied_app_exp);
             ad.setCancelable(false);
@@ -331,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) { //ok
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == REQUEST_CODE) {
@@ -342,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (isRootPermissionGranted()) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isUsageAccessGranted()) {
                         new AlertDialog.Builder(this)
-                                .setTitle(R.string.usage_access_permission_needed)
+                                .setTitle(R.string.use_usage_access_permission)
                                 .setMessage(R.string.usage_access_permission_needed_desc)
                                 .setPositiveButton(R.string.proceed, new DialogInterface.OnClickListener() {
                                     @Override
@@ -390,7 +390,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed() { //ok
         if (drawer.isDrawerOpen(Gravity.START)) drawer.closeDrawer(Gravity.START);
         else if (!main.getBoolean("firstRun", true) && main.getBoolean("askForRating", true))
             askForRating(false);
@@ -398,7 +398,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) { //ok
         int id = item.getItemId();
         switch (id) {
             case R.id.about:
@@ -501,7 +501,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    boolean isRootPermissionGranted() {
+    boolean isRootPermissionGranted() { //ok
 
         boolean p = false;
 
@@ -517,7 +517,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return p;
     }
 
-    private boolean isUsageAccessGranted() {
+    private boolean isUsageAccessGranted() { //ok
         try {
 
             PackageManager packageManager = getPackageManager();
@@ -534,7 +534,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    void showChangeLog(boolean onlyLatest) {
+    void showChangeLog(boolean onlyLatest) { //ok
         int currVer = main.getInt("version", 1);
         android.support.v7.app.AlertDialog.Builder changelog = new android.support.v7.app.AlertDialog.Builder(this);
         String message = "";
@@ -591,7 +591,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    public void otherAppsClickManager(View layout) {
+    public void otherAppsClickManager(View layout) { //ok
         //other apps links
 
         LinearLayout mdh = layout.findViewById(R.id.motodisplay_handwave);
@@ -600,24 +600,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 commonTools.openWeblink("market://details?id=sayantanrc.motodisplayhandwave");
-            }
-        });
-
-        LinearLayout instamean = layout.findViewById(R.id.instamean);
-
-        instamean.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                commonTools.openWeblink("market://details?id=balti.instamean");
-            }
-        });
-
-        LinearLayout bg_video = layout.findViewById(R.id.bg_video);
-
-        bg_video.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                commonTools.openWeblink("market://details?id=balti.bgvideo");
             }
         });
 
@@ -641,7 +623,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    void askForRating(boolean manual) {
+    void askForRating(boolean manual) { //ok
 
         AlertDialog.Builder rate = new AlertDialog.Builder(this);
         rate.setTitle(getString(R.string.rate_dialog_title))
@@ -678,7 +660,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         rate.show();
     }
 
-    void showLog() {
+    void showLog() { //ok
         View lView = View.inflate(this, R.layout.last_log_report, null);
         Button pLog = lView.findViewById(R.id.view_progress_log);
         Button eLog = lView.findViewById(R.id.view_error_log);
@@ -733,7 +715,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy() { //ok
         super.onDestroy();
         try {
             loadingDialog.dismiss();
