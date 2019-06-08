@@ -33,18 +33,18 @@ import java.io.File
 
 class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    val main : SharedPreferences by lazy { getSharedPreferences("main", Context.MODE_PRIVATE) }
-    val editor : SharedPreferences.Editor by lazy { main.edit() }
-    val commonTools by lazy { CommonTools(this) }                                               /*kotlin*/
+    private val main : SharedPreferences by lazy { getSharedPreferences("main", Context.MODE_PRIVATE) }
+    private val editor : SharedPreferences.Editor by lazy { main.edit() }
+    private val commonTools by lazy { CommonTools(this) }                                               /*kotlin*/
 
-    val REQUEST_CODE_BACKUP = 43
-    val REQUEST_CODE_RESTORE = 5443
+    private val REQUEST_CODE_BACKUP = 43
+    private val REQUEST_CODE_RESTORE = 5443
 
-    var rootErrorMessage = ""
-    var loadingDialog: AlertDialog? = null
+    private var rootErrorMessage = ""
+    private var loadingDialog: AlertDialog? = null
 
-    val storageHandler by lazy { Handler() }
-    val storageRunnable by lazy { object : Runnable {
+    private val storageHandler by lazy { Handler() }
+    private val storageRunnable by lazy { object : Runnable {
         override fun run() {
             refreshStorageSizes()
             storageHandler.postDelayed(this, 1000)
