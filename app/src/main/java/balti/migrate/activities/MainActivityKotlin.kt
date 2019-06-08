@@ -26,6 +26,7 @@ import android.widget.Toast
 import balti.migrate.*
 import balti.migrate.CommonTools.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.inAppRestore.ZipPicker
+import balti.migrate.utilities.CommonToolKotlin
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
 import kotlinx.android.synthetic.main.please_wait.view.*
@@ -35,7 +36,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     private val main : SharedPreferences by lazy { getSharedPreferences("main", Context.MODE_PRIVATE) }
     private val editor : SharedPreferences.Editor by lazy { main.edit() }
-    private val commonTools by lazy { CommonTools(this) }                                               /*kotlin*/
+    private val commonTools by lazy { CommonToolKotlin(this) }                                               /*kotlin*/
 
     private val REQUEST_CODE_BACKUP = 43
     private val REQUEST_CODE_RESTORE = 5443
@@ -140,11 +141,12 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         finish()
                     }
                     .setNegativeButton(R.string.contact) { _, _ ->
-                        val email = Intent(Intent.ACTION_SENDTO)
-                        email.data = Uri.parse("mailto:")
-                        email.putExtra(Intent.EXTRA_EMAIL, arrayOf("help.baltiapps@gmail.com"))
-                        email.putExtra(Intent.EXTRA_SUBJECT, "Unsupported device")
-                        email.putExtra(Intent.EXTRA_TEXT, commonTools.deviceSpecifications)
+                        val email = Intent(Intent.ACTION_SENDTO).apply {
+                            data = Uri.parse("mailto:")
+                            putExtra(Intent.EXTRA_EMAIL, arrayOf("help.baltiapps@gmail.com"))
+                            putExtra(Intent.EXTRA_SUBJECT, "Unsupported device")
+                            putExtra(Intent.EXTRA_TEXT, commonTools.deviceSpecifications)
+                        }
                         try {
                             startActivity(Intent.createChooser(email, getString(R.string.select_mail)))
                         } catch (e: Exception) {
@@ -232,7 +234,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             R.id.lastLog -> showLog()
 
-            R.id.older_builds -> commonTools.openWeblink("https://www.androidfilehost.com/?w=files&flid=285270")
+            R.id.older_builds -> commonTools.openWebLink("https://www.androidfilehost.com/?w=files&flid=285270")
 
             R.id.appIntro ->
                 startActivity(Intent(this, InitialGuide::class.java)                        /*kotlin*/
@@ -271,10 +273,10 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         }
                         .show()
 
-            R.id.contact_telegram -> commonTools.openWeblink("https://t.me/migrateApp")
+            R.id.contact_telegram -> commonTools.openWebLink("https://t.me/migrateApp")
 
             R.id.xda_thread ->
-                commonTools.openWeblink("https://forum.xda-developers.com/android/apps-games/app-migrate-custom-rom-migration-tool-t3862763")
+                commonTools.openWebLink("https://forum.xda-developers.com/android/apps-games/app-migrate-custom-rom-migration-tool-t3862763")
 
             R.id.otherApps -> otherAppsClickManager()
         }
@@ -328,7 +330,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 .setTitle(R.string.rate_dialog_title)
                 .setMessage(R.string.rate_dialog_message)
                 .setPositiveButton(R.string.sure) { _, _ ->
-                    commonTools.openWeblink("market://details?id=balti.migrate")
+                    commonTools.openWebLink("market://details?id=balti.migrate")
                     editor.putBoolean("askForRating", false)
                     editor.commit()
                 }
@@ -351,7 +353,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         val view = layoutInflater.inflate(R.layout.other_apps, null)
         view.setOnClickListener{
-            commonTools.openWeblink(
+            commonTools.openWebLink(
                     when (it.id) {
                         R.id.motodisplay_handwave -> "market://details?id=sayantanrc.motodisplayhandwave"
                         R.id.opcode_8085 -> "market://details?id=balti.opcode8085"
@@ -396,7 +398,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             sdCardRoot = File(defaultPath).parentFile
         }
         else {
-            val sdCardPaths = commonTools.sdCardPaths
+            val sdCardPaths = commonTools.getSdCardPaths()
             if (sdCardPaths.size == 1 && File(sdCardPaths[0]).canWrite()){
                 sdCardRoot = File(sdCardPaths[0])
             }
@@ -429,7 +431,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 finish()
             }
             ad.setPositiveButton(R.string.install) { _, _ ->
-                commonTools.openWeblink("market://details?id=balti.migrate")
+                commonTools.openWebLink("market://details?id=balti.migrate")
             }
             ad.show()
         }
