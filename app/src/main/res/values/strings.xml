@@ -311,7 +311,7 @@
     <string name="use_reflection">Use reflection?</string>
     <string name="use_reflection_exp">Reflection is an experimental way of calculating size in Nougat and below. This might provide a better way of calculating size. Recommended: Yes</string>
     <string name="use_usage_access_permission">Grant usage access permission?</string>
-    <string name="usage_access_permission_needed_desc">A new, faster and more reliable method has been added to calculate size of apps before backup.\n\nPlease click Proceed, Scroll and select \"Migrate\" then click \"Permit usage access\"</string>
+    <string name="usage_access_permission_needed_desc">A new, faster and more reliable method has been added to calculate size of apps before backup.\n\nPlease click Proceed, scroll and select \"Migrate\" then enable \"Permit usage access\"</string>
     <string name="storage_access_required">Please grant storage access to write backups.</string>
     <string name="storage_access_required_restore">Please grant storage access to read backups.</string>
     <string name="checking_permissions">Checking Storage and Root access</string>
@@ -527,7 +527,7 @@
     <string name="battery_optimisation_already_disabled">Battery optimisation already disabled</string>
     <string name="use_new_sizing_method">Use new method to calculate size</string>
     <string name="new_method_will_be_used">Use StorageStats or reflection</string>
-    <string name="old_method_will_be_used">Use terminal based method</string>
+    <string name="old_method_will_be_used">Use old terminal based method</string>
 
     <!--thanks_layout.xml-->
     <string name="thanks_to_stericson">Huge thanks to Stephen (stericdroid) for allowing me to liberally use his busybox builds</string>

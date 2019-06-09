@@ -14,7 +14,7 @@ import balti.migrate.R
 import kotlinx.android.synthetic.main.error_report_layout.view.*
 import java.io.*
 
-public class CommonToolKotlin(val context: Context) {
+class CommonToolKotlin(val context: Context) {
 
     companion object {
         val DEBUG_TAG = "migrate_tag"

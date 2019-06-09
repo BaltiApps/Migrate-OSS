@@ -1,4 +1,4 @@
-package balti.migrate.activities
+package balti.migrate.simpleActivities
 
 import android.Manifest
 import android.app.AppOpsManager
@@ -74,7 +74,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 notificationManager.createNotificationChannel(channel)
             }
 
-            startActivity(Intent(this, InitialGuide::class.java))                           /*kotlin*/
+            startActivity(Intent(this, InitialGuideKotlin::class.java))
             finish()
         }
         else showChangeLog(true)
@@ -237,8 +237,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             R.id.older_builds -> commonTools.openWebLink("https://www.androidfilehost.com/?w=files&flid=285270")
 
             R.id.appIntro ->
-                startActivity(Intent(this, InitialGuide::class.java)                        /*kotlin*/
-                        .putExtra("manual", true))
+                startActivity(Intent(this, InitialGuideKotlin::class.java))
 
             R.id.thanks ->
                 AlertDialog.Builder(this)
@@ -448,11 +447,9 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
                     if (!main.getBoolean("alternate_access_asked", false)) {
 
-                        editor.putBoolean("alternate_access_asked", true)
-                        editor.commit()
-
                         val accessPermissionDialog = AlertDialog.Builder(this)
                                 .setNegativeButton(R.string.old_method_will_be_used) { _, _ ->
+                                    editor.putBoolean("alternate_access_asked", true)
                                     editor.putInt("calculating_size_method", 1)
                                     editor.commit()
                                     startActivity(Intent(this, BackupActivity::class.java)) /*kotlin*/
@@ -467,10 +464,14 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                             accessPermissionDialog.setTitle(R.string.use_reflection)
                                     .setMessage(R.string.use_reflection_exp)
                                     .setPositiveButton(R.string.yes) { _, _ ->
+                                        editor.putBoolean("alternate_access_asked", true)
                                         editor.putInt("calculating_size_method", 2)
                                         editor.commit()
                                         startActivity(Intent(this, BackupActivity::class.java)) /*kotlin*/
                                     }
+
+                            accessPermissionDialog.show()
+
                         } else {
                             if (!isUsageAccessGranted()) {
                                 accessPermissionDialog.setTitle(R.string.use_usage_access_permission)
@@ -482,6 +483,9 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                                             startActivity(intent)
                                             Toast.makeText(this, R.string.usage_permission_toast, Toast.LENGTH_SHORT).show()
                                         }
+
+                                accessPermissionDialog.show()
+
                             } else {
                                 editor.putBoolean("alternate_access_asked", true)
                                 editor.putInt("calculating_size_method", 2)
@@ -489,8 +493,6 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                                 startActivity(Intent(this, BackupActivity::class.java))     /*kotlin*/
                             }
                         }
-
-                        accessPermissionDialog.show()
 
                     } else {
                         startActivity(Intent(this, BackupActivity::class.java))             /*kotlin*/

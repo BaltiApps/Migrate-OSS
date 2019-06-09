@@ -33,7 +33,7 @@
             android:value="ca-app-pub-6582325651261661~4343120914"/>
 
 
-        <activity android:name=".activities.MainActivityKotlin"
+        <activity android:name=".simpleActivities.MainActivityKotlin"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme.Launcher"
@@ -45,7 +45,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".InitialGuide"
+        <activity android:name=".simpleActivities.InitialGuideKotlin"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance"/>
 
