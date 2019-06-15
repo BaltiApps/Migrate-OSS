@@ -15,28 +15,28 @@
         android:paddingEnd="@dimen/large_padding_width"
         android:paddingBottom="@dimen/small_padding_width">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
 
             <ImageButton
                 android:id="@+id/backupLayoutBackButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
                 android:background="@android:color/transparent"
-                android:foreground="?android:attr/selectableItemBackground"
                 android:padding="@dimen/large_padding_width"
-                android:src="@drawable/ic_arrow_back" />
+                android:src="@drawable/ic_arrow_back"
+                android:foreground="?android:attr/selectableItemBackground" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@id/backupLayoutBackButton"
+                android:layout_weight="1"
                 android:paddingStart="@dimen/small_padding_width"
+                android:paddingEnd="@dimen/small_padding_width"
                 android:text="@string/select_apps"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -44,14 +44,12 @@
                 android:id="@+id/backup_activity_help"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
                 android:background="@android:color/transparent"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:padding="@dimen/large_padding_width"
                 android:src="@drawable/ic_help" />
 
-        </RelativeLayout>
+        </LinearLayout>
 
 
         <LinearLayout
@@ -61,8 +59,9 @@
 
             <Spinner
                 android:id="@+id/appType"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:entries="@array/appTypeList" />
 
             <LinearLayout
@@ -155,8 +154,17 @@
             android:id="@+id/appLoadingView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true" />
+            android:layout_centerInParent="true"/>
+
+        <TextView
+            android:id="@+id/noAppsInCategoryLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_apps"
+            android:layout_centerInParent="true"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:visibility="gone"
+            />
 
         <ListView
             android:id="@+id/appBackupList"

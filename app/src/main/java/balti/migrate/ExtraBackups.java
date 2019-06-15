@@ -63,6 +63,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
 
+import balti.migrate.backupActivity.BackupActivityKotlin;
+
 import static balti.migrate.CommonTools.DEBUG_TAG;
 import static balti.migrate.CommonTools.DEFAULT_INTERNAL_STORAGE_DIR;
 
@@ -553,7 +555,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                             String appIcon = byteToString(stream.toByteArray());
 
                             String line = appName + " " + packageName + " " + apkPath + " " + dataPath + " " + appIcon + " " + versionName +
-                                    " " + packet.PERMISSIONS;
+                                    " " + packet.PERMISSION;
 
                             writer.write(line + "\n");
 
@@ -1649,7 +1651,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(ExtraBackups.this, BackupActivity.class));
+                startActivity(new Intent(ExtraBackups.this, BackupActivityKotlin.class));
                 finish();
             }
         });

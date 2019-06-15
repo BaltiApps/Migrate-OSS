@@ -133,10 +133,14 @@
     <string name="app">App</string>
     <string-array name="appTypeList">
         <item>User apps</item>
-        <item>System apps</item>
-        <item>System + user</item>
+        <item>System (not updated)</item>
+        <item>System (updated only)</item>
+        <item>All system</item>
+        <item>User + System (updated only)</item>
+        <item>All</item>
     </string-array>
     <string name="next">Next</string>
+    <string name="no_apps">No apps available\nin this category!</string>
 
     <!--ask_for_backup_name.xml-->
     <string name="enter_backup_name">Enter backup name</string>
@@ -287,7 +291,15 @@
     </string>
     <string name="backup_activity_help_1">
         \n
-        Selecting <i>Data</i> of an app necessarily means you have to backup the <i>App</i> also. <i>Perm</i>(permission) can be selected only if the apk or data is selected to be backed up.
+        Previously, selecting <b>Data</b> of an app meant you had to backup the <b>App</b> also. This is no longer the case. Moreover, Migrate now remembers the apps selected for backup.
+        Please note that if you decided not to backup <b>App</b> but <b>Data</b> and/or <b>Perm</b> of an application, then if the app is not already installed before starting restore via <b>Migrate helper</b>,
+        the <b>Data</b> and/or <b>Perm</b> of that app will not be restored.
+    </string>
+    <string name="backup_activity_help_2">
+        \n
+        <b>Apps in white:</b> Normal user apps\n
+        <b>Apps in yellow:</b> System apps which have been updated from Google Play Store or elsewhere. The updated APKs reside in the <b>/data</b> directory and not in system directories.\n
+        <b>Apps in red:</b> System apps which have not been updated.
     </string>
     <string name="bootloop_warning">Bootloop warning!</string>
     <string name="bootloop_warning_desc">Backing up and restoring system apps may result in a bootloop. Please proceed with caution.</string>
@@ -302,7 +314,7 @@
     <string name="dont_show_again">Don\'t show again</string>
     <string name="please_wait">Please wait</string>
     <string name="reading_data">Reading backup data</string>
-    <string name="just_a_minute">Just a minute...</string>
+    <string name="just_a_minute">Just a minute…</string>
     <string name="starting_engine">Starting backup engine</string>
     <string name="root_permission_denied">Root permission denied!</string>
     <string name="root_permission_denied_desc">Please make sure that your device is rooted and you have allowed root permission.\n\n
@@ -380,7 +392,7 @@
     <string name="body_2_1">After boot up, you will be automatically prompted to continue restore</string>
 
     <!--initial_guide_3.xml-->
-    <string name="greet4">Few things before you start...</string>
+    <string name="greet4">Few things before you start…</string>
     <string name="body_3_0"><b>PLEASE USE MAGISK</b>. Lineage OS su addon causes unexpected behavior.</string>
     <string name="body_3_1">This app is still in its infancy. As a result, there might be bugs.\n\n
         Migrate is a root based app.\n\n
@@ -506,7 +518,7 @@
     <string name="opcode8085">Convert 8085 programs to hex code</string>
     <string name="mdh">Access Moto Display with a hand wave</string>
     <string name="bg_video">Play videos in background</string>
-    <string name="more_coming_soon">More coming soon...</string>
+    <string name="more_coming_soon">More coming soon…</string>
 
     <!--miscellaneous-->
     <string name="sure_to_mail">Are you sure you want to send an email?</string>

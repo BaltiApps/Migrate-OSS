@@ -26,6 +26,18 @@ class CommonToolKotlin(val context: Context) {
 
         val DEFAULT_INTERNAL_STORAGE_DIR = "/sdcard/Migrate"
         val TEMP_DIR_NAME = "/data/local/tmp/migrate_cache"
+
+        val ACTION_BACKUP_PROGRESS = "Migrate progress broadcast"
+        val ACTION_REQUEST_BACKUP_DATA = "get data"
+        val ACTION_EXTRA_BACKUP_ACTIVITY_STARTED = "extraBackupsStarted"
+
+        val PREFERENCE_FILE_APPS = "apps"
+        val PREFERENCE_FILE_MAIN = "main"
+        val PREFERENCE_SYSTEM_APPS_WARNING = "system_apps_warning"
+
+        val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
+        val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter
+        val PROPERTY_PERMISSION_SELECTION = "permission"        // used to set property in AppListAdapter
     }
 
     fun unpackAssetToInternal(assetFileName: String, targetFileName: String, toInternal: Boolean): String {
@@ -34,8 +46,8 @@ class CommonToolKotlin(val context: Context) {
         val unpackFile = if (toInternal) File(context.filesDir, targetFileName)
         else File(context.externalCacheDir, targetFileName)
 
-        var read = 0
-        var buffer = ByteArray(4096)
+        var read: Int
+        val buffer = ByteArray(4096)
 
         return try {
             val inputStream = assetManager.open(assetFileName)
@@ -258,11 +270,7 @@ class CommonToolKotlin(val context: Context) {
         }
     }
 
-    fun applyNamingCorrectionForShell(name: String): String {
-        var name = name
-        name = name.replace("(", "\\(")
-        name = name.replace(")", "\\)")
-        name = name.replace(" ", "\\ ")
-        return name
-    }
+    fun applyNamingCorrectionForShell(name: String) =
+            name.replace("(", "\\(").replace(")", "\\)").replace(" ", "\\ ")
+
 }

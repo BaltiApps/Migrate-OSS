@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/large_padding_width">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Package name"
+        android:id="@+id/app_info_package_name"
+        android:gravity="center_vertical"
+        android:drawableStart="@drawable/ic_adb_small"
+        android:drawablePadding="@dimen/small_padding_width"
+        android:padding="@dimen/small_padding_width"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Version name"
+        android:id="@+id/app_info_version_name"
+        android:gravity="center_vertical"
+        android:drawableStart="@drawable/ic_version_small"
+        android:drawablePadding="@dimen/small_padding_width"
+        android:padding="@dimen/small_padding_width"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="UID"
+        android:id="@+id/app_info_uid"
+        android:gravity="center_vertical"
+        android:drawableStart="@drawable/ic_uid_small"
+        android:drawablePadding="@dimen/small_padding_width"
+        android:padding="@dimen/small_padding_width"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Source dir"
+        android:id="@+id/app_info_source_dir"
+        android:gravity="center_vertical"
+        android:drawableStart="@drawable/ic_folder_small"
+        android:drawablePadding="@dimen/small_padding_width"
+        android:padding="@dimen/small_padding_width"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Data dir"
+        android:id="@+id/app_info_data_dir"
+        android:gravity="center_vertical"
+        android:drawableStart="@drawable/ic_folder_small"
+        android:drawablePadding="@dimen/small_padding_width"
+        android:padding="@dimen/small_padding_width"
+        />
+
+</LinearLayout>

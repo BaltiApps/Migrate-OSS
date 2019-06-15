@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import balti.migrate.simpleActivities.MainActivityKotlin;
+
 public class InitialGuide extends AppCompatActivity {
     Button previous, next;
 
@@ -125,7 +127,7 @@ public class InitialGuide extends AppCompatActivity {
             editor.putBoolean("firstRun", false);
             editor.commit();
         }
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, MainActivityKotlin.class));
         finish();
     }
 }

@@ -25,8 +25,10 @@ import android.widget.TextView
 import android.widget.Toast
 import balti.migrate.*
 import balti.migrate.CommonTools.DEFAULT_INTERNAL_STORAGE_DIR
+import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.inAppRestore.ZipPicker
 import balti.migrate.utilities.CommonToolKotlin
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREFERENCE_FILE_MAIN
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
 import kotlinx.android.synthetic.main.please_wait.view.*
@@ -34,7 +36,7 @@ import java.io.File
 
 class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private val main : SharedPreferences by lazy { getSharedPreferences("main", Context.MODE_PRIVATE) }
+    private val main : SharedPreferences by lazy { getSharedPreferences(PREFERENCE_FILE_MAIN, Context.MODE_PRIVATE) }
     private val editor : SharedPreferences.Editor by lazy { main.edit() }
     private val commonTools by lazy { CommonToolKotlin(this) }                                               /*kotlin*/
 
@@ -452,7 +454,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                                     editor.putBoolean("alternate_access_asked", true)
                                     editor.putInt("calculating_size_method", 1)
                                     editor.commit()
-                                    startActivity(Intent(this, BackupActivity::class.java)) /*kotlin*/
+                                    startActivity(Intent(this, BackupActivityKotlin::class.java)) /*kotlin*/
                                 }
                                 .setNeutralButton(android.R.string.cancel) { _, _ ->
                                     editor.putBoolean("alternate_access_asked", false)
@@ -467,7 +469,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                                         editor.putBoolean("alternate_access_asked", true)
                                         editor.putInt("calculating_size_method", 2)
                                         editor.commit()
-                                        startActivity(Intent(this, BackupActivity::class.java)) /*kotlin*/
+                                        startActivity(Intent(this, BackupActivityKotlin::class.java)) /*kotlin*/
                                     }
 
                             accessPermissionDialog.show()
@@ -490,12 +492,12 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                                 editor.putBoolean("alternate_access_asked", true)
                                 editor.putInt("calculating_size_method", 2)
                                 editor.commit()
-                                startActivity(Intent(this, BackupActivity::class.java))     /*kotlin*/
+                                startActivity(Intent(this, BackupActivityKotlin::class.java))     /*kotlin*/
                             }
                         }
 
                     } else {
-                        startActivity(Intent(this, BackupActivity::class.java))             /*kotlin*/
+                        startActivity(Intent(this, BackupActivityKotlin::class.java))             /*kotlin*/
                     }
                 } else {
                     AlertDialog.Builder(this)

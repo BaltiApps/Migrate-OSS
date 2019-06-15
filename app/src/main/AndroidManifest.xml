@@ -49,7 +49,7 @@
             android:screenOrientation="portrait"
             android:launchMode="singleInstance"/>
 
-        <activity android:name=".BackupActivity"
+        <activity android:name=".backupActivity.BackupActivityKotlin"
             android:screenOrientation="portrait"
             />
 

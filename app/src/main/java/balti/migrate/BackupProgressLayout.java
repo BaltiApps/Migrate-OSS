@@ -23,6 +23,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import balti.migrate.simpleActivities.MainActivityKotlin;
+
 import static android.view.View.VISIBLE;
 
 /**
@@ -446,7 +448,7 @@ public class BackupProgressLayout extends AppCompatActivity {
 
 
         if (!commonTools.isServiceRunning(BackupService.class.getName())) {
-            startActivity(new Intent(BackupProgressLayout.this, MainActivity.class));
+            startActivity(new Intent(BackupProgressLayout.this, MainActivityKotlin.class));
         }
         finish();
     }
