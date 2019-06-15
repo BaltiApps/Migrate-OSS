@@ -541,6 +541,10 @@
     <string name="new_method_will_be_used">Use StorageStats or reflection</string>
     <string name="old_method_will_be_used">Use old terminal based method</string>
 
+    <!--app_search_layout.xml-->
+    <string name="showing_apps_from">Showing apps from category:</string>
+    <string name="enter_app_name">App/package name</string>
+
     <!--thanks_layout.xml-->
     <string name="thanks_to_stericson">Huge thanks to Stephen (stericdroid) for allowing me to liberally use his busybox builds</string>
     <string name="thanks_to_magisk">Without topjohnwu\'s Magisk, this app would not be possible. I learned a lot from Magisk installer scripts.</string>

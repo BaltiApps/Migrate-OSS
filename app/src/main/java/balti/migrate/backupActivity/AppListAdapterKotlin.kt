@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.database.DataSetObserver
 import android.graphics.Color
+import android.os.AsyncTask
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +37,7 @@ class AppListAdapterKotlin(val context: Context,
     private var appAllChangeFromScanning = false
     private var dataAllChangeFromScanning = false
     private var permissionAllChangeFromScanning = false
+    private var externalDataSetChanged = true
 
     init {
         appList.sortWith(Comparator { o1, o2 ->
@@ -74,6 +77,7 @@ class AppListAdapterKotlin(val context: Context,
                     }
                 }
             }
+            externalDataSetChanged = false
             editor.commit()
             notifyDataSetChanged()
         }
@@ -81,6 +85,18 @@ class AppListAdapterKotlin(val context: Context,
         allAppSelect.setOnCheckedChangeListener { _, isChecked -> listener(PROPERTY_APP_SELECTION, isChecked) }
         allDataSelect.setOnCheckedChangeListener { _, isChecked -> listener(PROPERTY_DATA_SELECTION, isChecked) }
         allPermissionSelect.setOnCheckedChangeListener { _, isChecked -> listener(PROPERTY_PERMISSION_SELECTION, isChecked) }
+
+        this.registerDataSetObserver(object : DataSetObserver(){
+            override fun onChanged() {
+                super.onChanged()
+                if (externalDataSetChanged) {
+                    updateAllCheckbox(PROPERTY_APP_SELECTION, allAppSelect.isChecked)
+                    updateAllCheckbox(PROPERTY_DATA_SELECTION, allDataSelect.isChecked)
+                    updateAllCheckbox(PROPERTY_PERMISSION_SELECTION, allPermissionSelect.isChecked)
+                }
+                else externalDataSetChanged = true
+            }
+        })
 
     }
 
@@ -108,7 +124,8 @@ class AppListAdapterKotlin(val context: Context,
         val appItem = appList[position]
 
         viewHolder.appName.text = pm.getApplicationLabel(appItem.PACKAGE_INFO.applicationInfo)
-        viewHolder.appIcon.setImageDrawable(pm.getApplicationIcon(appItem.PACKAGE_INFO.applicationInfo))
+        LoadIcon(viewHolder.appIcon, appItem, pm).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+
         viewHolder.appInfo.setOnClickListener {
 
             val adView = View.inflate(context, R.layout.app_info, null)
@@ -138,58 +155,62 @@ class AppListAdapterKotlin(val context: Context,
         return view!!
     }
 
-    private fun CheckBox.setFromProperty(packageName: String, appItem: BackupDataPacketKotlin, defaultValue: Boolean = false){
-
-        fun updateAllCheckbox(property: String, allSelected: Boolean, immediateSelection: Boolean = true) {
-            if (!immediateSelection) {
-                if (allSelected) {
-                    when (property) {
-                        PROPERTY_APP_SELECTION -> {
-                            appAllChangeFromScanning = true
-                            allAppSelect.isChecked = false
-                        }
-                        PROPERTY_DATA_SELECTION -> {
-                            dataAllChangeFromScanning = true
-                            allDataSelect.isChecked = false
-                        }
-                        PROPERTY_PERMISSION_SELECTION -> {
-                            permissionAllChangeFromScanning = true
-                            allPermissionSelect.isChecked = false
-                        }
+    private fun updateAllCheckbox(property: String, allSelected: Boolean, immediateSelection: Boolean = true) {
+        if (!immediateSelection) {
+            if (allSelected) {
+                when (property) {
+                    PROPERTY_APP_SELECTION -> {
+                        appAllChangeFromScanning = true
+                        allAppSelect.isChecked = false
                     }
-                }
-            }
-            else if (!allSelected) {
-                loop@ for (i in 0 until appList.size) {
-                    val dp = appList[i]
-                    when (property) {
-                        PROPERTY_APP_SELECTION -> if (dp.APP || dp.EXCLUSIONS.contains(EXCLUDE_APP)) {
-                            if (i == appList.size -1){
-                                appAllChangeFromScanning = true
-                                allAppSelect.isChecked = true
-                            }
-                        }
-                        else break@loop
-
-                        PROPERTY_DATA_SELECTION -> if (dp.DATA || dp.EXCLUSIONS.contains(EXCLUDE_DATA)) {
-                            if (i == appList.size -1){
-                                dataAllChangeFromScanning = true
-                                allDataSelect.isChecked = true
-                            }
-                        }
-                        else break@loop
-
-                        PROPERTY_PERMISSION_SELECTION -> if (dp.PERMISSION || dp.EXCLUSIONS.contains(EXCLUDE_PERMISSION)) {
-                            if (i == appList.size -1){
-                                permissionAllChangeFromScanning = true
-                                allPermissionSelect.isChecked = true
-                            }
-                        }
-                        else break@loop
+                    PROPERTY_DATA_SELECTION -> {
+                        dataAllChangeFromScanning = true
+                        allDataSelect.isChecked = false
+                    }
+                    PROPERTY_PERMISSION_SELECTION -> {
+                        permissionAllChangeFromScanning = true
+                        allPermissionSelect.isChecked = false
                     }
                 }
             }
         }
+        else {
+            loop@ for (i in 0 until appList.size) {
+                val dp = appList[i]
+                when (property) {
+                    PROPERTY_APP_SELECTION ->
+                        if (dp.APP || dp.EXCLUSIONS.contains(EXCLUDE_APP)) {
+                            if (i == appList.size - 1) if (!allSelected) appAllChangeFromScanning = true
+                        } else {
+                            if (allSelected) appAllChangeFromScanning = true
+                            break@loop
+                        }
+
+                    PROPERTY_DATA_SELECTION ->
+                        if (dp.DATA || dp.EXCLUSIONS.contains(EXCLUDE_DATA)) {
+                            if (i == appList.size - 1) if (!allSelected) dataAllChangeFromScanning = true
+                        } else {
+                            if (allSelected) dataAllChangeFromScanning = true
+                            break@loop
+                        }
+
+                    PROPERTY_PERMISSION_SELECTION ->
+                        if (dp.PERMISSION || dp.EXCLUSIONS.contains(EXCLUDE_PERMISSION)) {
+                            if (i == appList.size - 1) if (!allSelected) permissionAllChangeFromScanning = true
+                        } else {
+                            if (allSelected) permissionAllChangeFromScanning = true
+                            break@loop
+                        }
+                }
+            }
+
+            if (appAllChangeFromScanning) allAppSelect.isChecked = !allAppSelect.isChecked
+            if (dataAllChangeFromScanning) allDataSelect.isChecked = !allDataSelect.isChecked
+            if (permissionAllChangeFromScanning) allPermissionSelect.isChecked = !allPermissionSelect.isChecked
+        }
+    }
+
+    private fun CheckBox.setFromProperty(packageName: String, appItem: BackupDataPacketKotlin, defaultValue: Boolean = false){
 
         val property = when (this.id){
             R.id.appCheckbox -> PROPERTY_APP_SELECTION

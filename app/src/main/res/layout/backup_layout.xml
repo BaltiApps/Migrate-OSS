@@ -163,6 +163,7 @@
             android:text="@string/no_apps"
             android:layout_centerInParent="true"
             android:textAppearance="?android:attr/textAppearanceLarge"
+            android:gravity="center_horizontal"
             android:visibility="gone"
             />
 
@@ -217,6 +218,17 @@
             android:background="@android:color/transparent"
             android:padding="10dp"
             android:src="@drawable/ic_select_all" />
+
+        <ImageButton
+            android:id="@+id/appSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/backupActivityNext"
+            android:layout_alignBottom="@id/backupActivityNext"
+            android:layout_toEndOf="@id/selectAll"
+            android:background="@android:color/transparent"
+            android:padding="10dp"
+            android:src="@drawable/ic_app_search" />
 
     </RelativeLayout>
 

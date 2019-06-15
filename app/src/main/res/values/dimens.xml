@@ -14,4 +14,5 @@
     <dimen name="extra_items_padding">15dp</dimen>
     <dimen name="guide_layouts_padding">30dp</dimen>
     <dimen name="third_party_logo_width">80dp</dimen>
+    <dimen name="extra_large_padding_width">20dp</dimen>
 </resources>
