@@ -4,17 +4,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/extra_item_selector_top_bar"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorPrimary"
+        android:gravity="center_vertical"
+        >
 
         <TextView
             android:id="@+id/extra_item_selector_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
+            android:layout_weight="1"
             android:padding="@dimen/large_padding_width"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -22,8 +24,6 @@
             android:id="@+id/extra_item_selector_select_all"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
             android:clickable="true"
             android:focusable="true"
             android:padding="@dimen/large_padding_width"
@@ -33,14 +33,12 @@
             android:id="@+id/extra_item_selector_clear_all"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toStartOf="@id/extra_item_selector_select_all"
             android:clickable="true"
             android:focusable="true"
             android:padding="@dimen/large_padding_width"
             android:src="@drawable/ic_clear_all" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/extra_item_selector_button_bar"
@@ -87,5 +85,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/no_data_label"
+        android:text="@string/no_contacts"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        />
 
 </RelativeLayout>

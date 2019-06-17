@@ -245,6 +245,9 @@
     <string name="sms_selector_label">Select SMS</string>
     <string name="contacts_selector_label">Select contacts</string>
     <string name="calls_selector_label">Select calls</string>
+    <string name="no_contacts">No contacts!</string>
+    <string name="no_sms">No sms!</string>
+    <string name="no_calls">No call logs!</string>
 
     <!--progress_layout-->
     <string name="loading">Loading…</string>
