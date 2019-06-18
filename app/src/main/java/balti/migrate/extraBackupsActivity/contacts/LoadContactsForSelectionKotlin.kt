@@ -46,8 +46,7 @@ class LoadContactsForSelectionKotlin(private val jobCode: Int, val context: Cont
 
     override fun doInBackground(vararg params: Any?): Any? {
         for (cdp in itemList){
-            val cdp1 = cdp.copy()
-            dataPackets.add(cdp1)
+            dataPackets.add(cdp.copy())
         }
         if (dataPackets.size > 0) adapter = ContactListAdapterKotlin(context, dataPackets)
         return null
