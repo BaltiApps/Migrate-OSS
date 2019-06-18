@@ -49,10 +49,13 @@ class CallsToolsKotlin(val context: Context) {
                 getCursorData.getString(CallLog.Calls.TRANSCRIPTION),
                 getCursorData.getString(CallLog.Calls.TYPE),
                 getCursorData.getString(CallLog.Calls.VOICEMAIL_URI),
+
                 getCursorData.getLong(CallLog.Calls.DATE),
                 getCursorData.getLong(CallLog.Calls.DURATION),
                 getCursorData.getLong(CallLog.Calls.NEW),
-                selected)
+
+                selected
+        )
 
         errorEncountered = getCursorData.errorEncountered.trim()
         return cdp

@@ -21,4 +21,12 @@ class GetCursorData(private val cursor: Cursor) {
             0L
         }
     }
+
+    fun getInt(columnName: String): Int {
+        return try { cursor.getInt(cursor.getColumnIndex(columnName)) }
+        catch (e: Exception) {
+            errorEncountered += e.message.toString() + "\n"
+            0
+        }
+    }
 }
