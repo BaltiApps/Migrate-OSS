@@ -23,7 +23,9 @@ class ReadCallsKotlin(private val jobCode: Int,
 
     private var callsCount = 0
     private val callsTools by lazy { CallsToolsKotlin(context) }
+
     private val cursor: Cursor? by lazy { callsTools.getCallsCursor() }
+
     private val vOp by lazy { ViewOperations(context) }
     private val onJobCompletion by lazy { context as OnJobCompletion }
     private var error = ""
@@ -81,11 +83,12 @@ class ReadCallsKotlin(private val jobCode: Int,
 
     override fun onPostExecute(result: ArrayList<CallsDataPacketsKotlin>?) {
         super.onPostExecute(result)
+
         if (error == "") onJobCompletion.onComplete(jobCode, true, result)
         else onJobCompletion.onComplete(jobCode, false, error)
-        cursor?.let {
-            try { it.close() } catch (_ : Exception){}
-            vOp.clickableSet(menuMainItem, callsCount > 0)
-        }
+
+        cursor?.let { try { it.close() } catch (_ : Exception){} }
+
+        vOp.clickableSet(menuMainItem, callsCount > 0)
     }
 }

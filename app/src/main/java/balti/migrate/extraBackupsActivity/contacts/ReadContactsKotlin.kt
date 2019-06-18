@@ -23,10 +23,13 @@ class ReadContactsKotlin(private val jobCode: Int,
 
     private var contactsCount = 0
     private val vcfTools: VcfToolsKotlin by lazy { VcfToolsKotlin(context) }
+
     private val cursor: Cursor? by lazy { vcfTools.getContactsCursor() }
+
     private val vOp by lazy { ViewOperations(context) }
     private val onJobCompletion by lazy { context as OnJobCompletion }
     private var error = ""
+    private var isContactsChecked = false
 
     override fun onPreExecute() {
         super.onPreExecute()
@@ -44,6 +47,7 @@ class ReadContactsKotlin(private val jobCode: Int,
             vOp.visibilitySet(menuReadProgressBar, View.GONE)
         }
         vOp.clickableSet(menuMainItem, false)
+        vOp.doSomething { isContactsChecked = doBackupCheckbox.isChecked }
     }
 
     override fun doInBackground(vararg params: Any?): ArrayList<ContactsDataPacketKotlin> {
@@ -53,6 +57,7 @@ class ReadContactsKotlin(private val jobCode: Int,
                 if (contactsCount > 0) cursorItem.moveToFirst()
                 for (i in 0 until contactsCount){
                     ContactsDataPacketKotlin(vcfTools.getVcfData(cursorItem)).let { cdp ->
+                        cdp.selected = isContactsChecked
                         vcfTools.errorEncountered.trim().let {err ->
                             if (err == "") {
                                 if (!tmpList.contains(cdp)) tmpList.add(cdp)
@@ -88,12 +93,12 @@ class ReadContactsKotlin(private val jobCode: Int,
 
     override fun onPostExecute(result: ArrayList<ContactsDataPacketKotlin>?) {
         super.onPostExecute(result)
+
         if (error == "") onJobCompletion.onComplete(jobCode, true, result)
         else onJobCompletion.onComplete(jobCode, false, error)
 
-        cursor?.let {
-            try { it.close() } catch (_ : Exception){}
-            vOp.clickableSet(menuMainItem, contactsCount > 0)
-        }
+        cursor?.let { try { it.close() } catch (_ : Exception){} }
+
+        vOp.clickableSet(menuMainItem, contactsCount > 0)
     }
 }

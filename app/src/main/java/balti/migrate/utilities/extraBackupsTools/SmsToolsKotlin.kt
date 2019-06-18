@@ -56,7 +56,7 @@ class SmsToolsKotlin(val context: Context) {
         return cursor
     }
 
-    fun getCallsPacket(cursor: Cursor, selected: Boolean): SmsDataPacketKotlin {
+    fun getSmsPacket(cursor: Cursor, selected: Boolean): SmsDataPacketKotlin {
 
         val getCursorData = GetCursorData(cursor)
 
