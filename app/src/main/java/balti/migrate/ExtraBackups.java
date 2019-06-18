@@ -775,15 +775,15 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
             dataPackets = new Vector<>(0);
 
-            this.topBar = itemSelectorView.findViewById(R.id.extra_item_selector_top_bar);
-            this.selectAll = itemSelectorView.findViewById(R.id.extra_item_selector_select_all);
-            this.clearAll = itemSelectorView.findViewById(R.id.extra_item_selector_clear_all);
-            this.progressBar = itemSelectorView.findViewById(R.id.extra_item_selector_round_progress);
-            this.listView = itemSelectorView.findViewById(R.id.extra_item_selector_item_holder);
-            this.bottomBar = itemSelectorView.findViewById(R.id.extra_item_selector_button_bar);
-            this.ok = itemSelectorView.findViewById(R.id.extra_item_selector_ok);
-            this.cancel = itemSelectorView.findViewById(R.id.extra_item_selector_cancel);
-            this.title = itemSelectorView.findViewById(R.id.extra_item_selector_title);
+            this.topBar = itemSelectorView.findViewById(R.id.eis_top_bar);
+            this.selectAll = itemSelectorView.findViewById(R.id.eis_select_all);
+            this.clearAll = itemSelectorView.findViewById(R.id.eis_clear_all);
+            this.progressBar = itemSelectorView.findViewById(R.id.eis_progressBar);
+            this.listView = itemSelectorView.findViewById(R.id.eis_listView);
+            this.bottomBar = itemSelectorView.findViewById(R.id.eis_button_bar);
+            this.ok = itemSelectorView.findViewById(R.id.eis_ok);
+            this.cancel = itemSelectorView.findViewById(R.id.eis_cancel);
+            this.title = itemSelectorView.findViewById(R.id.eis_title);
 
             title.setText(R.string.contacts_selector_label);
 
@@ -1039,15 +1039,15 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
             dataPackets = new Vector<>(0);
 
-            this.topBar = itemSelectorView.findViewById(R.id.extra_item_selector_top_bar);
-            this.selectAll = itemSelectorView.findViewById(R.id.extra_item_selector_select_all);
-            this.clearAll = itemSelectorView.findViewById(R.id.extra_item_selector_clear_all);
-            this.progressBar = itemSelectorView.findViewById(R.id.extra_item_selector_round_progress);
-            this.listView = itemSelectorView.findViewById(R.id.extra_item_selector_item_holder);
-            this.bottomBar = itemSelectorView.findViewById(R.id.extra_item_selector_button_bar);
-            this.ok = itemSelectorView.findViewById(R.id.extra_item_selector_ok);
-            this.cancel = itemSelectorView.findViewById(R.id.extra_item_selector_cancel);
-            this.title = itemSelectorView.findViewById(R.id.extra_item_selector_title);
+            this.topBar = itemSelectorView.findViewById(R.id.eis_top_bar);
+            this.selectAll = itemSelectorView.findViewById(R.id.eis_select_all);
+            this.clearAll = itemSelectorView.findViewById(R.id.eis_clear_all);
+            this.progressBar = itemSelectorView.findViewById(R.id.eis_progressBar);
+            this.listView = itemSelectorView.findViewById(R.id.eis_listView);
+            this.bottomBar = itemSelectorView.findViewById(R.id.eis_button_bar);
+            this.ok = itemSelectorView.findViewById(R.id.eis_ok);
+            this.cancel = itemSelectorView.findViewById(R.id.eis_cancel);
+            this.title = itemSelectorView.findViewById(R.id.eis_title);
 
             title.setText(R.string.sms_selector_label);
 
@@ -1232,15 +1232,15 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
             dataPackets = new Vector<>(0);
 
-            this.topBar = itemSelectorView.findViewById(R.id.extra_item_selector_top_bar);
-            this.selectAll = itemSelectorView.findViewById(R.id.extra_item_selector_select_all);
-            this.clearAll = itemSelectorView.findViewById(R.id.extra_item_selector_clear_all);
-            this.progressBar = itemSelectorView.findViewById(R.id.extra_item_selector_round_progress);
-            this.listView = itemSelectorView.findViewById(R.id.extra_item_selector_item_holder);
-            this.bottomBar = itemSelectorView.findViewById(R.id.extra_item_selector_button_bar);
-            this.ok = itemSelectorView.findViewById(R.id.extra_item_selector_ok);
-            this.cancel = itemSelectorView.findViewById(R.id.extra_item_selector_cancel);
-            this.title = itemSelectorView.findViewById(R.id.extra_item_selector_title);
+            this.topBar = itemSelectorView.findViewById(R.id.eis_top_bar);
+            this.selectAll = itemSelectorView.findViewById(R.id.eis_select_all);
+            this.clearAll = itemSelectorView.findViewById(R.id.eis_clear_all);
+            this.progressBar = itemSelectorView.findViewById(R.id.eis_progressBar);
+            this.listView = itemSelectorView.findViewById(R.id.eis_listView);
+            this.bottomBar = itemSelectorView.findViewById(R.id.eis_button_bar);
+            this.ok = itemSelectorView.findViewById(R.id.eis_ok);
+            this.cancel = itemSelectorView.findViewById(R.id.eis_cancel);
+            this.title = itemSelectorView.findViewById(R.id.eis_title);
 
             title.setText(R.string.calls_selector_label);
 

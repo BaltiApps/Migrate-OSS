@@ -15,10 +15,10 @@ import balti.migrate.utilities.VcfToolsKotlin
 
 class ReadContactsKotlin(private val jobCode: Int,
                          private val context: Context,
-                         private val contactsMainItem: LinearLayout,
-                         private val contactsSelectedStatus: TextView,
-                         private val contactsReadProgressBar: ProgressBar,
-                         private val doBackupContacts: CheckBox
+                         private val menuMainItem: LinearLayout,
+                         private val menuSelectedStatus: TextView,
+                         private val menuReadProgressBar: ProgressBar,
+                         private val doBackupMenu: CheckBox
                          ): AsyncTask<Any, Any, ArrayList<ContactsDataPacketKotlin>>() {
 
     private var contactsCount = 0
@@ -30,20 +30,20 @@ class ReadContactsKotlin(private val jobCode: Int,
 
     override fun onPreExecute() {
         super.onPreExecute()
-        vOp.visibilitySet(contactsSelectedStatus, View.VISIBLE)
-        vOp.visibilitySet(contactsReadProgressBar, View.VISIBLE)
+        vOp.visibilitySet(menuSelectedStatus, View.VISIBLE)
+        vOp.visibilitySet(menuReadProgressBar, View.VISIBLE)
         cursor?.let{
             contactsCount = it.count
-            vOp.progressSet(contactsReadProgressBar, 0, contactsCount)
-            vOp.enableSet(doBackupContacts, true)
+            vOp.progressSet(menuReadProgressBar, 0, contactsCount)
+            vOp.enableSet(doBackupMenu, true)
         }
         if (cursor == null) {
-            vOp.enableSet(doBackupContacts, false)
-            vOp.checkSet(doBackupContacts, false)
-            vOp.textSet(contactsSelectedStatus, R.string.reading_error)
-            vOp.visibilitySet(contactsReadProgressBar, View.GONE)
+            vOp.enableSet(doBackupMenu, false)
+            vOp.checkSet(doBackupMenu, false)
+            vOp.textSet(menuSelectedStatus, R.string.reading_error)
+            vOp.visibilitySet(menuReadProgressBar, View.GONE)
         }
-        vOp.clickableSet(contactsMainItem, false)
+        vOp.clickableSet(menuMainItem, false)
     }
 
     override fun doInBackground(vararg params: Any?): ArrayList<ContactsDataPacketKotlin> {
@@ -77,8 +77,8 @@ class ReadContactsKotlin(private val jobCode: Int,
 
     override fun onProgressUpdate(vararg values: Any?) {
         super.onProgressUpdate(*values)
-        vOp.progressSet(contactsReadProgressBar, values[0] as Int)
-        vOp.textSet(contactsSelectedStatus, values[1] as String)
+        vOp.progressSet(menuReadProgressBar, values[0] as Int)
+        vOp.textSet(menuSelectedStatus, values[1] as String)
     }
 
     override fun onPostExecute(result: ArrayList<ContactsDataPacketKotlin>?) {
@@ -88,7 +88,7 @@ class ReadContactsKotlin(private val jobCode: Int,
 
         cursor?.let {
             try { it.close() } catch (_ : Exception){}
-            vOp.clickableSet(contactsMainItem, contactsCount > 0)
+            vOp.clickableSet(menuMainItem, contactsCount > 0)
         }
     }
 }
