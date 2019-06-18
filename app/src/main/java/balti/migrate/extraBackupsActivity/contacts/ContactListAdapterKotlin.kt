@@ -19,10 +19,12 @@ class ContactListAdapterKotlin(val context: Context,
         val cdp = contactsList[position]
 
         val view = View.inflate(context, R.layout.contacts_item, null)
-        view.contacts_item_checkbox.text = cdp.fullName
-        view.contacts_item_checkbox.isChecked = cdp.selected
-        view.contacts_item_checkbox.setOnCheckedChangeListener { _, isChecked ->
-            cdp.selected = isChecked
+        view.contacts_item_checkbox.apply {
+            text = cdp.fullName
+            isChecked = cdp.selected
+            setOnCheckedChangeListener { _, isChecked ->
+                cdp.selected = isChecked
+            }
         }
 
         return view

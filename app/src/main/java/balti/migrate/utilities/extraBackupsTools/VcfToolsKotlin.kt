@@ -1,4 +1,4 @@
-package balti.migrate.utilities
+package balti.migrate.utilities.extraBackupsTools
 
 import android.Manifest
 import android.content.Context
@@ -12,6 +12,8 @@ import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
 class VcfToolsKotlin(val context: Context) {
+
+    var errorEncountered = ""
 
     fun getContactsCursor(): Cursor? {
         var cursor: Cursor? = null
@@ -41,6 +43,7 @@ class VcfToolsKotlin(val context: Context) {
             e.printStackTrace()
             fullName = ""
             vcardstring = ""
+            errorEncountered = e.message.toString()
         }
 
         return arrayOf(fullName, vcardstring)

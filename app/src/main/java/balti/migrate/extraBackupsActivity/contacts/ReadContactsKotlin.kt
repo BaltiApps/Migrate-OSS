@@ -11,15 +11,15 @@ import android.widget.TextView
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.OnJobCompletion
 import balti.migrate.extraBackupsActivity.ViewOperations
-import balti.migrate.utilities.VcfToolsKotlin
+import balti.migrate.utilities.extraBackupsTools.VcfToolsKotlin
 
 class ReadContactsKotlin(private val jobCode: Int,
                          private val context: Context,
                          private val menuMainItem: LinearLayout,
                          private val menuSelectedStatus: TextView,
                          private val menuReadProgressBar: ProgressBar,
-                         private val doBackupMenu: CheckBox
-                         ): AsyncTask<Any, Any, ArrayList<ContactsDataPacketKotlin>>() {
+                         private val doBackupCheckbox: CheckBox
+                         ) : AsyncTask<Any, Any, ArrayList<ContactsDataPacketKotlin>>() {
 
     private var contactsCount = 0
     private val vcfTools: VcfToolsKotlin by lazy { VcfToolsKotlin(context) }
@@ -35,11 +35,11 @@ class ReadContactsKotlin(private val jobCode: Int,
         cursor?.let{
             contactsCount = it.count
             vOp.progressSet(menuReadProgressBar, 0, contactsCount)
-            vOp.enableSet(doBackupMenu, true)
+            vOp.enableSet(doBackupCheckbox, true)
         }
         if (cursor == null) {
-            vOp.enableSet(doBackupMenu, false)
-            vOp.checkSet(doBackupMenu, false)
+            vOp.enableSet(doBackupCheckbox, false)
+            vOp.checkSet(doBackupCheckbox, false)
             vOp.textSet(menuSelectedStatus, R.string.reading_error)
             vOp.visibilitySet(menuReadProgressBar, View.GONE)
         }
@@ -49,14 +49,19 @@ class ReadContactsKotlin(private val jobCode: Int,
     override fun doInBackground(vararg params: Any?): ArrayList<ContactsDataPacketKotlin> {
         val tmpList : ArrayList<ContactsDataPacketKotlin> = ArrayList(0)
         try {
-            cursor?.let {
-                it.moveToFirst()
+            cursor?.let {cursorItem ->
+                if (contactsCount > 0) cursorItem.moveToFirst()
                 for (i in 0 until contactsCount){
-                    val obj = ContactsDataPacketKotlin(vcfTools.getVcfData(it))
-                    if (!tmpList.contains(obj))
-                        tmpList.add(obj)
-                    publishProgress(i, "${vOp.getStringFromRes(R.string.filtering_duplicates)}\n$i")
-                    it.moveToNext()
+                    ContactsDataPacketKotlin(vcfTools.getVcfData(cursorItem)).let { cdp ->
+                        vcfTools.errorEncountered.trim().let {err ->
+                            if (err == "") {
+                                if (!tmpList.contains(cdp)) tmpList.add(cdp)
+                                publishProgress(i, "${vOp.getStringFromRes(R.string.filtering_duplicates)}\n$i")
+                                cursorItem.moveToNext()
+                            }
+                            else throw Exception(err)
+                        }
+                    }
                 }
             }
         } catch (e: Exception){
