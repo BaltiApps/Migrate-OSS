@@ -14,7 +14,7 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import balti.migrate.R
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREFERENCE_FILE_APPS
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_APPS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_APP_SELECTION
 import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_DATA_SELECTION
 import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_PERMISSION_SELECTION
@@ -28,7 +28,7 @@ import java.util.*
 class SearchAppAdapter(val tmpList: Vector<BackupDataPacketKotlin>, val context: Context): BaseAdapter() {
 
     private val pm: PackageManager by lazy { context.packageManager }
-    private val main: SharedPreferences by lazy { context.getSharedPreferences(PREFERENCE_FILE_APPS, Context.MODE_PRIVATE) }
+    private val main: SharedPreferences by lazy { context.getSharedPreferences(PREF_FILE_APPS, Context.MODE_PRIVATE) }
     private val editor: SharedPreferences.Editor by lazy { main.edit() }
 
     init {

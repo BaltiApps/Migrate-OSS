@@ -16,7 +16,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin.Companion.appList
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREFERENCE_FILE_APPS
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_APPS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_APP_SELECTION
 import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_DATA_SELECTION
 import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_PERMISSION_SELECTION
@@ -32,7 +32,7 @@ class AppListAdapterKotlin(val context: Context,
                            val allPermissionSelect: CheckBox) : BaseAdapter() {
 
     private val pm: PackageManager by lazy { context.packageManager }
-    private val main: SharedPreferences by lazy { context.getSharedPreferences(PREFERENCE_FILE_APPS, Context.MODE_PRIVATE) }
+    private val main: SharedPreferences by lazy { context.getSharedPreferences(PREF_FILE_APPS, Context.MODE_PRIVATE) }
     private val editor: SharedPreferences.Editor by lazy { main.edit() }
     private var appAllChangeFromScanning = false
     private var dataAllChangeFromScanning = false

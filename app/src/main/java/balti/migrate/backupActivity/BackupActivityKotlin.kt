@@ -19,9 +19,9 @@ import balti.migrate.BackupProgressLayout
 import balti.migrate.R
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREFERENCE_FILE_APPS
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREFERENCE_FILE_MAIN
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREFERENCE_SYSTEM_APPS_WARNING
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_APPS
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_MAIN
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_APPS_WARNING
 import kotlinx.android.synthetic.main.app_search_layout.view.*
 import kotlinx.android.synthetic.main.backup_layout.*
 import java.util.*
@@ -39,7 +39,7 @@ class BackupActivityKotlin : AppCompatActivity() {
     private val USER_SYSTEM_UPDATED_PACKAGES = 4
     private val ALL_PACKAGES = 5
 
-    private val appPrefs by lazy { getSharedPreferences(PREFERENCE_FILE_APPS, Context.MODE_PRIVATE) }
+    private val appPrefs by lazy { getSharedPreferences(PREF_FILE_APPS, Context.MODE_PRIVATE) }
 
     /*val extraBackupsStartReceiver by lazy {
         object : BroadcastReceiver() {
@@ -169,7 +169,7 @@ class BackupActivityKotlin : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.backup_layout)
 
-        val main = getSharedPreferences(PREFERENCE_FILE_MAIN, Context.MODE_PRIVATE)
+        val main = getSharedPreferences(PREF_FILE_MAIN, Context.MODE_PRIVATE)
         val editor = main.edit()
 
         appType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
@@ -177,13 +177,13 @@ class BackupActivityKotlin : AppCompatActivity() {
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if ((position == USER_SYSTEM_UPDATED_PACKAGES || position == SYSTEM_NOT_UPDATED_PACKAGES || position == ALL_SYSTEM_PACKAGES || position == SYSTEM_UPDATE_ONLY_PACKAGES)
-                        && main.getBoolean(PREFERENCE_SYSTEM_APPS_WARNING, true)){
+                        && main.getBoolean(PREF_SYSTEM_APPS_WARNING, true)){
                     AlertDialog.Builder(this@BackupActivityKotlin)
                             .setTitle(R.string.bootloop_warning)
                             .setMessage(R.string.bootloop_warning_desc)
                             .setPositiveButton(android.R.string.ok, null)
                             .setNegativeButton(R.string.dont_show_again) { _, _ ->
-                                editor.putBoolean(PREFERENCE_SYSTEM_APPS_WARNING, false)
+                                editor.putBoolean(PREF_SYSTEM_APPS_WARNING, false)
                                 editor.commit()
                             }
                             .show()

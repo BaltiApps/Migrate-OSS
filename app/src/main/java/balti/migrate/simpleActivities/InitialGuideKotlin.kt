@@ -9,11 +9,13 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
 import balti.migrate.R
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_MAIN
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FIRST_RUN
 import kotlinx.android.synthetic.main.initial_guide.*
 
 class InitialGuideKotlin: AppCompatActivity() {
 
-    private val main by lazy { getSharedPreferences("main", Context.MODE_PRIVATE) }
+    private val main by lazy { getSharedPreferences(PREF_FILE_MAIN, Context.MODE_PRIVATE) }
     private val editor by lazy { main.edit() }
 
     var TOTAL_LAYOUTS = 0
@@ -75,7 +77,7 @@ class InitialGuideKotlin: AppCompatActivity() {
     }
 
     private fun finishGuide(){
-        editor.putBoolean("firstRun", false)
+        editor.putBoolean(PREF_FIRST_RUN, false)
         editor.commit()
         startActivity(Intent(this, MainActivityKotlin::class.java))
         finish()

@@ -31,13 +31,27 @@ class CommonToolKotlin(val context: Context) {
         val ACTION_REQUEST_BACKUP_DATA = "get data"
         val ACTION_EXTRA_BACKUP_ACTIVITY_STARTED = "extraBackupsStarted"
 
-        val PREFERENCE_FILE_APPS = "apps"
-        val PREFERENCE_FILE_MAIN = "main"
-        val PREFERENCE_SYSTEM_APPS_WARNING = "system_apps_warning"
+        val PREF_FILE_APPS = "apps"
+        val PREF_FILE_MAIN = "main"
+        val PREF_FIRST_RUN = "firstRun"
+        val PREF_VERSION_CURRENT = "version"
+        val PREF_ANDROID_VERSION_WARNING = "android_version_warning"
+        val PREF_DEFAULT_BACKUP_PATH = "defaultBackupPath"
+        val PREF_ASK_FOR_RATING = "askForRating"
+        val PREF_SYSTEM_APPS_WARNING = "system_apps_warning"
+        val PREF_ALTERNATE_ACCESS_ASKED = "alternate_access_asked"
+        val PREF_CALCULATING_SIZE_METHOD = "calculating_size_method"
+        val PREF_TERMINAL_METHOD = 1
+        val PREF_ALTERNATE_METHOD = 2
+
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
         val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter
         val PROPERTY_PERMISSION_SELECTION = "permission"        // used to set property in AppListAdapter
+
+        val CONTACTS_SELECTION = 3443
+        val SMS_SELECTION = 2398
+        val CALLS_SELECTION = 1109
     }
 
     fun unpackAssetToInternal(assetFileName: String, targetFileName: String, toInternal: Boolean): String {

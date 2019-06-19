@@ -28,7 +28,16 @@ import balti.migrate.CommonTools.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.inAppRestore.ZipPicker
 import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREFERENCE_FILE_MAIN
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_ACCESS_ASKED
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_METHOD
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ANDROID_VERSION_WARNING
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ASK_FOR_RATING
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_MAIN
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FIRST_RUN
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_VERSION_CURRENT
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
 import kotlinx.android.synthetic.main.please_wait.view.*
@@ -36,7 +45,7 @@ import java.io.File
 
 class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private val main : SharedPreferences by lazy { getSharedPreferences(PREFERENCE_FILE_MAIN, Context.MODE_PRIVATE) }
+    private val main : SharedPreferences by lazy { getSharedPreferences(PREF_FILE_MAIN, Context.MODE_PRIVATE) }
     private val editor : SharedPreferences.Editor by lazy { main.edit() }
     private val commonTools by lazy { CommonToolKotlin(this) }                                               /*kotlin*/
 
@@ -62,10 +71,10 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (main.getBoolean("firstRun", true)){
+        if (main.getBoolean(PREF_FIRST_RUN, true)){
             externalCacheDir
 
-            editor.putInt("version", THIS_VERSION)
+            editor.putInt(PREF_VERSION_CURRENT, THIS_VERSION)
             editor.commit()
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
@@ -122,13 +131,13 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         val cpuAbi = Build.SUPPORTED_ABIS[0]
 
         if (cpuAbi == "armeabi-v7a" || cpuAbi == "arm64-v8a" || cpuAbi == "x86" || cpuAbi == "x86_64"){
-            if (Build.VERSION.SDK_INT > 28 && !main.getBoolean("android_version_warning", false)){
+            if (Build.VERSION.SDK_INT > 28 && !main.getBoolean(PREF_ANDROID_VERSION_WARNING, false)){
                 AlertDialog.Builder(this)
                         .setTitle(R.string.too_fast)
                         .setMessage(R.string.too_fast_desc)
                         .setPositiveButton(android.R.string.ok, null)
                         .setNegativeButton(R.string.dont_show_again) { _, _ ->
-                                editor.putBoolean("android_version_warning", true)
+                                editor.putBoolean(PREF_ANDROID_VERSION_WARNING, true)
                                 editor.commit()
                         }
                         .show()
@@ -167,7 +176,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     }
 
     private fun showChangeLog(onlyLatest: Boolean) {
-        val currVer = main.getInt("version", 1)
+        val currVer = main.getInt(PREF_VERSION_CURRENT, 1)
         val changelog = AlertDialog.Builder(this)
 
         if (onlyLatest) {
@@ -178,7 +187,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         .setPositiveButton(R.string.close, null)
                         .show()
 
-                editor.putInt("version", THIS_VERSION)
+                editor.putInt(PREF_VERSION_CURRENT, THIS_VERSION)
                 editor.commit()
             }
         }
@@ -332,12 +341,12 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 .setMessage(R.string.rate_dialog_message)
                 .setPositiveButton(R.string.sure) { _, _ ->
                     commonTools.openWebLink("market://details?id=balti.migrate")
-                    editor.putBoolean("askForRating", false)
+                    editor.putBoolean(PREF_ASK_FOR_RATING, false)
                     editor.commit()
                 }
         if (!manual) {
             rateDialog.setNeutralButton(R.string.never_show) { _, _ ->
-                editor.putBoolean("askForRating", false)
+                editor.putBoolean(PREF_ASK_FOR_RATING, false)
                 editor.commit()
                 finish()
             }
@@ -393,7 +402,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         commonTools.getHumanReadableStorageSpace(fullKb)
 
         var sdCardRoot : File? = null
-        val defaultPath = main.getString("defaultBackupPath", DEFAULT_INTERNAL_STORAGE_DIR);
+        val defaultPath = main.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR);
 
         if (defaultPath != DEFAULT_INTERNAL_STORAGE_DIR && File(defaultPath).canWrite()){
             sdCardRoot = File(defaultPath).parentFile
@@ -447,17 +456,17 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
                 if (isRootPermissionGranted()) {
 
-                    if (!main.getBoolean("alternate_access_asked", false)) {
+                    if (!main.getBoolean(PREF_ALTERNATE_ACCESS_ASKED, false)) {
 
                         val accessPermissionDialog = AlertDialog.Builder(this)
                                 .setNegativeButton(R.string.old_method_will_be_used) { _, _ ->
-                                    editor.putBoolean("alternate_access_asked", true)
-                                    editor.putInt("calculating_size_method", 1)
+                                    editor.putBoolean(PREF_ALTERNATE_ACCESS_ASKED, true)
+                                    editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
                                     editor.commit()
                                     startActivity(Intent(this, BackupActivityKotlin::class.java)) /*kotlin*/
                                 }
                                 .setNeutralButton(android.R.string.cancel) { _, _ ->
-                                    editor.putBoolean("alternate_access_asked", false)
+                                    editor.putBoolean(PREF_ALTERNATE_ACCESS_ASKED, false)
                                     editor.commit()
                                 }
                                 .setCancelable(false)
@@ -466,8 +475,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                             accessPermissionDialog.setTitle(R.string.use_reflection)
                                     .setMessage(R.string.use_reflection_exp)
                                     .setPositiveButton(R.string.yes) { _, _ ->
-                                        editor.putBoolean("alternate_access_asked", true)
-                                        editor.putInt("calculating_size_method", 2)
+                                        editor.putBoolean(PREF_ALTERNATE_ACCESS_ASKED, true)
+                                        editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD)
                                         editor.commit()
                                         startActivity(Intent(this, BackupActivityKotlin::class.java)) /*kotlin*/
                                     }
@@ -479,7 +488,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                                 accessPermissionDialog.setTitle(R.string.use_usage_access_permission)
                                         .setMessage(R.string.usage_access_permission_needed_desc)
                                         .setPositiveButton(R.string.proceed) { _, _ ->
-                                            editor.putBoolean("alternate_access_asked", false)
+                                            editor.putBoolean(PREF_ALTERNATE_ACCESS_ASKED, false)
                                             editor.commit()
                                             val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
                                             startActivity(intent)
@@ -489,8 +498,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                                 accessPermissionDialog.show()
 
                             } else {
-                                editor.putBoolean("alternate_access_asked", true)
-                                editor.putInt("calculating_size_method", 2)
+                                editor.putBoolean(PREF_ALTERNATE_ACCESS_ASKED, true)
+                                editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD)
                                 editor.commit()
                                 startActivity(Intent(this, BackupActivityKotlin::class.java))     /*kotlin*/
                             }
@@ -563,7 +572,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(Gravity.START))
             drawer_layout.closeDrawer(Gravity.START)
-        else if (!main.getBoolean("firstRun", true) && main.getBoolean("askForRating", true))
+        else if (!main.getBoolean(PREF_FIRST_RUN, true) && main.getBoolean(PREF_ASK_FOR_RATING, true))
             askForRating(false)
         else
             super.onBackPressed()

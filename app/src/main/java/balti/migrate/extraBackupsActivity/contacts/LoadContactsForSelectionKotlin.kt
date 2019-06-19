@@ -10,7 +10,7 @@ import balti.migrate.extraBackupsActivity.ViewOperations
 import kotlinx.android.synthetic.main.extra_item_selector.view.*
 
 class LoadContactsForSelectionKotlin(private val jobCode: Int, val context: Context,
-                                     private val itemList: ArrayList<ContactsDataPacketKotlin> = ArrayList(0)):
+                                     private val itemList: ArrayList<ContactsDataPacketKotlin> = ArrayList(0)):     //unique
         AsyncTask<Any, Any, Any>() {
 
     private val selectorView by lazy { View.inflate(context, R.layout.extra_item_selector, null) }
@@ -22,7 +22,7 @@ class LoadContactsForSelectionKotlin(private val jobCode: Int, val context: Cont
     private val onJobCompletion by lazy { context as OnJobCompletion }
     private val vOp by lazy { ViewOperations(context) }
 
-    private lateinit var adapter: ContactListAdapterKotlin
+    private lateinit var adapter: ContactListAdapterKotlin              //unique
 
     init {
         selectorView.eis_ok.setOnClickListener(null)
@@ -30,8 +30,8 @@ class LoadContactsForSelectionKotlin(private val jobCode: Int, val context: Cont
             contactsSelectorDialog.dismiss()
             onJobCompletion.onComplete(jobCode, false, itemList)
         }
-        vOp.textSet(selectorView.eis_no_data, R.string.no_contacts)
-        vOp.textSet(selectorView.eis_title, R.string.sms_selector_label)
+        vOp.textSet(selectorView.eis_no_data, R.string.no_contacts)         //unique
+        vOp.textSet(selectorView.eis_title, R.string.sms_selector_label)            //unique
     }
 
     override fun onPreExecute() {
@@ -48,7 +48,7 @@ class LoadContactsForSelectionKotlin(private val jobCode: Int, val context: Cont
         for (cdp in itemList){
             dataPackets.add(cdp.copy())
         }
-        if (dataPackets.size > 0) adapter = ContactListAdapterKotlin(context, dataPackets)
+        if (dataPackets.size > 0) adapter = ContactListAdapterKotlin(context, dataPackets)  //unique
         return null
     }
 
