@@ -24,6 +24,8 @@ class CommonToolKotlin(val context: Context) {
         val BACKUP_PROGRESS_ACTIVITY_AD_ID = "ca-app-pub-6582325651261661/2755664936"
         val UNIVERSAL_TEST_ID = "ca-app-pub-3940256099942544/6300978111"
 
+        val MAX_TWRP_ZIP_SIZE = 4194300L
+
         val DEFAULT_INTERNAL_STORAGE_DIR = "/sdcard/Migrate"
         val TEMP_DIR_NAME = "/data/local/tmp/migrate_cache"
 
@@ -43,6 +45,7 @@ class CommonToolKotlin(val context: Context) {
         val PREF_CALCULATING_SIZE_METHOD = "calculating_size_method"
         val PREF_TERMINAL_METHOD = 1
         val PREF_ALTERNATE_METHOD = 2
+        val PREF_MAX_BACKUP_SIZE = "max_backup_size"
 
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter

@@ -25,11 +25,12 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_APPS_WARNI
 import kotlinx.android.synthetic.main.app_search_layout.view.*
 import kotlinx.android.synthetic.main.backup_layout.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 class BackupActivityKotlin : AppCompatActivity() {
 
     companion object {
-        val appList by lazy { Vector<BackupDataPacketKotlin>(0) }
+        val appList by lazy { ArrayList<BackupDataPacketKotlin>(0) }
     }
 
     private val USER_PACKAGES = 0
@@ -128,7 +129,7 @@ class BackupActivityKotlin : AppCompatActivity() {
             permissionsAllSelect.isChecked = false
 
             val tempAppList = packageManager.getInstalledPackages(0)
-            appList.removeAllElements()
+            appList.clear()
             tempAppList.forEach {
                 when (type){
                     USER_PACKAGES -> {

@@ -186,7 +186,7 @@
     <string name="contacts_not_recommended">Contacts backup and restore is not recommended <b>if you intend to sign in with Google</b> on your next ROM. Restoring contacts will make unnecessary duplicates of same contact entries.</string>
     <string name="dont_backup">Don\'t backup</string>
     <string name="backup_contacts_anyway">Backup contacts anyway</string>
-    <string name="files_size">Estimated total backup size:</string>
+    <string name="estimated_files_size">Estimated total backup size:</string>
     <string name="available_space">Available space:</string>
     <string name="insufficient_storage">Insufficient storage!</string>
     <string name="required_storage">Migrate needs more free space:</string>
@@ -240,6 +240,8 @@
     <string name="sd_card_not_rw_exp">External SD card may not be accessible. Make sure that \"ExSDCard Access Enabler\" module is installed in Magisk.\n\n
     [module made by developer Romain.]
     </string>
+    <string name="no_du_binary">\"du\" not available!</string>
+    <string name="re_calculating_size">Re-calculating size using terminal method</string>
 
     <!--extra_item_selector.xml-->
     <string name="sms_selector_label">Select SMS</string>

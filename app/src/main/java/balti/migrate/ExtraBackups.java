@@ -309,7 +309,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                         publishProgress(getString(R.string.calculating_size),
                                 (i + 1) + " of " + totalSelectedApps,
-                                getString(R.string.files_size) + " " + commonTools.getHumanReadableStorageSpace(totalSize) + "\n");
+                                getString(R.string.estimated_files_size) + " " + commonTools.getHumanReadableStorageSpace(totalSize) + "\n");
 
                         appsWithSize.add(new BackupDataPacketWithSize(packet, dataSize, systemSize));
 
@@ -363,7 +363,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                                             publishProgress(getString(R.string.calculating_size),
                                                     (finalI + 1) + " of " + totalSelectedApps,
-                                                    getString(R.string.files_size) + " " + commonTools.getHumanReadableStorageSpace(finalTotalBackupSize[0]) + "\n");
+                                                    getString(R.string.estimated_files_size) + " " + commonTools.getHumanReadableStorageSpace(finalTotalBackupSize[0]) + "\n");
 
                                             totalSize = totalSize + dataSize + systemSize;
 
@@ -423,7 +423,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                             publishProgress(getString(R.string.calculating_size),
                                     (i + 1) + " of " + totalSelectedApps,
-                                    getString(R.string.files_size) + " " + commonTools.getHumanReadableStorageSpace(totalSize) + "\n");
+                                    getString(R.string.estimated_files_size) + " " + commonTools.getHumanReadableStorageSpace(totalSize) + "\n");
 
                             appsWithSize.add(new BackupDataPacketWithSize(packet, dataSize, systemSize));
                         }
@@ -615,7 +615,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
 
                 new AlertDialog.Builder(ExtraBackups.this)
                         .setTitle(R.string.insufficient_storage)
-                        .setMessage(getString(R.string.files_size) + " " + commonTools.getHumanReadableStorageSpace(totalSize) + "\n" +
+                        .setMessage(getString(R.string.estimated_files_size) + " " + commonTools.getHumanReadableStorageSpace(totalSize) + "\n" +
                                 getString(R.string.available_space) + " " + commonTools.getHumanReadableStorageSpace(availableKb) + "\n\n" +
                                 getString(R.string.required_storage) + " " + commonTools.getHumanReadableStorageSpace(totalSize - availableKb) + "\n\n" +
                                 getString(R.string.will_be_compressed))
