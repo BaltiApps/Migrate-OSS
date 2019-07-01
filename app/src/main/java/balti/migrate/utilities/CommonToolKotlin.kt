@@ -55,6 +55,8 @@ class CommonToolKotlin(val context: Context) {
         val CONTACTS_SELECTION = 3443
         val SMS_SELECTION = 2398
         val CALLS_SELECTION = 1109
+
+        val SMS_AND_CALL_PERMISSION = 567
     }
 
     fun unpackAssetToInternal(assetFileName: String, targetFileName: String, toInternal: Boolean): String {
@@ -237,6 +239,20 @@ class CommonToolKotlin(val context: Context) {
                 sum
             }
         } else 0
+    }
+
+    fun dirDelete(path: String) {
+        val file = File(path)
+        if (file.exists()) {
+            if (!file.isDirectory)
+                file.delete()
+            else {
+                val files = file.listFiles()
+                for (f in files)
+                    dirDelete(f.absolutePath)
+                file.delete()
+            }
+        }
     }
 
     fun getHumanReadableStorageSpace(space: Long): String {

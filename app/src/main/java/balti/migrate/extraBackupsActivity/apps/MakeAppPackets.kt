@@ -148,13 +148,6 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
         val method = main.getInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD)
 
-        var c = 0
-        for (i in 0 until appList.size){
-            val dp = appList[i]
-            if (dp.APP || dp.DATA || dp.PERMISSION) c++
-            else appList.removeAt(c)
-        }
-
         publishProgress(vOp.getStringFromRes(R.string.calculating_size), "", "")
 
         try {

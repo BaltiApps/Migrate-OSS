@@ -1987,7 +1987,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         final EditText backupNameEditText = mainView.findViewById(R.id.backup_name_edit_text);
         backupNameEditText.setSingleLine(true);
 
-        final TextView sdCardLabel = mainView.findViewById(R.id.ask_for_backup_name_sd_card_name);
+        final TextView sdCardLabel = mainView.findViewById(R.id.sd_card_name);
 
         final RadioGroup storageSelect = mainView.findViewById(R.id.storage_select_radio_group);
         final RadioButton internalButton = mainView.findViewById(R.id.internal_storage_radio_button);

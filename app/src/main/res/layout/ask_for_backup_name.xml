@@ -31,7 +31,7 @@
             android:text="@string/sd_card" />
 
         <TextView
-            android:id="@+id/ask_for_backup_name_sd_card_name"
+            android:id="@+id/sd_card_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="30dp"

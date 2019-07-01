@@ -230,7 +230,7 @@
         After ticking a checkbox on an item, click on the item for further options.
     </string>
     <string name="change_size_calculation_method">You can try going to the main screen of the app -> click top left green icon -> \"Preferences\" -> \"Use new method to calculate size\"</string>
-    <string name="no_sd_card_detected">No SD card detected.</string>
+    <string name="no_sd_card_detected">No SD card detected (or not mounted as R/W).</string>
     <string name="no_sd_card_detected_exp">Please make sure that you have mounted an external SD card (if supported by your device)\n
     Also make sure that you install the \"ExSDCard Access Enabler\" magisk module.\n\n
     [module made by developer Romain.]
@@ -242,6 +242,7 @@
     </string>
     <string name="no_du_binary">\"du\" not available!</string>
     <string name="re_calculating_size">Re-calculating size using terminal method</string>
+    <string name="error_occurred">Error occurred!!</string>
 
     <!--extra_item_selector.xml-->
     <string name="sms_selector_label">Select SMS</string>
