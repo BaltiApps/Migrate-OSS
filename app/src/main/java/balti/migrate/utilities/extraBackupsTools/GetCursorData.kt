@@ -6,11 +6,13 @@ class GetCursorData(private val cursor: Cursor) {
 
     var errorEncountered = ""
 
-    fun getString(columnName: String): String {
-        return try { cursor.getString(cursor.getColumnIndex(columnName)) }
+    fun getString(columnName: String): String? {
+        return try {
+            cursor.getString(cursor.getColumnIndex(columnName))
+        }
         catch (e: Exception) {
             errorEncountered += e.message.toString() + "\n"
-            ""
+            null
         }
     }
 

@@ -1,6 +1,5 @@
 package balti.migrate.extraBackupsActivity.contacts
 
-data class ContactsDataPacketKotlin (val fullName: String, val vcfData: String) {
-    constructor(arr: Array<String>) : this(arr[0], arr[1])
-    var selected = false
+data class ContactsDataPacketKotlin (val fullName: String, val vcfData: String, var selected: Boolean) {
+    constructor(arr: Array<String>, selected: Boolean) : this(arr[0], arr[1], selected)
 }

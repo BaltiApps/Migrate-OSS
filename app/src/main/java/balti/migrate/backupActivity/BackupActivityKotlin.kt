@@ -17,6 +17,7 @@ import android.view.WindowManager
 import android.widget.AdapterView
 import balti.migrate.BackupProgressLayout
 import balti.migrate.R
+import balti.migrate.extraBackupsActivity.ExtraBackupsKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_APPS
@@ -41,14 +42,6 @@ class BackupActivityKotlin : AppCompatActivity() {
     private val ALL_PACKAGES = 5
 
     private val appPrefs by lazy { getSharedPreferences(PREF_FILE_APPS, Context.MODE_PRIVATE) }
-
-    /*val extraBackupsStartReceiver by lazy {
-        object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                //ExtraBackups.setAppList(appList)
-            }
-        }
-    }*/
 
     lateinit var adapter: AppListAdapterKotlin
 
@@ -198,7 +191,7 @@ class BackupActivityKotlin : AppCompatActivity() {
             /*for (dp in appList){
                 Log.d(DEBUG_TAG, "package: " + dp.PACKAGE_INFO.packageName + " " + dp.APP + " " + dp.DATA + " " + dp.PERMISSION)
             }*/
-            //startActivity(Intent(this, ExtraBackups::class.java))                           /*kotlin*/
+            startActivity(Intent(this, ExtraBackupsKotlin::class.java))
         }
 
         selectAll.setOnClickListener {

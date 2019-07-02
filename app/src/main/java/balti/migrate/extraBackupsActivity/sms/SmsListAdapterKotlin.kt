@@ -8,13 +8,7 @@ import android.widget.BaseAdapter
 import balti.migrate.R
 import kotlinx.android.synthetic.main.sms_item.view.*
 import java.util.ArrayList
-import kotlin.Any
-import kotlin.Boolean
 import kotlin.Comparator
-import kotlin.Int
-import kotlin.Long
-import kotlin.String
-import kotlin.apply
 
 class SmsListAdapterKotlin(val context: Context,
                            private val smsList: ArrayList<SmsDataPacketKotlin>): BaseAdapter() {
@@ -43,7 +37,7 @@ class SmsListAdapterKotlin(val context: Context,
         }
 
         view.sms_item_icon.setImageResource(
-                when (sdp.smsType.toIntOrNull()){
+                when (sdp.smsType?.toIntOrNull()){
                     Telephony.Sms.MESSAGE_TYPE_INBOX -> R.drawable.ic_incoming_sms
                     Telephony.Sms.MESSAGE_TYPE_SENT -> R.drawable.ic_outgoing_sms
                     Telephony.Sms.MESSAGE_TYPE_OUTBOX -> R.drawable.ic_outbox_sms

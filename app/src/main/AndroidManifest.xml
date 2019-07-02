@@ -57,7 +57,7 @@
             android:screenOrientation="portrait"
             />
 
-        <activity android:name=".ExtraBackups"
+        <activity android:name=".extraBackupsActivity.ExtraBackupsKotlin"
             android:screenOrientation="portrait"
             />
 

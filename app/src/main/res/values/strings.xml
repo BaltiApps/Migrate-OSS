@@ -194,6 +194,9 @@
     <string name="contacts_access_needed">Need to read contacts for contacts backup</string>
     <string name="sms_access_needed">Need to read SMS for SMS messages backup</string>
     <string name="calls_access_needed">Need to read call logs for calls backup</string>
+    <string name="error_reading_contacts">Error reading contacts</string>
+    <string name="error_reading_sms">Error reading SMS</string>
+    <string name="error_reading_calls">Error reading calls</string>
     <string name="calculating_size">Calculating size</string>
     <string name="error_reading_backup_data">Error reading backup data</string>
     <string name="error_calculating_size">Error calculating size</string>

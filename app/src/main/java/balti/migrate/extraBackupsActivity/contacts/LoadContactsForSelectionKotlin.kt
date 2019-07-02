@@ -22,16 +22,18 @@ class LoadContactsForSelectionKotlin(private val jobCode: Int, val context: Cont
     private val onJobCompletion by lazy { context as OnJobCompletion }
     private val vOp by lazy { ViewOperations(context) }
 
-    private lateinit var adapter: ContactListAdapterKotlin              //unique
+    private lateinit var adapter: ContactListAdapterKotlin
 
     init {
         selectorView.eis_ok.setOnClickListener(null)
         selectorView.eis_cancel.setOnClickListener {
-            contactsSelectorDialog.dismiss()
-            onJobCompletion.onComplete(jobCode, false, itemList)
+            vOp.doSomething {
+                contactsSelectorDialog.dismiss()
+                onJobCompletion.onComplete(jobCode, false, "")
+            }
         }
-        vOp.textSet(selectorView.eis_no_data, R.string.no_contacts)         //unique
-        vOp.textSet(selectorView.eis_title, R.string.sms_selector_label)            //unique
+        vOp.textSet(selectorView.eis_no_data, R.string.no_contacts)
+        vOp.textSet(selectorView.eis_title, R.string.contacts_selector_label)
     }
 
     override fun onPreExecute() {
@@ -48,7 +50,10 @@ class LoadContactsForSelectionKotlin(private val jobCode: Int, val context: Cont
         for (cdp in itemList){
             dataPackets.add(cdp.copy())
         }
-        if (dataPackets.size > 0) adapter = ContactListAdapterKotlin(context, dataPackets)  //unique
+        if (dataPackets.size > 0)
+            vOp.doSomething {
+                adapter = ContactListAdapterKotlin(context, dataPackets)
+            }
         return null
     }
 
@@ -65,16 +70,18 @@ class LoadContactsForSelectionKotlin(private val jobCode: Int, val context: Cont
         else vOp.visibilitySet(selectorView.eis_no_data, View.VISIBLE)
 
         selectorView.eis_ok.setOnClickListener {
-            onJobCompletion.onComplete(jobCode, true, dataPackets)
-            contactsSelectorDialog.dismiss()
+            vOp.doSomething {
+                onJobCompletion.onComplete(jobCode, true, dataPackets)
+                contactsSelectorDialog.dismiss()
+            }
         }
 
         selectorView.eis_select_all.setOnClickListener {
-            adapter.checkAll(true)
+            vOp.doSomething { adapter.checkAll(true) }
         }
 
         selectorView.eis_clear_all.setOnClickListener {
-            adapter.checkAll(false)
+            vOp.doSomething { adapter.checkAll(false) }
         }
 
     }

@@ -35,16 +35,18 @@ class ReadCallsKotlin(private val jobCode: Int,
         super.onPreExecute()
         vOp.visibilitySet(menuSelectedStatus, View.VISIBLE)
         vOp.visibilitySet(menuReadProgressBar, View.VISIBLE)
-        cursor?.let{
-            callsCount = it.count
-            vOp.progressSet(menuReadProgressBar, 0, callsCount)
-            vOp.enableSet(doBackupCheckbox, true)
-        }
-        if (cursor == null) {
-            vOp.enableSet(doBackupCheckbox, false)
-            vOp.checkSet(doBackupCheckbox, false)
-            vOp.textSet(menuSelectedStatus, R.string.reading_error)
-            vOp.visibilitySet(menuReadProgressBar, View.GONE)
+        vOp.doSomething {
+            cursor?.let {
+                callsCount = it.count
+                vOp.progressSet(menuReadProgressBar, 0, callsCount)
+                vOp.enableSet(doBackupCheckbox, true)
+            }
+            if (cursor == null) {
+                vOp.enableSet(doBackupCheckbox, false)
+                vOp.checkSet(doBackupCheckbox, false)
+                vOp.textSet(menuSelectedStatus, R.string.reading_error)
+                vOp.visibilitySet(menuReadProgressBar, View.GONE)
+            }
         }
         vOp.clickableSet(menuMainItem, false)
         vOp.doSomething { isCallsChecked = doBackupCheckbox.isChecked }
@@ -84,11 +86,18 @@ class ReadCallsKotlin(private val jobCode: Int,
     override fun onPostExecute(result: ArrayList<CallsDataPacketsKotlin>?) {
         super.onPostExecute(result)
 
-        if (error == "") onJobCompletion.onComplete(jobCode, true, result)
-        else onJobCompletion.onComplete(jobCode, false, error)
+        vOp.doSomething {
 
-        cursor?.let { try { it.close() } catch (_ : Exception){} }
+            if (error == "") {
+                vOp.clickableSet(menuMainItem, callsCount > 0)
+                onJobCompletion.onComplete(jobCode, true, result)
+            }
+            else onJobCompletion.onComplete(jobCode, false, error)
 
-        vOp.clickableSet(menuMainItem, callsCount > 0)
+            cursor?.let {
+                vOp.doSomething { it.close() }
+            }
+
+        }
     }
 }

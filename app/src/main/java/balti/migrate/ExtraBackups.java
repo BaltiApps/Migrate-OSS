@@ -1606,27 +1606,27 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
         commonTools = new CommonTools(this);
         pm = getPackageManager();
 
-        contactsMainItem = findViewById(R.id.extra_item_contacts);
+        contactsMainItem = findViewById(R.id.contacts_main_item);
         contactsSelectedStatus = findViewById(R.id.contacts_selected_status);
         contactsReadProgressBar = findViewById(R.id.contacts_read_progress);
         doBackupContacts = findViewById(R.id.do_backup_contacts);
 
-        smsMainItem = findViewById(R.id.extra_item_sms);
+        smsMainItem = findViewById(R.id.sms_main_item);
         smsSelectedStatus = findViewById(R.id.sms_selected_status);
         smsReadProgressBar = findViewById(R.id.sms_read_progress);
         doBackupSms = findViewById(R.id.do_backup_sms);
 
-        callsMainItem = findViewById(R.id.extra_item_calls);
+        callsMainItem = findViewById(R.id.calls_main_item);
         callsSelectedStatus = findViewById(R.id.calls_selected_status);
         callsReadProgressBar = findViewById(R.id.calls_read_progress);
         doBackupCalls = findViewById(R.id.do_backup_calls);
 
-        dpiMainItem = findViewById(R.id.extra_item_dpi);
+        dpiMainItem = findViewById(R.id.dpi_main_item);
         dpiReadProgressBar = findViewById(R.id.dpi_read_progress);
         dpiSelectedStatus = findViewById(R.id.dpi_selected_status);
         doBackupDpi = findViewById(R.id.do_backup_dpi);
 
-        keyboardMainItem = findViewById(R.id.extra_item_keyboard);
+        keyboardMainItem = findViewById(R.id.keyboard_main_item);
         keyboardSelectedStatus = findViewById(R.id.keyboard_selected_status);
         doBackupKeyboard = findViewById(R.id.do_backup_keyboard);
 

@@ -38,33 +38,32 @@ class ReadSmsKotlin(private val jobCode: Int,
         super.onPreExecute()
         vOp.visibilitySet(menuSelectedStatus, View.VISIBLE)
         vOp.visibilitySet(menuReadProgressBar, View.VISIBLE)
+        vOp.doSomething {
+            if (inboxCursor != null || outboxCursor != null || sentCursor != null || draftCursor != null) {
 
-        if (inboxCursor != null || outboxCursor != null || sentCursor != null || draftCursor != null){
+                inboxCursor?.let {
+                    smsCount += it.count
+                }
 
-            inboxCursor?.let {
-                smsCount += it.count
+                outboxCursor?.let {
+                    smsCount += it.count
+                }
+
+                sentCursor?.let {
+                    smsCount += it.count
+                }
+
+                draftCursor?.let {
+                    smsCount += it.count
+                }
+
+                vOp.progressSet(menuReadProgressBar, 0, smsCount)
+                vOp.enableSet(doBackupCheckbox, true)
+            } else {
+                vOp.checkSet(doBackupCheckbox, false)
+                vOp.textSet(menuSelectedStatus, R.string.reading_error)
+                vOp.visibilitySet(menuReadProgressBar, View.GONE)
             }
-
-            outboxCursor?.let {
-                smsCount += it.count
-            }
-
-            sentCursor?.let {
-                smsCount += it.count
-            }
-
-            draftCursor?.let {
-                smsCount += it.count
-            }
-
-            vOp.progressSet(menuReadProgressBar, 0, smsCount)
-            vOp.enableSet(doBackupCheckbox, true)
-        }
-        else {
-            vOp.enableSet(doBackupCheckbox, false)
-            vOp.checkSet(doBackupCheckbox, false)
-            vOp.textSet(menuSelectedStatus, R.string.reading_error)
-            vOp.visibilitySet(menuReadProgressBar, View.GONE)
         }
         vOp.clickableSet(menuMainItem, false)
         vOp.doSomething { isSmsChecked = doBackupCheckbox.isChecked }
@@ -117,15 +116,28 @@ class ReadSmsKotlin(private val jobCode: Int,
     override fun onPostExecute(result: ArrayList<SmsDataPacketKotlin>?) {
         super.onPostExecute(result)
 
-        if (error == "") onJobCompletion.onComplete(jobCode, true, result)
-        else onJobCompletion.onComplete(jobCode, false, error)
+        vOp.doSomething {
 
-        inboxCursor?.let { try { it.close() } catch (_ : Exception){} }
-        outboxCursor?.let { try { it.close() } catch (_ : Exception){} }
-        sentCursor?.let { try { it.close() } catch (_ : Exception){} }
-        draftCursor?.let { try { it.close() } catch (_ : Exception){} }
+            if (error == "") {
+                vOp.clickableSet(menuMainItem, smsCount > 0)
+                onJobCompletion.onComplete(jobCode, true, result)
+            }
+            else onJobCompletion.onComplete(jobCode, false, error)
 
-        vOp.clickableSet(menuMainItem, smsCount > 0)
+            inboxCursor?.let {
+                vOp.doSomething { it.close() }
+            }
+            outboxCursor?.let {
+                vOp.doSomething { it.close() }
+            }
+            sentCursor?.let {
+                vOp.doSomething { it.close() }
+            }
+            draftCursor?.let {
+                vOp.doSomething { it.close() }
+            }
+
+        }
     }
 
 }

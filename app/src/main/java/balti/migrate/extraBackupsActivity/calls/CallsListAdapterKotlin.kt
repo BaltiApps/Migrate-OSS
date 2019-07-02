@@ -32,7 +32,7 @@ class CallsListAdapterKotlin(val context: Context,
         }
 
         cdp.callsCachedName.let {name ->
-            if (name != ""){
+            if (name != null && name != ""){
                 view.calls_item_person.text = name
                 view.calls_item_number.apply {
                     visibility = View.VISIBLE

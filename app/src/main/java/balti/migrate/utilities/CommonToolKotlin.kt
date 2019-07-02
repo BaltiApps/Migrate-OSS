@@ -8,6 +8,8 @@ import android.os.Build
 import android.os.Environment
 import android.support.v4.content.FileProvider
 import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import balti.migrate.R
@@ -46,17 +48,29 @@ class CommonToolKotlin(val context: Context) {
         val PREF_TERMINAL_METHOD = 1
         val PREF_ALTERNATE_METHOD = 2
         val PREF_MAX_BACKUP_SIZE = "max_backup_size"
+        val PREF_AUTOSELECT_EXTRAS = "autoSelectExtraBackups"
 
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
         val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter
         val PROPERTY_PERMISSION_SELECTION = "permission"        // used to set property in AppListAdapter
 
-        val CONTACTS_SELECTION = 3443
-        val SMS_SELECTION = 2398
-        val CALLS_SELECTION = 1109
+        //extra backups
 
-        val SMS_AND_CALL_PERMISSION = 567
+        val JOBCODE_READ_CONTACTS = 3443
+        val JOBCODE_READ_SMS = 2398
+        val JOBCODE_READ_CALLS = 1109
+        val JOBCODE_READ_DPI = 3570
+
+        val JOBCODE_LOAD_CONTACTS = 7570
+        val JOBCODE_LOAD_SMS = 1944
+        val JOBCODE_LOAD_CALLS = 2242
+        val JOBCODE_LOAD_KEYBOARDS = 6765
+
+        val CONTACT_PERMISSION = 933
+        val SMS_PERMISSION = 944
+        val CALLS_PERMISSION = 676
+        val SMS_AND_CALLS_PERMISSION = 567
     }
 
     fun unpackAssetToInternal(assetFileName: String, targetFileName: String, toInternal: Boolean): String {
@@ -305,5 +319,61 @@ class CommonToolKotlin(val context: Context) {
 
     fun applyNamingCorrectionForShell(name: String) =
             name.replace("(", "\\(").replace(")", "\\)").replace(" ", "\\ ")
+
+
+
+    fun tryIt(f: () -> Unit, showError: Boolean = false, isCancelable: Boolean = true, title: String = ""){
+        try {
+            f()
+        }
+        catch (e: Exception){
+            if (showError)
+            {
+                showErrorDialog(e.message.toString(), title, isCancelable)
+                e.printStackTrace()
+            }
+            else e.printStackTrace()
+        }
+    }
+
+    fun tryIt(f: () -> Unit, title: String = ""){
+        tryIt(f, false, true, title)
+    }
+
+    fun tryIt(f: () -> Unit){
+        tryIt(f, "")
+    }
+
+    fun showErrorDialog(message: String, title: String = "", isCancelable: Boolean = true){
+        try {
+            Log.d(DEBUG_TAG, "should display")
+            AlertDialog.Builder(context)
+                    .setIcon(R.drawable.ic_error)
+                    .setMessage(message).apply {
+
+                        if (isCancelable)
+                            setNegativeButton(R.string.close, null)
+                        else {
+                            setCancelable(false)
+                            setNegativeButton(R.string.close) { _, _ ->
+                                if (context is AppCompatActivity) {
+                                    (context as AppCompatActivity).finish()
+                                }
+                            }
+                        }
+
+                        if (title == "")
+                            setTitle(R.string.error_occurred)
+                        else setTitle(title)
+
+                    }
+                    .show()
+        } catch (e: Exception){
+            e.printStackTrace()
+            try {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            } catch (_: Exception){}
+        }
+    }
 
 }

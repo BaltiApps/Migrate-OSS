@@ -47,6 +47,7 @@ class ReadDpiKotlin(private val jobCode: Int,
             BufferedWriter(OutputStreamWriter(dpiReader.outputStream)).let {
                 it.write("wm density\n")
                 it.write("exit\n")
+                it.flush()
             }
 
             BufferedReader(InputStreamReader(dpiReader.inputStream)).let {
@@ -71,29 +72,34 @@ class ReadDpiKotlin(private val jobCode: Int,
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
 
-        vOp.enableSet(doBackupCheckbox, true)
-        vOp.visibilitySet(menuReadProgressBar, View.GONE)
+        vOp.doSomething {
 
-        if (error != ""){
-            vOp.checkSet(doBackupCheckbox, false)
-            AlertDialog.Builder(context)
-                    .setTitle(R.string.error_reading_dpi)
-                    .setMessage(error)
-                    .setNegativeButton(R.string.close, null)
-                    .show()
-            onJobCompletion.onComplete(jobCode, false, error)
-        }
-        else {
-            vOp.visibilitySet(menuSelectedStatus, View.VISIBLE)
-            vOp.clickableSet(menuMainItem, true)
-            menuMainItem.setOnClickListener {
-                AlertDialog.Builder(context)
-                        .setTitle(R.string.dpi_label)
-                        .setMessage(dpiText)
-                        .setNegativeButton(R.string.close, null)
-                        .show()
+            vOp.enableSet(doBackupCheckbox, true)
+            vOp.visibilitySet(menuReadProgressBar, View.GONE)
+
+            if (error == "") {
+
+                vOp.doSomething {
+
+                    vOp.visibilitySet(menuSelectedStatus, View.VISIBLE)
+
+                    menuMainItem.setOnClickListener {
+                        AlertDialog.Builder(context)
+                                .setTitle(R.string.dpi_label)
+                                .setMessage(dpiText)
+                                .setNegativeButton(R.string.close, null)
+                                .show()
+
+                    }
+                }
+                onJobCompletion.onComplete(jobCode, true, dpiText)
             }
-            onJobCompletion.onComplete(jobCode, true, dpiText)
+            else {
+                vOp.checkSet(doBackupCheckbox, false)
+                onJobCompletion.onComplete(jobCode, false, error)
+            }
+
+            vOp.clickableSet(menuMainItem, error == "")
         }
     }
 }

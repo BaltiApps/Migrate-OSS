@@ -35,16 +35,17 @@ class ReadContactsKotlin(private val jobCode: Int,
         super.onPreExecute()
         vOp.visibilitySet(menuSelectedStatus, View.VISIBLE)
         vOp.visibilitySet(menuReadProgressBar, View.VISIBLE)
-        cursor?.let{
-            contactsCount = it.count
-            vOp.progressSet(menuReadProgressBar, 0, contactsCount)
-            vOp.enableSet(doBackupCheckbox, true)
-        }
-        if (cursor == null) {
-            vOp.enableSet(doBackupCheckbox, false)
-            vOp.checkSet(doBackupCheckbox, false)
-            vOp.textSet(menuSelectedStatus, R.string.reading_error)
-            vOp.visibilitySet(menuReadProgressBar, View.GONE)
+        vOp.doSomething {
+            cursor?.let {
+                contactsCount = it.count
+                vOp.progressSet(menuReadProgressBar, 0, contactsCount)
+                vOp.enableSet(doBackupCheckbox, true)
+            }
+            if (cursor == null) {
+                vOp.checkSet(doBackupCheckbox, false)
+                vOp.textSet(menuSelectedStatus, R.string.reading_error)
+                vOp.visibilitySet(menuReadProgressBar, View.GONE)
+            }
         }
         vOp.clickableSet(menuMainItem, false)
         vOp.doSomething { isContactsChecked = doBackupCheckbox.isChecked }
@@ -56,8 +57,7 @@ class ReadContactsKotlin(private val jobCode: Int,
             cursor?.let {cursorItem ->
                 if (contactsCount > 0) cursorItem.moveToFirst()
                 for (i in 0 until contactsCount){
-                    ContactsDataPacketKotlin(vcfTools.getVcfData(cursorItem)).let { cdp ->
-                        cdp.selected = isContactsChecked
+                    ContactsDataPacketKotlin(vcfTools.getVcfData(cursorItem), isContactsChecked).let { cdp ->
                         vcfTools.errorEncountered.trim().let {err ->
                             if (err == "") {
                                 if (!tmpList.contains(cdp)) tmpList.add(cdp)
@@ -94,11 +94,18 @@ class ReadContactsKotlin(private val jobCode: Int,
     override fun onPostExecute(result: ArrayList<ContactsDataPacketKotlin>?) {
         super.onPostExecute(result)
 
-        if (error == "") onJobCompletion.onComplete(jobCode, true, result)
-        else onJobCompletion.onComplete(jobCode, false, error)
+        vOp.doSomething {
 
-        cursor?.let { try { it.close() } catch (_ : Exception){} }
+            if (error == "") {
+                vOp.clickableSet(menuMainItem, contactsCount > 0)
+                onJobCompletion.onComplete(jobCode, true, result)
+            }
+            else onJobCompletion.onComplete(jobCode, false, error)
 
-        vOp.clickableSet(menuMainItem, contactsCount > 0)
+            cursor?.let {
+                vOp.doSomething { it.close() }
+            }
+
+        }
     }
 }

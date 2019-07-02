@@ -58,7 +58,7 @@
             android:padding="@dimen/large_padding_width">
 
             <LinearLayout
-                android:id="@+id/extra_item_contacts"
+                android:id="@+id/contacts_main_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/large_padding_width"
@@ -131,7 +131,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/extra_item_sms"
+                android:id="@+id/sms_main_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/large_padding_width"
@@ -204,7 +204,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/extra_item_calls"
+                android:id="@+id/calls_main_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/large_padding_width"
@@ -277,7 +277,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/extra_item_dpi"
+                android:id="@+id/dpi_main_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/large_padding_width"
@@ -343,7 +343,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/extra_item_keyboard"
+                android:id="@+id/keyboard_main_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/large_padding_width"
