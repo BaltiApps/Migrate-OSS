@@ -59,6 +59,10 @@ class CallsListAdapterKotlin(val context: Context,
                     else -> R.drawable.ic_call_log_icon
                 }
         )
+
+        view.setOnClickListener {
+            view.calls_item_checkbox.apply { isChecked = !isChecked }
+        }
         
         return view
     }

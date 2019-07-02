@@ -46,6 +46,10 @@ class SmsListAdapterKotlin(val context: Context,
                 }
         )
 
+        view.setOnClickListener {
+            view.sms_item_checkbox.apply { isChecked = !isChecked }
+        }
+
         return view
     }
 

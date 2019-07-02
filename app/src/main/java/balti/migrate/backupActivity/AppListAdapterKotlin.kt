@@ -152,6 +152,22 @@ class AppListAdapterKotlin(val context: Context,
         viewHolder.dataCheckBox.setFromProperty(appItem.PACKAGE_INFO.packageName, appItem)
         viewHolder.permCheckBox.setFromProperty(appItem.PACKAGE_INFO.packageName, appItem)
 
+        view?.setOnClickListener {
+            val isAllSelected = (appItem.APP || appItem.EXCLUSIONS.contains(EXCLUDE_APP))
+                    && (appItem.DATA || appItem.EXCLUSIONS.contains(EXCLUDE_DATA))
+                    && (appItem.PERMISSION || appItem.EXCLUSIONS.contains(EXCLUDE_PERMISSION))
+
+            if (!appItem.EXCLUSIONS.contains(EXCLUDE_APP))
+                viewHolder.appCheckBox.isChecked = !isAllSelected
+
+            if (!appItem.EXCLUSIONS.contains(EXCLUDE_DATA))
+                viewHolder.dataCheckBox.isChecked = !isAllSelected
+
+            if (!appItem.EXCLUSIONS.contains(EXCLUDE_PERMISSION))
+                viewHolder.permCheckBox.isChecked = !isAllSelected
+
+        }
+
         return view!!
     }
 
