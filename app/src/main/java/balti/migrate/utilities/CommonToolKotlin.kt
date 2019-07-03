@@ -67,6 +67,8 @@ class CommonToolKotlin(val context: Context) {
         val JOBCODE_LOAD_CALLS = 2242
         val JOBCODE_LOAD_KEYBOARDS = 6765
 
+        val JOBCODE_MAKE_APP_PACKETS = 65364
+
         val CONTACT_PERMISSION = 933
         val SMS_PERMISSION = 944
         val CALLS_PERMISSION = 676

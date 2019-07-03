@@ -81,6 +81,15 @@ class BackupActivityKotlin : AppCompatActivity() {
 
             noAppsInCategoryLabel.visibility = View.GONE
             appLoadingView.visibility = View.VISIBLE
+
+            appAllSelect.setOnCheckedChangeListener(null)
+            appAllSelect.isChecked = false
+
+            dataAllSelect.setOnCheckedChangeListener(null)
+            dataAllSelect.isChecked = false
+
+            permissionsAllSelect.setOnCheckedChangeListener(null)
+            permissionsAllSelect.isChecked = false
         }
 
         override fun doInBackground(vararg params: Int?): Any? {
@@ -111,15 +120,6 @@ class BackupActivityKotlin : AppCompatActivity() {
         }
 
         private fun updateAllApps(type: Int){
-
-            appAllSelect.setOnCheckedChangeListener(null)
-            appAllSelect.isChecked = false
-
-            dataAllSelect.setOnCheckedChangeListener(null)
-            dataAllSelect.isChecked = false
-
-            permissionsAllSelect.setOnCheckedChangeListener(null)
-            permissionsAllSelect.isChecked = false
 
             val tempAppList = packageManager.getInstalledPackages(0)
             appList.clear()

@@ -27,6 +27,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MAX_BACKUP_SIZE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
 import kotlinx.android.synthetic.main.please_wait.view.*
 import java.io.*
+import kotlin.math.ceil
 
 class MakeAppPackets(private val jobCode: Int, private val context: Context, private val destination: String,
                      private val appList: ArrayList<BackupDataPacketKotlin> = ArrayList(0)):
@@ -40,7 +41,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
     }
     private val onJobCompletion by lazy { context as OnJobCompletion }
     private val vOp by lazy { ViewOperations(context) }
-    private val appBatches by lazy { ArrayList<ArrayList<AppPacket>>(0) }
+    private val appBatches by lazy { ArrayList<AppBatch>(0) }
     private val parentAppBatch by lazy { ArrayList<AppPacket>(0) }
     private val notificationManager by lazy { context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
     private val main by lazy { context.getSharedPreferences(PREF_FILE_MAIN, MODE_PRIVATE) }
@@ -53,11 +54,10 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
     private var totalMemory = 0L
     private var totalSize = 0L
 
-
     init {
         dialogView.waiting_cancel.setOnClickListener {
-            cancel(true)
-            try { waitingDialog.dismiss() } catch (_: Exception){}
+            vOp.doSomething { cancel(true) }
+            vOp.doSomething { waitingDialog.dismiss() }
         }
         vOp.visibilitySet(dialogView.waiting_progress, View.GONE)
         vOp.visibilitySet(dialogView.waiting_details, View.GONE)
@@ -65,10 +65,12 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
     override fun onPreExecute() {
         super.onPreExecute()
-        waitingDialog.show()
-        notificationManager.cancelAll()
-        (context.filesDir.listFiles() + context.externalCacheDir.listFiles()).forEach {
-            it.delete()
+        vOp.doSomething {
+            waitingDialog.show()
+            notificationManager.cancelAll()
+            (context.filesDir.listFiles() + context.externalCacheDir.listFiles()).forEach {
+                it.delete()
+            }
         }
     }
 
@@ -76,7 +78,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
         Log.d(DEBUG_TAG, "Method terminal")
 
-        val duBinaryPath: String = Build.SUPPORTED_ABIS[0].run {
+        val busyboxPath: String = Build.SUPPORTED_ABIS[0].run {
             if (this == "armeabi-v7a" || this == "arm64-v8a")
                 commonTools.unpackAssetToInternal("busybox", "busybox", true)
             else if (this == "x86" || this == "x86_64")
@@ -84,9 +86,9 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             else ""
         }
 
-        Log.d(DEBUG_TAG, "du: $duBinaryPath")
+        Log.d(DEBUG_TAG, "du: $busyboxPath")
 
-        if (duBinaryPath.trim() == "") return vOp.getStringFromRes(R.string.no_du_binary)
+        if (busyboxPath.trim() == "") return vOp.getStringFromRes(R.string.no_busybox_binary)
 
         val processMemoryFinder = Runtime.getRuntime().exec("su")
         val processReader = BufferedReader(InputStreamReader(processMemoryFinder.inputStream))
@@ -107,7 +109,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             else null
 
             apkPath?.let { apk ->
-                processWriter.write("$duBinaryPath -s $apk\n")
+                processWriter.write("$busyboxPath du -s $apk\n")
                 processWriter.flush()
                 processReader.readLine().let { read ->
                     read.substring(0, read.indexOf("/")).trim().toLongOrNull()?.let { size ->
@@ -119,7 +121,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             }
 
             dataPath?.let { data ->
-                processWriter.write("$duBinaryPath -s $data\n")
+                processWriter.write("$busyboxPath du -s $data\n")
                 processWriter.flush()
                 processReader.readLine().let { read ->
                     read.substring(0, read.indexOf("/")).trim().toLongOrNull()?.let { size ->
@@ -146,7 +148,10 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
     override fun doInBackground(vararg params: Any?): Array<Any> {
 
-        val method = main.getInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD)
+        var method = PREF_ALTERNATE_METHOD
+        vOp.doSomething {
+            method = main.getInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD)
+        }
 
         publishProgress(vOp.getStringFromRes(R.string.calculating_size), "", "")
 
@@ -297,10 +302,16 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
         publishProgress(vOp.getStringFromRes(R.string.making_batches), "", "")
 
-        File(destination).let {
-            it.mkdirs()
-            if (!it.canWrite())
-                return arrayOf(false, vOp.getStringFromRes(R.string.could_not_create_destination), destination + "\n\n" + vOp.getStringFromRes(R.string.make_sure_destination_exists))
+        try {
+            File(destination).let {
+                it.mkdirs()
+                if (!it.canWrite())
+                    return arrayOf(false, vOp.getStringFromRes(R.string.could_not_create_destination), destination + "\n\n" + vOp.getStringFromRes(R.string.make_sure_destination_exists))
+            }
+        }
+        catch (e: Exception){
+            e.printStackTrace()
+            return arrayOf(false, vOp.getStringFromRes(R.string.error_checking_destination), e.message.toString())
         }
 
         try {
@@ -334,44 +345,49 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                             vOp.getStringFromRes(R.string.will_be_compressed))
         }
 
-        val parts = Math.ceil((totalSize * 1.0) / totalMemory).toInt()
+        try {
 
-        for (i in 1..parts){
+            val parts = ceil((totalSize * 1.0) / totalMemory).toInt()
 
-            val batchPackets = ArrayList<AppPacket>(0)
-            var batchSize = 0L
-            var c = 0
+            for (i in 1..parts) {
 
-            while (c < parentAppBatch.size && batchSize < totalMemory){
+                val batchPackets = ArrayList<AppPacket>(0)
+                var batchSize = 0L
+                var c = 0
 
-                val dp = parentAppBatch[c]
-                if (batchSize + dp.systemSize + dp.dataSize <= totalMemory){
-                    batchPackets.add(dp)
-                    batchSize += dp.dataSize + dp.systemSize
-                    parentAppBatch.removeAt(c)
+                while (c < parentAppBatch.size && batchSize < totalMemory) {
+
+                    val dp = parentAppBatch[c]
+                    if (batchSize + dp.systemSize + dp.dataSize <= totalMemory) {
+                        batchPackets.add(dp)
+                        batchSize += dp.dataSize + dp.systemSize
+                        parentAppBatch.removeAt(c)
+                    } else c++
                 }
-                else c++
+
+                if (batchSize == 0L && parentAppBatch.size != 0) {
+                    // signifies that all apps were considered but none could be added to a batch due to memory constraints
+
+                    var concatenatedNames = ""
+                    for (dp in parentAppBatch) concatenatedNames += "${pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo)}\n"
+
+                    return arrayOf(false, vOp.getStringFromRes(R.string.cannot_split), concatenatedNames)
+                } else appBatches.add(AppBatch(batchPackets))
+
             }
 
-            if (batchSize == 0L && parentAppBatch.size != 0){
-                // signifies that all apps were considered but none could be added to a batch due to memory constraints
-
-                var concatenatedNames = ""
-                for (dp in parentAppBatch) concatenatedNames += "${pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo)}\n"
-
-                return arrayOf(false, vOp.getStringFromRes(R.string.cannot_split), concatenatedNames)
-            }
-            else appBatches.add(batchPackets)
-
+            return arrayOf(true)
         }
-
-        return arrayOf(true)
+        catch (e: Exception){
+            e.printStackTrace()
+            return arrayOf(false, vOp.getStringFromRes(R.string.error_making_batches), e.message.toString())
+        }
     }
 
     override fun onProgressUpdate(vararg values: String?) {
         super.onProgressUpdate(*values)
         vOp.visibilitySet(dialogView.waiting_progress, View.VISIBLE)
-        vOp.visibilitySet(dialogView.waiting_details, View.GONE)
+        vOp.visibilitySet(dialogView.waiting_details, View.VISIBLE)
         values[0]?.let {vOp.textSet(dialogView.waiting_head, it.trim())}
         values[1]?.let {vOp.textSet(dialogView.waiting_progress, it.trim())}
         values[2]?.let {vOp.textSet(dialogView.waiting_details, it.trim())}
@@ -384,22 +400,30 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
         try { waitingDialog.dismiss() } catch (e: Exception){}
 
-        if (!(result[0] as Boolean)){
+        vOp.doSomething {
 
-            val errorDialog = AlertDialog.Builder(context)
-                    .setTitle(result[1] as String)
-                    .setMessage(result[2] as String)
-                    .setPositiveButton(R.string.close, null)
-                    .create()
+            if (!(result[0] as Boolean)) {
 
-            if (result[1] as String == vOp.getStringFromRes(R.string.insufficient_storage))
-                errorDialog.setIcon(R.drawable.ic_combine)
+                val errorDialog = AlertDialog.Builder(context)
+                        .setTitle(result[1] as String)
+                        .setMessage(result[2] as String)
+                        .setPositiveButton(R.string.close, null)
+                        .create()
 
-            errorDialog.show()
-            onJobCompletion.onComplete(jobCode, false, result[1] as String)
+                if (result[1] as String == vOp.getStringFromRes(R.string.insufficient_storage))
+                    errorDialog.setIcon(R.drawable.ic_combine)
+                else errorDialog.setIcon(R.drawable.ic_cancelled)
+
+                errorDialog.show()
+                onJobCompletion.onComplete(jobCode, false, result[1] as String)
+            } else {
+                onJobCompletion.onComplete(jobCode, true, appBatches)
+            }
         }
-        else {
-            onJobCompletion.onComplete(jobCode, true, appBatches)
-        }
+    }
+
+    override fun onCancelled() {
+        super.onCancelled()
+        vOp.doSomething { waitingDialog.dismiss() }
     }
 }

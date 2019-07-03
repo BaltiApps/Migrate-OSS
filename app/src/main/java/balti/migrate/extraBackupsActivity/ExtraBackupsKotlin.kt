@@ -18,6 +18,7 @@ import balti.migrate.BackupProgressLayout
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.backupActivity.BackupDataPacketKotlin
+import balti.migrate.extraBackupsActivity.apps.MakeAppPackets
 import balti.migrate.extraBackupsActivity.calls.CallsDataPacketsKotlin
 import balti.migrate.extraBackupsActivity.calls.LoadCallsForSelectionKotlin
 import balti.migrate.extraBackupsActivity.calls.ReadCallsKotlin
@@ -38,6 +39,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_CONTACTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_KEYBOARDS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_SMS
+import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_MAKE_APP_PACKETS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_CONTACTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_DPI
@@ -70,6 +72,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private var readSms: ReadSmsKotlin? = null
     private var readCalls: ReadCallsKotlin? = null
     private var readDpi: ReadDpiKotlin? = null
+    private var makeAppPackets: MakeAppPackets? = null
 
     private var loadKeyboard: LoadKeyboardForSelection? = null
 
@@ -454,7 +457,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                             val zip = File("$destination/$this.zip")
 
                             fun startBackup(){
-
+                                makeAppPackets = MakeAppPackets(JOBCODE_MAKE_APP_PACKETS, this@ExtraBackupsKotlin, destination, appListCopied)
+                                makeAppPackets?.execute()
                             }
 
                             if (dir.exists() || zip.exists()){
@@ -586,6 +590,15 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                         if (jobSuccess) keyboardText = it
                     }
                 }, true)
+
+            JOBCODE_MAKE_APP_PACKETS ->
+                commonTools.tryIt ({
+                    jobResult.toString().let {
+                        if (jobSuccess) {
+                            //TODO("start backup engine")
+                        }
+                    }
+                }, true)
         }
     }
 
@@ -656,6 +669,21 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         else {
             do_backup_calls.isChecked = false
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        commonTools.tryIt { makeAppPackets?.cancel(true) }
+        commonTools.tryIt { LocalBroadcastManager.getInstance(this).unregisterReceiver(progressReceiver) }
+        commonTools.tryIt { readContacts?.cancel(true) }
+        commonTools.tryIt { readSms?.cancel(true) }
+        commonTools.tryIt { readCalls?.cancel(true) }
+        commonTools.tryIt { readDpi?.cancel(true) }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        startActivity(Intent(this, BackupActivityKotlin::class.java))
     }
 
 }

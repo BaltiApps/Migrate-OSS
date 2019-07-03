@@ -115,6 +115,9 @@
     <string name="version_3.0">Version 3.0</string>
     <string name="version_3.0_content">
         \u2022 No compulsion to use grant usage access permission.\n
+        \u2022 Many more categories of apps in Select apps screen.\n
+        \u2022 Migrate now allows to backup Data without App.\n
+        \u2022 Search apps in Select apps screen.\n
     </string>
 
     <!--activity_main.xml-->
@@ -203,6 +206,8 @@
     <string name="could_not_create_destination">Could not create backup directory.</string>
     <string name="make_sure_destination_exists">Make sure the destination is mounted and writable.</string>
     <string name="error_detecting_memory">Error detecting device memory</string>
+    <string name="error_checking_destination">Error checking destination</string>
+    <string name="error_making_batches">Error making batches</string>
     <string name="cannot_split">Backup is not possible because these apps are too big!</string>
     <string name="making_batches">Making batches</string>
     <string name="part">Part</string>
@@ -243,7 +248,7 @@
     <string name="sd_card_not_rw_exp">External SD card may not be accessible. Make sure that \"ExSDCard Access Enabler\" module is installed in Magisk.\n\n
     [module made by developer Romain.]
     </string>
-    <string name="no_du_binary">\"du\" not available!</string>
+    <string name="no_busybox_binary">\"busybox\" not available!</string>
     <string name="re_calculating_size">Re-calculating size using terminal method</string>
     <string name="error_occurred">Error occurred!!</string>
 
