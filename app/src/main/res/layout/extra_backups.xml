@@ -398,6 +398,62 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/installers_main_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/large_padding_width"
+                android:background="@color/extraItemBg"
+                android:clickable="true"
+                android:elevation="10dp"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/small_padding_width"
+                android:paddingTop="@dimen/extra_items_padding"
+                android:paddingBottom="@dimen/extra_items_padding"
+                >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/extra_items_padding"
+                    android:src="@drawable/ic_installer_icon" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/installer_label"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                    <TextView
+                        android:id="@+id/installer_selected_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="@string/tap_to_see_values"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+                <CheckBox
+                    android:id="@+id/do_backup_installers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="@dimen/small_padding_width" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/extra_item_adb"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

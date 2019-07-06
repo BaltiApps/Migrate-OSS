@@ -21,6 +21,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_PERMISSION_SE
 import balti.migrate.utilities.ExclusionsKotlin.Companion.EXCLUDE_APP
 import balti.migrate.utilities.ExclusionsKotlin.Companion.EXCLUDE_DATA
 import balti.migrate.utilities.ExclusionsKotlin.Companion.EXCLUDE_PERMISSION
+import balti.migrate.utilities.LoadIcon
 import kotlinx.android.synthetic.main.app_info.view.*
 import kotlinx.android.synthetic.main.app_item.view.*
 import java.util.*

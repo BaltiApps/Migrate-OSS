@@ -35,6 +35,10 @@ class CommonToolKotlin(val context: Context) {
         val ACTION_REQUEST_BACKUP_DATA = "get data"
         val ACTION_EXTRA_BACKUP_ACTIVITY_STARTED = "extraBackupsStarted"
 
+        val PACKAGE_NAME_PLAY_STORE = "com.android.vending"
+        val PACKAGE_NAME_FDROID = "org.fdroid.fdroid.privileged"
+        val PACKAGE_NAMES_PACKAGE_INSTALLER = arrayOf("com.google.android.packageinstaller")
+
         val PREF_FILE_APPS = "apps"
         val PREF_FILE_MAIN = "main"
         val PREF_FIRST_RUN = "firstRun"
@@ -66,6 +70,7 @@ class CommonToolKotlin(val context: Context) {
         val JOBCODE_LOAD_SMS = 1944
         val JOBCODE_LOAD_CALLS = 2242
         val JOBCODE_LOAD_KEYBOARDS = 6765
+        val JOBCODE_LOAD_INSTALLERS = 8709
 
         val JOBCODE_MAKE_APP_PACKETS = 65364
 
@@ -73,6 +78,12 @@ class CommonToolKotlin(val context: Context) {
         val SMS_PERMISSION = 944
         val CALLS_PERMISSION = 676
         val SMS_AND_CALLS_PERMISSION = 567
+
+        // installer list adapter
+
+        val NOT_SET_POSITION = 0
+        val PLAY_STORE_POSITION = 1
+        val FDROID_POSITION = 2
     }
 
     fun unpackAssetToInternal(assetFileName: String, targetFileName: String, toInternal: Boolean): String {

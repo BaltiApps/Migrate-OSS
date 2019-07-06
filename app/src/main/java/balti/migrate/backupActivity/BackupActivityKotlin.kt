@@ -124,35 +124,38 @@ class BackupActivityKotlin : AppCompatActivity() {
             val tempAppList = packageManager.getInstalledPackages(0)
             appList.clear()
             tempAppList.forEach {
+                val installer = packageManager.getInstallerPackageName(it.packageName).let {installer ->
+                    installer ?: ""
+                }
                 when (type){
                     USER_PACKAGES -> {
                         if (it.applicationInfo.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 0){
-                            appList.add(BackupDataPacketKotlin(it, appPrefs))
+                            appList.add(BackupDataPacketKotlin(it, appPrefs, installer))
                         }
                     }
                     SYSTEM_NOT_UPDATED_PACKAGES -> {
                         if (it.applicationInfo.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) > 0 &&
                                 it.applicationInfo.sourceDir.startsWith("/system")){
-                            appList.add(BackupDataPacketKotlin(it, appPrefs))
+                            appList.add(BackupDataPacketKotlin(it, appPrefs, installer))
                         }
                     }
                     SYSTEM_UPDATE_ONLY_PACKAGES -> {
                         if (it.applicationInfo.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) > 0 &&
                                 it.applicationInfo.sourceDir.startsWith("/data")){
-                            appList.add(BackupDataPacketKotlin(it, appPrefs))
+                            appList.add(BackupDataPacketKotlin(it, appPrefs, installer))
                         }
                     }
                     ALL_SYSTEM_PACKAGES -> {
                         if (it.applicationInfo.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) > 0){
-                            appList.add(BackupDataPacketKotlin(it, appPrefs))
+                            appList.add(BackupDataPacketKotlin(it, appPrefs, installer))
                         }
                     }
                     USER_SYSTEM_UPDATED_PACKAGES -> {
                         if (it.applicationInfo.sourceDir.startsWith("/data")){
-                            appList.add(BackupDataPacketKotlin(it, appPrefs))
+                            appList.add(BackupDataPacketKotlin(it, appPrefs, installer))
                         }
                     }
-                    else -> appList.add(BackupDataPacketKotlin(it, appPrefs))
+                    else -> appList.add(BackupDataPacketKotlin(it, appPrefs, installer))
                 }
             }
             if (appList.size > 0) adapter = AppListAdapterKotlin(this@BackupActivityKotlin, appAllSelect, dataAllSelect, permissionsAllSelect)

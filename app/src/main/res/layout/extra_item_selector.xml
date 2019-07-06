@@ -20,6 +20,17 @@
             android:padding="@dimen/large_padding_width"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
+
+        <ImageView
+            android:id="@+id/eis_store_for_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="@dimen/large_padding_width"
+            android:visibility="gone"
+            android:src="@drawable/ic_store" />
+
         <ImageView
             android:id="@+id/eis_select_all"
             android:layout_width="wrap_content"
@@ -71,11 +82,22 @@
 
     </RelativeLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/fdroid_extension"
+        android:layout_above="@id/eis_button_bar"
+        android:padding="@dimen/large_padding_width"
+        android:background="@color/colorPrimary"
+        android:id="@+id/eis_fdroid_extension"
+        android:visibility="gone"
+        />
+
     <ListView
         android:id="@+id/eis_listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/eis_button_bar"
+        android:layout_above="@id/eis_fdroid_extension"
         android:layout_below="@id/eis_top_bar"
         android:padding="@dimen/large_padding_width"
         android:visibility="invisible" />

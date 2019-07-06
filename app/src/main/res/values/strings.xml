@@ -175,6 +175,7 @@
     <string name="keyboard_label">Default keyboard</string>
     <string name="dpi_label">Screen DPI</string>
     <string name="adb_label">ADB state</string>
+    <string name="installer_label">App installers</string>
     <string name="filtering_duplicates">Filtering\nduplicates</string>
     <string name="reading_sms">Reading sms</string>
     <string name="reading_calls">Reading calls</string>
@@ -256,9 +257,12 @@
     <string name="sms_selector_label">Select SMS</string>
     <string name="contacts_selector_label">Select contacts</string>
     <string name="calls_selector_label">Select calls</string>
+    <string name="installer_selector_label">Select installer</string>
+    <string name="set_installer_for_all">Select installer to be set for all selected apps</string>
     <string name="no_contacts">No contacts!</string>
     <string name="no_sms">No sms!</string>
     <string name="no_calls">No call logs!</string>
+    <string name="fdroid_extension">To set F-Droid as an installer, you must flash the F-Droid privileged extension.</string>
 
     <!--progress_layout-->
     <string name="loading">Loading…</string>
@@ -358,6 +362,11 @@
     <string name="uid">UID :</string>
     <string name="sourceDir">Source dir :</string>
     <string name="dataDir">Data dir :</string>
+    <string name="installer">Installer: </string>
+    <string name="play_store">Play Store</string>
+    <string name="package_installer">Package installer</string>
+    <string name="f_droid">F-Droid</string>
+    <string name="not_set">Don\'t set</string>
     
     <!--keyboard_selector.xml-->
     <string name="select_default_keyboard_from_enabled">Select default keyboard from enabled keyboards</string>

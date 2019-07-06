@@ -1,9 +1,10 @@
-package balti.migrate.backupActivity
+package balti.migrate.utilities
 
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.AsyncTask
 import android.widget.ImageView
+import balti.migrate.backupActivity.BackupDataPacketKotlin
 
 class LoadIcon(val icon: ImageView, val dp: BackupDataPacketKotlin, val pm: PackageManager) : AsyncTask<Any, Any, Drawable>(){
     override fun doInBackground(vararg params: Any?): Drawable? {

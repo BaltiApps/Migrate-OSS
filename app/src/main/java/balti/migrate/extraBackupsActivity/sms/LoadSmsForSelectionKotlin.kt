@@ -40,8 +40,8 @@ class LoadSmsForSelectionKotlin(private val jobCode: Int, val context: Context,
 
     override fun onPreExecute() {
         super.onPreExecute()
-        vOp.doSomething { smsSelectorDialog.show() }
         super.onPreExecute()
+        vOp.doSomething { smsSelectorDialog.show() }
         vOp.visibilitySet(selectorView.eis_top_bar, View.GONE)
         vOp.visibilitySet(selectorView.eis_button_bar, View.GONE)
         vOp.visibilitySet(selectorView.eis_progressBar, View.VISIBLE)
@@ -69,7 +69,10 @@ class LoadSmsForSelectionKotlin(private val jobCode: Int, val context: Context,
             vOp.visibilitySet(selectorView.eis_progressBar, View.GONE)
             vOp.visibilitySet(selectorView.eis_listView, View.VISIBLE)
         }
-        else vOp.visibilitySet(selectorView.eis_no_data, View.VISIBLE)
+        else {
+            vOp.visibilitySet(selectorView.eis_no_data, View.VISIBLE)
+            vOp.doSomething { smsSelectorDialog.setCancelable(true) }
+        }
 
         selectorView.eis_ok.setOnClickListener {
             onJobCompletion.onComplete(jobCode, true, dataPackets)

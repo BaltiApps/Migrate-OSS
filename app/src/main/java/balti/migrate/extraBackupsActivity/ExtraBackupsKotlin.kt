@@ -26,6 +26,7 @@ import balti.migrate.extraBackupsActivity.contacts.ContactsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.contacts.LoadContactsForSelectionKotlin
 import balti.migrate.extraBackupsActivity.contacts.ReadContactsKotlin
 import balti.migrate.extraBackupsActivity.dpi.ReadDpiKotlin
+import balti.migrate.extraBackupsActivity.installer.LoadInstallersForSelection
 import balti.migrate.extraBackupsActivity.keyboard.LoadKeyboardForSelection
 import balti.migrate.extraBackupsActivity.sms.LoadSmsForSelectionKotlin
 import balti.migrate.extraBackupsActivity.sms.ReadSmsKotlin
@@ -37,6 +38,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.CONTACT_PERMISSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_CONTACTS
+import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_INSTALLERS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_KEYBOARDS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_SMS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_MAKE_APP_PACKETS
@@ -44,6 +46,8 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_CONTACTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_DPI
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_SMS
+import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_FDROID
+import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_AUTOSELECT_EXTRAS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_MAIN
@@ -51,6 +55,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.SMS_AND_CALLS_PERMISSI
 import balti.migrate.utilities.CommonToolKotlin.Companion.SMS_PERMISSION
 import kotlinx.android.synthetic.main.ask_for_backup_name.view.*
 import kotlinx.android.synthetic.main.extra_backups.*
+import kotlinx.android.synthetic.main.please_wait.view.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -75,6 +80,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private var makeAppPackets: MakeAppPackets? = null
 
     private var loadKeyboard: LoadKeyboardForSelection? = null
+    private var loadInstallers: LoadInstallersForSelection? = null
 
     private var keyboardText = ""
     private var dpiText = ""
@@ -101,21 +107,55 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.extra_backups)
+        main = getSharedPreferences(PREF_FILE_MAIN, Context.MODE_PRIVATE)
+        editor = main.edit()
 
-        commonTools.tryIt ({
-            main = getSharedPreferences(PREF_FILE_MAIN, Context.MODE_PRIVATE)
-            editor = main.edit()
+        destination = main.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
 
-            destination = main.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
 
-            BackupActivityKotlin.appList.forEach {
-                if (it.APP || it.PERMISSION || it.DATA) {
-                    appListCopied.add(it)
-                    if (isAllAppsSelected && !(it.APP && it.DATA && it.PERMISSION)) isAllAppsSelected = false
-                } else if (isAllAppsSelected) isAllAppsSelected = false
+        class Copy : AsyncTask<Any, Any, Any>() {
+
+            private val dialogView by lazy { View.inflate(this@ExtraBackupsKotlin, R.layout.please_wait, null) }
+            private val waitingDialog by lazy {
+                AlertDialog.Builder(this@ExtraBackupsKotlin)
+                        .setView(dialogView)
+                        .setCancelable(false)
+                        .create()
             }
 
-        }, true, isCancelable = false)
+            override fun onPreExecute() {
+                super.onPreExecute()
+                dialogView.waiting_cancel.setOnClickListener {
+                    cancel(true)
+                    startActivity(Intent(this@ExtraBackupsKotlin, BackupActivityKotlin::class.java))
+                    finish()
+                }
+                waitingDialog.show()
+            }
+
+            override fun doInBackground(vararg params: Any?): Any? {
+                commonTools.tryIt({
+                    BackupActivityKotlin.appList.forEach {
+                        if (it.APP || it.PERMISSION || it.DATA) {
+                            appListCopied.add(BackupDataPacketKotlin(it.PACKAGE_INFO, main, it.installerName))
+                            if (isAllAppsSelected && !(it.APP && it.DATA && it.PERMISSION)) isAllAppsSelected = false
+                        } else if (isAllAppsSelected) isAllAppsSelected = false
+                    }
+
+
+                }, true, isCancelable = false)
+
+                return null
+            }
+
+            override fun onPostExecute(result: Any?) {
+                super.onPostExecute(result)
+                waitingDialog.dismiss()
+            }
+
+        }
+
+        Copy().execute()
 
         startBackupButton.setOnClickListener {
             if (appListCopied.size > 0 || do_backup_contacts.isChecked || do_backup_calls.isChecked
@@ -145,6 +185,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         do_backup_calls.setOnCheckedChangeListener(this)
         do_backup_dpi.setOnCheckedChangeListener(this)
         do_backup_keyboard.setOnCheckedChangeListener(this)
+        do_backup_installers.setOnCheckedChangeListener(this)
 
         if (main.getBoolean(PREF_AUTOSELECT_EXTRAS, true)) {        //extras_markers
             val isSmsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
@@ -158,7 +199,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 isCallsGranted -> do_backup_calls.isChecked = true
                 isSmsGranted -> do_backup_sms.isChecked = true
             }
-
+            do_backup_installers.isChecked = true
         }
     }
 
@@ -262,6 +303,20 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 commonTools.tryIt { loadKeyboard?.cancel(true) }
             }
 
+        } else if (buttonView == do_backup_installers){
+            if (isChecked){
+                updateInstallers(appListCopied, true)
+            }
+            else {
+                installers_main_item.isClickable = false
+                installer_selected_status.visibility = View.GONE
+
+                appListCopied.forEach {
+                    it.installerName = ""
+                }
+
+                commonTools.tryIt { loadInstallers?.cancel(true) }
+            }
         }
 
     }
@@ -591,6 +646,13 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     }
                 }, true)
 
+            JOBCODE_LOAD_INSTALLERS ->
+                if (jobSuccess) {
+                    commonTools.tryIt({
+                        updateInstallers(jobResult as ArrayList<BackupDataPacketKotlin>)
+                    }, true)
+                }
+
             JOBCODE_MAKE_APP_PACKETS ->
                 commonTools.tryIt ({
                     jobResult.toString().let {
@@ -669,6 +731,33 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         else {
             do_backup_calls.isChecked = false
         }
+    }
+
+    private fun updateInstallers(newAppList: ArrayList<BackupDataPacketKotlin>, selfCall: Boolean = false){
+
+        if (appListCopied.size == 0)
+        {
+            installer_selected_status.visibility = View.VISIBLE
+            installer_selected_status.text = getString(R.string.no_app_selected)
+            installers_main_item.isClickable = false
+            return
+        }
+        else {
+            if (!selfCall) appListCopied.clear()
+            var n = 0
+            newAppList.forEach {
+                if (!selfCall) appListCopied.add(it)
+                if (it.installerName == PACKAGE_NAME_PLAY_STORE || it.installerName == PACKAGE_NAME_FDROID) n++
+            }
+            installer_selected_status.visibility = View.VISIBLE
+            installer_selected_status.text = "$n of ${appListCopied.size}"
+            installers_main_item.isClickable = true
+            installers_main_item.setOnClickListener {
+                loadInstallers = LoadInstallersForSelection(JOBCODE_LOAD_INSTALLERS, this, appListCopied)
+                loadInstallers?.execute()
+            }
+        }
+
     }
 
     override fun onDestroy() {

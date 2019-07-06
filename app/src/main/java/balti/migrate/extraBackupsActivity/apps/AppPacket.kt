@@ -7,4 +7,5 @@ class AppPacket(backupDataPacket: BackupDataPacketKotlin, val dataSize : Long, v
     val APP = backupDataPacket.APP
     val DATA = backupDataPacket.DATA
     val PERMISSION = backupDataPacket.PERMISSION
+    val installerName = backupDataPacket.installerName
 }

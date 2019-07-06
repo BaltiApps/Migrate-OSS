@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Package name"
+        android:text="@string/packageName"
         android:id="@+id/app_info_package_name"
         android:gravity="center_vertical"
         android:drawableStart="@drawable/ic_adb_small"
@@ -18,7 +18,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Version name"
+        android:text="@string/versionName"
         android:id="@+id/app_info_version_name"
         android:gravity="center_vertical"
         android:drawableStart="@drawable/ic_version_small"
@@ -29,7 +29,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="UID"
+        android:text="@string/uid"
         android:id="@+id/app_info_uid"
         android:gravity="center_vertical"
         android:drawableStart="@drawable/ic_uid_small"
@@ -40,7 +40,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Source dir"
+        android:text="@string/sourceDir"
         android:id="@+id/app_info_source_dir"
         android:gravity="center_vertical"
         android:drawableStart="@drawable/ic_folder_small"
@@ -51,10 +51,22 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Data dir"
+        android:text="@string/dataDir"
         android:id="@+id/app_info_data_dir"
         android:gravity="center_vertical"
         android:drawableStart="@drawable/ic_folder_small"
+        android:drawablePadding="@dimen/small_padding_width"
+        android:padding="@dimen/small_padding_width"
+        />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/installer"
+        android:id="@+id/app_info_installer"
+        android:gravity="center_vertical"
+        android:drawableStart="@drawable/ic_store"
         android:drawablePadding="@dimen/small_padding_width"
         android:padding="@dimen/small_padding_width"
         />

@@ -1,5 +1,6 @@
 package balti.migrate.backupActivity
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
@@ -16,6 +17,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin.Companion.appList
+import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAMES_PACKAGE_INSTALLER
+import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_FDROID
+import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_APPS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_APP_SELECTION
 import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_DATA_SELECTION
@@ -23,6 +27,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_PERMISSION_SE
 import balti.migrate.utilities.ExclusionsKotlin.Companion.EXCLUDE_APP
 import balti.migrate.utilities.ExclusionsKotlin.Companion.EXCLUDE_DATA
 import balti.migrate.utilities.ExclusionsKotlin.Companion.EXCLUDE_PERMISSION
+import balti.migrate.utilities.LoadIcon
 import kotlinx.android.synthetic.main.app_info.view.*
 import kotlinx.android.synthetic.main.app_item.view.*
 
@@ -100,6 +105,7 @@ class AppListAdapterKotlin(val context: Context,
 
     }
 
+    @SuppressLint("SetTextI18n")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
 
         val viewHolder : ViewHolder
@@ -134,6 +140,14 @@ class AppListAdapterKotlin(val context: Context,
             adView.app_info_uid.text = context.getString(R.string.uid) + " " + appItem.PACKAGE_INFO.applicationInfo.uid
             adView.app_info_source_dir.text = context.getString(R.string.sourceDir) + " " + appItem.PACKAGE_INFO.applicationInfo.sourceDir
             adView.app_info_data_dir.text = context.getString(R.string.dataDir) + " " + appItem.PACKAGE_INFO.applicationInfo.dataDir
+            adView.app_info_installer.text = context.getString(R.string.installer) + " " + when (appItem.installerName) {
+                PACKAGE_NAME_PLAY_STORE -> context.getString(R.string.play_store)
+                PACKAGE_NAME_FDROID -> context.getString(R.string.f_droid)
+                else -> {
+                    if (appItem.installerName in PACKAGE_NAMES_PACKAGE_INSTALLER) context.getString(R.string.package_installer)
+                    else appItem.installerName
+                }
+            }
 
             AlertDialog.Builder(context)
                     .setTitle(viewHolder.appName.text)
