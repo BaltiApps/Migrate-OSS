@@ -118,6 +118,7 @@
         \u2022 Many more categories of apps in Select apps screen.\n
         \u2022 Migrate now allows to backup Data without App.\n
         \u2022 Search apps in Select apps screen.\n
+        \u2022 Backup and set app installer (Play store/F-Droid).\n
     </string>
 
     <!--activity_main.xml-->
