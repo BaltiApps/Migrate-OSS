@@ -119,6 +119,7 @@
         \u2022 Migrate now allows to backup Data without App.\n
         \u2022 Search apps in Select apps screen.\n
         \u2022 Backup and set app installer (Play store/F-Droid).\n
+        \u2022 Backup ADB state.\n
     </string>
 
     <!--activity_main.xml-->
@@ -184,7 +185,10 @@
     <string name="reading_error">Error reading</string>
     <string name="no_app_selected">No app selected!</string>
     <string name="filtering_apps">Filtering apps</string>
-    <string name="tap_to_see_values">Tap to see DPI values</string>
+    <string name="tap_to_see_values">Tap to see values</string>
+    <string name="adb_enabled">ADB debugging enabled</string>
+    <string name="adb_disabled">ADB debugging disabled</string>
+    <string name="adb_unknown">ADB state unknown! Value will not be backed up.</string>
 
     <!--ExtraBackups.java-->
     <string name="not_recommended">Not recommended!</string>
@@ -216,6 +220,7 @@
     <string name="parts">parts</string>
     <string name="of">of</string>
     <string name="error_reading_dpi">Error reading DPI</string>
+    <string name="error_reading_adb">Error reading ADB</string>
     <string name="dragons_ahead">Dragons ahead! May fail in Samsung, Huawei, Xiaomi.</string>
     <string name="dpi_backup_warning_desc">
         - Do not restore this backup in any other device.\n

@@ -18,6 +18,7 @@ import balti.migrate.BackupProgressLayout
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.backupActivity.BackupDataPacketKotlin
+import balti.migrate.extraBackupsActivity.adb.ReadAdbKotlin
 import balti.migrate.extraBackupsActivity.apps.MakeAppPackets
 import balti.migrate.extraBackupsActivity.calls.CallsDataPacketsKotlin
 import balti.migrate.extraBackupsActivity.calls.LoadCallsForSelectionKotlin
@@ -42,10 +43,12 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_INSTALLER
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_KEYBOARDS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_SMS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_MAKE_APP_PACKETS
+import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_ADB
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_CONTACTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_DPI
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_SMS
+import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_SMS_THEN_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_FDROID
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_AUTOSELECT_EXTRAS
@@ -77,6 +80,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private var readSms: ReadSmsKotlin? = null
     private var readCalls: ReadCallsKotlin? = null
     private var readDpi: ReadDpiKotlin? = null
+    private var readAdb: ReadAdbKotlin? = null
     private var makeAppPackets: MakeAppPackets? = null
 
     private var loadKeyboard: LoadKeyboardForSelection? = null
@@ -84,6 +88,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     private var keyboardText = ""
     private var dpiText = ""
+    private var adbState = 0
 
     private var contactList = ArrayList<ContactsDataPacketKotlin>(0)    //extras_markers
     private var smsList = ArrayList<SmsDataPacketKotlin>(0)
@@ -186,6 +191,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         do_backup_dpi.setOnCheckedChangeListener(this)
         do_backup_keyboard.setOnCheckedChangeListener(this)
         do_backup_installers.setOnCheckedChangeListener(this)
+        do_backup_adb.setOnCheckedChangeListener(this)
 
         if (main.getBoolean(PREF_AUTOSELECT_EXTRAS, true)) {        //extras_markers
             val isSmsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
@@ -289,6 +295,32 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
             }
 
+        } else if (buttonView == do_backup_adb) {
+            if (isChecked) {
+
+                AlertDialog.Builder(this)
+                        .setTitle(R.string.dragons_ahead)
+                        .setMessage(R.string.dpi_backup_warning_desc)
+                        .setPositiveButton(R.string.go_ahead) {_, _ ->
+                            readAdb = ReadAdbKotlin(JOBCODE_READ_ADB, this, adb_main_item, adb_selected_status, adb_read_progress, do_backup_adb)
+                            readAdb?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
+                        }
+                        .setNegativeButton(android.R.string.cancel) {_,_ ->
+                            do_backup_adb.isChecked = false
+                        }
+                        .setCancelable(false)
+                        .show()
+
+
+            } else {
+                adb_main_item.isClickable = false
+                adb_selected_status.visibility = View.GONE
+                adb_read_progress.visibility = View.GONE
+
+                commonTools.tryIt { readAdb?.cancel(true) }
+
+            }
+
         } else if (buttonView == do_backup_keyboard) {
 
             if (isChecked) {
@@ -329,23 +361,14 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             if (grantResults.size == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
 
                 do_backup_sms.setOnCheckedChangeListener(null)
-                do_backup_calls.setOnCheckedChangeListener(null)
-
                 do_backup_sms.isChecked = true
-                do_backup_calls.isChecked = true
 
                 commonTools.tryIt({
-                    readSms = ReadSmsKotlin(JOBCODE_READ_SMS, this, sms_main_item, sms_selected_status, sms_read_progress, do_backup_sms)
+                    readSms = ReadSmsKotlin(JOBCODE_READ_SMS_THEN_CALLS, this, sms_main_item, sms_selected_status, sms_read_progress, do_backup_sms)
                     readSms?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
                 }, true)
 
-                commonTools.tryIt({
-                    readCalls = ReadCallsKotlin(JOBCODE_READ_CALLS, this, calls_main_item, calls_selected_status, calls_read_progress, do_backup_calls)
-                    readCalls?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
-                }, true)
-
                 do_backup_sms.setOnCheckedChangeListener(this)
-                do_backup_calls.setOnCheckedChangeListener(this)
             }
         }
         else if (requestCode == CONTACT_PERMISSION){
@@ -572,6 +595,18 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     override fun onComplete(jobCode: Int, jobSuccess: Boolean, jobResult: Any?) {           //extras_markers
 
+        fun sms(){
+            if (jobSuccess) {
+                commonTools.tryIt({
+                    updateSms(jobResult as ArrayList<SmsDataPacketKotlin>)
+                }, true)
+            } else {
+                do_backup_sms.isChecked = false
+                jobResult.toString().let {
+                    commonTools.showErrorDialog(it, getString(R.string.error_reading_sms))
+                }
+            }}
+
         when (jobCode){
 
             JOBCODE_READ_CONTACTS ->
@@ -593,17 +628,12 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     }, true)
                 }
 
-            JOBCODE_READ_SMS ->
-                if (jobSuccess) {
-                    commonTools.tryIt({
-                        updateSms(jobResult as ArrayList<SmsDataPacketKotlin>)
-                    }, true)
-                } else {
-                    do_backup_sms.isChecked = false
-                    jobResult.toString().let {
-                        commonTools.showErrorDialog(it, getString(R.string.error_reading_sms))
-                    }
-                }
+            JOBCODE_READ_SMS -> sms()
+
+            JOBCODE_READ_SMS_THEN_CALLS -> {
+                sms()
+                do_backup_calls.isChecked = true
+            }
 
             JOBCODE_LOAD_SMS ->
                 if (jobSuccess){
@@ -639,6 +669,20 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     }
                 }, true)
 
+
+            JOBCODE_READ_ADB ->
+                commonTools.tryIt({
+                    if (jobSuccess) {
+                        adbState = jobResult as Int
+                        adb_selected_status.text = getString(when (adbState){
+                            0 -> R.string.adb_disabled
+                            1 -> R.string.adb_enabled
+                            else -> R.string.adb_unknown
+                        })
+                    }
+                    else commonTools.showErrorDialog(jobResult.toString(), getString(R.string.error_reading_adb))
+                }, true)
+
             JOBCODE_LOAD_KEYBOARDS ->
                 commonTools.tryIt ({
                     jobResult.toString().let {
@@ -648,9 +692,6 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
             JOBCODE_LOAD_INSTALLERS ->
                 if (jobSuccess) {
-                    commonTools.tryIt({
-                        updateInstallers(jobResult as ArrayList<BackupDataPacketKotlin>)
-                    }, true)
                 }
 
             JOBCODE_MAKE_APP_PACKETS ->

@@ -63,8 +63,10 @@ class CommonToolKotlin(val context: Context) {
 
         val JOBCODE_READ_CONTACTS = 3443
         val JOBCODE_READ_SMS = 2398
+        val JOBCODE_READ_SMS_THEN_CALLS = 2399
         val JOBCODE_READ_CALLS = 1109
         val JOBCODE_READ_DPI = 3570
+        val JOBCODE_READ_ADB = 2339
 
         val JOBCODE_LOAD_CONTACTS = 7570
         val JOBCODE_LOAD_SMS = 1944

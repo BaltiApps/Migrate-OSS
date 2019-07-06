@@ -454,7 +454,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/extra_item_adb"
+                android:id="@+id/adb_main_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/large_padding_width"
@@ -468,7 +468,6 @@
                 android:padding="@dimen/small_padding_width"
                 android:paddingTop="@dimen/extra_items_padding"
                 android:paddingBottom="@dimen/extra_items_padding"
-                android:visibility="gone"
                 >
 
                 <ImageView
