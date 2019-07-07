@@ -142,7 +142,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 commonTools.tryIt({
                     BackupActivityKotlin.appList.forEach {
                         if (it.APP || it.PERMISSION || it.DATA) {
-                            appListCopied.add(BackupDataPacketKotlin(it.PACKAGE_INFO, main, it.installerName))
+                            appListCopied.add(it.copy())
                             if (isAllAppsSelected && !(it.APP && it.DATA && it.PERMISSION)) isAllAppsSelected = false
                         } else if (isAllAppsSelected) isAllAppsSelected = false
                     }
@@ -692,6 +692,9 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
             JOBCODE_LOAD_INSTALLERS ->
                 if (jobSuccess) {
+                    commonTools.tryIt ({
+                        updateInstallers(jobResult as ArrayList<BackupDataPacketKotlin>)
+                    }, true)
                 }
 
             JOBCODE_MAKE_APP_PACKETS ->

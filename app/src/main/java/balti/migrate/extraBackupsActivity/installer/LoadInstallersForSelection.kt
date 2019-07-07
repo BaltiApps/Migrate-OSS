@@ -14,6 +14,7 @@ import balti.migrate.extraBackupsActivity.ViewOperations
 import balti.migrate.utilities.CommonToolKotlin.Companion.FDROID_POSITION
 import balti.migrate.utilities.CommonToolKotlin.Companion.NOT_SET_POSITION
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_FDROID
+import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PLAY_STORE_POSITION
 import kotlinx.android.synthetic.main.extra_item_selector.view.*
 
@@ -31,11 +32,15 @@ class LoadInstallersForSelection(private val jobCode: Int,
     }
     private val onJobCompletion by lazy { context as OnJobCompletion }
     private val vOp by lazy { ViewOperations(context) }
+    private val copiedItemList by lazy { ArrayList<BackupDataPacketKotlin>(0) }
+
+    private var fdroidClientPresent = false
+    private var fdroidExtensionPresent = false
+    private var playStorePresent = false
 
     private lateinit var adapter: InstallerListAdapter
 
     init {
-
         selectorView.eis_ok.setOnClickListener(null)
         selectorView.eis_cancel.setOnClickListener {
             installerSelectorDialog.dismiss()
@@ -57,13 +62,11 @@ class LoadInstallersForSelection(private val jobCode: Int,
         vOp.visibilitySet(selectorView.eis_listView, View.INVISIBLE)
         vOp.visibilitySet(selectorView.eis_no_data, View.GONE)
 
-        var fdroidClientPresent = false
-        var fdroidExtensionPresent = false
-
         vOp.doSomething {
             context.packageManager.getInstalledPackages(0).forEach {
                 if (it.packageName == "org.fdroid.fdroid") fdroidClientPresent = true
                 else if (it.packageName == PACKAGE_NAME_FDROID) fdroidExtensionPresent = true
+                else if (it.packageName == PACKAGE_NAME_PLAY_STORE) playStorePresent = true
             }
             if (fdroidClientPresent && !fdroidExtensionPresent)
                 vOp.visibilitySet(selectorView.eis_fdroid_extension, View.VISIBLE)
@@ -72,14 +75,18 @@ class LoadInstallersForSelection(private val jobCode: Int,
     }
 
     override fun doInBackground(vararg params: Any?): Any? {
-        if (itemList.size > 0) adapter = InstallerListAdapter(context, itemList)
+
+        for (i in itemList)
+            copiedItemList.add(i.copy())
+
+        if (copiedItemList.size > 0) adapter = InstallerListAdapter(context, copiedItemList)
         return null
     }
 
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
 
-        if (itemList.size > 0){
+        if (copiedItemList.size > 0){
             vOp.doSomething { selectorView.eis_listView.adapter = adapter }
             vOp.visibilitySet(selectorView.eis_top_bar, View.VISIBLE)
             vOp.visibilitySet(selectorView.eis_button_bar, View.VISIBLE)
@@ -101,27 +108,26 @@ class LoadInstallersForSelection(private val jobCode: Int,
                 val radioGroup = RadioGroup(context).apply {
                     setPadding(20,20,20,20)
                 }
-                val notSet = RadioButton(context).apply {
+                radioGroup.addView(RadioButton(context).apply {
                     setText(R.string.not_set)
                     id = NOT_SET_POSITION
                     layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                     setPadding(20,20,20,20)
-                }
-                val playStore = RadioButton(context).apply {
-                    setText(R.string.play_store)
-                    id = PLAY_STORE_POSITION
-                    layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-                    setPadding(20,20,20,20)
-                }
-                val fdroid = RadioButton(context).apply {
-                    setText(R.string.f_droid)
-                    id = FDROID_POSITION
-                    layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-                    setPadding(20,20,20,20)
-                }
-                radioGroup.addView(notSet)
-                radioGroup.addView(playStore)
-                radioGroup.addView(fdroid)
+                })
+                if (playStorePresent)
+                    radioGroup.addView(RadioButton(context).apply {
+                        setText(R.string.play_store)
+                        id = PLAY_STORE_POSITION
+                        layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                        setPadding(20, 20, 20, 20)
+                    })
+                if (fdroidExtensionPresent)
+                    radioGroup.addView(RadioButton(context).apply {
+                        setText(R.string.f_droid)
+                        id = FDROID_POSITION
+                        layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                        setPadding(20, 20, 20, 20)
+                    })
 
                 AlertDialog.Builder(context)
                         .setView(radioGroup)
