@@ -53,6 +53,7 @@ class CommonToolKotlin(val context: Context) {
         val PREF_ALTERNATE_METHOD = 2
         val PREF_MAX_BACKUP_SIZE = "max_backup_size"
         val PREF_AUTOSELECT_EXTRAS = "autoSelectExtraBackups"
+        val PREF_SHOW_STOCK_WARNING = "showStockWarning"
 
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
@@ -67,6 +68,7 @@ class CommonToolKotlin(val context: Context) {
         val JOBCODE_READ_CALLS = 1109
         val JOBCODE_READ_DPI = 3570
         val JOBCODE_READ_ADB = 2339
+        val JOBCODE_READ_WIFI = 1264
 
         val JOBCODE_LOAD_CONTACTS = 7570
         val JOBCODE_LOAD_SMS = 1944
@@ -80,6 +82,10 @@ class CommonToolKotlin(val context: Context) {
         val SMS_PERMISSION = 944
         val CALLS_PERMISSION = 676
         val SMS_AND_CALLS_PERMISSION = 567
+
+        val WIFI_FILE_NAME = "WifiConfigStore.xml"
+        val WIFI_FILE_PATH = "/data/misc/wifi/$WIFI_FILE_NAME"
+        val WIFI_FILE_NOT_FOUND = "***not_found***"
 
         // installer list adapter
 

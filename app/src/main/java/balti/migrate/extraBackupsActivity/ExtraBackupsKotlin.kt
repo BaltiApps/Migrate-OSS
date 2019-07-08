@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.*
 import android.content.pm.PackageManager
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
@@ -32,6 +33,8 @@ import balti.migrate.extraBackupsActivity.keyboard.LoadKeyboardForSelection
 import balti.migrate.extraBackupsActivity.sms.LoadSmsForSelectionKotlin
 import balti.migrate.extraBackupsActivity.sms.ReadSmsKotlin
 import balti.migrate.extraBackupsActivity.sms.SmsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.wifi.ReadWifiKotlin
+import balti.migrate.extraBackupsActivity.wifi.WifiDataPacket
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.CALLS_PERMISSION
@@ -49,11 +52,13 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_CONTACTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_DPI
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_SMS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_SMS_THEN_CALLS
+import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_WIFI
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_FDROID
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_AUTOSELECT_EXTRAS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_MAIN
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SHOW_STOCK_WARNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.SMS_AND_CALLS_PERMISSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.SMS_PERMISSION
 import kotlinx.android.synthetic.main.ask_for_backup_name.view.*
@@ -81,18 +86,21 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private var readCalls: ReadCallsKotlin? = null
     private var readDpi: ReadDpiKotlin? = null
     private var readAdb: ReadAdbKotlin? = null
+    private var readWifi: ReadWifiKotlin? = null
+
     private var makeAppPackets: MakeAppPackets? = null
 
     private var loadKeyboard: LoadKeyboardForSelection? = null
     private var loadInstallers: LoadInstallersForSelection? = null
 
-    private var keyboardText = ""
-    private var dpiText = ""
-    private var adbState = 0
 
     private var contactList = ArrayList<ContactsDataPacketKotlin>(0)    //extras_markers
     private var smsList = ArrayList<SmsDataPacketKotlin>(0)
     private var callsList = ArrayList<CallsDataPacketsKotlin>(0)
+    private var keyboardText = ""
+    private var dpiText = ""
+    private var adbState = 0
+    private var wifiData: WifiDataPacket? = null
 
     private val progressReceiver by lazy {
         object : BroadcastReceiver() {
@@ -164,7 +172,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
         startBackupButton.setOnClickListener {
             if (appListCopied.size > 0 || do_backup_contacts.isChecked || do_backup_calls.isChecked
-                    || do_backup_sms.isChecked || do_backup_dpi.isChecked || do_backup_keyboard.isChecked){     //extras_markers
+                    || do_backup_sms.isChecked || do_backup_dpi.isChecked || do_backup_keyboard.isChecked
+                    || do_backup_installers.isChecked || do_backup_adb.isChecked || do_backup_wifi.isChecked){                  //extras_markers
                 askForName()
             }
         }
@@ -192,6 +201,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         do_backup_keyboard.setOnCheckedChangeListener(this)
         do_backup_installers.setOnCheckedChangeListener(this)
         do_backup_adb.setOnCheckedChangeListener(this)
+        do_backup_wifi.setOnCheckedChangeListener(this)
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            wifi_main_item.visibility = View.GONE
 
         if (main.getBoolean(PREF_AUTOSELECT_EXTRAS, true)) {        //extras_markers
             val isSmsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
@@ -210,6 +223,30 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     }
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {        //extras_markers
+
+        fun showStockWarning(fPositive:() -> Unit, fNegative:() -> Unit){
+            if (main.getBoolean(PREF_SHOW_STOCK_WARNING, true)){
+                AlertDialog.Builder(this)
+                        .setTitle(R.string.dragons_ahead)
+                        .setMessage(R.string.dpi_backup_warning_desc)
+                        .setPositiveButton(R.string.go_ahead) {_, _ ->
+                            fPositive()
+                        }
+                        .setNegativeButton(android.R.string.cancel) {_,_ ->
+                            fNegative()
+                        }
+                        .setNeutralButton(R.string.dont_show_stock_warning){_, _ ->
+                            editor.putBoolean(PREF_SHOW_STOCK_WARNING, false)
+                            editor.commit()
+                            fPositive()
+                        }
+                        .setCancelable(false)
+                        .show()
+            }
+            else {
+                fPositive()
+            }
+        }
 
         if (buttonView == do_backup_contacts){
 
@@ -272,18 +309,12 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         } else if (buttonView == do_backup_dpi) {
             if (isChecked) {
 
-                AlertDialog.Builder(this)
-                        .setTitle(R.string.dragons_ahead)
-                        .setMessage(R.string.dpi_backup_warning_desc)
-                        .setPositiveButton(R.string.go_ahead) {_, _ ->
-                                readDpi = ReadDpiKotlin(JOBCODE_READ_DPI, this, dpi_main_item, dpi_selected_status, dpi_read_progress, do_backup_dpi)
-                                readDpi?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
-                        }
-                        .setNegativeButton(android.R.string.cancel) {_,_ ->
-                            do_backup_dpi.isChecked = false
-                        }
-                        .setCancelable(false)
-                        .show()
+                showStockWarning({
+                    readDpi = ReadDpiKotlin(JOBCODE_READ_DPI, this, dpi_main_item, dpi_selected_status, dpi_read_progress, do_backup_dpi)
+                    readDpi?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
+                }, {
+                    do_backup_dpi.isChecked = false
+                })
 
 
             } else {
@@ -298,19 +329,12 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         } else if (buttonView == do_backup_adb) {
             if (isChecked) {
 
-                AlertDialog.Builder(this)
-                        .setTitle(R.string.dragons_ahead)
-                        .setMessage(R.string.dpi_backup_warning_desc)
-                        .setPositiveButton(R.string.go_ahead) {_, _ ->
-                            readAdb = ReadAdbKotlin(JOBCODE_READ_ADB, this, adb_main_item, adb_selected_status, adb_read_progress, do_backup_adb)
-                            readAdb?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
-                        }
-                        .setNegativeButton(android.R.string.cancel) {_,_ ->
-                            do_backup_adb.isChecked = false
-                        }
-                        .setCancelable(false)
-                        .show()
-
+                showStockWarning({
+                    readAdb = ReadAdbKotlin(JOBCODE_READ_ADB, this, adb_main_item, adb_selected_status, adb_read_progress, do_backup_adb)
+                    readAdb?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
+                }, {
+                    do_backup_adb.isChecked = false
+                })
 
             } else {
                 adb_main_item.isClickable = false
@@ -348,6 +372,25 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 }
 
                 commonTools.tryIt { loadInstallers?.cancel(true) }
+            }
+        } else if (buttonView == do_backup_wifi){
+            if (isChecked) {
+
+                showStockWarning({
+                    readWifi = ReadWifiKotlin(JOBCODE_READ_WIFI, this, wifi_main_item, wifi_selected_status, wifi_read_progress, do_backup_wifi)
+                    readWifi?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
+                }, {
+                    do_backup_wifi.isChecked = false
+                })
+
+            } else {
+                wifiData = null
+                wifi_main_item.isClickable = false
+                wifi_selected_status.visibility = View.GONE
+                wifi_read_progress.visibility = View.GONE
+
+                commonTools.tryIt { readWifi?.cancel(true) }
+
             }
         }
 
@@ -512,7 +555,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
 
         val sdf = SimpleDateFormat("yyyy.MM.dd_HH.mm.ss")
-        if (isAllAppsSelected && do_backup_sms.isChecked && do_backup_calls.isChecked)              //extras_markers
+        if (isAllAppsSelected && do_backup_sms.isChecked && do_backup_calls.isChecked && do_backup_installers.isChecked)              //extras_markers
             mainView.backup_name_edit_text.setText("${getString(R.string.fullBackupLabel)}_${sdf.format(Calendar.getInstance().time)}")
         else mainView.backup_name_edit_text.setText("${getString(R.string.backupLabel)}_${sdf.format(Calendar.getInstance().time)}")
 
@@ -697,6 +740,15 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     }, true)
                 }
 
+            JOBCODE_READ_WIFI ->
+                commonTools.tryIt ({
+                    if (jobSuccess) {
+                        wifiData = jobResult as WifiDataPacket
+                        wifi_selected_status.text = wifiData?.fileName
+                    }
+                    else commonTools.showErrorDialog(jobResult.toString(), getString(R.string.error_reading_wifi))
+                }, true)
+
             JOBCODE_MAKE_APP_PACKETS ->
                 commonTools.tryIt ({
                     jobResult.toString().let {
@@ -804,7 +856,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     }
 
-    override fun onDestroy() {
+    override fun onDestroy() {                          //extras_markers
         super.onDestroy()
         commonTools.tryIt { makeAppPackets?.cancel(true) }
         commonTools.tryIt { LocalBroadcastManager.getInstance(this).unregisterReceiver(progressReceiver) }
@@ -812,6 +864,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         commonTools.tryIt { readSms?.cancel(true) }
         commonTools.tryIt { readCalls?.cancel(true) }
         commonTools.tryIt { readDpi?.cancel(true) }
+        commonTools.tryIt { readAdb?.cancel(true) }
+        commonTools.tryIt { readWifi?.cancel(true) }
     }
 
     override fun onBackPressed() {

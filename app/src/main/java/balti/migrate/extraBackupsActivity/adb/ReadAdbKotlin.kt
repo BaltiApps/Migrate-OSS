@@ -83,6 +83,9 @@ class ReadAdbKotlin(private val jobCode: Int,
             vOp.enableSet(doBackupCheckbox, true)
             vOp.visibilitySet(menuReadProgressBar, View.GONE)
 
+            if (adbState != 0 && adbState != 1)
+                error = "${vOp.getStringFromRes(R.string.adb_unknown)} ($adbState)\n\n$error".trim()
+
             if (error == "") {
 
                 vOp.doSomething {
@@ -97,7 +100,6 @@ class ReadAdbKotlin(private val jobCode: Int,
                                     when (adbState) {
                                         0 -> setMessage("${vOp.getStringFromRes(R.string.adb_disabled)} ($adbState)")
                                         1 -> setMessage("${vOp.getStringFromRes(R.string.adb_enabled)} ($adbState)")
-                                        else -> setMessage("${vOp.getStringFromRes(R.string.adb_unknown)} ($adbState)")
                                     }
                                 }
                                 .show()
