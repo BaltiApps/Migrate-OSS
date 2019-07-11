@@ -69,6 +69,7 @@ class CommonToolKotlin(val context: Context) {
         val JOBCODE_READ_DPI = 3570
         val JOBCODE_READ_ADB = 2339
         val JOBCODE_READ_WIFI = 1264
+        val JOBCODE_READ_FONTSCALE = 9221
 
         val JOBCODE_LOAD_CONTACTS = 7570
         val JOBCODE_LOAD_SMS = 1944

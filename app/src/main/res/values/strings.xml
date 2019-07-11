@@ -179,6 +179,7 @@
     <string name="adb_label">ADB state</string>
     <string name="installer_label">App installers</string>
     <string name="wifi_label">Wifi passwords file</string>
+    <string name="fontScale_label">Font scale</string>
     <string name="only_for_android_8">Only for Android Oreo and above (8.0+)</string>
     <string name="filtering_duplicates">Filtering\nduplicates</string>
     <string name="reading_sms">Reading sms</string>
@@ -191,6 +192,7 @@
     <string name="adb_enabled">ADB debugging enabled</string>
     <string name="adb_disabled">ADB debugging disabled</string>
     <string name="adb_unknown">ADB state unknown! Value will not be backed up.</string>
+    <string name="weird_font_scale">Weird font scale. Value will not be backed up.</string>
 
     <!--ExtraBackups.java-->
     <string name="not_recommended">Not recommended!</string>
@@ -224,6 +226,7 @@
     <string name="error_reading_dpi">Error reading DPI</string>
     <string name="error_reading_adb">Error reading ADB</string>
     <string name="error_reading_wifi">Error reading wifi password store</string>
+    <string name="error_reading_fontScale">Error reading font scale</string>
     <string name="dragons_ahead">Dragons ahead! May fail in Samsung, Huawei, Xiaomi.</string>
     <string name="dpi_backup_warning_desc">
         - Do not restore this backup in any other device.\n

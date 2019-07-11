@@ -28,6 +28,7 @@ import balti.migrate.extraBackupsActivity.contacts.ContactsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.contacts.LoadContactsForSelectionKotlin
 import balti.migrate.extraBackupsActivity.contacts.ReadContactsKotlin
 import balti.migrate.extraBackupsActivity.dpi.ReadDpiKotlin
+import balti.migrate.extraBackupsActivity.fontScale.ReadFontScaleKotlin
 import balti.migrate.extraBackupsActivity.installer.LoadInstallersForSelection
 import balti.migrate.extraBackupsActivity.keyboard.LoadKeyboardForSelection
 import balti.migrate.extraBackupsActivity.sms.LoadSmsForSelectionKotlin
@@ -50,6 +51,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_ADB
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_CONTACTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_DPI
+import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_FONTSCALE
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_SMS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_SMS_THEN_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_WIFI
@@ -87,6 +89,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private var readDpi: ReadDpiKotlin? = null
     private var readAdb: ReadAdbKotlin? = null
     private var readWifi: ReadWifiKotlin? = null
+    private var readFontScale: ReadFontScaleKotlin? = null
 
     private var makeAppPackets: MakeAppPackets? = null
 
@@ -101,6 +104,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private var dpiText = ""
     private var adbState = 0
     private var wifiData: WifiDataPacket? = null
+    private var fontScale = 0.0
 
     private val progressReceiver by lazy {
         object : BroadcastReceiver() {
@@ -125,6 +129,59 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
         destination = main.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
 
+        fun doEverything() {
+            startBackupButton.setOnClickListener {
+                if (appListCopied.size > 0 || do_backup_contacts.isChecked || do_backup_calls.isChecked
+                        || do_backup_sms.isChecked || do_backup_dpi.isChecked || do_backup_keyboard.isChecked
+                        || do_backup_installers.isChecked || do_backup_adb.isChecked || do_backup_wifi.isChecked || do_backup_fontScale.isChecked) {                  //extras_markers
+                    askForName()
+                }
+            }
+
+            extraBackupsBackButton.setOnClickListener {
+                startActivity(Intent(this, BackupActivityKotlin::class.java))
+                finish()
+            }
+
+            extra_backups_help.setOnClickListener {
+                AlertDialog.Builder(this)
+                        .setMessage(R.string.extra_backups_help)
+                        .setPositiveButton(R.string.close, null)
+                        .show()
+            }
+
+            LocalBroadcastManager.getInstance(this).registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
+
+            LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(CommonToolKotlin.ACTION_REQUEST_BACKUP_DATA))
+
+            do_backup_contacts.setOnCheckedChangeListener(this)         //extras_markers
+            do_backup_sms.setOnCheckedChangeListener(this)
+            do_backup_calls.setOnCheckedChangeListener(this)
+            do_backup_dpi.setOnCheckedChangeListener(this)
+            do_backup_keyboard.setOnCheckedChangeListener(this)
+            do_backup_installers.setOnCheckedChangeListener(this)
+            do_backup_adb.setOnCheckedChangeListener(this)
+            do_backup_wifi.setOnCheckedChangeListener(this)
+            do_backup_fontScale.setOnCheckedChangeListener(this)
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                wifi_main_item.visibility = View.GONE
+
+            if (main.getBoolean(PREF_AUTOSELECT_EXTRAS, true)) {        //extras_markers
+                val isSmsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
+                val isCallsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
+                val isSmsAndCallsGranted = isSmsGranted && isCallsGranted
+
+                when {
+                    isSmsAndCallsGranted ->
+                        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_SMS,
+                                Manifest.permission.READ_CALL_LOG), SMS_AND_CALLS_PERMISSION)
+                    isCallsGranted -> do_backup_calls.isChecked = true
+                    isSmsGranted -> do_backup_sms.isChecked = true
+                }
+                do_backup_installers.isChecked = true
+            }
+        }
 
         class Copy : AsyncTask<Any, Any, Any>() {
 
@@ -164,62 +221,11 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             override fun onPostExecute(result: Any?) {
                 super.onPostExecute(result)
                 waitingDialog.dismiss()
+                doEverything()
             }
-
         }
 
         Copy().execute()
-
-        startBackupButton.setOnClickListener {
-            if (appListCopied.size > 0 || do_backup_contacts.isChecked || do_backup_calls.isChecked
-                    || do_backup_sms.isChecked || do_backup_dpi.isChecked || do_backup_keyboard.isChecked
-                    || do_backup_installers.isChecked || do_backup_adb.isChecked || do_backup_wifi.isChecked){                  //extras_markers
-                askForName()
-            }
-        }
-
-        extraBackupsBackButton.setOnClickListener {
-            startActivity(Intent(this, BackupActivityKotlin::class.java))
-            finish()
-        }
-
-        extra_backups_help.setOnClickListener {
-            AlertDialog.Builder(this)
-                    .setMessage(R.string.extra_backups_help)
-                    .setPositiveButton(R.string.close, null)
-                    .show()
-        }
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
-
-        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(CommonToolKotlin.ACTION_REQUEST_BACKUP_DATA))
-
-        do_backup_contacts.setOnCheckedChangeListener(this)         //extras_markers
-        do_backup_sms.setOnCheckedChangeListener(this)
-        do_backup_calls.setOnCheckedChangeListener(this)
-        do_backup_dpi.setOnCheckedChangeListener(this)
-        do_backup_keyboard.setOnCheckedChangeListener(this)
-        do_backup_installers.setOnCheckedChangeListener(this)
-        do_backup_adb.setOnCheckedChangeListener(this)
-        do_backup_wifi.setOnCheckedChangeListener(this)
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-            wifi_main_item.visibility = View.GONE
-
-        if (main.getBoolean(PREF_AUTOSELECT_EXTRAS, true)) {        //extras_markers
-            val isSmsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
-            val isCallsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
-            val isSmsAndCallsGranted = isSmsGranted && isCallsGranted
-
-            when {
-                isSmsAndCallsGranted ->
-                    ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_SMS,
-                            Manifest.permission.READ_CALL_LOG), SMS_AND_CALLS_PERMISSION)
-                isCallsGranted -> do_backup_calls.isChecked = true
-                isSmsGranted -> do_backup_sms.isChecked = true
-            }
-            do_backup_installers.isChecked = true
-        }
     }
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {        //extras_markers
@@ -367,10 +373,6 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 installers_main_item.isClickable = false
                 installer_selected_status.visibility = View.GONE
 
-                appListCopied.forEach {
-                    it.installerName = ""
-                }
-
                 commonTools.tryIt { loadInstallers?.cancel(true) }
             }
         } else if (buttonView == do_backup_wifi){
@@ -390,6 +392,24 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 wifi_read_progress.visibility = View.GONE
 
                 commonTools.tryIt { readWifi?.cancel(true) }
+
+            }
+        } else if (buttonView == do_backup_fontScale) {
+            if (isChecked){
+
+                showStockWarning({
+                    readFontScale = ReadFontScaleKotlin(JOBCODE_READ_FONTSCALE, this, fontScale_main_item, fontScale_selected_status, fontScale_read_progress, do_backup_fontScale)
+                    readFontScale?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
+                }, {
+                    do_backup_fontScale.isChecked = false
+                })
+            } else {
+                fontScale = 0.0
+                fontScale_main_item.isClickable = false
+                fontScale_selected_status.visibility = View.GONE
+                fontScale_read_progress.visibility = View.GONE
+
+                commonTools.tryIt { readFontScale?.cancel(true) }
 
             }
         }
@@ -749,6 +769,15 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     else commonTools.showErrorDialog(jobResult.toString(), getString(R.string.error_reading_wifi))
                 }, true)
 
+            JOBCODE_READ_FONTSCALE ->
+                commonTools.tryIt ({
+                    if (jobSuccess) {
+                        fontScale = jobResult as Double
+                        fontScale_selected_status.text = fontScale.toString()
+                    }
+                    else commonTools.showErrorDialog(jobResult.toString(), getString(R.string.error_reading_fontScale))
+                }, true)
+
             JOBCODE_MAKE_APP_PACKETS ->
                 commonTools.tryIt ({
                     jobResult.toString().let {
@@ -866,6 +895,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         commonTools.tryIt { readDpi?.cancel(true) }
         commonTools.tryIt { readAdb?.cancel(true) }
         commonTools.tryIt { readWifi?.cancel(true) }
+        commonTools.tryIt { readFontScale?.cancel(true) }
     }
 
     override fun onBackPressed() {
