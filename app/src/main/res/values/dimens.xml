@@ -15,4 +15,6 @@
     <dimen name="guide_layouts_padding">30dp</dimen>
     <dimen name="third_party_logo_width">80dp</dimen>
     <dimen name="extra_large_padding_width">20dp</dimen>
+    <dimen name="selected_text_size">12sp</dimen>
+    <dimen name="stock_android_label_size">12sp</dimen>
 </resources>

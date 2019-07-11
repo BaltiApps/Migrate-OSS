@@ -233,8 +233,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         fun showStockWarning(fPositive:() -> Unit, fNegative:() -> Unit){
             if (main.getBoolean(PREF_SHOW_STOCK_WARNING, true)){
                 AlertDialog.Builder(this)
-                        .setTitle(R.string.dragons_ahead)
-                        .setMessage(R.string.dpi_backup_warning_desc)
+                        .setTitle(R.string.stock_android_title)
+                        .setMessage(R.string.stock_android_desc)
                         .setPositiveButton(R.string.go_ahead) {_, _ ->
                             fPositive()
                         }
@@ -321,12 +321,13 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 }, {
                     do_backup_dpi.isChecked = false
                 })
-
+                sal_dpi.visibility = View.GONE
 
             } else {
                 dpi_main_item.isClickable = false
                 dpi_selected_status.visibility = View.GONE
                 dpi_read_progress.visibility = View.GONE
+                sal_dpi.visibility = View.VISIBLE
 
                 commonTools.tryIt { readDpi?.cancel(true) }
 
@@ -341,11 +342,13 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 }, {
                     do_backup_adb.isChecked = false
                 })
+                sal_adb.visibility = View.GONE
 
             } else {
                 adb_main_item.isClickable = false
                 adb_selected_status.visibility = View.GONE
                 adb_read_progress.visibility = View.GONE
+                sal_adb.visibility = View.VISIBLE
 
                 commonTools.tryIt { readAdb?.cancel(true) }
 
@@ -384,12 +387,14 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 }, {
                     do_backup_wifi.isChecked = false
                 })
+                sal_wifi.visibility = View.GONE
 
             } else {
                 wifiData = null
                 wifi_main_item.isClickable = false
                 wifi_selected_status.visibility = View.GONE
                 wifi_read_progress.visibility = View.GONE
+                sal_wifi.visibility = View.VISIBLE
 
                 commonTools.tryIt { readWifi?.cancel(true) }
 
@@ -403,11 +408,14 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 }, {
                     do_backup_fontScale.isChecked = false
                 })
+                sal_fontScale.visibility = View.GONE
+
             } else {
                 fontScale = 0.0
                 fontScale_main_item.isClickable = false
                 fontScale_selected_status.visibility = View.GONE
                 fontScale_read_progress.visibility = View.GONE
+                sal_fontScale.visibility = View.VISIBLE
 
                 commonTools.tryIt { readFontScale?.cancel(true) }
 

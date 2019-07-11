@@ -103,7 +103,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
                             android:textColor="@color/colorAccent"
-                            android:textSize="12sp"
+                            android:textSize="@dimen/selected_text_size"
                             android:visibility="gone" />
 
                         <ProgressBar
@@ -176,7 +176,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
                             android:textColor="@color/colorAccent"
-                            android:textSize="12sp"
+                            android:textSize="@dimen/selected_text_size"
                             android:visibility="gone" />
 
                         <ProgressBar
@@ -249,7 +249,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
                             android:textColor="@color/colorAccent"
-                            android:textSize="12sp"
+                            android:textSize="@dimen/selected_text_size"
                             android:visibility="gone" />
 
                         <ProgressBar
@@ -317,7 +317,7 @@
                         android:gravity="center_horizontal"
                         android:text="@string/tap_to_see_values"
                         android:textColor="@color/colorAccent"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/selected_text_size"
                         android:visibility="gone" />
 
 
@@ -330,6 +330,16 @@
                         android:paddingStart="@dimen/small_padding_width"
                         android:paddingEnd="@dimen/small_padding_width"
                         android:visibility="gone" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stock_android_rom"
+                        android:textSize="@dimen/stock_android_label_size"
+                        android:textStyle="italic"
+                        android:textColor="@color/stock_android_label_color"
+                        android:id="@+id/sal_dpi"
+                        />
 
                 </LinearLayout>
 
@@ -383,7 +393,7 @@
                         android:gravity="center_horizontal"
                         android:text="@string/tap_to_see_values"
                         android:textColor="@color/colorAccent"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/selected_text_size"
                         android:visibility="gone" />
 
                 </LinearLayout>
@@ -439,7 +449,7 @@
                         android:gravity="center_horizontal"
                         android:text="@string/tap_to_see_values"
                         android:textColor="@color/colorAccent"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/selected_text_size"
                         android:visibility="gone" />
 
                 </LinearLayout>
@@ -495,7 +505,7 @@
                         android:gravity="center_horizontal"
                         android:text="@string/tap_to_see_values"
                         android:textColor="@color/colorAccent"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/selected_text_size"
                         android:visibility="gone" />
 
                     <ProgressBar
@@ -507,6 +517,16 @@
                         android:paddingStart="@dimen/small_padding_width"
                         android:paddingEnd="@dimen/small_padding_width"
                         android:visibility="gone" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stock_android_rom"
+                        android:textSize="@dimen/stock_android_label_size"
+                        android:textStyle="italic"
+                        android:textColor="@color/stock_android_label_color"
+                        android:id="@+id/sal_adb"
+                        />
 
                 </LinearLayout>
 
@@ -561,7 +581,7 @@
                         android:gravity="center_horizontal"
                         android:text="@string/tap_to_see_values"
                         android:textColor="@color/colorAccent"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/selected_text_size"
                         android:visibility="gone" />
 
                     <ProgressBar
@@ -573,6 +593,16 @@
                         android:paddingStart="@dimen/small_padding_width"
                         android:paddingEnd="@dimen/small_padding_width"
                         android:visibility="gone" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stock_android_rom"
+                        android:textSize="@dimen/stock_android_label_size"
+                        android:textStyle="italic"
+                        android:textColor="@color/stock_android_label_color"
+                        android:id="@+id/sal_wifi"
+                        />
 
                 </LinearLayout>
 
@@ -627,7 +657,7 @@
                         android:gravity="center_horizontal"
                         android:text="@string/tap_to_see_values"
                         android:textColor="@color/colorAccent"
-                        android:textSize="12sp"
+                        android:textSize="@dimen/selected_text_size"
                         android:visibility="gone" />
 
                     <ProgressBar
@@ -639,6 +669,16 @@
                         android:paddingStart="@dimen/small_padding_width"
                         android:paddingEnd="@dimen/small_padding_width"
                         android:visibility="gone" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stock_android_rom"
+                        android:textSize="@dimen/stock_android_label_size"
+                        android:textStyle="italic"
+                        android:textColor="@color/stock_android_label_color"
+                        android:id="@+id/sal_fontScale"
+                        />
 
                 </LinearLayout>
 
