@@ -2,7 +2,6 @@ package balti.migrate.simpleActivities
 
 import android.Manifest
 import android.app.AppOpsManager
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
@@ -28,6 +27,9 @@ import balti.migrate.CommonTools.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.inAppRestore.ZipPicker
 import balti.migrate.utilities.CommonToolKotlin
+import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
+import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
+import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_START
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_ACCESS_ASKED
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ANDROID_VERSION_WARNING
@@ -78,11 +80,9 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             editor.commit()
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                val channel = NotificationChannel(BackupService.BACKUP_START_NOTIFICATION,              /*kotlin*/
-                        BackupService.BACKUP_START_NOTIFICATION, NotificationManager.IMPORTANCE_DEFAULT)/*kotlin*/
-                channel.setSound(null, null)
-                notificationManager.createNotificationChannel(channel)
+                commonTools.makeNotificationChannel(CHANNEL_BACKUP_START, CHANNEL_BACKUP_START, NotificationManager.IMPORTANCE_DEFAULT)
+                commonTools.makeNotificationChannel(CHANNEL_BACKUP_RUNNING, CHANNEL_BACKUP_RUNNING, NotificationManager.IMPORTANCE_DEFAULT)
+                commonTools.makeNotificationChannel(CHANNEL_BACKUP_END, CHANNEL_BACKUP_END, NotificationManager.IMPORTANCE_DEFAULT)
             }
 
             startActivity(Intent(this, InitialGuideKotlin::class.java))

@@ -1,15 +1,15 @@
 package balti.migrate.utilities
 
-import android.app.ActivityManager
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.support.v4.content.FileProvider
+import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import balti.migrate.R
@@ -28,12 +28,44 @@ class CommonToolKotlin(val context: Context) {
 
         val MAX_TWRP_ZIP_SIZE = 4194300L
 
+        val BACKUP_NOTIFICATION_ID = 12954
+
         val DEFAULT_INTERNAL_STORAGE_DIR = "/sdcard/Migrate"
         val TEMP_DIR_NAME = "/data/local/tmp/migrate_cache"
 
+        val FILE_PROGRESSLOG = "progressLog.txt"
+        val FILE_ERRORLOG = "errorLog.txt"
+        val FILE_PREFIX_BACKUP_SCRIPT = "the_backup_script_"
+        val FILE_PREFIX_RETRY_SCRIPT = "retry_script_"
+
+        val CHANNEL_BACKUP_START = "Backup start notification"
+        val CHANNEL_BACKUP_END = "Backup finished notification"
+        val CHANNEL_BACKUP_RUNNING = "Backup running notification"
+
         val ACTION_BACKUP_PROGRESS = "Migrate progress broadcast"
+        val ACTION_BACKUP_CANCEL = "Migrate backup cancel broadcast"
         val ACTION_REQUEST_BACKUP_DATA = "get data"
         val ACTION_EXTRA_BACKUP_ACTIVITY_STARTED = "extraBackupsStarted"
+        val ACTION_START_BATCH_BACKUP = "start batch backup"
+        val ACTION_BACKUP_SERVICE_STARTED = "backup service started"
+
+        val EXTRA_PROGRESS_TYPE = "type"
+        val EXTRA_PROGRESS_TYPE_FINISHED = "finished"
+        val EXTRA_PROGRESS_TYPE_APP_PROGRESS = "app_progress"
+        val EXTRA_PROGRESS_TYPE_ZIP_PROGRESS = "zip_progress"
+        val EXTRA_PROGRESS_TYPE_VERIFYING = "verifying_backups"
+        val EXTRA_PROGRESS_TYPE_CORRECTING = "correcting_errors"
+
+        val EXTRA_BACKUP_NAME = "backupName"
+        val EXTRA_ERRORS = "errors"
+        val EXTRA_PART_NO = "partNo"
+        val EXTRA_IS_FINAL_PROCESS = "final_process"
+        val EXTRA_FINISHED_MESSAGE = "finishedMessage"
+        val EXTRA_TOTAL_TIME = "total_time"
+        val EXTRA_APP_LOG = "app_log"
+        val EXTRA_ZIP_LOG = "zip_log"
+        val EXTRA_APP_NAME = "app_name"
+        val EXTRA_RETRY_LOG = "retry_log"
 
         val PACKAGE_NAME_PLAY_STORE = "com.android.vending"
         val PACKAGE_NAME_FDROID = "org.fdroid.fdroid.privileged"
@@ -54,6 +86,8 @@ class CommonToolKotlin(val context: Context) {
         val PREF_MAX_BACKUP_SIZE = "max_backup_size"
         val PREF_AUTOSELECT_EXTRAS = "autoSelectExtraBackups"
         val PREF_SHOW_STOCK_WARNING = "showStockWarning"
+        val PREF_COMPRESSION_LEVEL = "compressionLevel"
+        val PREF_DEFAULT_COMPRESSION_LEVEL = 0
 
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
@@ -93,6 +127,15 @@ class CommonToolKotlin(val context: Context) {
         val NOT_SET_POSITION = 0
         val PLAY_STORE_POSITION = 1
         val FDROID_POSITION = 2
+
+        val REPORTING_EMAIL = "help.baltiapps@gmail.com"
+    }
+
+    var LBM : LocalBroadcastManager? = null
+
+    init {
+        if (context is Activity || context is Service)
+            LBM = LocalBroadcastManager.getInstance(context)
     }
 
     fun unpackAssetToInternal(assetFileName: String, targetFileName: String, toInternal: Boolean): String {
@@ -123,11 +166,11 @@ class CommonToolKotlin(val context: Context) {
 
     fun reportLogs(isErrorLogMandatory: Boolean) {
 
-        val progressLog = File(context.externalCacheDir, "progressLog.txt")
-        val errorLog = File(context.externalCacheDir, "errorLog.txt")
+        val progressLog = File(context.externalCacheDir, FILE_PROGRESSLOG)
+        val errorLog = File(context.externalCacheDir, FILE_ERRORLOG)
 
         val backupScripts = context.externalCacheDir.listFiles { f: File ->
-            (f.name.startsWith("the_backup_script_") || f.name.startsWith("retry_script_"))
+            (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT))
                     && f.name.endsWith(".sh")
 
         }
@@ -161,7 +204,7 @@ class CommonToolKotlin(val context: Context) {
                         val emailIntent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
                             flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                             type = "text/plain"
-                            putExtra(Intent.EXTRA_EMAIL, arrayOf("help.baltiapps@gmail.com"))
+                            putExtra(Intent.EXTRA_EMAIL, arrayOf(REPORTING_EMAIL))
                             putExtra(Intent.EXTRA_SUBJECT, "Log report for Migrate")
                             putExtra(Intent.EXTRA_TEXT, body)
                         }
@@ -342,7 +385,14 @@ class CommonToolKotlin(val context: Context) {
     fun applyNamingCorrectionForShell(name: String) =
             name.replace("(", "\\(").replace(")", "\\)").replace(" ", "\\ ")
 
-
+    fun makeNotificationChannel(channelId: String, channelDesc: CharSequence, importance: Int){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val channel = NotificationChannel(channelId, channelDesc, importance)
+            channel.setSound(null, null)
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
 
     fun tryIt(f: () -> Unit, showError: Boolean = false, isCancelable: Boolean = true, title: String = ""){
         try {
@@ -368,7 +418,6 @@ class CommonToolKotlin(val context: Context) {
 
     fun showErrorDialog(message: String, title: String = "", isCancelable: Boolean = true){
         try {
-            Log.d(DEBUG_TAG, "should display")
             AlertDialog.Builder(context)
                     .setIcon(R.drawable.ic_error)
                     .setMessage(message).apply {

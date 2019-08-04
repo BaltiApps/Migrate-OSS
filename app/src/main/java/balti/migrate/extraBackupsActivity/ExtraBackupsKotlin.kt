@@ -20,6 +20,7 @@ import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.backupActivity.BackupDataPacketKotlin
 import balti.migrate.extraBackupsActivity.adb.ReadAdbKotlin
+import balti.migrate.extraBackupsActivity.apps.AppBatch
 import balti.migrate.extraBackupsActivity.apps.MakeAppPackets
 import balti.migrate.extraBackupsActivity.calls.CallsDataPacketsKotlin
 import balti.migrate.extraBackupsActivity.calls.LoadCallsForSelectionKotlin
@@ -75,6 +76,11 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     // to add extras search for "extras_markers" and change those lines/functions
 
+    companion object {
+        var appBatches = ArrayList<AppBatch>(0)
+        var backupName = ""
+    }
+
     private val commonTools by lazy { CommonToolKotlin(this) }
     val appListCopied by lazy { ArrayList<BackupDataPacketKotlin>(0) }
 
@@ -95,7 +101,6 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     private var loadKeyboard: LoadKeyboardForSelection? = null
     private var loadInstallers: LoadInstallersForSelection? = null
-
 
     private var contactList = ArrayList<ContactsDataPacketKotlin>(0)    //extras_markers
     private var smsList = ArrayList<SmsDataPacketKotlin>(0)
@@ -606,6 +611,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                             val zip = File("$destination/$this.zip")
 
                             fun startBackup(){
+                                backupName = this
                                 makeAppPackets = MakeAppPackets(JOBCODE_MAKE_APP_PACKETS, this@ExtraBackupsKotlin, destination, appListCopied)
                                 makeAppPackets?.execute()
                             }
@@ -790,6 +796,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 commonTools.tryIt ({
                     jobResult.toString().let {
                         if (jobSuccess) {
+                            appBatches = jobResult as ArrayList<AppBatch>
                             //TODO("start backup engine")
                         }
                     }
