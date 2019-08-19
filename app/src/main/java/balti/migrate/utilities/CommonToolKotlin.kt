@@ -19,6 +19,7 @@ import java.io.*
 class CommonToolKotlin(val context: Context) {
 
     companion object {
+
         val DEBUG_TAG = "migrate_tag"
         val MAIN_ACTIVITY_AD_ID = "ca-app-pub-6582325651261661/6749792408"
         val BACKUP_ACTIVITY_AD_ID = "ca-app-pub-6582325651261661/5791933954"
@@ -50,6 +51,7 @@ class CommonToolKotlin(val context: Context) {
         val ACTION_BACKUP_SERVICE_STARTED = "backup service started"
 
         val EXTRA_PROGRESS_TYPE = "type"
+        val EXTRA_PROGRESS_TYPE_TESTING = "TESTING_SYSTEM"
         val EXTRA_PROGRESS_TYPE_FINISHED = "finished"
         val EXTRA_PROGRESS_TYPE_APP_PROGRESS = "app_progress"
         val EXTRA_PROGRESS_TYPE_ZIP_PROGRESS = "zip_progress"
@@ -62,6 +64,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_IS_FINAL_PROCESS = "final_process"
         val EXTRA_FINISHED_MESSAGE = "finishedMessage"
         val EXTRA_TOTAL_TIME = "total_time"
+        val EXTRA_TEST_LOG = "test_log"
         val EXTRA_APP_LOG = "app_log"
         val EXTRA_ZIP_LOG = "zip_log"
         val EXTRA_APP_NAME = "app_name"
@@ -127,6 +130,31 @@ class CommonToolKotlin(val context: Context) {
         val NOT_SET_POSITION = 0
         val PLAY_STORE_POSITION = 1
         val FDROID_POSITION = 2
+
+        // main backup engine
+        val MIGRATE_STATUS_LABEL = "migrate_status"
+
+        val SETTINGS_DPI = "val_dpi"
+        val SETTINGS_KEYBOARD = "keyboard_text"
+        val SETTINGS_ADB = "val_adb"
+        val SETTINGS_FONT_SCALE = "val_fontScale"
+
+        val BACKUP_NAME_SETTINGS = "settings.json"
+        val BACKUP_NAME_WIFI = "wifi.xml"
+
+        val MTD_APP_NAME = "app_name"
+        val MTD_PACKAGE_NAME = "package_name"
+        val MTD_APK = "apk"
+        val MTD_DATA = "data"
+        val MTD_VERSION = "version"
+        val MTD_DATA_SIZE = "data_size"
+        val MTD_SYSTEM_SIZE = "system_size"
+        val MTD_PERMISSION = "permission"
+        val MTD_ICON_FILE_NAME = "icon_file"
+
+        val EXTRA_PART_NAME = "part_name"
+        val EXTRA_PART_NUMBER = "part_number"
+        val EXTRA_TOTAL_PARTS = "total_parts"
 
         val REPORTING_EMAIL = "help.baltiapps@gmail.com"
     }
@@ -323,14 +351,12 @@ class CommonToolKotlin(val context: Context) {
     fun dirDelete(path: String) {
         val file = File(path)
         if (file.exists()) {
-            if (!file.isDirectory)
-                file.delete()
-            else {
+            if (file.isDirectory) {
                 val files = file.listFiles()
                 for (f in files)
                     dirDelete(f.absolutePath)
-                file.delete()
             }
+            file.delete()
         }
     }
 

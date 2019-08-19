@@ -583,6 +583,10 @@
     <string name="showing_apps_from">Showing apps from category:</string>
     <string name="enter_app_name">App/package name</string>
 
+    <!--MainBackupEngine.kt-->
+    <string name="test_apk_not_found">Test apk not found or not properly created</string>
+    <string name="test_data_not_found">Test data (tar.gz) not found or not properly created</string>
+
     <!--thanks_layout.xml-->
     <string name="thanks_to_stericson">Huge thanks to Stephen (stericdroid) for allowing me to liberally use his busybox builds</string>
     <string name="thanks_to_magisk">Without topjohnwu\'s Magisk, this app would not be possible. I learned a lot from Magisk installer scripts.</string>

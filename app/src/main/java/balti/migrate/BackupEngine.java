@@ -253,7 +253,7 @@ public class BackupEngine {
     }
 
 
-    String moveFile(File source, File destination) {
+    String moveFile(File source, File destination) {    //done
         try {
             BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(source));
             FileOutputStream fileOutputStream = new FileOutputStream(destination);
@@ -1003,7 +1003,7 @@ public class BackupEngine {
         return err;
     }
 
-    Vector<File> getAllFiles(File directory, Vector<File> allFiles) {
+    Vector<File> getAllFiles(File directory, Vector<File> allFiles) {       //done
         File files[] = directory.listFiles();
         for (File f : files) {
             if (f.isFile())
@@ -1016,7 +1016,7 @@ public class BackupEngine {
         return allFiles;
     }
 
-    void makePackageData() {
+    void makePackageData() {        // done
 
         File package_data = new File(destination + "/" + backupName + "/package-data.txt");
         String contents = "";
@@ -1041,7 +1041,7 @@ public class BackupEngine {
         }
     }
 
-    void makeExtrasData() {
+    void makeExtrasData() {     // done
 
         File package_data = new File(destination + "/" + backupName + "/extras-data");
         String contents = "";
@@ -1074,6 +1074,7 @@ public class BackupEngine {
     }
 
     void systemAppInstallScript(String sysAppPackageName, String sysAppPastingDir, String appDir) {
+        // done
 
         String scriptName = sysAppPackageName + ".sh";
         String scriptLocation = destination + "/" + backupName + "/" + scriptName;
@@ -1088,7 +1089,7 @@ public class BackupEngine {
                 "cd /tmp/" + "\n" +
                 "rm -rf " + appDir + "\n" +
                 "rm -rf " + scriptName + "\n";
-        ;
+
 
 
         (new File(destination + "/" + backupName)).mkdirs();
@@ -1147,7 +1148,7 @@ public class BackupEngine {
         }
     }
 
-    String byteToString(byte[] bytes) {
+    String byteToString(byte[] bytes) {         //done
         StringBuilder res = new StringBuilder();
         for (byte b : bytes) {
             res.append(b).append("_");
@@ -1155,7 +1156,7 @@ public class BackupEngine {
         return res.toString();
     }
 
-    private Bitmap getBitmapFromDrawable(@NonNull Drawable drawable) {
+    private Bitmap getBitmapFromDrawable(@NonNull Drawable drawable) {      // done. combined
         final Bitmap bmp = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         final Canvas canvas = new Canvas(bmp);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
