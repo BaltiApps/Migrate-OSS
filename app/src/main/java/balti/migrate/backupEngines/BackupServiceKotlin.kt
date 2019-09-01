@@ -43,12 +43,17 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ZIP_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_COMPRESSION_LEVEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_COMPRESSION_LEVEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_MAIN
+import dagger.Module
+import dagger.Provides
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 
-
+@Module
 class BackupServiceKotlin: Service() {
+
+    @Provides
+    fun getEngineContext() : Context = this
 
     override fun onBind(intent: Intent?): IBinder? = null
 
