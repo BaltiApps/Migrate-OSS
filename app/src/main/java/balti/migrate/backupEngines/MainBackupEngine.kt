@@ -2,9 +2,6 @@ package balti.migrate.backupEngines
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageInfo
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.os.AsyncTask
 import android.os.Build
 import android.support.v4.app.NotificationCompat
@@ -41,7 +38,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MainBackupEngine(private var context: Context, private var backupName: String, private var destination: String,
+class MainBackupEngine(private var context: Context, private val madePartName: String, private var backupName: String, private var destination: String,
                        private var compressionLevel: Int, private var partNumber: Int, private var totalParts: Int,
                        private var contactList : ArrayList<ContactsDataPacketKotlin>?, private var doBackupContacts : Boolean,
                        private var callsList: ArrayList<CallsDataPacketsKotlin>?, private var doBackupCalls : Boolean,
@@ -55,13 +52,6 @@ class MainBackupEngine(private var context: Context, private var backupName: Str
 
     private val commonTools by lazy {
         CommonToolKotlin(context)
-    }
-
-    private val madePartName by lazy {
-        (totalParts > 1).let {
-            if (it) "${context.getString(R.string.part)} $partNumber ${context.getString(R.string.of)} $totalParts"
-            else ""
-        }
     }
 
     private val errorTag by lazy { "[$partNumber/$totalParts]" }
@@ -152,27 +142,6 @@ class MainBackupEngine(private var context: Context, private var backupName: Str
             e.printStackTrace()
             return e.message.toString()
         }
-    }
-
-    private fun getIconString(packageInfo: PackageInfo): String {
-
-        val stream = ByteArrayOutputStream()
-
-        val drawable = pm.getApplicationIcon(packageInfo.applicationInfo)
-        val icon = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(icon)
-
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-
-        icon.compress(Bitmap.CompressFormat.PNG, 100, stream)
-
-        val bytes = stream.toByteArray()
-        var res = ""
-        for (b in bytes){
-            res = res + b + "_"
-        }
-        return res
     }
 
     private fun getAllFiles(directory: File, allFiles: ArrayList<File>): ArrayList<File>{

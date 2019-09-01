@@ -347,6 +347,7 @@
     <string name="stock_android_rom">Stock android ROM recommended</string>
     <string name="please_wait">Please wait</string>
     <string name="reading_data">Reading backup data</string>
+    <string name="making_app_script">Making app backup script</string>
     <string name="just_a_minute">Just a minute…</string>
     <string name="starting_engine">Starting backup engine</string>
     <string name="root_permission_denied">Root permission denied!</string>

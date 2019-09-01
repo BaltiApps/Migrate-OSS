@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
 import balti.migrate.R
+import balti.migrate.backupEngines.BackupIntentData
 import kotlinx.android.synthetic.main.error_report_layout.view.*
 import java.io.*
 
@@ -51,6 +52,8 @@ class CommonToolKotlin(val context: Context) {
         val ACTION_BACKUP_SERVICE_STARTED = "backup service started"
 
         val EXTRA_PROGRESS_TYPE = "type"
+        val EXTRA_TITLE = "title"
+        val EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS = "making_app_backup_scripts"
         val EXTRA_PROGRESS_TYPE_TESTING = "TESTING_SYSTEM"
         val EXTRA_PROGRESS_TYPE_FINISHED = "finished"
         val EXTRA_PROGRESS_TYPE_APP_PROGRESS = "app_progress"
@@ -69,6 +72,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_ZIP_LOG = "zip_log"
         val EXTRA_APP_NAME = "app_name"
         val EXTRA_RETRY_LOG = "retry_log"
+        val EXTRA_PROGERSS_PERCENTAGE = "progress"
 
         val PACKAGE_NAME_PLAY_STORE = "com.android.vending"
         val PACKAGE_NAME_FDROID = "org.fdroid.fdroid.privileged"
@@ -91,6 +95,7 @@ class CommonToolKotlin(val context: Context) {
         val PREF_SHOW_STOCK_WARNING = "showStockWarning"
         val PREF_COMPRESSION_LEVEL = "compressionLevel"
         val PREF_DEFAULT_COMPRESSION_LEVEL = 0
+        val PREF_NEW_ICON_METHOD = "new icon method"
 
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
@@ -143,6 +148,8 @@ class CommonToolKotlin(val context: Context) {
         val BACKUP_NAME_WIFI = "wifi.xml"
 
         val MTD_APP_NAME = "app_name"
+        val MTD_IS_SYSTEM = "is_system_app"
+        val MTD_APP_ICON = "icon"
         val MTD_PACKAGE_NAME = "package_name"
         val MTD_APK = "apk"
         val MTD_DATA = "data"
@@ -155,6 +162,8 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_PART_NAME = "part_name"
         val EXTRA_PART_NUMBER = "part_number"
         val EXTRA_TOTAL_PARTS = "total_parts"
+
+        val MIGRATE_STATUS = "migrate_status"
 
         val REPORTING_EMAIL = "help.baltiapps@gmail.com"
     }
@@ -473,4 +482,13 @@ class CommonToolKotlin(val context: Context) {
         }
     }
 
+    fun getMadePartName(backupIntentData: BackupIntentData): String =
+            (backupIntentData.totalParts > 1).let {
+                if (it)
+                    "${context.getString(R.string.part)} ${backupIntentData.partNumber} ${context.getString(R.string.of)} ${backupIntentData.totalParts}"
+                else ""
+            }
+
+    fun getPercentageText(count: Int, total: Int): String =
+            "${(((count*1.0)/total)*100).toInt()}%"
 }

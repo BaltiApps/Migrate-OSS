@@ -2,10 +2,7 @@ package balti.migrate.backupEngines
 
 import android.app.NotificationManager
 import android.app.Service
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
@@ -52,8 +49,13 @@ import java.io.FileWriter
 @Module
 class BackupServiceKotlin: Service() {
 
+    private val sharedPrefs by lazy { getSharedPreferences(PREF_FILE_MAIN, Context.MODE_PRIVATE) }
+
     @Provides
     fun getEngineContext() : Context = this
+
+    @Provides
+    fun getPrefs(): SharedPreferences = sharedPrefs
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -278,8 +280,7 @@ class BackupServiceKotlin: Service() {
         super.onCreate()
 
         commonTools.tryIt {
-            compressionLevel = getSharedPreferences(PREF_FILE_MAIN, Context.MODE_PRIVATE)
-                    .getInt(PREF_COMPRESSION_LEVEL, PREF_DEFAULT_COMPRESSION_LEVEL)
+            compressionLevel = sharedPrefs.getInt(PREF_COMPRESSION_LEVEL, PREF_DEFAULT_COMPRESSION_LEVEL)
         }
 
         commonTools.tryIt {
