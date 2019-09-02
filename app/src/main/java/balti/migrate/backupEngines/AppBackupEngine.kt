@@ -196,6 +196,7 @@ abstract class AppBackupEngine(private val bd: BackupIntentData,
         val scriptFile = File(engineContext.filesDir, "the_backup_script_${bd.partNumber}.sh")
         val scriptWriter = BufferedWriter(FileWriter(scriptFile))
         val appAndDataBackupScript = commonTools.unpackAssetToInternal("backup_app_and_data.sh", "backup_app_and_data.sh", false)
+        val appVerifyScript = commonTools.unpackAssetToInternal("verify_app_and_data.sh", "verify_app_and_data.sh", false)
 
         scriptWriter.write("#!sbin/sh\n\n")
         scriptWriter.write("echo \" \"\n")
@@ -249,14 +250,16 @@ abstract class AppBackupEngine(private val bd: BackupIntentData,
                 val scriptCommand = "sh " + appAndDataBackupScript + " " + packageName + " " + "${bd.destination}/${bd.backupName}" + " " +
                         apkPath + " " + apkName + " " + dataPath + " " + dataName + " " + busyboxBinaryPath + " " + it[i].PERMISSION + "\n"
 
-
-
                 scriptWriter.write(echoCopyCommand, 0, echoCopyCommand.length)
                 scriptWriter.write(scriptCommand, 0, scriptCommand.length)
 
+                if (sharedPrefs.getBoolean(CommonToolKotlin.PREF_VERIFY_APP_BACKUPS, true)){
+                    val verifyCommand = "sh $appVerifyScript $packageName ${bd.destination} $busyboxBinaryPath\n"
+                    scriptWriter.write(verifyCommand, 0, verifyCommand.length)
+                }
+
                 val isSystem = apkPath.startsWith("/system")
-                if (isSystem)
-                    systemAppInstallScript(packageName, apkPath, packageName)
+                if (isSystem) systemAppInstallScript(packageName, apkPath, packageName)
 
                 makeMetadataFile(isSystem, appName, apkName,
                         "$dataName.tar.gz", appIconFileName, versionName,
@@ -270,6 +273,10 @@ abstract class AppBackupEngine(private val bd: BackupIntentData,
         scriptFile.setExecutable(true)
 
         return scriptFile.absolutePath
+    }
+
+    private fun runBackupScript(){
+
     }
 
     override fun onPreExecute() {

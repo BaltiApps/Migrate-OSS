@@ -95,7 +95,10 @@ class CommonToolKotlin(val context: Context) {
         val PREF_SHOW_STOCK_WARNING = "showStockWarning"
         val PREF_COMPRESSION_LEVEL = "compressionLevel"
         val PREF_DEFAULT_COMPRESSION_LEVEL = 0
-        val PREF_NEW_ICON_METHOD = "new icon method"
+
+        val PREF_NEW_ICON_METHOD = "new_icon_method"
+        val PREF_VERIFY_APP_BACKUPS = "verify_apps"
+        val PREF_REALTIME_ERRORS = "realtime_errors"
 
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
