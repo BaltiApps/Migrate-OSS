@@ -1,52 +1,49 @@
 #!sbin/sh
 
-# PARAMETERS: packageName destination apkPath apkName dataParentPath dataName busyboxBinaryPath isPermission
-#                   1           2        3       4          5           6              7              8
+# PARAMETERS: packageName destination apkPath apkName dataPath dataName busyBox
+#                   1          2         3       4       5         6      7
 
 echo " "
 
-if [ ! -e "$2" ]; then
-    echo "Destination for package $1: $2 does not exist. Making..."
-    mkdir -p $2 2>/dev/null
+PACKAGE_NAME="$1"
+DESTINATION="$2"
+APK_PATH="$3"
+APK_NAME="$4"
+DATA_PATH="$5"
+DATA_NAME="$6"
+BUSYBOX="$7"
+
+if [[ ! -e "$DESTINATION" ]]; then
+    echo "Destination for package $PACKAGE_NAME: $DESTINATION does not exist. Making..."
+    mkdir -p ${DESTINATION} 2>/dev/null
 fi
-
-# backup permission
-
-#   |   Starting version 1.2
-#   |   permissions are backed up using
-#   |   Java based methods
-
-#if [ "$8" = true ]; then
-#    perms="$(dumpsys package $1 | grep android.permission | grep granted=true)"
-#    if [ -n "$perms" ]; then
-#        echo "$perms" > "$2/$1.perm"
-#    else
-#        echo "no_permissions_granted" > "$2/$1.perm"
-#    fi
-#fi
 
 # starting version 1.3 all apks are backed up in <packageName>.app directory
 # these include split apks also
 
-# make app directory
-appDir="$2/$1.app"
-mkdir -p ${appDir}
+if [[ ${APK_PATH} != "NULL" && ${APK_NAME} != "NULL" ]]; then
 
-# backup apk
-cd $3; cp "$4" "${appDir}/$1.apk"
-if [ -e "$2/$1.app/$1.apk" ]; then
-    echo "Apk copied"
+    # make app directory
+    appDir="$DESTINATION/$PACKAGE_NAME.app"
+    mkdir -p ${appDir}
+
+    # backup apk
+    cd ${APK_PATH}; cp "$APK_NAME" "${appDir}/$PACKAGE_NAME.apk"
+    if [[ -e "$2/$1.app/$1.apk" ]]; then
+        echo "Apk copied"
+    fi
+
+    # copy split apks (new in v2.0)
+    cp ${APK_PATH}/split_*.apk "${appDir}/" 2>/dev/null && echo "Copied split apks"
+
 fi
 
-# copy split apks (new in v2.0)
-cp $3/split_*.apk "${appDir}/" 2>/dev/null && echo "Copied split apks"
-
 # backup data
-if [ ! "$6" = "NULL" ]; then
-    if [ -e "$5/$6" ]; then
-        cd "$5"
-        $7 tar -vczpf "$2/$1.tar.gz" "$6"
+if [[ ${DATA_PATH} != "NULL" && ${DATA_NAME} != "NULL" ]]; then
+    if [[ -e "$DATA_PATH/$DATA_NAME" ]]; then
+        cd "$DATA_PATH"
+        ${BUSYBOX} tar -vczpf "$DESTINATION/$PACKAGE_NAME.tar.gz" "$DATA_NAME"
     else
-        echo "Data path : $5/$6 does not exist"
+        echo "Data path : $DATA_PATH/$DATA_NAME does not exist"
     fi
 fi

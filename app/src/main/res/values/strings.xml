@@ -383,6 +383,9 @@
     <string name="package_installer">Package installer</string>
     <string name="f_droid">F-Droid</string>
     <string name="not_set">Don\'t set</string>
+
+    <!--AppBackupEngine.kt-->
+    <string name="script_file_does_not_exist">Script file does not exist</string>
     
     <!--keyboard_selector.xml-->
     <string name="select_default_keyboard_from_enabled">Select default keyboard from enabled keyboards</string>

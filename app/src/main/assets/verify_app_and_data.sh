@@ -1,36 +1,68 @@
 #!sbin/sh
 
-# PARAMETERS: packageName destination busyBox
-#                 1           2          3
+# PARAMETERS: fileToCheck packageName destination busyBox
+#                  1           2           3         4
 
-APP_NAME="$1.app"
-DATA_NAME="$1.tar.gz"
-PERMISSION_NAME="$1.perm"
-JSON_NAME="$1.json"
-ICON_NAME="$1.icon"
-DESTINATION="$2"
-BUSYBOX="$3"
+FILE_TO_CHECK="$1"
+PACKAGE_NAME="$2"
+DESTINATION="$3"
+BUSYBOX="$4"
+
+echo " "
 
 echoErr() { echo "$@" 1>&2; }
-checkFile() {
+checkExistence(){
     if [[ -z $1 && $1 != "NULL" ]]; then
         if [[ -e "$DESTINATION/$1" ]]; then
-            echo "---FOUND $1---"
-            if [[ $1 == *"tar.gz" ]]; then
-                echo "---VERIFYING $1---"
-                ${BUSYBOX} gzip -t "$DESTINATION/$1"
-            fi
+            echo true
         else
-            echoErr "---NOT FOUND $1---"
+            echo false
         fi
     fi
 }
 
-checkFile ${APP_NAME}
-checkFile ${DATA_NAME}
-checkFile ${PERMISSION_NAME}
-checkFile ${JSON_NAME}
-checkFile ${ICON_NAME}
+checkApp(){
 
-echo "---VERIFICATION COMPLETE---"
-echoErr "---VERIFICATION COMPLETE---"
+    exists="$(checkExistence $1)"
+
+    if [[ ${exists} == true ]]; then
+        echo "--- APP $1 ---"
+        if [[ ! -e "$DESTINATION/$PACKAGE_NAME.app/$FILE_TO_CHECK" ]]; then
+            echo "--- ERROR - No base apk ---"
+        else
+            echo "--- OK $1 ---"
+        fi
+    fi
+
+}
+
+checkData(){
+
+    exists="$(checkExistence $1)"
+
+    if [[ ${exists} == true ]]; then
+        echo "--- DATA $1 ---"
+        err="$(${BUSYBOX} gzip -t "${DESTINATION}/$1" 2>&1)"
+        if [[ ! -z "$err" ]]; then
+            echoErr "--- ERROR - $1 - $err ---"
+        else
+            echo "--- OK $1 ---"
+        fi
+    fi
+
+}
+
+if [[ ${FILE_TO_CHECK} == *".app" ]]; then
+    checkApp ${FILE_TO_CHECK}
+elif [[ ${FILE_TO_CHECK} == *".app" ]]; then
+    checkData ${FILE_TO_CHECK}
+else
+    echo "--- CHECK $1 ---"
+    if [[ $(checkExistence ${FILE_TO_CHECK}) == true ]]; then
+        echo "--- OK $1 ---"
+    else
+        echo "--- NOT FOUND $1 ---"
+    fi
+fi
+
+echo "--- VERIFICATION COMPLETE ---"

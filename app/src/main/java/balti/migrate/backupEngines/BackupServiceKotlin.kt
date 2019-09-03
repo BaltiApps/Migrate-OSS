@@ -24,19 +24,18 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_START
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ERRORS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_FINISHED_MESSAGE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_IS_FINAL_PROCESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_APP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_FINISHED
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_TESTING
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_VERIFYING
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_RETRY_LOG
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SCRIPT_APP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TEST_LOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ZIP_LOG
+import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_COMPRESSION_LEVEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_COMPRESSION_LEVEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_MAIN
@@ -47,7 +46,7 @@ import java.io.File
 import java.io.FileWriter
 
 @Module
-class BackupServiceKotlin: Service() {
+class BackupServiceKotlin: Service(), OnBackupComplete {
 
     private val sharedPrefs by lazy { getSharedPreferences(PREF_FILE_MAIN, Context.MODE_PRIVATE) }
 
@@ -66,11 +65,19 @@ class BackupServiceKotlin: Service() {
 
     private var progressWriter: BufferedWriter? = null
     private var errorWriter: BufferedWriter? = null
-    private var lastProgressLine = ""
+    private var lastTestLine = ""
+    private var lastScriptAppName = ""
+    private var lastAppLogLine = ""
     private var lastZipLine = ""
     private var lastVerifyLine = ""
     private var lastCorrectionLine = ""
-    private var lastTestLine = ""
+
+    private var startedTest = false
+    private var startedScript = false
+    private var startedAppProgress = false
+    private var startedZip = false
+    private var startedVerify = false
+    private var startedCorrection = false
 
     private val toReturnIntent by lazy { Intent(ACTION_BACKUP_PROGRESS) }
     private val allErrors by lazy { ArrayList<String>(0) }
@@ -109,9 +116,12 @@ class BackupServiceKotlin: Service() {
                                 if (extraName == EXTRA_TEST_LOG && this != lastTestLine) {
                                     progressWriter?.write("$this\n")
                                     lastTestLine = this
-                                } else if (extraName == EXTRA_APP_LOG && this != lastProgressLine) {
+                                } else if (extraName == EXTRA_SCRIPT_APP_NAME && this != lastScriptAppName) {
                                     progressWriter?.write("$this\n")
-                                    lastProgressLine = this
+                                    lastScriptAppName = this
+                                }  else if (extraName == EXTRA_APP_LOG && this != lastAppLogLine) {
+                                    progressWriter?.write("$this\n")
+                                    lastAppLogLine = this
                                 } else if (extraName == EXTRA_ZIP_LOG && this != lastZipLine) {
                                     progressWriter?.write("$this\n")
                                     lastZipLine = this
@@ -129,17 +139,17 @@ class BackupServiceKotlin: Service() {
 
                 when (intent.getStringExtra(EXTRA_PROGRESS_TYPE)) {
 
-                    EXTRA_PROGRESS_TYPE_FINISHED -> {
+                    /*EXTRA_PROGRESS_TYPE_FINISHED -> {
 
                         commonTools.tryIt {
 
                             if (intent.hasExtra(EXTRA_ERRORS))
                                 allErrors.addAll(intent.getStringArrayListExtra(EXTRA_ERRORS))
 
-                            if (intent.hasExtra(EXTRA_FINISHED_MESSAGE))
-                                progressWriter?.write("\n\n" + intent.getStringExtra(EXTRA_FINISHED_MESSAGE) + "\n\n\n")
-
                             if (intent.getBooleanExtra(EXTRA_IS_FINAL_PROCESS, false)) {
+
+                                if (intent.hasExtra(EXTRA_FINISHED_MESSAGE))
+                                    progressWriter?.write("\n\n" + intent.getStringExtra(EXTRA_FINISHED_MESSAGE) + "\n\n\n")
 
                                 allErrors.forEach {
                                     commonTools.tryIt { errorWriter?.write(it + "\n") }
@@ -169,19 +179,53 @@ class BackupServiceKotlin: Service() {
                             }
 
                         }
-                    }
+                    }*/
 
                     EXTRA_PROGRESS_TYPE_TESTING -> {
+                        if (!startedTest) {
+                            progressWriter?.write("\n\n${MIGRATE_STATUS} System test logs\n")
+                            startedTest = true
+                        }
                         writeLogs(EXTRA_TEST_LOG)
                         if (intent.hasExtra(EXTRA_ERRORS)) {
-                            allErrors.add(EXTRA_PROGRESS_TYPE_TESTING)
                             allErrors.addAll(intent.getStringArrayListExtra(EXTRA_ERRORS))
                         }
                     }
-                    EXTRA_PROGRESS_TYPE_APP_PROGRESS -> writeLogs(EXTRA_APP_LOG)
-                    EXTRA_PROGRESS_TYPE_ZIP_PROGRESS -> writeLogs(EXTRA_ZIP_LOG)
-                    EXTRA_PROGRESS_TYPE_VERIFYING -> writeLogs(EXTRA_APP_NAME)
-                    EXTRA_PROGRESS_TYPE_CORRECTING -> writeLogs(EXTRA_RETRY_LOG)
+                    EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS -> {
+                        if (!startedScript) {
+                            progressWriter?.write("\n\n${MIGRATE_STATUS} Making app backup scripts\n")
+                            startedScript = true
+                        }
+                        writeLogs(EXTRA_SCRIPT_APP_NAME)
+                    }
+                    EXTRA_PROGRESS_TYPE_APP_PROGRESS -> {
+                        if (!startedAppProgress) {
+                            progressWriter?.write("\n\n${MIGRATE_STATUS} App backup logs\n")
+                            startedAppProgress = true
+                        }
+                        writeLogs(EXTRA_APP_LOG)
+                    }
+                    EXTRA_PROGRESS_TYPE_ZIP_PROGRESS -> {
+                        if (!startedZip) {
+                            progressWriter?.write("\n\n${MIGRATE_STATUS} Zip logs\n")
+                            startedZip = true
+                        }
+                        writeLogs(EXTRA_ZIP_LOG)
+                    }
+                    EXTRA_PROGRESS_TYPE_VERIFYING -> {
+                        if (!startedVerify) {
+                            progressWriter?.write("\n\n${MIGRATE_STATUS} App verification logs\n")
+                            startedVerify = true
+                        }
+                        writeLogs(EXTRA_APP_NAME)
+                    }
+                    EXTRA_PROGRESS_TYPE_CORRECTING -> {
+                        if (!startedCorrection) {
+                            progressWriter?.write("\n\n${MIGRATE_STATUS} Correction logs\n")
+                            startedCorrection = true
+                        }
+                        writeLogs(EXTRA_RETRY_LOG)
+                    }
 
                 }
             }
@@ -337,5 +381,9 @@ class BackupServiceKotlin: Service() {
 
         commonTools.tryIt { progressWriter?.close() }
         commonTools.tryIt { errorWriter?.close() }
+    }
+
+    override fun onBackupComplete(jobCode: Int, jobSuccess: Boolean, jobResult: Any?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

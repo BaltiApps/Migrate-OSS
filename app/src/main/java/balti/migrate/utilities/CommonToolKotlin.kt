@@ -56,6 +56,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS = "making_app_backup_scripts"
         val EXTRA_PROGRESS_TYPE_TESTING = "TESTING_SYSTEM"
         val EXTRA_PROGRESS_TYPE_FINISHED = "finished"
+        val EXTRA_PROGRESS_TYPE_APP_BACKUP_FINISHED = "app_backup_finished"
         val EXTRA_PROGRESS_TYPE_APP_PROGRESS = "app_progress"
         val EXTRA_PROGRESS_TYPE_ZIP_PROGRESS = "zip_progress"
         val EXTRA_PROGRESS_TYPE_VERIFYING = "verifying_backups"
@@ -71,6 +72,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_APP_LOG = "app_log"
         val EXTRA_ZIP_LOG = "zip_log"
         val EXTRA_APP_NAME = "app_name"
+        val EXTRA_SCRIPT_APP_NAME = "script_app_name"
         val EXTRA_RETRY_LOG = "retry_log"
         val EXTRA_PROGERSS_PERCENTAGE = "progress"
 
@@ -97,9 +99,6 @@ class CommonToolKotlin(val context: Context) {
         val PREF_DEFAULT_COMPRESSION_LEVEL = 0
 
         val PREF_NEW_ICON_METHOD = "new_icon_method"
-        val PREF_VERIFY_APP_BACKUPS = "verify_apps"
-        val PREF_REALTIME_ERRORS = "realtime_errors"
-
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
         val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter
@@ -123,6 +122,8 @@ class CommonToolKotlin(val context: Context) {
         val JOBCODE_LOAD_INSTALLERS = 8709
 
         val JOBCODE_MAKE_APP_PACKETS = 65364
+
+        val JOBCODE_APP_BACKUP = 3499
 
         val CONTACT_PERMISSION = 933
         val SMS_PERMISSION = 944
@@ -166,7 +167,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_PART_NUMBER = "part_number"
         val EXTRA_TOTAL_PARTS = "total_parts"
 
-        val MIGRATE_STATUS = "migrate_status"
+        val MIGRATE_STATUS = "MIGRATE_STATUS"
 
         val REPORTING_EMAIL = "help.baltiapps@gmail.com"
     }
@@ -492,6 +493,11 @@ class CommonToolKotlin(val context: Context) {
                 else ""
             }
 
+    fun getPercentage(count: Int, total: Int): Int {
+        return if (total != 0) (count*100)/total
+        else 0
+    }
+
     fun getPercentageText(count: Int, total: Int): String =
-            "${(((count*1.0)/total)*100).toInt()}%"
+            "${getPercentage(count, total)}%"
 }
