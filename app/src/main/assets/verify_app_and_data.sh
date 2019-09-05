@@ -51,18 +51,3 @@ checkData(){
     fi
 
 }
-
-if [[ ${FILE_TO_CHECK} == *".app" ]]; then
-    checkApp ${FILE_TO_CHECK}
-elif [[ ${FILE_TO_CHECK} == *".app" ]]; then
-    checkData ${FILE_TO_CHECK}
-else
-    echo "--- CHECK $1 ---"
-    if [[ $(checkExistence ${FILE_TO_CHECK}) == true ]]; then
-        echo "--- OK $1 ---"
-    else
-        echo "--- NOT FOUND $1 ---"
-    fi
-fi
-
-echo "--- VERIFICATION COMPLETE ---"

@@ -3,23 +3,18 @@ package balti.migrate.backupEngines
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.os.AsyncTask
 import android.widget.Toast
 import balti.migrate.R
 import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.AppBatch
-import balti.migrate.extraBackupsActivity.apps.AppPacket
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PART_NUMBER
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGERSS_PERCENTAGE
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_APP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
@@ -27,18 +22,8 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SCRIPT_APP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_PARTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_BACKUP_SCRIPT
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
-import balti.migrate.utilities.CommonToolKotlin.Companion.MTD_APK
-import balti.migrate.utilities.CommonToolKotlin.Companion.MTD_APP_ICON
-import balti.migrate.utilities.CommonToolKotlin.Companion.MTD_APP_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.MTD_DATA
-import balti.migrate.utilities.CommonToolKotlin.Companion.MTD_DATA_SIZE
-import balti.migrate.utilities.CommonToolKotlin.Companion.MTD_ICON_FILE_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.MTD_IS_SYSTEM
-import balti.migrate.utilities.CommonToolKotlin.Companion.MTD_PACKAGE_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.MTD_PERMISSION
-import balti.migrate.utilities.CommonToolKotlin.Companion.MTD_SYSTEM_SIZE
-import balti.migrate.utilities.CommonToolKotlin.Companion.MTD_VERSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
 import java.io.*
 import javax.inject.Inject
@@ -64,12 +49,15 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
             by lazy { DaggerBackupDependencyComponent.create() }
 
     private val commonTools by lazy { CommonToolKotlin(engineContext) }
+    private val backupUtils by lazy { BackupUtils() }
+
     private val actualBroadcast by lazy {
         Intent(ACTION_BACKUP_PROGRESS).apply {
             putExtra(EXTRA_BACKUP_NAME, bd.backupName)
             putExtra(EXTRA_PROGRESS_TYPE, "")
             putExtra(EXTRA_TOTAL_PARTS, bd.totalParts)
             putExtra(EXTRA_PART_NUMBER, bd.partNumber)
+            putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
         }
     }
     private val pm by lazy { engineContext.packageManager }
@@ -97,27 +85,6 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         if (isBackupCancelled || doBreak) onCancelledFunction?.invoke()
     }
 
-    private fun getIconString(packageInfo: PackageInfo): String {
-
-        val stream = ByteArrayOutputStream()
-
-        val drawable = pm.getApplicationIcon(packageInfo.applicationInfo)
-        val icon = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(icon)
-
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-
-        icon.compress(Bitmap.CompressFormat.PNG, 100, stream)
-
-        val bytes = stream.toByteArray()
-        var res = ""
-        for (b in bytes){
-            res = res + b + "_"
-        }
-        return res
-    }
-
     private fun systemAppInstallScript(sysAppPackageName: String, sysAppPastingDir: String, appDir: String) {
 
         val scriptName = "$sysAppPackageName.sh"
@@ -141,84 +108,6 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         }
 
         script.setExecutable(true, false)
-    }
-
-    private fun makeMetadataFile(isSystem: Boolean, appName: String, apkName: String, dataName: String, iconFileName: String?, version: String, permissions: Boolean, appPacket: AppPacket, iconString: String? = null) {
-
-        val packageName = appPacket.PACKAGE_INFO.packageName
-
-        val metadataFileName = "$packageName.json"
-        val metadataFile = File("${bd.destination}/${bd.destination}/$metadataFileName")
-
-        val metadataContent = "" +
-                "{\n" +
-                "   \"${MTD_IS_SYSTEM}\" : \"$isSystem\",\n" +
-                "   \"${MTD_APP_NAME}\" : \"$appName\",\n" +
-                "   \"${MTD_PACKAGE_NAME}\" : \"$packageName\",\n" +
-                "   \"${MTD_APK}\" : \"$apkName\",\n" +
-                "   \"${MTD_DATA}\" : \"$dataName\",\n" +
-                "   \"${MTD_VERSION}\" : \"$version\",\n" +
-                "   \"${MTD_DATA_SIZE}\" : ${appPacket.dataSize},\n" +
-                "   \"${MTD_SYSTEM_SIZE}\" : ${appPacket.systemSize},\n" +
-                "   \"${MTD_PERMISSION}\" : $permissions,\n" +
-                when {
-                    iconFileName != null -> "   \"${MTD_ICON_FILE_NAME}\" : \"$iconFileName\"\n"
-                    iconString != null -> "   \"${MTD_APP_ICON}\" : $iconString\n"
-                    else -> ""
-                } +
-                "}\n"
-
-        File(actualDestination).mkdirs()
-
-        commonTools.tryIt {
-            val writer = BufferedWriter(FileWriter(metadataFile))
-            writer.write(metadataContent)
-            writer.close()
-        }
-    }
-
-    private fun makeIconFile(packageName: String, iconString: String): String{
-
-        val iconFileName = "$packageName.icon"
-        val iconFile = File("$actualDestination/$iconFileName")
-
-        File(actualDestination).mkdirs()
-
-        commonTools.tryIt {
-            val writer = BufferedWriter(FileWriter(iconFile))
-            writer.write(iconString)
-            writer.close()
-        }
-
-        return iconFileName
-    }
-
-    private fun makePermissionFile(packageName: String){
-        val backupPerm = File("$actualDestination/$packageName.perm")
-        try {
-
-            val writer = BufferedWriter(FileWriter(backupPerm))
-
-            val pi = pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
-            if (pi.requestedPermissions == null) {
-                writer.write("no_permissions_granted")
-            } else {
-                for (i in pi.requestedPermissions.indices) {
-                    if (pi.requestedPermissionsFlags[i] and PackageInfo.REQUESTED_PERMISSION_GRANTED != 0) {
-                        val p = pi.requestedPermissions[i].trim { it <= ' ' }
-                        if (p.startsWith("android.permission"))
-                            writer.write(p + "\n")
-                    }
-                }
-            }
-
-            writer.close()
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            backupErrors.add("PERM_FILE_MAKE_ERROR" + errorTag + ": PACKAGE: " + packageName + " ERROR: " + e.message)
-        }
-
     }
 
     private fun makeBackupScript(): String?{
@@ -248,17 +137,17 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
             actualBroadcast.putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS)
             actualBroadcast.putExtra(EXTRA_TITLE, title)
 
-            appBatch.appPackets.let {
-                for (i in 0 until it.size) {
+            appBatch.appPackets.let {packets ->
+                for (i in 0 until packets.size) {
 
                     if (isBackupCancelled) break
 
-                    val packet = appBatch.appPackets[i]
+                    val packet = packets[i]
 
                     val appName = formatName(pm.getApplicationLabel(packet.PACKAGE_INFO.applicationInfo).toString())
 
                     actualBroadcast.apply {
-                        putExtra(EXTRA_PROGERSS_PERCENTAGE, commonTools.getPercentageText(i + 1, it.size))
+                        putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentageText(i + 1, packets.size))
                         putExtra(EXTRA_SCRIPT_APP_NAME, appName)
                     }
                     commonTools.LBM?.sendBroadcast(actualBroadcast)
@@ -283,18 +172,18 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
                     }
 
                     if (packet.PERMISSION)
-                        makePermissionFile(packageName)
+                        backupUtils.makePermissionFile(packageName, actualDestination, pm)
 
                     var versionName: String? = packet.PACKAGE_INFO.versionName
                     versionName = if (versionName == null || versionName == "") "_"
                     else formatName(versionName)
 
-                    val appIcon: String = getIconString(packet.PACKAGE_INFO)
+                    val appIcon: String = backupUtils.getIconString(packet.PACKAGE_INFO, pm)
                     var appIconFileName: String? = null
                     if (!sharedPrefs.getBoolean(PREF_NEW_ICON_METHOD, true))
-                        appIconFileName = makeIconFile(packageName, appIcon)
+                        appIconFileName = backupUtils.makeIconFile(packageName, appIcon, actualDestination)
 
-                    val echoCopyCommand = "echo \"$MIGRATE_STATUS: $appName (${(i + 1)}/${it.size}) icon: ${if (appIconFileName == null) appIcon else "$(cat $packageName.icon)"}\"\n"
+                    val echoCopyCommand = "echo \"$MIGRATE_STATUS: $appName (${(i + 1)}/${packets.size}) icon: ${if (appIconFileName == null) appIcon else "$(cat $packageName.icon)"}\"\n"
                     val scriptCommand = "sh $appAndDataBackupScript " +
                             "$packageName $actualDestination " +
                             "$apkPath $apkName " +
@@ -307,9 +196,11 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
                     val isSystem = apkPath.startsWith("/system")
                     if (isSystem) systemAppInstallScript(packageName, apkPath, packageName)
 
-                    makeMetadataFile(isSystem, appName, apkName,
-                            "$dataName.tar.gz", appIconFileName, versionName,
-                            packet.PERMISSION, packet, if (appIconFileName != null) appIcon else null)
+                    backupUtils.makeMetadataFile(
+                            isSystem, appName, apkName, "$dataName.tar.gz", appIconFileName,
+                            versionName, packet.PERMISSION, packet, bd, doBackupInstallers, actualDestination,
+                            if (appIconFileName != null) appIcon else null
+                    )
                 }
             }
 
@@ -372,7 +263,7 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
                         else engineContext.getString(R.string.backingUp)
 
                         actualBroadcast.putExtra(EXTRA_APP_NAME, line)
-                        actualBroadcast.putExtra(EXTRA_PROGERSS_PERCENTAGE, commonTools.getPercentage(++c, appBatch.appPackets.size))
+                        actualBroadcast.putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(++c, appBatch.appPackets.size))
                         actualBroadcast.putExtra(EXTRA_TITLE, title)
 
                         commonTools.LBM?.sendBroadcast(actualBroadcast)
@@ -390,12 +281,12 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
 
                     var ignorable = false
 
-                    (BackupUtils.ignorableWarnings + BackupUtils.correctableErrors).forEach {
-                        if (errorLine.endsWith(it)) ignorable = true
+                    (BackupUtils.ignorableWarnings + BackupUtils.correctableErrors).forEach {warnings ->
+                        if (errorLine.endsWith(warnings)) ignorable = true
                     }
 
-                    if (ignorable) backupErrors.add("RUN$errorTag: $errorLine")
-                    else backupErrors.add("SUPPRESSED_RUN$errorTag: $errorLine")
+                    if (ignorable) backupErrors.add("APP_BACKUP_ERR$errorTag: $errorLine")
+                    else backupErrors.add("APP_BACKUP_SUPPRESSED$errorTag: $errorLine")
 
                     return@iterateBufferedReader false
                 }, null, false)
@@ -404,31 +295,32 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         }
         catch (e: Exception){
             e.printStackTrace()
-            backupErrors.add("RUN_CODE_ERROR$errorTag: ${e.message}")
+            backupErrors.add("APP_BACKUP_TRY_CATCH$errorTag: ${e.message}")
         }
     }
 
     private fun cancelTask() {
-        commonTools.tryIt {
-            val killProcess = Runtime.getRuntime().exec("su")
-            val writer = BufferedWriter(OutputStreamWriter(killProcess.outputStream))
-            if (BACKUP_PID != -999){
+        if (BACKUP_PID != -999) {
+            commonTools.tryIt {
+                val killProcess = Runtime.getRuntime().exec("su")
+
+                val writer = BufferedWriter(OutputStreamWriter(killProcess.outputStream))
                 writer.write("kill -9 $BACKUP_PID\n")
                 writer.write("kill -15 $BACKUP_PID\n")
-            }
-            writer.write("exit\n")
-            writer.flush()
+                writer.write("exit\n")
+                writer.flush()
 
-            commonTools.tryIt { killProcess.waitFor() }
-            commonTools.tryIt { suProcess?.waitFor() }
+                commonTools.tryIt { killProcess.waitFor() }
+                commonTools.tryIt { suProcess?.waitFor() }
 
-            Toast.makeText(engineContext, engineContext.getString(R.string.deletingFiles), Toast.LENGTH_SHORT).show()
+                Toast.makeText(engineContext, engineContext.getString(R.string.deletingFiles), Toast.LENGTH_SHORT).show()
 
-            if (bd.totalParts > 1) {
-                commonTools.dirDelete(actualDestination)
-                commonTools.dirDelete("$actualDestination.zip")
-            } else {
-                commonTools.dirDelete(bd.destination)
+                if (bd.totalParts > 1) {
+                    commonTools.dirDelete(actualDestination)
+                    commonTools.dirDelete("$actualDestination.zip")
+                } else {
+                    commonTools.dirDelete(bd.destination)
+                }
             }
         }
     }
@@ -438,11 +330,17 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         backupDependencyComponent.inject(this)
 
         if (bd.partNumber == 0){
-            var previousBackupScripts = engineContext.filesDir.listFiles { f -> f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) && f.name.endsWith(".sh") }
+            var previousBackupScripts = engineContext.filesDir.listFiles {
+                f -> (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
+                    f.name.endsWith(".sh")
+            }
             for (f in previousBackupScripts) f.delete()
 
             engineContext.externalCacheDir?.let {
-                previousBackupScripts = it.listFiles { f -> f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) && f.name.endsWith(".sh") }
+                previousBackupScripts = it.listFiles {
+                    f -> (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
+                        f.name.endsWith(".sh")
+                }
                 for (f in previousBackupScripts) f.delete()
             }
         }
@@ -456,6 +354,7 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
 
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
+        BACKUP_PID = -999
         if (backupErrors.size == 0)
             onBackupComplete.onBackupComplete(jobcode, true, bd.partNumber)
         else onBackupComplete.onBackupComplete(jobcode, false, backupErrors)

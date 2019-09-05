@@ -7,4 +7,5 @@ import javax.inject.Singleton
 @Component(modules = [BackupServiceKotlin::class])
 interface BackupDependencyComponent {
     fun inject(appBackupEngine: AppBackupEngine)
+    fun inject(verificationEngine: VerificationEngine)
 }

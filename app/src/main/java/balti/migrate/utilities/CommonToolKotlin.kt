@@ -74,7 +74,8 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_APP_NAME = "app_name"
         val EXTRA_SCRIPT_APP_NAME = "script_app_name"
         val EXTRA_RETRY_LOG = "retry_log"
-        val EXTRA_PROGERSS_PERCENTAGE = "progress"
+        val EXTRA_PROGRESS_PERCENTAGE = "progress"
+        val DEFECT_NUMBER = "defect_number"
 
         val PACKAGE_NAME_PLAY_STORE = "com.android.vending"
         val PACKAGE_NAME_FDROID = "org.fdroid.fdroid.privileged"
@@ -162,6 +163,7 @@ class CommonToolKotlin(val context: Context) {
         val MTD_SYSTEM_SIZE = "system_size"
         val MTD_PERMISSION = "permission"
         val MTD_ICON_FILE_NAME = "icon_file"
+        val MTD_INSTALLER_NAME = "installer_name"
 
         val EXTRA_PART_NAME = "part_name"
         val EXTRA_PART_NUMBER = "part_number"
