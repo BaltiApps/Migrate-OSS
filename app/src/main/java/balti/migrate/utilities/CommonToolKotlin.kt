@@ -365,7 +365,7 @@ class CommonToolKotlin(val context: Context) {
 
     fun dirDelete(path: String) {
         val file = File(path)
-        if (file.exists()) {
+        if (file.exists() && file.absolutePath != Environment.getExternalStorageDirectory().absolutePath) {
             if (file.isDirectory) {
                 val files = file.listFiles()
                 for (f in files)

@@ -144,17 +144,6 @@ class MainBackupEngine(private var context: Context, private val madePartName: S
         }
     }
 
-    private fun getAllFiles(directory: File, allFiles: ArrayList<File>): ArrayList<File>{
-        if (!directory.isDirectory) return arrayListOf(directory)
-        else {
-            for (f in directory.listFiles()){
-                allFiles.add(f)
-                if (f.isDirectory) getAllFiles(f, allFiles)
-            }
-        }
-        return allFiles
-    }
-
     private fun systemAppInstallScript(sysAppPackageName: String, sysAppPastingDir: String, appDir: String) {
 
         val scriptName = "$sysAppPackageName.sh"

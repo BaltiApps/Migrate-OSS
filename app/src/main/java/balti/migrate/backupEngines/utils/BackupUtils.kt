@@ -16,7 +16,7 @@ class BackupUtils {
 
     companion object {
         val ignorableWarnings = arrayOf(
-                "socket ignored"
+                "socket ignored", "error exit delayed from previous errors"
         )
         val correctableErrors = arrayOf(
                 "No such file or directory"

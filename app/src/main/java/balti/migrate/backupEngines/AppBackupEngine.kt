@@ -6,7 +6,10 @@ import android.content.SharedPreferences
 import android.os.AsyncTask
 import android.widget.Toast
 import balti.migrate.R
+import balti.migrate.backupEngines.utils.BackupDependencyComponent
 import balti.migrate.backupEngines.utils.BackupUtils
+import balti.migrate.backupEngines.utils.DaggerBackupDependencyComponent
+import balti.migrate.backupEngines.utils.OnBackupComplete
 import balti.migrate.extraBackupsActivity.apps.AppBatch
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
@@ -61,7 +64,6 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         }
     }
     private val pm by lazy { engineContext.packageManager }
-    private val errorTag by lazy { "[${bd.partNumber}/${bd.totalParts}]" }
     private val backupErrors by lazy { ArrayList<String>(0) }
     private val madePartName by lazy { commonTools.getMadePartName(bd) }
     private val actualDestination by lazy { "${bd.destination}/${bd.backupName}" }
@@ -213,7 +215,7 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         }
         catch (e: Exception){
             e.printStackTrace()
-            backupErrors.add("SCRIPT_MAKING_ERROR$errorTag: ${e.message}")
+            backupErrors.add("SCRIPT_MAKING_ERROR${bd.errorTag}: ${e.message}")
             return null
         }
     }
@@ -285,8 +287,8 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
                         if (errorLine.endsWith(warnings)) ignorable = true
                     }
 
-                    if (ignorable) backupErrors.add("APP_BACKUP_ERR$errorTag: $errorLine")
-                    else backupErrors.add("APP_BACKUP_SUPPRESSED$errorTag: $errorLine")
+                    if (ignorable) backupErrors.add("APP_BACKUP_ERR${bd.errorTag}: $errorLine")
+                    else backupErrors.add("APP_BACKUP_SUPPRESSED${bd.errorTag}: $errorLine")
 
                     return@iterateBufferedReader false
                 }, null, false)
@@ -295,7 +297,7 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         }
         catch (e: Exception){
             e.printStackTrace()
-            backupErrors.add("APP_BACKUP_TRY_CATCH$errorTag: ${e.message}")
+            backupErrors.add("APP_BACKUP_TRY_CATCH${bd.errorTag}: ${e.message}")
         }
     }
 

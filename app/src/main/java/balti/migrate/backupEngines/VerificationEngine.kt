@@ -6,7 +6,10 @@ import android.content.SharedPreferences
 import android.os.AsyncTask
 import android.widget.Toast
 import balti.migrate.R
+import balti.migrate.backupEngines.utils.BackupDependencyComponent
 import balti.migrate.backupEngines.utils.BackupUtils
+import balti.migrate.backupEngines.utils.DaggerBackupDependencyComponent
+import balti.migrate.backupEngines.utils.OnBackupComplete
 import balti.migrate.extraBackupsActivity.apps.AppBatch
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
@@ -19,6 +22,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_VERIFYING
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_RETRY_LOG
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_PARTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
@@ -54,7 +58,6 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
     }
     private val pm by lazy { engineContext.packageManager }
-    private val errorTag by lazy { "[${bd.partNumber}/${bd.totalParts}]" }
     private val allErrors by lazy { ArrayList<String>(0) }
     private val madePartName by lazy { commonTools.getMadePartName(bd) }
     private val actualDestination by lazy { "${bd.destination}/${bd.backupName}" }
@@ -100,6 +103,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     val packageName = pi.packageName
 
                     actualBroadcast.apply {
+                        putExtra(EXTRA_TITLE, title)
                         putExtra(EXTRA_APP_NAME, "verifying: " + pm.getApplicationLabel(pi.applicationInfo))
                                 .putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage((i + 1), packets.size))
                     }
@@ -160,7 +164,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
         catch (e: Exception) {
             e.printStackTrace()
-            allErrors.add("VERIFICATION_GENERATION$errorTag: ${e.message}")
+            allErrors.add("VERIFICATION_GENERATION${bd.errorTag}: ${e.message}")
             return null
         }
     }
@@ -262,8 +266,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         if (errorLine.endsWith(warnings)) ignorable = true
                     }
 
-                    if (ignorable) allErrors.add("CORRECTION_ERR$errorTag: $errorLine")
-                    else allErrors.add("CORRECTION_SUPPRESSED$errorTag: $errorLine")
+                    if (ignorable) allErrors.add("CORRECTION_ERR${bd.errorTag}: $errorLine")
+                    else allErrors.add("CORRECTION_SUPPRESSED${bd.errorTag}: $errorLine")
 
                     return@iterateBufferedReader false
                 }, null, false)
@@ -271,7 +275,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
         catch (e: Exception){
             e.printStackTrace()
-            allErrors.add("CORRECTION_TRY_CATCH$errorTag: ${e.message}")
+            allErrors.add("CORRECTION_TRY_CATCH${bd.errorTag}: ${e.message}")
         }
     }
 
