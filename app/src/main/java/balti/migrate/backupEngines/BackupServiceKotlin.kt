@@ -34,6 +34,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_VE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_RETRY_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SCRIPT_APP_NAME
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TAR_CHECK_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TEST_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ZIP_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
@@ -126,7 +127,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
                                 } else if (extraName == EXTRA_ZIP_LOG && this != lastZipLine) {
                                     progressWriter?.write("$this\n")
                                     lastZipLine = this
-                                } else if (extraName == EXTRA_APP_NAME && this != lastVerifyLine) {
+                                } else if (extraName == EXTRA_APP_NAME || extraName == EXTRA_TAR_CHECK_LOG && this != lastVerifyLine) {
                                     progressWriter?.write("$this\n")
                                     lastVerifyLine = this
                                 } else if (extraName == EXTRA_RETRY_LOG && this != lastCorrectionLine) {
@@ -219,6 +220,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
                             startedVerify = true
                         }
                         writeLogs(EXTRA_APP_NAME)
+                        writeLogs(EXTRA_TAR_CHECK_LOG)
                     }
                     EXTRA_PROGRESS_TYPE_CORRECTING -> {
                         if (!startedCorrection) {

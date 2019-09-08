@@ -293,6 +293,7 @@
     <string name="making_package_flash_ready">Making package flash ready</string>
     <string name="backing_app_permissions">Backing app permissions</string>
     <string name="verifying_backups">Verifying backup</string>
+    <string name="verifying_tar">Verifying_tar</string>
     <string name="correcting_errors">Correcting errors</string>
     <string name="backing_contacts">Backing up contacts</string>
     <string name="backing_sms">Backing up sms</string>

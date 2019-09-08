@@ -10,6 +10,8 @@ import balti.migrate.backupEngines.utils.DaggerBackupDependencyComponent
 import balti.migrate.backupEngines.utils.OnBackupComplete
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PART_NUMBER
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
@@ -177,13 +179,13 @@ class ZippingEngine(private val jobcode: Int,
             commonTools.dirDelete(directory.absolutePath)
 
             if (c < files.size)
-                zipErrors.add("ZIP_ERROR${bd.errorTag}: ${engineContext.getString(R.string.incompleteZip)}")
+                zipErrors.add("$ERR_ZIP${bd.errorTag}: ${engineContext.getString(R.string.incompleteZip)}")
 
         }
         catch (e: Exception){
             if (!isBackupCancelled) {
                 e.printStackTrace()
-                zipErrors.add("ZIP_ERROR${bd.errorTag}: ${e.message}")
+                zipErrors.add("$ERR_ZIP_TRY_CATCH${bd.errorTag}: ${e.message}")
             }
         }
 

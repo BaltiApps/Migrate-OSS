@@ -13,6 +13,10 @@ import balti.migrate.backupEngines.utils.OnBackupComplete
 import balti.migrate.extraBackupsActivity.apps.AppBatch
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_APP_BACKUP_SHELL
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_APP_BACKUP_SUPPRESSED
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_APP_BACKUP_TRY_CATCH
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_SCRIPT_MAKING_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
@@ -215,7 +219,7 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         }
         catch (e: Exception){
             e.printStackTrace()
-            backupErrors.add("SCRIPT_MAKING_ERROR${bd.errorTag}: ${e.message}")
+            backupErrors.add("$ERR_SCRIPT_MAKING_TRY_CATCH${bd.errorTag}: ${e.message}")
             return null
         }
     }
@@ -287,8 +291,8 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
                         if (errorLine.endsWith(warnings)) ignorable = true
                     }
 
-                    if (ignorable) backupErrors.add("APP_BACKUP_ERR${bd.errorTag}: $errorLine")
-                    else backupErrors.add("APP_BACKUP_SUPPRESSED${bd.errorTag}: $errorLine")
+                    if (!ignorable) backupErrors.add("$ERR_APP_BACKUP_SHELL${bd.errorTag}: $errorLine")
+                    else backupErrors.add("$ERR_APP_BACKUP_SUPPRESSED${bd.errorTag}: $errorLine")
 
                     return@iterateBufferedReader false
                 }, null, false)
@@ -297,7 +301,7 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         }
         catch (e: Exception){
             e.printStackTrace()
-            backupErrors.add("APP_BACKUP_TRY_CATCH${bd.errorTag}: ${e.message}")
+            backupErrors.add("$ERR_APP_BACKUP_TRY_CATCH${bd.errorTag}: ${e.message}")
         }
     }
 

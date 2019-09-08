@@ -3,6 +3,7 @@ package balti.migrate.backupEngines
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageInfo
 import android.os.AsyncTask
 import android.widget.Toast
 import balti.migrate.R
@@ -13,20 +14,30 @@ import balti.migrate.backupEngines.utils.OnBackupComplete
 import balti.migrate.extraBackupsActivity.apps.AppBatch
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.DEFECT_NUMBER
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_SHELL
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_SUPPRESSED
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_TRY_CATCH
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_TAR_CHECK_TRY_CATCH
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_TAR_SHELL
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_TAR_SUPPRESSED
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_VERIFICATION_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_DEFECT_NUMBER
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PART_NUMBER
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_VERIFYING
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_RETRY_LOG
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TAR_CHECK_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_PARTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_TAR_CHECK
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TAR_GZ_INTEGRITY
 import java.io.*
 import javax.inject.Inject
 
@@ -38,6 +49,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     @Inject lateinit var sharedPrefs: SharedPreferences
 
     private var VERIFICATION_PID = -999
+    private var TAR_CHECK_CORRECTION_PID = -999
     private var isBackupCancelled = false
 
     private val onBackupComplete by lazy { engineContext as OnBackupComplete }
@@ -81,6 +93,26 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         if (isBackupCancelled || doBreak) onCancelledFunction?.invoke()
     }
 
+    private fun getDataCorrectionCommand(pi: PackageInfo, expectedDataFile: File): String{
+
+        val fullDataPath = pi.applicationInfo.dataDir
+        val actualDataName = fullDataPath.substring(fullDataPath.lastIndexOf('/') + 1)
+        val dataPathParent = fullDataPath.substring(0, fullDataPath.lastIndexOf('/'))
+
+        return "if [ -e $fullDataPath ]; then\n" +
+                "   cd $dataPathParent\n" +
+                "   echo \"Copy data: $expectedDataFile\"" +
+                "   $busyboxBinaryPath tar -vczpf ${expectedDataFile.absolutePath} $actualDataName\n" +
+                "fi\n\n"
+    }
+
+    private fun getDataCorrectionCommand(dataName: String): String {
+        val packageName = dataName.let { it.substring(0, it.lastIndexOf(".tar.gz")) }
+        val expectedDataFile = File(actualDestination, dataName)
+
+        return getDataCorrectionCommand(pm.getPackageInfo(packageName, 0), expectedDataFile)
+    }
+
     private fun verifyBackups(): ArrayList<String>? {
 
         val allRecovery = ArrayList<String>(0)
@@ -91,7 +123,11 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 engineContext.getString(R.string.verifying_backups) + " : " + madePartName
             else engineContext.getString(R.string.verifying_backups)
 
-            actualBroadcast.putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_VERIFYING)
+            actualBroadcast.apply {
+                putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_VERIFYING)
+                putExtra(EXTRA_TITLE, title)
+                putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
+            }
 
             appBatch.appPackets.let { packets ->
                 for (i in 0 until packets.size) {
@@ -103,9 +139,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     val packageName = pi.packageName
 
                     actualBroadcast.apply {
-                        putExtra(EXTRA_TITLE, title)
                         putExtra(EXTRA_APP_NAME, "verifying: " + pm.getApplicationLabel(pi.applicationInfo))
-                                .putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage((i + 1), packets.size))
+                        putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage((i + 1), packets.size))
                     }
                     commonTools.LBM?.sendBroadcast(actualBroadcast)
 
@@ -129,33 +164,35 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
                         apkName = commonTools.applyNamingCorrectionForShell(apkName)
 
-                        allRecovery.add("echo \"Copy apk(s): $packageName\"\n" +
-                                "rm -rf $expectedAppDir 2> /dev/null" +
-                                "mkdir -p $expectedAppDir\n" +
-                                "cd $apkPath\n" +
-                                "cp *.apk $expectedAppDir/\n\n" +
-                                "mv $expectedAppDir/$apkName $expectedAppDir/${pi.packageName}.apk\n"
-                        )
+                        expectedAppDir.absolutePath.let {
+                            allRecovery.add(
+                                    "echo \"Copy apk(s): $packageName\"\n" +
+                                    "rm -rf $it 2> /dev/null" +
+                                    "mkdir -p $it\n" +
+                                    "cd $apkPath\n" +
+                                    "cp *.apk $it/\n\n" +
+                                    "mv $it/$apkName $it/${pi.packageName}.apk\n"
+                            )
+                        }
                     }
 
                     if (packet.DATA &&
                             (!expectedDataFile.exists() || expectedDataFile.length() == 0L)) {
 
-                        val fullDataPath = pi.applicationInfo.dataDir
-                        val actualDataName = fullDataPath.substring(fullDataPath.lastIndexOf('/') + 1)
-                        val dataPathParent = fullDataPath.substring(0, fullDataPath.lastIndexOf('/'))
-
                         allRecovery.add(
-                                "if [ -e $fullDataPath ]; then\n" +
-                                        "   cd $dataPathParent\n" +
-                                        "   echo \"Copy data: $expectedDataFile\"" +
-                                        "   $busyboxBinaryPath tar -vczpf ${expectedDataFile.absolutePath} $actualDataName\n" +
-                                        "fi\n\n"
+                                getDataCorrectionCommand(pi, expectedDataFile)
                         )
+
                     }
 
                     if (packet.PERMISSION && (!expectedPermFile.exists() || expectedPermFile.length() == 0L)) {
                         allRecovery.add("$MIGRATE_STATUS:perm:$packageName")
+                    }
+                }
+
+                if (sharedPrefs.getBoolean(PREF_TAR_GZ_INTEGRITY, true)){
+                    checkTars()?.let {
+                        allRecovery.addAll(it)
                     }
                 }
             }
@@ -164,7 +201,128 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
         catch (e: Exception) {
             e.printStackTrace()
-            allErrors.add("VERIFICATION_GENERATION${bd.errorTag}: ${e.message}")
+            allErrors.add("$ERR_VERIFICATION_TRY_CATCH${bd.errorTag}: ${e.message}")
+            return null
+        }
+    }
+
+    private fun checkTars(): ArrayList<String>?{
+
+        try {
+
+            val tarRecovery = ArrayList<String>(0)
+
+            val title = if (bd.totalParts > 1)
+                engineContext.getString(R.string.verifying_tar) + " : " + madePartName
+            else engineContext.getString(R.string.verifying_tar)
+
+            actualBroadcast.apply {
+                putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_VERIFYING)
+                putExtra(EXTRA_TITLE, title)
+                putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
+            }
+
+            commonTools.LBM?.sendBroadcast(actualBroadcast)
+
+            val tarCheckScript = File(engineContext.filesDir.absolutePath, "$FILE_PREFIX_TAR_CHECK${bd.partNumber}.sh")
+            val scriptWriter = BufferedWriter(FileWriter(tarCheckScript))
+
+            scriptWriter.write("#!sbin/sh\n\n")
+            scriptWriter.write("echo \" \"\n")
+            scriptWriter.write("sleep 1\n")
+            scriptWriter.write("echo \"--- TAR CHECK PID: $$\"\n")
+            scriptWriter.write("cp ${tarCheckScript.absolutePath} ${engineContext.externalCacheDir}/\n")
+
+            scriptWriter.write(
+                    "checkData(){\n" +
+                            "\n" +
+                            "        echo \"--- TAR_GZ \$1 ---\"\n" +
+                            "        err=\"\$(${busyboxBinaryPath} gzip -t \"${actualDestination}/\$1\" 2>&1)\"\n" +
+                            "        if [[ ! -z \"\$err\" ]]; then\n" +
+                            "            echo \"--- ERROR:\$1:\$err ---\"\n" +
+                            "        else\n" +
+                            "            echo \"--- OK \$1 ---\"\n" +
+                            "        fi\n" +
+                            "    fi\n" +
+                            "\n" +
+                            "}\n"
+            )
+
+            for (i in 0 until appBatch.appPackets.size) {
+
+                val packet = appBatch.appPackets[i]
+                val expectedDataFile = File("$actualDestination/${packet.PACKAGE_INFO.packageName}.tar.gz")
+
+                if (packet.DATA && expectedDataFile.exists() && expectedDataFile.length() == 0L) {
+                    scriptWriter.write("checkData ${expectedDataFile.name}\n")
+                }
+            }
+
+            scriptWriter.write("echo \"--- Tar checks complete ---\"\n")
+            scriptWriter.close()
+
+            suProcess = Runtime.getRuntime().exec("su")
+            suProcess?.let {
+                val suInputStream = BufferedWriter(OutputStreamWriter(it.outputStream))
+                val outputStream = BufferedReader(InputStreamReader(it.inputStream))
+                val errorStream = BufferedReader(InputStreamReader(it.errorStream))
+
+                suInputStream.write("sh " + tarCheckScript.absolutePath + "\n")
+                suInputStream.write("exit\n")
+                suInputStream.flush()
+
+                var c = 0
+
+                iterateBufferedReader(outputStream, { line ->
+
+                    when {
+                        line.startsWith("--- TAR CHECK PID:") -> commonTools.tryIt {
+                            TAR_CHECK_CORRECTION_PID = line.substring(line.lastIndexOf(" ") + 1).trim().toInt()
+                        }
+                        line.startsWith("--- TAR_GZ") -> {
+                            c++
+                            actualBroadcast.apply {
+                                putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(c, appBatch.appPackets.size))
+                            }
+                        }
+                        line.startsWith("--- ERROR") -> {
+                            val dataName = line.let { it1 ->
+                                it1.substring(it1.indexOf(' ') + 1, it1.lastIndexOf("---")).trim().split(":")[1]
+                            }
+                            tarRecovery.add(getDataCorrectionCommand(dataName))
+                        }
+                    }
+
+                    actualBroadcast.apply {
+                        putExtra(EXTRA_TAR_CHECK_LOG, line)
+                        putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(c, appBatch.appPackets.size))
+                    }
+                    commonTools.LBM?.sendBroadcast(actualBroadcast)
+
+                    return@iterateBufferedReader line == "--- Tar checks complete ---"
+
+                })
+
+                iterateBufferedReader(errorStream, { errorLine ->
+
+                    var ignorable = false
+
+                    BackupUtils.ignorableWarnings.forEach { warnings ->
+                        if (errorLine.endsWith(warnings)) ignorable = true
+                    }
+
+                    if (!ignorable) allErrors.add("$ERR_TAR_SHELL${bd.errorTag}: $errorLine")
+                    else allErrors.add("$ERR_TAR_SUPPRESSED${bd.errorTag}: $errorLine")
+
+                    return@iterateBufferedReader false
+                }, null, false)
+            }
+
+            return tarRecovery
+        }
+        catch (e: Exception){
+            e.printStackTrace()
+            allErrors.add("$ERR_TAR_CHECK_TRY_CATCH${bd.errorTag}: ${e.message}")
             return null
         }
     }
@@ -173,15 +331,16 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
         if (appBatch.appPackets.size == 0 || defects.size == 0) return
 
-        actualBroadcast.apply {
-            putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_CORRECTING)
-            putExtra(DEFECT_NUMBER, 0)
-            putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
-        }
-
         val title = if (bd.totalParts > 1)
             engineContext.getString(R.string.correcting_errors) + " : " + madePartName
         else engineContext.getString(R.string.correcting_errors)
+
+        actualBroadcast.apply {
+            putExtra(EXTRA_TITLE, title)
+            putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_CORRECTING)
+            putExtra(EXTRA_DEFECT_NUMBER, 0)
+            putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
+        }
 
         commonTools.LBM?.sendBroadcast(actualBroadcast)
 
@@ -235,7 +394,6 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 suInputStream.flush()
 
                 iterateBufferedReader(outputStream, {line ->
-                    if (isCancelled) return@iterateBufferedReader true
 
                     if (line.startsWith("--- RECOVERY PID:")){
                         commonTools.tryIt {
@@ -245,7 +403,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     else if (line.startsWith("--- DEFECT:")){
                         val defectNumber = line.substring(line.lastIndexOf(" ") + 1).trim().toInt()
                         actualBroadcast.apply {
-                            putExtra(DEFECT_NUMBER, defectNumber)
+                            putExtra(EXTRA_DEFECT_NUMBER, defectNumber)
                             putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(defectNumber, defects.size))
                         }
                     }
@@ -266,8 +424,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         if (errorLine.endsWith(warnings)) ignorable = true
                     }
 
-                    if (ignorable) allErrors.add("CORRECTION_ERR${bd.errorTag}: $errorLine")
-                    else allErrors.add("CORRECTION_SUPPRESSED${bd.errorTag}: $errorLine")
+                    if (!ignorable) allErrors.add("$ERR_CORRECTION_SHELL${bd.errorTag}: $errorLine")
+                    else allErrors.add("$ERR_CORRECTION_SUPPRESSED${bd.errorTag}: $errorLine")
 
                     return@iterateBufferedReader false
                 }, null, false)
@@ -275,7 +433,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
         catch (e: Exception){
             e.printStackTrace()
-            allErrors.add("CORRECTION_TRY_CATCH${bd.errorTag}: ${e.message}")
+            allErrors.add("$ERR_CORRECTION_TRY_CATCH${bd.errorTag}: ${e.message}")
         }
     }
 
@@ -285,8 +443,14 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 val killProcess = Runtime.getRuntime().exec("su")
 
                 val writer = BufferedWriter(OutputStreamWriter(killProcess.outputStream))
-                writer.write("kill -9 $VERIFICATION_PID\n")
-                writer.write("kill -15 $VERIFICATION_PID\n")
+                fun killId(pid: Int) {
+                    writer.write("kill -9 $pid\n")
+                    writer.write("kill -15 $pid\n")
+                }
+
+                killId(VERIFICATION_PID)
+                killId(TAR_CHECK_CORRECTION_PID)
+
                 writer.write("exit\n")
                 writer.flush()
 
@@ -329,6 +493,6 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     override fun onCancelled() {
         super.onCancelled()
         isBackupCancelled = false
-        cancelTask()
+        commonTools.tryIt { cancelTask() }
     }
 }

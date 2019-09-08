@@ -39,6 +39,7 @@ class CommonToolKotlin(val context: Context) {
         val FILE_ERRORLOG = "errorLog.txt"
         val FILE_PREFIX_BACKUP_SCRIPT = "the_backup_script_"
         val FILE_PREFIX_RETRY_SCRIPT = "retry_script_"
+        val FILE_PREFIX_TAR_CHECK = "tar_check_"
 
         val CHANNEL_BACKUP_START = "Backup start notification"
         val CHANNEL_BACKUP_END = "Backup finished notification"
@@ -72,10 +73,27 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_APP_LOG = "app_log"
         val EXTRA_ZIP_LOG = "zip_log"
         val EXTRA_APP_NAME = "app_name"
+        val EXTRA_TAR_CHECK_LOG = "tar_check_log"
         val EXTRA_SCRIPT_APP_NAME = "script_app_name"
         val EXTRA_RETRY_LOG = "retry_log"
         val EXTRA_PROGRESS_PERCENTAGE = "progress"
-        val DEFECT_NUMBER = "defect_number"
+        val EXTRA_DEFECT_NUMBER = "defect_number"
+
+        val ERR_ZIP = "ZIP_ERROR"
+        val ERR_ZIP_TRY_CATCH = "ZIP_TRY_CATCH"
+        val ERR_VERIFICATION_TRY_CATCH = "VERIFICATION_TRY_CATCH"
+        val ERR_CORRECTION_SHELL = "CORRECTION_SHELL"
+        val ERR_CORRECTION_SUPPRESSED = "CORRECTION_SUPPRESSED"
+        val ERR_CORRECTION_TRY_CATCH = "CORRECTION_TRY_CATCH"
+        val ERR_TAR_SHELL = "TAR_ERR"
+        val ERR_TAR_SUPPRESSED = "TAR_SUPPRESSED"
+        val ERR_TAR_CHECK_TRY_CATCH = "TAR_TRY_CATCH"
+        val ERR_SCRIPT_MAKING_TRY_CATCH = "SCRIPT_MAKING_TRY_CATCH"
+        val ERR_APP_BACKUP_SHELL = "RUN"
+        val ERR_APP_BACKUP_SUPPRESSED = "RUN_SUPPRESSED"
+        val ERR_APP_BACKUP_TRY_CATCH = "RUN_TRY_CATCH"
+
+        val ALL_SUPPRESSED_ERRORS = arrayOf(ERR_APP_BACKUP_SUPPRESSED, ERR_CORRECTION_SUPPRESSED, ERR_TAR_SUPPRESSED)
 
         val PACKAGE_NAME_PLAY_STORE = "com.android.vending"
         val PACKAGE_NAME_FDROID = "org.fdroid.fdroid.privileged"
@@ -100,6 +118,7 @@ class CommonToolKotlin(val context: Context) {
         val PREF_DEFAULT_COMPRESSION_LEVEL = 0
 
         val PREF_NEW_ICON_METHOD = "new_icon_method"
+        val PREF_TAR_GZ_INTEGRITY = "tar_integrity"
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
         val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter
