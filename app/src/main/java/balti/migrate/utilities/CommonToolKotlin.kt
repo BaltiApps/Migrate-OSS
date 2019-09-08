@@ -78,6 +78,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_RETRY_LOG = "retry_log"
         val EXTRA_PROGRESS_PERCENTAGE = "progress"
         val EXTRA_DEFECT_NUMBER = "defect_number"
+        val EXTRA_MADE_PART_NAME = "madePartName"
 
         val ERR_ZIP = "ZIP_ERROR"
         val ERR_ZIP_TRY_CATCH = "ZIP_TRY_CATCH"

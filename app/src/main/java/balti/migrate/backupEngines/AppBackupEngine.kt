@@ -20,6 +20,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_SCRIPT_MAKING_TRY_
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_MADE_PART_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PART_NUMBER
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
@@ -57,6 +58,7 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
 
     private val commonTools by lazy { CommonToolKotlin(engineContext) }
     private val backupUtils by lazy { BackupUtils() }
+    private val madePartName by lazy { commonTools.getMadePartName(bd) }
 
     private val actualBroadcast by lazy {
         Intent(ACTION_BACKUP_PROGRESS).apply {
@@ -65,11 +67,11 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
             putExtra(EXTRA_TOTAL_PARTS, bd.totalParts)
             putExtra(EXTRA_PART_NUMBER, bd.partNumber)
             putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
+            putExtra(EXTRA_MADE_PART_NAME, madePartName)
         }
     }
     private val pm by lazy { engineContext.packageManager }
     private val backupErrors by lazy { ArrayList<String>(0) }
-    private val madePartName by lazy { commonTools.getMadePartName(bd) }
     private val actualDestination by lazy { "${bd.destination}/${bd.backupName}" }
 
     private var suProcess : Process? = null

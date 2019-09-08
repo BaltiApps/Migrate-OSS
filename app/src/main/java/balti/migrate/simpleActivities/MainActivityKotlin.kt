@@ -117,6 +117,10 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             startActivity(Intent(this, HowToRestore::class.java))                           /*kotlin*/
         }
 
+        inAppRestore.setOnClickListener {
+            startActivity(Intent(this, ZipPicker::class.java))                           /*kotlin*/
+        }
+
         drawerButton.setOnClickListener {
             drawer_layout.openDrawer(Gravity.START)
         }
@@ -402,7 +406,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         commonTools.getHumanReadableStorageSpace(fullKb)
 
         var sdCardRoot : File? = null
-        val defaultPath = main.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR);
+        val defaultPath = main.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
 
         if (defaultPath != DEFAULT_INTERNAL_STORAGE_DIR && File(defaultPath).canWrite()){
             sdCardRoot = File(defaultPath).parentFile
@@ -580,15 +584,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     override fun onDestroy() {
         super.onDestroy()
-        try {
-            loadingDialog?.dismiss()
-        } catch (_: Exception) {
-        }
-
-        try {
-            storageHandler.removeCallbacks(storageRunnable)
-        } catch (_: Exception) {
-        }
-
+        commonTools.tryIt { loadingDialog?.dismiss() }
+        commonTools.tryIt { storageHandler.removeCallbacks(storageRunnable) }
     }
 }

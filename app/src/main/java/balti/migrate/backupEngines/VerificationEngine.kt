@@ -24,6 +24,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_VERIFICATION_TRY_C
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_DEFECT_NUMBER
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_MADE_PART_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PART_NUMBER
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
@@ -60,6 +61,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     private val commonTools by lazy { CommonToolKotlin(engineContext) }
     private val backupUtils by lazy { BackupUtils() }
 
+    private val madePartName by lazy { commonTools.getMadePartName(bd) }
+
     private val actualBroadcast by lazy {
         Intent(ACTION_BACKUP_PROGRESS).apply {
             putExtra(EXTRA_BACKUP_NAME, bd.backupName)
@@ -67,11 +70,11 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
             putExtra(EXTRA_TOTAL_PARTS, bd.totalParts)
             putExtra(EXTRA_PART_NUMBER, bd.partNumber)
             putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
+            putExtra(EXTRA_MADE_PART_NAME, madePartName)
         }
     }
     private val pm by lazy { engineContext.packageManager }
     private val allErrors by lazy { ArrayList<String>(0) }
-    private val madePartName by lazy { commonTools.getMadePartName(bd) }
     private val actualDestination by lazy { "${bd.destination}/${bd.backupName}" }
 
     private var suProcess : Process? = null
@@ -357,7 +360,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
             for (i in 0 until defects.size){
                 if (isBackupCancelled) break
 
-                var defect = defects[i]
+                val defect = defects[i]
                 if (defect.startsWith(MIGRATE_STATUS)){
                     val parts = defect.split(":")
                     if (parts.size == 3){

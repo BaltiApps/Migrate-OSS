@@ -2,7 +2,6 @@ package balti.migrate.backupEngines
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.AsyncTask
 import balti.migrate.R
 import balti.migrate.backupEngines.utils.BackupDependencyComponent
@@ -10,9 +9,9 @@ import balti.migrate.backupEngines.utils.DaggerBackupDependencyComponent
 import balti.migrate.backupEngines.utils.OnBackupComplete
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_MADE_PART_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PART_NUMBER
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
@@ -33,7 +32,6 @@ class ZippingEngine(private val jobcode: Int,
                     private val bd: BackupIntentData) : AsyncTask<Any, Any, Any>() {
 
     @Inject lateinit var engineContext: Context
-    @Inject lateinit var sharedPrefs : SharedPreferences
 
     private val commonTools by lazy { CommonToolKotlin(engineContext) }
     private val madePartName by lazy { commonTools.getMadePartName(bd) }
@@ -51,6 +49,7 @@ class ZippingEngine(private val jobcode: Int,
             putExtra(EXTRA_TOTAL_PARTS, bd.totalParts)
             putExtra(EXTRA_PART_NUMBER, bd.partNumber)
             putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
+            putExtra(EXTRA_MADE_PART_NAME, madePartName)
         }
     }
 
@@ -99,25 +98,25 @@ class ZippingEngine(private val jobcode: Int,
 
             val zipOutputStream = ZipOutputStream(FileOutputStream(zipFile))
 
-            var c = 0
+            for (i in 0 until files.size){
 
-            for (file in files){
+                val file = files[i]
+
                 if (isBackupCancelled) break
 
-                val relativeFilePath = file.absolutePath.substring(directory.absolutePath.length + 1).apply {
-                    if (this.endsWith("/")) this.substring(0, this.length - 1)
+                val relativeFilePath = file.absolutePath.substring(directory.absolutePath.length + 1).let {
+                    if (it.endsWith("/") && file.isFile) it.substring(0, it.length - 1)
+                    else if (file.isDirectory && !it.endsWith("/")) "$it/"
+                    else it
                 }
 
                 val zipEntry: ZipEntry
 
                 if (file.isDirectory){
-                    zipEntry = ZipEntry("$relativeFilePath/")
+                    zipEntry = ZipEntry(relativeFilePath)
 
                     zipOutputStream.putNextEntry(zipEntry)
                     zipOutputStream.closeEntry()
-                    c++
-
-                    continue
                 }
                 else {
                     zipEntry = ZipEntry(relativeFilePath)
@@ -157,29 +156,24 @@ class ZippingEngine(private val jobcode: Int,
                     zipOutputStream.closeEntry()
                     fileInputStream.close()
                     file.delete()
+
+                    actualBroadcast.apply {
+                        putExtra(EXTRA_TITLE, title)
+                        putExtra(EXTRA_ZIP_LOG, "zipped: " + file.name)
+                        putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage((i+1), files.size).let {
+                            if (it == 100) 99
+                            else it
+                        })
+                    }
+
+                    commonTools.LBM?.sendBroadcast(actualBroadcast)
                 }
-
-                c++
-
-                actualBroadcast.apply {
-                    putExtra(EXTRA_TITLE, title)
-                    putExtra(EXTRA_ZIP_LOG, "zipped: " + file.name)
-                    putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(c, files.size).let {
-                        if (it == 100) 99
-                        else it
-                    })
-                }
-
-                commonTools.LBM?.sendBroadcast(actualBroadcast)
 
                 zippedFiles.add(relativeFilePath)
             }
 
             zipOutputStream.close()
             commonTools.dirDelete(directory.absolutePath)
-
-            if (c < files.size)
-                zipErrors.add("$ERR_ZIP${bd.errorTag}: ${engineContext.getString(R.string.incompleteZip)}")
 
         }
         catch (e: Exception){
