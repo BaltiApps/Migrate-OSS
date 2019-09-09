@@ -7,10 +7,7 @@ import android.graphics.Canvas
 import balti.migrate.backupEngines.BackupIntentData
 import balti.migrate.extraBackupsActivity.apps.AppPacket
 import balti.migrate.utilities.CommonToolKotlin
-import java.io.BufferedWriter
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileWriter
+import java.io.*
 
 class BackupUtils {
 
@@ -23,6 +20,19 @@ class BackupUtils {
         )
     }
 
+    fun iterateBufferedReader(reader: BufferedReader, loopFunction: (line: String) -> Boolean,
+                                      onCancelledFunction: (() -> Unit)? = null){
+        var doBreak = false
+        while (true){
+            val line : String? = reader.readLine()
+            if (line == null) break
+            else {
+                doBreak = loopFunction(line.trim())
+                if (doBreak) break
+            }
+        }
+        if (doBreak) onCancelledFunction?.invoke()
+    }
 
     fun getIconString(packageInfo: PackageInfo, pm: PackageManager): String {
 

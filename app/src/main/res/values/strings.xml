@@ -290,6 +290,9 @@
     <string name="backingUp">Backing up apps</string>
     <string name="noErrors">Finished! No errors.</string>
     <string name="combining">Combining all files</string>
+    <string name="verifying_zip">Verifying zip</string>
+    <string name="listing_zip_file">Listing zip file</string>
+    <string name="comparing_zip_contents">Comparing zip contents</string>
     <string name="making_package_flash_ready">Making package flash ready</string>
     <string name="backing_app_permissions">Backing app permissions</string>
     <string name="verifying_backups">Verifying backup</string>

@@ -60,6 +60,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_PROGRESS_TYPE_APP_BACKUP_FINISHED = "app_backup_finished"
         val EXTRA_PROGRESS_TYPE_APP_PROGRESS = "app_progress"
         val EXTRA_PROGRESS_TYPE_ZIP_PROGRESS = "zip_progress"
+        val EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION = "zip_verification_progress"
         val EXTRA_PROGRESS_TYPE_VERIFYING = "verifying_backups"
         val EXTRA_PROGRESS_TYPE_CORRECTING = "correcting_errors"
 
@@ -72,6 +73,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_TEST_LOG = "test_log"
         val EXTRA_APP_LOG = "app_log"
         val EXTRA_ZIP_LOG = "zip_log"
+        val EXTRA_ZIP_VERIFICATION_LOG = "zip_veri_log"
         val EXTRA_APP_NAME = "app_name"
         val EXTRA_TAR_CHECK_LOG = "tar_check_log"
         val EXTRA_SCRIPT_APP_NAME = "script_app_name"
@@ -93,6 +95,8 @@ class CommonToolKotlin(val context: Context) {
         val ERR_APP_BACKUP_SHELL = "RUN"
         val ERR_APP_BACKUP_SUPPRESSED = "RUN_SUPPRESSED"
         val ERR_APP_BACKUP_TRY_CATCH = "RUN_TRY_CATCH"
+        val ERR_ZIP_VERIFICATION_TRY_CATCH = "ZIP_VERI_TRY_CATCH"
+        val ERR_ZIP_ITEM_UNAVAILABLE = "ZIP_ITEM_UNAVAILABLE"
 
         val ALL_SUPPRESSED_ERRORS = arrayOf(ERR_APP_BACKUP_SUPPRESSED, ERR_CORRECTION_SUPPRESSED, ERR_TAR_SUPPRESSED)
 

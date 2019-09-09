@@ -76,7 +76,7 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
 
     private var suProcess : Process? = null
 
-    private fun iterateBufferedReader(reader: BufferedReader, loopFunction: (line: String) -> Boolean,
+    /*private fun iterateBufferedReader(reader: BufferedReader, loopFunction: (line: String) -> Boolean,
                                       onCancelledFunction: (() -> Unit)? = null, isMasterCancelApplicable: Boolean = true){
         var doBreak = false
         while (true){
@@ -91,7 +91,7 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
             }
         }
         if (isBackupCancelled || doBreak) onCancelledFunction?.invoke()
-    }
+    }*/
 
     private fun systemAppInstallScript(sysAppPackageName: String, sysAppPastingDir: String, appDir: String) {
 
@@ -245,7 +245,9 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
 
                 var c = 0
 
-                iterateBufferedReader(outputStream, { output ->
+                backupUtils.iterateBufferedReader(outputStream, { output ->
+
+                    if (isBackupCancelled) return@iterateBufferedReader true
 
                     actualBroadcast.putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_APP_PROGRESS)
 
@@ -285,7 +287,7 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
 
                 commonTools.tryIt { it.waitFor() }
 
-                iterateBufferedReader(errorStream, { errorLine ->
+                backupUtils.iterateBufferedReader(errorStream, { errorLine ->
 
                     var ignorable = false
 
@@ -297,7 +299,7 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
                     else backupErrors.add("$ERR_APP_BACKUP_SUPPRESSED${bd.errorTag}: $errorLine")
 
                     return@iterateBufferedReader false
-                }, null, false)
+                })
 
             }
         }

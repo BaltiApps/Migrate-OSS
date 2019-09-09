@@ -177,10 +177,8 @@ class ZippingEngine(private val jobcode: Int,
 
         }
         catch (e: Exception){
-            if (!isBackupCancelled) {
-                e.printStackTrace()
-                zipErrors.add("$ERR_ZIP_TRY_CATCH${bd.errorTag}: ${e.message}")
-            }
+            e.printStackTrace()
+            zipErrors.add("$ERR_ZIP_TRY_CATCH${bd.errorTag}: ${e.message}")
         }
 
         return 0

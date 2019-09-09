@@ -79,23 +79,6 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
     private var suProcess : Process? = null
 
-    private fun iterateBufferedReader(reader: BufferedReader, loopFunction: (line: String) -> Boolean,
-                                      onCancelledFunction: (() -> Unit)? = null, isMasterCancelApplicable: Boolean = true){
-        var doBreak = false
-        while (true){
-            val line : String? = reader.readLine()
-            if (line == null) break
-            else {
-                if (!isMasterCancelApplicable || !isBackupCancelled) {
-                    doBreak = loopFunction(line.trim())
-                    if (doBreak) break
-                }
-                else break
-            }
-        }
-        if (isBackupCancelled || doBreak) onCancelledFunction?.invoke()
-    }
-
     private fun getDataCorrectionCommand(pi: PackageInfo, expectedDataFile: File): String{
 
         val fullDataPath = pi.applicationInfo.dataDir
@@ -276,7 +259,9 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
                 var c = 0
 
-                iterateBufferedReader(outputStream, { line ->
+                backupUtils.iterateBufferedReader(outputStream, { line ->
+
+                    if (isBackupCancelled) return@iterateBufferedReader true
 
                     when {
                         line.startsWith("--- TAR CHECK PID:") -> commonTools.tryIt {
@@ -306,7 +291,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
                 })
 
-                iterateBufferedReader(errorStream, { errorLine ->
+                backupUtils.iterateBufferedReader(errorStream, { errorLine ->
 
                     var ignorable = false
 
@@ -318,7 +303,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     else allErrors.add("$ERR_TAR_SUPPRESSED${bd.errorTag}: $errorLine")
 
                     return@iterateBufferedReader false
-                }, null, false)
+                }, null)
             }
 
             return tarRecovery
@@ -396,7 +381,9 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 suInputStream.write("exit\n")
                 suInputStream.flush()
 
-                iterateBufferedReader(outputStream, {line ->
+                backupUtils.iterateBufferedReader(outputStream, {line ->
+
+                    if (isBackupCancelled) return@iterateBufferedReader true
 
                     if (line.startsWith("--- RECOVERY PID:")){
                         commonTools.tryIt {
@@ -419,7 +406,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
                 commonTools.tryIt { it.waitFor() }
 
-                iterateBufferedReader(errorStream, {errorLine ->
+                backupUtils.iterateBufferedReader(errorStream, {errorLine ->
 
                     var ignorable = false
 
@@ -431,7 +418,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     else allErrors.add("$ERR_CORRECTION_SUPPRESSED${bd.errorTag}: $errorLine")
 
                     return@iterateBufferedReader false
-                }, null, false)
+                }, null)
             }
         }
         catch (e: Exception){
