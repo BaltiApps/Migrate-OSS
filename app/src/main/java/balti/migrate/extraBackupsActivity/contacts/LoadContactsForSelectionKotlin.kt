@@ -5,8 +5,10 @@ import android.os.AsyncTask
 import android.support.v7.app.AlertDialog
 import android.view.View
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.OnJobCompletion
-import balti.migrate.extraBackupsActivity.ViewOperations
+import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.contacts.utils.ContactListAdapterKotlin
+import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
+import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import kotlinx.android.synthetic.main.extra_item_selector.view.*
 
 class LoadContactsForSelectionKotlin(private val jobCode: Int, val context: Context,

@@ -8,9 +8,9 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import balti.migrate.R
-import balti.migrate.backupActivity.BackupDataPacketKotlin
-import balti.migrate.extraBackupsActivity.OnJobCompletion
-import balti.migrate.extraBackupsActivity.ViewOperations
+import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
+import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
+import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import kotlinx.android.synthetic.main.keyboard_item.view.*
 import kotlinx.android.synthetic.main.keyboard_selector.view.*
 import java.io.BufferedReader

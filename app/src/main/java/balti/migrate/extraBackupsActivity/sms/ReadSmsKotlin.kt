@@ -9,9 +9,10 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.OnJobCompletion
-import balti.migrate.extraBackupsActivity.ViewOperations
-import balti.migrate.utilities.extraBackupsTools.SmsToolsKotlin
+import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.sms.utils.SmsToolsKotlin
+import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
+import balti.migrate.extraBackupsActivity.utils.ViewOperations
 
 class ReadSmsKotlin(private val jobCode: Int,
                     private val context: Context,

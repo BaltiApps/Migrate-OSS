@@ -7,8 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.OnJobCompletion
-import balti.migrate.extraBackupsActivity.ViewOperations
+import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
+import balti.migrate.extraBackupsActivity.utils.ViewOperations
+import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.utilities.CommonToolKotlin.Companion.WIFI_FILE_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.WIFI_FILE_NOT_FOUND
 import balti.migrate.utilities.CommonToolKotlin.Companion.WIFI_FILE_PATH

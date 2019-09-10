@@ -9,9 +9,10 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.OnJobCompletion
-import balti.migrate.extraBackupsActivity.ViewOperations
-import balti.migrate.utilities.extraBackupsTools.VcfToolsKotlin
+import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.contacts.utils.VcfToolsKotlin
+import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
+import balti.migrate.extraBackupsActivity.utils.ViewOperations
 
 class ReadContactsKotlin(private val jobCode: Int,
                          private val context: Context,

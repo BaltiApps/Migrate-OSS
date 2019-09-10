@@ -14,9 +14,11 @@ import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.View
 import balti.migrate.R
-import balti.migrate.backupActivity.BackupDataPacketKotlin
-import balti.migrate.extraBackupsActivity.OnJobCompletion
-import balti.migrate.extraBackupsActivity.ViewOperations
+import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
+import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
+import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
+import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
+import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolKotlin.Companion.MAX_TWRP_ZIP_SIZE

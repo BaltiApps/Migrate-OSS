@@ -1,9 +1,10 @@
-package balti.migrate.backupEngines
+package balti.migrate.backupEngines.engines
 
 import android.content.Context
 import android.content.Intent
 import android.os.AsyncTask
 import balti.migrate.R
+import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.BackupDependencyComponent
 import balti.migrate.backupEngines.utils.DaggerBackupDependencyComponent
 import balti.migrate.backupEngines.utils.OnBackupComplete
@@ -31,9 +32,6 @@ class ZipVerificationEngine(private val jobcode: Int,
 
 
     @Inject lateinit var engineContext: Context
-
-    private var VERIFICATION_PID = -999
-    private var TAR_CHECK_CORRECTION_PID = -999
     private var isBackupCancelled = false
 
     private val onBackupComplete by lazy { engineContext as OnBackupComplete }
@@ -66,7 +64,6 @@ class ZipVerificationEngine(private val jobcode: Int,
 
         try {
             val contents = ArrayList<String>(0)
-
 
             val title = if (bd.totalParts > 1)
                 engineContext.getString(R.string.verifying_zip) + " : " + madePartName

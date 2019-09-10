@@ -1,4 +1,4 @@
-package balti.migrate.extraBackupsActivity.apps
+package balti.migrate.extraBackupsActivity.apps.containers
 
 class AppBatch(val appPackets: ArrayList<AppPacket>) {
 

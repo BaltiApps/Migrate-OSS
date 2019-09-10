@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import balti.migrate.R
-import balti.migrate.backupActivity.BackupDataPacketKotlin
-import balti.migrate.extraBackupsActivity.OnJobCompletion
-import balti.migrate.extraBackupsActivity.ViewOperations
+import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
+import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
+import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.migrate.utilities.CommonToolKotlin.Companion.FDROID_POSITION
 import balti.migrate.utilities.CommonToolKotlin.Companion.NOT_SET_POSITION
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_FDROID

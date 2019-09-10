@@ -13,7 +13,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
 import balti.migrate.R
-import balti.migrate.backupEngines.BackupIntentData
+import balti.migrate.backupEngines.containers.BackupIntentData
 import kotlinx.android.synthetic.main.error_report_layout.view.*
 import java.io.*
 

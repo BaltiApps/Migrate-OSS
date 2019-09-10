@@ -1,4 +1,4 @@
-package balti.migrate.backupActivity
+package balti.migrate.backupActivity.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -17,6 +17,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin.Companion.appList
+import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAMES_PACKAGE_INSTALLER
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_FDROID
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_PLAY_STORE

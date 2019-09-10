@@ -1,4 +1,4 @@
-package balti.migrate.extraBackupsActivity.sms
+package balti.migrate.extraBackupsActivity.sms.utils
 
 import android.content.Context
 import android.provider.Telephony
@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import balti.migrate.R
+import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import kotlinx.android.synthetic.main.sms_item.view.*
 import java.util.ArrayList
 import kotlin.Comparator

@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import balti.migrate.R
-import balti.migrate.backupActivity.BackupDataPacketKotlin
+import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.FDROID_POSITION
 import balti.migrate.utilities.CommonToolKotlin.Companion.NOT_SET_POSITION
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAMES_PACKAGE_INSTALLER

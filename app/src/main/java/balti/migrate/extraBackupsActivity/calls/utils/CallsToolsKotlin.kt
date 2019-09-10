@@ -1,4 +1,4 @@
-package balti.migrate.utilities.extraBackupsTools
+package balti.migrate.extraBackupsActivity.calls.utils
 
 import android.Manifest
 import android.content.Context
@@ -6,7 +6,8 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.provider.CallLog
 import android.support.v4.app.ActivityCompat
-import balti.migrate.extraBackupsActivity.calls.CallsDataPacketsKotlin
+import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
+import balti.migrate.extraBackupsActivity.utils.GetCursorData
 
 
 class CallsToolsKotlin(val context: Context) {

@@ -1,4 +1,4 @@
-package balti.migrate.backupActivity
+package balti.migrate.backupActivity.utils
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -14,6 +14,7 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import balti.migrate.R
+import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_APPS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_APP_SELECTION
 import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_DATA_SELECTION

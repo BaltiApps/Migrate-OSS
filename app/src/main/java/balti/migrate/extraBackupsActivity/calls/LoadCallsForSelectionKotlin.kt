@@ -5,8 +5,10 @@ import android.os.AsyncTask
 import android.support.v7.app.AlertDialog
 import android.view.View
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.OnJobCompletion
-import balti.migrate.extraBackupsActivity.ViewOperations
+import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
+import balti.migrate.extraBackupsActivity.calls.utils.CallsListAdapterKotlin
+import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
+import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import kotlinx.android.synthetic.main.extra_item_selector.view.*
 
 class LoadCallsForSelectionKotlin(private val jobCode: Int, val context: Context,

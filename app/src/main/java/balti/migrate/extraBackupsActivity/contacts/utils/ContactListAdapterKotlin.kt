@@ -1,10 +1,11 @@
-package balti.migrate.extraBackupsActivity.contacts
+package balti.migrate.extraBackupsActivity.contacts.utils
 
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import balti.migrate.R
+import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import kotlinx.android.synthetic.main.contacts_item.view.*
 
 class ContactListAdapterKotlin(val context: Context,

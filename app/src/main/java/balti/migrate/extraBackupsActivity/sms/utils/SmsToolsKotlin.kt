@@ -1,4 +1,4 @@
-package balti.migrate.utilities.extraBackupsTools
+package balti.migrate.extraBackupsActivity.sms.utils
 
 import android.Manifest
 import android.content.Context
@@ -6,7 +6,8 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.provider.Telephony
 import android.support.v4.app.ActivityCompat
-import balti.migrate.extraBackupsActivity.sms.SmsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.utils.GetCursorData
 
 class SmsToolsKotlin(val context: Context) {
 

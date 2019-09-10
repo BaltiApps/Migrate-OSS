@@ -8,10 +8,10 @@ import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import balti.migrate.R
 import balti.migrate.backupEngines.utils.OnBackupComplete
-import balti.migrate.extraBackupsActivity.apps.AppBatch
-import balti.migrate.extraBackupsActivity.calls.CallsDataPacketsKotlin
-import balti.migrate.extraBackupsActivity.contacts.ContactsDataPacketKotlin
-import balti.migrate.extraBackupsActivity.sms.SmsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
+import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
+import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
