@@ -1,24 +1,12 @@
 package balti.migrate.backupEngines.engines
 
-import android.content.Context
-import android.content.Intent
-import android.os.AsyncTask
 import balti.migrate.R
+import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
-import balti.migrate.backupEngines.utils.BackupDependencyComponent
-import balti.migrate.backupEngines.utils.DaggerBackupDependencyComponent
-import balti.migrate.backupEngines.utils.OnBackupComplete
-import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_TRY_CATCH
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_MADE_PART_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PART_NUMBER
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_PARTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ZIP_LOG
 import java.io.BufferedInputStream
 import java.io.File
@@ -27,37 +15,12 @@ import java.io.FileOutputStream
 import java.util.zip.CRC32
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
-import javax.inject.Inject
 
 class ZippingEngine(private val jobcode: Int,
-                    private val bd: BackupIntentData) : AsyncTask<Any, Any, Any>() {
-
-    @Inject lateinit var engineContext: Context
-
-    private val commonTools by lazy { CommonToolKotlin(engineContext) }
-    private val madePartName by lazy { commonTools.getMadePartName(bd) }
-    private val actualDestination by lazy { "${bd.destination}/${bd.backupName}" }
-
-    private val onBackupComplete by lazy { engineContext as OnBackupComplete }
-
-    private val backupDependencyComponent: BackupDependencyComponent
-            by lazy { DaggerBackupDependencyComponent.create() }
-
-    private val actualBroadcast by lazy {
-        Intent(ACTION_BACKUP_PROGRESS).apply {
-            putExtra(EXTRA_BACKUP_NAME, bd.backupName)
-            putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_ZIP_PROGRESS)
-            putExtra(EXTRA_TOTAL_PARTS, bd.totalParts)
-            putExtra(EXTRA_PART_NUMBER, bd.partNumber)
-            putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
-            putExtra(EXTRA_MADE_PART_NAME, madePartName)
-        }
-    }
+                    private val bd: BackupIntentData) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_ZIP_PROGRESS) {
 
     private val zippedFiles = ArrayList<String>(0)
     private val zipErrors = ArrayList<String>(0)
-
-    private var isBackupCancelled = false
 
     private fun getAllFiles(directory: File, allFiles: ArrayList<File>): ArrayList<File>{
         if (!directory.isDirectory) return arrayListOf(directory)
@@ -68,11 +31,6 @@ class ZippingEngine(private val jobcode: Int,
             }
         }
         return allFiles
-    }
-
-    override fun onPreExecute() {
-        super.onPreExecute()
-        backupDependencyComponent.inject(this)
     }
 
     override fun doInBackground(vararg params: Any?): Any {
@@ -190,10 +148,5 @@ class ZippingEngine(private val jobcode: Int,
         if (zipErrors.size == 0)
             onBackupComplete.onBackupComplete(jobcode, true, zippedFiles)
         else onBackupComplete.onBackupComplete(jobcode, false, zipErrors)
-    }
-
-    override fun onCancelled() {
-        super.onCancelled()
-        isBackupCancelled = true
     }
 }

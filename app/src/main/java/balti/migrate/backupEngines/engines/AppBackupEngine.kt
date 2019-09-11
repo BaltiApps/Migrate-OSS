@@ -1,81 +1,45 @@
 package balti.migrate.backupEngines.engines
 
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
-import android.os.AsyncTask
 import android.widget.Toast
 import balti.migrate.R
+import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
-import balti.migrate.backupEngines.utils.BackupDependencyComponent
 import balti.migrate.backupEngines.utils.BackupUtils
-import balti.migrate.backupEngines.utils.DaggerBackupDependencyComponent
-import balti.migrate.backupEngines.utils.OnBackupComplete
 import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
-import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_APP_BACKUP_SHELL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_APP_BACKUP_SUPPRESSED
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_APP_BACKUP_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_SCRIPT_MAKING_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_MADE_PART_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PART_NUMBER
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_APP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SCRIPT_APP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_PARTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_BACKUP_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
 import java.io.*
-import javax.inject.Inject
 
 abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData,
                                private val appBatch: AppBatch,
                                private val doBackupInstallers : Boolean,
-                               private val busyboxBinaryPath: String) : AsyncTask<Any, Any, Any>() {
-
-    @Inject lateinit var engineContext: Context
-    @Inject lateinit var sharedPrefs : SharedPreferences
+                               private val busyboxBinaryPath: String) : ParentBackupClass(bd, "") {
 
     companion object {
         var ICON_STRING = ""
     }
 
     private var BACKUP_PID = -999
-    private var isBackupCancelled = false
 
-    private val onBackupComplete by lazy { engineContext as OnBackupComplete }
-
-    private val backupDependencyComponent: BackupDependencyComponent
-            by lazy { DaggerBackupDependencyComponent.create() }
-
-    private val commonTools by lazy { CommonToolKotlin(engineContext) }
-    private val backupUtils by lazy { BackupUtils() }
-    private val madePartName by lazy { commonTools.getMadePartName(bd) }
-
-    private val actualBroadcast by lazy {
-        Intent(ACTION_BACKUP_PROGRESS).apply {
-            putExtra(EXTRA_BACKUP_NAME, bd.backupName)
-            putExtra(EXTRA_PROGRESS_TYPE, "")
-            putExtra(EXTRA_TOTAL_PARTS, bd.totalParts)
-            putExtra(EXTRA_PART_NUMBER, bd.partNumber)
-            putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
-            putExtra(EXTRA_MADE_PART_NAME, madePartName)
-        }
-    }
     private val pm by lazy { engineContext.packageManager }
-    private val backupErrors by lazy { ArrayList<String>(0) }
-    private val actualDestination by lazy { "${bd.destination}/${bd.backupName}" }
-
+    private val backupUtils by lazy { BackupUtils() }
     private var suProcess : Process? = null
+
+    private val backupErrors by lazy { ArrayList<String>(0) }
 
     /*private fun iterateBufferedReader(reader: BufferedReader, loopFunction: (line: String) -> Boolean,
                                       onCancelledFunction: (() -> Unit)? = null, isMasterCancelApplicable: Boolean = true){
@@ -93,6 +57,30 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         }
         if (isBackupCancelled || doBreak) onCancelledFunction?.invoke()
     }*/
+
+    init {
+
+        customPreExecuteFunction = {
+            if (bd.partNumber == 0){
+
+                var previousBackupScripts = engineContext.filesDir.listFiles {
+                    f -> (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
+                        f.name.endsWith(".sh")
+                }
+                for (f in previousBackupScripts) f.delete()
+
+                engineContext.externalCacheDir?.let {
+                    previousBackupScripts = it.listFiles {
+                        f -> (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
+                            f.name.endsWith(".sh")
+                    }
+                    for (f in previousBackupScripts) f.delete()
+                }
+            }
+        }
+
+        customCancelFunction = { commonTools.tryIt { cancelTask() }}
+    }
 
     private fun systemAppInstallScript(sysAppPackageName: String, sysAppPastingDir: String, appDir: String) {
 
@@ -189,7 +177,7 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
 
                     val appIcon: String = backupUtils.getIconString(packet.PACKAGE_INFO, pm)
                     var appIconFileName: String? = null
-                    if (!sharedPrefs.getBoolean(PREF_NEW_ICON_METHOD, true))
+                    if (!sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true))
                         appIconFileName = backupUtils.makeIconFile(packageName, appIcon, actualDestination)
 
                     val echoCopyCommand = "echo \"$MIGRATE_STATUS: $appName (${(i + 1)}/${packets.size}) icon: ${if (appIconFileName == null) appIcon else "$(cat $packageName.icon)"}\"\n"
@@ -336,27 +324,6 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         }
     }
 
-    override fun onPreExecute() {
-        super.onPreExecute()
-        backupDependencyComponent.inject(this)
-
-        if (bd.partNumber == 0){
-            var previousBackupScripts = engineContext.filesDir.listFiles {
-                f -> (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
-                    f.name.endsWith(".sh")
-            }
-            for (f in previousBackupScripts) f.delete()
-
-            engineContext.externalCacheDir?.let {
-                previousBackupScripts = it.listFiles {
-                    f -> (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
-                        f.name.endsWith(".sh")
-                }
-                for (f in previousBackupScripts) f.delete()
-            }
-        }
-    }
-
     override fun doInBackground(vararg params: Any?): Any {
         val scriptLocation = makeBackupScript()
         scriptLocation?.let { runBackupScript(it) }
@@ -369,11 +336,5 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         if (backupErrors.size == 0)
             onBackupComplete.onBackupComplete(jobcode, true, bd.partNumber)
         else onBackupComplete.onBackupComplete(jobcode, false, backupErrors)
-    }
-
-    override fun onCancelled() {
-        super.onCancelled()
-        isBackupCancelled = true
-        cancelTask()
     }
 }

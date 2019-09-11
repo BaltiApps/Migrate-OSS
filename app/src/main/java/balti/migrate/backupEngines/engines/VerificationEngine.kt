@@ -1,20 +1,12 @@
 package balti.migrate.backupEngines.engines
 
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageInfo
-import android.os.AsyncTask
 import android.widget.Toast
 import balti.migrate.R
+import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
-import balti.migrate.backupEngines.utils.BackupDependencyComponent
 import balti.migrate.backupEngines.utils.BackupUtils
-import balti.migrate.backupEngines.utils.DaggerBackupDependencyComponent
-import balti.migrate.backupEngines.utils.OnBackupComplete
 import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
-import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_SHELL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_SUPPRESSED
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_TRY_CATCH
@@ -23,10 +15,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_TAR_SHELL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_TAR_SUPPRESSED
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_VERIFICATION_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_DEFECT_NUMBER
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_MADE_PART_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PART_NUMBER
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
@@ -34,51 +23,30 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_VE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_RETRY_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TAR_CHECK_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_PARTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_TAR_CHECK
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TAR_GZ_INTEGRITY
 import java.io.*
-import javax.inject.Inject
 
 class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentData,
                          private val appBatch: AppBatch,
-                         private val busyboxBinaryPath: String) :AsyncTask<Any, Any, Any>() {
-
-    @Inject lateinit var engineContext: Context
-    @Inject lateinit var sharedPrefs: SharedPreferences
+                         private val busyboxBinaryPath: String) : ParentBackupClass(bd, "") {
 
     private var VERIFICATION_PID = -999
     private var TAR_CHECK_CORRECTION_PID = -999
-    private var isBackupCancelled = false
 
-    private val onBackupComplete by lazy { engineContext as OnBackupComplete }
-
-    private val backupDependencyComponent: BackupDependencyComponent
-            by lazy { DaggerBackupDependencyComponent.create() }
-
-    private val commonTools by lazy { CommonToolKotlin(engineContext) }
     private val backupUtils by lazy { BackupUtils() }
 
-    private val madePartName by lazy { commonTools.getMadePartName(bd) }
-
-    private val actualBroadcast by lazy {
-        Intent(ACTION_BACKUP_PROGRESS).apply {
-            putExtra(EXTRA_BACKUP_NAME, bd.backupName)
-            putExtra(EXTRA_PROGRESS_TYPE, "")
-            putExtra(EXTRA_TOTAL_PARTS, bd.totalParts)
-            putExtra(EXTRA_PART_NUMBER, bd.partNumber)
-            putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
-            putExtra(EXTRA_MADE_PART_NAME, madePartName)
-        }
-    }
     private val pm by lazy { engineContext.packageManager }
     private val allErrors by lazy { ArrayList<String>(0) }
-    private val actualDestination by lazy { "${bd.destination}/${bd.backupName}" }
 
     private var suProcess : Process? = null
+
+    init {
+        customCancelFunction = {commonTools.tryIt { cancelTask() }}
+    }
 
     private fun getDataCorrectionCommand(pi: PackageInfo, expectedDataFile: File): String{
 
@@ -137,7 +105,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     val expectedDataFile = File("$actualDestination/$packageName.tar.gz")
                     val expectedPermFile = File(actualDestination, "$packageName.perm")
 
-                    if (!expectedIconFile.exists() && sharedPrefs.getBoolean(PREF_NEW_ICON_METHOD, true)) {
+                    if (!expectedIconFile.exists() && sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true)) {
                         allRecovery.add("$MIGRATE_STATUS:icon:$packageName")
                     }
 
@@ -177,7 +145,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     }
                 }
 
-                if (sharedPrefs.getBoolean(PREF_TAR_GZ_INTEGRITY, true)){
+                if (sharedPreferences.getBoolean(PREF_TAR_GZ_INTEGRITY, true)){
                     checkTars()?.let {
                         allRecovery.addAll(it)
                     }
@@ -460,11 +428,6 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
     }
 
-    override fun onPreExecute() {
-        super.onPreExecute()
-        backupDependencyComponent.inject(this)
-    }
-
     override fun doInBackground(vararg params: Any?): Any {
         val defects = verifyBackups()
         if (defects != null && defects.size != 0)
@@ -479,11 +442,5 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         if (allErrors.size == 0)
             onBackupComplete.onBackupComplete(jobcode, true, bd.partNumber)
         else onBackupComplete.onBackupComplete(jobcode, false, allErrors)
-    }
-
-    override fun onCancelled() {
-        super.onCancelled()
-        isBackupCancelled = false
-        commonTools.tryIt { cancelTask() }
     }
 }

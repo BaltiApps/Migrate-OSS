@@ -1,5 +1,6 @@
 package balti.migrate.backupEngines.engines
 
+import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CONTACTS_TRY_CATCH
@@ -14,7 +15,7 @@ class ContactsBackupEngine(private val jobcode: Int,
                            private val bd: BackupIntentData,
                            private val contactPackets: ArrayList<ContactsDataPacketKotlin>,
                            private val vcfFileName: String):
-        ParentBackupClass(jobcode, bd, EXTRA_PROGRESS_TYPE_CONTACTS) {
+        ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_CONTACTS) {
 
     private val vcfFile by lazy { File(actualDestination, vcfFileName) }
     private val errors by lazy { ArrayList<String>(0) }
