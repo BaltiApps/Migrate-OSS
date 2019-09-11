@@ -63,6 +63,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION = "zip_verification_progress"
         val EXTRA_PROGRESS_TYPE_VERIFYING = "verifying_backups"
         val EXTRA_PROGRESS_TYPE_CORRECTING = "correcting_errors"
+        val EXTRA_PROGRESS_TYPE_CONTACTS = "contacts_progress"
 
         val EXTRA_BACKUP_NAME = "backupName"
         val EXTRA_ERRORS = "errors"
@@ -81,6 +82,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_PROGRESS_PERCENTAGE = "progress"
         val EXTRA_DEFECT_NUMBER = "defect_number"
         val EXTRA_MADE_PART_NAME = "madePartName"
+        val EXTRA_CONTACT_NAME = "contact_name"
 
         val ERR_ZIP = "ZIP_ERROR"
         val ERR_ZIP_TRY_CATCH = "ZIP_TRY_CATCH"
@@ -97,6 +99,7 @@ class CommonToolKotlin(val context: Context) {
         val ERR_APP_BACKUP_TRY_CATCH = "RUN_TRY_CATCH"
         val ERR_ZIP_VERIFICATION_TRY_CATCH = "ZIP_VERI_TRY_CATCH"
         val ERR_ZIP_ITEM_UNAVAILABLE = "ZIP_ITEM_UNAVAILABLE"
+        val ERR_CONTACTS_TRY_CATCH = "CONTACTS_TRY_CATCH"
 
         val ALL_SUPPRESSED_ERRORS = arrayOf(ERR_APP_BACKUP_SUPPRESSED, ERR_CORRECTION_SUPPRESSED, ERR_TAR_SUPPRESSED)
 

@@ -1,10 +1,7 @@
 package balti.migrate.backupEngines.utils
 
 import balti.migrate.backupEngines.BackupServiceKotlin
-import balti.migrate.backupEngines.engines.AppBackupEngine
-import balti.migrate.backupEngines.engines.VerificationEngine
-import balti.migrate.backupEngines.engines.ZipVerificationEngine
-import balti.migrate.backupEngines.engines.ZippingEngine
+import balti.migrate.backupEngines.engines.*
 import dagger.Component
 import javax.inject.Singleton
 
@@ -15,4 +12,5 @@ interface BackupDependencyComponent {
     fun inject(verificationEngine: VerificationEngine)
     fun inject(zippingEngine: ZippingEngine)
     fun inject(zipVerificationEngine: ZipVerificationEngine)
+    fun masterInject(parentBackupClass: ParentBackupClass)
 }
