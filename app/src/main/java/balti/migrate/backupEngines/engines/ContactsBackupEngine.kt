@@ -1,8 +1,10 @@
 package balti.migrate.backupEngines.engines
 
+import balti.migrate.R
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
+import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CONTACTS_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_CONTACT_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
@@ -27,12 +29,29 @@ class ContactsBackupEngine(private val jobcode: Int,
             File(actualDestination).mkdirs()
             if (vcfFile.exists()) vcfFile.delete()
 
-            BufferedWriter(FileWriter(vcfFile, true)).let {bufferedWriter ->
+            val title = if (bd.totalParts > 1)
+                engineContext.getString(R.string.backing_contacts) + " : " + madePartName
+            else engineContext.getString(R.string.backing_contacts)
+
+
+            actualBroadcast.apply {
+                putExtra(CommonToolKotlin.EXTRA_TITLE, title)
+                putExtra(EXTRA_CONTACT_NAME, "")
+                putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
+            }
+
+            commonTools.LBM?.sendBroadcast(actualBroadcast)
+
+            actualBroadcast.putExtra(CommonToolKotlin.EXTRA_TITLE, title)
+
+            BufferedWriter(FileWriter(vcfFile, true)).run {
 
                 for (i in 0 until contactPackets.size){
 
+                    if (isBackupCancelled) break
+
                     val packet = contactPackets[i]
-                    bufferedWriter.write("${packet.vcfData}\n")
+                    this.write("${packet.vcfData}\n")
 
                     actualBroadcast.apply {
                         putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage((i+1), contactPackets.size))
@@ -42,6 +61,7 @@ class ContactsBackupEngine(private val jobcode: Int,
                     commonTools.LBM?.sendBroadcast(actualBroadcast)
                 }
 
+                this.close()
             }
         }
         catch (e: Exception){

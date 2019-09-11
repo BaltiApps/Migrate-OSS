@@ -301,6 +301,8 @@
     <string name="backing_contacts">Backing up contacts</string>
     <string name="backing_sms">Backing up sms</string>
     <string name="backing_calls">Backing up calls</string>
+    <string name="verifying_calls">Verifying calls</string>
+    <string name="call_logs_incomplete">Call logs incomplete</string>
     <string name="backing_dpi">Backing up DPI</string>
     <string name="backing_keyboard">Backing up keyboard</string>
     <string name="errorMakingScripts">Error making scripts</string>
