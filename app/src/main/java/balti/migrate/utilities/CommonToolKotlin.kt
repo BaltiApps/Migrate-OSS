@@ -65,6 +65,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_PROGRESS_TYPE_CORRECTING = "correcting_errors"
         val EXTRA_PROGRESS_TYPE_CONTACTS = "contacts_progress"
         val EXTRA_PROGRESS_TYPE_CALLS = "calls_progress"
+        val EXTRA_PROGRESS_TYPE_SMS = "sms_progress"
 
         val EXTRA_BACKUP_NAME = "backupName"
         val EXTRA_ERRORS = "errors"
@@ -85,6 +86,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_MADE_PART_NAME = "madePartName"
         val EXTRA_CONTACT_NAME = "contact_name"
         val EXTRA_CALLS_NAME = "calls_name"
+        val EXTRA_SMS_ADDRESS = "sms_address"
 
         val ERR_ZIP = "ZIP_ERROR"
         val ERR_ZIP_TRY_CATCH = "ZIP_TRY_CATCH"
@@ -102,10 +104,14 @@ class CommonToolKotlin(val context: Context) {
         val ERR_ZIP_VERIFICATION_TRY_CATCH = "ZIP_VERI_TRY_CATCH"
         val ERR_ZIP_ITEM_UNAVAILABLE = "ZIP_ITEM_UNAVAILABLE"
         val ERR_CONTACTS_TRY_CATCH = "CONTACTS_TRY_CATCH"
-        val ERR_CALLS_TRY_CATCH = "CALLS_TRY_CATCH"
         val ERR_CALLS_WRITE = "CALLS_WRITE"
+        val ERR_CALLS_TRY_CATCH = "CALLS_TRY_CATCH"
         val ERR_CALLS_VERIFY = "CALLS_VERIFY"
         val ERR_CALLS_VERIFY_TRY_CATCH = "CALLS_VERIFY_TRY_CATCH"
+        val ERR_SMS_WRITE = "SMS_WRITE"
+        val ERR_SMS_TRY_CATCH = "SMS_TRY_CATCH"
+        val ERR_SMS_VERIFY = "SMS_VERIFY"
+        val ERR_SMS_VERIFY_TRY_CATCH = "SMS_VERIFY_TRY_CATCH"
 
         val ALL_SUPPRESSED_ERRORS = arrayOf(ERR_APP_BACKUP_SUPPRESSED, ERR_CORRECTION_SUPPRESSED, ERR_TAR_SUPPRESSED)
 
@@ -134,6 +140,7 @@ class CommonToolKotlin(val context: Context) {
         val PREF_NEW_ICON_METHOD = "new_icon_method"
         val PREF_TAR_GZ_INTEGRITY = "tar_integrity"
         val PREF_CONTACTS_VERIFY = "contacts_verify"
+        val PREF_SMS_VERIFY = "sms_verify"
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
         val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter
