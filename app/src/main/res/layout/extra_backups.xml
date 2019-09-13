@@ -704,6 +704,26 @@
         android:gravity="center_vertical"
         android:padding="10dp">
 
+        <LinearLayout
+            android:id="@+id/backupButtonWaiting"
+            android:layout_width="@dimen/next_button_width"
+            android:layout_height="@dimen/next_button_height"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/next"
+            android:gravity="center"
+            android:padding="@dimen/large_padding_width"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            >
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminateTint="@android:color/white"
+                />
+
+        </LinearLayout>
+
         <Button
             android:id="@+id/startBackupButton"
             android:layout_width="@dimen/next_button_width"

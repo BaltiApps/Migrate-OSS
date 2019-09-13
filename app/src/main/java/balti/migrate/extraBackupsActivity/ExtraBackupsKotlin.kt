@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -40,6 +39,7 @@ import balti.migrate.extraBackupsActivity.wifi.ReadWifiKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
+import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
 import balti.migrate.utilities.CommonToolKotlin.Companion.CALLS_PERMISSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.CONTACT_PERMISSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
@@ -121,9 +121,20 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                             action = ACTION_BACKUP_PROGRESS
                         }
                 )
-                commonTools.tryIt { LocalBroadcastManager.getInstance(this@ExtraBackupsKotlin).unregisterReceiver(this) }
+                commonTools.tryIt { commonTools.LBM?.unregisterReceiver(this) }
                 finish()
             }
+        }
+    }
+
+    private fun toggleBackupButton(v: Int = -1){
+        if (v == 0){
+            backupButtonWaiting.visibility = View.VISIBLE
+            startBackupButton.visibility = View.GONE
+        }
+        else {
+            backupButtonWaiting.visibility = View.GONE
+            startBackupButton.visibility = View.VISIBLE
         }
     }
 
@@ -156,9 +167,9 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                         .show()
             }
 
-            LocalBroadcastManager.getInstance(this).registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
+            commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
 
-            LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(CommonToolKotlin.ACTION_REQUEST_BACKUP_DATA))
+            commonTools.LBM?.sendBroadcast(Intent(ACTION_REQUEST_BACKUP_DATA))
 
             do_backup_contacts.setOnCheckedChangeListener(this)         //extras_markers
             do_backup_sms.setOnCheckedChangeListener(this)
@@ -260,6 +271,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             }
         }
 
+        if (!isChecked) toggleBackupButton(1)
+
         if (buttonView == do_backup_contacts){
 
             if (isChecked) {
@@ -324,6 +337,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 showStockWarning({
                     readDpi = ReadDpiKotlin(JOBCODE_READ_DPI, this, dpi_main_item, dpi_selected_status, dpi_read_progress, do_backup_dpi)
                     readDpi?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
+                    toggleBackupButton(0)
                 }, {
                     do_backup_dpi.isChecked = false
                 })
@@ -345,6 +359,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 showStockWarning({
                     readAdb = ReadAdbKotlin(JOBCODE_READ_ADB, this, adb_main_item, adb_selected_status, adb_read_progress, do_backup_adb)
                     readAdb?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
+                    toggleBackupButton(0)
                 }, {
                     do_backup_adb.isChecked = false
                 })
@@ -365,6 +380,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             if (isChecked) {
                 loadKeyboard = LoadKeyboardForSelection(JOBCODE_LOAD_KEYBOARDS, this, keyboard_main_item, keyboard_selected_status, do_backup_keyboard, appListCopied)
                 loadKeyboard?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) }
+                toggleBackupButton(0)
             }
             else {
                 keyboardText = ""
@@ -390,6 +406,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 showStockWarning({
                     readWifi = ReadWifiKotlin(JOBCODE_READ_WIFI, this, wifi_main_item, wifi_selected_status, wifi_read_progress, do_backup_wifi)
                     readWifi?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
+                    toggleBackupButton(0)
                 }, {
                     do_backup_wifi.isChecked = false
                 })
@@ -411,6 +428,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 showStockWarning({
                     readFontScale = ReadFontScaleKotlin(JOBCODE_READ_FONTSCALE, this, fontScale_main_item, fontScale_selected_status, fontScale_read_progress, do_backup_fontScale)
                     readFontScale?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
+                    toggleBackupButton(0)
                 }, {
                     do_backup_fontScale.isChecked = false
                 })
@@ -443,6 +461,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 commonTools.tryIt({
                     readSms = ReadSmsKotlin(JOBCODE_READ_SMS_THEN_CALLS, this, sms_main_item, sms_selected_status, sms_read_progress, do_backup_sms)
                     readSms?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+                    toggleBackupButton(0)
                 }, true)
 
                 do_backup_sms.setOnCheckedChangeListener(this)
@@ -455,6 +474,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 commonTools.tryIt({
                     readContacts = ReadContactsKotlin(JOBCODE_READ_CONTACTS, this, contacts_main_item, contacts_selected_status, contacts_read_progress, do_backup_contacts)
                     readContacts?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+                    toggleBackupButton(0)
                 }, true)
 
             }
@@ -471,6 +491,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 commonTools.tryIt({
                     readSms = ReadSmsKotlin(JOBCODE_READ_SMS, this, sms_main_item, sms_selected_status, sms_read_progress, do_backup_sms)
                     readSms?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+                    toggleBackupButton(0)
                 }, true)
 
             }
@@ -487,6 +508,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 commonTools.tryIt({
                     readCalls = ReadCallsKotlin(JOBCODE_READ_CALLS, this, calls_main_item, calls_selected_status, calls_read_progress, do_backup_calls)
                     readCalls?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+                    toggleBackupButton(0)
                 }, true)
 
             }
@@ -684,6 +706,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     commonTools.showErrorDialog(it, getString(R.string.error_reading_sms))
                 }
             }}
+
+        toggleBackupButton(1)
 
         when (jobCode){
 
@@ -896,6 +920,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             installers_main_item.setOnClickListener {
                 loadInstallers = LoadInstallersForSelection(JOBCODE_LOAD_INSTALLERS, this, appListCopied)
                 loadInstallers?.execute()
+                toggleBackupButton(0)
             }
         }
 
@@ -904,7 +929,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     override fun onDestroy() {                          //extras_markers
         super.onDestroy()
         commonTools.tryIt { makeAppPackets?.cancel(true) }
-        commonTools.tryIt { LocalBroadcastManager.getInstance(this).unregisterReceiver(progressReceiver) }
+        commonTools.tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
         commonTools.tryIt { readContacts?.cancel(true) }
         commonTools.tryIt { readSms?.cancel(true) }
         commonTools.tryIt { readCalls?.cancel(true) }
