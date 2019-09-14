@@ -110,15 +110,13 @@ class BackupUtils {
 
         File(actualDestination).mkdirs()
 
-        return try {
+        try {
             val writer = BufferedWriter(FileWriter(iconFile))
             writer.write(iconString)
             writer.close()
-            ""
         }
         catch (e: Exception){
             e.printStackTrace()
-            e.message.toString()
         }
 
         return iconFileName
