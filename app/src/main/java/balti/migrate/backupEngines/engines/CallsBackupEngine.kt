@@ -39,7 +39,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_CALLS_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CONTACTS_VERIFY
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALLS_VERIFY
 import java.io.File
 
 class CallsBackupEngine(private val jobcode: Int,
@@ -212,7 +212,7 @@ class CallsBackupEngine(private val jobcode: Int,
 
         writeCalls()
 
-        if (sharedPreferences.getBoolean(PREF_CONTACTS_VERIFY, true) && errors.size == 0){
+        if (sharedPreferences.getBoolean(PREF_CALLS_VERIFY, true) && errors.size == 0){
             verifyCalls()
         }
 

@@ -4,11 +4,11 @@ import balti.migrate.R
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
-import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CONTACTS_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_CONTACT_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CONTACTS
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -35,14 +35,11 @@ class ContactsBackupEngine(private val jobcode: Int,
 
 
             actualBroadcast.apply {
-                putExtra(CommonToolKotlin.EXTRA_TITLE, title)
+                putExtra(EXTRA_TITLE, title)
                 putExtra(EXTRA_CONTACT_NAME, "")
                 putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
             }
-
             commonTools.LBM?.sendBroadcast(actualBroadcast)
-
-            actualBroadcast.putExtra(CommonToolKotlin.EXTRA_TITLE, title)
 
             BufferedWriter(FileWriter(vcfFile, true)).run {
 

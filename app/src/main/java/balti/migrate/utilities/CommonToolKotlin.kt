@@ -66,6 +66,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_PROGRESS_TYPE_CONTACTS = "contacts_progress"
         val EXTRA_PROGRESS_TYPE_CALLS = "calls_progress"
         val EXTRA_PROGRESS_TYPE_SMS = "sms_progress"
+        val EXTRA_PROGRESS_TYPE_WIFI = "wifi_progress"
 
         val EXTRA_BACKUP_NAME = "backupName"
         val EXTRA_ERRORS = "errors"
@@ -112,6 +113,7 @@ class CommonToolKotlin(val context: Context) {
         val ERR_SMS_TRY_CATCH = "SMS_TRY_CATCH"
         val ERR_SMS_VERIFY = "SMS_VERIFY"
         val ERR_SMS_VERIFY_TRY_CATCH = "SMS_VERIFY_TRY_CATCH"
+        val ERR_WIFI_TRY_CATCH = "WIFI_TRY_CATCH"
 
         val ALL_SUPPRESSED_ERRORS = arrayOf(ERR_APP_BACKUP_SUPPRESSED, ERR_CORRECTION_SUPPRESSED, ERR_TAR_SUPPRESSED)
 
@@ -139,8 +141,8 @@ class CommonToolKotlin(val context: Context) {
 
         val PREF_NEW_ICON_METHOD = "new_icon_method"
         val PREF_TAR_GZ_INTEGRITY = "tar_integrity"
-        val PREF_CONTACTS_VERIFY = "contacts_verify"
         val PREF_SMS_VERIFY = "sms_verify"
+        val PREF_CALLS_VERIFY = "calls_verify"
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
         val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter

@@ -59,7 +59,6 @@ class SmsBackupEngine(private val jobcode: Int,
                 putExtra(EXTRA_SMS_ADDRESS, "")
                 putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
             }
-
             commonTools.LBM?.sendBroadcast(actualBroadcast)
 
             val DROP_TABLE = "DROP TABLE IF EXISTS $SMS_TABLE_NAME"
