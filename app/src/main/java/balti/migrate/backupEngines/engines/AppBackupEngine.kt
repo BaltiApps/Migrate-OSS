@@ -41,23 +41,6 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
 
     private val backupErrors by lazy { ArrayList<String>(0) }
 
-    /*private fun iterateBufferedReader(reader: BufferedReader, loopFunction: (line: String) -> Boolean,
-                                      onCancelledFunction: (() -> Unit)? = null, isMasterCancelApplicable: Boolean = true){
-        var doBreak = false
-        while (true){
-            val line : String? = reader.readLine()
-            if (line == null) break
-            else {
-                if (!isMasterCancelApplicable || !isBackupCancelled) {
-                    doBreak = loopFunction(line.trim())
-                    if (doBreak) break
-                }
-                else break
-            }
-        }
-        if (isBackupCancelled || doBreak) onCancelledFunction?.invoke()
-    }*/
-
     init {
 
         customPreExecuteFunction = {

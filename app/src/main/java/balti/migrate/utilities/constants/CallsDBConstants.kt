@@ -1,4 +1,4 @@
-package balti.migrate.utilities
+package balti.migrate.utilities.constants
 
 class CallsDBConstants {
 

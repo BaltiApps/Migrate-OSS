@@ -67,6 +67,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_PROGRESS_TYPE_CALLS = "calls_progress"
         val EXTRA_PROGRESS_TYPE_SMS = "sms_progress"
         val EXTRA_PROGRESS_TYPE_WIFI = "wifi_progress"
+        val EXTRA_PROGRESS_TYPE_SETTINGS = "settings_progress"
 
         val EXTRA_BACKUP_NAME = "backupName"
         val EXTRA_ERRORS = "errors"
@@ -114,6 +115,7 @@ class CommonToolKotlin(val context: Context) {
         val ERR_SMS_VERIFY = "SMS_VERIFY"
         val ERR_SMS_VERIFY_TRY_CATCH = "SMS_VERIFY_TRY_CATCH"
         val ERR_WIFI_TRY_CATCH = "WIFI_TRY_CATCH"
+        val ERR_SETTINGS_TRY_CATCH = "SETTINGS_TRY_CATCH"
 
         val ALL_SUPPRESSED_ERRORS = arrayOf(ERR_APP_BACKUP_SUPPRESSED, ERR_CORRECTION_SUPPRESSED, ERR_TAR_SUPPRESSED)
 

@@ -294,6 +294,7 @@
     <string name="listing_zip_file">Listing zip file</string>
     <string name="comparing_zip_contents">Comparing zip contents</string>
     <string name="storing_wifi_data">Storing wifi data</string>
+    <string name="writing_settings">Writing settings</string>
     <string name="making_package_flash_ready">Making package flash ready</string>
     <string name="backing_app_permissions">Backing app permissions</string>
     <string name="verifying_backups">Verifying backup</string>
