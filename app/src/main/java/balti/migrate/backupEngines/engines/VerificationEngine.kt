@@ -40,12 +40,19 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     private val backupUtils by lazy { BackupUtils() }
 
     private val pm by lazy { engineContext.packageManager }
+
     private val allErrors by lazy { ArrayList<String>(0) }
+    private val actualErrors by lazy { ArrayList<String>(0) }
 
     private var suProcess : Process? = null
 
     init {
         customCancelFunction = {commonTools.tryIt { cancelTask() }}
+    }
+
+    private fun addToActualErrors(err: String){
+        actualErrors.add(err)
+        allErrors.add(err)
     }
 
     private fun getDataCorrectionCommand(pi: PackageInfo, expectedDataFile: File): String{
@@ -156,7 +163,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
         catch (e: Exception) {
             e.printStackTrace()
-            allErrors.add("$ERR_VERIFICATION_TRY_CATCH${bd.errorTag}: ${e.message}")
+            addToActualErrors("$ERR_VERIFICATION_TRY_CATCH${bd.errorTag}: ${e.message}")
             return null
         }
     }
@@ -268,7 +275,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         if (errorLine.endsWith(warnings)) ignorable = true
                     }
 
-                    if (!ignorable) allErrors.add("$ERR_TAR_SHELL${bd.errorTag}: $errorLine")
+                    if (!ignorable)
+                        addToActualErrors("$ERR_TAR_SHELL${bd.errorTag}: $errorLine")
                     else allErrors.add("$ERR_TAR_SUPPRESSED${bd.errorTag}: $errorLine")
 
                     return@iterateBufferedReader false
@@ -279,7 +287,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
         catch (e: Exception){
             e.printStackTrace()
-            allErrors.add("$ERR_TAR_CHECK_TRY_CATCH${bd.errorTag}: ${e.message}")
+            addToActualErrors("$ERR_TAR_CHECK_TRY_CATCH${bd.errorTag}: ${e.message}")
             return null
         }
     }
@@ -383,7 +391,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         if (errorLine.endsWith(warnings)) ignorable = true
                     }
 
-                    if (!ignorable) allErrors.add("$ERR_CORRECTION_SHELL${bd.errorTag}: $errorLine")
+                    if (!ignorable)
+                        addToActualErrors("$ERR_CORRECTION_SHELL${bd.errorTag}: $errorLine")
                     else allErrors.add("$ERR_CORRECTION_SUPPRESSED${bd.errorTag}: $errorLine")
 
                     return@iterateBufferedReader false
@@ -392,7 +401,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
         catch (e: Exception){
             e.printStackTrace()
-            allErrors.add("$ERR_CORRECTION_TRY_CATCH${bd.errorTag}: ${e.message}")
+            addToActualErrors("$ERR_CORRECTION_TRY_CATCH${bd.errorTag}: ${e.message}")
         }
     }
 
@@ -439,8 +448,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
         VERIFICATION_PID = -999
-        if (allErrors.size == 0)
-            onBackupComplete.onBackupComplete(jobcode, true, bd.partNumber)
+        if (actualErrors.size == 0)
+            onBackupComplete.onBackupComplete(jobcode, true, allErrors)
         else onBackupComplete.onBackupComplete(jobcode, false, allErrors)
     }
 }

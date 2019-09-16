@@ -39,7 +39,8 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
     private val backupUtils by lazy { BackupUtils() }
     private var suProcess : Process? = null
 
-    private val backupErrors by lazy { ArrayList<String>(0) }
+    private val allErrors by lazy { ArrayList<String>(0) }
+    private val actualErrors by lazy { ArrayList<String>(0) }
 
     init {
 
@@ -63,6 +64,11 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         }
 
         customCancelFunction = { commonTools.tryIt { cancelTask() }}
+    }
+
+    private fun addToActualErrors(err: String){
+        actualErrors.add(err)
+        allErrors.add(err)
     }
 
     private fun systemAppInstallScript(sysAppPackageName: String, sysAppPastingDir: String, appDir: String) {
@@ -193,7 +199,7 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         }
         catch (e: Exception){
             e.printStackTrace()
-            backupErrors.add("$ERR_SCRIPT_MAKING_TRY_CATCH${bd.errorTag}: ${e.message}")
+            addToActualErrors("$ERR_SCRIPT_MAKING_TRY_CATCH${bd.errorTag}: ${e.message}")
             return null
         }
     }
@@ -267,8 +273,9 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
                         if (errorLine.endsWith(warnings)) ignorable = true
                     }
 
-                    if (!ignorable) backupErrors.add("$ERR_APP_BACKUP_SHELL${bd.errorTag}: $errorLine")
-                    else backupErrors.add("$ERR_APP_BACKUP_SUPPRESSED${bd.errorTag}: $errorLine")
+                    if (!ignorable)
+                        addToActualErrors("$ERR_APP_BACKUP_SHELL${bd.errorTag}: $errorLine")
+                    else allErrors.add("$ERR_APP_BACKUP_SUPPRESSED${bd.errorTag}: $errorLine")
 
                     return@iterateBufferedReader false
                 })
@@ -277,7 +284,7 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         }
         catch (e: Exception){
             e.printStackTrace()
-            backupErrors.add("$ERR_APP_BACKUP_TRY_CATCH${bd.errorTag}: ${e.message}")
+            addToActualErrors("$ERR_APP_BACKUP_TRY_CATCH${bd.errorTag}: ${e.message}")
         }
     }
 
@@ -316,8 +323,8 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
         BACKUP_PID = -999
-        if (backupErrors.size == 0)
-            onBackupComplete.onBackupComplete(jobcode, true, bd.partNumber)
-        else onBackupComplete.onBackupComplete(jobcode, false, backupErrors)
+        if (actualErrors.size == 0)
+            onBackupComplete.onBackupComplete(jobcode, true, allErrors)
+        else onBackupComplete.onBackupComplete(jobcode, false, allErrors)
     }
 }
