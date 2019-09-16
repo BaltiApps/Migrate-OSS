@@ -6,7 +6,8 @@
     current_version_name (must not have blank spaces)
     changelog
     build.gradle
-    MainActivity.java [int THIS_VERSION and showChangeLog()]
+    MainActivity.java [showChangeLog()]
+    CommonToolsKotlin [THIS_VERSION]
     build.gradle version in Migrate helper
 
     -->

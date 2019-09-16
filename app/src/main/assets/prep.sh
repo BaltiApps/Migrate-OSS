@@ -7,6 +7,7 @@ TIMESTAMP=$2
 
 OUTFD="/dev/null"
 AB_DEVICE=""
+SYSTEM=/system
 
 for FD in `ls /proc/$$/fd`; do
 	if readlink /proc/$$/fd/$FD | grep -q pipe; then
@@ -42,15 +43,13 @@ echoIt " "
 echoIt "Checking parameters..."
 echoIt " "
 
-SYSTEM="/system"
-
 # Detect SAR
 SAR_PROP="$(getprop ro.build.system_root_image)"
 if [[ "$SAR_PROP" == "true" ]] || [[ -d /system_root && ! -f /system/build.prop ]]
 then
     echoIt "System-as-root detected!"
 	echoIt "Experimental support !!!"
-	SYSTEM="/system_root"
+	SYSTEM=/system_root
 else
     echoIt "Non System-as-root."
 fi
@@ -241,6 +240,6 @@ mkdir -p /data/app/
 mkdir -p /data/data/
 
 mkdir -p ${TEMP_DIR_NAME}
-cp /tmp/package-data.txt $1/package-data${TIMESTAMP}.txt
+cp /tmp/package-data.txt ${TEMP_DIR_NAME}/package-data${TIMESTAMP}.txt
 
 rm /tmp/prep.sh

@@ -2,10 +2,11 @@
 
 # parameters
 
-# temp_unpack_dir
-# version
+TEMP_UNPACK_DIR=$1
+VERSION=$2
 
 OUTFD="/dev/null"
+SYSTEM=/system
 
 for FD in `ls /proc/$$/fd`; do
 	if readlink /proc/$$/fd/$FD | grep -q pipe; then
@@ -16,43 +17,62 @@ for FD in `ls /proc/$$/fd`; do
 	fi
 done
 
-helper_apk_dir=/system/app/MigrateHelper
+echoIt() {
+    if [[ ${OUTFD} != "/dev/null" ]]; then
+        echoIt "$1" >> /proc/self/fd/${OUTFD};
+    else
+        echo "FD:: $1"
+    fi
+}
+
+helper_apk_dir=${SYSTEM}/app/MigrateHelper
 ext_helper_apk_dir=/sdcard/Android/data/balti.migratehelper/helper
 
-if [ -e ${helper_apk_dir}/MigrateHelper.apk ]; then
+# Detect SAR
+SAR_PROP="$(getprop ro.build.system_root_image)"
+if [[ "$SAR_PROP" == "true" ]] || [[ -d /system_root && ! -f /system/build.prop ]]
+then
+	SYSTEM=/system_root
+fi
 
-    echo "ui_print Current helper version: $2" >> /proc/self/fd/$OUTFD;
+if [[ -e ${helper_apk_dir}/MigrateHelper.apk ]]; then
 
-    if [ -e ${helper_apk_dir}/v ]; then
+    echoIt "Current helper version: $VERSION"
+
+    if [[ -e ${helper_apk_dir}/v ]]; then
         last_helper_version="$(cat ${helper_apk_dir}/v)"
-        echo "ui_print Last helper version: $last_helper_version" >> /proc/self/fd/$OUTFD;
+        echoIt "Last helper version: $last_helper_version"
     else
         last_helper_version="0"
     fi
 
-    if [ ${last_helper_version} -lt $2 ]; then
-        echo "ui_print Upgrading helper." >> /proc/self/fd/$OUTFD;
+    if [[ ${last_helper_version} -lt ${VERSION} ]]; then
+        echoIt "Upgrading helper."
         rm -r ${helper_apk_dir}
         rm -r /data/data/balti.migratehelper/
-        mv $1 ${helper_apk_dir}
-        echo "$2" > ${helper_apk_dir}/v
+        mv ${TEMP_UNPACK_DIR} ${helper_apk_dir}
+        echo "$VERSION" > ${helper_apk_dir}/v
         mkdir -p ${ext_helper_apk_dir}
         cp ${helper_apk_dir}/MigrateHelper.apk ${ext_helper_apk_dir}/MigrateHelper.apk
     else
-        echo "ui_print Helper already present. Skipping helper injection." >> /proc/self/fd/$OUTFD;
-        rm -r $1
+        echoIt "Helper already present. Skipping helper injection."
+        rm -r ${TEMP_UNPACK_DIR}
     fi
+
 else
-    echo "ui_print Injecting helper." >> /proc/self/fd/$OUTFD;
+    echoIt "ui_print Injecting helper."
     rm -r ${helper_apk_dir}
     rm -r /data/data/balti.migratehelper/
-    mv $1 ${helper_apk_dir}
+    mv ${TEMP_UNPACK_DIR} ${helper_apk_dir}
     touch ${helper_apk_dir}/v
-    echo "$2" > ${helper_apk_dir}/v
+    echo "$VERSION" > ${helper_apk_dir}/v
     mkdir -p ${ext_helper_apk_dir}
     cp ${helper_apk_dir}/MigrateHelper.apk ${ext_helper_apk_dir}/MigrateHelper.apk
 fi
 
-if [ -e $1 ] && [ -f $1 ]; then
-    mv $1 $1.bak
+chmod 777 ${helper_apk_dir}
+chmod 777 ${ext_helper_apk_dir}
+
+if [[ -e ${TEMP_UNPACK_DIR} ]] && [[ -f ${TEMP_UNPACK_DIR} ]]; then
+    mv ${TEMP_UNPACK_DIR} ${TEMP_UNPACK_DIR}.bak
 fi

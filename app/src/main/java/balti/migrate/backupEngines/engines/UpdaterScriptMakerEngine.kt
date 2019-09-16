@@ -6,6 +6,7 @@ import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.TEMP_DIR_NAME
+import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -13,7 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-// extract busybox, update-binary, mount_script.sh, prep.sh, helper_unpacking_script
+// extract busybox, update-binary, mount_script.sh, prep.sh, helper_unpacking_script.sh, verify.sh
 
 class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupIntentData,
                                private val appBatch: AppBatch,
@@ -56,6 +57,8 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 extractFile("mount_script.sh")
                 extractFile("prep.sh")
                 extractFile("package-data.txt")
+                extractFile("helper_unpacking_script.sh")
+                extractFile("verify.sh")
 
                 // set permission to scripts
                 fun set777Permission(fileName: String){
@@ -65,6 +68,9 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 set777Permission("mount_script.sh")
                 set777Permission("prep.sh")
                 set777Permission("package-data.txt")
+                set777Permission("helper_unpacking_script.sh")
+                set777Permission("verify.sh")
+                set777Permission("extras-data")
 
                 // mount partitions
                 updater_writer.write("ui_print(\" \");\n")
@@ -149,6 +155,32 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 }
                 updater_writer.write("ui_print(\" \");\n")
 
+                // unpack helper
+                updater_writer.write("ui_print(\"Unpacking helper\");\n")
+                updater_writer.write("package_extract_dir(\"helper\", \"/tmp/helper\");\n")
+                updater_writer.write("run_program(\"/tmp/helper_unpacking_script.sh\", \"/tmp/helper\", \"$THIS_VERSION\");\n")
+
+                updater_writer.write("set_progress(1.0000);\n")
+
+                // verification
+                updater_writer.write("run_program(\"/tmp/verify.sh\", \"$TEMP_DIR_NAME\");\n")
+
+                // un-mount partitions
+                updater_writer.write("ui_print(\" \");\n")
+                updater_writer.write("ui_print(\"Unmounting partition...\");\n")
+                updater_writer.write("run_program(\"/tmp/mount_script.sh\", \"u\");\n")
+
+                updater_writer.write("ui_print(\" \");\n")
+                updater_writer.write("ui_print(\"Finished!\");\n")
+                updater_writer.write("ui_print(\" \");\n")
+                updater_writer.write("ui_print(\"Files have been restored to Migrate cache.\");\n")
+                updater_writer.write("ui_print(\"---------------------------------\");\n")
+                updater_writer.write("ui_print(\"PLEASE ROOT YOUR ROM WITH MAGISK.\");\n")
+                updater_writer.write("ui_print(\"YOU WILL BE PROMPTED TO CONTINUE RESTORE AFTER STARTUP!!\");\n")
+                updater_writer.write("ui_print(\"---------------------------------\");\n")
+                updater_writer.write("ui_print(\" \");\n")
+
+                updater_writer.close()
             }
         }
         catch (e: Exception){

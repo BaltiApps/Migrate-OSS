@@ -40,6 +40,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_MAIN
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FIRST_RUN
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_VERSION_CURRENT
+import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
 import kotlinx.android.synthetic.main.please_wait.view.*
@@ -64,10 +65,6 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             storageHandler.postDelayed(this, 1000)
         }
     }}
-
-    companion object {
-        val THIS_VERSION = 13
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

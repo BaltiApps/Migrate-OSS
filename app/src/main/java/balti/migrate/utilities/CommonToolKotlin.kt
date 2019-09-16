@@ -21,6 +21,8 @@ class CommonToolKotlin(val context: Context) {
 
     companion object {
 
+        val THIS_VERSION = 13
+
         val DEBUG_TAG = "migrate_tag"
         val MAIN_ACTIVITY_AD_ID = "ca-app-pub-6582325651261661/6749792408"
         val BACKUP_ACTIVITY_AD_ID = "ca-app-pub-6582325651261661/5791933954"
