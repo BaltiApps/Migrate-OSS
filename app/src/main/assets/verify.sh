@@ -2,64 +2,81 @@
 
 # parameters
 
-# TEMP_DIR_NAME
+FILE_LIST=$1
+TEMP_DIR_NAME=$2
 
 OUTFD="$(cat /tmp/migrate/OUTFD)"
 SYSTEM="$(cat /tmp/migrate/SYSTEM)"
 
+echoIt() {
+    if [[ ${OUTFD} != "/dev/null" || ! -z ${OUTFD} ]]; then
+    echoIt "$1" >> /proc/self/fd/${OUTFD};
+    else
+    echo "FD:: $1"
+    fi
+}
 
-echo "ui_print  " >> /proc/self/fd/$OUTFD;
-echo "ui_print Verifying extras..." >> /proc/self/fd/$OUTFD;
+echoIt " "
+echoIt "Verifying backup..."
 
-# Removed in v2.0. This is now done by prep.sh
-# mv /tmp/package-data /data/balti.migrate/package-data
+ext_helper_apk=/sdcard/Android/data/balti.migratehelper/helper/MigrateHelper.apk
 
-res="$(cat /proc/cmdline | grep slot_suffix)";
+if [[ ! -e ${SYSTEM}/app/MigrateHelper/MigrateHelper.apk ]]; then
+    echoIt " "
+    echoIt "------------!!!!!!!!!!------------"
+    echoIt "Helper not installed successfully!"
 
-if [ ! -e /system/app/MigrateHelper/MigrateHelper.apk ]; then
-    echo "ui_print  " >> /proc/self/fd/$OUTFD;
-    echo "ui_print ------------!!!!!!!!!!------------" >> /proc/self/fd/$OUTFD;
-    echo "ui_print Helper not installed successfully!" >> /proc/self/fd/$OUTFD;
-    echo "ui_print  Please report to the developer!! " >> /proc/self/fd/$OUTFD;
-    echo "ui_print  " >> /proc/self/fd/$OUTFD;
-    echo "ui_print Deleting migrate cache..." >> /proc/self/fd/$OUTFD;
-    echo "ui_print ------------!!!!!!!!!!------------" >> /proc/self/fd/$OUTFD;
-    echo "ui_print  " >> /proc/self/fd/$OUTFD;
-    #rm -rf /system/app/MigrateHelper
-    #rm -rf $1
-    unsuccessful_unpack=false
-    sleep 2s
-else
-    unsuccessful_unpack=false
+    if [[ ! -e ${ext_helper_apk} ]]; then
+        echoIt "Helper apk is also present under:"
+        echoIt "${ext_helper_apk}"
+        echoIt " Please install the app manually"
+    else
+        echoIt "Please contact our telegram group"
+        echoIt "     https://t.me/migrateApp     "
+    fi
+
+    echoIt "------------!!!!!!!!!!------------"
+    echoIt " "
+    sleep 1s
 fi
 
-if [ -e /tmp/extras-data ] && [ "$unsuccessful_unpack" = false ]
-then
-    ed=/tmp/extras-data
+echoIt " "
+echoIt "Checking files..."
+
+anyError="false"
+if [[ -e /tmp/${FILE_LIST} ]]; then
+    ed=/tmp/${FILE_LIST}
     while read -r line || [[ -n "$line" ]]; do
-        if [ ! -e $1/${line} ]; then
-            echo "ui_print $line was not unpacked" >> /proc/self/fd/$OUTFD;
-        fi
+        case ${line} in
+            *tar.gz)
+            if [[ ! -e /data/data/${line} ]]; then
+                echoIt "$line was not unpacked"
+                anyError="true"
+            fi
+            ;;
+            *)
+            if [[ ! -e ${TEMP_DIR_NAME}/${line} ]]; then
+                echoIt "$line was not unpacked"
+                anyError="true"
+            fi
+            ;;
+        esac
     done < "$ed"
 fi
 
-
-ext_helper_apk=/sdcard/Android/data/balti.migratehelper/helper/MigrateHelper.apk
-if [ -e ${ext_helper_apk} ]; then
-    echo "ui_print  " >> /proc/self/fd/$OUTFD;
-    echo "ui_print **********************************" >> /proc/self/fd/$OUTFD;
-    echo "ui_print Helper apk is also present under:" >> /proc/self/fd/$OUTFD;
-    echo "ui_print ${ext_helper_apk}" >> /proc/self/fd/$OUTFD;
-    echo "ui_print  Please install the app manually" >> /proc/self/fd/$OUTFD;
-    echo "ui_print   if TWRP could not install it" >> /proc/self/fd/$OUTFD;
-    echo "ui_print **********************************" >> /proc/self/fd/$OUTFD;
-    sleep 2s
+if [[ ${anyError} == "true" ]]; then
+    echoIt " "
+    echoIt "------------!!!!!!!!!!------------"
+    echoIt "  Some files were not extracted   "
+    echoIt "     Restore maybe incomplete     "
+    echoIt "------------!!!!!!!!!!------------"
+    echoIt " "
+    sleep 1s
 fi
 
-if [ -n "$res" ]; then
-    umount /system
-fi
+echoIt "Verification complete"
+echoIt " "
+echoIt "For any issues please contact our telegram group"
+echoIt "https://t.me/migrateApp"
+echoIt " "
 
-if [ "$unsuccessful_unpack" = true ]; then
-    umount /data
-fi

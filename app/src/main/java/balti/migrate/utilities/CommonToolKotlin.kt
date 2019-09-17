@@ -43,6 +43,8 @@ class CommonToolKotlin(val context: Context) {
         val FILE_PREFIX_RETRY_SCRIPT = "retry_script_"
         val FILE_PREFIX_TAR_CHECK = "tar_check_"
 
+        val FILE_FILE_LIST = "fileList.txt"
+
         val CHANNEL_BACKUP_START = "Backup start notification"
         val CHANNEL_BACKUP_END = "Backup finished notification"
         val CHANNEL_BACKUP_RUNNING = "Backup running notification"

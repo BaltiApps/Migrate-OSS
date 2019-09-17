@@ -8,6 +8,7 @@ import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_EXTRACT
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
 import balti.migrate.utilities.CommonToolKotlin.Companion.TEMP_DIR_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
 import java.io.*
@@ -97,7 +98,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             extractFile("package-data.txt")
             extractFile("helper_unpacking_script.sh")
             extractFile("verify.sh")
-            extractFile("fileList.txt")
+            extractFile(FILE_FILE_LIST)
 
             // set permission to scripts
             fun set777Permission(fileName: String) {
@@ -109,7 +110,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             set777Permission("package-data.txt")
             set777Permission("helper_unpacking_script.sh")
             set777Permission("verify.sh")
-            set777Permission("fileList.txt")
+            set777Permission(FILE_FILE_LIST)
 
             // mount partitions
             updater_writer.write("ui_print(\" \");\n")
@@ -201,7 +202,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             updater_writer.write("set_progress(1.0000);\n")
 
             // verification
-            updater_writer.write("run_program(\"/tmp/verify.sh\", \"$TEMP_DIR_NAME\");\n")
+            updater_writer.write("run_program(\"/tmp/verify.sh\", \"$FILE_FILE_LIST\", \"$TEMP_DIR_NAME\");\n")
 
             // un-mount partitions
             updater_writer.write("ui_print(\" \");\n")

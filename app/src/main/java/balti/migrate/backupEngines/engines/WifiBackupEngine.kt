@@ -56,10 +56,7 @@ class WifiBackupEngine(private val jobcode: Int,
                 this.close()
             }
 
-            BufferedWriter(FileWriter(File(actualDestination, "fileList.txt"), true)).run {
-                this.write("${wifiDataPacket.fileName}\n")
-                this.close()
-            }
+            writeToFileList(wifiDataPacket.fileName)
         }
         catch (e: Exception){
             e.printStackTrace()

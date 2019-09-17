@@ -124,7 +124,7 @@ if [[ -e /tmp/package-data.txt ]]; then
     # sometimes, the above data command gets the percentage of data used
     # In that case, the data_free variable will contain % at the end
             case ${data_free} in
-        *%)
+                *%)
                 echoIt "Using third argument..."
                 data_free=$(df -k /data | tail -1 | awk '{print $3}')
                 ;;
@@ -166,7 +166,7 @@ if [[ -e /tmp/package-data.txt ]]; then
             system_free=$(df -k /system | tail -1 | awk '{print $4}')
 
             case ${system_free} in
-        *%)
+                *%)
                 echoIt "Using third argument..."
                 system_free=$(df -k /system | tail -1 | awk '{print $3}')
                 ;;

@@ -16,6 +16,10 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PART_NUMBER
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_PARTS
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
+import java.io.BufferedWriter
+import java.io.File
+import java.io.FileWriter
 import javax.inject.Inject
 
 abstract class ParentBackupClass(private val bd: BackupIntentData,
@@ -38,6 +42,13 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     var customCancelFunction: (() -> Unit)? = null
     var customPreExecuteFunction: (() -> Unit)? = null
+
+    fun writeToFileList(fileName: String){
+        BufferedWriter(FileWriter(File(actualDestination, FILE_FILE_LIST), true)).run {
+            this.write("$fileName\n")
+            this.close()
+        }
+    }
 
     val actualBroadcast by lazy {
         Intent(ACTION_BACKUP_PROGRESS).apply {

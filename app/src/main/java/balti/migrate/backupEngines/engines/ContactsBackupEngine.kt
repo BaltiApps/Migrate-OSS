@@ -61,10 +61,7 @@ class ContactsBackupEngine(private val jobcode: Int,
                 this.close()
             }
 
-            BufferedWriter(FileWriter(File(actualDestination, "fileList.txt"), true)).run {
-                this.write("$vcfFileName\n")
-                this.close()
-            }
+            writeToFileList(vcfFileName)
         }
         catch (e: Exception){
             e.printStackTrace()

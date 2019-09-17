@@ -40,9 +40,7 @@ import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_TABLE_
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_TRANSCRIPTION
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_TYPE
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_VOICEMAIL_URI
-import java.io.BufferedWriter
 import java.io.File
-import java.io.FileWriter
 
 class CallsBackupEngine(private val jobcode: Int,
                         private val bd: BackupIntentData,
@@ -161,10 +159,7 @@ class CallsBackupEngine(private val jobcode: Int,
                 db.close()
             }
 
-            BufferedWriter(FileWriter(File(actualDestination, "fileList.txt"), true)).run {
-                this.write("$callsDBFileName\n")
-                this.close()
-            }
+            writeToFileList(callsDBFileName)
         }
         catch (e: Exception){
             e.printStackTrace()

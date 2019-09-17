@@ -18,6 +18,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_AP
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SCRIPT_APP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_BACKUP_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
@@ -42,7 +43,7 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
     private val allErrors by lazy { ArrayList<String>(0) }
     private val actualErrors by lazy { ArrayList<String>(0) }
 
-    private val fileListWriter by lazy { BufferedWriter(FileWriter(File(actualDestination, "fileList.txt"))) }
+    private val fileListWriter by lazy { BufferedWriter(FileWriter(File(actualDestination, FILE_FILE_LIST))) }
 
     init {
 
