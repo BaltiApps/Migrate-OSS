@@ -75,8 +75,3 @@ if [[ ${anyError} == "true" ]]; then
 fi
 
 echoIt "Verification complete"
-echoIt " "
-echoIt "For any issues please contact our telegram group"
-echoIt "https://t.me/migrateApp"
-echoIt " "
-

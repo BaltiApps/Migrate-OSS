@@ -216,6 +216,8 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             updater_writer.write("ui_print(\"---------------------------------\");\n")
             updater_writer.write("ui_print(\"PLEASE ROOT YOUR ROM WITH MAGISK.\");\n")
             updater_writer.write("ui_print(\"YOU WILL BE PROMPTED TO CONTINUE RESTORE AFTER STARTUP!!\");\n")
+            updater_writer.write("ui_print(\"For any issues please contact our telegram group\");\n")
+            updater_writer.write("ui_print(\"https://t.me/migrateApp\");\n")
             updater_writer.write("ui_print(\"---------------------------------\");\n")
             updater_writer.write("ui_print(\" \");\n")
 
