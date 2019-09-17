@@ -50,6 +50,11 @@ class SettingsBackupEngine(private val jobcode: Int,
                 this.write(jsonObject.toString())
                 this.close()
             }
+
+            BufferedWriter(FileWriter(File(actualDestination, "fileList.txt"), true)).run {
+                this.write("$BACKUP_NAME_SETTINGS\n")
+                this.close()
+            }
         }
         catch (e: Exception){
             e.printStackTrace()

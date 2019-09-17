@@ -5,20 +5,12 @@
 TEMP_UNPACK_DIR=$1
 VERSION=$2
 
-OUTFD="/dev/null"
-SYSTEM=/system
-
-for FD in `ls /proc/$$/fd`; do
-	if readlink /proc/$$/fd/$FD | grep -q pipe; then
-		if ps | grep -v grep | grep -q " 3 $FD "; then
-			OUTFD=$FD
-			break
-		fi
-	fi
-done
+OUTFD="$(cat /tmp/migrate/OUTFD)"
+SYSTEM="$(cat /tmp/migrate/SYSTEM)"
+AB="$(cat /tmp/migrate/AB)"
 
 echoIt() {
-    if [[ ${OUTFD} != "/dev/null" ]]; then
+    if [[ ${OUTFD} != "/dev/null" || ! -z ${OUTFD} ]]; then
         echoIt "$1" >> /proc/self/fd/${OUTFD};
     else
         echo "FD:: $1"
@@ -27,13 +19,6 @@ echoIt() {
 
 helper_apk_dir=${SYSTEM}/app/MigrateHelper
 ext_helper_apk_dir=/sdcard/Android/data/balti.migratehelper/helper
-
-# Detect SAR
-SAR_PROP="$(getprop ro.build.system_root_image)"
-if [[ "$SAR_PROP" == "true" ]] || [[ -d /system_root && ! -f /system/build.prop ]]
-then
-	SYSTEM=/system_root
-fi
 
 if [[ -e ${helper_apk_dir}/MigrateHelper.apk ]]; then
 

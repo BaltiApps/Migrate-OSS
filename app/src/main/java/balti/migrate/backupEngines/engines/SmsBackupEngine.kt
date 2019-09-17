@@ -33,7 +33,9 @@ import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_STATUS
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_SUBJECT
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_TABLE_NAME
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_TYPE
+import java.io.BufferedWriter
 import java.io.File
+import java.io.FileWriter
 
 class SmsBackupEngine(private val jobcode: Int,
                       private val bd: BackupIntentData,
@@ -132,6 +134,11 @@ class SmsBackupEngine(private val jobcode: Int,
 
                 File(smsDBFile.absolutePath + "-shm").delete()
                 File(smsDBFile.absolutePath + "-wal").delete()
+
+                BufferedWriter(FileWriter(File(actualDestination, "fileList.txt"), true)).run {
+                    this.write("$smsDBFileName\n")
+                    this.close()
+                }
             }
         }
         catch (e: Exception){

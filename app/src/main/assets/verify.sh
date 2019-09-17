@@ -4,16 +4,9 @@
 
 # TEMP_DIR_NAME
 
-OUTFD="/dev/null"
+OUTFD="$(cat /tmp/migrate/OUTFD)"
+SYSTEM="$(cat /tmp/migrate/SYSTEM)"
 
-for FD in `ls /proc/$$/fd`; do
-	if readlink /proc/$$/fd/$FD | grep -q pipe; then
-		if ps | grep -v grep | grep -q " 3 $FD "; then
-			OUTFD=$FD
-			break
-		fi
-	fi
-done
 
 echo "ui_print  " >> /proc/self/fd/$OUTFD;
 echo "ui_print Verifying extras..." >> /proc/self/fd/$OUTFD;
@@ -42,8 +35,8 @@ fi
 
 if [ -e /tmp/extras-data ] && [ "$unsuccessful_unpack" = false ]
 then
-	ed=/tmp/extras-data
-	while read -r line || [[ -n "$line" ]]; do
+    ed=/tmp/extras-data
+    while read -r line || [[ -n "$line" ]]; do
         if [ ! -e $1/${line} ]; then
             echo "ui_print $line was not unpacked" >> /proc/self/fd/$OUTFD;
         fi

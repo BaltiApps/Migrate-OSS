@@ -1181,7 +1181,7 @@ public class BackupEngine {
         (new File(helper.getAbsolutePath().substring(0, helper.getAbsolutePath().lastIndexOf('/')))).mkdirs();
 
         try {
-            InputStream inputStream = assetManager.open("helper.apk");
+            InputStream inputStream = assetManager.open("MigrateHelper.apk");
             FileOutputStream writer = new FileOutputStream(helper);
             while ((read = inputStream.read(buffer)) > 0) {
                 writer.write(buffer, 0, read);
@@ -1250,8 +1250,8 @@ public class BackupEngine {
 
             updater_writer.write("ifelse(is_mounted(\"/data\") && is_mounted(\"/system\"), ui_print(\"Mounted!\"), abort(\"Mount failed! Exiting...\"));\n");
 
-            /*updater_writer.write("package_extract_file(\"helper.apk\", \"/tmp/helper.apk\");\n");
-            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777, \"" + "/tmp/helper.apk" + "\");\n");*/
+            /*updater_writer.write("package_extract_file(\"MigrateHelper.apk\", \"/tmp/MigrateHelper.apk\");\n");
+            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777, \"" + "/tmp/MigrateHelper.apk" + "\");\n");*/
 
             updater_writer.write("package_extract_file(\"" + "prep.sh" + "\", \"" + "/tmp/prep.sh" + "\");\n");
             updater_writer.write("package_extract_file(\"" + "package-data.txt" + "\", \"" + "/tmp/package-data.txt" + "\");\n");
@@ -1623,7 +1623,7 @@ public class BackupEngine {
             err = err + "MAKE_PACKAGE_FLASH_READY" + errorTag + ": " + "mount_using_self_busybox.sh could not be moved " + moveErr + "\n";
         }
 
-        File helper = new File(commonTools.unpackAssetToInternal("helper.apk", "helper.apk", false));
+        File helper = new File(commonTools.unpackAssetToInternal("MigrateHelper.apk", "MigrateHelper.apk", false));
 
         File helper_destination = new File(destination + "/" + backupName + "/system/app/helper/MigrateHelper.apk");
         helper_destination.getParentFile().mkdirs();

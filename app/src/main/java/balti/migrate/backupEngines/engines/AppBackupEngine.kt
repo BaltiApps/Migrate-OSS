@@ -42,6 +42,8 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
     private val allErrors by lazy { ArrayList<String>(0) }
     private val actualErrors by lazy { ArrayList<String>(0) }
 
+    private val fileListWriter by lazy { BufferedWriter(FileWriter(File(actualDestination, "fileList.txt"))) }
+
     init {
 
         customPreExecuteFunction = {
@@ -77,9 +79,37 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
         val scriptLocation = "$actualDestination/$scriptName"
         val script = File(scriptLocation)
 
+        var pastingDir = "/system"
+
+        sysAppPastingDir.let {fullDir ->
+
+            "/system/".let { if (fullDir.startsWith(it)) pastingDir = fullDir.substring(it.length) }
+
+            "/system_root/".run {
+                if (fullDir.startsWith(this)) {
+                    pastingDir = fullDir.substring(this.length)
+
+                    "/system_root/system/".run {
+                        if (fullDir.startsWith(this)) {
+                            pastingDir = fullDir.substring(this.length)
+
+                            "/system_root/system/system".run {
+                                if (fullDir.startsWith(this))
+                                    pastingDir = fullDir.substring(this.length)
+                            }
+
+                        }
+
+                    }
+                }
+            }
+        }
+
         val scriptText = "#!sbin/sh\n\n" +
-                "mkdir -p " + sysAppPastingDir + "\n" +
-                "mv /tmp/" + appDir + "/*.apk " + sysAppPastingDir + "/" + "\n" +
+                "\n" +
+                "SYSTEM=$(cat /tmp/migrate/SYSTEM)\n" +
+                "mkdir -p \$SYSTEM/$pastingDir\n" +
+                "mv /tmp/$appDir/*.apk \$SYSTEM/$pastingDir/\n" +
                 "cd /tmp/" + "\n" +
                 "rm -rf " + appDir + "\n" +
                 "rm -rf " + scriptName + "\n"
@@ -143,10 +173,13 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
                     var apkPath = "NULL"
                     var apkName = "NULL"       //has .apk extension
                     if (packet.APP) {
+
                         apkPath = packet.PACKAGE_INFO.applicationInfo.sourceDir
                         apkName = apkPath.substring(apkPath.lastIndexOf('/') + 1)
                         apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'))
                         apkName = commonTools.applyNamingCorrectionForShell(apkName)
+
+                        fileListWriter.write("$packageName.app\n")
                     }
 
                     var dataPath = "NULL"
@@ -155,10 +188,14 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
                         dataPath = packet.PACKAGE_INFO.applicationInfo.dataDir
                         dataName = dataPath.substring(dataPath.lastIndexOf('/') + 1)
                         dataPath = dataPath.substring(0, dataPath.lastIndexOf('/'))
+
+                        fileListWriter.write("$packageName.tar.gz\n")
                     }
 
-                    if (packet.PERMISSION)
+                    if (packet.PERMISSION) {
                         backupUtils.makePermissionFile(packageName, actualDestination, pm)
+                        fileListWriter.write("$packageName.perm\n")
+                    }
 
                     var versionName: String? = packet.PACKAGE_INFO.versionName
                     versionName = if (versionName == null || versionName == "") "_"
@@ -166,8 +203,10 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
 
                     val appIcon: String = backupUtils.getIconString(packet.PACKAGE_INFO, pm)
                     var appIconFileName: String? = null
-                    if (!sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true))
+                    if (!sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true)) {
                         appIconFileName = backupUtils.makeIconFile(packageName, appIcon, actualDestination)
+                        fileListWriter.write("$packageName.icon\n")
+                    }
 
                     val echoCopyCommand = "echo \"$MIGRATE_STATUS: $appName (${(i + 1)}/${packets.size}) icon: ${if (appIconFileName == null) appIcon else "$(cat $packageName.icon)"}\"\n"
                     val scriptCommand = "sh $appAndDataBackupScript " +
@@ -188,12 +227,15 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
                             if (appIconFileName != null) appIcon else null
                     )
                 }
+
             }
 
             scriptWriter.write("echo \"--- App files copied ---\"\n")
             scriptWriter.close()
 
             scriptFile.setExecutable(true)
+
+            fileListWriter.close()
 
             return scriptFile.absolutePath
         }
