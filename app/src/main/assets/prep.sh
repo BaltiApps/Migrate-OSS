@@ -5,9 +5,11 @@
 TEMP_DIR_NAME=$1
 TIMESTAMP=$2
 
+# In case of errors, system app path and build.prop path can be manually mentioned under:
+# /tmp/migrate/SYSTEM_MANUAL and /tmp/migrate/BUILDPROP_MANUAL files respectively.
+
 OUTFD="/dev/null"
-AB="false"
-SYSTEM=/system
+SYSTEM=""
 SAR="$(cat /tmp/migrate/SAR)"
 
 for FD in `ls /proc/$$/fd`; do
@@ -40,42 +42,73 @@ echoIt " "
 echoIt "Checking parameters..."
 echoIt " "
 
-# Check SAR
-if [[ "$SAR" == "true" ]]
-then
-    echoIt "System-as-root detected!"
-    echoIt "Experimental support !!!"
-    SAR="true"
+if [[ -d /system_root/system/system/app ]]; then
+    SYSTEM=/system_root/system/system
+elif [[ -d /system_root/system/app ]]; then
     SYSTEM=/system_root/system
+elif [[ -d /system_root/app ]]; then
+    SYSTEM=/system_root
+elif [[ -d /system_root/product/app ]]; then
+    SYSTEM=/system_root/product
+elif [[ -d /system/system/app ]]; then
+    SYSTEM=/system/system
+elif [[ -d /system/app ]]; then
+    SYSTEM=/system
+elif [[ -d /system/product/app ]]; then
+    SYSTEM=/system/product
+fi
+
+manual_entry_system="$(cat /tmp/migrate/SYSTEM_MANUAL)"
+
+if [[ ${SYSTEM} != "" ]]; then
+    echoIt "System app confirmed under: $SYSTEM"
+elif [[ -n "$manual_entry_system" ]]; then
+    echoIt "Manual system app location: $manual_entry_system"
+    SYSTEM=${manual_entry_system}
 else
-    echoIt "Non System-as-root."
+    echoIt "System app directory detection failed. Trying from parameters"
+
+    # Check SAR
+    if [[ "$SAR" == "true" ]]
+    then
+        echoIt "System-as-root detected!"
+        SYSTEM=/system_root
+    else
+        echoIt "Non System-as-root."
+    fi
+
+    ab_device="$(cat /proc/cmdline | grep slot_suffix)";
+    if [[ -n "$ab_device" ]];
+    then
+        echoIt "A/B device!"
+        SYSTEM=${SYSTEM}/system
+    else
+        echoIt "Only-A device."
+    fi
+
+    echoIt "Calculated system app under: $SYSTEM"
+
 fi
 
 echoIt " "
 
-# Detect A/B device
-ab_device="$(cat /proc/cmdline | grep slot_suffix)";
-if [[ -n "$ab_device" ]];
-then
-    echoIt "A/B device!"
-    echoIt "Experimental support !!!"
-    AB="true"
-    SYSTEM=${SYSTEM}/system
-else
-    echoIt "Only-A device."
-fi
-
-echoIt " "
-
-sleep 2s
+sleep 1s
 
 # Check if ROM is present
-if [[ -e "$SYSTEM/build.prop" ]]; then
+build_prop="$SYSTEM/build.prop"
+manual_entry_buildprop="$(cat /tmp/migrate/BUILDPROP_MANUAL)"
+
+if [[ -n "$manual_entry_buildprop" ]]; then
+    echoIt "Manual build.prop location: $manual_entry_buildprop"
+    build_prop=${manual_entry_buildprop}
+fi
+
+if [[ -e "$build_prop" ]]; then
     echoIt "ROM is present."
 else
 
     echo "DEBUG:: --- Contents in $SYSTEM ---"
-    echo "$(ls ${SYSTEM})"
+    echo "$(find / -name build.prop)"
     echo "DEBUG:: --- End of contents ---"
 
     echoIt " "
@@ -197,7 +230,7 @@ if [[ -e /tmp/package-data.txt ]]; then
         # check ROM android version
         elif [[ "$key" == "sdk" ]]; then
 
-            rom_sdk="$(cat ${SYSTEM}/build.prop | grep ro.build.version.sdk | cut -d "=" -f2)"
+            rom_sdk="$(cat ${build_prop} | grep ro.build.version.sdk | cut -d "=" -f2)"
 
             if [[ ${rom_sdk} -ge 21 ]]; then
 
@@ -216,7 +249,7 @@ if [[ -e /tmp/package-data.txt ]]; then
             else
 
                 echo "DEBUG:: rom_sdk line from build.prop ---"
-                echo "$(cat ${SYSTEM}/build.prop | grep ro.build.version.sdk)"
+                echo "$(cat ${build_prop} | grep ro.build.version.sdk)"
                 echo "DEBUG:: rom_sdk = $rom_sdk"
 
                 echoIt "------------!!!!!!!!!!------------"
@@ -243,7 +276,6 @@ cp /tmp/package-data.txt ${TEMP_DIR_NAME}/package-data${TIMESTAMP}.txt
 
 # export variables
 echo "${OUTFD}" > /tmp/migrate/OUTFD
-echo "${AB}" > /tmp/migrate/AB
 echo "${SYSTEM}" > /tmp/migrate/SYSTEM
 
 rm /tmp/prep.sh

@@ -7,7 +7,6 @@ VERSION=$2
 
 OUTFD="$(cat /tmp/migrate/OUTFD)"
 SYSTEM="$(cat /tmp/migrate/SYSTEM)"
-AB="$(cat /tmp/migrate/AB)"
 
 echoIt() {
     if [[ ${OUTFD} != "/dev/null" || ! -z ${OUTFD} ]]; then
