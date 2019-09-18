@@ -42,20 +42,18 @@ echoIt " "
 echoIt "Checking parameters..."
 echoIt " "
 
-if [[ -d /system_root/system/system/app ]]; then
-    SYSTEM=/system_root/system/system
-elif [[ -d /system_root/system/app ]]; then
+if [[ -d /system_root/system/app ]]; then
     SYSTEM=/system_root/system
+
 elif [[ -d /system_root/app ]]; then
     SYSTEM=/system_root
-elif [[ -d /system_root/product/app ]]; then
-    SYSTEM=/system_root/product
+
 elif [[ -d /system/system/app ]]; then
     SYSTEM=/system/system
+
 elif [[ -d /system/app ]]; then
     SYSTEM=/system
-elif [[ -d /system/product/app ]]; then
-    SYSTEM=/system/product
+
 fi
 
 manual_entry_system="$(cat /tmp/migrate/SYSTEM_MANUAL)"
