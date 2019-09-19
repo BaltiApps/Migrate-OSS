@@ -123,8 +123,6 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
 
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
-        if (testingErrors.size == 0)
-            onBackupComplete.onBackupComplete(jobcode, true, bd.partNumber)
-        else onBackupComplete.onBackupComplete(jobcode, false, testingErrors)
+        onBackupComplete.onBackupComplete(jobcode, testingErrors.size == 0, testingErrors)
     }
 }

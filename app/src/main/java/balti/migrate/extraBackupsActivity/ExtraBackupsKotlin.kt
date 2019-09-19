@@ -18,6 +18,7 @@ import balti.migrate.BackupProgressLayout
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
+import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.extraBackupsActivity.adb.ReadAdbKotlin
 import balti.migrate.extraBackupsActivity.apps.MakeAppPackets
 import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
@@ -39,7 +40,9 @@ import balti.migrate.extraBackupsActivity.wifi.ReadWifiKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
+import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_SERVICE_STARTED
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
+import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_START_BATCH_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.CALLS_PERMISSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.CONTACT_PERMISSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
@@ -78,14 +81,13 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     // to add extras search for "extras_markers" and change those lines/functions
 
     companion object {
-        var appBatches = ArrayList<AppBatch>(0)
-        var backupName = ""
     }
 
     private val commonTools by lazy { CommonToolKotlin(this) }
     val appListCopied by lazy { ArrayList<BackupDataPacketKotlin>(0) }
 
     private lateinit var destination: String
+    private var backupName = ""
     private lateinit var main: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
     private var isAllAppsSelected = true
@@ -103,6 +105,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private var loadKeyboard: LoadKeyboardForSelection? = null
     private var loadInstallers: LoadInstallersForSelection? = null
 
+    private var appBatches = ArrayList<AppBatch>(0)
     private var contactList = ArrayList<ContactsDataPacketKotlin>(0)    //extras_markers
     private var smsList = ArrayList<SmsDataPacketKotlin>(0)
     private var callsList = ArrayList<CallsDataPacketsKotlin>(0)
@@ -123,6 +126,33 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 )
                 commonTools.tryIt { commonTools.LBM?.unregisterReceiver(this) }
                 finish()
+            }
+        }
+    }
+
+    private val serviceStartReceiver by lazy {
+        object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+
+                BackupServiceKotlin.destination = destination
+                BackupServiceKotlin.backupName = backupName
+
+                BackupServiceKotlin.appBatches = appBatches
+
+                BackupServiceKotlin.contactsList = if (do_backup_contacts.isChecked) contactList else null
+                BackupServiceKotlin.callsList = if (do_backup_calls.isChecked) callsList else null
+                BackupServiceKotlin.smsList = if (do_backup_sms.isChecked) smsList else null
+
+                BackupServiceKotlin.dpiText = if (do_backup_dpi.isChecked) dpiText else null
+                BackupServiceKotlin.keyboardText = if (do_backup_keyboard.isChecked) keyboardText else null
+                BackupServiceKotlin.adbState = if (do_backup_adb.isChecked) adbState else null
+                BackupServiceKotlin.fontScale = if (do_backup_fontScale.isChecked) fontScale else null
+                BackupServiceKotlin.wifiData = if (do_backup_wifi.isChecked) wifiData else null
+
+                BackupServiceKotlin.doBackupInstallers = do_backup_installers.isChecked
+
+                commonTools.LBM?.sendBroadcast(Intent(ACTION_START_BATCH_BACKUP))
+                commonTools.tryIt { commonTools.LBM?.unregisterReceiver(this) }
             }
         }
     }
@@ -168,6 +198,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             }
 
             commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
+            commonTools.LBM?.registerReceiver(serviceStartReceiver, IntentFilter(ACTION_BACKUP_SERVICE_STARTED))
 
             commonTools.LBM?.sendBroadcast(Intent(ACTION_REQUEST_BACKUP_DATA))
 
@@ -576,7 +607,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                                 this.setPadding(20, 20, 20 ,20)
                             }
 
-                            for (i in 0 until sdCardProbableDirs.size){
+                            for (i in sdCardProbableDirs.indices){
 
                                 val sdFile = File(sdCardProbableDirs[0])
                                 val button = RadioButton(this).apply {
@@ -928,8 +959,11 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     override fun onDestroy() {                          //extras_markers
         super.onDestroy()
-        commonTools.tryIt { makeAppPackets?.cancel(true) }
+
         commonTools.tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
+        commonTools.tryIt { commonTools.LBM?.unregisterReceiver(serviceStartReceiver) }
+
+        commonTools.tryIt { makeAppPackets?.cancel(true) }
         commonTools.tryIt { readContacts?.cancel(true) }
         commonTools.tryIt { readSms?.cancel(true) }
         commonTools.tryIt { readCalls?.cancel(true) }

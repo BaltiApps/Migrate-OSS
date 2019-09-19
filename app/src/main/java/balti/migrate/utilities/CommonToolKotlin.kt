@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
 import balti.migrate.R
-import balti.migrate.backupEngines.containers.BackupIntentData
 import kotlinx.android.synthetic.main.error_report_layout.view.*
 import java.io.*
 
@@ -52,7 +51,6 @@ class CommonToolKotlin(val context: Context) {
         val ACTION_BACKUP_PROGRESS = "Migrate progress broadcast"
         val ACTION_BACKUP_CANCEL = "Migrate backup cancel broadcast"
         val ACTION_REQUEST_BACKUP_DATA = "get data"
-        val ACTION_EXTRA_BACKUP_ACTIVITY_STARTED = "extraBackupsStarted"
         val ACTION_START_BATCH_BACKUP = "start batch backup"
         val ACTION_BACKUP_SERVICE_STARTED = "backup service started"
 
@@ -126,6 +124,8 @@ class CommonToolKotlin(val context: Context) {
         val ERR_UPDATER_TRY_CATCH = "UPDATER_TRY_CATCH"
         val ERR_UPDATER_EXTRACT = "UPDATER_EXTRACT"
 
+        val ERR_BACKUP_SERVICE_ERROR = "BACKUP_SERVICE"
+
         val ALL_SUPPRESSED_ERRORS = arrayOf(ERR_APP_BACKUP_SUPPRESSED, ERR_CORRECTION_SUPPRESSED, ERR_TAR_SUPPRESSED)
 
         val PACKAGE_NAME_PLAY_STORE = "com.android.vending"
@@ -178,7 +178,17 @@ class CommonToolKotlin(val context: Context) {
 
         val JOBCODE_MAKE_APP_PACKETS = 65364
 
-        val JOBCODE_APP_BACKUP = 3499
+        val JOBCODE_PEFORM_SYSTEM_TEST = 10000
+        val JOBCODE_PEFORM_BACKUP_CONTACTS = 20000
+        val JOBCODE_PEFORM_BACKUP_SMS = 30000
+        val JOBCODE_PEFORM_BACKUP_CALLS = 40000
+        val JOBCODE_PEFORM_BACKUP_WIFI = 50000
+        val JOBCODE_PEFORM_BACKUP_SETTINGS = 60000
+        val JOBCODE_PERFORM_APP_BACKUP = 70000
+        val JOBCODE_PERFORM_APP_BACKUP_VERIFICATION = 80000
+        val JOBCODE_PERFORM_UPDATER_SCRIPT = 90000
+        val JOBCODE_PERFORM_ZIP_BACKUP = 100000
+        val JOBCODE_PERFORM_ZIP_VERIFICATION = 110000
 
         val CONTACT_PERMISSION = 933
         val SMS_PERMISSION = 944
@@ -542,13 +552,6 @@ class CommonToolKotlin(val context: Context) {
         }
     }
 
-    fun getMadePartName(backupIntentData: BackupIntentData): String =
-            (backupIntentData.totalParts > 1).let {
-                if (it)
-                    "${context.getString(R.string.part)} ${backupIntentData.partNumber} ${context.getString(R.string.of)} ${backupIntentData.totalParts}"
-                else ""
-            }
-
     fun getPercentage(count: Int, total: Int): Int {
         return if (total != 0) (count*100)/total
         else 0
@@ -556,4 +559,9 @@ class CommonToolKotlin(val context: Context) {
 
     fun getPercentageText(count: Int, total: Int): String =
             "${getPercentage(count, total)}%"
+
+    fun getMadePartName(zeroIndexedPartName: Int, totalParts: Int): String =
+            if (totalParts > 1)
+                "${context.getString(R.string.part)} ${zeroIndexedPartName + 1} ${context.getString(R.string.of)} $totalParts"
+            else ""
 }

@@ -79,9 +79,7 @@ class ZipVerificationEngine(private val jobcode: Int,
 
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
-        if (verificationErrors.size == 0)
-            onBackupComplete.onBackupComplete(jobcode, true, 0)
-        else onBackupComplete.onBackupComplete(jobcode, false, verificationErrors)
+        onBackupComplete.onBackupComplete(jobcode, verificationErrors.size == 0, verificationErrors)
     }
 
 }

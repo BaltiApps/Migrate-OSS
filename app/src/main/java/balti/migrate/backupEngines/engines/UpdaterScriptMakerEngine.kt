@@ -12,7 +12,6 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
 import balti.migrate.utilities.CommonToolKotlin.Companion.TEMP_DIR_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
 import java.io.*
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -20,6 +19,7 @@ import kotlin.collections.ArrayList
 
 class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupIntentData,
                                private val appBatch: AppBatch,
+                               private val timeStamp: String,
                                private val contactsFileName: String?,
                                private val smsFileName: String?,
                                private val callsFileName: String?,
@@ -29,8 +29,6 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
     private val pm by lazy { engineContext.packageManager }
 
     private val errors by lazy { ArrayList<String>(0) }
-
-    private val timeStamp by lazy { SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(Calendar.getInstance().time);}
 
     private fun moveFile(source: File, destination: File): String {
         return try {
@@ -260,9 +258,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
-        if (errors.size == 0)
-            onBackupComplete.onBackupComplete(jobcode, true, 0)
-        else onBackupComplete.onBackupComplete(jobcode, false, errors)
+        onBackupComplete.onBackupComplete(jobcode, errors.size == 0, errors)
     }
 
 }

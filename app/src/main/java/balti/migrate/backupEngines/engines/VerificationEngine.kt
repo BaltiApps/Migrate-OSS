@@ -182,6 +182,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_VERIFYING)
                 putExtra(EXTRA_TITLE, title)
                 putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
+                removeExtra(EXTRA_APP_NAME)
             }
 
             commonTools.LBM?.sendBroadcast(actualBroadcast)
@@ -448,8 +449,6 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
         VERIFICATION_PID = -999
-        if (actualErrors.size == 0)
-            onBackupComplete.onBackupComplete(jobcode, true, allErrors)
-        else onBackupComplete.onBackupComplete(jobcode, false, allErrors)
+        onBackupComplete.onBackupComplete(jobcode, actualErrors.size == 0, allErrors)
     }
 }

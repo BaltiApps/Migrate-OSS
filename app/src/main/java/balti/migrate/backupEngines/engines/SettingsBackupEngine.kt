@@ -20,7 +20,7 @@ class SettingsBackupEngine(private val jobcode: Int,
                            private val bd: BackupIntentData,
                            private val dpiText: String?,
                            private val adbState: Int?,
-                           private val fontScale: Int?,
+                           private val fontScale: Double?,
                            private val keyboardText: String?) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_SETTINGS) {
 
     private val settingsFile by lazy { File(actualDestination, BACKUP_NAME_SETTINGS) }
@@ -63,8 +63,6 @@ class SettingsBackupEngine(private val jobcode: Int,
 
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
-        if (errors.size == 0)
-            onBackupComplete.onBackupComplete(jobcode, true, 0)
-        else onBackupComplete.onBackupComplete(jobcode, false, errors)
+        onBackupComplete.onBackupComplete(jobcode, errors.size == 0, errors)
     }
 }

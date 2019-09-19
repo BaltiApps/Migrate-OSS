@@ -223,8 +223,6 @@ class CallsBackupEngine(private val jobcode: Int,
 
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
-        if (errors.size == 0)
-            onBackupComplete.onBackupComplete(jobcode, true, 0)
-        else onBackupComplete.onBackupComplete(jobcode, false, errors)
+        onBackupComplete.onBackupComplete(jobcode, errors.size == 0, errors)
     }
 }

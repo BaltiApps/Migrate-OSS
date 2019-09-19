@@ -25,7 +25,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
 import java.io.*
 
-abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData,
+class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData,
                                private val appBatch: AppBatch,
                                private val doBackupInstallers : Boolean,
                                private val busyboxBinaryPath: String) : ParentBackupClass(bd, "") {
@@ -366,8 +366,6 @@ abstract class AppBackupEngine(private val jobcode: Int, private val bd: BackupI
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
         BACKUP_PID = -999
-        if (actualErrors.size == 0)
-            onBackupComplete.onBackupComplete(jobcode, true, allErrors)
-        else onBackupComplete.onBackupComplete(jobcode, false, allErrors)
+        onBackupComplete.onBackupComplete(jobcode, actualErrors.size == 0, allErrors)
     }
 }

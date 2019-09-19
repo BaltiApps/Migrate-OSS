@@ -105,7 +105,7 @@ if [[ -e "$build_prop" ]]; then
     echoIt "ROM is present."
 else
 
-    echo "DEBUG:: --- Contents in $SYSTEM ---"
+    echo "DEBUG:: --- Possible build.prop locations ---"
     echo "$(find / -name build.prop)"
     echo "DEBUG:: --- End of contents ---"
 

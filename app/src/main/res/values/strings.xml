@@ -319,6 +319,10 @@
     <string name="incompleteZip">Not all files could be combined.</string>
     <string name="no_keyboard_data">No keyboard data</string>
 
+    <string name="backup_error_system_check_failed">Backup cancelled because system check failed.</string>
+    <string name="backup_error_updater_script">Backup failed at updater script.</string>
+    <string name="backup_error_at_app_verification">Backup failed at app verification.</string>
+
     <!--BackupActivity.java-->
     <string name="setBackupName">Set backup name</string>
     <string name="overwrite">Overwrite?</string>

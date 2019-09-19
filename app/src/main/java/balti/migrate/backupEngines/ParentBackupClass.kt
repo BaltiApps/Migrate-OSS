@@ -37,7 +37,7 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
             by lazy { DaggerBackupDependencyComponent.create() }
 
     val commonTools by lazy { CommonToolKotlin(engineContext) }
-    val madePartName by lazy { commonTools.getMadePartName(bd) }
+    val madePartName by lazy { commonTools.getMadePartName(bd.partNumber, bd.totalParts) }
     val actualDestination by lazy { "${bd.destination}/${bd.backupName}" }
 
     var customCancelFunction: (() -> Unit)? = null
