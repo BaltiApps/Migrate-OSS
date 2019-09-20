@@ -314,7 +314,7 @@
     <string name="errorMakingScripts">Error making scripts</string>
     <string name="backupCancelled">Backup cancelled</string>
     <string name="deletingFiles">Deleting files</string>
-    <string name="backupFinishedWithErrors">Errors found! Please retry.</string>
+    <string name="backupFinishedWithErrors">Backup finished with errors!</string>
     <string name="backupPartHadErrors">Backup part had errors.</string>
     <string name="incompleteZip">Not all files could be combined.</string>
     <string name="no_keyboard_data">No keyboard data</string>
@@ -322,6 +322,7 @@
     <string name="backup_error_system_check_failed">Backup cancelled because system check failed.</string>
     <string name="backup_error_updater_script">Backup failed at updater script.</string>
     <string name="backup_error_at_app_verification">Backup failed at app verification.</string>
+    <string name="errors_in_batch">Errors found in batch</string>
 
     <!--BackupActivity.java-->
     <string name="setBackupName">Set backup name</string>

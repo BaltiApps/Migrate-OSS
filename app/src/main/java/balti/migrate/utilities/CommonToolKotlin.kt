@@ -4,6 +4,7 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Environment
 import android.support.v4.content.FileProvider
@@ -31,7 +32,9 @@ class CommonToolKotlin(val context: Context) {
 
         val MAX_TWRP_ZIP_SIZE = 4194300L
 
-        val BACKUP_NOTIFICATION_ID = 12954
+        val BACKUP_NOTIFICATION_ID = 129
+        val PENDING_INTENT_REQUEST_ID = 219
+        val PENDING_INTENT_BACKUP_CANCEL_ID = 912
 
         val DEFAULT_INTERNAL_STORAGE_DIR = "/sdcard/Migrate"
         val TEMP_DIR_NAME = "/data/local/tmp/migrate_cache"
@@ -176,7 +179,7 @@ class CommonToolKotlin(val context: Context) {
         val JOBCODE_LOAD_KEYBOARDS = 6765
         val JOBCODE_LOAD_INSTALLERS = 8709
 
-        val JOBCODE_MAKE_APP_PACKETS = 65364
+        val JOBCODE_MAKE_APP_PACKETS = 6536
 
         val JOBCODE_PEFORM_SYSTEM_TEST = 10000
         val JOBCODE_PEFORM_BACKUP_CONTACTS = 20000
@@ -564,4 +567,14 @@ class CommonToolKotlin(val context: Context) {
             if (totalParts > 1)
                 "${context.getString(R.string.part)} ${zeroIndexedPartName + 1} ${context.getString(R.string.of)} $totalParts"
             else ""
+
+    fun doBackgroundTask(f: () -> Unit){
+        class Class : AsyncTask<Any, Any, Any>(){
+            override fun doInBackground(vararg params: Any?): Any {
+                f()
+                return 0
+            }
+        }
+        Class().execute()
+    }
 }

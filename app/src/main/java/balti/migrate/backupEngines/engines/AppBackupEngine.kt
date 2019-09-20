@@ -164,7 +164,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     val appName = formatName(pm.getApplicationLabel(packet.PACKAGE_INFO.applicationInfo).toString())
 
                     actualBroadcast.apply {
-                        putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentageText(i + 1, packets.size))
+                        putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(i + 1, packets.size))
                         putExtra(EXTRA_SCRIPT_APP_NAME, appName)
                     }
                     commonTools.LBM?.sendBroadcast(actualBroadcast)

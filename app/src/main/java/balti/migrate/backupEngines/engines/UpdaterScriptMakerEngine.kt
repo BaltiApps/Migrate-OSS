@@ -234,7 +234,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
             actualBroadcast.apply {
                 putExtra(CommonToolKotlin.EXTRA_TITLE, title)
-                putExtra(CommonToolKotlin.EXTRA_PROGRESS_PERCENTAGE, 0)
+                removeExtra(CommonToolKotlin.EXTRA_PROGRESS_PERCENTAGE)
             }
             commonTools.LBM?.sendBroadcast(actualBroadcast)
 

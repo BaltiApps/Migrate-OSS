@@ -80,9 +80,6 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     // to add extras search for "extras_markers" and change those lines/functions
 
-    companion object {
-    }
-
     private val commonTools by lazy { CommonToolKotlin(this) }
     val appListCopied by lazy { ArrayList<BackupDataPacketKotlin>(0) }
 
@@ -853,7 +850,14 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     jobResult.toString().let {
                         if (jobSuccess) {
                             appBatches = jobResult as ArrayList<AppBatch>
-                            //TODO("start backup engine")
+
+                            Intent(this, BackupServiceKotlin::class.java).run {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                    startForegroundService(this)
+                                } else {
+                                    startService(this)
+                                }
+                            }
                         }
                     }
                 }, true)

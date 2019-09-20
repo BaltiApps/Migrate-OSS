@@ -5,7 +5,7 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <!--<uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
     <uses-permission android:name="android.permission.READ_SMS"/>
     <uses-permission android:name="android.permission.READ_CALL_LOG"/>
@@ -88,7 +88,11 @@
             android:screenOrientation="portrait"
             />
 
-        <service android:name=".BackupService"/>
+        <service android:name=".backupEngines.BackupServiceKotlin"/>
+
+        <activity android:name=".simpleActivities.ProgressShowActivity"
+            android:screenOrientation="portrait"
+            />
 
         <provider
             android:authorities="migrate.provider"
