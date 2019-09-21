@@ -2,12 +2,13 @@ package balti.migrate.backupEngines.utils
 
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolKotlin
-import java.io.*
+import java.io.BufferedReader
+import java.io.BufferedWriter
+import java.io.File
+import java.io.FileWriter
 
 class BackupUtils {
 
@@ -32,27 +33,6 @@ class BackupUtils {
             }
         }
         if (doBreak) onCancelledFunction?.invoke()
-    }
-
-    fun getIconString(packageInfo: PackageInfo, pm: PackageManager): String {
-
-        val stream = ByteArrayOutputStream()
-
-        val drawable = pm.getApplicationIcon(packageInfo.applicationInfo)
-        val icon = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(icon)
-
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-
-        icon.compress(Bitmap.CompressFormat.PNG, 100, stream)
-
-        val bytes = stream.toByteArray()
-        var res = ""
-        for (b in bytes){
-            res = res + b + "_"
-        }
-        return res
     }
 
     fun makeMetadataFile(isSystem: Boolean, appName: String, apkName: String,

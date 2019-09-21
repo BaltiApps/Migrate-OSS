@@ -36,6 +36,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_BACKUP_SERVICE_ERR
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ERRORS
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_IS_CANCELLED
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_APP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
@@ -303,14 +304,6 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
                         writeLogs(EXTRA_APP_LOG)
                     }
 
-                    EXTRA_PROGRESS_TYPE_ZIP_PROGRESS -> {
-                        if (!startedZip) {
-                            progressWriter?.write("\n\n${MIGRATE_STATUS} Zip logs\n")
-                            startedZip = true
-                        }
-                        writeLogs(EXTRA_ZIP_LOG)
-                    }
-
                     EXTRA_PROGRESS_TYPE_VERIFYING -> {
                         if (!startedVerify) {
                             progressWriter?.write("\n\n${MIGRATE_STATUS} App verification logs\n")
@@ -326,6 +319,14 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
                             startedCorrection = true
                         }
                         writeLogs(EXTRA_RETRY_LOG)
+                    }
+
+                    EXTRA_PROGRESS_TYPE_ZIP_PROGRESS -> {
+                        if (!startedZip) {
+                            progressWriter?.write("\n\n${MIGRATE_STATUS} Zip logs\n")
+                            startedZip = true
+                        }
+                        writeLogs(EXTRA_ZIP_LOG)
                     }
 
                 }
@@ -660,6 +661,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
             putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_FINISHED)
             putExtra(EXTRA_TITLE, title)
             putStringArrayListExtra(EXTRA_ERRORS, criticalErrors)
+            putExtra(EXTRA_IS_CANCELLED, cancelAll)
             putExtra(EXTRA_TOTAL_TIME, TOTAL_TIME)
         }
         commonTools.LBM?.sendBroadcast(toReturnIntent)

@@ -413,8 +413,8 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                         .create()
 
                 if (result[1] as String == vOp.getStringFromRes(R.string.insufficient_storage))
-                    errorDialog.setIcon(R.drawable.ic_combine)
-                else errorDialog.setIcon(R.drawable.ic_cancelled)
+                    errorDialog.setIcon(R.drawable.ic_zipping_icon)
+                else errorDialog.setIcon(R.drawable.ic_cancelled_icon)
 
                 errorDialog.show()
                 onJobCompletion.onComplete(jobCode, false, result[1] as String)

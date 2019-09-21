@@ -620,7 +620,7 @@ public class ExtraBackups extends AppCompatActivity implements CompoundButton.On
                                 getString(R.string.required_storage) + " " + commonTools.getHumanReadableStorageSpace(totalSize - availableKb) + "\n\n" +
                                 getString(R.string.will_be_compressed))
                         .setNegativeButton(R.string.close, null)
-                        .setIcon(R.drawable.ic_combine)
+                        .setIcon(R.drawable.ic_zipping_icon)
                         .show();
 
 

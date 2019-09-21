@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.os.AsyncTask
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +21,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_PERMISSION_SE
 import balti.migrate.utilities.ExclusionsKotlin.Companion.EXCLUDE_APP
 import balti.migrate.utilities.ExclusionsKotlin.Companion.EXCLUDE_DATA
 import balti.migrate.utilities.ExclusionsKotlin.Companion.EXCLUDE_PERMISSION
-import balti.migrate.utilities.LoadIcon
+import balti.migrate.utilities.IconTools
 import kotlinx.android.synthetic.main.app_info.view.*
 import kotlinx.android.synthetic.main.app_item.view.*
 import java.util.*
@@ -32,6 +31,7 @@ class SearchAppAdapter(val tmpList: Vector<BackupDataPacketKotlin>, val context:
     private val pm: PackageManager by lazy { context.packageManager }
     private val main: SharedPreferences by lazy { context.getSharedPreferences(PREF_FILE_APPS, Context.MODE_PRIVATE) }
     private val editor: SharedPreferences.Editor by lazy { main.edit() }
+    private val iconTools by lazy { IconTools() }
 
     init {
         tmpList.sortWith(Comparator { o1, o2 ->
@@ -62,7 +62,7 @@ class SearchAppAdapter(val tmpList: Vector<BackupDataPacketKotlin>, val context:
         val appItem = tmpList[position]
 
         viewHolder.appName.text = pm.getApplicationLabel(appItem.PACKAGE_INFO.applicationInfo)
-        LoadIcon(viewHolder.appIcon, appItem, pm).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+        iconTools.loadIconFromApplication(viewHolder.appIcon, appItem, pm)
 
         viewHolder.appInfo.setOnClickListener {
 

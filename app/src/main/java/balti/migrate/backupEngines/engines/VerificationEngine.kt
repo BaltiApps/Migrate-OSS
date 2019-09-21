@@ -29,6 +29,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_TAR_CHECK
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TAR_GZ_INTEGRITY
+import balti.migrate.utilities.IconTools
 import java.io.*
 
 class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentData,
@@ -39,6 +40,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     private var TAR_CHECK_CORRECTION_PID = -999
 
     private val backupUtils by lazy { BackupUtils() }
+    private val iconTools by lazy { IconTools() }
 
     private val pm by lazy { engineContext.packageManager }
 
@@ -331,7 +333,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         when (parts[1]){
                             "icon" -> {
                                 val pi = pm.getPackageInfo(parts[2], 0)
-                                backupUtils.makeIconFile(parts[2], backupUtils.getIconString(pi, pm), actualDestination)
+                                backupUtils.makeIconFile(parts[2], iconTools.getIconString(pi, pm), actualDestination)
                             }
                             "perm" -> {
                                 backupUtils.makePermissionFile(parts[2], actualDestination, pm)

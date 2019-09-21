@@ -1,7 +1,6 @@
 package balti.migrate.extraBackupsActivity.installer
 
 import android.content.Context
-import android.os.AsyncTask
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -13,13 +12,15 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAMES_PACKAGE_
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_FDROID
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PLAY_STORE_POSITION
-import balti.migrate.utilities.LoadIcon
+import balti.migrate.utilities.IconTools
 import kotlinx.android.synthetic.main.installer_set_item.view.*
 
 class InstallerListAdapter(val context: Context,
                            private val appList: ArrayList<BackupDataPacketKotlin>): BaseAdapter() {
 
     private val pm by lazy { context.packageManager }
+    private val iconTools by lazy { IconTools() }
+
     private var isPlayStoreAvailable = false
     private var isFdroidAvailable = false
 
@@ -97,7 +98,7 @@ class InstallerListAdapter(val context: Context,
             }
         }
 
-        LoadIcon(viewHolder.appIcon, appItem, pm).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+        iconTools.loadIconFromApplication(viewHolder.appIcon, appItem, pm)
 
         viewHolder.appName.text = pm.getApplicationLabel(appItem.PACKAGE_INFO.applicationInfo)
         viewHolder.packageName.text = appItem.PACKAGE_INFO.packageName

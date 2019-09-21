@@ -83,7 +83,7 @@ public class BackupProgressLayout extends AppCompatActivity {
             if (bitmap != null) {
                 appIcon.setImageBitmap(bitmap);
             } else {
-                appIcon.setImageResource(R.drawable.ic_backup);
+                appIcon.setImageResource(R.drawable.ic_save_icon);
             }
         }
     }
@@ -215,11 +215,11 @@ public class BackupProgressLayout extends AppCompatActivity {
                     }
 
                     if (intent.getStringExtra("finishedMessage").equals(getString(R.string.backupCancelled))) {
-                        appIcon.setImageResource(R.drawable.ic_cancelled);
+                        appIcon.setImageResource(R.drawable.ic_cancelled_icon);
                     } else {
                         progressBar.setProgress(100);
                         progress.setText("100%");
-                        appIcon.setImageResource(R.drawable.ic_finished);
+                        appIcon.setImageResource(R.drawable.ic_finished_icon);
                     }
 
                     addLog("finishedMessage", intent);
@@ -260,7 +260,7 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                 } else if (type.equals("making_package_flash_ready")) {
 
-                    appIcon.setImageResource(R.drawable.ic_combine);
+                    appIcon.setImageResource(R.drawable.ic_zipping_icon);
 
                     task.setText(R.string.making_package_flash_ready);
 
@@ -334,7 +334,7 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                 } else if (type.equals("verifying_backups")) {
 
-                    appIcon.setImageResource(R.drawable.ic_verify);
+                    appIcon.setImageResource(R.drawable.ic_verify_icon);
 
                     task.setText(R.string.verifying_backups);
 
@@ -380,7 +380,7 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                 } else if (type.equals("zip_progress")) {
 
-                    appIcon.setImageResource(R.drawable.ic_combine);
+                    appIcon.setImageResource(R.drawable.ic_zipping_icon);
 
                     task.setText(R.string.combining);
 

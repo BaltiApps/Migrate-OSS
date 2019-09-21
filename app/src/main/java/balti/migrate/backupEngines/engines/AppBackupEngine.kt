@@ -24,6 +24,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_BACKUP_SCR
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
+import balti.migrate.utilities.IconTools
 import java.io.*
 
 class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData,
@@ -39,6 +40,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
     private val pm by lazy { engineContext.packageManager }
     private val backupUtils by lazy { BackupUtils() }
+    private val iconTools by lazy { IconTools() }
     private var suProcess : Process? = null
 
     private val allErrors by lazy { ArrayList<String>(0) }
@@ -207,7 +209,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     versionName = if (versionName == null || versionName == "") "_"
                     else formatName(versionName)
 
-                    val appIcon: String = backupUtils.getIconString(packet.PACKAGE_INFO, pm)
+                    val appIcon: String = iconTools.getIconString(packet.PACKAGE_INFO, pm)
                     var appIconFileName: String? = null
                     if (!sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true)) {
                         appIconFileName = backupUtils.makeIconFile(packageName, appIcon, actualDestination)
