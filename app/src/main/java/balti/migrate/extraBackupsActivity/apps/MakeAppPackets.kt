@@ -21,10 +21,10 @@ import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.DEBUG_TAG
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.MAX_TWRP_ZIP_SIZE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_MAIN
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MAX_BACKUP_SIZE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
 import kotlinx.android.synthetic.main.please_wait.view.*
@@ -46,11 +46,11 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
     private val appBatches by lazy { ArrayList<AppBatch>(0) }
     private val parentAppBatch by lazy { ArrayList<AppPacket>(0) }
     private val notificationManager by lazy { context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
-    private val main by lazy { context.getSharedPreferences(PREF_FILE_MAIN, MODE_PRIVATE) }
+    private val main by lazy { context.getSharedPreferences(FILE_MAIN_PREF, MODE_PRIVATE) }
     private val commonTools by lazy { CommonToolKotlin(context) }
     private val pm by lazy { context.packageManager }
     private val maxBackupSize : Long
-        get() = context.getSharedPreferences(PREF_FILE_MAIN, MODE_PRIVATE).getLong(PREF_MAX_BACKUP_SIZE, MAX_TWRP_ZIP_SIZE)
+        get() = context.getSharedPreferences(FILE_MAIN_PREF, MODE_PRIVATE).getLong(PREF_MAX_BACKUP_SIZE, MAX_TWRP_ZIP_SIZE)
 
     private var availableKb = 0L
     private var totalMemory = 0L

@@ -1,12 +1,9 @@
 package balti.migrate.backupEngines
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.AsyncTask
+import balti.migrate.AppInstance
 import balti.migrate.backupEngines.containers.BackupIntentData
-import balti.migrate.backupEngines.utils.BackupDependencyComponent
-import balti.migrate.backupEngines.utils.DaggerBackupDependencyComponent
 import balti.migrate.backupEngines.utils.OnBackupComplete
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
@@ -20,21 +17,21 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
-import javax.inject.Inject
 
 abstract class ParentBackupClass(private val bd: BackupIntentData,
                                  private val intentType: String): AsyncTask<Any, Any, Any>() {
 
-
-    @Inject lateinit var engineContext: Context
-    @Inject lateinit var sharedPreferences: SharedPreferences
+    /*@Inject lateinit var sharedPreferences: SharedPreferences
+    @Inject lateinit var engineContext: Context*/
+    val engineContext by lazy { BackupServiceKotlin.serviceContext }
+    val sharedPreferences by lazy { AppInstance.sharedPrefs }
 
     var isBackupCancelled = false
 
     val onBackupComplete by lazy { engineContext as OnBackupComplete }
 
-    private val backupDependencyComponent: BackupDependencyComponent
-            by lazy { DaggerBackupDependencyComponent.create() }
+    /*private val backupDependencyComponent: BackupDependencyComponent
+            by lazy { DaggerBackupDependencyComponent.create() }*/
 
     val commonTools by lazy { CommonToolKotlin(engineContext) }
     val madePartName by lazy { commonTools.getMadePartName(bd.partNumber, bd.totalParts) }
@@ -63,7 +60,8 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     override fun onPreExecute() {
         super.onPreExecute()
-        backupDependencyComponent.masterInject(this)
+        //backupDependencyComponent.masterInject(this)
+        //AppInstance.COMPONENT.inject(this)
         customPreExecuteFunction?.invoke()
     }
 

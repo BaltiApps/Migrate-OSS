@@ -30,13 +30,13 @@ import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_START
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_ACCESS_ASKED
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ANDROID_VERSION_WARNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ASK_FOR_RATING
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_MAIN
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FIRST_RUN
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_VERSION_CURRENT
@@ -48,7 +48,7 @@ import java.io.File
 
 class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private val main : SharedPreferences by lazy { getSharedPreferences(PREF_FILE_MAIN, Context.MODE_PRIVATE) }
+    private val main : SharedPreferences by lazy { getSharedPreferences(FILE_MAIN_PREF, Context.MODE_PRIVATE) }
     private val editor : SharedPreferences.Editor by lazy { main.edit() }
     private val commonTools by lazy { CommonToolKotlin(this) }                                               /*kotlin*/
 

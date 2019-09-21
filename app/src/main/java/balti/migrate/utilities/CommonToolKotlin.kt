@@ -39,6 +39,8 @@ class CommonToolKotlin(val context: Context) {
         val DEFAULT_INTERNAL_STORAGE_DIR = "/sdcard/Migrate"
         val TEMP_DIR_NAME = "/data/local/tmp/migrate_cache"
 
+        val FILE_MAIN_PREF = "main"
+
         val FILE_PROGRESSLOG = "progressLog.txt"
         val FILE_ERRORLOG = "errorLog.txt"
         val FILE_PREFIX_BACKUP_SCRIPT = "the_backup_script_"
@@ -136,7 +138,6 @@ class CommonToolKotlin(val context: Context) {
         val PACKAGE_NAMES_PACKAGE_INSTALLER = arrayOf("com.google.android.packageinstaller")
 
         val PREF_FILE_APPS = "apps"
-        val PREF_FILE_MAIN = "main"
         val PREF_FIRST_RUN = "firstRun"
         val PREF_VERSION_CURRENT = "version"
         val PREF_ANDROID_VERSION_WARNING = "android_version_warning"

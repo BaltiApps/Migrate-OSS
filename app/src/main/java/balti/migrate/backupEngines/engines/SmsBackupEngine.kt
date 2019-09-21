@@ -81,9 +81,11 @@ class SmsBackupEngine(private val jobcode: Int,
                     "$SMS_LOCKED INTEGER, " +
                     "$SMS_REPLY_PATH_PRESENT INTEGER )"
 
-            val dataBase: SQLiteDatabase = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1)
-                SQLiteDatabase.openDatabase(smsDBFile.absolutePath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS or SQLiteDatabase.OPEN_READWRITE)
-            else SQLiteDatabase.openOrCreateDatabase(smsDBFile.absolutePath, null)
+            var dataBase: SQLiteDatabase = SQLiteDatabase.openOrCreateDatabase(smsDBFile.absolutePath, null)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                dataBase = SQLiteDatabase.openDatabase(smsDBFile.absolutePath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS or SQLiteDatabase.OPEN_READWRITE)
+            }
 
             dataBase.let { db ->
                 db.execSQL(DROP_TABLE)

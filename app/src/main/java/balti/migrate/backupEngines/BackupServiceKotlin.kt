@@ -3,7 +3,10 @@ package balti.migrate.backupEngines
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.AsyncTask.THREAD_POOL_EXECUTOR
 import android.os.Build
 import android.os.IBinder
@@ -51,6 +54,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ZIP_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ERRORLOG
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_CONTACTS
@@ -68,9 +72,6 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PENDING_INTENT_BACKUP_
 import balti.migrate.utilities.CommonToolKotlin.Companion.PENDING_INTENT_REQUEST_ID
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_COMPRESSION_LEVEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_COMPRESSION_LEVEL
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_MAIN
-import dagger.Module
-import dagger.Provides
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -78,7 +79,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-@Module
+
 class BackupServiceKotlin: Service(), OnBackupComplete {
 
     companion object {
@@ -98,15 +99,11 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
         var doBackupInstallers = false
 
+        lateinit var serviceContext: Context
+        private set
     }
 
-    private val sharedPrefs by lazy { getSharedPreferences(PREF_FILE_MAIN, Context.MODE_PRIVATE) }
-
-    @Provides
-    fun getEngineContext() : Context = this
-
-    @Provides
-    fun getPrefs(): SharedPreferences = sharedPrefs
+    private val sharedPrefs by lazy { getSharedPreferences(FILE_MAIN_PREF, Context.MODE_PRIVATE) }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -223,7 +220,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         onGoingNotification.apply {
             setContentTitle(title)
             setContentText(content)
-            setProgress(max, progressPercentage, indeterminate)
+            setProgress(max, progressPercentage, indeterminate || isBackupFinished)
         }
         val notif = onGoingNotification.build()
 
@@ -375,6 +372,8 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
     override fun onCreate() {
         super.onCreate()
+
+        serviceContext = this
 
         commonTools.tryIt {
             compressionLevel = sharedPrefs.getInt(PREF_COMPRESSION_LEVEL, PREF_DEFAULT_COMPRESSION_LEVEL)

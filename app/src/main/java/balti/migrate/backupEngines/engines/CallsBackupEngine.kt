@@ -96,9 +96,11 @@ class CallsBackupEngine(private val jobcode: Int,
                     "$CALLS_DURATION INTEGER, " +
                     "$CALLS_NEW INTEGER )"
 
-            val dataBase: SQLiteDatabase = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1)
-                SQLiteDatabase.openDatabase(callsDBFile.absolutePath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS or SQLiteDatabase.OPEN_READWRITE)
-            else SQLiteDatabase.openOrCreateDatabase(callsDBFile.absolutePath, null)
+            var dataBase: SQLiteDatabase = SQLiteDatabase.openOrCreateDatabase(callsDBFile.absolutePath, null)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                dataBase = SQLiteDatabase.openDatabase(callsDBFile.absolutePath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS or SQLiteDatabase.OPEN_READWRITE)
+            }
 
             dataBase.let { db ->
                 db.execSQL(DROP_TABLE)

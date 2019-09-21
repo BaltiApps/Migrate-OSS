@@ -41,15 +41,17 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
             val testScriptPath = commonTools.unpackAssetToInternal("systemTestScript.sh", "test.sh", false)
             val thisPackageInfo = pm.getApplicationInfo(engineContext.packageName, 0)
 
-            val thisDataPath = thisPackageInfo.dataDir.let {
+            val dataPathDirPath = thisPackageInfo.dataDir.let {
                 if (it.endsWith("/")) it.substring(0, it.length - 1)
-                else ""
+                else it
             }
+            val dataPath = dataPathDirPath.substring(0, dataPathDirPath.lastIndexOf("/"))
+            val dataName = dataPathDirPath.substring(dataPathDirPath.lastIndexOf("/")+1)
 
             suProcess = Runtime.getRuntime().exec("su")
             suProcess?.let {
                 val suWriter = BufferedWriter(OutputStreamWriter(it.outputStream))
-                suWriter.write("sh $testScriptPath ${thisPackageInfo.packageName} ${thisPackageInfo.sourceDir} $thisDataPath ${engineContext.externalCacheDir} $busyboxBinaryPath\n")
+                suWriter.write("sh $testScriptPath ${thisPackageInfo.packageName} ${thisPackageInfo.sourceDir} $dataPath $dataName ${engineContext.externalCacheDir.absolutePath} $busyboxBinaryPath\n")
                 suWriter.write("exit\n")
                 suWriter.flush()
 
@@ -72,8 +74,15 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
 
                 val errorStream = BufferedReader(InputStreamReader(it.errorStream))
 
-                backupUtils.iterateBufferedReader(errorStream, { line ->
-                    testingErrors.add("$ERR_TESTING_ERROR${bd.errorTag}: $line")
+                backupUtils.iterateBufferedReader(errorStream, { errorLine ->
+
+                    var ignorable = false
+
+                    BackupUtils.ignorableWarnings.forEach {warnings ->
+                        if (errorLine.endsWith(warnings)) ignorable = true
+                    }
+
+                    if (!ignorable) testingErrors.add("$ERR_TESTING_ERROR${bd.errorTag}: $errorLine")
                     return@iterateBufferedReader false
                 })
 

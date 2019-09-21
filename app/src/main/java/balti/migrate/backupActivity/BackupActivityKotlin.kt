@@ -7,7 +7,6 @@ import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.os.AsyncTask
 import android.os.Bundle
-import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
@@ -15,16 +14,17 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.WindowManager
 import android.widget.AdapterView
-import balti.migrate.BackupProgressLayout
 import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.backupActivity.utils.AppListAdapterKotlin
 import balti.migrate.backupActivity.utils.SearchAppAdapter
 import balti.migrate.extraBackupsActivity.ExtraBackupsKotlin
+import balti.migrate.simpleActivities.ProgressShowActivity
+import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_APPS
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_MAIN
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_APPS_WARNING
 import kotlinx.android.synthetic.main.app_search_layout.view.*
 import kotlinx.android.synthetic.main.backup_layout.*
@@ -44,6 +44,8 @@ class BackupActivityKotlin : AppCompatActivity() {
     private val USER_SYSTEM_UPDATED_PACKAGES = 4
     private val ALL_PACKAGES = 5
 
+    private val commonTools by lazy { CommonToolKotlin(this) }
+
     private val appPrefs by lazy { getSharedPreferences(PREF_FILE_APPS, Context.MODE_PRIVATE) }
 
     lateinit var adapter: AppListAdapterKotlin
@@ -51,15 +53,15 @@ class BackupActivityKotlin : AppCompatActivity() {
     private val progressReceiver by lazy {
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                startActivity(Intent(this@BackupActivityKotlin, BackupProgressLayout::class.java)   /*kotlin*/
+                startActivity(Intent(this@BackupActivityKotlin, ProgressShowActivity::class.java)   /*kotlin*/
                         .apply {
-                            putExtras(this.extras)
+                            intent?.extras?.let {
+                                this.putExtras(it)
+                            }
                             action = ACTION_BACKUP_PROGRESS
                         }
                 )
-                try {
-                    LocalBroadcastManager.getInstance(this@BackupActivityKotlin).unregisterReceiver(this)
-                } catch (_: Exception) {}
+                commonTools.tryIt { commonTools.LBM?.unregisterReceiver(this) }
                 finish()
             }
         }
@@ -169,7 +171,7 @@ class BackupActivityKotlin : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.backup_layout)
 
-        val main = getSharedPreferences(PREF_FILE_MAIN, Context.MODE_PRIVATE)
+        val main = getSharedPreferences(FILE_MAIN_PREF, Context.MODE_PRIVATE)
         val editor = main.edit()
 
         appType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
@@ -308,15 +310,15 @@ class BackupActivityKotlin : AppCompatActivity() {
                     .show()
         }
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
+        commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
 
-        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(ACTION_REQUEST_BACKUP_DATA))
+        commonTools.LBM?.sendBroadcast(Intent(ACTION_REQUEST_BACKUP_DATA))
     }
 
     override fun onDestroy() {
         super.onDestroy()
         try {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(progressReceiver)
+            commonTools.LBM?.unregisterReceiver(progressReceiver)
         } catch(_: Exception){}
     }
 }

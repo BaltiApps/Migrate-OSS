@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.*
-import balti.migrate.BackupProgressLayout
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
@@ -38,6 +37,7 @@ import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.wifi.ReadWifiKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
+import balti.migrate.simpleActivities.ProgressShowActivity
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_SERVICE_STARTED
@@ -46,6 +46,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_START_BATCH_BAC
 import balti.migrate.utilities.CommonToolKotlin.Companion.CALLS_PERMISSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.CONTACT_PERMISSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_CONTACTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_INSTALLERS
@@ -64,7 +65,6 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_FDROID
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_AUTOSELECT_EXTRAS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_MAIN
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SHOW_STOCK_WARNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.SMS_AND_CALLS_PERMISSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.SMS_PERMISSION
@@ -115,9 +115,11 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private val progressReceiver by lazy {
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                startActivity(Intent(this@ExtraBackupsKotlin, BackupProgressLayout::class.java)   /*kotlin*/
+                startActivity(Intent(this@ExtraBackupsKotlin, ProgressShowActivity::class.java)   /*kotlin*/
                         .apply {
-                            putExtras(this.extras)
+                            intent?.extras?.let {
+                                this.putExtras(it)
+                            }
                             action = ACTION_BACKUP_PROGRESS
                         }
                 )
@@ -168,7 +170,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.extra_backups)
-        main = getSharedPreferences(PREF_FILE_MAIN, Context.MODE_PRIVATE)
+        main = getSharedPreferences(FILE_MAIN_PREF, Context.MODE_PRIVATE)
         editor = main.edit()
 
         destination = main.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
