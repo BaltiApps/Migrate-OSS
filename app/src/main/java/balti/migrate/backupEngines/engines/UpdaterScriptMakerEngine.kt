@@ -1,6 +1,7 @@
 package balti.migrate.backupEngines.engines
 
 import balti.migrate.R
+import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
@@ -133,6 +134,11 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             // extract app files
             val size = appBatch.appPackets.size
             for (c in 0 until appBatch.appPackets.size) {
+
+                if (BackupServiceKotlin.cancelAll) {
+                    updater_writer.close()
+                    break
+                }
 
                 val packet = appBatch.appPackets[c]
                 val packageName = packet.PACKAGE_INFO.packageName

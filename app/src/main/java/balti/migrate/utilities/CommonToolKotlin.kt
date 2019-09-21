@@ -32,7 +32,11 @@ class CommonToolKotlin(val context: Context) {
 
         val MAX_TWRP_ZIP_SIZE = 4194300L
 
-        val BACKUP_NOTIFICATION_ID = 129
+        val NOTIFICATION_ID_ONGOING = 129
+        val NOTIFICATION_ID_FINISHED = 130
+        val NOTIFICATION_ID_CANCELLING = 131
+
+
         val PENDING_INTENT_REQUEST_ID = 219
         val PENDING_INTENT_BACKUP_CANCEL_ID = 912
 
@@ -49,9 +53,9 @@ class CommonToolKotlin(val context: Context) {
 
         val FILE_FILE_LIST = "fileList.txt"
 
-        val CHANNEL_BACKUP_START = "Backup start notification"
         val CHANNEL_BACKUP_END = "Backup finished notification"
         val CHANNEL_BACKUP_RUNNING = "Backup running notification"
+        val CHANNEL_BACKUP_CANCELLING = "Cancelling current backup"
 
         val ACTION_BACKUP_PROGRESS = "Migrate progress broadcast"
         val ACTION_BACKUP_CANCEL = "Migrate backup cancel broadcast"

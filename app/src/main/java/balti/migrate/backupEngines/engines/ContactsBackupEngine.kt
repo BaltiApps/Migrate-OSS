@@ -1,6 +1,7 @@
 package balti.migrate.backupEngines.engines
 
 import balti.migrate.R
+import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
@@ -45,7 +46,7 @@ class ContactsBackupEngine(private val jobcode: Int,
 
                 for (i in 0 until contactPackets.size){
 
-                    if (isBackupCancelled) break
+                    if (BackupServiceKotlin.cancelAll) break
 
                     val packet = contactPackets[i]
                     this.write("${packet.vcfData}\n")

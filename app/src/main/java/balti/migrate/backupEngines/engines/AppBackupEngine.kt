@@ -2,6 +2,7 @@ package balti.migrate.backupEngines.engines
 
 import android.widget.Toast
 import balti.migrate.R
+import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.BackupUtils
@@ -161,7 +162,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
             appBatch.appPackets.let {packets ->
                 for (i in 0 until packets.size) {
 
-                    if (isBackupCancelled) break
+                    if (BackupServiceKotlin.cancelAll) break
 
                     val packet = packets[i]
 
@@ -272,7 +273,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
                 backupUtils.iterateBufferedReader(outputStream, { output ->
 
-                    if (isBackupCancelled) return@iterateBufferedReader true
+                    if (BackupServiceKotlin.cancelAll) return@iterateBufferedReader true
 
                     actualBroadcast.putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_APP_PROGRESS)
 

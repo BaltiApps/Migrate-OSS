@@ -3,6 +3,7 @@ package balti.migrate.backupEngines.engines
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import balti.migrate.R
+import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
@@ -89,7 +90,7 @@ class SmsBackupEngine(private val jobcode: Int,
                 for (i in 0 until smsPackets.size) {
                     try {
 
-                        if (isBackupCancelled) {
+                        if (BackupServiceKotlin.cancelAll) {
                             commonTools.tryIt { db.close() }
                             break
                         }
@@ -171,7 +172,7 @@ class SmsBackupEngine(private val jobcode: Int,
                 actualBroadcast.putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(c, smsPackets.size))
                 broadcastProgress()
 
-            } while (cursor.moveToNext() && !isBackupCancelled)
+            } while (cursor.moveToNext() && !BackupServiceKotlin.cancelAll)
 
             commonTools.tryIt { cursor.close() }
 

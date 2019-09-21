@@ -1,6 +1,7 @@
 package balti.migrate.backupEngines.engines
 
 import balti.migrate.R
+import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_ITEM_UNAVAILABLE
@@ -38,7 +39,7 @@ class ZipVerificationEngine(private val jobcode: Int,
             val e = ZipFile(zipFile).entries()
             while (e.hasMoreElements()) {
 
-                if (isBackupCancelled) break
+                if (BackupServiceKotlin.cancelAll) break
                 val entry = e.nextElement()
                 contents.add(entry.name)
 
@@ -55,7 +56,7 @@ class ZipVerificationEngine(private val jobcode: Int,
             for (i in 0 until zipList.size){
 
                 val zipItem = zipList[i]
-                if (isBackupCancelled) break
+                if (BackupServiceKotlin.cancelAll) break
 
                 actualBroadcast.apply {
                     putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(i+1, zipList.size))

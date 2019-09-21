@@ -2,6 +2,7 @@ package balti.migrate.backupEngines.engines
 
 import android.widget.Toast
 import balti.migrate.R
+import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.BackupUtils
@@ -59,7 +60,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
 
                 backupUtils.iterateBufferedReader(resultStream, { line ->
 
-                    if (isBackupCancelled) return@iterateBufferedReader true
+                    if (BackupServiceKotlin.cancelAll) return@iterateBufferedReader true
 
                     if (line.startsWith("--- PID:")) {
                         commonTools.tryIt { TESTING_PID = line.substring(line.lastIndexOf(" ") + 1).toInt() }

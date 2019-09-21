@@ -29,8 +29,6 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
     val engineContext by lazy { BackupServiceKotlin.serviceContext }
     val sharedPreferences by lazy { AppInstance.sharedPrefs }
 
-    var isBackupCancelled = false
-
     val onBackupComplete by lazy { engineContext as OnBackupComplete }
 
     val commonTools by lazy { CommonToolKotlin(engineContext) }
@@ -79,8 +77,11 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
             }
         }
+    }
 
-
+    fun masterCancel(){
+        customCancelFunction?.invoke()
+        cancel(true)
     }
 
     fun getDataBase(dataBaseFile: File): SQLiteDatabase{
@@ -93,11 +94,5 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
     override fun onPreExecute() {
         super.onPreExecute()
         customPreExecuteFunction?.invoke()
-    }
-
-    override fun onCancelled() {
-        super.onCancelled()
-        isBackupCancelled = true
-        customCancelFunction?.invoke()
     }
 }

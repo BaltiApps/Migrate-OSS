@@ -29,10 +29,9 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_REQUEST_BACKUP_
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_START_BATCH_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.ALL_SUPPRESSED_ERRORS
 import balti.migrate.utilities.CommonToolKotlin.Companion.BACKUP_NAME_SETTINGS
-import balti.migrate.utilities.CommonToolKotlin.Companion.BACKUP_NOTIFICATION_ID
+import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELLING
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
-import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_START
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_BACKUP_SERVICE_ERROR
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
@@ -67,6 +66,9 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PERFORM_UPDATE
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PERFORM_ZIP_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PERFORM_ZIP_VERIFICATION
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
+import balti.migrate.utilities.CommonToolKotlin.Companion.NOTIFICATION_ID_CANCELLING
+import balti.migrate.utilities.CommonToolKotlin.Companion.NOTIFICATION_ID_FINISHED
+import balti.migrate.utilities.CommonToolKotlin.Companion.NOTIFICATION_ID_ONGOING
 import balti.migrate.utilities.CommonToolKotlin.Companion.PENDING_INTENT_BACKUP_CANCEL_ID
 import balti.migrate.utilities.CommonToolKotlin.Companion.PENDING_INTENT_REQUEST_ID
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_COMPRESSION_LEVEL
@@ -106,6 +108,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         // flags
         private var notificationActionAdded = false
         private var isBackupFinished = false
+        var cancelAll = false
 
         private lateinit var onGoingNotification: NotificationCompat.Builder
         private lateinit var notificationManager: NotificationManager
@@ -134,7 +137,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
             if (isBackupFinished) notif.actions = arrayOf()
 
-            notificationManager.notify(if (manualId != -1) manualId else BACKUP_NOTIFICATION_ID, notif)
+            notificationManager.notify(if (manualId != -1) manualId else NOTIFICATION_ID_ONGOING, notif)
         }
     }
 
@@ -142,7 +145,6 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
-    private var cancelAll = false
     private val commonTools by lazy { CommonToolKotlin(this) }
 
     private var progressWriter: BufferedWriter? = null
@@ -189,6 +191,13 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
     private val smsBackupName = "Sms_$timeStamp.sms.db"
     private val callsBackupName = "Calls_$timeStamp.calls.db"
 
+    private val cancellingNotification by lazy {
+        NotificationCompat.Builder(this, CHANNEL_BACKUP_CANCELLING)
+            .setContentTitle(getString(R.string.cancelling))
+            .setSmallIcon(R.drawable.ic_notification_icon)
+                .build()
+    }
+
     private fun addError(error: String, addToCriticalWithoutChecking: Boolean = true){
         allErrors.add(error)
         if (!addToCriticalWithoutChecking) {
@@ -221,6 +230,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         object : BroadcastReceiver(){
             override fun onReceive(context: Context?, intent: Intent?) {
                 commonTools.tryIt {
+                    notificationManager.notify(NOTIFICATION_ID_CANCELLING, cancellingNotification)
                     cancelAll = true
                     commonTools.tryIt { currentTask?.cancel(true) }
                     commonTools.dirDelete("$destination/$backupName")
@@ -338,8 +348,12 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
                 currentBackupName = backupName
                 currentDestination = destination
+
                 notificationActionAdded = false
                 isBackupFinished = false
+                cancelAll = false
+
+                notificationManager.cancelAll()
 
                 if (dpiText != null || keyboardText != null || adbState != null || fontScale != null) isSettingsNull = false
 
@@ -365,7 +379,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
         serviceContext = this
 
-        onGoingNotification = NotificationCompat.Builder(this, CHANNEL_BACKUP_START)
+        onGoingNotification = NotificationCompat.Builder(this, CHANNEL_BACKUP_RUNNING)
                 .setContentTitle(getString(R.string.loading))
                 .setSmallIcon(R.drawable.ic_notification_icon)
                 .setOngoing(true)
@@ -382,9 +396,9 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            commonTools.makeNotificationChannel(CHANNEL_BACKUP_START, CHANNEL_BACKUP_START, NotificationManager.IMPORTANCE_DEFAULT)
             commonTools.makeNotificationChannel(CHANNEL_BACKUP_RUNNING, CHANNEL_BACKUP_RUNNING, NotificationManager.IMPORTANCE_DEFAULT)
             commonTools.makeNotificationChannel(CHANNEL_BACKUP_END, CHANNEL_BACKUP_END, NotificationManager.IMPORTANCE_DEFAULT)
+            commonTools.makeNotificationChannel(CHANNEL_BACKUP_CANCELLING, CHANNEL_BACKUP_CANCELLING, NotificationManager.IMPORTANCE_LOW)
         }
 
         commonTools.LBM?.registerReceiver(startBatchBackupReceiver, IntentFilter(ACTION_START_BATCH_BACKUP))
@@ -393,7 +407,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         registerReceiver(cancelReceiver, IntentFilter(ACTION_BACKUP_CANCEL))
         commonTools.LBM?.registerReceiver(requestProgressReceiver, IntentFilter(ACTION_REQUEST_BACKUP_DATA))
 
-        startForeground(BACKUP_NOTIFICATION_ID, onGoingNotification.build())
+        startForeground(NOTIFICATION_ID_ONGOING, onGoingNotification.build())
 
         commonTools.LBM?.sendBroadcast(Intent(ACTION_BACKUP_SERVICE_STARTED))
 
@@ -660,8 +674,11 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
         commonTools.tryIt { progressWriter?.close() }
 
+        notificationManager.cancel(NOTIFICATION_ID_CANCELLING)
+
         onGoingNotification.setOngoing(false)
-        updateNotification(title, "", 0, false, 0, BACKUP_NOTIFICATION_ID+1)
+        onGoingNotification.setChannelId(CHANNEL_BACKUP_END)
+        updateNotification(title, "", 0, false, 0, NOTIFICATION_ID_FINISHED)
 
         stopSelf()
     }

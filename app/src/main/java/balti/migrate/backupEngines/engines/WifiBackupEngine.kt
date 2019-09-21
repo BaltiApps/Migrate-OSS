@@ -1,6 +1,7 @@
 package balti.migrate.backupEngines.engines
 
 import balti.migrate.R
+import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
@@ -41,7 +42,7 @@ class WifiBackupEngine(private val jobcode: Int,
                 wifiDataPacket.contents.let {contents ->
                     for (i in 0 until contents.size) {
 
-                        if (isBackupCancelled) break
+                        if (BackupServiceKotlin.cancelAll) break
 
                         this.write(contents[i])
 

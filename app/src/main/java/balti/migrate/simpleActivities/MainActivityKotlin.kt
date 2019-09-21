@@ -27,9 +27,9 @@ import balti.migrate.CommonTools.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.inAppRestore.ZipPicker
 import balti.migrate.utilities.CommonToolKotlin
+import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELLING
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
-import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_START
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_ACCESS_ASKED
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_METHOD
@@ -77,9 +77,9 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             editor.commit()
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                commonTools.makeNotificationChannel(CHANNEL_BACKUP_START, CHANNEL_BACKUP_START, NotificationManager.IMPORTANCE_DEFAULT)
                 commonTools.makeNotificationChannel(CHANNEL_BACKUP_RUNNING, CHANNEL_BACKUP_RUNNING, NotificationManager.IMPORTANCE_DEFAULT)
                 commonTools.makeNotificationChannel(CHANNEL_BACKUP_END, CHANNEL_BACKUP_END, NotificationManager.IMPORTANCE_DEFAULT)
+                commonTools.makeNotificationChannel(CHANNEL_BACKUP_CANCELLING, CHANNEL_BACKUP_CANCELLING, NotificationManager.IMPORTANCE_LOW)
             }
 
             startActivity(Intent(this, InitialGuideKotlin::class.java))

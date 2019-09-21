@@ -1,6 +1,7 @@
 package balti.migrate.backupEngines.engines
 
 import balti.migrate.R
+import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_TRY_CATCH
@@ -61,7 +62,7 @@ class ZippingEngine(private val jobcode: Int,
 
                 val file = files[i]
 
-                if (isBackupCancelled) break
+                if (BackupServiceKotlin.cancelAll) break
 
                 val relativeFilePath = file.absolutePath.substring(directory.absolutePath.length + 1).let {
                     if (it.endsWith("/") && file.isFile) it.substring(0, it.length - 1)

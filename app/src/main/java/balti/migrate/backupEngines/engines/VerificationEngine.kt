@@ -3,6 +3,7 @@ package balti.migrate.backupEngines.engines
 import android.content.pm.PackageInfo
 import android.widget.Toast
 import balti.migrate.R
+import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.BackupUtils
@@ -94,7 +95,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
             appBatch.appPackets.let { packets ->
                 for (i in 0 until packets.size) {
 
-                    if (isBackupCancelled) break
+                    if (BackupServiceKotlin.cancelAll) break
 
                     val packet = packets[i]
                     val pi = packet.PACKAGE_INFO
@@ -238,7 +239,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
                 backupUtils.iterateBufferedReader(outputStream, { line ->
 
-                    if (isBackupCancelled) return@iterateBufferedReader true
+                    if (BackupServiceKotlin.cancelAll) return@iterateBufferedReader true
 
                     when {
                         line.startsWith("--- TAR CHECK PID:") -> commonTools.tryIt {
@@ -321,7 +322,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
             scriptWriter.write("cp ${retryScript.absolutePath} ${engineContext.externalCacheDir}/\n")
 
             for (i in 0 until defects.size){
-                if (isBackupCancelled) break
+                if (BackupServiceKotlin.cancelAll) break
 
                 val defect = defects[i]
                 if (defect.startsWith(MIGRATE_STATUS)){
@@ -361,7 +362,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
                 backupUtils.iterateBufferedReader(outputStream, {line ->
 
-                    if (isBackupCancelled) return@iterateBufferedReader true
+                    if (BackupServiceKotlin.cancelAll) return@iterateBufferedReader true
 
                     if (line.startsWith("--- RECOVERY PID:")){
                         commonTools.tryIt {
