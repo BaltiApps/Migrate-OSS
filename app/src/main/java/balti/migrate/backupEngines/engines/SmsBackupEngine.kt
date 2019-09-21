@@ -2,7 +2,6 @@ package balti.migrate.backupEngines.engines
 
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
-import android.os.Build
 import balti.migrate.R
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
@@ -59,7 +58,7 @@ class SmsBackupEngine(private val jobcode: Int,
                 putExtra(EXTRA_SMS_ADDRESS, "")
                 putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
             }
-            commonTools.LBM?.sendBroadcast(actualBroadcast)
+            broadcastProgress()
 
             val DROP_TABLE = "DROP TABLE IF EXISTS $SMS_TABLE_NAME"
             val CREATE_TABLE = "CREATE TABLE $SMS_TABLE_NAME ( " +
@@ -81,11 +80,7 @@ class SmsBackupEngine(private val jobcode: Int,
                     "$SMS_LOCKED INTEGER, " +
                     "$SMS_REPLY_PATH_PRESENT INTEGER )"
 
-            var dataBase: SQLiteDatabase = SQLiteDatabase.openOrCreateDatabase(smsDBFile.absolutePath, null)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                dataBase = SQLiteDatabase.openDatabase(smsDBFile.absolutePath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS or SQLiteDatabase.OPEN_READWRITE)
-            }
+            val dataBase: SQLiteDatabase = getDataBase(smsDBFile)
 
             dataBase.let { db ->
                 db.execSQL(DROP_TABLE)
@@ -94,7 +89,11 @@ class SmsBackupEngine(private val jobcode: Int,
                 for (i in 0 until smsPackets.size) {
                     try {
 
-                        if (isBackupCancelled) break
+                        if (isBackupCancelled) {
+                            commonTools.tryIt { db.close() }
+                            break
+                        }
+
                         val dataPacket = smsPackets[i]
 
                         val contentValues = ContentValues()
@@ -122,7 +121,7 @@ class SmsBackupEngine(private val jobcode: Int,
                             putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(i+1, smsPackets.size))
                         }
 
-                        commonTools.LBM?.sendBroadcast(actualBroadcast)
+                        broadcastProgress()
                     }
                     catch (e: Exception){
                         e.printStackTrace()
@@ -158,11 +157,9 @@ class SmsBackupEngine(private val jobcode: Int,
                 removeExtra(EXTRA_SMS_ADDRESS)
             }
 
-            commonTools.LBM?.sendBroadcast(actualBroadcast)
+            broadcastProgress()
 
-            val dataBase: SQLiteDatabase = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1)
-                SQLiteDatabase.openDatabase(smsDBFile.absolutePath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS or SQLiteDatabase.OPEN_READWRITE)
-            else SQLiteDatabase.openOrCreateDatabase(smsDBFile.absolutePath, null)
+            val dataBase: SQLiteDatabase = getDataBase(smsDBFile)
 
             val cursor = dataBase.query(SMS_TABLE_NAME, arrayOf("id"), null, null, null, null, null)
             cursor.moveToFirst()
@@ -172,7 +169,7 @@ class SmsBackupEngine(private val jobcode: Int,
 
                 c++
                 actualBroadcast.putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(c, smsPackets.size))
-                commonTools.LBM?.sendBroadcast(actualBroadcast)
+                broadcastProgress()
 
             } while (cursor.moveToNext() && !isBackupCancelled)
 

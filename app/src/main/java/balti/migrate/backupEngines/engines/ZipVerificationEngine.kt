@@ -33,7 +33,7 @@ class ZipVerificationEngine(private val jobcode: Int,
                 putExtra(EXTRA_ZIP_VERIFICATION_LOG, engineContext.getString(R.string.listing_zip_file))
                 putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
             }
-            commonTools.LBM?.sendBroadcast(actualBroadcast)
+            broadcastProgress()
 
             val e = ZipFile(zipFile).entries()
             while (e.hasMoreElements()) {
@@ -43,14 +43,14 @@ class ZipVerificationEngine(private val jobcode: Int,
                 contents.add(entry.name)
 
                 actualBroadcast.putExtra(EXTRA_ZIP_VERIFICATION_LOG, "listing: ${entry.name}")
-                commonTools.LBM?.sendBroadcast(actualBroadcast)
+                broadcastProgress()
             }
 
             actualBroadcast.apply {
                 putExtra(EXTRA_ZIP_VERIFICATION_LOG, "\n\n${engineContext.getString(R.string.comparing_zip_contents)}")
                 putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
             }
-            commonTools.LBM?.sendBroadcast(actualBroadcast)
+            broadcastProgress()
 
             for (i in 0 until zipList.size){
 
@@ -61,7 +61,7 @@ class ZipVerificationEngine(private val jobcode: Int,
                     putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(i+1, zipList.size))
                     putExtra(EXTRA_ZIP_VERIFICATION_LOG, "checking: $zipItem")
                 }
-                commonTools.LBM?.sendBroadcast(actualBroadcast)
+                broadcastProgress()
 
                 if (!contents.contains(zipItem)) {
                     verificationErrors.add("$ERR_ZIP_ITEM_UNAVAILABLE${bd.errorTag}: $i")

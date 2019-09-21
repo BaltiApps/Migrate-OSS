@@ -93,6 +93,7 @@
 
         <activity android:name=".simpleActivities.ProgressShowActivity"
             android:screenOrientation="portrait"
+            android:launchMode="singleInstance"
             />
 
         <provider

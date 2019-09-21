@@ -43,7 +43,11 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
     private val allErrors by lazy { ArrayList<String>(0) }
     private val actualErrors by lazy { ArrayList<String>(0) }
 
-    private val fileListWriter by lazy { BufferedWriter(FileWriter(File(actualDestination, FILE_FILE_LIST))) }
+    private val fileListWriter by lazy {
+        val file = File(actualDestination, FILE_FILE_LIST)
+        file.createNewFile()
+        BufferedWriter(FileWriter(file))
+    }
 
     init {
 

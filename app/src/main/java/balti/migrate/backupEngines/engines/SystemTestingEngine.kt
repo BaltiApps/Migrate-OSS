@@ -36,7 +36,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
             else engineContext.getString(R.string.testing_system)
 
             actualBroadcast.putExtra(EXTRA_TITLE, title)
-            commonTools.LBM?.sendBroadcast(actualBroadcast)
+            broadcastProgress()
 
             val testScriptPath = commonTools.unpackAssetToInternal("systemTestScript.sh", "test.sh", false)
             val thisPackageInfo = pm.getApplicationInfo(engineContext.packageName, 0)
@@ -66,7 +66,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                     }
 
                     actualBroadcast.putExtra(EXTRA_TEST_LOG, line)
-                    commonTools.LBM?.sendBroadcast(actualBroadcast)
+                    broadcastProgress()
 
                     return@iterateBufferedReader line == "--- Test done ---"
 

@@ -104,7 +104,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         putExtra(EXTRA_APP_NAME, "verifying: " + pm.getApplicationLabel(pi.applicationInfo))
                         putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage((i + 1), packets.size))
                     }
-                    commonTools.LBM?.sendBroadcast(actualBroadcast)
+                    broadcastProgress()
 
                     val expectedIconFile = File(actualDestination, "$packageName.icon")
                     val expectedAppDir = File(actualDestination, "$packageName.app")
@@ -185,7 +185,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 removeExtra(EXTRA_APP_NAME)
             }
 
-            commonTools.LBM?.sendBroadcast(actualBroadcast)
+            broadcastProgress()
 
             val tarCheckScript = File(engineContext.filesDir.absolutePath, "$FILE_PREFIX_TAR_CHECK${bd.partNumber}.sh")
             val scriptWriter = BufferedWriter(FileWriter(tarCheckScript))
@@ -262,7 +262,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         putExtra(EXTRA_TAR_CHECK_LOG, line)
                         putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(c, appBatch.appPackets.size))
                     }
-                    commonTools.LBM?.sendBroadcast(actualBroadcast)
+                    broadcastProgress()
 
                     return@iterateBufferedReader line == "--- Tar checks complete ---"
 
@@ -308,7 +308,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
             putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
         }
 
-        commonTools.LBM?.sendBroadcast(actualBroadcast)
+        broadcastProgress()
 
         try {
             val retryScript = File(engineContext.filesDir.absolutePath, "$FILE_PREFIX_RETRY_SCRIPT${bd.partNumber}.sh")
@@ -377,7 +377,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     }
 
                     actualBroadcast.putExtra(EXTRA_RETRY_LOG, line)
-                    commonTools.LBM?.sendBroadcast(actualBroadcast)
+                    broadcastProgress()
 
                     return@iterateBufferedReader line == "--- Retry complete ---"
                 })

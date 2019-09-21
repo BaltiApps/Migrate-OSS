@@ -39,7 +39,7 @@ class ContactsBackupEngine(private val jobcode: Int,
                 putExtra(EXTRA_CONTACT_NAME, "")
                 putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
             }
-            commonTools.LBM?.sendBroadcast(actualBroadcast)
+            broadcastProgress()
 
             BufferedWriter(FileWriter(vcfFile, true)).run {
 
@@ -55,7 +55,7 @@ class ContactsBackupEngine(private val jobcode: Int,
                         putExtra(EXTRA_CONTACT_NAME, packet.fullName)
                     }
 
-                    commonTools.LBM?.sendBroadcast(actualBroadcast)
+                    broadcastProgress()
                 }
 
                 this.close()

@@ -236,7 +236,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 putExtra(CommonToolKotlin.EXTRA_TITLE, title)
                 removeExtra(CommonToolKotlin.EXTRA_PROGRESS_PERCENTAGE)
             }
-            commonTools.LBM?.sendBroadcast(actualBroadcast)
+            broadcastProgress()
 
             extractToBackup("busybox", actualDestination)
             extractToBackup("update-binary", "$actualDestination/META-INF/com/google/android/")

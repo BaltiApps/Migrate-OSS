@@ -49,7 +49,7 @@ class ZippingEngine(private val jobcode: Int,
                 putExtra(EXTRA_ZIP_LOG, "")
                 putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
             }
-            commonTools.LBM?.sendBroadcast(actualBroadcast)
+            broadcastProgress()
 
             if (zipFile.exists()) zipFile.delete()
 
@@ -125,7 +125,7 @@ class ZippingEngine(private val jobcode: Int,
                         })
                     }
 
-                    commonTools.LBM?.sendBroadcast(actualBroadcast)
+                    broadcastProgress()
                 }
 
                 zippedFiles.add(relativeFilePath)

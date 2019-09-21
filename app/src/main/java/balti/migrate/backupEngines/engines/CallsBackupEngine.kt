@@ -2,7 +2,6 @@ package balti.migrate.backupEngines.engines
 
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
-import android.os.Build
 import balti.migrate.R
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
@@ -67,7 +66,7 @@ class CallsBackupEngine(private val jobcode: Int,
                 putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
             }
 
-            commonTools.LBM?.sendBroadcast(actualBroadcast)
+            broadcastProgress()
 
             val DROP_TABLE = "DROP TABLE IF EXISTS $CALLS_TABLE_NAME"
             val CREATE_TABLE = "CREATE TABLE $CALLS_TABLE_NAME ( " +
@@ -96,11 +95,7 @@ class CallsBackupEngine(private val jobcode: Int,
                     "$CALLS_DURATION INTEGER, " +
                     "$CALLS_NEW INTEGER )"
 
-            var dataBase: SQLiteDatabase = SQLiteDatabase.openOrCreateDatabase(callsDBFile.absolutePath, null)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                dataBase = SQLiteDatabase.openDatabase(callsDBFile.absolutePath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS or SQLiteDatabase.OPEN_READWRITE)
-            }
+            var dataBase: SQLiteDatabase = getDataBase(callsDBFile)
 
             dataBase.let { db ->
                 db.execSQL(DROP_TABLE)
@@ -111,7 +106,10 @@ class CallsBackupEngine(private val jobcode: Int,
                 for (i in 0 until callsPackets.size) {
                     try {
 
-                        if (isBackupCancelled) break
+                        if (isBackupCancelled) {
+                            commonTools.tryIt { db.close() }
+                            break
+                        }
                         val dataPacket = callsPackets[i]
 
                         display = if (dataPacket.callsCachedName != null && dataPacket.callsCachedName != "")
@@ -150,7 +148,7 @@ class CallsBackupEngine(private val jobcode: Int,
                             putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(i+1, callsPackets.size))
                         }
 
-                        commonTools.LBM?.sendBroadcast(actualBroadcast)
+                        broadcastProgress()
                     }
                     catch (e: Exception){
                         e.printStackTrace()
@@ -183,11 +181,9 @@ class CallsBackupEngine(private val jobcode: Int,
                 removeExtra(EXTRA_CALLS_NAME)
             }
 
-            commonTools.LBM?.sendBroadcast(actualBroadcast)
+            broadcastProgress()
 
-            val dataBase: SQLiteDatabase = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1)
-                SQLiteDatabase.openDatabase(callsDBFile.absolutePath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS or SQLiteDatabase.OPEN_READWRITE)
-            else SQLiteDatabase.openOrCreateDatabase(callsDBFile.absolutePath, null)
+            val dataBase: SQLiteDatabase = getDataBase(callsDBFile)
 
             val cursor = dataBase.query(CALLS_TABLE_NAME, arrayOf("id"), null, null, null, null, null)
             cursor.moveToFirst()
@@ -197,7 +193,7 @@ class CallsBackupEngine(private val jobcode: Int,
 
                 c++
                 actualBroadcast.putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(c, callsPackets.size))
-                commonTools.LBM?.sendBroadcast(actualBroadcast)
+                broadcastProgress()
 
             } while (cursor.moveToNext() && !isBackupCancelled)
 

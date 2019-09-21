@@ -34,7 +34,7 @@ class WifiBackupEngine(private val jobcode: Int,
                 putExtra(EXTRA_TITLE, title)
                 putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
             }
-            commonTools.LBM?.sendBroadcast(actualBroadcast)
+            broadcastProgress()
 
             BufferedWriter(FileWriter(wifiFile, true)).run {
 
@@ -48,7 +48,7 @@ class WifiBackupEngine(private val jobcode: Int,
                         actualBroadcast.putExtra(EXTRA_PROGRESS_PERCENTAGE,
                                 commonTools.getPercentage((i + 1), contents.size))
 
-                        commonTools.LBM?.sendBroadcast(actualBroadcast)
+                        broadcastProgress()
 
                     }
                 }

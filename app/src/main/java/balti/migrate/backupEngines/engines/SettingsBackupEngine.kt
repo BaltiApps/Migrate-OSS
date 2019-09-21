@@ -38,7 +38,7 @@ class SettingsBackupEngine(private val jobcode: Int,
             else engineContext.getString(R.string.writing_settings)
 
             actualBroadcast.putExtra(EXTRA_TITLE, title)
-            commonTools.LBM?.sendBroadcast(actualBroadcast)
+            broadcastProgress()
 
             val jsonObject = JSONObject()
             dpiText?.let { jsonObject.put(JSON_FIELD_DPI_TEXT, it) }
