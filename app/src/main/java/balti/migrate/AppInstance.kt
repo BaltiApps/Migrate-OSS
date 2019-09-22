@@ -2,6 +2,7 @@ package balti.migrate
 
 import android.app.ActivityManager
 import android.app.Application
+import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
@@ -13,6 +14,7 @@ class AppInstance: Application() {
     companion object{
         lateinit var appContext: Context
         lateinit var sharedPrefs: SharedPreferences
+        lateinit var notificationManager: NotificationManager
         var MAX_CUSTOM_ZIP_SIZE = 0L
         var MAX_WORKING_SIZE = 0L
     }
@@ -30,6 +32,7 @@ class AppInstance: Application() {
         super.onCreate()
         appContext = this
         sharedPrefs = getSharedPreferences(FILE_MAIN_PREF, Context.MODE_PRIVATE)
+        notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
         MAX_CUSTOM_ZIP_SIZE = if (DEVICE_RAM_SIZE < MAX_TWRP_SIZE) DEVICE_RAM_SIZE else MAX_TWRP_SIZE
 

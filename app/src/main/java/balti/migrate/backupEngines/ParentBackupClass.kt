@@ -1,13 +1,19 @@
 package balti.migrate.backupEngines
 
+import android.app.PendingIntent
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.os.AsyncTask
 import android.os.Build
+import android.support.v4.app.NotificationCompat
 import balti.migrate.AppInstance
+import balti.migrate.R
+import balti.migrate.backupEngines.BackupServiceKotlin.Companion.serviceContext
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.OnBackupComplete
+import balti.migrate.simpleActivities.ProgressShowActivity
 import balti.migrate.utilities.CommonToolKotlin
+import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
@@ -19,6 +25,9 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SCRIPT_APP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_PARTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
+import balti.migrate.utilities.CommonToolKotlin.Companion.NOTIFICATION_ID_ONGOING
+import balti.migrate.utilities.CommonToolKotlin.Companion.PENDING_INTENT_BACKUP_CANCEL_ID
+import balti.migrate.utilities.CommonToolKotlin.Companion.PENDING_INTENT_REQUEST_ID
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -35,6 +44,35 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
     val commonTools by lazy { CommonToolKotlin(engineContext) }
     val madePartName by lazy { commonTools.getMadePartName(bd.partNumber, bd.totalParts) }
     val actualDestination by lazy { "${bd.destination}/${bd.backupName}" }
+
+    private val onGoingNotification by lazy {
+        NotificationCompat.Builder(engineContext, CommonToolKotlin.CHANNEL_BACKUP_RUNNING)
+                .setContentTitle(engineContext.getString(R.string.loading))
+                .setSmallIcon(R.drawable.ic_notification_icon)
+                .addAction(
+                        NotificationCompat.Action(0, serviceContext.getString(android.R.string.cancel),
+                                PendingIntent.getBroadcast(serviceContext, PENDING_INTENT_BACKUP_CANCEL_ID,
+                                        Intent(ACTION_BACKUP_CANCEL), 0))
+                )
+    }
+
+    private fun updateNotification(title: String, content: String = ""){
+
+        val p = actualBroadcast.getIntExtra(EXTRA_PROGRESS_PERCENTAGE, -1)
+
+        onGoingNotification.apply {
+            setContentTitle(title)
+            setContentText(content)
+            setProgress(100, p, p == -1)
+            setContentIntent(
+                    PendingIntent.getActivity(serviceContext, PENDING_INTENT_REQUEST_ID,
+                            Intent(serviceContext, ProgressShowActivity::class.java).putExtras(actualBroadcast),
+                            PendingIntent.FLAG_UPDATE_CURRENT)
+            )
+        }
+        val notif = onGoingNotification.build()
+        AppInstance.notificationManager.notify(NOTIFICATION_ID_ONGOING, notif)
+    }
 
     var customPreExecuteFunction: (() -> Unit)? = null
 
@@ -71,11 +109,7 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
                     }
 
             if (it.hasExtra(EXTRA_TITLE)) {
-
-                BackupServiceKotlin.updateNotification(it.getStringExtra(EXTRA_TITLE),
-                        notificationContent, it.getIntExtra(EXTRA_PROGRESS_PERCENTAGE, -1),
-                        !it.hasExtra(EXTRA_PROGRESS_PERCENTAGE))
-
+                updateNotification(it.getStringExtra(EXTRA_TITLE), notificationContent)
             }
         }
     }
