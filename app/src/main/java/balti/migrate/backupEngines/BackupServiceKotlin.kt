@@ -37,6 +37,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ERRORS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_IS_CANCELLED
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_APP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
@@ -234,7 +235,6 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
                     notificationManager.notify(NOTIFICATION_ID_CANCELLING, cancellingNotification)
                     cancelAll = true
                     commonTools.tryIt { currentTask?.cancel(true) }
-                    commonTools.dirDelete("$destination/$backupName")
                     backupFinished(getString(R.string.backupCancelled))
                 }
             }
@@ -383,7 +383,6 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         onGoingNotification = NotificationCompat.Builder(this, CHANNEL_BACKUP_RUNNING)
                 .setContentTitle(getString(R.string.loading))
                 .setSmallIcon(R.drawable.ic_notification_icon)
-                .setOngoing(true)
 
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -657,14 +656,18 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
             else -> getString(R.string.noErrors)
         }
 
-        toReturnIntent.apply {
-            putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_FINISHED)
-            putExtra(EXTRA_TITLE, title)
-            putStringArrayListExtra(EXTRA_ERRORS, criticalErrors)
-            putExtra(EXTRA_IS_CANCELLED, cancelAll)
-            putExtra(EXTRA_TOTAL_TIME, TOTAL_TIME)
-        }
-        commonTools.LBM?.sendBroadcast(toReturnIntent)
+        commonTools.LBM?.sendBroadcast(Intent(ACTION_BACKUP_PROGRESS)
+                .apply {
+                    putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_FINISHED)
+                    putExtra(EXTRA_TITLE, title)
+                    putStringArrayListExtra(EXTRA_ERRORS, criticalErrors)
+                    putExtra(EXTRA_IS_CANCELLED, cancelAll)
+                    putExtra(EXTRA_TOTAL_TIME, TOTAL_TIME)
+                    putExtra(EXTRA_PROGRESS_PERCENTAGE,
+                            toReturnIntent.getIntExtra(EXTRA_PROGRESS_PERCENTAGE, -1))
+                    action = ACTION_BACKUP_PROGRESS
+                }
+        )
 
         for (e in allErrors){
             errorWriter?.write("$e\n")
@@ -678,9 +681,10 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
         notificationManager.cancel(NOTIFICATION_ID_CANCELLING)
 
-        onGoingNotification.setOngoing(false)
         onGoingNotification.setChannelId(CHANNEL_BACKUP_END)
         updateNotification(title, "", 0, false, 0, NOTIFICATION_ID_FINISHED)
+
+        commonTools.dirDelete("$destination/$backupName")
 
         stopSelf()
     }

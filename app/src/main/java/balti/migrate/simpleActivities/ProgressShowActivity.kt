@@ -55,7 +55,7 @@ import kotlinx.android.synthetic.main.backup_progress_layout.*
 
 class ProgressShowActivity: AppCompatActivity() {
 
-    private var boldTitle = getString(R.string.please_wait)
+    private lateinit var boldTitle : String
     private val commonTools by lazy { CommonToolKotlin(this) }
     private val iconTools by lazy { IconTools() }
     private val errors by lazy { ArrayList<String>(0) }
@@ -66,7 +66,7 @@ class ProgressShowActivity: AppCompatActivity() {
 
     private fun addToLogDisplay(intent: Intent, type: String){
 
-        fun addLog(intent: Intent, keys: Array<String>){
+        fun addLog(keys: Array<String>){
             try {
                 keys.forEach { key ->
                     if (!intent.hasExtra(key)) return
@@ -86,7 +86,7 @@ class ProgressShowActivity: AppCompatActivity() {
             progressLogTextView.append("\n\n")
         }
 
-        addLog(intent, when (type) {
+        addLog(when (type) {
             EXTRA_PROGRESS_TYPE_TESTING -> arrayOf(EXTRA_TEST_LOG)
             EXTRA_PROGRESS_TYPE_CONTACTS -> arrayOf(EXTRA_CONTACT_NAME)
             EXTRA_PROGRESS_TYPE_SMS -> arrayOf(EXTRA_SMS_ADDRESS)
@@ -98,7 +98,7 @@ class ProgressShowActivity: AppCompatActivity() {
             EXTRA_PROGRESS_TYPE_ZIP_PROGRESS -> arrayOf(EXTRA_ZIP_LOG)
             EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION -> arrayOf(EXTRA_ZIP_VERIFICATION_LOG)
 
-            EXTRA_PROGRESS_TYPE_FINISHED -> arrayOf(type)
+            EXTRA_PROGRESS_TYPE_FINISHED -> arrayOf(EXTRA_TITLE)
 
             else -> arrayOf("")
         })
@@ -186,13 +186,9 @@ class ProgressShowActivity: AppCompatActivity() {
 
                 val type = intent.getStringExtra(EXTRA_PROGRESS_TYPE)
 
-                setImageIcon(intent, type)
-                addToLogDisplay(intent, type)
-
-                if (intent.hasExtra(EXTRA_MADE_PART_NAME))
-                    part_name.text = intent.getStringExtra(EXTRA_MADE_PART_NAME)
-
                 if (type == EXTRA_PROGRESS_TYPE_FINISHED) {
+
+                    commonTools.LBM?.unregisterReceiver(progressReceiver)
 
                     window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                     if (errors.size > 0) {
@@ -209,10 +205,19 @@ class ProgressShowActivity: AppCompatActivity() {
 
                     progressActionButton.apply {
                         text = getString(R.string.close)
-                        background = getDrawable(R.drawable.cancel_backup)
+                        background = getDrawable(R.drawable.log_action_button)
                         setOnClickListener { finish() }
                     }
+
+                    progressTask.setTextColor(resources.getColor(R.color.error_color))
+
                 }
+
+                setImageIcon(intent, type)
+                addToLogDisplay(intent, type)
+
+                if (intent.hasExtra(EXTRA_MADE_PART_NAME))
+                    part_name.text = intent.getStringExtra(EXTRA_MADE_PART_NAME)
             }
 
         }
@@ -262,9 +267,11 @@ class ProgressShowActivity: AppCompatActivity() {
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
+        boldTitle = getString(R.string.please_wait)
+
         progressActionButton.apply {
             text = getString(android.R.string.cancel)
-            background = getDrawable(R.drawable.log_action_button)
+            background = getDrawable(R.drawable.cancel_backup)
             setOnClickListener { commonTools.LBM?.sendBroadcast(Intent(ACTION_BACKUP_CANCEL)) }
         }
 
