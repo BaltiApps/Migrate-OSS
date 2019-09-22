@@ -50,7 +50,6 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_PARTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ZIP_LOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ZIP_VERIFICATION_LOG
 import balti.migrate.utilities.IconTools
 import kotlinx.android.synthetic.main.backup_progress_layout.*
 
@@ -97,7 +96,8 @@ class ProgressShowActivity: AppCompatActivity() {
             EXTRA_PROGRESS_TYPE_VERIFYING -> arrayOf(EXTRA_APP_NAME, EXTRA_TAR_CHECK_LOG)
             EXTRA_PROGRESS_TYPE_CORRECTING -> arrayOf(EXTRA_RETRY_LOG)
             EXTRA_PROGRESS_TYPE_ZIP_PROGRESS -> arrayOf(EXTRA_ZIP_LOG)
-            EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION -> arrayOf(EXTRA_ZIP_VERIFICATION_LOG)
+
+            EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION -> arrayOf(EXTRA_TITLE)
 
             EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL -> arrayOf(EXTRA_TITLE)
             EXTRA_PROGRESS_TYPE_FINISHED -> arrayOf(EXTRA_TITLE)
@@ -121,15 +121,15 @@ class ProgressShowActivity: AppCompatActivity() {
             }
         }
         else if (type == EXTRA_PROGRESS_TYPE_FINISHED){
+
             val isCancelled = intent.getBooleanExtra(EXTRA_IS_CANCELLED, false)
+
             app_icon.setImageResource(
-                    if (isCancelled)
-                        R.drawable.ic_error
-                    else if (intent.hasExtra(EXTRA_ERRORS)) {
-                        errors.addAll(intent.getStringArrayListExtra(EXTRA_ERRORS))
-                        if (errors.size == 0) R.drawable.ic_finished_icon
-                        else R.drawable.ic_cancelled_icon
-                    } else R.drawable.ic_finished_icon
+                    when {
+                        isCancelled -> R.drawable.ic_cancelled_icon
+                        errors.size > 0 -> R.drawable.ic_error
+                        else -> R.drawable.ic_finished_icon
+                    }
             )
             if (errors.size != 0 || isCancelled) app_icon.setColorFilter(
                     ContextCompat.getColor(this@ProgressShowActivity, R.color.error_color),
@@ -193,6 +193,10 @@ class ProgressShowActivity: AppCompatActivity() {
                 if (type == EXTRA_PROGRESS_TYPE_FINISHED) {
 
                     window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+                    if (intent.hasExtra(EXTRA_ERRORS))
+                        errors.addAll(intent.getStringArrayListExtra(EXTRA_ERRORS))
+
                     if (errors.size > 0) {
                         reportLogButton.visibility = View.VISIBLE
                         errorLogTextView.visibility = View.VISIBLE
@@ -200,6 +204,9 @@ class ProgressShowActivity: AppCompatActivity() {
                             errorLogTextView.append("$it\n")
                         }
                     }
+
+                    if (errors.size != 0 || intent.getBooleanExtra(EXTRA_IS_CANCELLED, false))
+                        progressTask.setTextColor(resources.getColor(R.color.error_color))
 
                     intent.getLongExtra(EXTRA_TOTAL_TIME, -1).let {
                         if (it != -1L) progressTask.append("\n(${calendarDifference(it)})")
@@ -210,9 +217,6 @@ class ProgressShowActivity: AppCompatActivity() {
                         background = getDrawable(R.drawable.log_action_button)
                         setOnClickListener { finish() }
                     }
-
-                    progressTask.setTextColor(resources.getColor(R.color.error_color))
-
                 }
 
                 setImageIcon(intent, type)
