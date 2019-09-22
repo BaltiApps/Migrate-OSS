@@ -190,7 +190,7 @@ class SmsBackupEngine(private val jobcode: Int,
 
         writeSms()
 
-        if (sharedPreferences.getBoolean(PREF_SMS_VERIFY, true) && errors.size == 0){
+        if (!BackupServiceKotlin.cancelAll && sharedPreferences.getBoolean(PREF_SMS_VERIFY, true) && errors.size == 0){
             verifySms()
         }
 

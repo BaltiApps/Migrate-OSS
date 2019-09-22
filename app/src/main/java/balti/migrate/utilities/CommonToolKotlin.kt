@@ -78,7 +78,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_PROGRESS_TYPE_ZIP_PROGRESS = "zip_progress"
         val EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION = "zip_verification_progress"
         val EXTRA_PROGRESS_TYPE_FINISHED = "finished"
-        val EXTRA_PROGRESS_TYPE_APP_BACKUP_FINISHED = "app_backup_finished"
+        val EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL = "waiting_to_cancel"
 
         val EXTRA_BACKUP_NAME = "backupName"
         val EXTRA_ERRORS = "errors"
@@ -574,11 +574,16 @@ class CommonToolKotlin(val context: Context) {
                 "${context.getString(R.string.part)} ${zeroIndexedPartName + 1} ${context.getString(R.string.of)} $totalParts"
             else ""
 
-    fun doBackgroundTask(f: () -> Unit){
+    fun doBackgroundTask(job: () -> Unit, postJob: () -> Unit){
         class Class : AsyncTask<Any, Any, Any>(){
             override fun doInBackground(vararg params: Any?): Any {
-                f()
+                job()
                 return 0
+            }
+
+            override fun onPostExecute(result: Any?) {
+                super.onPostExecute(result)
+                postJob()
             }
         }
         Class().execute()

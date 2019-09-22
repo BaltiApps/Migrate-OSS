@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.AsyncTask
 import android.os.AsyncTask.THREAD_POOL_EXECUTOR
 import android.os.Build
 import android.os.IBinder
@@ -45,6 +46,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_FI
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_TESTING
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_VERIFYING
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_RETRY_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SCRIPT_APP_NAME
@@ -232,10 +234,29 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         object : BroadcastReceiver(){
             override fun onReceive(context: Context?, intent: Intent?) {
                 commonTools.tryIt {
-                    notificationManager.notify(NOTIFICATION_ID_CANCELLING, cancellingNotification)
+
                     cancelAll = true
-                    commonTools.tryIt { currentTask?.cancel(true) }
-                    backupFinished(getString(R.string.backupCancelled))
+
+                    commonTools.LBM?.sendBroadcast(Intent(ACTION_BACKUP_PROGRESS)
+                            .apply {
+                                putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL)
+                                putExtra(EXTRA_TITLE, getString(R.string.cancelling))
+                            }
+                    )
+                    notificationManager.notify(NOTIFICATION_ID_CANCELLING, cancellingNotification)
+
+                    commonTools.doBackgroundTask({
+
+                        currentTask?.let {
+                            while (it.status != AsyncTask.Status.FINISHED) {
+                                commonTools.tryIt { Thread.sleep(100) }
+                            }
+                            commonTools.tryIt { Thread.sleep(500) }
+                        }
+
+                    }, {
+                        backupFinished(getString(R.string.backupCancelled))
+                    })
                 }
             }
         }
@@ -396,9 +417,9 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            commonTools.makeNotificationChannel(CHANNEL_BACKUP_RUNNING, CHANNEL_BACKUP_RUNNING, NotificationManager.IMPORTANCE_DEFAULT)
-            commonTools.makeNotificationChannel(CHANNEL_BACKUP_END, CHANNEL_BACKUP_END, NotificationManager.IMPORTANCE_DEFAULT)
-            commonTools.makeNotificationChannel(CHANNEL_BACKUP_CANCELLING, CHANNEL_BACKUP_CANCELLING, NotificationManager.IMPORTANCE_LOW)
+            commonTools.makeNotificationChannel(CHANNEL_BACKUP_RUNNING, CHANNEL_BACKUP_RUNNING, NotificationManager.IMPORTANCE_LOW)
+            commonTools.makeNotificationChannel(CHANNEL_BACKUP_END, CHANNEL_BACKUP_END, NotificationManager.IMPORTANCE_HIGH)
+            commonTools.makeNotificationChannel(CHANNEL_BACKUP_CANCELLING, CHANNEL_BACKUP_CANCELLING, NotificationManager.IMPORTANCE_MIN)
         }
 
         commonTools.LBM?.registerReceiver(startBatchBackupReceiver, IntentFilter(ACTION_START_BATCH_BACKUP))
@@ -665,7 +686,6 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
                     putExtra(EXTRA_TOTAL_TIME, TOTAL_TIME)
                     putExtra(EXTRA_PROGRESS_PERCENTAGE,
                             toReturnIntent.getIntExtra(EXTRA_PROGRESS_PERCENTAGE, -1))
-                    action = ACTION_BACKUP_PROGRESS
                 }
         )
 

@@ -171,7 +171,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                         putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(i + 1, packets.size))
                         putExtra(EXTRA_SCRIPT_APP_NAME, appName)
                     }
-                    commonTools.LBM?.sendBroadcast(actualBroadcast)
+                    broadcastProgress()
 
                     val packageName = packet.PACKAGE_INFO.packageName
 
@@ -304,11 +304,11 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                         actualBroadcast.putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(++c, appBatch.appPackets.size))
                         actualBroadcast.putExtra(EXTRA_TITLE, title)
 
-                        commonTools.LBM?.sendBroadcast(actualBroadcast)
+                        broadcastProgress()
                     }
 
                     actualBroadcast.putExtra(EXTRA_APP_LOG, line)
-                    commonTools.LBM?.sendBroadcast(actualBroadcast)
+                    broadcastProgress()
 
                     return@iterateBufferedReader line == "--- App files copied ---"
                 })

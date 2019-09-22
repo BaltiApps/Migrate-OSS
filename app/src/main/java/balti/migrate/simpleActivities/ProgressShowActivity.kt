@@ -37,6 +37,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_SM
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_TESTING
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_VERIFYING
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_WIFI
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION
@@ -98,6 +99,7 @@ class ProgressShowActivity: AppCompatActivity() {
             EXTRA_PROGRESS_TYPE_ZIP_PROGRESS -> arrayOf(EXTRA_ZIP_LOG)
             EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION -> arrayOf(EXTRA_ZIP_VERIFICATION_LOG)
 
+            EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL -> arrayOf(EXTRA_TITLE)
             EXTRA_PROGRESS_TYPE_FINISHED -> arrayOf(EXTRA_TITLE)
 
             else -> arrayOf("")
@@ -155,6 +157,8 @@ class ProgressShowActivity: AppCompatActivity() {
                     EXTRA_PROGRESS_TYPE_ZIP_PROGRESS -> R.drawable.ic_zipping_icon
                     EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION -> R.drawable.ic_verifying_zip_icon
 
+                    EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL -> R.drawable.ic_canceling_icon
+
                     else -> R.drawable.ic_save_icon
                 })
     }
@@ -162,14 +166,6 @@ class ProgressShowActivity: AppCompatActivity() {
     private fun handleProgress(intent: Intent?){
 
         if (intent != null){
-
-            if (intent.hasExtra(EXTRA_TITLE)){
-                boldTitle = intent.getStringExtra(EXTRA_TITLE).let {
-                    if (it.contains(":")) it.substring(0, it.indexOf(":")).trim()
-                    else it.trim()
-                }
-                progressTask.text = boldTitle
-            }
 
             intent.getIntExtra(EXTRA_PROGRESS_PERCENTAGE, -1).let {
                 if (it != -1) {
@@ -182,13 +178,19 @@ class ProgressShowActivity: AppCompatActivity() {
                 }
             }
 
+            if (intent.hasExtra(EXTRA_TITLE)){
+                boldTitle = intent.getStringExtra(EXTRA_TITLE).let {
+                    if (it.contains(":")) it.substring(0, it.indexOf(":")).trim()
+                    else it.trim()
+                }
+                progressTask.text = boldTitle
+            }
+
             if (intent.hasExtra(EXTRA_PROGRESS_TYPE)){
 
                 val type = intent.getStringExtra(EXTRA_PROGRESS_TYPE)
 
                 if (type == EXTRA_PROGRESS_TYPE_FINISHED) {
-
-                    commonTools.LBM?.unregisterReceiver(progressReceiver)
 
                     window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                     if (errors.size > 0) {

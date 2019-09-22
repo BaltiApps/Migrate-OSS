@@ -38,11 +38,6 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     var customPreExecuteFunction: (() -> Unit)? = null
 
-    companion object {
-        var isBackupStopped = false
-        private set
-    }
-
     fun writeToFileList(fileName: String){
         BufferedWriter(FileWriter(File(actualDestination, FILE_FILE_LIST), true)).run {
             this.write("$fileName\n")
@@ -63,8 +58,9 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     fun broadcastProgress(){
 
-        commonTools.LBM?.sendBroadcast(actualBroadcast)
+        if (BackupServiceKotlin.cancelAll) return
 
+        commonTools.LBM?.sendBroadcast(actualBroadcast)
 
         actualBroadcast.let {
             val notificationContent =
@@ -122,8 +118,7 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
     }
 
     override fun onPostExecute(result: Any?) {
-        isBackupStopped = true
-        postExecuteFunction()
         super.onPostExecute(result)
+        postExecuteFunction()
     }
 }
