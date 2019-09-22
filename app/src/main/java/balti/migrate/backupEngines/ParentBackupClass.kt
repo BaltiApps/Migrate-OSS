@@ -22,6 +22,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
+import java.io.OutputStreamWriter
 
 abstract class ParentBackupClass(private val bd: BackupIntentData,
                                  private val intentType: String): AsyncTask<Any, Any, Any>() {
@@ -35,8 +36,12 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
     val madePartName by lazy { commonTools.getMadePartName(bd.partNumber, bd.totalParts) }
     val actualDestination by lazy { "${bd.destination}/${bd.backupName}" }
 
-    var customCancelFunction: (() -> Unit)? = null
     var customPreExecuteFunction: (() -> Unit)? = null
+
+    companion object {
+        var isBackupStopped = false
+        private set
+    }
 
     fun writeToFileList(fileName: String){
         BufferedWriter(FileWriter(File(actualDestination, FILE_FILE_LIST), true)).run {
@@ -79,11 +84,6 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
         }
     }
 
-    fun masterCancel(){
-        customCancelFunction?.invoke()
-        cancel(true)
-    }
-
     fun getDataBase(dataBaseFile: File): SQLiteDatabase{
         var dataBase: SQLiteDatabase = SQLiteDatabase.openOrCreateDatabase(dataBaseFile.absolutePath, null)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1)
@@ -91,8 +91,39 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
         return dataBase
     }
 
+    abstract fun postExecuteFunction()
+
+    internal fun cancelTask(suProcess: Process?, vararg pids: Int) {
+
+            commonTools.tryIt {
+                val killProcess = Runtime.getRuntime().exec("su")
+
+                val writer = BufferedWriter(OutputStreamWriter(killProcess.outputStream))
+                fun killId(pid: Int) {
+                    writer.write("kill -9 $pid\n")
+                    writer.write("kill -15 $pid\n")
+                }
+
+                for (pid in pids)
+                    if (pid != -999) killId(pid)
+
+                writer.write("exit\n")
+                writer.flush()
+
+                commonTools.tryIt { killProcess.waitFor() }
+                commonTools.tryIt { suProcess?.waitFor() }
+            }
+
+    }
+
     override fun onPreExecute() {
         super.onPreExecute()
         customPreExecuteFunction?.invoke()
+    }
+
+    override fun onPostExecute(result: Any?) {
+        isBackupStopped = true
+        postExecuteFunction()
+        super.onPostExecute(result)
     }
 }

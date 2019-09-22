@@ -175,6 +175,7 @@ class SmsBackupEngine(private val jobcode: Int,
             } while (cursor.moveToNext() && !BackupServiceKotlin.cancelAll)
 
             commonTools.tryIt { cursor.close() }
+            commonTools.tryIt { dataBase.close() }
 
             if (c != smsPackets.size)
                 errors.add("$ERR_SMS_VERIFY${bd.errorTag}: ${engineContext.getString(R.string.sms_records_incomplete)} - $c/${smsPackets.size}}")
@@ -196,8 +197,7 @@ class SmsBackupEngine(private val jobcode: Int,
         return 0
     }
 
-    override fun onPostExecute(result: Any?) {
-        super.onPostExecute(result)
+    override fun postExecuteFunction() {
         onBackupComplete.onBackupComplete(jobcode, errors.size == 0, errors)
     }
 

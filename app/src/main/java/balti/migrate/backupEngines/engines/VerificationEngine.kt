@@ -1,7 +1,6 @@
 package balti.migrate.backupEngines.engines
 
 import android.content.pm.PackageInfo
-import android.widget.Toast
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
@@ -36,7 +35,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                          private val appBatch: AppBatch,
                          private val busyboxBinaryPath: String) : ParentBackupClass(bd, "") {
 
-    private var VERIFICATION_PID = -999
+    private var CORRECTION_PID = -999
     private var TAR_CHECK_CORRECTION_PID = -999
 
     private val backupUtils by lazy { BackupUtils() }
@@ -48,10 +47,6 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     private val actualErrors by lazy { ArrayList<String>(0) }
 
     private var suProcess : Process? = null
-
-    init {
-        customCancelFunction = {commonTools.tryIt { cancelTask() }}
-    }
 
     private fun addToActualErrors(err: String){
         actualErrors.add(err)
@@ -241,7 +236,10 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
                 backupUtils.iterateBufferedReader(outputStream, { line ->
 
-                    if (BackupServiceKotlin.cancelAll) return@iterateBufferedReader true
+                    if (BackupServiceKotlin.cancelAll) {
+                        cancelTask(suProcess, TAR_CHECK_CORRECTION_PID)
+                        return@iterateBufferedReader true
+                    }
 
                     when {
                         line.startsWith("--- TAR CHECK PID:") -> commonTools.tryIt {
@@ -364,11 +362,14 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
                 backupUtils.iterateBufferedReader(outputStream, {line ->
 
-                    if (BackupServiceKotlin.cancelAll) return@iterateBufferedReader true
+                    if (BackupServiceKotlin.cancelAll) {
+                        cancelTask(suProcess, CORRECTION_PID)
+                        return@iterateBufferedReader true
+                    }
 
                     if (line.startsWith("--- RECOVERY PID:")){
                         commonTools.tryIt {
-                            VERIFICATION_PID = line.substring(line.lastIndexOf(" ") + 1).trim().toInt()
+                            CORRECTION_PID = line.substring(line.lastIndexOf(" ") + 1).trim().toInt()
                         }
                     }
                     else if (line.startsWith("--- DEFECT:")){
@@ -409,38 +410,6 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
     }
 
-    private fun cancelTask() {
-        if (VERIFICATION_PID != -999) {
-            commonTools.tryIt {
-                val killProcess = Runtime.getRuntime().exec("su")
-
-                val writer = BufferedWriter(OutputStreamWriter(killProcess.outputStream))
-                fun killId(pid: Int) {
-                    writer.write("kill -9 $pid\n")
-                    writer.write("kill -15 $pid\n")
-                }
-
-                killId(VERIFICATION_PID)
-                killId(TAR_CHECK_CORRECTION_PID)
-
-                writer.write("exit\n")
-                writer.flush()
-
-                commonTools.tryIt { killProcess.waitFor() }
-                commonTools.tryIt { suProcess?.waitFor() }
-
-                Toast.makeText(engineContext, engineContext.getString(R.string.deletingFiles), Toast.LENGTH_SHORT).show()
-
-                if (bd.totalParts > 1) {
-                    commonTools.dirDelete(actualDestination)
-                    commonTools.dirDelete("$actualDestination.zip")
-                } else {
-                    commonTools.dirDelete(bd.destination)
-                }
-            }
-        }
-    }
-
     override fun doInBackground(vararg params: Any?): Any {
         val defects = verifyBackups()
         if (defects != null && defects.size != 0)
@@ -449,9 +418,9 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         return 0
     }
 
-    override fun onPostExecute(result: Any?) {
-        super.onPostExecute(result)
-        VERIFICATION_PID = -999
+    override fun postExecuteFunction() {
+        CORRECTION_PID = -999
+        TAR_CHECK_CORRECTION_PID = -999
         onBackupComplete.onBackupComplete(jobcode, actualErrors.size == 0, allErrors)
     }
 }

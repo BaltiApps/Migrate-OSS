@@ -262,8 +262,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
         return 0
     }
 
-    override fun onPostExecute(result: Any?) {
-        super.onPostExecute(result)
+    override fun postExecuteFunction() {
         onBackupComplete.onBackupComplete(jobcode, errors.size == 0, errors)
     }
 

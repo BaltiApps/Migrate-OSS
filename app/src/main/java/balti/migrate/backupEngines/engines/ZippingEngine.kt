@@ -144,8 +144,7 @@ class ZippingEngine(private val jobcode: Int,
         return 0
     }
 
-    override fun onPostExecute(result: Any?) {
-        super.onPostExecute(result)
+    override fun postExecuteFunction() {
         if (zipErrors.size == 0)
             onBackupComplete.onBackupComplete(jobcode, true, zippedFiles)
         else onBackupComplete.onBackupComplete(jobcode, false, zipErrors)

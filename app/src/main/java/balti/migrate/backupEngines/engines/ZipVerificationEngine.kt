@@ -1,10 +1,12 @@
 package balti.migrate.backupEngines.engines
 
+import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_ITEM_UNAVAILABLE
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_TOO_BIG
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_VERIFICATION_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION
@@ -37,6 +39,13 @@ class ZipVerificationEngine(private val jobcode: Int,
             broadcastProgress()
 
             val e = ZipFile(zipFile).entries()
+
+            val fileSize = zipFile.length()
+            if (fileSize > MAX_WORKING_SIZE){
+                verificationErrors.add("$ERR_ZIP_TOO_BIG${bd.errorTag}: ${commonTools.getHumanReadableStorageSpace(fileSize)}")
+                return 0
+            }
+
             while (e.hasMoreElements()) {
 
                 if (BackupServiceKotlin.cancelAll) break
@@ -78,8 +87,7 @@ class ZipVerificationEngine(private val jobcode: Int,
         return 0
     }
 
-    override fun onPostExecute(result: Any?) {
-        super.onPostExecute(result)
+    override fun postExecuteFunction() {
         onBackupComplete.onBackupComplete(jobcode, verificationErrors.size == 0, verificationErrors)
     }
 

@@ -61,8 +61,7 @@ class SettingsBackupEngine(private val jobcode: Int,
         return 0
     }
 
-    override fun onPostExecute(result: Any?) {
-        super.onPostExecute(result)
+    override fun postExecuteFunction() {
         onBackupComplete.onBackupComplete(jobcode, errors.size == 0, errors)
     }
 }

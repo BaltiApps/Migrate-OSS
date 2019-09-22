@@ -1,6 +1,5 @@
 package balti.migrate.backupEngines.engines
 
-import android.widget.Toast
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
@@ -23,10 +22,6 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
     private var TESTING_PID = -999
 
     private val testingErrors by lazy { ArrayList<String>(0) }
-
-    init {
-        customCancelFunction = { commonTools.tryIt { cancelTask() } }
-    }
 
     override fun doInBackground(vararg params: Any?): Any {
 
@@ -60,7 +55,10 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
 
                 backupUtils.iterateBufferedReader(resultStream, { line ->
 
-                    if (BackupServiceKotlin.cancelAll) return@iterateBufferedReader true
+                    if (BackupServiceKotlin.cancelAll) {
+                        cancelTask(suProcess, TESTING_PID)
+                        return@iterateBufferedReader true
+                    }
 
                     if (line.startsWith("--- PID:")) {
                         commonTools.tryIt { TESTING_PID = line.substring(line.lastIndexOf(" ") + 1).toInt() }
@@ -105,34 +103,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
 
     }
 
-    private fun cancelTask() {
-        if (TESTING_PID != -999) {
-            commonTools.tryIt {
-                val killProcess = Runtime.getRuntime().exec("su")
-
-                val writer = BufferedWriter(OutputStreamWriter(killProcess.outputStream))
-                writer.write("kill -9 $TESTING_PID\n")
-                writer.write("kill -15 $TESTING_PID\n")
-                writer.write("exit\n")
-                writer.flush()
-
-                commonTools.tryIt { killProcess.waitFor() }
-                commonTools.tryIt { suProcess?.waitFor() }
-
-                Toast.makeText(engineContext, engineContext.getString(R.string.deletingFiles), Toast.LENGTH_SHORT).show()
-
-                if (bd.totalParts > 1) {
-                    commonTools.dirDelete(actualDestination)
-                    commonTools.dirDelete("$actualDestination.zip")
-                } else {
-                    commonTools.dirDelete(bd.destination)
-                }
-            }
-        }
-    }
-
-    override fun onPostExecute(result: Any?) {
-        super.onPostExecute(result)
+    override fun postExecuteFunction() {
         onBackupComplete.onBackupComplete(jobcode, testingErrors.size == 0, testingErrors)
     }
 }

@@ -1,6 +1,5 @@
 package balti.migrate.extraBackupsActivity.apps
 
-import android.app.ActivityManager
 import android.app.NotificationManager
 import android.app.usage.StorageStatsManager
 import android.content.Context
@@ -13,6 +12,7 @@ import android.os.StatFs
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.View
+import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
@@ -22,10 +22,8 @@ import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
-import balti.migrate.utilities.CommonToolKotlin.Companion.MAX_TWRP_ZIP_SIZE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MAX_BACKUP_SIZE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
 import kotlinx.android.synthetic.main.please_wait.view.*
 import java.io.*
@@ -49,11 +47,8 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
     private val main by lazy { context.getSharedPreferences(FILE_MAIN_PREF, MODE_PRIVATE) }
     private val commonTools by lazy { CommonToolKotlin(context) }
     private val pm by lazy { context.packageManager }
-    private val maxBackupSize : Long
-        get() = context.getSharedPreferences(FILE_MAIN_PREF, MODE_PRIVATE).getLong(PREF_MAX_BACKUP_SIZE, MAX_TWRP_ZIP_SIZE)
 
     private var availableKb = 0L
-    private var totalMemory = 0L
     private var totalSize = 0L
 
     init {
@@ -322,17 +317,6 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 availableKb = it.blockSizeLong * it.availableBlocksLong / 1024
             }
 
-            val activityManager = context.getSystemService(ACTIVITY_SERVICE) as ActivityManager
-            ActivityManager.MemoryInfo().let {
-                activityManager.getMemoryInfo(it)
-                totalMemory = it.totalMem / 1024
-            }
-
-            (if (maxBackupSize >= MAX_TWRP_ZIP_SIZE) MAX_TWRP_ZIP_SIZE else maxBackupSize).let {
-                totalMemory = if (totalMemory >= it) it
-                else totalMemory
-            }
-
         }
         catch (e: Exception){
             e.printStackTrace()
@@ -349,7 +333,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
         try {
 
-            val parts = ceil((totalSize * 1.0) / totalMemory).toInt()
+            val parts = ceil((totalSize * 1.0) / MAX_WORKING_SIZE).toInt()
 
             for (i in 1..parts) {
 
@@ -357,10 +341,10 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 var batchSize = 0L
                 var c = 0
 
-                while (c < parentAppBatch.size && batchSize < totalMemory) {
+                while (c < parentAppBatch.size && batchSize < MAX_WORKING_SIZE) {
 
                     val dp = parentAppBatch[c]
-                    if (batchSize + dp.systemSize + dp.dataSize <= totalMemory) {
+                    if (batchSize + dp.systemSize + dp.dataSize <= MAX_WORKING_SIZE) {
                         batchPackets.add(dp)
                         batchSize += dp.dataSize + dp.systemSize
                         parentAppBatch.removeAt(c)

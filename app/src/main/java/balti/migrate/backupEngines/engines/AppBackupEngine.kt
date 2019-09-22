@@ -1,6 +1,5 @@
 package balti.migrate.backupEngines.engines
 
-import android.widget.Toast
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
@@ -72,8 +71,6 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                 }
             }
         }
-
-        customCancelFunction = { commonTools.tryIt { cancelTask() }}
     }
 
     private fun addToActualErrors(err: String){
@@ -275,7 +272,10 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
                 backupUtils.iterateBufferedReader(outputStream, { output ->
 
-                    if (BackupServiceKotlin.cancelAll) return@iterateBufferedReader true
+                    if (BackupServiceKotlin.cancelAll) {
+                        cancelTask(suProcess, BACKUP_PID)
+                        return@iterateBufferedReader true
+                    }
 
                     actualBroadcast.putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_APP_PROGRESS)
 
@@ -338,40 +338,13 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
         }
     }
 
-    private fun cancelTask() {
-        if (BACKUP_PID != -999) {
-            commonTools.tryIt {
-                val killProcess = Runtime.getRuntime().exec("su")
-
-                val writer = BufferedWriter(OutputStreamWriter(killProcess.outputStream))
-                writer.write("kill -9 $BACKUP_PID\n")
-                writer.write("kill -15 $BACKUP_PID\n")
-                writer.write("exit\n")
-                writer.flush()
-
-                commonTools.tryIt { killProcess.waitFor() }
-                commonTools.tryIt { suProcess?.waitFor() }
-
-                Toast.makeText(engineContext, engineContext.getString(R.string.deletingFiles), Toast.LENGTH_SHORT).show()
-
-                if (bd.totalParts > 1) {
-                    commonTools.dirDelete(actualDestination)
-                    commonTools.dirDelete("$actualDestination.zip")
-                } else {
-                    commonTools.dirDelete(bd.destination)
-                }
-            }
-        }
-    }
-
     override fun doInBackground(vararg params: Any?): Any {
         val scriptLocation = makeBackupScript()
         scriptLocation?.let { runBackupScript(it) }
         return 0
     }
 
-    override fun onPostExecute(result: Any?) {
-        super.onPostExecute(result)
+    override fun postExecuteFunction() {
         BACKUP_PID = -999
         onBackupComplete.onBackupComplete(jobcode, actualErrors.size == 0, allErrors)
     }
