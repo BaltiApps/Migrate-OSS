@@ -8,8 +8,6 @@ import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_TESTING_ERROR
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_TESTING_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_TESTING
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TEST_LOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import java.io.*
 
 class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntentData,
@@ -31,8 +29,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                 engineContext.getString(R.string.testing_system) + " : " + madePartName
             else engineContext.getString(R.string.testing_system)
 
-            actualBroadcast.putExtra(EXTRA_TITLE, title)
-            broadcastProgress()
+            resetBroadcast(true, title)
 
             val testScriptPath = commonTools.unpackAssetToInternal("systemTestScript.sh", "test.sh", false)
             val thisPackageInfo = pm.getApplicationInfo(engineContext.packageName, 0)
@@ -64,8 +61,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                         commonTools.tryIt { TESTING_PID = line.substring(line.lastIndexOf(" ") + 1).toInt() }
                     }
 
-                    actualBroadcast.putExtra(EXTRA_TEST_LOG, line)
-                    broadcastProgress()
+                    broadcastProgress("", line)
 
                     return@iterateBufferedReader line == "--- Test done ---"
 

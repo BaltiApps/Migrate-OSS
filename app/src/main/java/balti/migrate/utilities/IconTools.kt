@@ -11,7 +11,10 @@ import android.os.AsyncTask.THREAD_POOL_EXECUTOR
 import android.widget.ImageView
 import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
+import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileReader
 
 class IconTools {
 
@@ -64,11 +67,18 @@ class IconTools {
 
                 return try {
 
-                    val byteChunks = iconString.split("_")
+                    val byteChunks = iconString.trim().split("_")
 
-                    val imageData = ByteArray(byteChunks.size)
-                    for (i in byteChunks.indices)
-                        imageData[i] = java.lang.Byte.parseByte(byteChunks[i])
+                    val filterData = ArrayList<Byte>(0)
+                    for (byte in byteChunks) {
+                        try {
+                            filterData.add(java.lang.Byte.parseByte(byte))
+                        }
+                        catch (e: Exception){}
+                    }
+
+                    val imageData = ByteArray(filterData.size)
+                    for (d in imageData.indices) imageData[d] = filterData[d]
 
                     BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
 
@@ -88,5 +98,14 @@ class IconTools {
             }
         }
         Setter().execute()
+    }
+
+    fun setIconFromFile(iconView: ImageView, file: File){
+        var icon = ""
+        BufferedReader(FileReader(file)).readLines().forEach {
+            icon += it
+        }
+
+        setIconFromIconString(iconView, icon)
     }
 }

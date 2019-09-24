@@ -117,10 +117,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             override fun onReceive(context: Context?, intent: Intent?) {
                 startActivity(Intent(this@ExtraBackupsKotlin, ProgressShowActivity::class.java)   /*kotlin*/
                         .apply {
-                            intent?.extras?.let {
+                            intent?.let {
                                 this.putExtras(it)
+                                this.action = it.action
                             }
-                            action = ACTION_BACKUP_PROGRESS
                         }
                 )
                 commonTools.tryIt { commonTools.LBM?.unregisterReceiver(this) }

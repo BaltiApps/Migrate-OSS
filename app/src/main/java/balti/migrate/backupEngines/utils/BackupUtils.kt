@@ -45,7 +45,7 @@ class BackupUtils {
         val packageName = appPacket.PACKAGE_INFO.packageName
 
         val metadataFileName = "$packageName.json"
-        val metadataFile = File("${bd.destination}/${bd.destination}/$metadataFileName")
+        val metadataFile = File("${bd.destination}/${bd.backupName}/$metadataFileName")
 
         val metadataContent = "" +
                 "{\n" +

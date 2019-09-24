@@ -5,10 +5,7 @@ import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_TRY_CATCH
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ZIP_LOG
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -45,17 +42,10 @@ class ZippingEngine(private val jobcode: Int,
             val directory = File(actualDestination)
             val zipFile = File("$actualDestination.zip")
 
-            actualBroadcast.apply {
-                putExtra(EXTRA_TITLE, title)
-                putExtra(EXTRA_ZIP_LOG, "")
-                putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
-            }
-            broadcastProgress()
+            resetBroadcast(false, title)
 
             if (zipFile.exists()) zipFile.delete()
-
             val files = getAllFiles(directory, ArrayList(0))
-
             val zipOutputStream = ZipOutputStream(FileOutputStream(zipFile))
 
             for (i in 0 until files.size){
@@ -117,16 +107,8 @@ class ZippingEngine(private val jobcode: Int,
                     fileInputStream.close()
                     file.delete()
 
-                    actualBroadcast.apply {
-                        putExtra(EXTRA_TITLE, title)
-                        putExtra(EXTRA_ZIP_LOG, "zipped: " + file.name)
-                        putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage((i+1), files.size).let {
-                            if (it == 100) 99
-                            else it
-                        })
-                    }
-
-                    broadcastProgress()
+                    broadcastProgress("", "zipped: ${file.name}",
+                            commonTools.getPercentage((i+1), files.size))
                 }
 
                 zippedFiles.add(relativeFilePath)

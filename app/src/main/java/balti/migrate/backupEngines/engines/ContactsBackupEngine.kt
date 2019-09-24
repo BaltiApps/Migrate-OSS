@@ -6,10 +6,7 @@ import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CONTACTS_TRY_CATCH
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_CONTACT_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CONTACTS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -34,13 +31,7 @@ class ContactsBackupEngine(private val jobcode: Int,
                 engineContext.getString(R.string.backing_contacts) + " : " + madePartName
             else engineContext.getString(R.string.backing_contacts)
 
-
-            actualBroadcast.apply {
-                putExtra(EXTRA_TITLE, title)
-                putExtra(EXTRA_CONTACT_NAME, "")
-                putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
-            }
-            broadcastProgress()
+            resetBroadcast(false, title)
 
             BufferedWriter(FileWriter(vcfFile, true)).run {
 
@@ -51,12 +42,7 @@ class ContactsBackupEngine(private val jobcode: Int,
                     val packet = contactPackets[i]
                     this.write("${packet.vcfData}\n")
 
-                    actualBroadcast.apply {
-                        putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage((i+1), contactPackets.size))
-                        putExtra(EXTRA_CONTACT_NAME, packet.fullName)
-                    }
-
-                    broadcastProgress()
+                    broadcastProgress("", packet.fullName, commonTools.getPercentage((i+1), contactPackets.size))
                 }
 
                 this.close()

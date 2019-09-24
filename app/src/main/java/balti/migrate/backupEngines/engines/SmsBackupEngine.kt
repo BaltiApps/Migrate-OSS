@@ -11,10 +11,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_SMS_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_SMS_VERIFY
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_SMS_VERIFY_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_SMS_WRITE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_SMS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SMS_ADDRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SMS_VERIFY
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_ADDRESS
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_BODY
@@ -54,12 +51,7 @@ class SmsBackupEngine(private val jobcode: Int,
                 engineContext.getString(R.string.backing_sms) + " : " + madePartName
             else engineContext.getString(R.string.backing_sms)
 
-            actualBroadcast.apply {
-                putExtra(EXTRA_TITLE, title)
-                putExtra(EXTRA_SMS_ADDRESS, "")
-                putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
-            }
-            broadcastProgress()
+            resetBroadcast(false, title)
 
             val DROP_TABLE = "DROP TABLE IF EXISTS $SMS_TABLE_NAME"
             val CREATE_TABLE = "CREATE TABLE $SMS_TABLE_NAME ( " +
@@ -117,12 +109,8 @@ class SmsBackupEngine(private val jobcode: Int,
 
                         db.insert(SMS_TABLE_NAME, null, contentValues)
 
-                        actualBroadcast.apply {
-                            putExtra(EXTRA_SMS_ADDRESS, dataPacket.smsAddress)
-                            putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(i+1, smsPackets.size))
-                        }
+                        broadcastProgress("", dataPacket.smsAddress.toString(), commonTools.getPercentage(i+1, smsPackets.size))
 
-                        broadcastProgress()
                     }
                     catch (e: Exception){
                         e.printStackTrace()
@@ -152,13 +140,7 @@ class SmsBackupEngine(private val jobcode: Int,
                 engineContext.getString(R.string.verifying_sms) + " : " + madePartName
             else engineContext.getString(R.string.verifying_sms)
 
-            actualBroadcast.apply {
-                putExtra(EXTRA_TITLE, title)
-                putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
-                removeExtra(EXTRA_SMS_ADDRESS)
-            }
-
-            broadcastProgress()
+            resetBroadcast(false, title)
 
             val dataBase: SQLiteDatabase = getDataBase(smsDBFile)
 
@@ -169,8 +151,7 @@ class SmsBackupEngine(private val jobcode: Int,
             do {
 
                 c++
-                actualBroadcast.putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(c, smsPackets.size))
-                broadcastProgress()
+                broadcastProgress("", "($c/${smsPackets.size})", commonTools.getPercentage(c, smsPackets.size))
 
             } while (cursor.moveToNext() && !BackupServiceKotlin.cancelAll)
 

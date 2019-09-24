@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import balti.migrate.AppInstance
+import balti.migrate.AppInstance.Companion.sharedPrefs
 import balti.migrate.R
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.engines.*
@@ -33,29 +34,19 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELL
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_BACKUP_SERVICE_ERROR
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_LOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ERRORS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_IS_CANCELLED
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_APP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CALLS
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CONTACTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_FINISHED
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_TESTING
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_VERIFYING
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_SMS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_RETRY_LOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SCRIPT_APP_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TAR_CHECK_LOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TEST_LOG
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TASKLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ZIP_LOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ERRORLOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_CONTACTS
@@ -68,7 +59,6 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PERFORM_APP_BA
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PERFORM_UPDATER_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PERFORM_ZIP_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PERFORM_ZIP_VERIFICATION
-import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolKotlin.Companion.NOTIFICATION_ID_CANCELLING
 import balti.migrate.utilities.CommonToolKotlin.Companion.NOTIFICATION_ID_FINISHED
 import balti.migrate.utilities.CommonToolKotlin.Companion.NOTIFICATION_ID_ONGOING
@@ -107,34 +97,24 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         var cancelAll = false
     }
 
-    private val sharedPrefs by lazy { getSharedPreferences(FILE_MAIN_PREF, Context.MODE_PRIVATE) }
-
     override fun onBind(intent: Intent?): IBinder? = null
 
     private val commonTools by lazy { CommonToolKotlin(this) }
 
     private var progressWriter: BufferedWriter? = null
     private var errorWriter: BufferedWriter? = null
-    private var lastTestLine = ""
-    private var lastScriptAppName = ""
-    private var lastAppLogLine = ""
-    private var lastZipLine = ""
-    private var lastVerifyLine = ""
-    private var lastCorrectionLine = ""
 
-    private var startedTest = false
-    private var startedScript = false
-    private var startedAppProgress = false
-    private var startedZip = false
-    private var startedVerify = false
-    private var startedCorrection = false
+    private var lastTitle = ""
+    private var lastLog = ""
+    private var lastDeterminateProgress = 0
 
     private val allErrors by lazy { ArrayList<String>(0) }
     private val criticalErrors by lazy { ArrayList<String>(0) }
 
     private var lastErrorCount = 0
 
-    private var TOTAL_TIME = 0L
+    private var startTime = 0L
+    private var endTime = 0L
 
     private var compressionLevel = 0
 
@@ -230,91 +210,34 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         object : BroadcastReceiver(){
             override fun onReceive(context: Context?, intent: Intent?) {
 
-                if (intent == null || !intent.hasExtra(EXTRA_PROGRESS_TYPE)) return
+                if (intent == null || !intent.hasExtra(EXTRA_PROGRESS_TYPE) || !intent.hasExtra(EXTRA_TITLE)) return
 
                 toReturnIntent.putExtras(intent)
 
-                fun writeLogs(extraName : String) {
-                    commonTools.tryIt {
-                        if (intent.hasExtra(extraName)) {
-                            intent.getStringExtra(extraName).run {
+                val type = intent.getStringExtra(EXTRA_PROGRESS_TYPE)
+                if (type in arrayOf(EXTRA_PROGRESS_TYPE_CONTACTS, EXTRA_PROGRESS_TYPE_SMS, EXTRA_PROGRESS_TYPE_CALLS))
+                    return
 
-                                if (extraName == EXTRA_TEST_LOG && this != lastTestLine) {
-                                    progressWriter?.write("$this\n")
-                                    lastTestLine = this
-                                } else if (extraName == EXTRA_SCRIPT_APP_NAME && this != lastScriptAppName) {
-                                    progressWriter?.write("$this\n")
-                                    lastScriptAppName = this
-                                }  else if (extraName == EXTRA_APP_LOG && this != lastAppLogLine) {
-                                    progressWriter?.write("$this\n")
-                                    lastAppLogLine = this
-                                } else if (extraName == EXTRA_ZIP_LOG && this != lastZipLine) {
-                                    progressWriter?.write("$this\n")
-                                    lastZipLine = this
-                                } else if (extraName == EXTRA_APP_NAME || extraName == EXTRA_TAR_CHECK_LOG && this != lastVerifyLine) {
-                                    progressWriter?.write("$this\n")
-                                    lastVerifyLine = this
-                                } else if (extraName == EXTRA_RETRY_LOG && this != lastCorrectionLine) {
-                                    progressWriter?.write("$this\n")
-                                    lastCorrectionLine = this
-                                }
-                            }
+                intent.getStringExtra(EXTRA_TITLE).trim().run {
+                    if (this != lastTitle) {
+                        progressWriter?.write("\n$this\n")
+                        lastTitle = this
+                    }
+                }
+
+                if (intent.hasExtra(EXTRA_TASKLOG)){
+                    intent.getStringExtra(EXTRA_TASKLOG).trim().run {
+                        if (this != lastLog) {
+                            progressWriter?.write("$this\n")
+                            lastLog = this
                         }
                     }
                 }
 
-                when (intent.getStringExtra(EXTRA_PROGRESS_TYPE)) {
-
-                    EXTRA_PROGRESS_TYPE_TESTING -> {
-                        if (!startedTest) {
-                            progressWriter?.write("\n\n${MIGRATE_STATUS} System test logs\n")
-                            startedTest = true
-                        }
-                        writeLogs(EXTRA_TEST_LOG)
-                    }
-
-                    EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS -> {
-                        if (!startedScript) {
-                            progressWriter?.write("\n\n${MIGRATE_STATUS} Making app backup scripts\n")
-                            startedScript = true
-                        }
-                        writeLogs(EXTRA_SCRIPT_APP_NAME)
-                    }
-
-                    EXTRA_PROGRESS_TYPE_APP_PROGRESS -> {
-                        if (!startedAppProgress) {
-                            progressWriter?.write("\n\n${MIGRATE_STATUS} App backup logs\n")
-                            startedAppProgress = true
-                        }
-                        writeLogs(EXTRA_APP_LOG)
-                    }
-
-                    EXTRA_PROGRESS_TYPE_VERIFYING -> {
-                        if (!startedVerify) {
-                            progressWriter?.write("\n\n${MIGRATE_STATUS} App verification logs\n")
-                            startedVerify = true
-                        }
-                        writeLogs(EXTRA_APP_NAME)
-                        writeLogs(EXTRA_TAR_CHECK_LOG)
-                    }
-
-                    EXTRA_PROGRESS_TYPE_CORRECTING -> {
-                        if (!startedCorrection) {
-                            progressWriter?.write("\n\n${MIGRATE_STATUS} Correction logs\n")
-                            startedCorrection = true
-                        }
-                        writeLogs(EXTRA_RETRY_LOG)
-                    }
-
-                    EXTRA_PROGRESS_TYPE_ZIP_PROGRESS -> {
-                        if (!startedZip) {
-                            progressWriter?.write("\n\n${MIGRATE_STATUS} Zip logs\n")
-                            startedZip = true
-                        }
-                        writeLogs(EXTRA_ZIP_LOG)
-                    }
-
+                intent.getIntExtra(EXTRA_PROGRESS_PERCENTAGE, -1).run {
+                    if (this != -1) lastDeterminateProgress = this
                 }
+
             }
         }
     }
@@ -331,6 +254,8 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
     private val startBatchBackupReceiver by lazy {
         object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
+
+                startTime = timeInMillis()
 
                 currentBackupName = backupName
                 currentDestination = destination
@@ -564,10 +489,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         val bd = getBackupIntentData()
         var task : ParentBackupClass? = null
 
-        if (cancelAll){
-            backupFinished(getString(R.string.backupCancelled))
-            return
-        }
+        if (cancelAll) return
 
         when (jobCode) {
             JOBCODE_PERFORM_APP_BACKUP_VERIFICATION -> try {
@@ -612,7 +534,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
     private fun runNextBatch(isThisBatchSuccessful: Boolean = false){
 
         if (cancelAll){
-            backupFinished(getString(R.string.backupCancelled))
+            return
         }
         else {
             if (!isThisBatchSuccessful)
@@ -636,27 +558,35 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
             else -> getString(R.string.noErrors)
         }
 
+        try {
+            if (allErrors.size == 0) {
+                errorWriter?.write("--- No errors! ---\n")
+            } else for (e in allErrors) {
+                errorWriter?.write("$e\n")
+            }
+            errorWriter?.write("--- Backup Name : $backupName ---\n")
+            errorWriter?.write("--- Migrate version ${getString(R.string.current_version_name)} ---\n")
+
+            progressWriter?.write("--- \n\nBackup Name : $backupName ---\n")
+            progressWriter?.write("--- Total parts : ${appBatches.size} ---\n")
+            progressWriter?.write("--- Migrate version ${getString(R.string.current_version_name)} ---\n")
+        }
+        catch (e: Exception){
+            e.printStackTrace()
+        }
+
+        endTime = timeInMillis()
+
         commonTools.LBM?.sendBroadcast(Intent(ACTION_BACKUP_PROGRESS)
                 .apply {
                     putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_FINISHED)
                     putExtra(EXTRA_TITLE, title)
                     putStringArrayListExtra(EXTRA_ERRORS, criticalErrors)
                     putExtra(EXTRA_IS_CANCELLED, cancelAll)
-                    putExtra(EXTRA_TOTAL_TIME, TOTAL_TIME)
-                    putExtra(EXTRA_PROGRESS_PERCENTAGE,
-                            toReturnIntent.getIntExtra(EXTRA_PROGRESS_PERCENTAGE, -1))
+                    putExtra(EXTRA_TOTAL_TIME, endTime - startTime)
+                    putExtra(EXTRA_PROGRESS_PERCENTAGE, if (criticalErrors.size == 0) 100 else lastDeterminateProgress)
                 }
         )
-
-        for (e in allErrors){
-            errorWriter?.write("$e\n")
-        }
-        commonTools.tryIt { errorWriter?.close() }
-
-        progressWriter?.write("--- Total parts : " + appBatches.size + " ---\n")
-        progressWriter?.write("--- Migrate version " + getString(R.string.current_version_name) + " ---\n")
-
-        commonTools.tryIt { progressWriter?.close() }
 
         AppInstance.notificationManager.cancel(NOTIFICATION_ID_CANCELLING)
 
@@ -670,6 +600,8 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
         stopSelf()
     }
+
+    private fun timeInMillis() = Calendar.getInstance().timeInMillis
 
     override fun onDestroy() {
         super.onDestroy()

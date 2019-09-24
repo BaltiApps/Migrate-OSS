@@ -6,9 +6,7 @@ import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_WIFI_TRY_CATCH
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_WIFI
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -31,11 +29,7 @@ class WifiBackupEngine(private val jobcode: Int,
                 engineContext.getString(R.string.storing_wifi_data) + " : " + madePartName
             else engineContext.getString(R.string.storing_wifi_data)
 
-            actualBroadcast.apply {
-                putExtra(EXTRA_TITLE, title)
-                putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
-            }
-            broadcastProgress()
+            resetBroadcast(true, title)
 
             BufferedWriter(FileWriter(wifiFile, true)).run {
 
@@ -45,12 +39,6 @@ class WifiBackupEngine(private val jobcode: Int,
                         if (BackupServiceKotlin.cancelAll) break
 
                         this.write(contents[i])
-
-                        actualBroadcast.putExtra(EXTRA_PROGRESS_PERCENTAGE,
-                                commonTools.getPercentage((i + 1), contents.size))
-
-                        broadcastProgress()
-
                     }
                 }
 

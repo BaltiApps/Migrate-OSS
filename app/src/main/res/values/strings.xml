@@ -300,6 +300,7 @@
     <string name="testing_system">Testing system</string>
     <string name="writing_settings">Writing settings</string>
     <string name="making_package_flash_ready">Making package flash ready</string>
+    <string name="making_updater_script">Making updater-script</string>
     <string name="backing_app_permissions">Backing app permissions</string>
     <string name="verifying_backups">Verifying backup</string>
     <string name="verifying_tar">Verifying_tar</string>
@@ -366,7 +367,7 @@
     <string name="stock_android_rom">Stock android ROM recommended</string>
     <string name="please_wait">Please wait</string>
     <string name="reading_data">Reading backup data</string>
-    <string name="making_app_script">Making app backup script</string>
+    <string name="making_app_script">Making app auxiliary files</string>
     <string name="just_a_minute">Just a minute…</string>
     <string name="starting_engine">Starting backup engine</string>
     <string name="root_permission_denied">Root permission denied!</string>
@@ -405,6 +406,9 @@
 
     <!--AppBackupEngine.kt-->
     <string name="script_file_does_not_exist">Script file does not exist</string>
+
+    <!--VerificationEngine.kt-->
+    <string name="defect_no">Defect number:</string>
     
     <!--keyboard_selector.xml-->
     <string name="select_default_keyboard_from_enabled">Select default keyboard from enabled keyboards</string>

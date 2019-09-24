@@ -17,13 +17,9 @@ import balti.migrate.backupEngines.engines.AppBackupEngine
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_LOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_CALLS_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_CONTACT_NAME
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ACTUAL_DESTINATION
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ERRORS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_IS_CANCELLED
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_MADE_PART_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_APP_PROGRESS
@@ -41,21 +37,17 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_WA
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_WIFI
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_RETRY_LOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SCRIPT_APP_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SMS_ADDRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TAR_CHECK_LOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TEST_LOG
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SUBTASK
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TASKLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_PARTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ZIP_LOG
 import balti.migrate.utilities.IconTools
 import kotlinx.android.synthetic.main.backup_progress_layout.*
+import java.io.File
 
 class ProgressShowActivity: AppCompatActivity() {
 
-    private lateinit var boldTitle : String
     private val commonTools by lazy { CommonToolKotlin(this) }
     private val iconTools by lazy { IconTools() }
     private val errors by lazy { ArrayList<String>(0) }
@@ -64,56 +56,21 @@ class ProgressShowActivity: AppCompatActivity() {
     private var lastType = ""
     private var lastIcon = ""
 
-    private fun addToLogDisplay(intent: Intent, type: String){
-
-        fun addLog(keys: Array<String>){
-            try {
-                keys.forEach { key ->
-                    if (!intent.hasExtra(key)) return
-                    val logMsg = intent.getStringExtra(key)
-                    if (logMsg.trim() != lastLog.trim()) {
-                        lastLog = logMsg
-                        progressLogTextView.append(lastLog + "\n")
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        if (type != lastType) {
-            lastType = type
-            progressLogTextView.append("\n\n")
-        }
-
-        addLog(when (type) {
-            EXTRA_PROGRESS_TYPE_TESTING -> arrayOf(EXTRA_TEST_LOG)
-            EXTRA_PROGRESS_TYPE_CONTACTS -> arrayOf(EXTRA_CONTACT_NAME)
-            EXTRA_PROGRESS_TYPE_SMS -> arrayOf(EXTRA_SMS_ADDRESS)
-            EXTRA_PROGRESS_TYPE_CALLS -> arrayOf(EXTRA_CALLS_NAME)
-            EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS -> arrayOf(EXTRA_SCRIPT_APP_NAME)
-            EXTRA_PROGRESS_TYPE_APP_PROGRESS -> arrayOf(EXTRA_APP_LOG)
-            EXTRA_PROGRESS_TYPE_VERIFYING -> arrayOf(EXTRA_APP_NAME, EXTRA_TAR_CHECK_LOG)
-            EXTRA_PROGRESS_TYPE_CORRECTING -> arrayOf(EXTRA_RETRY_LOG)
-            EXTRA_PROGRESS_TYPE_ZIP_PROGRESS -> arrayOf(EXTRA_ZIP_LOG)
-
-            EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION -> arrayOf(EXTRA_TITLE)
-
-            EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL -> arrayOf(EXTRA_TITLE)
-            EXTRA_PROGRESS_TYPE_FINISHED -> arrayOf(EXTRA_TITLE)
-
-            else -> arrayOf("")
-        })
-
-    }
+    private var lastTitle = ""
 
     private fun setImageIcon(intent: Intent, type: String){
 
         if (type == EXTRA_PROGRESS_TYPE_APP_PROGRESS){
             try {
                 if (lastIcon != AppBackupEngine.ICON_STRING) {
-                    lastIcon = AppBackupEngine.ICON_STRING
-                    iconTools.setIconFromIconString(app_icon, lastIcon)
+                    AppBackupEngine.ICON_STRING.run {
+                        if (this.contains(".icon", true)){
+                            val iconFile = File(intent.getStringExtra(EXTRA_ACTUAL_DESTINATION), this.trim())
+                            iconTools.setIconFromFile(app_icon, iconFile)
+                        }
+                        else iconTools.setIconFromIconString(app_icon, this)
+                        lastIcon = this
+                    }
                 }
             }
             catch (_: Exception){
@@ -178,12 +135,26 @@ class ProgressShowActivity: AppCompatActivity() {
                 }
             }
 
-            if (intent.hasExtra(EXTRA_TITLE)){
-                boldTitle = intent.getStringExtra(EXTRA_TITLE).let {
-                    if (it.contains(":")) it.substring(0, it.indexOf(":")).trim()
-                    else it.trim()
+            if (intent.hasExtra(EXTRA_TITLE)) {
+                intent.getStringExtra(EXTRA_TITLE).trim().run {
+                    if (this != lastTitle && this != ""){
+                        progressTask.text = this
+                        progressLogTextView.append("\n$this\n")
+                        lastTitle = this
+                    }
                 }
-                progressTask.text = boldTitle
+            }
+
+            if (intent.hasExtra(EXTRA_SUBTASK))
+                subTask.text = intent.getStringExtra(EXTRA_SUBTASK)
+
+            if (intent.hasExtra(EXTRA_TASKLOG)){
+                intent.getStringExtra(EXTRA_TASKLOG).trim().run {
+                    if (this != lastLog && this != ""){
+                        progressLogTextView.append("$this\n")
+                        lastLog = this
+                    }
+                }
             }
 
             if (intent.hasExtra(EXTRA_PROGRESS_TYPE)){
@@ -209,25 +180,22 @@ class ProgressShowActivity: AppCompatActivity() {
                         progressTask.setTextColor(resources.getColor(R.color.error_color))
 
                     intent.getLongExtra(EXTRA_TOTAL_TIME, -1).let {
-                        if (it != -1L) progressTask.append("\n(${calendarDifference(it)})")
+                        if (it != -1L) subTask.text = calendarDifference(it)
                     }
 
                     progressActionButton.apply {
                         text = getString(R.string.close)
                         background = getDrawable(R.drawable.log_action_button)
-                        setOnClickListener { finish() }
+                        setOnClickListener {
+                            startActivity(Intent(this@ProgressShowActivity, MainActivityKotlin::class.java))
+                            finish()
+                        }
                     }
                 }
 
                 setImageIcon(intent, type)
-                addToLogDisplay(intent, type)
-
-                if (intent.hasExtra(EXTRA_MADE_PART_NAME))
-                    part_name.text = intent.getStringExtra(EXTRA_MADE_PART_NAME)
             }
-
         }
-
     }
 
     private val progressReceiver by lazy {
@@ -273,7 +241,7 @@ class ProgressShowActivity: AppCompatActivity() {
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        boldTitle = getString(R.string.please_wait)
+        progressTask.text = getString(R.string.please_wait)
 
         progressActionButton.apply {
             text = getString(android.R.string.cancel)

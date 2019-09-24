@@ -35,7 +35,7 @@ class CommonToolKotlin(val context: Context) {
         val NOTIFICATION_ID_CANCELLING = 131
 
 
-        val PENDING_INTENT_REQUEST_ID = 219
+        val PENDING_INTENT_REQUEST_ID = 913
         val PENDING_INTENT_BACKUP_CANCEL_ID = 912
 
         val DEFAULT_INTERNAL_STORAGE_DIR = "/sdcard/Migrate"
@@ -63,6 +63,9 @@ class CommonToolKotlin(val context: Context) {
 
         val EXTRA_PROGRESS_TYPE = "type"
         val EXTRA_TITLE = "title"
+        val EXTRA_SUBTASK = "subtask"
+        val EXTRA_TASKLOG = "tasklog"
+        val EXTRA_PROGRESS_PERCENTAGE = "progress"
 
         val EXTRA_PROGRESS_TYPE_TESTING = "TESTING_SYSTEM"
         val EXTRA_PROGRESS_TYPE_CONTACTS = "contacts_progress"
@@ -81,6 +84,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL = "waiting_to_cancel"
 
         val EXTRA_BACKUP_NAME = "backupName"
+        val EXTRA_ACTUAL_DESTINATION = "actualDestination"
         val EXTRA_ERRORS = "errors"
         val EXTRA_PART_NO = "partNo"
         val EXTRA_IS_FINAL_PROCESS = "final_process"
@@ -94,7 +98,6 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_TAR_CHECK_LOG = "tar_check_log"
         val EXTRA_SCRIPT_APP_NAME = "script_app_name"
         val EXTRA_RETRY_LOG = "retry_log"
-        val EXTRA_PROGRESS_PERCENTAGE = "progress"
         val EXTRA_DEFECT_NUMBER = "defect_number"
         val EXTRA_MADE_PART_NAME = "madePartName"
         val EXTRA_CONTACT_NAME = "contact_name"
@@ -286,7 +289,7 @@ class CommonToolKotlin(val context: Context) {
         val errorLog = File(context.externalCacheDir, FILE_ERRORLOG)
 
         val backupScripts = context.externalCacheDir.listFiles { f: File ->
-            (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT))
+            (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT) || f.name.startsWith(FILE_PREFIX_TAR_CHECK))
                     && f.name.endsWith(".sh")
 
         }

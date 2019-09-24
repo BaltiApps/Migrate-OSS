@@ -5,7 +5,6 @@ import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
-import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_EXTRACT
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT
@@ -235,14 +234,10 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
         try {
 
             val title = if (bd.totalParts > 1)
-                engineContext.getString(R.string.making_package_flash_ready) + " : " + madePartName
-            else engineContext.getString(R.string.making_package_flash_ready)
+                engineContext.getString(R.string.making_updater_script) + " : " + madePartName
+            else engineContext.getString(R.string.making_updater_script)
 
-            actualBroadcast.apply {
-                putExtra(CommonToolKotlin.EXTRA_TITLE, title)
-                removeExtra(CommonToolKotlin.EXTRA_PROGRESS_PERCENTAGE)
-            }
-            broadcastProgress()
+            resetBroadcast(true, title)
 
             extractToBackup("busybox", actualDestination)
             extractToBackup("update-binary", "$actualDestination/META-INF/com/google/android/")

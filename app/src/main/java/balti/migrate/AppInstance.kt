@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MAX_BACKUP_SIZE
+import java.io.File
 
 
 class AppInstance: Application() {
@@ -37,6 +38,8 @@ class AppInstance: Application() {
         MAX_CUSTOM_ZIP_SIZE = if (DEVICE_RAM_SIZE < MAX_TWRP_SIZE) DEVICE_RAM_SIZE else MAX_TWRP_SIZE
 
         MAX_WORKING_SIZE = sharedPrefs.getLong(PREF_MAX_BACKUP_SIZE, MAX_CUSTOM_ZIP_SIZE)
+
+        File(externalCacheDir.absolutePath).mkdirs()
     }
 
 }

@@ -6,7 +6,6 @@ import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.utilities.CommonToolKotlin.Companion.BACKUP_NAME_SETTINGS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_SETTINGS_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_SETTINGS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.constants.SettingsFields.Companion.JSON_FIELD_ADB_TEXT
 import balti.migrate.utilities.constants.SettingsFields.Companion.JSON_FIELD_DPI_TEXT
 import balti.migrate.utilities.constants.SettingsFields.Companion.JSON_FIELD_FONT_SCALE
@@ -37,8 +36,7 @@ class SettingsBackupEngine(private val jobcode: Int,
                 engineContext.getString(R.string.writing_settings) + " : " + madePartName
             else engineContext.getString(R.string.writing_settings)
 
-            actualBroadcast.putExtra(EXTRA_TITLE, title)
-            broadcastProgress()
+            resetBroadcast(true, title)
 
             val jsonObject = JSONObject()
             dpiText?.let { jsonObject.put(JSON_FIELD_DPI_TEXT, it) }

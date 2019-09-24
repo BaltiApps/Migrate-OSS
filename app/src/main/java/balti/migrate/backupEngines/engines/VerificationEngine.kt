@@ -14,15 +14,8 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_TAR_CHECK_TRY_CATC
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_TAR_SHELL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_TAR_SUPPRESSED
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_VERIFICATION_TRY_CATCH
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_DEFECT_NUMBER
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_VERIFYING
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_RETRY_LOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TAR_CHECK_LOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_TAR_CHECK
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
@@ -83,11 +76,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 engineContext.getString(R.string.verifying_backups) + " : " + madePartName
             else engineContext.getString(R.string.verifying_backups)
 
-            actualBroadcast.apply {
-                putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_VERIFYING)
-                putExtra(EXTRA_TITLE, title)
-                putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
-            }
+            resetBroadcast(true, title, EXTRA_PROGRESS_TYPE_VERIFYING)
 
             appBatch.appPackets.let { packets ->
                 for (i in 0 until packets.size) {
@@ -97,12 +86,9 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     val packet = packets[i]
                     val pi = packet.PACKAGE_INFO
                     val packageName = pi.packageName
+                    val appName = pm.getApplicationLabel(pi.applicationInfo).toString()
 
-                    actualBroadcast.apply {
-                        putExtra(EXTRA_APP_NAME, "verifying: " + pm.getApplicationLabel(pi.applicationInfo))
-                        putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage((i + 1), packets.size))
-                    }
-                    broadcastProgress()
+                    broadcastProgress(appName, "verifying: $appName")
 
                     val expectedIconFile = File(actualDestination, "$packageName.icon")
                     val expectedAppDir = File(actualDestination, "$packageName.app")
@@ -114,39 +100,56 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         allRecovery.add("$MIGRATE_STATUS:icon:$packageName")
                     }
 
-                    if (packet.APP &&
-                            (!expectedAppDir.exists() || commonTools.getDirLength(expectedAppDir.absolutePath) == 0L) &&
-                            (!expectedApkFile.exists() || expectedApkFile.length() == 0L)) {
+                    if (packet.APP){
 
-                        var apkPath = pi.applicationInfo.sourceDir
-                        var apkName = apkPath.substring(apkPath.lastIndexOf('/') + 1)
-                        apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'))
+                        val existsAppDir = expectedAppDir.exists()
+                        val sizeAppDir = commonTools.getDirLength(expectedAppDir.absolutePath)
+                        val existsApk = expectedApkFile.exists()
+                        val sizeApk = expectedApkFile.length()
 
-                        apkName = commonTools.applyNamingCorrectionForShell(apkName)
+                        if (!existsAppDir || sizeAppDir == 0L || !existsApk || sizeApk == 0L) {
 
-                        expectedAppDir.absolutePath.let {
-                            allRecovery.add(
-                                    "echo \"Copy apk(s): $packageName\"\n" +
-                                    "rm -rf $it 2> /dev/null" +
-                                    "mkdir -p $it\n" +
-                                    "cd $apkPath\n" +
-                                    "cp *.apk $it/\n\n" +
-                                    "mv $it/$apkName $it/${pi.packageName}.apk\n"
-                            )
+                            var apkPath = pi.applicationInfo.sourceDir
+                            var apkName = apkPath.substring(apkPath.lastIndexOf('/') + 1)
+                            apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'))
+
+                            apkName = commonTools.applyNamingCorrectionForShell(apkName)
+
+                            expectedAppDir.absolutePath.let {
+                                allRecovery.add(
+                                        "echo \"Copy apk(s): $packageName\"\n" +
+                                                "rm -rf $it 2> /dev/null" +
+                                                "mkdir -p $it\n" +
+                                                "cd $apkPath\n" +
+                                                "cp *.apk $it/\n\n" +
+                                                "mv $it/$apkName $it/${pi.packageName}.apk\n"
+                                )
+                            }
+
+                            broadcastProgress(appName, "$packageName : appDir $existsAppDir, $sizeAppDir : apk $existsApk, $sizeApk")
                         }
                     }
 
-                    if (packet.DATA &&
-                            (!expectedDataFile.exists() || expectedDataFile.length() == 0L)) {
+                    if (packet.DATA){
 
-                        allRecovery.add(
-                                getDataCorrectionCommand(pi, expectedDataFile)
-                        )
+                        val existsData = expectedDataFile.exists()
+                        val sizeData = expectedDataFile.length()
 
+                        if (!existsData || sizeData == 0L) {
+                            allRecovery.add(getDataCorrectionCommand(pi, expectedDataFile))
+                            broadcastProgress(appName, "$packageName : data $existsData, $sizeData")
+                        }
                     }
 
-                    if (packet.PERMISSION && (!expectedPermFile.exists() || expectedPermFile.length() == 0L)) {
-                        allRecovery.add("$MIGRATE_STATUS:perm:$packageName")
+                    if (packet.PERMISSION) {
+
+                        val existsPerm = expectedPermFile.exists()
+                        val sizePerm = expectedPermFile.length()
+
+                        if (!existsPerm || sizePerm == 0L) {
+                            allRecovery.add("$MIGRATE_STATUS:perm:$packageName")
+                            broadcastProgress(appName, "$packageName : perm $existsPerm, $sizePerm")
+                        }
                     }
                 }
 
@@ -176,14 +179,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 engineContext.getString(R.string.verifying_tar) + " : " + madePartName
             else engineContext.getString(R.string.verifying_tar)
 
-            actualBroadcast.apply {
-                putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_VERIFYING)
-                putExtra(EXTRA_TITLE, title)
-                putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
-                removeExtra(EXTRA_APP_NAME)
-            }
-
-            broadcastProgress()
+            resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_VERIFYING)
 
             val tarCheckScript = File(engineContext.filesDir.absolutePath, "$FILE_PREFIX_TAR_CHECK${bd.partNumber}.sh")
             val scriptWriter = BufferedWriter(FileWriter(tarCheckScript))
@@ -197,13 +193,12 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
             scriptWriter.write(
                     "checkData(){\n" +
                             "\n" +
-                            "        echo \"--- TAR_GZ \$1 ---\"\n" +
-                            "        err=\"\$(${busyboxBinaryPath} gzip -t \"${actualDestination}/\$1\" 2>&1)\"\n" +
-                            "        if [[ ! -z \"\$err\" ]]; then\n" +
-                            "            echo \"--- ERROR:\$1:\$err ---\"\n" +
-                            "        else\n" +
-                            "            echo \"--- OK \$1 ---\"\n" +
-                            "        fi\n" +
+                            "    echo \"--- TAR_GZ \$1 ---\"\n" +
+                            "    err=\"\$(${busyboxBinaryPath} gzip -t \"${actualDestination}/\$1\" 2>&1)\"\n" +
+                            "    if [[ ! -z \"\$err\" ]]; then\n" +
+                            "        echo \"--- ERROR:\$1:\$err ---\"\n" +
+                            "    else\n" +
+                            "        echo \"--- OK:\$1 ---\"\n" +
                             "    fi\n" +
                             "\n" +
                             "}\n"
@@ -233,6 +228,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 suInputStream.flush()
 
                 var c = 0
+                var progress = 0
+                var log = ""
 
                 backupUtils.iterateBufferedReader(outputStream, { line ->
 
@@ -243,27 +240,25 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
                     when {
                         line.startsWith("--- TAR CHECK PID:") -> commonTools.tryIt {
+                            log = line
                             TAR_CHECK_CORRECTION_PID = line.substring(line.lastIndexOf(" ") + 1).trim().toInt()
                         }
                         line.startsWith("--- TAR_GZ") -> {
                             c++
-                            actualBroadcast.apply {
-                                putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(c, appBatch.appPackets.size))
-                            }
+                            progress = commonTools.getPercentage(c, appBatch.appPackets.size)
+                            log = ""
                         }
                         line.startsWith("--- ERROR") -> {
                             val dataName = line.let { it1 ->
-                                it1.substring(it1.indexOf(' ') + 1, it1.lastIndexOf("---")).trim().split(":")[1]
+                                it1.trim().split(":")[1]
                             }
                             tarRecovery.add(getDataCorrectionCommand(dataName))
+                            log = "Error: $dataName\n$line"
                         }
+                        else -> log = line
                     }
 
-                    actualBroadcast.apply {
-                        putExtra(EXTRA_TAR_CHECK_LOG, line)
-                        putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(c, appBatch.appPackets.size))
-                    }
-                    broadcastProgress()
+                    broadcastProgress("", log, progress)
 
                     return@iterateBufferedReader line == "--- Tar checks complete ---"
 
@@ -302,14 +297,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
             engineContext.getString(R.string.correcting_errors) + " : " + madePartName
         else engineContext.getString(R.string.correcting_errors)
 
-        actualBroadcast.apply {
-            putExtra(EXTRA_TITLE, title)
-            putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_CORRECTING)
-            putExtra(EXTRA_DEFECT_NUMBER, 0)
-            putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
-        }
-
-        broadcastProgress()
+        resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_CORRECTING)
 
         try {
             val retryScript = File(engineContext.filesDir.absolutePath, "$FILE_PREFIX_RETRY_SCRIPT${bd.partNumber}.sh")
@@ -360,6 +348,9 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 suInputStream.write("exit\n")
                 suInputStream.flush()
 
+                var progress = 0
+                var defectNumber = 0
+
                 backupUtils.iterateBufferedReader(outputStream, {line ->
 
                     if (BackupServiceKotlin.cancelAll) {
@@ -373,15 +364,12 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         }
                     }
                     else if (line.startsWith("--- DEFECT:")){
-                        val defectNumber = line.substring(line.lastIndexOf(" ") + 1).trim().toInt()
-                        actualBroadcast.apply {
-                            putExtra(EXTRA_DEFECT_NUMBER, defectNumber)
-                            putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(defectNumber, defects.size))
-                        }
+                        defectNumber = line.substring(line.lastIndexOf(" ") + 1).trim().toInt()
+                        progress = commonTools.getPercentage(defectNumber, defects.size)
                     }
 
-                    actualBroadcast.putExtra(EXTRA_RETRY_LOG, line)
-                    broadcastProgress()
+                    broadcastProgress("${engineContext.getString(R.string.defect_no)} $defectNumber",
+                            line, progress)
 
                     return@iterateBufferedReader line == "--- Retry complete ---"
                 })

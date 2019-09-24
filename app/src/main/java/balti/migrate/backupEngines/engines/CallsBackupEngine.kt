@@ -11,10 +11,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CALLS_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CALLS_VERIFY
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CALLS_VERIFY_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CALLS_WRITE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_CALLS_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CALLS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALLS_VERIFY
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_CACHED_FORMATTED_NUMBER
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_CACHED_LOOKUP_URI
@@ -61,13 +58,7 @@ class CallsBackupEngine(private val jobcode: Int,
                 engineContext.getString(R.string.backing_calls) + " : " + madePartName
             else engineContext.getString(R.string.backing_calls)
 
-            actualBroadcast.apply {
-                putExtra(EXTRA_TITLE, title)
-                putExtra(EXTRA_CALLS_NAME, "")
-                putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
-            }
-
-            broadcastProgress()
+            resetBroadcast(false, title)
 
             val DROP_TABLE = "DROP TABLE IF EXISTS $CALLS_TABLE_NAME"
             val CREATE_TABLE = "CREATE TABLE $CALLS_TABLE_NAME ( " +
@@ -96,7 +87,7 @@ class CallsBackupEngine(private val jobcode: Int,
                     "$CALLS_DURATION INTEGER, " +
                     "$CALLS_NEW INTEGER )"
 
-            var dataBase: SQLiteDatabase = getDataBase(callsDBFile)
+            val dataBase: SQLiteDatabase = getDataBase(callsDBFile)
 
             dataBase.let { db ->
                 db.execSQL(DROP_TABLE)
@@ -144,12 +135,7 @@ class CallsBackupEngine(private val jobcode: Int,
 
                         db.insert(CALLS_TABLE_NAME, null, contentValues)
 
-                        actualBroadcast.apply {
-                            putExtra(EXTRA_CALLS_NAME, display)
-                            putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(i+1, callsPackets.size))
-                        }
-
-                        broadcastProgress()
+                        broadcastProgress("", display, commonTools.getPercentage(i+1, callsPackets.size))
                     }
                     catch (e: Exception){
                         e.printStackTrace()
@@ -176,13 +162,7 @@ class CallsBackupEngine(private val jobcode: Int,
                 engineContext.getString(R.string.verifying_calls) + " : " + madePartName
             else engineContext.getString(R.string.verifying_calls)
 
-            actualBroadcast.apply {
-                putExtra(EXTRA_TITLE, title)
-                putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
-                removeExtra(EXTRA_CALLS_NAME)
-            }
-
-            broadcastProgress()
+            resetBroadcast(false, title)
 
             val dataBase: SQLiteDatabase = getDataBase(callsDBFile)
 
@@ -193,8 +173,7 @@ class CallsBackupEngine(private val jobcode: Int,
             do {
 
                 c++
-                actualBroadcast.putExtra(EXTRA_PROGRESS_PERCENTAGE, commonTools.getPercentage(c, callsPackets.size))
-                broadcastProgress()
+                broadcastProgress("", "($c/${callsPackets.size})", commonTools.getPercentage(c, callsPackets.size))
 
             } while (cursor.moveToNext() && !BackupServiceKotlin.cancelAll)
 

@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.os.AsyncTask
 import android.os.Build
 import android.support.v4.app.NotificationCompat
+import android.util.Log
 import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin.Companion.serviceContext
@@ -15,13 +16,15 @@ import balti.migrate.simpleActivities.ProgressShowActivity
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_APP_NAME
+import balti.migrate.utilities.CommonToolKotlin.Companion.DEBUG_TAG
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ACTUAL_DESTINATION
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_MADE_PART_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PART_NUMBER
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SCRIPT_APP_NAME
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SUBTASK
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TASKLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_PARTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
@@ -36,7 +39,7 @@ import java.io.OutputStreamWriter
 abstract class ParentBackupClass(private val bd: BackupIntentData,
                                  private val intentType: String): AsyncTask<Any, Any, Any>() {
 
-    val engineContext by lazy { BackupServiceKotlin.serviceContext }
+    val engineContext by lazy { serviceContext }
     val sharedPreferences by lazy { AppInstance.sharedPrefs }
 
     val onBackupComplete by lazy { engineContext as OnBackupComplete }
@@ -44,6 +47,26 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
     val commonTools by lazy { CommonToolKotlin(engineContext) }
     val madePartName by lazy { commonTools.getMadePartName(bd.partNumber, bd.totalParts) }
     val actualDestination by lazy { "${bd.destination}/${bd.backupName}" }
+
+    private var lastProgress = 0
+    private var lastTitle = ""
+    private var lastSubTask = ""
+    private var isIndeterminate = true
+
+    private var storedTitle = ""
+
+    private var isFileListWriterOpened = false
+
+    private val actualBroadcast by lazy {
+        Intent(ACTION_BACKUP_PROGRESS).apply {
+            putExtra(EXTRA_BACKUP_NAME, bd.backupName)
+            putExtra(EXTRA_ACTUAL_DESTINATION, actualDestination)
+            putExtra(EXTRA_PROGRESS_TYPE, intentType)
+            putExtra(EXTRA_TOTAL_PARTS, bd.totalParts)
+            putExtra(EXTRA_PART_NUMBER, bd.partNumber)
+            putExtra(EXTRA_MADE_PART_NAME, madePartName)
+        }
+    }
 
     private val onGoingNotification by lazy {
         NotificationCompat.Builder(engineContext, CommonToolKotlin.CHANNEL_BACKUP_RUNNING)
@@ -56,62 +79,19 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
                 )
     }
 
-    private fun updateNotification(title: String, content: String = ""){
+    private val activityIntent by lazy { Intent(serviceContext, ProgressShowActivity::class.java) }
 
-        val p = actualBroadcast.getIntExtra(EXTRA_PROGRESS_PERCENTAGE, -1)
-
-        onGoingNotification.apply {
-            setContentTitle(title)
-            setContentText(content)
-            setProgress(100, p, p == -1)
-            setContentIntent(
-                    PendingIntent.getActivity(serviceContext, PENDING_INTENT_REQUEST_ID,
-                            Intent(serviceContext, ProgressShowActivity::class.java).putExtras(actualBroadcast),
-                            PendingIntent.FLAG_UPDATE_CURRENT)
-            )
-        }
-        val notif = onGoingNotification.build()
-        AppInstance.notificationManager.notify(NOTIFICATION_ID_ONGOING, notif)
+    private val fileListWriter: BufferedWriter? by lazy {
+        isFileListWriterOpened = true
+        Log.d(DEBUG_TAG, actualBroadcast.getStringExtra(EXTRA_TITLE))
+        val file = File(actualDestination, FILE_FILE_LIST)
+        if (!file.exists()) file.createNewFile()
+        Log.d(DEBUG_TAG, "done")
+        BufferedWriter(FileWriter(file, true))
     }
-
-    var customPreExecuteFunction: (() -> Unit)? = null
 
     fun writeToFileList(fileName: String){
-        BufferedWriter(FileWriter(File(actualDestination, FILE_FILE_LIST), true)).run {
-            this.write("$fileName\n")
-            this.close()
-        }
-    }
-
-    val actualBroadcast by lazy {
-        Intent(ACTION_BACKUP_PROGRESS).apply {
-            putExtra(EXTRA_BACKUP_NAME, bd.backupName)
-            putExtra(EXTRA_PROGRESS_TYPE, intentType)
-            putExtra(EXTRA_TOTAL_PARTS, bd.totalParts)
-            putExtra(EXTRA_PART_NUMBER, bd.partNumber)
-            putExtra(EXTRA_PROGRESS_PERCENTAGE, 0)
-            putExtra(EXTRA_MADE_PART_NAME, madePartName)
-        }
-    }
-
-    fun broadcastProgress(){
-
-        if (BackupServiceKotlin.cancelAll) return
-
-        commonTools.LBM?.sendBroadcast(actualBroadcast)
-
-        actualBroadcast.let {
-            val notificationContent =
-                    when {
-                        it.hasExtra(EXTRA_SCRIPT_APP_NAME) -> it.getStringExtra(EXTRA_SCRIPT_APP_NAME)
-                        it.hasExtra(EXTRA_APP_NAME) -> it.getStringExtra(EXTRA_APP_NAME)
-                        else -> ""
-                    }
-
-            if (it.hasExtra(EXTRA_TITLE)) {
-                updateNotification(it.getStringExtra(EXTRA_TITLE), notificationContent)
-            }
-        }
+        commonTools.tryIt { fileListWriter?.write("$fileName\n") }
     }
 
     fun getDataBase(dataBaseFile: File): SQLiteDatabase{
@@ -121,9 +101,71 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
         return dataBase
     }
 
-    abstract fun postExecuteFunction()
+    private fun updateNotification(subTask: String, progressPercent: Int){
 
-    internal fun cancelTask(suProcess: Process?, vararg pids: Int) {
+        if (storedTitle != lastTitle || subTask != lastSubTask || progressPercent != lastProgress) {
+
+            actualBroadcast.let {
+
+                if (it.hasExtra(EXTRA_TITLE)) {
+                    onGoingNotification.apply {
+                        setContentTitle(it.getStringExtra(EXTRA_TITLE))
+                        setContentText(subTask)
+                        setProgress(100, progressPercent, progressPercent == -1)
+                        setContentIntent(
+                                PendingIntent.getActivity(serviceContext, PENDING_INTENT_REQUEST_ID,
+                                        activityIntent.putExtras(actualBroadcast),
+                                        PendingIntent.FLAG_UPDATE_CURRENT)
+                        )
+                    }
+                    AppInstance.notificationManager.notify(NOTIFICATION_ID_ONGOING, onGoingNotification.build())
+                }
+            }
+
+            lastSubTask = subTask
+            lastProgress = progressPercent
+            lastTitle = storedTitle
+        }
+    }
+
+    fun broadcastProgress(subTask: String, taskLog: String, progressPercent: Int = -1){
+
+        if (BackupServiceKotlin.cancelAll) return
+
+        val progress = if (!isIndeterminate && progressPercent == -1) lastProgress else progressPercent
+
+        commonTools.LBM?.sendBroadcast(
+                actualBroadcast.apply {
+                    putExtra(EXTRA_SUBTASK, subTask)
+                    putExtra(EXTRA_TASKLOG, taskLog)
+                    putExtra(EXTRA_PROGRESS_PERCENTAGE, progress)
+                }
+        )
+
+        updateNotification(subTask, progress)
+    }
+
+    fun resetBroadcast(isIndeterminateProgress: Boolean, title: String, newIntentType: String = ""){
+
+        this.isIndeterminate = isIndeterminateProgress
+        val progress = if (!isIndeterminateProgress) 0 else -1
+
+        storedTitle = title
+
+        actualBroadcast.apply {
+            if (newIntentType != "") putExtra(EXTRA_PROGRESS_TYPE, newIntentType)
+            putExtra(EXTRA_TITLE, title)
+            putExtra(EXTRA_SUBTASK, "")
+            putExtra(EXTRA_TASKLOG, "")
+            putExtra(EXTRA_PROGRESS_PERCENTAGE, progress)
+        }
+
+        commonTools.LBM?.sendBroadcast(actualBroadcast)
+        updateNotification("", progress)
+
+    }
+
+    fun cancelTask(suProcess: Process?, vararg pids: Int) {
 
             commonTools.tryIt {
                 val killProcess = Runtime.getRuntime().exec("su")
@@ -146,13 +188,19 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     }
 
+    var customPreExecuteFunction: (() -> Unit)? = null
+
+    abstract fun postExecuteFunction()
+
     override fun onPreExecute() {
         super.onPreExecute()
+        File(actualDestination).mkdirs()
         customPreExecuteFunction?.invoke()
     }
 
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
+        if (isFileListWriterOpened) commonTools.tryIt { fileListWriter?.close() }
         postExecuteFunction()
     }
 }
