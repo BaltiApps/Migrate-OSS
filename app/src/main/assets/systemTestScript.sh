@@ -16,7 +16,7 @@ echo "--- PID: $$"
 mount -o rw,remount /data
 
 # copy apk and data
-cp ${APK_FULL_PATH} "${COPY_PATH}/$PACKAGE_NAME.apk"
+cp -v ${APK_FULL_PATH} "${COPY_PATH}/$PACKAGE_NAME.apk"
 cd ${DATA_PATH}
 ${BUSYBOX_PATH} tar -vczpf "$COPY_PATH/$PACKAGE_NAME.tar.gz" ${DATA_NAME}
 

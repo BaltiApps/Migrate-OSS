@@ -10,9 +10,9 @@ SYSTEM="$(cat /tmp/migrate/SYSTEM)"
 
 echoIt() {
     if [[ ${OUTFD} != "/dev/null" || ! -z ${OUTFD} ]]; then
-        echoIt "$1" >> /proc/self/fd/${OUTFD};
+        echo "ui_print $1" >> /proc/self/fd/${OUTFD};
     else
-        echo "FD:: $1"
+        echo "FD $OUTFD:: $1"
     fi
 }
 
