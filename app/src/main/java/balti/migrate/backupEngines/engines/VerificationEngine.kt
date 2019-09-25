@@ -212,7 +212,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 val packet = appBatch.appPackets[i]
                 val expectedDataFile = File("$actualDestination/${packet.PACKAGE_INFO.packageName}.tar.gz")
 
-                if (packet.DATA && expectedDataFile.exists() && expectedDataFile.length() == 0L) {
+                if (packet.DATA && expectedDataFile.exists() && expectedDataFile.length() != 0L) {
                     scriptWriter.write("checkData ${expectedDataFile.name}\n")
                 }
             }

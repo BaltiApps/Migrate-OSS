@@ -46,8 +46,6 @@ class ZipVerificationEngine(private val jobcode: Int,
                 if (BackupServiceKotlin.cancelAll) break
                 val entry = e.nextElement()
                 contents.add(entry.name)
-
-                broadcastProgress(subTask, "listing: ${entry.name}", false)
             }
 
             resetBroadcast(true, title)
@@ -59,8 +57,6 @@ class ZipVerificationEngine(private val jobcode: Int,
 
                 val zipItem = zipList[i]
                 if (BackupServiceKotlin.cancelAll) break
-
-                broadcastProgress(subTask, "checking: $zipItem", false)
 
                 if (!contents.contains(zipItem)) {
                     verificationErrors.add("$ERR_ZIP_ITEM_UNAVAILABLE${bd.errorTag}: $i")
