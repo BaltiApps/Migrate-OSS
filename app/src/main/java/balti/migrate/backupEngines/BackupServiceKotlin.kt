@@ -1,6 +1,7 @@
 package balti.migrate.backupEngines
 
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -22,6 +23,7 @@ import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotli
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
+import balti.migrate.simpleActivities.ProgressShowActivity
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
@@ -577,7 +579,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
         endTime = timeInMillis()
 
-        commonTools.LBM?.sendBroadcast(Intent(ACTION_BACKUP_PROGRESS)
+        val returnIntent = Intent(ACTION_BACKUP_PROGRESS)
                 .apply {
                     putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_FINISHED)
                     putExtra(EXTRA_TITLE, title)
@@ -586,7 +588,8 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
                     putExtra(EXTRA_TOTAL_TIME, endTime - startTime)
                     putExtra(EXTRA_PROGRESS_PERCENTAGE, if (criticalErrors.size == 0) 100 else lastDeterminateProgress)
                 }
-        )
+
+        commonTools.LBM?.sendBroadcast(returnIntent)
 
         AppInstance.notificationManager.cancel(NOTIFICATION_ID_CANCELLING)
 
@@ -594,6 +597,10 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
                 NotificationCompat.Builder(this, CHANNEL_BACKUP_END)
                         .setContentTitle(title)
                         .setSmallIcon(R.drawable.ic_notification_icon)
+                        .setContentIntent(
+                                PendingIntent.getActivity(serviceContext, CommonToolKotlin.PENDING_INTENT_REQUEST_ID,
+                                        Intent(this, ProgressShowActivity::class.java).putExtras(returnIntent),
+                                        PendingIntent.FLAG_UPDATE_CURRENT))
                         .build())
 
         commonTools.dirDelete("$destination/$backupName")

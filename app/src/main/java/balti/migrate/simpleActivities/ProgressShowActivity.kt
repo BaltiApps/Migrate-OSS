@@ -164,6 +164,7 @@ class ProgressShowActivity: AppCompatActivity() {
                 if (type == EXTRA_PROGRESS_TYPE_FINISHED) {
 
                     window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    closeWarning.visibility = View.GONE
 
                     if (intent.hasExtra(EXTRA_ERRORS))
                         errors.addAll(intent.getStringArrayListExtra(EXTRA_ERRORS))
