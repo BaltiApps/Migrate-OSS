@@ -1,5 +1,6 @@
 package balti.migrate.backupEngines.engines
 
+import android.os.Build
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
@@ -117,7 +118,8 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
             // exit if mount failed
             updater_writer.write("ifelse(is_mounted(\"/data\"), ui_print(\"Mounted data!\"), abort(\"Mount failed data! Exiting...\"));\n")
-            updater_writer.write("ifelse((is_mounted(\"/system\") || is_mounted(\"/system_root\")), ui_print(\"Mounted system!\"), abort(\"Mount failed system! Exiting...\"));\n")
+            updater_writer.write("ifelse((is_mounted(\"/system\") || is_mounted(\"/system_root\")), ui_print(\"Mounted system!\"), " +
+                    "ui_print(\"Mount failed system! Migrate helper will not be automatically installed!\"));\n")
 
             // run prep.sh
             updater_writer.write("run_program(\"/tmp/prep.sh\", \"$TEMP_DIR_NAME\", \"$timeStamp\");\n")
@@ -159,7 +161,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 }
 
                 if (packet.DATA)
-                    updater_writer.write("package_extract_dir(\"$packageName.tar.gz\", \"/data/data/$packageName.tar.gz\");\n")
+                    updater_writer.write("package_extract_file(\"$packageName.tar.gz\", \"/data/data/$packageName.tar.gz\");\n")
 
                 if (packet.PERMISSION)
                     updater_writer.write("package_extract_file(\"$packageName.perm\", \"$TEMP_DIR_NAME/$packageName.perm\");\n")
@@ -229,6 +231,30 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
     }
 
+    private fun makePackageData() {        // done
+
+        val packageData = File(actualDestination, "package-data.txt")
+        var contents = ""
+
+        contents += "backup_name ${bd.backupName}\n"
+        contents += "timestamp $timeStamp\n"
+        contents += "device " + Build.DEVICE + "\n"
+        contents += "sdk " + Build.VERSION.SDK_INT + "\n"
+        contents += "cpu_abi " + Build.SUPPORTED_ABIS[0] + "\n"
+        contents += "data_required_size ${appBatch.dataSize}\n"
+        contents += "system_required_size ${appBatch.dataSize}\n"
+        contents += "migrate_version " + engineContext.getString(R.string.current_version_name) + "\n"
+
+        try {
+            val writer = BufferedWriter(FileWriter(packageData))
+            writer.write(contents)
+            writer.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+    }
+
     override fun doInBackground(vararg params: Any?): Any {
 
         try {
@@ -239,13 +265,14 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
             resetBroadcast(true, title)
 
+            makePackageData()
             extractToBackup("busybox", actualDestination)
             extractToBackup("update-binary", "$actualDestination/META-INF/com/google/android/")
             extractToBackup("mount_script.sh", actualDestination)
             extractToBackup("prep.sh", actualDestination)
             extractToBackup("helper_unpacking_script.sh", actualDestination)
             extractToBackup("verify.sh", actualDestination)
-            extractToBackup("MigrateHelper.apk", "$actualDestination/system/app/helper/")
+            extractToBackup("MigrateHelper.apk", "$actualDestination/helper/")
 
             makeUpdaterScript()
         }
