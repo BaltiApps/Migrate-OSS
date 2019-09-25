@@ -107,7 +107,7 @@ class ZippingEngine(private val jobcode: Int,
                     fileInputStream.close()
                     file.delete()
 
-                    broadcastProgress("", "zipped: ${file.name}",
+                    broadcastProgress("", "zipped: ${file.name}", true,
                             commonTools.getPercentage((i+1), files.size))
                 }
 

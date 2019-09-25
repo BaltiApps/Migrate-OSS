@@ -135,7 +135,7 @@ class CallsBackupEngine(private val jobcode: Int,
 
                         db.insert(CALLS_TABLE_NAME, null, contentValues)
 
-                        broadcastProgress("", display, commonTools.getPercentage(i+1, callsPackets.size))
+                        broadcastProgress("", display, true, commonTools.getPercentage(i+1, callsPackets.size))
                     }
                     catch (e: Exception){
                         e.printStackTrace()
@@ -173,7 +173,7 @@ class CallsBackupEngine(private val jobcode: Int,
             do {
 
                 c++
-                broadcastProgress("", "($c/${callsPackets.size})", commonTools.getPercentage(c, callsPackets.size))
+                broadcastProgress("", "", true, commonTools.getPercentage(c, callsPackets.size))
 
             } while (cursor.moveToNext() && !BackupServiceKotlin.cancelAll)
 

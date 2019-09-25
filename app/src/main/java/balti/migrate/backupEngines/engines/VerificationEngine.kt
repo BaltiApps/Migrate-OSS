@@ -41,6 +41,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
     private var suProcess : Process? = null
 
+    private var lastProgress = 0
+
     private fun addToActualErrors(err: String){
         actualErrors.add(err)
         allErrors.add(err)
@@ -88,7 +90,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     val packageName = pi.packageName
                     val appName = pm.getApplicationLabel(pi.applicationInfo).toString()
 
-                    broadcastProgress(appName, "verifying: $appName")
+                    broadcastProgress(appName, "verifying: $appName", false)
 
                     val expectedIconFile = File(actualDestination, "$packageName.icon")
                     val expectedAppDir = File(actualDestination, "$packageName.app")
@@ -126,7 +128,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                                 )
                             }
 
-                            broadcastProgress(appName, "$packageName : appDir $existsAppDir, $sizeAppDir : apk $existsApk, $sizeApk")
+                            broadcastProgress(appName, "$packageName : appDir $existsAppDir, $sizeAppDir : apk $existsApk, $sizeApk", false)
                         }
                     }
 
@@ -137,7 +139,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
                         if (!existsData || sizeData == 0L) {
                             allRecovery.add(getDataCorrectionCommand(pi, expectedDataFile))
-                            broadcastProgress(appName, "$packageName : data $existsData, $sizeData")
+                            broadcastProgress(appName, "$packageName : data $existsData, $sizeData", false)
                         }
                     }
 
@@ -148,7 +150,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
                         if (!existsPerm || sizePerm == 0L) {
                             allRecovery.add("$MIGRATE_STATUS:perm:$packageName")
-                            broadcastProgress(appName, "$packageName : perm $existsPerm, $sizePerm")
+                            broadcastProgress(appName, "$packageName : perm $existsPerm, $sizePerm", false)
                         }
                     }
                 }
@@ -174,6 +176,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         try {
 
             val tarRecovery = ArrayList<String>(0)
+            lastProgress = 0
 
             val title = if (bd.totalParts > 1)
                 engineContext.getString(R.string.verifying_tar) + " : " + madePartName
@@ -258,7 +261,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         else -> log = line
                     }
 
-                    broadcastProgress("", log, progress)
+                    broadcastProgress("", log, progress != lastProgress, progress)
+                    lastProgress = progress
 
                     return@iterateBufferedReader line == "--- Tar checks complete ---"
 
@@ -292,6 +296,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     private fun correctBackups(defects: ArrayList<String>) {
 
         if (appBatch.appPackets.size == 0 || defects.size == 0) return
+
+        lastProgress = 0
 
         val title = if (bd.totalParts > 1)
             engineContext.getString(R.string.correcting_errors) + " : " + madePartName
@@ -368,8 +374,11 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         progress = commonTools.getPercentage(defectNumber, defects.size)
                     }
 
+
                     broadcastProgress("${engineContext.getString(R.string.defect_no)} $defectNumber",
-                            line, progress)
+                            line, progress != lastProgress, progress)
+
+                    lastProgress = progress
 
                     return@iterateBufferedReader line == "--- Retry complete ---"
                 })

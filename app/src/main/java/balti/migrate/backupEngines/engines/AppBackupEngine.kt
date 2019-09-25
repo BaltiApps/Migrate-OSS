@@ -40,7 +40,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
     private fun writeFileList(fileName: String, appName: String){
         writeToFileList("$fileName\n")
-        broadcastProgress(appName, fileName)
+        broadcastProgress(appName, fileName, false)
     }
 
     init {
@@ -161,7 +161,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     val appName = formatName(pm.getApplicationLabel(packet.PACKAGE_INFO.applicationInfo).toString())
                     val modifiedAppName = "$appName(${i+1}/${packets.size})"
 
-                    broadcastProgress(modifiedAppName, modifiedAppName, commonTools.getPercentage(i + 1, packets.size))
+                    broadcastProgress(modifiedAppName, modifiedAppName, true, commonTools.getPercentage(i + 1, packets.size))
 
                     val packageName = packet.PACKAGE_INFO.packageName
 
@@ -297,9 +297,9 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
                         appName = line
                         progress = commonTools.getPercentage(++c, appBatch.appPackets.size)
-                        broadcastProgress(appName, appName, progress)
+                        broadcastProgress(appName, appName, true, progress)
                     }
-                    else broadcastProgress(appName, line, progress)
+                    else broadcastProgress(appName, line, false)
 
                     return@iterateBufferedReader line == "--- App files copied ---"
                 })

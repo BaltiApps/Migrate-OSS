@@ -109,7 +109,7 @@ class SmsBackupEngine(private val jobcode: Int,
 
                         db.insert(SMS_TABLE_NAME, null, contentValues)
 
-                        broadcastProgress("", dataPacket.smsAddress.toString(), commonTools.getPercentage(i+1, smsPackets.size))
+                        broadcastProgress("", dataPacket.smsAddress.toString(), true, commonTools.getPercentage(i+1, smsPackets.size))
 
                     }
                     catch (e: Exception){
@@ -151,7 +151,7 @@ class SmsBackupEngine(private val jobcode: Int,
             do {
 
                 c++
-                broadcastProgress("", "($c/${smsPackets.size})", commonTools.getPercentage(c, smsPackets.size))
+                broadcastProgress("", "", true, commonTools.getPercentage(c, smsPackets.size))
 
             } while (cursor.moveToNext() && !BackupServiceKotlin.cancelAll)
 

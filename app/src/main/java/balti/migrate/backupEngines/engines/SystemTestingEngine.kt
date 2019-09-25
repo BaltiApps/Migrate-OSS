@@ -61,7 +61,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                         commonTools.tryIt { TESTING_PID = line.substring(line.lastIndexOf(" ") + 1).toInt() }
                     }
 
-                    broadcastProgress("", line)
+                    broadcastProgress("", line, false)
 
                     return@iterateBufferedReader line == "--- Test done ---"
 

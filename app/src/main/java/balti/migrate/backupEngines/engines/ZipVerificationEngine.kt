@@ -39,7 +39,7 @@ class ZipVerificationEngine(private val jobcode: Int,
             }
 
             var subTask = engineContext.getString(R.string.listing_zip_file)
-            broadcastProgress(subTask, subTask)
+            broadcastProgress(subTask, subTask, false)
 
             while (e.hasMoreElements()) {
 
@@ -47,20 +47,20 @@ class ZipVerificationEngine(private val jobcode: Int,
                 val entry = e.nextElement()
                 contents.add(entry.name)
 
-                broadcastProgress(subTask, "listing: ${entry.name}")
+                broadcastProgress(subTask, "listing: ${entry.name}", false)
             }
 
             resetBroadcast(true, title)
 
             subTask = "${engineContext.getString(R.string.comparing_zip_contents)}(${zipList.size}/${contents.size})"
-            broadcastProgress(subTask, subTask)
+            broadcastProgress(subTask, subTask, false)
 
             for (i in 0 until zipList.size){
 
                 val zipItem = zipList[i]
                 if (BackupServiceKotlin.cancelAll) break
 
-                broadcastProgress(subTask, "checking: $zipItem")
+                broadcastProgress(subTask, "checking: $zipItem", false)
 
                 if (!contents.contains(zipItem)) {
                     verificationErrors.add("$ERR_ZIP_ITEM_UNAVAILABLE${bd.errorTag}: $i")

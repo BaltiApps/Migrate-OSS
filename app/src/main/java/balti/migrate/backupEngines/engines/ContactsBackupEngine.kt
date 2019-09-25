@@ -42,7 +42,7 @@ class ContactsBackupEngine(private val jobcode: Int,
                     val packet = contactPackets[i]
                     this.write("${packet.vcfData}\n")
 
-                    broadcastProgress("", packet.fullName, commonTools.getPercentage((i+1), contactPackets.size))
+                    broadcastProgress("", packet.fullName, true, commonTools.getPercentage((i+1), contactPackets.size))
                 }
 
                 this.close()
