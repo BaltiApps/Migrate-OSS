@@ -201,8 +201,8 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
             // unpack helper
             updater_writer.write("ui_print(\"Unpacking helper\");\n")
-            updater_writer.write("package_extract_dir(\"helper\", \"/tmp/helper\");\n")
-            updater_writer.write("run_program(\"/tmp/helper_unpacking_script.sh\", \"/tmp/helper\", \"$THIS_VERSION\");\n")
+            updater_writer.write("package_extract_dir(\"system\", \"/tmp/system\");\n")
+            updater_writer.write("run_program(\"/tmp/helper_unpacking_script.sh\", \"/tmp/system/\", \"$THIS_VERSION\");\n")
 
             updater_writer.write("set_progress(1.0000);\n")
 
@@ -272,7 +272,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             extractToBackup("prep.sh", actualDestination)
             extractToBackup("helper_unpacking_script.sh", actualDestination)
             extractToBackup("verify.sh", actualDestination)
-            extractToBackup("MigrateHelper.apk", "$actualDestination/helper/")
+            extractToBackup("MigrateHelper.apk", "$actualDestination/system/app/MigrateHelper/")
 
             makeUpdaterScript()
         }

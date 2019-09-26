@@ -19,7 +19,7 @@ echoIt() {
 echoIt " "
 echoIt "Verifying backup..."
 
-ext_helper_apk=/sdcard/Android/data/balti.migratehelper/helper/MigrateHelper.apk
+ext_helper_apk=/sdcard/Migrate/helper.apk
 
 if [[ ! -e ${SYSTEM}/app/MigrateHelper/MigrateHelper.apk ]]; then
     echoIt " "

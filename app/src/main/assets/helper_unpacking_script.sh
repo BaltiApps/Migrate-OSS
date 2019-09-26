@@ -17,7 +17,7 @@ echoIt() {
 }
 
 helper_apk_dir=${SYSTEM}/app/MigrateHelper
-ext_helper_apk_dir=/sdcard/Android/data/balti.migratehelper/helper
+ext_helper_apk_dir=/sdcard/Migrate
 
 if [[ -e ${helper_apk_dir}/MigrateHelper.apk ]]; then
 
@@ -34,27 +34,27 @@ if [[ -e ${helper_apk_dir}/MigrateHelper.apk ]]; then
         echoIt "Upgrading helper."
         rm -rf ${helper_apk_dir}
         rm -rf /data/data/balti.migratehelper/
-        mv ${TEMP_UNPACK_DIR} ${helper_apk_dir}
+        cp -a ${TEMP_UNPACK_DIR}/app ${SYSTEM}/
         echo "$VERSION" > ${helper_apk_dir}/v
         mkdir -p ${ext_helper_apk_dir}
-        cp ${helper_apk_dir}/MigrateHelper.apk ${ext_helper_apk_dir}/MigrateHelper.apk
+        cp -a ${helper_apk_dir}/MigrateHelper.apk ${ext_helper_apk_dir}/helper.apk
     else
         echoIt "Helper already present. Skipping helper injection."
         rm -r ${TEMP_UNPACK_DIR}
     fi
 
 else
-    echoIt "ui_print Injecting helper."
+    echoIt "Injecting helper."
     rm -r ${helper_apk_dir}
     rm -r /data/data/balti.migratehelper/
-    mv ${TEMP_UNPACK_DIR} ${helper_apk_dir}
+    cp -a ${TEMP_UNPACK_DIR}/app ${SYSTEM}/
     touch ${helper_apk_dir}/v
     echo "$VERSION" > ${helper_apk_dir}/v
     mkdir -p ${ext_helper_apk_dir}
-    cp ${helper_apk_dir}/MigrateHelper.apk ${ext_helper_apk_dir}/MigrateHelper.apk
+    cp ${helper_apk_dir}/MigrateHelper.apk ${ext_helper_apk_dir}/helper.apk
 fi
 
-chmod 777 ${helper_apk_dir}
+#chmod 777 ${helper_apk_dir}
 chmod 777 ${ext_helper_apk_dir}
 
 if [[ -e ${TEMP_UNPACK_DIR} ]] && [[ -f ${TEMP_UNPACK_DIR} ]]; then
