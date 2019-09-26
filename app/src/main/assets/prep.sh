@@ -42,7 +42,13 @@ echoIt " "
 echoIt "Checking parameters..."
 echoIt " "
 
-if [[ -d /system_root/system/app ]]; then
+manual_entry_system="$(cat /tmp/migrate/SYSTEM_MANUAL)"
+
+if [[ -n "$manual_entry_system" ]]; then
+    echoIt "Manual system app location: $manual_entry_system"
+    SYSTEM=${manual_entry_system}
+
+elif [[ -d /system_root/system/app ]]; then
     SYSTEM=/system_root/system
 
 elif [[ -d /system_root/app ]]; then
@@ -56,13 +62,8 @@ elif [[ -d /system/app ]]; then
 
 fi
 
-manual_entry_system="$(cat /tmp/migrate/SYSTEM_MANUAL)"
-
 if [[ ${SYSTEM} != "" ]]; then
     echoIt "System app confirmed under: $SYSTEM"
-elif [[ -n "$manual_entry_system" ]]; then
-    echoIt "Manual system app location: $manual_entry_system"
-    SYSTEM=${manual_entry_system}
 else
     echoIt "System app directory detection failed. Trying from parameters"
 
@@ -75,6 +76,7 @@ else
         echoIt "Non System-as-root."
     fi
 
+    # Check A/B device
     ab_device="$(cat /proc/cmdline | grep slot_suffix)";
     if [[ -n "$ab_device" ]];
     then
@@ -82,6 +84,11 @@ else
         SYSTEM=${SYSTEM}/system
     else
         echoIt "Only-A device."
+    fi
+
+    # If android 10, the app directory is always under /system/system/
+    if [[ -z "$ab_device" ]] && [[ ! -e ${SYSTEM}/build.prop ]]; then
+        SYSTEM=${SYSTEM}/system
     fi
 
     echoIt "Calculated system app under: $SYSTEM"

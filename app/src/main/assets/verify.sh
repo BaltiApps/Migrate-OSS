@@ -29,7 +29,7 @@ if [[ ! -e ${SYSTEM}/app/MigrateHelper/MigrateHelper.apk ]]; then
     if [[ ! -e ${ext_helper_apk} ]]; then
         echoIt "Helper apk is also present under:"
         echoIt "${ext_helper_apk}"
-        echoIt " Please install the app manually"
+        echoIt "Please install the app manually"
     else
         echoIt "Please contact our telegram group"
         echoIt "     https://t.me/migrateApp     "
@@ -74,4 +74,5 @@ if [[ ${anyError} == "true" ]]; then
     sleep 1s
 fi
 
+chmod -R 777 ${TEMP_DIR_NAME}
 echoIt "Verification complete"
