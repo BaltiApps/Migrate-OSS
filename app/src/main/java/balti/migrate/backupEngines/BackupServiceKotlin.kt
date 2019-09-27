@@ -228,7 +228,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
                 }
 
                 if (intent.hasExtra(EXTRA_TASKLOG)){
-                    intent.getStringExtra(EXTRA_TASKLOG).trim().run {
+                    intent.getStringExtra(EXTRA_TASKLOG).run {
                         if (this != lastLog) {
                             progressWriter?.write("$this\n")
                             lastLog = this

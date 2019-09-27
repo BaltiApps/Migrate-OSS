@@ -283,7 +283,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
                         appName = line
                         progress = commonTools.getPercentage(++c, appBatch.appPackets.size)
-                        broadcastProgress(appName, appName, true, progress)
+                        broadcastProgress(appName, "\n${appName}", true, progress)
                     }
                     else broadcastProgress(appName, line, false)
 

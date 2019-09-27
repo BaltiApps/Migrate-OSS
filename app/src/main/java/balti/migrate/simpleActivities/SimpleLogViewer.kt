@@ -63,7 +63,7 @@ class SimpleLogViewer: AppCompatActivity() {
 
                         BufferedReader(FileReader(File(filePath))).readLines().forEach { it1 ->
                             publishProgress(it1)
-                            commonTools.tryIt { Thread.sleep(5) }
+                            commonTools.tryIt { Thread.sleep(1) }
                         }
 
                         return 0

@@ -149,7 +149,7 @@ class ProgressShowActivity: AppCompatActivity() {
                 subTask.text = intent.getStringExtra(EXTRA_SUBTASK)
 
             if (intent.hasExtra(EXTRA_TASKLOG)){
-                intent.getStringExtra(EXTRA_TASKLOG).trim().run {
+                intent.getStringExtra(EXTRA_TASKLOG).run {
                     if (this != lastLog && this != ""){
                         progressLogTextView.append("$this\n")
                         lastLog = this
