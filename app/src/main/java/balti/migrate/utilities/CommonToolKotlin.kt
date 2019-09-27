@@ -211,6 +211,9 @@ class CommonToolKotlin(val context: Context) {
         val WIFI_FILE_PATH = "/data/misc/wifi/$WIFI_FILE_NAME"
         val WIFI_FILE_NOT_FOUND = "***not_found***"
 
+        val SIMPLE_LOG_VIEWER_HEAD = "slg_head"
+        val SIMPLE_LOG_VIEWER_FILEPATH = "slg_filePath"
+
         // installer list adapter
 
         val NOT_SET_POSITION = 0

@@ -54,16 +54,20 @@
             android:screenOrientation="portrait"
             />
 
-        <activity android:name=".HowToRestore"
-            android:screenOrientation="portrait"
-            />
-
         <activity android:name=".extraBackupsActivity.ExtraBackupsKotlin"
             android:screenOrientation="portrait"
             />
 
-        <activity android:name=".BackupProgressLayout"
+        <activity android:name=".simpleActivities.ProgressShowActivity"
+            android:screenOrientation="portrait"
             android:launchMode="singleInstance"
+            />
+
+        <activity android:name=".simpleActivities.SimpleLogViewer"
+            android:screenOrientation="portrait"
+            />
+
+        <activity android:name=".HowToRestore"
             android:screenOrientation="portrait"
             />
 
@@ -76,11 +80,6 @@
             android:screenOrientation="portrait"
             />
 
-
-        <activity android:name=".SimpleLogDisplay"
-            android:screenOrientation="portrait"
-            />
-
         <activity android:name=".inAppRestore.ZipPicker"
             android:screenOrientation="portrait"
             />
@@ -90,11 +89,6 @@
             />
 
         <service android:name=".backupEngines.BackupServiceKotlin"/>
-
-        <activity android:name=".simpleActivities.ProgressShowActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleInstance"
-            />
 
         <provider
             android:authorities="migrate.provider"

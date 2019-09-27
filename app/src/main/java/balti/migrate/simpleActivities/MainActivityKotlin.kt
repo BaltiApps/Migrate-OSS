@@ -22,15 +22,20 @@ import android.view.ViewGroup
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
-import balti.migrate.*
 import balti.migrate.CommonTools.DEFAULT_INTERNAL_STORAGE_DIR
+import balti.migrate.HelpPage
+import balti.migrate.HowToRestore
+import balti.migrate.PreferenceScreen
+import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.inAppRestore.ZipPicker
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELLING
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ERRORLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_ACCESS_ASKED
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ANDROID_VERSION_WARNING
@@ -40,6 +45,8 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PA
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FIRST_RUN
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_VERSION_CURRENT
+import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
+import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
@@ -307,23 +314,23 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 .create()
 
         lView.view_progress_log.setOnClickListener {
-            val f = File(externalCacheDir, "progressLog.txt")
+            val f = File(externalCacheDir, FILE_PROGRESSLOG)
             if (f.exists())
                 startActivity(
-                        Intent(this, SimpleLogDisplay::class.java)                          /*kotlin*/
-                                .putExtra("head", getString(R.string.progressLog))
-                                .putExtra("filePath", f.absolutePath)
+                        Intent(this, SimpleLogViewer::class.java)                          /*kotlin*/
+                                .putExtra(SIMPLE_LOG_VIEWER_HEAD, getString(R.string.progressLog))
+                                .putExtra(SIMPLE_LOG_VIEWER_FILEPATH, f.absolutePath)
                 )
             else Toast.makeText(this, R.string.progress_log_does_not_exist, Toast.LENGTH_SHORT).show()
         }
 
         lView.view_error_log.setOnClickListener {
-            val f = File(externalCacheDir, "errorLog.txt")
+            val f = File(externalCacheDir, FILE_ERRORLOG)
             if (f.exists())
                 startActivity(
-                        Intent(this, SimpleLogDisplay::class.java)                          /*kotlin*/
-                                .putExtra("head", getString(R.string.errorLog))
-                                .putExtra("filePath", f.absolutePath)
+                        Intent(this, SimpleLogViewer::class.java)                          /*kotlin*/
+                                .putExtra(SIMPLE_LOG_VIEWER_HEAD, getString(R.string.errorLog))
+                                .putExtra(SIMPLE_LOG_VIEWER_FILEPATH, f.absolutePath)
                 )
             else Toast.makeText(this, R.string.error_log_does_not_exist, Toast.LENGTH_SHORT).show()
         }
