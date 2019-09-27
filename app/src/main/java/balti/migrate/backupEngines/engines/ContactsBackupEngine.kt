@@ -27,9 +27,7 @@ class ContactsBackupEngine(private val jobcode: Int,
             File(actualDestination).mkdirs()
             if (vcfFile.exists()) vcfFile.delete()
 
-            val title = if (bd.totalParts > 1)
-                engineContext.getString(R.string.backing_contacts) + " : " + madePartName
-            else engineContext.getString(R.string.backing_contacts)
+            val title = getTitle(R.string.backing_contacts)
 
             resetBroadcast(false, title)
 

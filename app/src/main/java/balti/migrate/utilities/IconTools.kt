@@ -29,14 +29,14 @@ class IconTools {
         drawable.setBounds(0, 0, canvas.width, canvas.height)
         drawable.draw(canvas)
 
-        icon.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        icon.compress(Bitmap.CompressFormat.PNG, 80, stream)
 
         val bytes = stream.toByteArray()
-        var res = ""
+        var res = StringBuilder()
         for (b in bytes){
-            res = res + b + "_"
+            res.append(b).append("_")
         }
-        return res
+        return res.toString()
     }
 
     fun loadIconFromApplication(iconView: ImageView, dp: BackupDataPacketKotlin, pm: PackageManager){

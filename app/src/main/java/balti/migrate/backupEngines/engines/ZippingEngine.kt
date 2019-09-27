@@ -35,14 +35,12 @@ class ZippingEngine(private val jobcode: Int,
 
         try {
 
-            val title = if (bd.totalParts > 1)
-                engineContext.getString(R.string.combining) + " : " + madePartName
-            else engineContext.getString(R.string.combining)
+            val title = getTitle(R.string.combining)
+
+            resetBroadcast(false, title)
 
             val directory = File(actualDestination)
             val zipFile = File("$actualDestination.zip")
-
-            resetBroadcast(false, title)
 
             if (zipFile.exists()) zipFile.delete()
             val files = getAllFiles(directory, ArrayList(0))

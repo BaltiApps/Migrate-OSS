@@ -25,9 +25,7 @@ class WifiBackupEngine(private val jobcode: Int,
             File(actualDestination).mkdirs()
             if (wifiFile.exists()) wifiFile.delete()
 
-            val title = if (bd.totalParts > 1)
-                engineContext.getString(R.string.storing_wifi_data) + " : " + madePartName
-            else engineContext.getString(R.string.storing_wifi_data)
+            val title = getTitle(R.string.storing_wifi_data)
 
             resetBroadcast(true, title)
 

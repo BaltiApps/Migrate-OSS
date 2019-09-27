@@ -25,9 +25,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
 
         try {
 
-            val title = if (bd.totalParts > 1)
-                engineContext.getString(R.string.testing_system) + " : " + madePartName
-            else engineContext.getString(R.string.testing_system)
+            val title = getTitle(R.string.testing_system)
 
             resetBroadcast(true, title)
 

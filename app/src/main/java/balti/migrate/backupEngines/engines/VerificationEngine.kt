@@ -74,9 +74,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
         try {
 
-            val title = if (bd.totalParts > 1)
-                engineContext.getString(R.string.verifying_backups) + " : " + madePartName
-            else engineContext.getString(R.string.verifying_backups)
+            val title = getTitle(R.string.verifying_backups)
 
             resetBroadcast(true, title, EXTRA_PROGRESS_TYPE_VERIFYING)
 
@@ -178,9 +176,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
             val tarRecovery = ArrayList<String>(0)
             lastProgress = 0
 
-            val title = if (bd.totalParts > 1)
-                engineContext.getString(R.string.verifying_tar) + " : " + madePartName
-            else engineContext.getString(R.string.verifying_tar)
+            val title = getTitle(R.string.verifying_tar)
 
             resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_VERIFYING)
 
@@ -299,9 +295,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
         lastProgress = 0
 
-        val title = if (bd.totalParts > 1)
-            engineContext.getString(R.string.correcting_errors) + " : " + madePartName
-        else engineContext.getString(R.string.correcting_errors)
+        val title = getTitle(R.string.correcting_errors)
 
         resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_CORRECTING)
 

@@ -32,9 +32,7 @@ class SettingsBackupEngine(private val jobcode: Int,
             File(actualDestination).mkdirs()
             if (settingsFile.exists()) settingsFile.delete()
 
-            val title = if (bd.totalParts > 1)
-                engineContext.getString(R.string.writing_settings) + " : " + madePartName
-            else engineContext.getString(R.string.writing_settings)
+            val title = getTitle(R.string.writing_settings)
 
             resetBroadcast(true, title)
 

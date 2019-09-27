@@ -24,9 +24,7 @@ class ZipVerificationEngine(private val jobcode: Int,
         try {
             val contents = ArrayList<String>(0)
 
-            val title = if (bd.totalParts > 1)
-                engineContext.getString(R.string.verifying_zip) + " : " + madePartName
-            else engineContext.getString(R.string.verifying_zip)
+            val title = getTitle(R.string.verifying_zip)
 
             resetBroadcast(true, title)
 

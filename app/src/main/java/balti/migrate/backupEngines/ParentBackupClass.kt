@@ -44,7 +44,7 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     val commonTools by lazy { CommonToolKotlin(engineContext) }
     val madePartName by lazy { commonTools.getMadePartName(bd.partNumber, bd.totalParts) }
-    val actualDestination by lazy { "${bd.destination}/${bd.backupName}" }
+    val actualDestination by lazy { formatName("${bd.destination}/${bd.backupName}") }
 
     private var lastProgress = 0
     private var isIndeterminate = true
@@ -86,11 +86,23 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
         commonTools.tryIt { fileListWriter?.write("$fileName\n") }
     }
 
+    fun getTitle(stringRes: Int): String{
+        return if (bd.totalParts > 1)
+            engineContext.getString(stringRes) + " : " + madePartName.replace("_", " ")
+        else engineContext.getString(stringRes)
+    }
+
     fun getDataBase(dataBaseFile: File): SQLiteDatabase{
         var dataBase: SQLiteDatabase = SQLiteDatabase.openOrCreateDatabase(dataBaseFile.absolutePath, null)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1)
             dataBase = SQLiteDatabase.openDatabase(dataBaseFile.absolutePath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS or SQLiteDatabase.OPEN_READWRITE)
         return dataBase
+    }
+
+    fun formatName(name: String): String {
+        return name.replace(' ', '_')
+                .replace('`', '\'')
+                .replace('"', '\'')
     }
 
     private fun updateNotification(subTask: String, progressPercent: Int){

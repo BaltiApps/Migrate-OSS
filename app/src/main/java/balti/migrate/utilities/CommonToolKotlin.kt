@@ -577,7 +577,7 @@ class CommonToolKotlin(val context: Context) {
 
     fun getMadePartName(zeroIndexedPartName: Int, totalParts: Int): String =
             if (totalParts > 1)
-                "${context.getString(R.string.part)} ${zeroIndexedPartName + 1} ${context.getString(R.string.of)} $totalParts"
+                "${context.getString(R.string.part)}_${zeroIndexedPartName + 1}_${context.getString(R.string.of)}_$totalParts"
             else ""
 
     fun doBackgroundTask(job: () -> Unit, postJob: () -> Unit){

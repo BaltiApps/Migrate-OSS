@@ -259,9 +259,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
         try {
 
-            val title = if (bd.totalParts > 1)
-                engineContext.getString(R.string.making_updater_script) + " : " + madePartName
-            else engineContext.getString(R.string.making_updater_script)
+            val title = getTitle(R.string.making_updater_script)
 
             resetBroadcast(true, title)
 

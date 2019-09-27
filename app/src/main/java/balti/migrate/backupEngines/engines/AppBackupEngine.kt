@@ -127,16 +127,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
         try {
 
-
-            fun formatName(name: String): String {
-                return name.replace(' ', '_')
-                        .replace('`', '\'')
-                        .replace('"', '\'')
-            }
-
-            val title = if (bd.totalParts > 1)
-                engineContext.getString(R.string.making_app_script) + " : " + madePartName
-            else engineContext.getString(R.string.making_app_script)
+            val title = getTitle(R.string.making_app_script)
 
             resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS)
 
@@ -187,12 +178,10 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                         writeFileList("$packageName.tar.gz", modifiedAppName)
                     }
 
-
                     if (packet.PERMISSION) {
                         backupUtils.makePermissionFile(packageName, actualDestination, pm)
                         writeFileList("$packageName.perm", modifiedAppName)
                     }
-
 
                     var versionName: String? = packet.PACKAGE_INFO.versionName
                     versionName = if (versionName == null || versionName == "") "_"
@@ -214,7 +203,6 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
                     scriptWriter.write(echoCopyCommand, 0, echoCopyCommand.length)
                     scriptWriter.write(scriptCommand, 0, scriptCommand.length)
-
 
                     val isSystem = apkPath.startsWith("/system")
                     if (isSystem) systemAppInstallScript(packageName, apkPath, packageName)
@@ -251,9 +239,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
             if (!File(scriptFileLocation).exists())
                 throw Exception(engineContext.getString(R.string.script_file_does_not_exist))
 
-            val title = if (bd.totalParts > 1)
-                engineContext.getString(R.string.backingUp) + " : " + madePartName
-            else engineContext.getString(R.string.backingUp)
+            val title = getTitle(R.string.backingUp)
 
             resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_APP_PROGRESS)
 

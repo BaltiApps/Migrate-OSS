@@ -54,9 +54,7 @@ class CallsBackupEngine(private val jobcode: Int,
             File(actualDestination).mkdirs()
             if (callsDBFile.exists()) callsDBFile.delete()
 
-            val title = if (bd.totalParts > 1)
-                engineContext.getString(R.string.backing_calls) + " : " + madePartName
-            else engineContext.getString(R.string.backing_calls)
+            val title = getTitle(R.string.backing_calls)
 
             resetBroadcast(false, title)
 
@@ -158,9 +156,7 @@ class CallsBackupEngine(private val jobcode: Int,
 
         try {
 
-            val title = if (bd.totalParts > 1)
-                engineContext.getString(R.string.verifying_calls) + " : " + madePartName
-            else engineContext.getString(R.string.verifying_calls)
+            val title = getTitle(R.string.verifying_calls)
 
             resetBroadcast(false, title)
 
