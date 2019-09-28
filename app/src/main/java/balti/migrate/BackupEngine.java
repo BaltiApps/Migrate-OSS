@@ -894,7 +894,7 @@ public class BackupEngine {
         String err = "";
         try {
 
-            String title = (totalParts > 1) ? context.getString(R.string.combining) + " : " + madePartName : context.getString(R.string.combining);
+            String title = (totalParts > 1) ? context.getString(R.string.zipping_all_files) + " : " + madePartName : context.getString(R.string.zipping_all_files);
             progressNotif.setContentTitle(title)
                     .setContentIntent(PendingIntent.getActivity(context, 1, activityProgressIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                     .setProgress(0, 0, false)

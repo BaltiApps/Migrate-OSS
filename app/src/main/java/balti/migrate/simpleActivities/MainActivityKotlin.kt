@@ -464,7 +464,10 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
                 if (isRootPermissionGranted()) {
 
-                    if (!main.getBoolean(PREF_ALTERNATE_ACCESS_ASKED, false)) {
+                    val isAboveOreo = Build.VERSION.SDK_INT > Build.VERSION_CODES.O
+                    val isAlternatePermission = main.getInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
+
+                    if (!main.getBoolean(PREF_ALTERNATE_ACCESS_ASKED, false) || (isAboveOreo && isAlternatePermission && !isUsageAccessGranted())) {
 
                         val accessPermissionDialog = AlertDialog.Builder(this)
                                 .setNegativeButton(R.string.old_method_will_be_used) { _, _ ->
@@ -479,7 +482,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                                 }
                                 .setCancelable(false)
 
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                        if (!isAboveOreo) {
                             accessPermissionDialog.setTitle(R.string.use_reflection)
                                     .setMessage(R.string.use_reflection_exp)
                                     .setPositiveButton(R.string.yes) { _, _ ->
@@ -491,7 +494,9 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
                             accessPermissionDialog.show()
 
-                        } else {
+                        }
+                        else
+                        {
                             if (!isUsageAccessGranted()) {
                                 accessPermissionDialog.setTitle(R.string.use_usage_access_permission)
                                         .setMessage(R.string.usage_access_permission_needed_desc)
@@ -516,6 +521,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                     } else {
                         startActivity(Intent(this, BackupActivityKotlin::class.java))             /*kotlin*/
                     }
+
                 } else {
                     AlertDialog.Builder(this)
                             .setTitle(R.string.root_permission_denied)

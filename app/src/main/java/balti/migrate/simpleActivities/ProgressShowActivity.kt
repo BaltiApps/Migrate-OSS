@@ -177,8 +177,10 @@ class ProgressShowActivity: AppCompatActivity() {
                         }
                     }
 
-                    if (errors.size != 0 || intent.getBooleanExtra(EXTRA_IS_CANCELLED, false))
+                    if (errors.size != 0 || intent.getBooleanExtra(EXTRA_IS_CANCELLED, false)) {
                         progressTask.setTextColor(resources.getColor(R.color.error_color))
+                        subTask.setTextColor(resources.getColor(R.color.error_color))
+                    }
 
                     intent.getLongExtra(EXTRA_TOTAL_TIME, -1).let {
                         if (it != -1L) subTask.text = calendarDifference(it)

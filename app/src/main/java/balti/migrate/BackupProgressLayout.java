@@ -382,7 +382,7 @@ public class BackupProgressLayout extends AppCompatActivity {
 
                     appIcon.setImageResource(R.drawable.ic_zipping_icon);
 
-                    task.setText(R.string.combining);
+                    task.setText(R.string.zipping_all_files);
 
                     setProgress("progress", intent);
 

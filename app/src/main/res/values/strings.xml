@@ -203,6 +203,7 @@
     <string name="dont_backup">Don\'t backup</string>
     <string name="backup_contacts_anyway">Backup contacts anyway</string>
     <string name="estimated_files_size">Estimated total backup size:</string>
+    <string name="estimated_app_size">Estimated app size:</string>
     <string name="available_space">Available space:</string>
     <string name="insufficient_storage">Insufficient storage!</string>
     <string name="required_storage">Migrate needs more free space:</string>
@@ -293,7 +294,7 @@
     <string name="close">Close</string>
     <string name="backingUp">Backing up apps</string>
     <string name="noErrors">Finished! No errors.</string>
-    <string name="combining">Combining all files</string>
+    <string name="zipping_all_files">Zipping all files</string>
     <string name="verifying_zip">Verifying zip</string>
     <string name="listing_zip_file">Listing zip file</string>
     <string name="comparing_zip_contents">Comparing zip contents</string>

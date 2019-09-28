@@ -148,7 +148,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             publishProgress(vOp.getStringFromRes(R.string.calculating_size),
                     (i + 1).toString() + " of " + appList.size,
                     pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString() + "\n" +
-                            vOp.getStringFromRes(R.string.estimated_files_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize + dataSize) + "\n")
+                            vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize + dataSize) + "\n")
 
         }
 
@@ -225,7 +225,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                                 publishProgress(vOp.getStringFromRes(R.string.calculating_size),
                                         (i + 1).toString() + " of " + appList.size,
                                         pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString() + "\n" +
-                                                vOp.getStringFromRes(R.string.estimated_files_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize+dataSize) + "\n")
+                                                vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize+dataSize) + "\n")
 
                             }
                         })
@@ -285,7 +285,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                         publishProgress(vOp.getStringFromRes(R.string.calculating_size),
                                 (i + 1).toString() + " of " + appList.size,
                                 pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString() + "\n" +
-                                        vOp.getStringFromRes(R.string.estimated_files_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize+dataSize) + "\n")
+                                        vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize+dataSize) + "\n")
 
                     }
 

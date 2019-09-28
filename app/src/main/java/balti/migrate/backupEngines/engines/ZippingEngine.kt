@@ -35,7 +35,7 @@ class ZippingEngine(private val jobcode: Int,
 
         try {
 
-            val title = getTitle(R.string.combining)
+            val title = getTitle(R.string.zipping_all_files)
 
             resetBroadcast(false, title)
 
