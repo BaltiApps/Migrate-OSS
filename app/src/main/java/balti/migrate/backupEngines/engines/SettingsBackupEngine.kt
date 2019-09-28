@@ -37,13 +37,13 @@ class SettingsBackupEngine(private val jobcode: Int,
             resetBroadcast(true, title)
 
             val jsonObject = JSONObject()
-            dpiText?.let { jsonObject.put(JSON_FIELD_DPI_TEXT, it) }
+            dpiText?.let { jsonObject.put(JSON_FIELD_DPI_TEXT, it.trim()) }
             adbState?.let { jsonObject.put(JSON_FIELD_ADB_TEXT, it) }
             fontScale?.let { jsonObject.put(JSON_FIELD_FONT_SCALE, it) }
-            keyboardText?.let { jsonObject.put(JSON_FIELD_KEYBOARD_TEXT, it) }
+            keyboardText?.let { jsonObject.put(JSON_FIELD_KEYBOARD_TEXT, it.trim()) }
 
             BufferedWriter(FileWriter(settingsFile, true)).run {
-                this.write(jsonObject.toString())
+                this.write(jsonObject.toString(4))
                 this.close()
             }
 

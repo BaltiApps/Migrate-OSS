@@ -49,6 +49,8 @@ class CommonToolKotlin(val context: Context) {
         val FILE_PREFIX_RETRY_SCRIPT = "retry_script_"
         val FILE_PREFIX_TAR_CHECK = "tar_check_"
 
+        val FILE_ZIP_NAME_EXTRAS = "Extras"
+
         val FILE_FILE_LIST = "fileList.txt"
 
         val CHANNEL_BACKUP_END = "Backup finished notification"
@@ -166,6 +168,9 @@ class CommonToolKotlin(val context: Context) {
         val PREF_TAR_GZ_INTEGRITY = "tar_integrity"
         val PREF_SMS_VERIFY = "sms_verify"
         val PREF_CALLS_VERIFY = "calls_verify"
+        val PREF_SYSTEM_CHECK = "do_system_check"
+        val PREF_SEPARATE_EXTRAS_BACKUP = "separate_extras"
+        val PREF_DELETE_ERROR_BACKUP = "delete_backup_on_error"
 
         val PREF_IGNORE_APP_CACHE = "ignore_app_cache"
 

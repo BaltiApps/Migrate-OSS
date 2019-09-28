@@ -50,6 +50,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ERRORLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ZIP_NAME_EXTRAS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_CONTACTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_SETTINGS
@@ -66,6 +67,9 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.NOTIFICATION_ID_FINISH
 import balti.migrate.utilities.CommonToolKotlin.Companion.NOTIFICATION_ID_ONGOING
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_COMPRESSION_LEVEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_COMPRESSION_LEVEL
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DELETE_ERROR_BACKUP
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SEPARATE_EXTRAS_BACKUP
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_CHECK
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -138,6 +142,8 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
     private val contactsBackupName = "Contacts_$timeStamp.vcf"
     private val smsBackupName = "Sms_$timeStamp.sms.db"
     private val callsBackupName = "Calls_$timeStamp.calls.db"
+
+    private var workingAppBatches = ArrayList<AppBatch>(0)
 
     private val toReturnIntent by lazy { Intent(ACTION_BACKUP_PROGRESS) }
 
@@ -266,23 +272,38 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
                 AppInstance.notificationManager.cancelAll()
 
-                if (dpiText != null || keyboardText != null || adbState != null || fontScale != null) isSettingsNull = false
+                var isExtrasBackup = true
 
-                when (appBatches.size){
-                    1 -> doFallThroughJob(JOBCODE_PEFORM_SYSTEM_TEST)
-                    0 -> doFallThroughJob(JOBCODE_PEFORM_BACKUP_CONTACTS)
-                    else -> doFallThroughJob(JOBCODE_PEFORM_SYSTEM_TEST)
+                if (dpiText != null || keyboardText != null || adbState != null || fontScale != null) isSettingsNull = false
+                if (!isSettingsNull || contactsList != null || callsList != null || smsList != null || wifiData != null){
+                    isExtrasBackup = true
+                }
+
+                appBatches.run {
+                    if (!sharedPrefs.getBoolean(PREF_SEPARATE_EXTRAS_BACKUP, true)) workingAppBatches = this
+                    else if (this.size <= 1) workingAppBatches = this
+                    else if (!isExtrasBackup) workingAppBatches = this
+
+                    when (this.size) {
+                        1 -> doFallThroughJob(JOBCODE_PEFORM_SYSTEM_TEST)
+                        0 -> doFallThroughJob(JOBCODE_PEFORM_BACKUP_CONTACTS)
+                        else -> doFallThroughJob(JOBCODE_PEFORM_SYSTEM_TEST)
+                    }
                 }
             }
         }
     }
 
     private fun getBackupIntentData(): BackupIntentData{
-        if (appBatches.size > 1) {
-            currentDestination = "$destination/$backupName"
-            currentBackupName = commonTools.getMadePartName(currentPartNumber, appBatches.size)
+        appBatches.size.run {
+            if (this > 1) {
+                currentDestination = "$destination/$backupName"
+                currentBackupName =
+                        if (workingAppBatches.size > 0) commonTools.getMadePartName(currentPartNumber, this)
+                        else FILE_ZIP_NAME_EXTRAS
+            }
+            return BackupIntentData(currentBackupName, currentDestination, currentPartNumber, workingAppBatches.size)
         }
-        return BackupIntentData(currentBackupName, currentDestination, currentPartNumber, appBatches.size)
     }
 
     override fun onCreate() {
@@ -336,7 +357,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
                     currentTask = try {
                         when (jCode) {
-                            JOBCODE_PEFORM_SYSTEM_TEST -> SystemTestingEngine(jCode, bd, busyboxBinaryPath)
+                            JOBCODE_PEFORM_SYSTEM_TEST -> if (sharedPrefs.getBoolean(PREF_SYSTEM_CHECK, true)) SystemTestingEngine(jCode, bd, busyboxBinaryPath) else null
                             JOBCODE_PEFORM_BACKUP_CONTACTS -> ContactsBackupEngine(jCode, bd, workingObject as ArrayList<ContactsDataPacketKotlin>, contactsBackupName)
                             JOBCODE_PEFORM_BACKUP_SMS -> SmsBackupEngine(jCode, bd, workingObject as ArrayList<SmsDataPacketKotlin>, smsBackupName)
                             JOBCODE_PEFORM_BACKUP_CALLS -> CallsBackupEngine(jCode, bd, workingObject as ArrayList<CallsDataPacketsKotlin>, callsBackupName)
@@ -374,6 +395,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         doJob(JOBCODE_PEFORM_BACKUP_CALLS, callsList)
         doJob(JOBCODE_PEFORM_BACKUP_WIFI, wifiData)
         doJob(JOBCODE_PEFORM_BACKUP_SETTINGS, if (isSettingsNull) null else Any())
+
         doJob(JOBCODE_PERFORM_APP_BACKUP, Any())
 
         // if app backup works, app verification will be triggered from callback
@@ -385,11 +407,11 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
     }
 
     private fun getAppBatchBackupTask(bd: BackupIntentData): AppBackupEngine?{
-        return if (currentPartNumber < appBatches.size) {
+        return if (currentPartNumber < workingAppBatches.size) {
             commonTools.tryIt {
                 progressWriter?.write("\n\n--- Next batch backup: ${currentPartNumber + 1} ---\n\n")
             }
-            AppBackupEngine(currentAppBackupJobCode, bd, appBatches[currentPartNumber], doBackupInstallers, busyboxBinaryPath)
+            AppBackupEngine(currentAppBackupJobCode, bd, workingAppBatches[currentPartNumber], doBackupInstallers, busyboxBinaryPath)
         } else null
     }
 
@@ -398,8 +420,8 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         try {
 
             val batch = when {
-                appBatches.size == 0 -> AppBatch(ArrayList(0))
-                else -> appBatches[currentPartNumber]
+                workingAppBatches.size == 0 -> AppBatch(ArrayList(0))
+                else -> workingAppBatches[currentPartNumber]
             }
 
             return UpdaterScriptMakerEngine(currentUpdaterScriptJobCode, bd, batch, timeStamp,
@@ -494,10 +516,14 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         if (cancelAll) return
 
         when (jobCode) {
+
             JOBCODE_PERFORM_APP_BACKUP_VERIFICATION -> try {
+
                 currentAppVerificationJobCode = jobCode + currentPartNumber
-                task = VerificationEngine(jobCode, bd, appBatches[currentPartNumber], busyboxBinaryPath)
+                task = VerificationEngine(currentAppVerificationJobCode, bd, workingAppBatches[currentPartNumber], busyboxBinaryPath)
+
             } catch (e: Exception) {
+
                 e.printStackTrace()
                 addError("$ERR_BACKUP_SERVICE_ERROR${bd.errorTag}: RUN_CONDITIONAL_TASK ${e.message}")
 
@@ -506,9 +532,12 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
             }
 
             JOBCODE_PERFORM_ZIP_BACKUP -> try {
+
                 currentZippingJobCode = jobCode + currentPartNumber
-                task = ZippingEngine(jobCode, bd)
+                task = ZippingEngine(currentZippingJobCode, bd)
+
             } catch (e: Exception) {
+
                 e.printStackTrace()
                 addError("$ERR_BACKUP_SERVICE_ERROR${bd.errorTag}: RUN_CONDITIONAL_TASK ${e.message}")
 
@@ -517,13 +546,17 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
             }
 
             JOBCODE_PERFORM_ZIP_VERIFICATION -> try {
+
                 currentZipVerificationJobCode = jobCode + currentPartNumber
-                task = ZipVerificationEngine(jobCode, bd, zipListIfAny!!,
+                task = ZipVerificationEngine(currentZipVerificationJobCode, bd, zipListIfAny!!,
                         File(currentDestination, "$currentBackupName.zip"))
+
             } catch (e: Exception) {
+
                 e.printStackTrace()
                 addError("$ERR_BACKUP_SERVICE_ERROR${bd.errorTag}: RUN_CONDITIONAL_TASK ${e.message}")
                 runNextBatch()
+
             }
         }
 
@@ -539,13 +572,20 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
             return
         }
         else {
+            commonTools.dirDelete("$currentDestination/$currentBackupName")
+
             if (!isThisBatchSuccessful)
-                addError("$ERR_BACKUP_SERVICE_ERROR[$currentPartNumber/${appBatches.size}]: " +
+                addError("$ERR_BACKUP_SERVICE_ERROR[$currentPartNumber/${workingAppBatches.size}]: " +
                         "${getString(R.string.errors_in_batch)} ${criticalErrors.size - lastErrorCount}")
 
             lastErrorCount = criticalErrors.size
 
-            if (currentPartNumber + 1 < appBatches.size) {
+            if (workingAppBatches.size == 0 && appBatches.size != 0){
+                workingAppBatches = appBatches
+                currentPartNumber -= 1
+            }
+
+            if (currentPartNumber + 1 < workingAppBatches.size) {
                 currentPartNumber++
                 doFallThroughJob(JOBCODE_PERFORM_APP_BACKUP)
             } else backupFinished("")
@@ -570,7 +610,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
             errorWriter?.write("--- Migrate version ${getString(R.string.current_version_name)} ---\n")
 
             progressWriter?.write("--- \n\nBackup Name : $backupName ---\n")
-            progressWriter?.write("--- Total parts : ${appBatches.size} ---\n")
+            progressWriter?.write("--- Total parts : ${workingAppBatches.size} ---\n")
             progressWriter?.write("--- Migrate version ${getString(R.string.current_version_name)} ---\n")
         }
         catch (e: Exception){
@@ -603,7 +643,8 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
                                         PendingIntent.FLAG_UPDATE_CURRENT))
                         .build())
 
-        commonTools.dirDelete("$destination/$backupName")
+        if ((errorTitle != "" || criticalErrors.size != 0) && sharedPrefs.getBoolean(PREF_DELETE_ERROR_BACKUP, true))
+            commonTools.dirDelete("$destination/$backupName")
 
         stopSelf()
     }

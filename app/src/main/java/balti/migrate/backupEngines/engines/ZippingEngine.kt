@@ -20,7 +20,7 @@ class ZippingEngine(private val jobcode: Int,
     private val zippedFiles = ArrayList<String>(0)
     private val zipErrors = ArrayList<String>(0)
 
-    private fun getAllFiles(directory: File, allFiles: ArrayList<File>): ArrayList<File>{
+    private fun getAllFiles(directory: File, allFiles: ArrayList<File> = ArrayList(0)): ArrayList<File>{
         if (!directory.isDirectory) return arrayListOf(directory)
         else {
             for (f in directory.listFiles()){
@@ -43,7 +43,7 @@ class ZippingEngine(private val jobcode: Int,
             val zipFile = File("$actualDestination.zip")
 
             if (zipFile.exists()) zipFile.delete()
-            val files = getAllFiles(directory, ArrayList(0))
+            val files = getAllFiles(directory)
             val zipOutputStream = ZipOutputStream(FileOutputStream(zipFile))
 
             for (i in 0 until files.size){
@@ -114,7 +114,6 @@ class ZippingEngine(private val jobcode: Int,
 
             zipOutputStream.close()
             commonTools.dirDelete(directory.absolutePath)
-
         }
         catch (e: Exception){
             e.printStackTrace()

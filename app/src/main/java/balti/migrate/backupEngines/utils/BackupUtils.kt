@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolKotlin
+import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.File
@@ -47,33 +48,29 @@ class BackupUtils {
         val metadataFileName = "$packageName.json"
         val metadataFile = File("${bd.destination}/${bd.backupName}/$metadataFileName")
 
-        val metadataContent = "" +
-                "{\n" +
-                "   \"${CommonToolKotlin.MTD_IS_SYSTEM}\" : \"$isSystem\",\n" +
-                "   \"${CommonToolKotlin.MTD_APP_NAME}\" : \"$appName\",\n" +
-                "   \"${CommonToolKotlin.MTD_PACKAGE_NAME}\" : \"$packageName\",\n" +
-                "   \"${CommonToolKotlin.MTD_APK}\" : \"$apkName\",\n" +
-                "   \"${CommonToolKotlin.MTD_DATA}\" : \"$dataName\",\n" +
-                "   \"${CommonToolKotlin.MTD_VERSION}\" : \"$version\",\n" +
-                "   \"${CommonToolKotlin.MTD_DATA_SIZE}\" : ${appPacket.dataSize},\n" +
-                "   \"${CommonToolKotlin.MTD_SYSTEM_SIZE}\" : ${appPacket.systemSize},\n" +
-                "   \"${CommonToolKotlin.MTD_PERMISSION}\" : $permissions,\n" +
-                when {
-                    iconFileName != null -> "   \"${CommonToolKotlin.MTD_ICON_FILE_NAME}\" : \"$iconFileName\"\n"
-                    iconString != null -> "   \"${CommonToolKotlin.MTD_APP_ICON}\" : $iconString\n"
-                    else -> ""
-                } +
-                "   \"${CommonToolKotlin.MTD_INSTALLER_NAME}\" : ${
-                if (doBackupInstallers) appPacket.installerName
-                else "NULL"
-                },\n" +
-                "}\n"
+        val jsonObject = JSONObject()
+        jsonObject.apply {
+            put(CommonToolKotlin.MTD_IS_SYSTEM, isSystem)
+            put(CommonToolKotlin.MTD_APP_NAME, appName)
+            put(CommonToolKotlin.MTD_PACKAGE_NAME, packageName)
+            put(CommonToolKotlin.MTD_APK, apkName)
+            put(CommonToolKotlin.MTD_DATA, dataName)
+            put(CommonToolKotlin.MTD_VERSION, version)
+            put(CommonToolKotlin.MTD_DATA_SIZE, appPacket.dataSize)
+            put(CommonToolKotlin.MTD_SYSTEM_SIZE, appPacket.systemSize)
+            put(CommonToolKotlin.MTD_PERMISSION, permissions)
+            when {
+                iconFileName != null -> put(CommonToolKotlin.MTD_ICON_FILE_NAME, iconFileName)
+                iconString != null -> put(CommonToolKotlin.MTD_APP_ICON, iconString)
+            }
+            put(CommonToolKotlin.MTD_INSTALLER_NAME, if (doBackupInstallers) appPacket.installerName else "NULL")
+        }
 
         File(actualDestination).mkdirs()
 
         return try {
             val writer = BufferedWriter(FileWriter(metadataFile))
-            writer.write(metadataContent)
+            writer.write(jsonObject.toString(4))
             writer.close()
             ""
         }
