@@ -403,7 +403,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
     override fun doInBackground(vararg params: Any?): Any {
         val defects = verifyBackups()
-        if (defects != null && defects.size != 0)
+        if (!BackupServiceKotlin.cancelAll && defects != null && defects.size != 0)
             correctBackups(defects)
 
         return 0

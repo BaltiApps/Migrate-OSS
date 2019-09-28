@@ -321,7 +321,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
     override fun doInBackground(vararg params: Any?): Any {
         val scriptLocation = makeBackupScript()
-        scriptLocation?.let { runBackupScript(it) }
+        if (!BackupServiceKotlin.cancelAll) scriptLocation?.let { runBackupScript(it) }
         return 0
     }
 
