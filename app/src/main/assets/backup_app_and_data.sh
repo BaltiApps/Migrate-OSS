@@ -1,7 +1,7 @@
 #!sbin/sh
 
-# PARAMETERS: packageName destination apkPath apkName dataPath dataName busyBox
-#                  1          2      3     4       5         6    7
+# PARAMETERS: packageName destination apkPath apkName dataPath dataName busyBox ignoreCache
+#                  1          2          3       4       5         6       7         8
 
 echo " "
 
@@ -12,6 +12,7 @@ APK_NAME="$4"
 DATA_PATH="$5"
 DATA_NAME="$6"
 BUSYBOX="$7"
+IGNORE_CACHE=$8
 
 if [[ ! -e "$DESTINATION" ]]; then
     echo "Destination for package $PACKAGE_NAME: $DESTINATION does not exist. Making..."
@@ -42,7 +43,11 @@ fi
 if [[ ${DATA_PATH} != "NULL" && ${DATA_NAME} != "NULL" ]]; then
     if [[ -e "$DATA_PATH/$DATA_NAME" ]]; then
         cd "$DATA_PATH"
-        ${BUSYBOX} tar -vczpf "$DESTINATION/$PACKAGE_NAME.tar.gz" "$DATA_NAME"
+        if [[ "${IGNORE_CACHE}" == "true" ]]; then
+            ${BUSYBOX} tar -vczpf "$DESTINATION/$PACKAGE_NAME.tar.gz" "$DATA_NAME" --exclude="$DATA_NAME/cache"
+        else
+            ${BUSYBOX} tar -vczpf "$DESTINATION/$PACKAGE_NAME.tar.gz" "$DATA_NAME"
+        fi
     else
         echo "Data path : $DATA_PATH/$DATA_NAME does not exist"
     fi

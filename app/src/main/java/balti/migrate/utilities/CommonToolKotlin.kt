@@ -167,6 +167,8 @@ class CommonToolKotlin(val context: Context) {
         val PREF_SMS_VERIFY = "sms_verify"
         val PREF_CALLS_VERIFY = "calls_verify"
 
+        val PREF_IGNORE_APP_CACHE = "ignore_app_cache"
+
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
         val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter
         val PROPERTY_PERMISSION_SELECTION = "permission"        // used to set property in AppListAdapter

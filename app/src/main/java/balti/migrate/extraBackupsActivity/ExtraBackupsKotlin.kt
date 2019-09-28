@@ -65,6 +65,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_FDROID
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_AUTOSELECT_EXTRAS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SHOW_STOCK_WARNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.SMS_AND_CALLS_PERMISSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.SMS_PERMISSION
@@ -556,6 +557,14 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
         mainView.backup_name_edit_text.setSingleLine(true)
         mainView.sd_card_name.text = destination
+
+        mainView.ignore_cache_checkbox.apply {
+            isChecked = main.getBoolean(PREF_IGNORE_APP_CACHE, false)
+            setOnCheckedChangeListener { _, isChecked ->
+                editor.putBoolean(PREF_IGNORE_APP_CACHE, isChecked)
+                editor.commit()
+            }
+        }
 
         main.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR).run {
             if (this == DEFAULT_INTERNAL_STORAGE_DIR || !(File(this).canWrite())){

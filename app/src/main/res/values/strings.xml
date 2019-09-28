@@ -151,6 +151,8 @@
     <!--ask_for_backup_name.xml-->
     <string name="enter_backup_name">Enter backup name</string>
     <string name="sd_card">SD card</string>
+    <string name="advanced_options">Advanced options</string>
+    <string name="ignore_cache">Ignore app cache</string>
 
     <!--learn_about_sd_card.xml-->
     <string name="p1">1. SD card support is experimental, and requires a magisk module.</string>

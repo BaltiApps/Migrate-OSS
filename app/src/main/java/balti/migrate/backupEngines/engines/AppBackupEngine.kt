@@ -15,6 +15,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MA
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_BACKUP_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.IconTools
 import java.io.*
@@ -131,6 +132,8 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
             resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS)
 
+            val ignoreCache = sharedPreferences.getBoolean(PREF_IGNORE_APP_CACHE, false)
+
             val scriptFile = File(engineContext.filesDir, "$FILE_PREFIX_BACKUP_SCRIPT${bd.partNumber}.sh")
             val scriptWriter = BufferedWriter(FileWriter(scriptFile))
             val appAndDataBackupScript = commonTools.unpackAssetToInternal("backup_app_and_data.sh", "backup_app_and_data.sh", false)
@@ -199,7 +202,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                             "$packageName $actualDestination " +
                             "$apkPath $apkName " +
                             "$dataPath $dataName " +
-                            "$busyboxBinaryPath\n"
+                            "$busyboxBinaryPath $ignoreCache\n"
 
                     scriptWriter.write(echoCopyCommand, 0, echoCopyCommand.length)
                     scriptWriter.write(scriptCommand, 0, scriptCommand.length)
