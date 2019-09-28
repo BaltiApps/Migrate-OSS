@@ -24,6 +24,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
 import kotlinx.android.synthetic.main.please_wait.view.*
 import java.io.*
@@ -47,6 +48,8 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
     private val main by lazy { context.getSharedPreferences(FILE_MAIN_PREF, MODE_PRIVATE) }
     private val commonTools by lazy { CommonToolKotlin(context) }
     private val pm by lazy { context.packageManager }
+
+    private val ignoreCache by lazy { main.getBoolean(PREF_IGNORE_APP_CACHE, false) }
 
     private var availableKb = 0L
     private var totalSize = 0L
@@ -105,6 +108,8 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 dp.PACKAGE_INFO.applicationInfo.dataDir
             else null
 
+            val dataCachePath = "$dataPath/cache"
+
             apkPath?.let { apk ->
                 processWriter.write("$busyboxPath du -s $apk\n")
                 processWriter.flush()
@@ -123,6 +128,16 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 processReader.readLine().let { read ->
                     read.substring(0, read.indexOf("/")).trim().toLongOrNull()?.let { size ->
                         dataSize += size
+                    }
+                }
+
+                if (ignoreCache){
+                    processWriter.write("$busyboxPath du -s $dataCachePath\n")
+                    processWriter.flush()
+                    processReader.readLine().let { read ->
+                        read.substring(0, read.indexOf("/")).trim().toLongOrNull()?.let { size ->
+                            dataSize -= size
+                        }
                     }
                 }
             }
@@ -196,7 +211,8 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
                                 dataPath?.let { _ ->
                                     pStats?.let {
-                                        dataSize += it.dataSize + it.cacheSize
+                                        dataSize += it.dataSize
+                                        if (!ignoreCache) dataSize += it.cacheSize
                                     }
                                 }
 
@@ -256,6 +272,8 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                                             (if (externalMedia.canRead()) commonTools.getDirLength(externalMedia.absolutePath) else 0)
 
                             dataSize += storageStats.dataBytes - ignoreSize
+                            if (ignoreCache) dataSize -= storageStats.cacheBytes
+
                         }
 
                         dataSize /= 1024
