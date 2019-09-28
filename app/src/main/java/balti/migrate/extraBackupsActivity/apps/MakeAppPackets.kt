@@ -31,15 +31,9 @@ import java.io.*
 import kotlin.math.ceil
 
 class MakeAppPackets(private val jobCode: Int, private val context: Context, private val destination: String,
-                     private val appList: ArrayList<BackupDataPacketKotlin> = ArrayList(0)):
+                     private val appList: ArrayList<BackupDataPacketKotlin> = ArrayList(0), val dialogView: View):
         AsyncTask<Any, String, Array<Any>>() {
 
-    private val dialogView by lazy { View.inflate(context, R.layout.please_wait, null) }
-    private val waitingDialog by lazy { AlertDialog.Builder(context)
-            .setView(dialogView)
-            .setCancelable(false)
-            .create()
-    }
     private val onJobCompletion by lazy { context as OnJobCompletion }
     private val vOp by lazy { ViewOperations(context) }
     private val appBatches by lazy { ArrayList<AppBatch>(0) }
@@ -57,7 +51,6 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
     init {
         dialogView.waiting_cancel.setOnClickListener {
             vOp.doSomething { cancel(true) }
-            vOp.doSomething { waitingDialog.dismiss() }
         }
         vOp.visibilitySet(dialogView.waiting_progress, View.GONE)
         vOp.visibilitySet(dialogView.waiting_details, View.GONE)
@@ -66,7 +59,6 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
     override fun onPreExecute() {
         super.onPreExecute()
         vOp.doSomething {
-            waitingDialog.show()
             notificationManager.cancelAll()
             (context.filesDir.listFiles() + context.externalCacheDir.listFiles()).forEach {
                 it.delete()
@@ -402,8 +394,6 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
         vOp.visibilitySet(dialogView.waiting_cancel, View.GONE)
 
-        try { waitingDialog.dismiss() } catch (e: Exception){}
-
         vOp.doSomething {
 
             if (!(result[0] as Boolean)) {
@@ -424,10 +414,5 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 onJobCompletion.onComplete(jobCode, true, appBatches)
             }
         }
-    }
-
-    override fun onCancelled() {
-        super.onCancelled()
-        vOp.doSomething { waitingDialog.dismiss() }
     }
 }

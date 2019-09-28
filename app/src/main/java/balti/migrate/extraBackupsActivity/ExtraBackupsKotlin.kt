@@ -71,6 +71,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.SMS_AND_CALLS_PERMISSI
 import balti.migrate.utilities.CommonToolKotlin.Companion.SMS_PERMISSION
 import kotlinx.android.synthetic.main.ask_for_backup_name.view.*
 import kotlinx.android.synthetic.main.extra_backups.*
+import kotlinx.android.synthetic.main.please_wait.*
 import kotlinx.android.synthetic.main.please_wait.view.*
 import java.io.File
 import java.text.SimpleDateFormat
@@ -112,6 +113,16 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private var adbState = 0
     private var wifiData: WifiDataPacket? = null
     private var fontScale = 0.0
+
+
+    private val dialogView by lazy { View.inflate(this, R.layout.please_wait, null) }
+    private val waitingDialog by lazy {
+        AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(false)
+                .create()
+    }
+
 
     private val progressReceiver by lazy {
         object : BroadcastReceiver() {
@@ -674,7 +685,9 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
                             fun startBackup(){
                                 backupName = this
-                                makeAppPackets = MakeAppPackets(JOBCODE_MAKE_APP_PACKETS, this@ExtraBackupsKotlin, destination, appListCopied)
+                                waitingDialog.show()
+                                makeAppPackets = MakeAppPackets(JOBCODE_MAKE_APP_PACKETS, this@ExtraBackupsKotlin, destination, appListCopied,
+                                        dialogView)
                                 makeAppPackets?.execute()
                             }
 
@@ -862,6 +875,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                         if (jobSuccess) {
                             appBatches = jobResult as ArrayList<AppBatch>
 
+                            waitingDialog.waiting_head.setText(R.string.just_a_minute)
+                            waitingDialog.waiting_progress.setText(R.string.starting_engine)
+                            waitingDialog.waiting_details.text = ""
+
                             Intent(this, BackupServiceKotlin::class.java).run {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                     startForegroundService(this)
@@ -974,6 +991,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     override fun onDestroy() {                          //extras_markers
         super.onDestroy()
+
+        commonTools.tryIt { waitingDialog.dismiss() }
 
         commonTools.tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
         commonTools.tryIt { commonTools.LBM?.unregisterReceiver(serviceStartReceiver) }
