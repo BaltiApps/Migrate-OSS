@@ -887,6 +887,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                                 }
                             }
                         }
+                        else commonTools.tryIt { waitingDialog.dismiss() }
                     }
                 }, true)
         }

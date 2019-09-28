@@ -48,9 +48,11 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
     private var availableKb = 0L
     private var totalSize = 0L
 
+    private var cancelThis = false
+
     init {
         dialogView.waiting_cancel.setOnClickListener {
-            vOp.doSomething { cancel(true) }
+            cancelThis = true
         }
         vOp.visibilitySet(dialogView.waiting_progress, View.GONE)
         vOp.visibilitySet(dialogView.waiting_details, View.GONE)
@@ -87,6 +89,8 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
         val processWriter = BufferedWriter(OutputStreamWriter(processMemoryFinder.outputStream))
 
         for (i in 0 until appList.size) {
+
+            if (cancelThis) break
 
             var dataSize = 0L
             var systemSize = 0L
@@ -179,6 +183,8 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
                     for (i in 0 until appList.size){
 
+                        if (cancelThis) break
+
                         val dp = appList[i]
 
                         getPackageSizeInfo.invoke(pm, dp.PACKAGE_INFO, object : IPackageStatsObserver.Stub(){
@@ -225,13 +231,15 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                     }
 
                     while (parentAppBatch.size < appList.size)
-                        Thread.sleep(100)
+                        if(!cancelThis) Thread.sleep(100)
 
                 } else {
 
                     val storageStatsManager = context.getSystemService(STORAGE_STATS_SERVICE) as StorageStatsManager
 
                     for (i in 0 until appList.size){
+
+                        if (cancelThis) break
 
                         val dp = appList[i]
                         var dataSize = 0L
@@ -347,6 +355,8 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
             for (i in 1..parts) {
 
+                if (cancelThis) break
+
                 val batchPackets = ArrayList<AppPacket>(0)
                 var batchSize = 0L
                 var c = 0
@@ -382,36 +392,41 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
     override fun onProgressUpdate(vararg values: String?) {
         super.onProgressUpdate(*values)
-        vOp.visibilitySet(dialogView.waiting_progress, View.VISIBLE)
-        vOp.visibilitySet(dialogView.waiting_details, View.VISIBLE)
-        values[0]?.let {vOp.textSet(dialogView.waiting_head, it.trim())}
-        values[1]?.let {vOp.textSet(dialogView.waiting_progress, it.trim())}
-        values[2]?.let {vOp.textSet(dialogView.waiting_details, it.trim())}
+        if (!cancelThis) {
+            vOp.visibilitySet(dialogView.waiting_progress, View.VISIBLE)
+            vOp.visibilitySet(dialogView.waiting_details, View.VISIBLE)
+            values[0]?.let { vOp.textSet(dialogView.waiting_head, it.trim()) }
+            values[1]?.let { vOp.textSet(dialogView.waiting_progress, it.trim()) }
+            values[2]?.let { vOp.textSet(dialogView.waiting_details, it.trim()) }
+        }
     }
 
     override fun onPostExecute(result: Array<Any>) {
         super.onPostExecute(result)
 
-        vOp.visibilitySet(dialogView.waiting_cancel, View.GONE)
+        if (cancelThis) onJobCompletion.onComplete(jobCode, false, "")
+        else {
+            vOp.visibilitySet(dialogView.waiting_cancel, View.GONE)
 
-        vOp.doSomething {
+            vOp.doSomething {
 
-            if (!(result[0] as Boolean)) {
+                if (!(result[0] as Boolean)) {
 
-                val errorDialog = AlertDialog.Builder(context)
-                        .setTitle(result[1] as String)
-                        .setMessage(result[2] as String)
-                        .setPositiveButton(R.string.close, null)
-                        .create()
+                    val errorDialog = AlertDialog.Builder(context)
+                            .setTitle(result[1] as String)
+                            .setMessage(result[2] as String)
+                            .setPositiveButton(R.string.close, null)
+                            .create()
 
-                if (result[1] as String == vOp.getStringFromRes(R.string.insufficient_storage))
-                    errorDialog.setIcon(R.drawable.ic_zipping_icon)
-                else errorDialog.setIcon(R.drawable.ic_cancelled_icon)
+                    if (result[1] as String == vOp.getStringFromRes(R.string.insufficient_storage))
+                        errorDialog.setIcon(R.drawable.ic_zipping_icon)
+                    else errorDialog.setIcon(R.drawable.ic_cancelled_icon)
 
-                errorDialog.show()
-                onJobCompletion.onComplete(jobCode, false, result[1] as String)
-            } else {
-                onJobCompletion.onComplete(jobCode, true, appBatches)
+                    errorDialog.show()
+                    onJobCompletion.onComplete(jobCode, false, result[1] as String)
+                } else {
+                    onJobCompletion.onComplete(jobCode, true, appBatches)
+                }
             }
         }
     }
