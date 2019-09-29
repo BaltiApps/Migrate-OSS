@@ -7,12 +7,11 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Environment
-import android.support.v4.content.FileProvider
-import android.support.v4.content.LocalBroadcastManager
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import balti.migrate.R
 import kotlinx.android.synthetic.main.error_report_layout.view.*
 import java.io.*
@@ -263,11 +262,11 @@ class CommonToolKotlin(val context: Context) {
         val REPORTING_EMAIL = "help.baltiapps@gmail.com"
     }
 
-    var LBM : LocalBroadcastManager? = null
+    var LBM : androidx.localbroadcastmanager.content.LocalBroadcastManager? = null
 
     init {
         if (context is Activity || context is Service)
-            LBM = LocalBroadcastManager.getInstance(context)
+            LBM = androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(context)
     }
 
     fun unpackAssetToInternal(assetFileName: String, targetFileName: String, toInternal: Boolean): String {

@@ -8,10 +8,11 @@ import android.content.pm.IPackageStatsObserver
 import android.content.pm.PackageStats
 import android.os.AsyncTask
 import android.os.Build
+import android.os.Environment
 import android.os.StatFs
-import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
@@ -257,8 +258,9 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                             dp.PACKAGE_INFO.applicationInfo.dataDir
                         else null
 
-                        val externalData = File("/sdcard/Android/data/" + dp.PACKAGE_INFO.packageName)
-                        val externalMedia = File("/sdcard/Android/media/" + dp.PACKAGE_INFO.packageName)
+                        val sdcard = Environment.getExternalStorageDirectory().path
+                        val externalData = File("$sdcard/Android/data/" + dp.PACKAGE_INFO.packageName)
+                        val externalMedia = File("$sdcard/Android/media/" + dp.PACKAGE_INFO.packageName)
 
                         apkPath?.let {apk ->
                             if (apk.startsWith("/system"))

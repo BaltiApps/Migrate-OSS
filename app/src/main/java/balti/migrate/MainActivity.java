@@ -17,13 +17,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.StatFs;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +28,15 @@ import android.widget.ScrollView;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
 import java.io.IOException;
@@ -157,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                drawer.openDrawer(Gravity.START);
+                drawer.openDrawer(GravityCompat.START);
             }
         });
 
@@ -391,7 +393,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() { //ok
-        if (drawer.isDrawerOpen(Gravity.START)) drawer.closeDrawer(Gravity.START);
+        if (drawer.isDrawerOpen(GravityCompat.START)) drawer.closeDrawer(GravityCompat.START);
         else if (!main.getBoolean("firstRun", true) && main.getBoolean("askForRating", true))
             askForRating(false);
         else super.onBackPressed();
@@ -495,7 +497,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 otherAppsClickManager(view);
                 break;
         }
-        drawer.closeDrawer(Gravity.START);
+        drawer.closeDrawer(GravityCompat.START);
 
         return true;
     }
@@ -536,7 +538,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     void showChangeLog(boolean onlyLatest) { //ok
         int currVer = main.getInt("version", 1);
-        android.support.v7.app.AlertDialog.Builder changelog = new android.support.v7.app.AlertDialog.Builder(this);
+        androidx.appcompat.app.AlertDialog.Builder changelog = new androidx.appcompat.app.AlertDialog.Builder(this);
         String message = "";
         String title = "";
         if (onlyLatest) {

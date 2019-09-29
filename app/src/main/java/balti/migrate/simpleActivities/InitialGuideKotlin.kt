@@ -3,11 +3,9 @@ package balti.migrate.simpleActivities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.view.PagerAdapter
-import android.support.v4.view.ViewPager
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import balti.migrate.R
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FIRST_RUN
@@ -33,7 +31,7 @@ class InitialGuideKotlin: AppCompatActivity() {
 
         TOTAL_LAYOUTS = arrLayouts.size
 
-        initial_guide_view_pager.adapter = object : PagerAdapter(){
+        initial_guide_view_pager.adapter = object : androidx.viewpager.widget.PagerAdapter(){
 
             override fun isViewFromObject(view: View, `object`: Any): Boolean = view == `object`
             override fun getCount(): Int = TOTAL_LAYOUTS
@@ -61,7 +59,7 @@ class InitialGuideKotlin: AppCompatActivity() {
             } else finishGuide()
         }
 
-        initial_guide_view_pager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+        initial_guide_view_pager.addOnPageChangeListener(object : androidx.viewpager.widget.ViewPager.OnPageChangeListener {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
 
             override fun onPageScrollStateChanged(state: Int) {}

@@ -30,7 +30,7 @@
 
     </RelativeLayout>
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/initial_guide_view_pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

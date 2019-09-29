@@ -1,8 +1,9 @@
 package balti.migrate.inAppRestore;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import balti.migrate.R;
 

@@ -11,17 +11,16 @@ import android.graphics.Paint
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
-import android.support.design.widget.NavigationView
-import android.support.v4.app.ActivityCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.view.GravityCompat
 import balti.migrate.CommonTools.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.HelpPage
 import balti.migrate.HowToRestore
@@ -48,6 +47,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_VERSION_CURRENT
 import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
 import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
+import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
 import kotlinx.android.synthetic.main.please_wait.view.*
@@ -126,7 +126,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         }
 
         drawerButton.setOnClickListener {
-            drawer_layout.openDrawer(Gravity.START)
+            drawer_layout.openDrawer(GravityCompat.START)
         }
 
         learn_sd_card_support.paintFlags = Paint.UNDERLINE_TEXT_FLAG
@@ -298,7 +298,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             R.id.otherApps -> otherAppsClickManager()
         }
-        drawer_layout.closeDrawer(Gravity.START)
+        drawer_layout.closeDrawer(GravityCompat.START)
 
         return true
     }
@@ -584,8 +584,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     }
 
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(Gravity.START))
-            drawer_layout.closeDrawer(Gravity.START)
+        if (drawer_layout.isDrawerOpen(GravityCompat.START))
+            drawer_layout.closeDrawer(GravityCompat.START)
         else if (!main.getBoolean(PREF_FIRST_RUN, true) && main.getBoolean(PREF_ASK_FOR_RATING, true))
             askForRating(false)
         else

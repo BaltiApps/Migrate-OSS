@@ -2,8 +2,8 @@ package balti.migrate.extraBackupsActivity.sms
 
 import android.content.Context
 import android.os.AsyncTask
-import android.support.v7.app.AlertDialog
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.sms.utils.SmsListAdapterKotlin

@@ -11,7 +11,7 @@ import android.os.AsyncTask
 import android.os.AsyncTask.THREAD_POOL_EXECUTOR
 import android.os.Build
 import android.os.IBinder
-import android.support.v4.app.NotificationCompat
+import androidx.core.app.NotificationCompat
 import balti.migrate.AppInstance
 import balti.migrate.AppInstance.Companion.sharedPrefs
 import balti.migrate.R
