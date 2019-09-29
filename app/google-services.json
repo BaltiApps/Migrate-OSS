@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "370559829650",
+    "firebase_url": "https://balti-migrate-main.firebaseio.com",
+    "project_id": "balti-migrate-main",
+    "storage_bucket": "balti-migrate-main.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:370559829650:android:f22948a07dfd01a87e084b",
+        "android_client_info": {
+          "package_name": "balti.migrate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "370559829650-q361l78onu35dtrbhqjar81brdk7d34e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMyRapVuF72qA8yJ-kPSqLpVdf_bO6w2s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "370559829650-q361l78onu35dtrbhqjar81brdk7d34e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
