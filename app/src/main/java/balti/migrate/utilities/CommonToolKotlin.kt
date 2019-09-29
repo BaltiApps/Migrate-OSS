@@ -209,6 +209,9 @@ class CommonToolKotlin(val context: Context) {
         val JOBCODE_PERFORM_ZIP_BACKUP = 100000
         val JOBCODE_PERFORM_ZIP_VERIFICATION = 110000
 
+        val TIMEOUT_WAITING_TO_CANCEL_TASK = 500L
+        val TIMEOUT_WAITING_TO_KILL = 3000L
+
         val CONTACT_PERMISSION = 933
         val SMS_PERMISSION = 944
         val CALLS_PERMISSION = 676

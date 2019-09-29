@@ -70,6 +70,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_COMPRESSI
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DELETE_ERROR_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SEPARATE_EXTRAS_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_CHECK
+import balti.migrate.utilities.CommonToolKotlin.Companion.TIMEOUT_WAITING_TO_CANCEL_TASK
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -203,7 +204,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
                             while (it.status != AsyncTask.Status.FINISHED) {
                                 commonTools.tryIt { Thread.sleep(100) }
                             }
-                            commonTools.tryIt { Thread.sleep(500) }
+                            commonTools.tryIt { Thread.sleep(TIMEOUT_WAITING_TO_CANCEL_TASK) }
                         }
 
                     }, {
@@ -606,10 +607,11 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
             } else for (e in allErrors) {
                 errorWriter?.write("$e\n")
             }
-            errorWriter?.write("--- Backup Name : $backupName ---\n")
+            errorWriter?.write("\n--- Backup Name : $backupName ---\n")
+            if (cancelAll) errorWriter?.write("--- Cancelled! ---\n")
             errorWriter?.write("--- Migrate version ${getString(R.string.current_version_name)} ---\n")
 
-            progressWriter?.write("--- \n\nBackup Name : $backupName ---\n")
+            progressWriter?.write("\n--- Backup Name : $backupName ---\n")
             progressWriter?.write("--- Total parts : ${workingAppBatches.size} ---\n")
             progressWriter?.write("--- Migrate version ${getString(R.string.current_version_name)} ---\n")
         }

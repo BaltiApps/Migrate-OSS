@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -12,6 +13,7 @@ import android.text.method.ScrollingMovementMethod
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
 import balti.migrate.R
 import balti.migrate.backupEngines.engines.AppBackupEngine
 import balti.migrate.utilities.CommonToolKotlin
@@ -42,9 +44,12 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TASKLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_PARTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
+import balti.migrate.utilities.CommonToolKotlin.Companion.TIMEOUT_WAITING_TO_KILL
 import balti.migrate.utilities.IconTools
 import kotlinx.android.synthetic.main.backup_progress_layout.*
+import java.io.BufferedWriter
 import java.io.File
+import java.io.OutputStreamWriter
 
 class ProgressShowActivity: AppCompatActivity() {
 
@@ -57,6 +62,8 @@ class ProgressShowActivity: AppCompatActivity() {
     private var lastIcon = ""
 
     private var lastTitle = ""
+
+    private lateinit var forceStopDialog: AlertDialog
 
     private fun setImageIcon(intent: Intent, type: String){
 
@@ -163,6 +170,8 @@ class ProgressShowActivity: AppCompatActivity() {
 
                 if (type == EXTRA_PROGRESS_TYPE_FINISHED) {
 
+                    commonTools.tryIt { forceStopDialog.dismiss() }
+
                     window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                     closeWarning.visibility = View.GONE
 
@@ -249,7 +258,42 @@ class ProgressShowActivity: AppCompatActivity() {
         progressActionButton.apply {
             text = getString(android.R.string.cancel)
             background = getDrawable(R.drawable.cancel_backup)
-            setOnClickListener { commonTools.LBM?.sendBroadcast(Intent(ACTION_BACKUP_CANCEL)) }
+            setOnClickListener {
+                if (this.text == getString(R.string.force_stop)) {
+
+                    forceStopDialog = AlertDialog.Builder(this@ProgressShowActivity).apply {
+
+                        this.setTitle(getString(R.string.force_stop_alert_title))
+                        this.setMessage(getString(R.string.force_stop_alert_desc))
+
+                        setPositiveButton(R.string.kill_app) { _, _ ->
+
+                            Runtime.getRuntime().exec("su").apply {
+                                BufferedWriter(OutputStreamWriter(this.outputStream)).run {
+                                    this.write("am force-stop $packageName\n")
+                                    this.write("exit\n")
+                                    this.flush()
+                                }
+                            }
+
+                            val handler = Handler()
+                            handler.postDelayed({
+                                Toast.makeText(this@ProgressShowActivity, R.string.killing_programmatically, Toast.LENGTH_SHORT).show()
+                                android.os.Process.killProcess(android.os.Process.myPid())
+                            }, TIMEOUT_WAITING_TO_KILL)
+                        }
+
+                        setNegativeButton(R.string.wait_to_cancel, null)
+
+                    }.create()
+
+                    forceStopDialog.show()
+                }
+                else {
+                    text = getString(R.string.force_stop)
+                    commonTools.LBM?.sendBroadcast(Intent(ACTION_BACKUP_CANCEL))
+                }
+            }
         }
 
         progressBar.max = 100

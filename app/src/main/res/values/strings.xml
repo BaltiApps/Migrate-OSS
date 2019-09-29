@@ -613,6 +613,14 @@
     <string name="showing_apps_from">Showing apps from category:</string>
     <string name="enter_app_name">App/package name</string>
 
+    <!--ProgressShowActivity.kt-->
+    <string name="force_stop">Force stop</string>
+    <string name="force_stop_alert_title">Force stop app?</string>
+    <string name="force_stop_alert_desc">Force stopping will attempt to kill the whole app. If you have already pressed Cancel once, please wait for some time.\n\nOn force stopping, you will have to manually delete any backup files made.</string>
+    <string name="kill_app">OK, kill it!</string>
+    <string name="wait_to_cancel">Wait…</string>
+    <string name="killing_programmatically">Killing programmatically</string>
+
     <!--MainBackupEngine.kt-->
     <string name="test_apk_not_found">Test apk not found or not properly created</string>
     <string name="test_data_not_found">Test data (tar.gz) not found or not properly created</string>
