@@ -39,7 +39,7 @@ public class HelpPage extends AppCompatActivity {
                 email.putExtra(Intent.EXTRA_EMAIL, new String[]{"help.baltiapps@gmail.com"});
                 email.putExtra(Intent.EXTRA_SUBJECT, "Feedback for Migrate");
                 try {
-                    startActivity(Intent.createChooser(email, getString(R.string.select_mail)));
+                    startActivity(Intent.createChooser(email, getString(R.string.select_telegram)));
                 } catch (Exception e) {
                     Toast.makeText(HelpPage.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }

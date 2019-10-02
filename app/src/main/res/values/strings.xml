@@ -418,22 +418,38 @@
     <string name="present_in_backup">Present in backup</string>
 
     <!--error_report_layout.xml-->
+    <string name="report_header">Report via Telegram</string>
     <string name="share_progress_logs">Share progress logs</string>
     <string name="share_error_logs">Share error logs</string>
     <string name="share_script">Share script</string>
+    <string name="send_to_tg">Send to Telegram</string>
     <string name="agree_and_send">Agree and send</string>
-    <string name="error_report_disclaimer">Thanks for your interest in helping to improve this app. You agree to share:\n\n
-        - Some internal file structure of apps (this does not necessarily have any private data).\n
+    <string name="error_report_disclaimer">Thanks for your interest in helping to improve this app. From now on, all error reports are to be sent in our Telegram group - https://t.me/migrateApp.
+        As such, you will get faster resolution from many people in the group.\n\n
+        By sharing logs, you agree to <b>PUBLICLY</b> share some information. Click \"Agree and send\" to proceed.
+    </string>
+    <string name="what_is_shared">What is shared?</string>
+    <string name="shared_desc">
+        On sharing logs, you agree to share (publicly, if on Telegram):\n\n
+        - Some internal file structure of apps. This (in most cases) does not contain personally identifiable sensitive information.\n
         - The backup name.\n
         - Some backup details like number of backup parts.\n
-        - Personal info like phone numbers <b><i>ARE NOT RECORDED</i></b>\n
-        - You may be contacted via email address if further follow up is needed.\n\n
-        Click \"Agree and send\" to proceed.
+        - Device information like android version.\n\n
+        Migrate highly respects privacy of users. As such logs generated during back up of contacts, sms and call logs are NOT RECORDED and not sharable.
+        No intentional attempt is made to identify or make illicit use of personal data of users.\n\n
+        In any case, you agree that neither the developer, nor is the app responsible for any unintentional breach of privacy. In case you feel that your logs may contain sensitive information, please don\'t share them. In case you have already shared, please request for their deletion as soon as possible.
     </string>
+    <string name="not_joined_yet">Not joined in our group yet?</string>
+    <string name="send_logs_using">Send logs using:</string>
     <string name="log_files_do_not_exist">Log files do not exist</string>
     <string name="progress_log_does_not_exist">\"progressLog\" does not exist</string>
     <string name="error_log_does_not_exist">\"errorLog\" does not exist</string>
     <string name="backup_script_does_not_exist">Backup scripts do not exist</string>
+    <string name="tg_not_installed">Our Telegram group helps to get quick resolutions to problems.</string>
+    <string name="tg_not_installed_desc">Please install Telegram and join our group.</string>
+    <string name="install_tg">Install Telegram</string>
+    <string name="join_group">Join group</string>
+    <string name="use_email_instead">Use old email</string>
 
     <!--backup_progress_layout.xml-->
     <string name="report">Report</string>
@@ -528,7 +544,7 @@
     <string name="xda_thread">XDA thread</string>
     <string name="other_options">Other options</string>
     <string name="other_apps">Other apps</string>
-    <string name="contact">Contact by email</string>
+    <string name="contact">Contact via Telegram</string>
     <string name="contact_over_telegram">Telegram group</string>
     <string name="older_builds">Older builds on AFH</string>
     
@@ -589,10 +605,12 @@
     <string name="more_coming_soon">More coming soon…</string>
 
     <!--miscellaneous-->
-    <string name="sure_to_mail">Are you sure you want to send an email?</string>
-    <string name="sure_to_mail_exp">Please only contact if you are sure of a bug. To avoid unnecessary emails, please read the Help page first.\n
-        Your email address will not be used for anything else other than if it is necessary to mail back.</string>
-    <string name="select_mail">Select mailing app, example Gmail.</string>
+    <string name="contact_via_telegram">Contact via Telegram</string>
+    <string name="contact_via_telegram_desc">For feedback and support, please contact on our Telegram group. You will get better and faster support from group members.\n\nYou may also choose to personally contact the developer on Telegram.</string>
+    <string name="contact_dev">Contact developer</string>
+    <string name="post_in_group">Post in group</string>
+    <string name="select_mail">Select mail app like Gmail</string>
+    <string name="select_telegram">Open Telegram and select the Migrate group</string>
     <!--<string name="sem_apology">Semester apology!</string>
     <string name="sem_apology_desc">Due to upcoming semesters, I will not be able to focus on the app development for a month or so. I am sorry.\n\n
     Meanwhile, please continue using the app and share bug reports. Your love and support means a lot to me. Thanks!\n\n
@@ -600,7 +618,7 @@
 
     <string name="copied_app">This app has been copied and is fake.</string>
     <string name="copied_app_exp">Please get the original app from BaltiApps by clicking the Install button.</string>
-    <string name="install">Install original app</string>
+    <string name="install_original_migrate">Install original app</string>
 
     <!--preference.xml-->
     <string name="disable_battery_optimisation">Disable battery optimisation</string>

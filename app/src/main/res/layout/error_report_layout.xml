@@ -2,14 +2,45 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="15dp">
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/large_padding_width"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/report_header"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_gravity="start"
+        android:textStyle="bold"
+        />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/large_padding_width"/>
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/large_padding_width"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/error_report_disclaimer" />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/large_padding_width"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/what_is_shared"
+        android:id="@+id/report_button_what_is_shared"
+        />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -42,5 +73,49 @@
 
     </LinearLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/not_joined_yet"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/join_group"
+        android:id="@+id/report_button_join_group"
+        />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/large_padding_width"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/send_logs_using"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/use_email_instead"
+            android:id="@+id/report_button_old_email"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/send_to_tg"
+            android:backgroundTint="@color/colorButtons"
+            android:id="@+id/report_button_telegram"
+            />
+
+    </LinearLayout>
 
 </LinearLayout>

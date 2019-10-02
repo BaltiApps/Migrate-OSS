@@ -1,8 +1,12 @@
 package balti.migrate.utilities
 
-import android.app.*
+import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
@@ -44,6 +48,7 @@ class CommonToolKotlin(val context: Context) {
 
         val FILE_PROGRESSLOG = "progressLog.txt"
         val FILE_ERRORLOG = "errorLog.txt"
+        val FILE_DEVICE_INFO = "device_info.txt"
         val FILE_PREFIX_BACKUP_SCRIPT = "the_backup_script_"
         val FILE_PREFIX_RETRY_SCRIPT = "retry_script_"
         val FILE_PREFIX_TAR_CHECK = "tar_check_"
@@ -260,6 +265,14 @@ class CommonToolKotlin(val context: Context) {
         val MIGRATE_STATUS = "MIGRATE_STATUS"
 
         val REPORTING_EMAIL = "help.baltiapps@gmail.com"
+        val TG_LINK = "https://t.me/migrateApp"
+        val TG_DEV_LINK = "https://t.me/SayantanRC"
+
+        val TG_CLIENTS = arrayOf(
+                "org.telegram.messenger",          // Official Telegram app
+                "org.thunderdog.challegram",       // Telegram X
+                "org.telegram.plus"                // Plus messenger
+        )
     }
 
     var LBM : androidx.localbroadcastmanager.content.LocalBroadcastManager? = null
@@ -303,7 +316,6 @@ class CommonToolKotlin(val context: Context) {
         val backupScripts = context.externalCacheDir.listFiles { f: File ->
             (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT) || f.name.startsWith(FILE_PREFIX_TAR_CHECK))
                     && f.name.endsWith(".sh")
-
         }
 
         if (isErrorLogMandatory && !errorLog.exists()) {
@@ -326,47 +338,61 @@ class CommonToolKotlin(val context: Context) {
             eView.share_errors_checkbox.isChecked = errorLog.exists()
             eView.share_errors_checkbox.isEnabled = errorLog.exists() && !isErrorLogMandatory
 
-            AlertDialog.Builder(context)
-                    .setView(eView)
-                    .setPositiveButton(R.string.agree_and_send) {_, _ ->
+            eView.report_button_what_is_shared.setOnClickListener {
+                AlertDialog.Builder(context)
+                        .setTitle(R.string.what_is_shared)
+                        .setMessage(R.string.shared_desc)
+                        .setPositiveButton(R.string.close, null)
+                        .show()
+            }
 
-                        val body = deviceSpecifications
+            eView.report_button_join_group.setOnClickListener {
+                openWebLink(TG_LINK)
+            }
 
-                        val emailIntent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-                            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            type = "text/plain"
-                            putExtra(Intent.EXTRA_EMAIL, arrayOf(REPORTING_EMAIL))
-                            putExtra(Intent.EXTRA_SUBJECT, "Log report for Migrate")
-                            putExtra(Intent.EXTRA_TEXT, body)
-                        }
+            fun getUris(): ArrayList<Uri>{
 
-                        val uris = ArrayList<Uri>(0)
+                val uris = ArrayList<Uri>(0)
+                try {
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            if (eView.share_errors_checkbox.isChecked) uris.add(FileProvider.getUriForFile(context, "migrate.provider", errorLog))
-                            if (eView.share_progress_checkbox.isChecked) uris.add(FileProvider.getUriForFile(context, "migrate.provider", progressLog))
-                            if (eView.share_script_checkbox.isChecked)
-                                for (f in backupScripts)
-                                    uris.add(FileProvider.getUriForFile(context, "migrate.provider", f))
-                        }
-                        else {
-                            if (eView.share_errors_checkbox.isChecked) uris.add(Uri.fromFile(errorLog))
-                            if (eView.share_progress_checkbox.isChecked) uris.add(Uri.fromFile(progressLog))
-                            if (eView.share_script_checkbox.isChecked) for (f in backupScripts) uris.add(Uri.fromFile(f))
-                        }
+                    if (eView.share_errors_checkbox.isChecked) uris.add(getUri(errorLog))
+                    if (eView.share_progress_checkbox.isChecked) uris.add(getUri(progressLog))
+                    if (eView.share_script_checkbox.isChecked) for (f in backupScripts) uris.add(getUri(f))
 
-                        emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT).show()
+                }
 
-                        try {
-                            context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.select_mail)))
-                            Toast.makeText(context, context.getString(R.string.select_mail), Toast.LENGTH_SHORT).show()
-                        } catch (e: Exception) {
-                            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
-                        }
+                return uris
+            }
 
-                    }
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .show()
+            eView.report_button_old_email.setOnClickListener {
+                sendIntent(getUris(), true)
+            }
+
+            var isTgClientInstalled = false
+            for (i in TG_CLIENTS.indices){
+                if (isPackageInstalled(TG_CLIENTS[i])){
+                    isTgClientInstalled = true
+                    break
+                }
+            }
+
+            if (!isTgClientInstalled){
+                eView.report_button_telegram.apply {
+                    text = context.getString(R.string.install_tg)
+                    setOnClickListener { openWebLink("market://details?id=${TG_CLIENTS[0]}") }
+                }
+            }
+            else {
+                eView.report_button_telegram.apply {
+                    text = context.getString(R.string.send_to_tg)
+                    setOnClickListener { sendIntent(getUris()) }
+                }
+            }
+
+            AlertDialog.Builder(context).setView(eView).show()
 
         }
         else {
@@ -395,14 +421,52 @@ class CommonToolKotlin(val context: Context) {
                     "Hardware: " + Build.HARDWARE
         private set
 
+    private fun getUri(file: File) =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                FileProvider.getUriForFile(context, "migrate.provider", file)
+            else Uri.fromFile(file)
 
-    fun isServiceRunning(name: String): Boolean {
-        val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        for (s in manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (name == s.service.className)
-                return true
+    private fun sendIntent(uris: ArrayList<Uri>, isEmail: Boolean = false){
+        Intent().run {
+
+            action = Intent.ACTION_SEND_MULTIPLE
+            type = "text/plain"
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+
+            if (isEmail) {
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(REPORTING_EMAIL))
+                putExtra(Intent.EXTRA_SUBJECT, "Log report for Migrate")
+                putExtra(Intent.EXTRA_TEXT, deviceSpecifications)
+
+                putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+                context.startActivity(Intent.createChooser(this, context.getString(R.string.select_mail)))
+            }
+            else doBackgroundTask({
+
+                tryIt {
+                    val infoFile = File(context.externalCacheDir, FILE_DEVICE_INFO)
+                    BufferedWriter(FileWriter(infoFile)).run {
+                        write(deviceSpecifications)
+                        close()
+                    }
+                    uris.add(getUri(infoFile))
+                }
+
+            }, {
+                this.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+                context.startActivity(Intent.createChooser(this, context.getString(R.string.select_telegram)))
+            })
         }
-        return false
+    }
+
+    private fun isPackageInstalled(packageName: String): Boolean{
+        return try {
+            context.packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
+            true
+        }
+        catch (_: Exception){
+            false
+        }
     }
 
 

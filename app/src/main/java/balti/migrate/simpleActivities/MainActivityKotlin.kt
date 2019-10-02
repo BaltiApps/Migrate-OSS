@@ -46,6 +46,8 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_VERSION_CURRENT
 import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
 import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
+import balti.migrate.utilities.CommonToolKotlin.Companion.TG_DEV_LINK
+import balti.migrate.utilities.CommonToolKotlin.Companion.TG_LINK
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
@@ -167,7 +169,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                             putExtra(Intent.EXTRA_TEXT, commonTools.deviceSpecifications)
                         }
                         try {
-                            startActivity(Intent.createChooser(email, getString(R.string.select_mail)))
+                            startActivity(Intent.createChooser(email, getString(R.string.select_telegram)))
                         } catch (e: Exception) {
                             Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
                         }
@@ -270,28 +272,16 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             R.id.contact ->
                 AlertDialog.Builder(this)
-                        .setTitle(R.string.sure_to_mail)
-                        .setMessage(R.string.sure_to_mail_exp)
-                        .setPositiveButton(android.R.string.ok) { _, _ ->
-                            val email = Intent(Intent.ACTION_SENDTO)
-                                    .setData(Uri.parse("mailto:"))
-                                    .putExtra(Intent.EXTRA_EMAIL, arrayOf("help.baltiapps@gmail.com"))
-                                    .putExtra(Intent.EXTRA_SUBJECT, "Bug report for Migrate")
-                                    .putExtra(Intent.EXTRA_TEXT, commonTools.deviceSpecifications)
-
-                            try {
-                                startActivity(Intent.createChooser(email, getString(R.string.select_mail)))
-                            } catch (e: Exception){
-                                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
-                            }
+                        .setTitle(R.string.contact_via_telegram)
+                        .setMessage(R.string.contact_via_telegram_desc)
+                        .setPositiveButton(R.string.post_in_group) { _, _ ->
+                            commonTools.openWebLink(TG_LINK)
                         }
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .setNeutralButton(R.string.help) {_, _ ->
-                            startActivity(Intent(this, HelpPage::class.java))               /*kotlin*/
+                        .setNeutralButton(android.R.string.cancel, null)
+                        .setNegativeButton(R.string.contact_dev) {_, _ ->
+                            commonTools.openWebLink(TG_DEV_LINK)
                         }
                         .show()
-
-            R.id.contact_telegram -> commonTools.openWebLink("https://t.me/migrateApp")
 
             R.id.xda_thread ->
                 commonTools.openWebLink("https://forum.xda-developers.com/android/apps-games/app-migrate-custom-rom-migration-tool-t3862763")
@@ -448,7 +438,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             ad.setNegativeButton(R.string.close) { _, _ ->
                 finish()
             }
-            ad.setPositiveButton(R.string.install) { _, _ ->
+            ad.setPositiveButton(R.string.install_original_migrate) { _, _ ->
                 commonTools.openWebLink("market://details?id=balti.migrate")
             }
             ad.show()

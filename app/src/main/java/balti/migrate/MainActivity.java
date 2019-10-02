@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             email.putExtra(Intent.EXTRA_TEXT, body);
 
                             try {
-                                startActivity(Intent.createChooser(email, getString(R.string.select_mail)));
+                                startActivity(Intent.createChooser(email, getString(R.string.select_telegram)));
                             } catch (Exception e) {
                                 Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
@@ -322,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     finish();
                 }
             });
-            ad.setPositiveButton(R.string.install, new DialogInterface.OnClickListener() {
+            ad.setPositiveButton(R.string.install_original_migrate, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     commonTools.openWeblink("market://details?id=balti.migrate");
@@ -450,8 +450,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.contact:
                 android.app.AlertDialog.Builder confirmEmail;
                 confirmEmail = new android.app.AlertDialog.Builder(MainActivity.this);
-                confirmEmail.setTitle(getString(R.string.sure_to_mail))
-                        .setMessage(getString(R.string.sure_to_mail_exp))
+                confirmEmail.setTitle(getString(R.string.contact_via_telegram))
+                        .setMessage(getString(R.string.contact_via_telegram_desc))
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -463,7 +463,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 email.putExtra(Intent.EXTRA_TEXT, commonTools.getDeviceSpecifications());
 
                                 try {
-                                    startActivity(Intent.createChooser(email, getString(R.string.select_mail)));
+                                    startActivity(Intent.createChooser(email, getString(R.string.select_telegram)));
                                 } catch (Exception e) {
                                     Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
@@ -477,10 +477,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             }
                         })
                         .show();
-                break;
-
-            case R.id.contact_telegram:
-                commonTools.openWeblink("https://t.me/migrateApp");
                 break;
 
             case R.id.xda_thread:

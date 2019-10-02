@@ -167,8 +167,8 @@ public class CommonTools {
                             emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
 
                             try {
-                                context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.select_mail)));
-                                Toast.makeText(context, context.getString(R.string.select_mail), Toast.LENGTH_SHORT).show();
+                                context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.select_telegram)));
+                                Toast.makeText(context, context.getString(R.string.select_telegram), Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {
                                 Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
