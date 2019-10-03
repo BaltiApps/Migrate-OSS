@@ -158,10 +158,13 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             AlertDialog.Builder(this)
                     .setTitle(R.string.unsupported_device)
                     .setMessage(getString(R.string.cpu_arch_is) + "\n" + cpuAbi + "\n\n" + getString(R.string.currently_supported_cpu))
-                    .setPositiveButton(R.string.close) { _, _ ->
+                    .setNegativeButton(R.string.close) { _, _ ->
                         finish()
                     }
-                    .setNegativeButton(R.string.contact) { _, _ ->
+                    .setPositiveButton(R.string.contact) { _, _ ->
+                        commonTools.openWebLink(TG_LINK)
+                    }
+                    .setNeutralButton(R.string.use_email_instead) {_, _ ->
                         val email = Intent(Intent.ACTION_SENDTO).apply {
                             data = Uri.parse("mailto:")
                             putExtra(Intent.EXTRA_EMAIL, arrayOf("help.baltiapps@gmail.com"))
