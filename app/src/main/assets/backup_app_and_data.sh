@@ -30,7 +30,7 @@ if [[ ${APK_PATH} != "NULL" && ${APK_NAME} != "NULL" ]]; then
 
     # backup apk
     cd ${APK_PATH}; cp "$APK_NAME" "${appDir}/$PACKAGE_NAME.apk"
-    if [[ -e "$2/$1.app/$1.apk" ]]; then
+    if [[ -e "$DESTINATION/$PACKAGE_NAME.app/$PACKAGE_NAME.apk" ]]; then
         echo "Apk copied"
     fi
 

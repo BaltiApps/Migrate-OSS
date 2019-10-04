@@ -48,6 +48,10 @@ if [[ -e /tmp/${FILE_LIST} ]]; then
     ed=/tmp/${FILE_LIST}
     while read -r line || [[ -n "$line" ]]; do
         case ${line} in
+            *app_sys)
+                # ignore system apps
+                echo "Debug:: verify.sh - ignoring $line"
+            ;;
             *tar.gz)
             if [[ ! -e /data/data/${line} ]]; then
                 echoIt "$line was not unpacked"

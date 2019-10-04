@@ -71,46 +71,23 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
         allErrors.add(err)
     }
 
-    private fun systemAppInstallScript(sysAppPackageName: String, sysAppPastingDir: String, appDir: String) {
+    private fun systemAppInstallScript(packageName: String, apkPath: String) {
 
-        val scriptName = "$sysAppPackageName.sh"
+        val scriptName = "$packageName.sh"
         val scriptLocation = "$actualDestination/$scriptName"
         val script = File(scriptLocation)
 
-        var pastingDir = "/system"
-
-        sysAppPastingDir.let {fullDir ->
-
-            "/system/".let { if (fullDir.startsWith(it)) pastingDir = fullDir.substring(it.length) }
-
-            "/system_root/".run {
-                if (fullDir.startsWith(this)) {
-                    pastingDir = fullDir.substring(this.length)
-
-                    "/system_root/system/".run {
-                        if (fullDir.startsWith(this)) {
-                            pastingDir = fullDir.substring(this.length)
-
-                            "/system_root/system/system".run {
-                                if (fullDir.startsWith(this))
-                                    pastingDir = fullDir.substring(this.length)
-                            }
-
-                        }
-
-                    }
-                }
-            }
-        }
+        var pastingDir: String = if (apkPath.contains("priv-app"))
+            apkPath.substring(apkPath.indexOf("/priv-app"))
+        else apkPath.substring(apkPath.indexOf("/app"))
 
         val scriptText = "#!sbin/sh\n\n" +
                 "\n" +
                 "SYSTEM=$(cat /tmp/migrate/SYSTEM)\n" +
                 "mkdir -p \$SYSTEM/$pastingDir\n" +
-                "mv /tmp/$appDir/*.apk \$SYSTEM/$pastingDir/\n" +
-                "cd /tmp/" + "\n" +
-                "rm -rf " + appDir + "\n" +
-                "rm -rf " + scriptName + "\n"
+                "mv /tmp/$packageName/*.apk \$SYSTEM/$pastingDir/\n" +
+                "rm -rf /tmp/$packageName\n" +
+                "rm /tmp/$scriptName\n"
 
 
         File(actualDestination).mkdirs()
@@ -161,6 +138,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
                     var apkPath = "NULL"
                     var apkName = "NULL"       //has .apk extension
+                    var isSystem = false
                     if (packet.APP) {
 
                         apkPath = packet.PACKAGE_INFO.applicationInfo.sourceDir
@@ -168,7 +146,10 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                         apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'))
                         apkName = commonTools.applyNamingCorrectionForShell(apkName)
 
-                        writeFileList("$packageName.app", modifiedAppName)
+                        isSystem = !apkPath.startsWith("/data")
+
+                        if (!isSystem) writeFileList("$packageName.app", modifiedAppName)
+                        else writeFileList("$packageName.app_sys", modifiedAppName)
                     }
 
                     var dataPath = "NULL"
@@ -207,8 +188,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     scriptWriter.write(echoCopyCommand, 0, echoCopyCommand.length)
                     scriptWriter.write(scriptCommand, 0, scriptCommand.length)
 
-                    val isSystem = apkPath.startsWith("/system")
-                    if (isSystem) systemAppInstallScript(packageName, apkPath, packageName)
+                    commonTools.tryIt { if (isSystem) systemAppInstallScript(packageName, apkPath) }
 
                     backupUtils.makeMetadataFile(
                             isSystem, appName, apkName, "$dataName.tar.gz", appIconFileName,
