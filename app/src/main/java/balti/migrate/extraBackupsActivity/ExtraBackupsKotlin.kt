@@ -179,6 +179,11 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
     }
 
+    fun doWaitingJob(job: () -> Unit){
+        toggleBackupButton(0)
+        job()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.extra_backups)
@@ -377,9 +382,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             if (isChecked) {
 
                 showStockWarning({
-                    readDpi = ReadDpiKotlin(JOBCODE_READ_DPI, this, dpi_main_item, dpi_selected_status, dpi_read_progress, do_backup_dpi)
-                    readDpi?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
-                    toggleBackupButton(0)
+                    doWaitingJob {
+                        readDpi = ReadDpiKotlin(JOBCODE_READ_DPI, this, dpi_main_item, dpi_selected_status, dpi_read_progress, do_backup_dpi)
+                        readDpi?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
+                    }
                 }, {
                     do_backup_dpi.isChecked = false
                 })
@@ -399,9 +405,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             if (isChecked) {
 
                 showStockWarning({
-                    readAdb = ReadAdbKotlin(JOBCODE_READ_ADB, this, adb_main_item, adb_selected_status, adb_read_progress, do_backup_adb)
-                    readAdb?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
-                    toggleBackupButton(0)
+                    doWaitingJob{
+                        readAdb = ReadAdbKotlin(JOBCODE_READ_ADB, this, adb_main_item, adb_selected_status, adb_read_progress, do_backup_adb)
+                        readAdb?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
+                    }
                 }, {
                     do_backup_adb.isChecked = false
                 })
@@ -420,9 +427,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         } else if (buttonView == do_backup_keyboard) {
 
             if (isChecked) {
-                loadKeyboard = LoadKeyboardForSelection(JOBCODE_LOAD_KEYBOARDS, this, keyboard_main_item, keyboard_selected_status, do_backup_keyboard, appListCopied)
-                loadKeyboard?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) }
-                toggleBackupButton(0)
+                doWaitingJob {
+                    loadKeyboard = LoadKeyboardForSelection(JOBCODE_LOAD_KEYBOARDS, this, keyboard_main_item, keyboard_selected_status, do_backup_keyboard, appListCopied)
+                    loadKeyboard?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) }
+                }
             }
             else {
                 keyboardText = ""
@@ -446,9 +454,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             if (isChecked) {
 
                 showStockWarning({
-                    readWifi = ReadWifiKotlin(JOBCODE_READ_WIFI, this, wifi_main_item, wifi_selected_status, wifi_read_progress, do_backup_wifi)
-                    readWifi?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
-                    toggleBackupButton(0)
+                    doWaitingJob {
+                        readWifi = ReadWifiKotlin(JOBCODE_READ_WIFI, this, wifi_main_item, wifi_selected_status, wifi_read_progress, do_backup_wifi)
+                        readWifi?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) }
+                    }
                 }, {
                     do_backup_wifi.isChecked = false
                 })
@@ -468,9 +477,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             if (isChecked){
 
                 showStockWarning({
-                    readFontScale = ReadFontScaleKotlin(JOBCODE_READ_FONTSCALE, this, fontScale_main_item, fontScale_selected_status, fontScale_read_progress, do_backup_fontScale)
-                    readFontScale?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)}
-                    toggleBackupButton(0)
+                    doWaitingJob {
+                        readFontScale = ReadFontScaleKotlin(JOBCODE_READ_FONTSCALE, this, fontScale_main_item, fontScale_selected_status, fontScale_read_progress, do_backup_fontScale)
+                        readFontScale?.let { it.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) }
+                    }
                 }, {
                     do_backup_fontScale.isChecked = false
                 })
@@ -501,9 +511,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 do_backup_sms.isChecked = true
 
                 commonTools.tryIt({
-                    readSms = ReadSmsKotlin(JOBCODE_READ_SMS_THEN_CALLS, this, sms_main_item, sms_selected_status, sms_read_progress, do_backup_sms)
-                    readSms?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
-                    toggleBackupButton(0)
+                    doWaitingJob {
+                        readSms = ReadSmsKotlin(JOBCODE_READ_SMS_THEN_CALLS, this, sms_main_item, sms_selected_status, sms_read_progress, do_backup_sms)
+                        readSms?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+                    }
                 }, true)
 
                 do_backup_sms.setOnCheckedChangeListener(this)
@@ -514,9 +525,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 commonTools.tryIt({
-                    readContacts = ReadContactsKotlin(JOBCODE_READ_CONTACTS, this, contacts_main_item, contacts_selected_status, contacts_read_progress, do_backup_contacts)
-                    readContacts?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
-                    toggleBackupButton(0)
+                    doWaitingJob {
+                        readContacts = ReadContactsKotlin(JOBCODE_READ_CONTACTS, this, contacts_main_item, contacts_selected_status, contacts_read_progress, do_backup_contacts)
+                        readContacts?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+                    }
                 }, true)
 
             }
@@ -531,9 +543,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 commonTools.tryIt({
-                    readSms = ReadSmsKotlin(JOBCODE_READ_SMS, this, sms_main_item, sms_selected_status, sms_read_progress, do_backup_sms)
-                    readSms?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
-                    toggleBackupButton(0)
+                    doWaitingJob {
+                        readSms = ReadSmsKotlin(JOBCODE_READ_SMS, this, sms_main_item, sms_selected_status, sms_read_progress, do_backup_sms)
+                        readSms?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+                    }
                 }, true)
 
             }
@@ -548,9 +561,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 commonTools.tryIt({
-                    readCalls = ReadCallsKotlin(JOBCODE_READ_CALLS, this, calls_main_item, calls_selected_status, calls_read_progress, do_backup_calls)
-                    readCalls?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
-                    toggleBackupButton(0)
+                    doWaitingJob {
+                        readCalls = ReadCallsKotlin(JOBCODE_READ_CALLS, this, calls_main_item, calls_selected_status, calls_read_progress, do_backup_calls)
+                        readCalls?.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+                    }
                 }, true)
 
             }
@@ -759,7 +773,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 }
             }}
 
-        toggleBackupButton(1)
+        if (jobCode != JOBCODE_READ_SMS_THEN_CALLS)
+            toggleBackupButton(1)
 
         when (jobCode){
 
@@ -982,9 +997,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             installer_selected_status.text = "$n of ${appListCopied.size}"
             installers_main_item.isClickable = true
             installers_main_item.setOnClickListener {
-                loadInstallers = LoadInstallersForSelection(JOBCODE_LOAD_INSTALLERS, this, appListCopied)
-                loadInstallers?.execute()
-                toggleBackupButton(0)
+                doWaitingJob {
+                    loadInstallers = LoadInstallersForSelection(JOBCODE_LOAD_INSTALLERS, this, appListCopied)
+                    loadInstallers?.execute()
+                }
             }
         }
 

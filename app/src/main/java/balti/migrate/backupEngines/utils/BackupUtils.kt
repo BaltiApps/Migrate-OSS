@@ -4,7 +4,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
-import balti.migrate.utilities.CommonToolKotlin
+import balti.migrate.utilities.constants.MtdConstants
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -50,20 +50,20 @@ class BackupUtils {
 
         val jsonObject = JSONObject()
         jsonObject.apply {
-            put(CommonToolKotlin.MTD_IS_SYSTEM, isSystem)
-            put(CommonToolKotlin.MTD_APP_NAME, appName)
-            put(CommonToolKotlin.MTD_PACKAGE_NAME, packageName)
-            put(CommonToolKotlin.MTD_APK, apkName)
-            put(CommonToolKotlin.MTD_DATA, dataName)
-            put(CommonToolKotlin.MTD_VERSION, version)
-            put(CommonToolKotlin.MTD_DATA_SIZE, appPacket.dataSize)
-            put(CommonToolKotlin.MTD_SYSTEM_SIZE, appPacket.systemSize)
-            put(CommonToolKotlin.MTD_PERMISSION, permissions)
+            put(MtdConstants.MTD_IS_SYSTEM, isSystem)
+            put(MtdConstants.MTD_APP_NAME, appName)
+            put(MtdConstants.MTD_PACKAGE_NAME, packageName)
+            put(MtdConstants.MTD_APK, apkName)
+            put(MtdConstants.MTD_DATA, dataName)
+            put(MtdConstants.MTD_VERSION, version)
+            put(MtdConstants.MTD_DATA_SIZE, appPacket.dataSize)
+            put(MtdConstants.MTD_SYSTEM_SIZE, appPacket.systemSize)
+            put(MtdConstants.MTD_PERMISSION, permissions)
             when {
-                iconFileName != null -> put(CommonToolKotlin.MTD_ICON_FILE_NAME, iconFileName)
-                iconString != null -> put(CommonToolKotlin.MTD_APP_ICON, iconString)
+                iconFileName != null -> put(MtdConstants.MTD_ICON_FILE_NAME, iconFileName)
+                iconString != null -> put(MtdConstants.MTD_APP_ICON, iconString)
             }
-            put(CommonToolKotlin.MTD_INSTALLER_NAME, if (doBackupInstallers) appPacket.installerName else "NULL")
+            put(MtdConstants.MTD_INSTALLER_NAME, if (doBackupInstallers) appPacket.installerName else "NULL")
         }
 
         File(actualDestination).mkdirs()

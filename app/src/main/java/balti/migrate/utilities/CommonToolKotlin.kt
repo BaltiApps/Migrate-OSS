@@ -221,6 +221,8 @@ class CommonToolKotlin(val context: Context) {
         val CALLS_PERMISSION = 676
         val SMS_AND_CALLS_PERMISSION = 567
 
+        val BACKUP_NAME_SETTINGS = "settings.json"
+
         val WIFI_FILE_NAME = "WifiConfigStore.xml"
         val WIFI_FILE_PATH = "/data/misc/wifi/$WIFI_FILE_NAME"
         val WIFI_FILE_NOT_FOUND = "***not_found***"
@@ -236,27 +238,6 @@ class CommonToolKotlin(val context: Context) {
 
         // main backup engine
         val MIGRATE_STATUS_LABEL = "migrate_status"
-
-        val SETTINGS_DPI = "val_dpi"
-        val SETTINGS_KEYBOARD = "keyboard_text"
-        val SETTINGS_ADB = "val_adb"
-        val SETTINGS_FONT_SCALE = "val_fontScale"
-
-        val BACKUP_NAME_SETTINGS = "settings.json"
-        val BACKUP_NAME_WIFI = "wifi.xml"
-
-        val MTD_APP_NAME = "app_name"
-        val MTD_IS_SYSTEM = "is_system_app"
-        val MTD_APP_ICON = "icon"
-        val MTD_PACKAGE_NAME = "package_name"
-        val MTD_APK = "apk"
-        val MTD_DATA = "data"
-        val MTD_VERSION = "version"
-        val MTD_DATA_SIZE = "data_size"
-        val MTD_SYSTEM_SIZE = "system_size"
-        val MTD_PERMISSION = "permission"
-        val MTD_ICON_FILE_NAME = "icon_file"
-        val MTD_INSTALLER_NAME = "installer_name"
 
         val EXTRA_PART_NAME = "part_name"
         val EXTRA_PART_NUMBER = "part_number"
