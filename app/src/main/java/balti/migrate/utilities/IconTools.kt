@@ -97,17 +97,29 @@ class IconTools {
                 }
             }
         }
-        Setter().execute()
+        Setter().executeOnExecutor(THREAD_POOL_EXECUTOR)
     }
 
     fun setIconFromFile(iconView: ImageView, file: File){
-        var icon = ""
 
-        if (file.exists() && file.canRead())
-            BufferedReader(FileReader(file)).readLines().forEach {
-                icon += it
+        class Setter : AsyncTask<Any, Any, String>() {
+
+            override fun doInBackground(vararg params: Any?): String {
+
+                val icon = StringBuffer("")
+                if (file.exists() && file.canRead()) {
+                    BufferedReader(FileReader(file)).readLines().forEach {
+                        icon.append(it)
+                    }
+                }
+                return icon.toString()
             }
 
-        setIconFromIconString(iconView, icon)
+            override fun onPostExecute(result: String) {
+                super.onPostExecute(result)
+                setIconFromIconString(iconView, result)
+            }
+        }
+        Setter().executeOnExecutor(THREAD_POOL_EXECUTOR)
     }
 }
