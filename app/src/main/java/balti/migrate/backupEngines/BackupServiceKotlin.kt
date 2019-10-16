@@ -70,6 +70,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_COMPRESSI
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DELETE_ERROR_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SEPARATE_EXTRAS_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_CHECK
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ZIP_VERIFICATION
 import balti.migrate.utilities.CommonToolKotlin.Companion.TIMEOUT_WAITING_TO_CANCEL_TASK
 import java.io.BufferedWriter
 import java.io.File
@@ -548,9 +549,12 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
             JOBCODE_PERFORM_ZIP_VERIFICATION -> try {
 
-                currentZipVerificationJobCode = jobCode + currentPartNumber
-                task = ZipVerificationEngine(currentZipVerificationJobCode, bd, zipListIfAny!!,
-                        File(currentDestination, "$currentBackupName.zip"))
+                if (sharedPrefs.getBoolean(PREF_ZIP_VERIFICATION, true)) {
+                    currentZipVerificationJobCode = jobCode + currentPartNumber
+                    task = ZipVerificationEngine(currentZipVerificationJobCode, bd, zipListIfAny!!,
+                            File(currentDestination, "$currentBackupName.zip"))
+                }
+                else runNextBatch(criticalErrors.size == lastErrorCount)
 
             } catch (e: Exception) {
 
