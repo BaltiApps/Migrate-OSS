@@ -28,8 +28,6 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_APPS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_APPS_WARNING
 import kotlinx.android.synthetic.main.app_search_layout.view.*
 import kotlinx.android.synthetic.main.backup_layout.*
-import java.util.*
-import kotlin.collections.ArrayList
 
 class BackupActivityKotlin : AppCompatActivity() {
 
@@ -255,7 +253,7 @@ class BackupActivityKotlin : AppCompatActivity() {
                 inner class LoadSearchApps(val term: String) : AsyncTask<Any, Any, Any>(){
 
                     lateinit var adapter: SearchAppAdapter
-                    var tmpList = Vector<BackupDataPacketKotlin>(0)
+                    var tmpList = ArrayList<BackupDataPacketKotlin>(0)
 
                     override fun onPreExecute() {
                         super.onPreExecute()
@@ -267,7 +265,7 @@ class BackupActivityKotlin : AppCompatActivity() {
                     override fun doInBackground(vararg params: Any?): Any? {
 
                         if (term.trim() != "") makeTmpList(term)
-                        else tmpList.removeAllElements()
+                        else tmpList.clear()
 
                         if (tmpList.size > 0) adapter = SearchAppAdapter(tmpList, this@BackupActivityKotlin)
 
@@ -285,7 +283,7 @@ class BackupActivityKotlin : AppCompatActivity() {
                     }
 
                     fun makeTmpList(term: String){
-                        tmpList.removeAllElements()
+                        tmpList.clear()
                         for (dp in appList){
                             if (dp.PACKAGE_INFO.packageName.contains(term, true)
                                     || packageManager.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).contains(term, true))
@@ -296,7 +294,7 @@ class BackupActivityKotlin : AppCompatActivity() {
             })
 
             searchAD.setView(searchView)
-            searchAD.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+            searchAD.window?.run { setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE) }
             searchAD.show()
 
         }

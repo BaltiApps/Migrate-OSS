@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.app_info.view.*
 import kotlinx.android.synthetic.main.app_item.view.*
 import java.util.*
 
-class SearchAppAdapter(val tmpList: Vector<BackupDataPacketKotlin>, val context: Context): BaseAdapter() {
+class SearchAppAdapter(private val tmpList: ArrayList<BackupDataPacketKotlin>, private val context: Context): BaseAdapter() {
 
     private val pm: PackageManager by lazy { context.packageManager }
     private val main: SharedPreferences by lazy { context.getSharedPreferences(PREF_FILE_APPS, Context.MODE_PRIVATE) }

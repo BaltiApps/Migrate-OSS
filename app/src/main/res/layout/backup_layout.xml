@@ -198,37 +198,40 @@
             android:textAllCaps="true"
             android:textColor="@android:color/white" />
 
-        <ImageButton
-            android:id="@+id/clearAll"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_alignTop="@id/backupActivityNext"
             android:layout_alignBottom="@id/backupActivityNext"
-            android:background="@android:color/transparent"
-            android:padding="10dp"
-            android:src="@drawable/ic_clear_all" />
+            android:layout_alignParentStart="true"
+            >
 
-        <ImageButton
-            android:id="@+id/selectAll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/backupActivityNext"
-            android:layout_alignBottom="@id/backupActivityNext"
-            android:layout_toEndOf="@id/clearAll"
-            android:background="@android:color/transparent"
-            android:padding="10dp"
-            android:src="@drawable/ic_select_all" />
+            <ImageButton
+                android:id="@+id/clearAll"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:src="@drawable/ic_clear_all" />
 
-        <ImageButton
-            android:id="@+id/appSearch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@id/backupActivityNext"
-            android:layout_alignBottom="@id/backupActivityNext"
-            android:layout_toEndOf="@id/selectAll"
-            android:background="@android:color/transparent"
-            android:padding="10dp"
-            android:src="@drawable/ic_app_search" />
+            <ImageButton
+                android:id="@+id/selectAll"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:src="@drawable/ic_select_all" />
+
+            <ImageButton
+                android:id="@+id/appSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:src="@drawable/ic_app_search" />
+
+        </LinearLayout>
 
     </RelativeLayout>
 
