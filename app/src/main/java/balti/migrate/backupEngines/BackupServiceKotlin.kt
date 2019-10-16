@@ -49,6 +49,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TASKLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ERRORLOG
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ZIP_NAME_EXTRAS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_CALLS
@@ -550,9 +551,12 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
             JOBCODE_PERFORM_ZIP_VERIFICATION -> try {
 
                 if (sharedPrefs.getBoolean(PREF_ZIP_VERIFICATION, true)) {
+
                     currentZipVerificationJobCode = jobCode + currentPartNumber
+
                     task = ZipVerificationEngine(currentZipVerificationJobCode, bd, zipListIfAny!!,
-                            File(currentDestination, "$currentBackupName.zip"))
+                            File(currentDestination, "$currentBackupName.zip"),
+                            File(currentDestination, FILE_FILE_LIST))
                 }
                 else runNextBatch(criticalErrors.size == lastErrorCount)
 

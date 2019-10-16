@@ -126,6 +126,8 @@ class CommonToolKotlin(val context: Context) {
         val ERR_APP_BACKUP_TRY_CATCH = "RUN_TRY_CATCH"
         val ERR_ZIP_VERIFICATION_TRY_CATCH = "ZIP_VERI_TRY_CATCH"
         val ERR_ZIP_ITEM_UNAVAILABLE = "ZIP_ITEM_UNAVAILABLE"
+        val ERR_ZIP_FL_ITEM_UNAVAILABLE = "ZIP_FL_ITEM_UNAVAILABLE"
+        val ERR_ZIP_FL_UNAVAILABLE = "ZIP_FILELIST_UNAVAILABLE"
         val ERR_ZIP_TOO_BIG = "ZIP_TOO_BIG"
         val ERR_CONTACTS_TRY_CATCH = "CONTACTS_TRY_CATCH"
         val ERR_CALLS_WRITE = "CALLS_WRITE"
@@ -176,6 +178,7 @@ class CommonToolKotlin(val context: Context) {
         val PREF_SEPARATE_EXTRAS_BACKUP = "separate_extras"
         val PREF_DELETE_ERROR_BACKUP = "delete_backup_on_error"
         val PREF_ZIP_VERIFICATION = "do_zip_verification"
+        val PREF_FILELIST_IN_ZIP_VERIFICATION = "fileList_in__zip_verification"
 
         val PREF_IGNORE_APP_CACHE = "ignore_app_cache"
 
