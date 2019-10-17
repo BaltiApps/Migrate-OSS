@@ -201,6 +201,9 @@
     <string name="adb_disabled">ADB debugging disabled</string>
     <string name="adb_unknown">ADB state unknown! Value will not be backed up.</string>
     <string name="weird_font_scale">Weird font scale. Value will not be backed up.</string>
+    <string name="empty_call_logs">No call logs found on the device. Nothing to backup</string>
+    <string name="empty_sms">No call SMS messages found on the device. Nothing to backup</string>
+    <string name="empty_contacts">No contacts on the device. Nothing to backup</string>
 
     <!--ExtraBackups.java-->
     <string name="not_recommended">Not recommended!</string>

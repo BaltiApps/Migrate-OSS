@@ -964,7 +964,11 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             }
         }
         else {
-            do_backup_contacts.isChecked = false
+            AlertDialog.Builder(this)
+                    .setMessage(R.string.empty_contacts)
+                    .setPositiveButton(R.string.close) {_, _ -> do_backup_contacts.isChecked = false }
+                    .setCancelable(false)
+                    .show()
         }
     }
 
@@ -987,7 +991,11 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             }
         }
         else {
-            do_backup_sms.isChecked = false
+            AlertDialog.Builder(this)
+                    .setMessage(R.string.empty_sms)
+                    .setPositiveButton(R.string.close) {_, _ -> do_backup_sms.isChecked = false }
+                    .setCancelable(false)
+                    .show()
         }
     }
 
@@ -1010,7 +1018,11 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             }
         }
         else {
-            do_backup_calls.isChecked = false
+            AlertDialog.Builder(this)
+                    .setMessage(R.string.empty_call_logs)
+                    .setPositiveButton(R.string.close) {_, _ -> do_backup_calls.isChecked = false }
+                    .setCancelable(false)
+                    .show()
         }
     }
 
