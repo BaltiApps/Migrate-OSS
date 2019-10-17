@@ -29,6 +29,7 @@ class ReadAdbKotlin(private val jobCode: Int,
     private val onJobCompletion by lazy { context as OnJobCompletion }
     private var error = ""
 
+    private var adbText = ""
     private var adbState = 0
 
     override fun onPreExecute() {
@@ -41,8 +42,6 @@ class ReadAdbKotlin(private val jobCode: Int,
     }
 
     override fun doInBackground(vararg params: Any?): Any? {
-
-        var adbText = ""
 
         try {
             val dpiReader = Runtime.getRuntime().exec("su")
@@ -57,6 +56,8 @@ class ReadAdbKotlin(private val jobCode: Int,
                     adbText += line + "\n"
                 }
             }
+
+            adbText = adbText.trim()
 
             BufferedReader(InputStreamReader(dpiReader.errorStream)).let {
                 it.readLines().forEach { line ->
@@ -106,7 +107,7 @@ class ReadAdbKotlin(private val jobCode: Int,
 
                     }
                 }
-                onJobCompletion.onComplete(jobCode, true, adbState)
+                onJobCompletion.onComplete(jobCode, true, if (adbText != "null") adbState else null)
             } else {
                 vOp.checkSet(doBackupCheckbox, false)
                 onJobCompletion.onComplete(jobCode, false, error)

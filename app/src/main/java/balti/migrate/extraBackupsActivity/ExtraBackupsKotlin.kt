@@ -179,7 +179,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
     }
 
-    fun doWaitingJob(job: () -> Unit){
+    private fun doWaitingJob(job: () -> Unit){
         toggleBackupButton(0)
         job()
     }
@@ -773,6 +773,19 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 }
             }}
 
+        fun setDefaultValueForExtraNotPresent(execFunc: () -> Unit, doCheckbox: CheckBox, title: String, body: String){
+
+            AlertDialog.Builder(this)
+                    .setTitle(title)
+                    .setMessage(body)
+                    .setPositiveButton(R.string.yes_recommended) {_, _ -> execFunc() }
+                    .setNegativeButton(android.R.string.cancel) {_, _ ->
+                        doCheckbox.isChecked = false
+                    }
+                    .setCancelable(false)
+                    .show()
+        }
+
         if (jobCode != JOBCODE_READ_SMS_THEN_CALLS)
             toggleBackupButton(1)
 
@@ -842,12 +855,28 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             JOBCODE_READ_ADB ->
                 commonTools.tryIt({
                     if (jobSuccess) {
-                        adbState = jobResult as Int
-                        adb_selected_status.text = getString(when (adbState){
-                            0 -> R.string.adb_disabled
-                            1 -> R.string.adb_enabled
-                            else -> R.string.adb_unknown
-                        })
+
+                        {
+                            adb_selected_status.text = getString(
+                                    when (adbState) {
+                                        0 -> R.string.adb_disabled
+                                        1 -> R.string.adb_enabled
+                                        else -> R.string.adb_unknown
+                                    }
+                            )
+                        }.run {
+                            if (jobResult == null){
+                                setDefaultValueForExtraNotPresent({
+                                    adbState = 0
+                                    this()
+                                }, do_backup_adb, getString(R.string.adb_label), getString(R.string.no_default_adb_scale))
+                            }
+                            else {
+                                adbState = jobResult as Int
+                                this()
+                            }
+                        }
+
                     }
                     else commonTools.showErrorDialog(jobResult.toString(), getString(R.string.error_reading_adb))
                 }, true)
@@ -878,8 +907,16 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             JOBCODE_READ_FONTSCALE ->
                 commonTools.tryIt ({
                     if (jobSuccess) {
-                        fontScale = jobResult as Double
-                        fontScale_selected_status.text = fontScale.toString()
+                        if (jobResult == null){
+                            setDefaultValueForExtraNotPresent({
+                                fontScale = 1.0
+                                fontScale_selected_status.text = fontScale.toString()
+                            }, do_backup_fontScale, getString(R.string.fontScale_label), getString(R.string.no_default_font_scale))
+                        }
+                        else {
+                            fontScale = jobResult as Double
+                            fontScale_selected_status.text = fontScale.toString()
+                        }
                     }
                     else commonTools.showErrorDialog(jobResult.toString(), getString(R.string.error_reading_fontScale))
                 }, true)

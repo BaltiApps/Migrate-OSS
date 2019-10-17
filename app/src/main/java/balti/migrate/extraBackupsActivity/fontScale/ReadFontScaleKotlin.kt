@@ -57,13 +57,15 @@ class ReadFontScaleKotlin(private val jobCode: Int,
                 }
             }
 
+            scaleText = scaleText.trim()
+
             BufferedReader(InputStreamReader(dpiReader.errorStream)).let {
                 it.readLines().forEach {line ->
                     error += line + "\n"
                 }
             }
 
-            scale = scaleText.trim().toDouble()
+            if (scaleText != "null") scale = scaleText.trim().toDouble()
 
         } catch (e: Exception){
             error += e.message
@@ -99,9 +101,8 @@ class ReadFontScaleKotlin(private val jobCode: Int,
 
                     }
                 }
-                onJobCompletion.onComplete(jobCode, true, scale)
-            }
-            else {
+                onJobCompletion.onComplete(jobCode, true, if (scaleText != "null") scale else null)
+            } else {
                 vOp.checkSet(doBackupCheckbox, false)
                 onJobCompletion.onComplete(jobCode, false, error)
             }
