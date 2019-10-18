@@ -7,14 +7,18 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_USE_SU_FOR_KEYBOARD
 import kotlinx.android.synthetic.main.keyboard_item.view.*
 import kotlinx.android.synthetic.main.keyboard_selector.view.*
 import java.io.BufferedReader
+import java.io.BufferedWriter
 import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 
 class LoadKeyboardForSelection (private val jobCode: Int, val context: Context,
                                 private val menuMainItem: LinearLayout,
@@ -41,7 +45,19 @@ class LoadKeyboardForSelection (private val jobCode: Int, val context: Context,
 
         try {
 
-            val keyboardReader = Runtime.getRuntime().exec("ime list -s")
+            val useSu = AppInstance.sharedPrefs.getBoolean(PREF_USE_SU_FOR_KEYBOARD, true)
+
+            val keyboardReader = if (useSu)
+                Runtime.getRuntime().exec("su")
+            else Runtime.getRuntime().exec("ime list -s")
+
+            if (useSu) {
+                BufferedWriter(OutputStreamWriter(keyboardReader.outputStream)).let {
+                    it.write("ime list -s\n")
+                    it.write("exit\n")
+                    it.flush()
+                }
+            }
 
             BufferedReader(InputStreamReader(keyboardReader.inputStream)).let {
                 it.readLines().forEach {line ->
@@ -56,6 +72,7 @@ class LoadKeyboardForSelection (private val jobCode: Int, val context: Context,
             }
 
         } catch (e: Exception){
+            e.printStackTrace()
             error += e.message
         }
 

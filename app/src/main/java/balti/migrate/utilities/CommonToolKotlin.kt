@@ -177,6 +177,7 @@ class CommonToolKotlin(val context: Context) {
         val PREF_SYSTEM_CHECK = "do_system_check"
         val PREF_SEPARATE_EXTRAS_BACKUP = "separate_extras"
         val PREF_DELETE_ERROR_BACKUP = "delete_backup_on_error"
+        val PREF_USE_SU_FOR_KEYBOARD = "use_su_for_keyboard"
         val PREF_ZIP_VERIFICATION = "do_zip_verification"
         val PREF_FILELIST_IN_ZIP_VERIFICATION = "fileList_in__zip_verification"
 

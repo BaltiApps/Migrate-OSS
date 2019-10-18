@@ -225,6 +225,10 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
                 toReturnIntent.putExtras(intent)
 
+                intent.getIntExtra(EXTRA_PROGRESS_PERCENTAGE, -1).run {
+                    if (this != -1) lastDeterminateProgress = this
+                }
+
                 val type = intent.getStringExtra(EXTRA_PROGRESS_TYPE)
                 if (type in arrayOf(EXTRA_PROGRESS_TYPE_CONTACTS, EXTRA_PROGRESS_TYPE_SMS, EXTRA_PROGRESS_TYPE_CALLS))
                     return
@@ -243,10 +247,6 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
                             lastLog = this
                         }
                     }
-                }
-
-                intent.getIntExtra(EXTRA_PROGRESS_PERCENTAGE, -1).run {
-                    if (this != -1) lastDeterminateProgress = this
                 }
 
             }
@@ -636,7 +636,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
                     putStringArrayListExtra(EXTRA_ERRORS, criticalErrors)
                     putExtra(EXTRA_IS_CANCELLED, cancelAll)
                     putExtra(EXTRA_TOTAL_TIME, endTime - startTime)
-                    putExtra(EXTRA_PROGRESS_PERCENTAGE, if (criticalErrors.size == 0) 100 else lastDeterminateProgress)
+                    putExtra(EXTRA_PROGRESS_PERCENTAGE, if (criticalErrors.size == 0 && !cancelAll) 100 else lastDeterminateProgress)
                 }
 
         commonTools.LBM?.sendBroadcast(returnIntent)
