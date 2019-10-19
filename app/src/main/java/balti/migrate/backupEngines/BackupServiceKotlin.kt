@@ -104,6 +104,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         private set
 
         var cancelAll = false
+        private set
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
