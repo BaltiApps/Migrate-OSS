@@ -64,8 +64,13 @@ fi
 
 if [[ ${SYSTEM} != "" ]]; then
     echoIt "System app confirmed under: $SYSTEM"
+    sleep 1s
 else
     echoIt "System app directory detection failed. Trying from parameters"
+
+    echo "DEBUG:: --- Contents of root (level 0) ---"
+    echo "$(ls -l /)"
+    echo "DEBUG:: --- End of contents ---"
 
     # Check SAR
     if [[ "$SAR" == "true" ]]
@@ -74,7 +79,12 @@ else
         SYSTEM=/system_root
     else
         echoIt "Non System-as-root."
+        SYSTEM=/system
     fi
+
+    echo "DEBUG:: --- Contents of level 1 system ---"
+    echo "$(ls -l ${SYSTEM})"
+    echo "DEBUG:: --- End of contents ---"
 
     # Check A/B device
     ab_device="$(cat /proc/cmdline | grep slot_suffix)";
@@ -86,12 +96,17 @@ else
         echoIt "Only-A device."
     fi
 
+    echo "DEBUG:: --- Contents of level 2 system ---"
+    echo "$(ls -l ${SYSTEM})"
+    echo "DEBUG:: --- End of contents ---"
+
     # If android 10, the app directory is always under /system/system/
     if [[ -z "$ab_device" ]] && [[ ! -e ${SYSTEM}/build.prop ]]; then
         SYSTEM=${SYSTEM}/system
     fi
 
     echoIt "Calculated system app under: $SYSTEM"
+    sleep 1s
 
 fi
 
@@ -201,7 +216,7 @@ if [[ -e /tmp/package-data.txt ]]; then
         # check free space in /system
         elif [[ "$key" == "system_required_size" ]]; then
 
-            system_free=$(df -k /system | tail -1 | awk '{print $4}')
+            system_free=$(df -k ${SYSTEM} | tail -1 | awk '{print $4}')
 
             case ${system_free} in
                 *%)
@@ -211,12 +226,12 @@ if [[ -e /tmp/package-data.txt ]]; then
             esac
 
             if [[ ${system_free} -ge ${val} ]]; then
-                echoIt "Free space (/system) is OK ($system_free KB)"
+                echoIt "Free space ($SYSTEM) is OK ($system_free KB)"
 
             else
 
                 echo "DEBUG:: --- df output /system---"
-                echo "$(df -k /system)"
+                echo "$(df -k ${SYSTEM})"
                 echo "DEBUG:: --- End of output ---"
                 echo "DEBUG:: system_free = $system_free"
 
