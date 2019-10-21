@@ -58,14 +58,17 @@ class SmsBackupEngine(private val jobcode: Int,
                     "$SMS_BODY TEXT, " +
                     "$SMS_TYPE TEXT, " +
                     "$SMS_DATE TEXT, " +
+
                     "$SMS_DATE_SENT TEXT, " +
                     "$SMS_CREATOR TEXT, " +
                     "$SMS_PERSON TEXT, " +
                     "$SMS_PROTOCOL TEXT, " +
+
                     "$SMS_SEEN TEXT, " +
                     "$SMS_SERVICE_CENTER TEXT, " +
                     "$SMS_STATUS TEXT, " +
                     "$SMS_SUBJECT TEXT, " +
+
                     "$SMS_ERROR INTEGER, " +
                     "$SMS_READ INTEGER, " +
                     "$SMS_LOCKED INTEGER, " +
@@ -90,16 +93,19 @@ class SmsBackupEngine(private val jobcode: Int,
                         val contentValues = ContentValues()
                         contentValues.put(SMS_ADDRESS, dataPacket.smsAddress)
                         contentValues.put(SMS_BODY, dataPacket.smsBody)
-                        contentValues.put(SMS_DATE, dataPacket.smsDate)
-                        contentValues.put(SMS_DATE_SENT, dataPacket.smsDateSent)
                         contentValues.put(SMS_TYPE, dataPacket.smsType)
+                        contentValues.put(SMS_DATE, dataPacket.smsDate)
+
+                        contentValues.put(SMS_DATE_SENT, dataPacket.smsDateSent)
                         contentValues.put(SMS_CREATOR, dataPacket.smsCreator)
                         contentValues.put(SMS_PERSON, dataPacket.smsPerson)
                         contentValues.put(SMS_PROTOCOL, dataPacket.smsProtocol)
+
                         contentValues.put(SMS_SEEN, dataPacket.smsSeen)
                         contentValues.put(SMS_SERVICE_CENTER, dataPacket.smsServiceCenter)
                         contentValues.put(SMS_STATUS, dataPacket.smsStatus)
                         contentValues.put(SMS_SUBJECT, dataPacket.smsSubject)
+
                         contentValues.put(SMS_ERROR, dataPacket.smsError)
                         contentValues.put(SMS_READ, dataPacket.smsRead)
                         contentValues.put(SMS_LOCKED, dataPacket.smsLocked)

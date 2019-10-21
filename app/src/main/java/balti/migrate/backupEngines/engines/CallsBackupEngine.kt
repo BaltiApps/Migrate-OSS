@@ -65,22 +65,27 @@ class CallsBackupEngine(private val jobcode: Int,
                     "$CALLS_CACHED_LOOKUP_URI TEXT, " +
                     "$CALLS_CACHED_MATCHED_NUMBER TEXT," +
                     "$CALLS_CACHED_NAME TEXT, " +
+
                     "$CALLS_CACHED_NORMALIZED_NUMBER TEXT, " +
                     "$CALLS_CACHED_NUMBER_LABEL TEXT, " +
                     "$CALLS_CACHED_NUMBER_TYPE TEXT, " +
                     "$CALLS_CACHED_PHOTO_ID TEXT, " +
+
                     "$CALLS_COUNTRY_ISO TEXT, " +
                     "$CALLS_DATA_USAGE TEXT, " +
                     "$CALLS_FEATURES TEXT, " +
                     "$CALLS_GEOCODED_LOCATION TEXT, " +
+
                     "$CALLS_IS_READ TEXT, " +
                     "$CALLS_NUMBER TEXT, " +
                     "$CALLS_NUMBER_PRESENTATION TEXT, " +
                     "$CALLS_PHONE_ACCOUNT_COMPONENT_NAME TEXT, " +
+
                     "$CALLS_PHONE_ACCOUNT_ID TEXT, " +
                     "$CALLS_TRANSCRIPTION TEXT," +
                     "$CALLS_TYPE TEXT, " +
                     "$CALLS_VOICEMAIL_URI TEXT, " +
+
                     "$CALLS_DATE INTEGER, " +
                     "$CALLS_DURATION INTEGER, " +
                     "$CALLS_NEW INTEGER )"
@@ -111,22 +116,27 @@ class CallsBackupEngine(private val jobcode: Int,
                         contentValues.put(CALLS_CACHED_LOOKUP_URI, dataPacket.callsCachedLookupUri)
                         contentValues.put(CALLS_CACHED_MATCHED_NUMBER, dataPacket.callsCachedMatchedNumber)
                         contentValues.put(CALLS_CACHED_NAME, dataPacket.callsCachedName)
+
                         contentValues.put(CALLS_CACHED_NORMALIZED_NUMBER, dataPacket.callsCachedNormalizedNumber)
                         contentValues.put(CALLS_CACHED_NUMBER_LABEL, dataPacket.callsCachedNumberLabel)
                         contentValues.put(CALLS_CACHED_NUMBER_TYPE, dataPacket.callsCachedNumberType)
                         contentValues.put(CALLS_CACHED_PHOTO_ID, dataPacket.callsCachedPhotoId)
+
                         contentValues.put(CALLS_COUNTRY_ISO, dataPacket.callsCountryIso)
                         contentValues.put(CALLS_DATA_USAGE, dataPacket.callsDataUsage)
                         contentValues.put(CALLS_FEATURES, dataPacket.callsFeatures)
                         contentValues.put(CALLS_GEOCODED_LOCATION, dataPacket.callsGeocodedLocation)
+
                         contentValues.put(CALLS_IS_READ, dataPacket.callsIsRead)
                         contentValues.put(CALLS_NUMBER, dataPacket.callsNumber)
                         contentValues.put(CALLS_NUMBER_PRESENTATION, dataPacket.callsNumberPresentation)
                         contentValues.put(CALLS_PHONE_ACCOUNT_COMPONENT_NAME, dataPacket.callsPhoneAccountComponentName)
+
                         contentValues.put(CALLS_PHONE_ACCOUNT_ID, dataPacket.callsPhoneAccountId)
                         contentValues.put(CALLS_TRANSCRIPTION, dataPacket.callsTranscription)
                         contentValues.put(CALLS_TYPE, dataPacket.callsType)
                         contentValues.put(CALLS_VOICEMAIL_URI, dataPacket.callsVoicemailUri)
+
                         contentValues.put(CALLS_DATE, dataPacket.callsDate)
                         contentValues.put(CALLS_DURATION, dataPacket.callsDuration)
                         contentValues.put(CALLS_NEW, dataPacket.callsNew)
