@@ -60,3 +60,5 @@ chmod 777 ${ext_helper_apk_dir}
 if [[ -e ${TEMP_UNPACK_DIR} ]] && [[ -f ${TEMP_UNPACK_DIR} ]]; then
     mv ${TEMP_UNPACK_DIR} ${TEMP_UNPACK_DIR}.bak
 fi
+
+rm /tmp/helper_unpacking_script.sh

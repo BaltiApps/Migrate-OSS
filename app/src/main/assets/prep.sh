@@ -2,8 +2,9 @@
 
 # parameters:
 
-TEMP_DIR_NAME=$1
+MIGRATE_CACHE=$1
 TIMESTAMP=$2
+PACKAGE_DATA_NAME=$3
 
 # In case of errors, system app path and build.prop path can be manually mentioned under:
 # /tmp/migrate/SYSTEM_MANUAL and /tmp/migrate/BUILDPROP_MANUAL files respectively.
@@ -291,8 +292,8 @@ mkdir -p ${SYSTEM}/priv-app/
 mkdir -p /data/app/
 mkdir -p /data/data/
 
-mkdir -p ${TEMP_DIR_NAME}
-cp /tmp/package-data.txt ${TEMP_DIR_NAME}/package-data${TIMESTAMP}.txt
+mkdir -p ${MIGRATE_CACHE}
+cp /tmp/${PACKAGE_DATA_NAME} ${MIGRATE_CACHE}/"$PACKAGE_DATA_NAME"${TIMESTAMP}.txt && echoIt "Copied package data"
 
 # export variables
 echo "${OUTFD}" > /tmp/migrate/OUTFD

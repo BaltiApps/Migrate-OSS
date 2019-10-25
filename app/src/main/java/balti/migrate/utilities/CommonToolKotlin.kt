@@ -56,6 +56,7 @@ class CommonToolKotlin(val context: Context) {
         val FILE_ZIP_NAME_EXTRAS = "Extras"
 
         val FILE_FILE_LIST = "fileList.txt"
+        val FILE_PACKAGE_DATA = "package-data.txt"
 
         val CHANNEL_BACKUP_END = "Backup finished notification"
         val CHANNEL_BACKUP_RUNNING = "Backup running notification"

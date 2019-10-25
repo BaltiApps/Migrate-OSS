@@ -3,7 +3,8 @@
 # parameters
 
 FILE_LIST=$1
-TEMP_DIR_NAME=$2
+MIGRATE_CACHE=$2
+TIMESTAMP=$3
 
 OUTFD="$(cat /tmp/migrate/OUTFD)"
 SYSTEM="$(cat /tmp/migrate/SYSTEM)"
@@ -59,7 +60,7 @@ if [[ -e /tmp/${FILE_LIST} ]]; then
             fi
             ;;
             *)
-            if [[ ! -e ${TEMP_DIR_NAME}/${line} ]]; then
+            if [[ ! -e ${MIGRATE_CACHE}/${line} ]]; then
                 echoIt "$line was not unpacked"
                 anyError="true"
             fi
@@ -78,5 +79,9 @@ if [[ ${anyError} == "true" ]]; then
     sleep 1s
 fi
 
-chmod -R 777 ${TEMP_DIR_NAME}
+chmod -R 777 ${MIGRATE_CACHE}
+cp /tmp/${FILE_LIST} ${MIGRATE_CACHE}/"$FILE_LIST"${TIMESTAMP}.txt && echoIt "Copied file list"
+
 echoIt "Verification complete"
+
+rm /tmp/verify.sh

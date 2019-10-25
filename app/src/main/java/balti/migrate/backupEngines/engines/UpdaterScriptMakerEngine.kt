@@ -10,6 +10,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_EXTRACT
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PACKAGE_DATA
 import balti.migrate.utilities.CommonToolKotlin.Companion.TEMP_DIR_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
 import java.io.*
@@ -94,7 +95,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             extractFile("busybox")
             extractFile("mount_script.sh")
             extractFile("prep.sh")
-            extractFile("package-data.txt")
+            extractFile(FILE_PACKAGE_DATA)
             extractFile("helper_unpacking_script.sh")
             extractFile("verify.sh")
             extractFile(FILE_FILE_LIST)
@@ -106,7 +107,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             set777Permission("busybox")
             set777Permission("mount_script.sh")
             set777Permission("prep.sh")
-            set777Permission("package-data.txt")
+            set777Permission(FILE_PACKAGE_DATA)
             set777Permission("helper_unpacking_script.sh")
             set777Permission("verify.sh")
             set777Permission(FILE_FILE_LIST)
@@ -122,7 +123,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                     "ui_print(\"Mount failed system! Migrate helper will not be automatically installed!\"));\n")
 
             // run prep.sh
-            updater_writer.write("run_program(\"/tmp/prep.sh\", \"$TEMP_DIR_NAME\", \"$timeStamp\");\n")
+            updater_writer.write("run_program(\"/tmp/prep.sh\", \"$TEMP_DIR_NAME\", \"$timeStamp\", \"$FILE_PACKAGE_DATA\");\n")
 
             // data will be unmounted if prep.sh aborted unsuccessfully
             updater_writer.write("ifelse(is_mounted(\"/data\"), ui_print(\"Parameters checked!\") && sleep(2s), abort(\"Exiting...\"));\n")
@@ -207,7 +208,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             updater_writer.write("set_progress(1.0000);\n")
 
             // verification
-            updater_writer.write("run_program(\"/tmp/verify.sh\", \"$FILE_FILE_LIST\", \"$TEMP_DIR_NAME\");\n")
+            updater_writer.write("run_program(\"/tmp/verify.sh\", \"$FILE_FILE_LIST\", \"$TEMP_DIR_NAME\", \"$timeStamp\");\n")
 
             // un-mount partitions
             updater_writer.write("ui_print(\" \");\n")
@@ -236,7 +237,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
     private fun makePackageData() {        // done
 
-        val packageData = File(actualDestination, "package-data.txt")
+        val packageData = File(actualDestination, FILE_PACKAGE_DATA)
         var contents = ""
 
         contents += "backup_name ${bd.backupName}\n"
