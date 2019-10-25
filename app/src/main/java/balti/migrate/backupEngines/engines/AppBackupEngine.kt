@@ -40,7 +40,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
     private val actualErrors by lazy { ArrayList<String>(0) }
 
     private fun writeFileList(fileName: String, appName: String){
-        writeToFileList("$fileName\n")
+        writeToFileList(fileName)
         broadcastProgress(appName, fileName, false)
     }
 

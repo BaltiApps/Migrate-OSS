@@ -109,7 +109,6 @@ class ReadAdbKotlin(private val jobCode: Int,
                 }
                 onJobCompletion.onComplete(jobCode, true, if (adbText != "null") adbState else null)
             } else {
-                vOp.checkSet(doBackupCheckbox, false)
                 onJobCompletion.onComplete(jobCode, false, error)
             }
 

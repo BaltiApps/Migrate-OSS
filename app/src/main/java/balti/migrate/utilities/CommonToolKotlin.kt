@@ -64,8 +64,6 @@ class CommonToolKotlin(val context: Context) {
         val ACTION_BACKUP_PROGRESS = "Migrate progress broadcast"
         val ACTION_BACKUP_CANCEL = "Migrate backup cancel broadcast"
         val ACTION_REQUEST_BACKUP_DATA = "get data"
-        val ACTION_START_BATCH_BACKUP = "start batch backup"
-        val ACTION_BACKUP_SERVICE_STARTED = "backup service started"
 
         val EXTRA_PROGRESS_TYPE = "type"
         val EXTRA_TITLE = "title"
@@ -90,6 +88,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL = "waiting_to_cancel"
 
         val EXTRA_BACKUP_NAME = "backupName"
+        val EXTRA_DESTINATION = "destination"
         val EXTRA_ACTUAL_DESTINATION = "actualDestination"
         val EXTRA_ERRORS = "errors"
         val EXTRA_PART_NO = "partNo"
@@ -146,6 +145,7 @@ class CommonToolKotlin(val context: Context) {
         val ERR_UPDATER_EXTRACT = "UPDATER_EXTRACT"
 
         val ERR_BACKUP_SERVICE_ERROR = "BACKUP_SERVICE"
+        val ERR_CONDITIONAL_TASK = "RUN_CONDITIONAL_TASK"
 
         val ALL_SUPPRESSED_ERRORS = arrayOf(ERR_APP_BACKUP_SUPPRESSED, ERR_CORRECTION_SUPPRESSED, ERR_TAR_SUPPRESSED)
 

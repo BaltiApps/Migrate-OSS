@@ -1,6 +1,7 @@
 package balti.migrate.extraBackupsActivity
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.*
 import android.content.pm.PackageManager
 import android.os.AsyncTask
@@ -14,6 +15,15 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import balti.migrate.AppInstance.Companion.adbState
+import balti.migrate.AppInstance.Companion.appBatches
+import balti.migrate.AppInstance.Companion.callsList
+import balti.migrate.AppInstance.Companion.contactsList
+import balti.migrate.AppInstance.Companion.dpiText
+import balti.migrate.AppInstance.Companion.fontScale
+import balti.migrate.AppInstance.Companion.keyboardText
+import balti.migrate.AppInstance.Companion.smsList
+import balti.migrate.AppInstance.Companion.wifiData
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
@@ -40,12 +50,12 @@ import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.simpleActivities.ProgressShowActivity
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_SERVICE_STARTED
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_START_BATCH_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.CALLS_PERMISSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.CONTACT_PERMISSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_DESTINATION
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_CONTACTS
@@ -83,7 +93,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     // to add extras search for "extras_markers" and change those lines/functions
 
     private val commonTools by lazy { CommonToolKotlin(this) }
-    val appListCopied by lazy { ArrayList<BackupDataPacketKotlin>(0) }
+    private val appListCopied by lazy { ArrayList<BackupDataPacketKotlin>(0) }
 
     private lateinit var destination: String
     private var backupName = ""
@@ -103,17 +113,6 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     private var loadKeyboard: LoadKeyboardForSelection? = null
     private var loadInstallers: LoadInstallersForSelection? = null
-
-    private var appBatches = ArrayList<AppBatch>(0)
-    private var contactList = ArrayList<ContactsDataPacketKotlin>(0)    //extras_markers
-    private var smsList = ArrayList<SmsDataPacketKotlin>(0)
-    private var callsList = ArrayList<CallsDataPacketsKotlin>(0)
-    private var keyboardText = ""
-    private var dpiText = ""
-    private var adbState = 0
-    private var wifiData: WifiDataPacket? = null
-    private var fontScale = 0.0
-
 
     private val dialogView by lazy { View.inflate(this, R.layout.please_wait, null) }
     private val waitingDialog by lazy {
@@ -137,33 +136,6 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 )
                 commonTools.tryIt { commonTools.LBM?.unregisterReceiver(this) }
                 finish()
-            }
-        }
-    }
-
-    private val serviceStartReceiver by lazy {
-        object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-
-                BackupServiceKotlin.destination = destination
-                BackupServiceKotlin.backupName = backupName
-
-                BackupServiceKotlin.appBatches = appBatches
-
-                BackupServiceKotlin.contactsList = if (do_backup_contacts.isChecked) contactList else null
-                BackupServiceKotlin.callsList = if (do_backup_calls.isChecked) callsList else null
-                BackupServiceKotlin.smsList = if (do_backup_sms.isChecked) smsList else null
-
-                BackupServiceKotlin.dpiText = if (do_backup_dpi.isChecked) dpiText else null
-                BackupServiceKotlin.keyboardText = if (do_backup_keyboard.isChecked) keyboardText else null
-                BackupServiceKotlin.adbState = if (do_backup_adb.isChecked) adbState else null
-                BackupServiceKotlin.fontScale = if (do_backup_fontScale.isChecked) fontScale else null
-                BackupServiceKotlin.wifiData = if (do_backup_wifi.isChecked) wifiData else null
-
-                BackupServiceKotlin.doBackupInstallers = do_backup_installers.isChecked
-
-                commonTools.LBM?.sendBroadcast(Intent(ACTION_START_BATCH_BACKUP))
-                commonTools.tryIt { commonTools.LBM?.unregisterReceiver(this) }
             }
         }
     }
@@ -214,7 +186,6 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             }
 
             commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
-            commonTools.LBM?.registerReceiver(serviceStartReceiver, IntentFilter(ACTION_BACKUP_SERVICE_STARTED))
 
             commonTools.LBM?.sendBroadcast(Intent(ACTION_REQUEST_BACKUP_DATA))
 
@@ -339,6 +310,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                         .show()
             }
             else {
+                contactsList.clear()
                 contacts_main_item.isClickable = false
                 contacts_read_progress.visibility = View.GONE
                 contacts_selected_status.visibility = View.GONE
@@ -354,6 +326,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                         SMS_PERMISSION)
 
             } else {
+                smsList.clear()
                 sms_main_item.isClickable = false
                 sms_read_progress.visibility = View.GONE
                 sms_selected_status.visibility = View.GONE
@@ -371,6 +344,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
 
             } else {
+                callsList.clear()
                 calls_main_item.isClickable = false
                 calls_read_progress.visibility = View.GONE
                 calls_selected_status.visibility = View.GONE
@@ -392,11 +366,11 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 sal_dpi.visibility = View.GONE
 
             } else {
+                dpiText = null
                 dpi_main_item.isClickable = false
                 dpi_selected_status.visibility = View.GONE
                 dpi_read_progress.visibility = View.GONE
                 sal_dpi.visibility = View.VISIBLE
-
                 commonTools.tryIt { readDpi?.cancel(true) }
 
             }
@@ -415,6 +389,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 sal_adb.visibility = View.GONE
 
             } else {
+                adbState = null
                 adb_main_item.isClickable = false
                 adb_selected_status.visibility = View.GONE
                 adb_read_progress.visibility = View.GONE
@@ -433,7 +408,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 }
             }
             else {
-                keyboardText = ""
+                keyboardText = null
                 keyboard_main_item.isClickable = false
                 keyboard_selected_status.visibility = View.GONE
 
@@ -487,7 +462,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 sal_fontScale.visibility = View.GONE
 
             } else {
-                fontScale = 0.0
+                fontScale = null
                 fontScale_main_item.isClickable = false
                 fontScale_selected_status.visibility = View.GONE
                 fontScale_read_progress.visibility = View.GONE
@@ -576,6 +551,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
     }
 
+    @SuppressLint("SimpleDateFormat", "SetTextI18n")
     private fun askForName() {
 
         val mainView = View.inflate(this, R.layout.ask_for_backup_name, null)
@@ -755,7 +731,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
         destination = path
         label.text = destination
-        editor.putString("defaultBackupPath", destination)
+        editor.putString(PREF_DEFAULT_BACKUP_PATH, destination)
         editor.commit()
     }
 
@@ -847,7 +823,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 commonTools.tryIt ({
                     jobResult.toString().let {
                         if (jobSuccess) dpiText = it
-                        else commonTools.showErrorDialog(it, getString(R.string.error_reading_dpi))
+                        else {
+                            do_backup_dpi.isChecked = false
+                            commonTools.showErrorDialog(it, getString(R.string.error_reading_dpi))
+                        }
                     }
                 }, true)
 
@@ -878,15 +857,20 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                         }
 
                     }
-                    else commonTools.showErrorDialog(jobResult.toString(), getString(R.string.error_reading_adb))
-                }, true)
-
-            JOBCODE_LOAD_KEYBOARDS ->
-                commonTools.tryIt ({
-                    jobResult.toString().let {
-                        if (jobSuccess) keyboardText = it
+                    else {
+                        do_backup_adb.isChecked = false
+                        commonTools.showErrorDialog(jobResult.toString(), getString(R.string.error_reading_adb))
                     }
                 }, true)
+
+            JOBCODE_LOAD_KEYBOARDS -> {
+                commonTools.tryIt({
+                    jobResult.toString().let {
+                        keyboardText = if (jobSuccess) it
+                        else null
+                    }
+                }, true)
+            }
 
             JOBCODE_LOAD_INSTALLERS ->
                 if (jobSuccess) {
@@ -901,13 +885,16 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                         wifiData = jobResult as WifiDataPacket
                         wifi_selected_status.text = wifiData?.fileName
                     }
-                    else commonTools.showErrorDialog(jobResult.toString(), getString(R.string.error_reading_wifi))
+                    else {
+                        do_backup_wifi.isChecked = false
+                        commonTools.showErrorDialog(jobResult.toString(), getString(R.string.error_reading_wifi))
+                    }
                 }, true)
 
             JOBCODE_READ_FONTSCALE ->
                 commonTools.tryIt ({
                     if (jobSuccess) {
-                        if (jobResult == null){
+                        if (jobResult == null) {
                             setDefaultValueForExtraNotPresent({
                                 fontScale = 1.0
                                 fontScale_selected_status.text = fontScale.toString()
@@ -918,20 +905,27 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                             fontScale_selected_status.text = fontScale.toString()
                         }
                     }
-                    else commonTools.showErrorDialog(jobResult.toString(), getString(R.string.error_reading_fontScale))
+                    else {
+                        do_backup_fontScale.isChecked = false
+                        commonTools.showErrorDialog(jobResult.toString(), getString(R.string.error_reading_fontScale))
+                    }
                 }, true)
 
             JOBCODE_MAKE_APP_PACKETS ->
                 commonTools.tryIt ({
                     jobResult.toString().let {
                         if (jobSuccess) {
-                            appBatches = jobResult as ArrayList<AppBatch>
+                            appBatches.clear()
+                            appBatches.addAll(jobResult as ArrayList<AppBatch>)
 
                             waitingDialog.waiting_head.setText(R.string.just_a_minute)
                             waitingDialog.waiting_progress.setText(R.string.starting_engine)
                             waitingDialog.waiting_details.text = ""
 
-                            Intent(this, BackupServiceKotlin::class.java).run {
+                            Intent(this, BackupServiceKotlin::class.java).apply {
+                                putExtra(EXTRA_DESTINATION, destination)
+                                putExtra(EXTRA_BACKUP_NAME, backupName)
+                            }.run {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                     startForegroundService(this)
                                 } else {
@@ -946,21 +940,21 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     }
 
     private fun updateContacts(newContactsList: ArrayList<ContactsDataPacketKotlin>){
-        contactList.clear()
+        contactsList.clear()
 
         contacts_selected_status.text = getString(R.string.reading)
         contacts_read_progress.visibility = View.GONE
 
         var n = 0
         newContactsList.forEach {
-            contactList.add(it)
+            contactsList.add(it)
             if (it.selected) n++
         }
 
         if (n > 0){
-            contacts_selected_status.text = "$n of ${contactList.size}"
+            contacts_selected_status.text = "$n of ${contactsList.size}"
             contacts_main_item.setOnClickListener {
-                LoadContactsForSelectionKotlin(JOBCODE_LOAD_CONTACTS, this, contactList).execute()
+                LoadContactsForSelectionKotlin(JOBCODE_LOAD_CONTACTS, this, contactsList).execute()
             }
         }
         else {
@@ -1061,7 +1055,6 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         commonTools.tryIt { waitingDialog.dismiss() }
 
         commonTools.tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
-        commonTools.tryIt { commonTools.LBM?.unregisterReceiver(serviceStartReceiver) }
 
         commonTools.tryIt { makeAppPackets?.cancel(true) }
         commonTools.tryIt { readContacts?.cancel(true) }

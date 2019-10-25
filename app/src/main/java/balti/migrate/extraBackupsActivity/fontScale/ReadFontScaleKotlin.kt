@@ -103,7 +103,6 @@ class ReadFontScaleKotlin(private val jobCode: Int,
                 }
                 onJobCompletion.onComplete(jobCode, true, if (scaleText != "null") scale else null)
             } else {
-                vOp.checkSet(doBackupCheckbox, false)
                 onJobCompletion.onComplete(jobCode, false, error)
             }
 

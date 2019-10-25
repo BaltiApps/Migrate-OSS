@@ -327,6 +327,7 @@
     <string name="backing_keyboard">Backing up keyboard</string>
     <string name="errorMakingScripts">Error making scripts</string>
     <string name="backupCancelled">Backup cancelled</string>
+    <string name="errorStartingBackup">Error starting backup (onStartCommand).</string>
     <string name="deletingFiles">Deleting files</string>
     <string name="backupFinishedWithErrors">Backup finished with errors!</string>
     <string name="backupPartHadErrors">Backup part had errors.</string>

@@ -5,6 +5,11 @@ import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
+import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
+import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
+import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MAX_BACKUP_SIZE
 import java.io.File
@@ -18,6 +23,19 @@ class AppInstance: Application() {
         lateinit var notificationManager: NotificationManager
         var MAX_CUSTOM_ZIP_SIZE = 0L
         var MAX_WORKING_SIZE = 0L
+
+        val appBatches = ArrayList<AppBatch>(0)
+
+        val contactsList = ArrayList<ContactsDataPacketKotlin>(0)
+        val callsList = ArrayList<CallsDataPacketsKotlin>(0)
+        val smsList = ArrayList<SmsDataPacketKotlin>(0)
+        var dpiText : String? = null
+        var keyboardText : String? = null
+        var adbState : Int? = null
+        var fontScale : Double? = null
+        var wifiData : WifiDataPacket? = null
+
+        var doBackupInstallers = false
     }
 
     private val MAX_TWRP_SIZE = 4194300L

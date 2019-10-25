@@ -120,7 +120,6 @@ class ReadWifiKotlin(private val jobCode: Int,
                 }
                 onJobCompletion.onComplete(jobCode, true, WifiDataPacket(WIFI_FILE_NAME, contents))
             } else {
-                vOp.checkSet(doBackupCheckbox, false)
                 onJobCompletion.onComplete(jobCode, false, error)
             }
 

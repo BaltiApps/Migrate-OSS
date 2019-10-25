@@ -13,7 +13,17 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import balti.migrate.AppInstance
+import balti.migrate.AppInstance.Companion.adbState
+import balti.migrate.AppInstance.Companion.appBatches
+import balti.migrate.AppInstance.Companion.callsList
+import balti.migrate.AppInstance.Companion.contactsList
+import balti.migrate.AppInstance.Companion.doBackupInstallers
+import balti.migrate.AppInstance.Companion.dpiText
+import balti.migrate.AppInstance.Companion.fontScale
+import balti.migrate.AppInstance.Companion.keyboardText
 import balti.migrate.AppInstance.Companion.sharedPrefs
+import balti.migrate.AppInstance.Companion.smsList
+import balti.migrate.AppInstance.Companion.wifiData
 import balti.migrate.R
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.engines.*
@@ -27,15 +37,16 @@ import balti.migrate.simpleActivities.ProgressShowActivity
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_SERVICE_STARTED
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_START_BATCH_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.ALL_SUPPRESSED_ERRORS
 import balti.migrate.utilities.CommonToolKotlin.Companion.BACKUP_NAME_SETTINGS
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELLING
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_BACKUP_SERVICE_ERROR
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CONDITIONAL_TASK
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_DESTINATION
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ERRORS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_IS_CANCELLED
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
@@ -85,21 +96,6 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
     companion object {
 
-        var destination = ""
-        var backupName = ""
-        var appBatches = ArrayList<AppBatch>(0)
-
-        var contactsList : ArrayList<ContactsDataPacketKotlin>? = null
-        var callsList : ArrayList<CallsDataPacketsKotlin>? = null
-        var smsList : ArrayList<SmsDataPacketKotlin>? = null
-        var dpiText : String? = null
-        var keyboardText : String? = null
-        var adbState : Int? = null
-        var fontScale : Double? = null
-        var wifiData : WifiDataPacket? = null
-
-        var doBackupInstallers = false
-
         lateinit var serviceContext: Context
         private set
 
@@ -108,6 +104,10 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
+
+    private var destination = ""
+    private var backupName = ""
+    private var isBackupInitiated = false
 
     private val commonTools by lazy { CommonToolKotlin(this) }
 
@@ -136,7 +136,8 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
     private var currentZippingJobCode = 0
     private var currentZipVerificationJobCode = 0
 
-    private var isSettingsNull = true
+    private val isSettingsNull : Boolean
+        get() = (dpiText == null && keyboardText == null && adbState == null && fontScale == null)
 
     private var currentBackupName = ""
     private var currentDestination = ""
@@ -263,37 +264,33 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         }
     }
 
-    private val startBatchBackupReceiver by lazy {
-        object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
+    private fun startBackup(){
+        startTime = timeInMillis()
 
-                startTime = timeInMillis()
+        isBackupInitiated = true
 
-                currentBackupName = backupName
-                currentDestination = destination
+        currentBackupName = backupName
+        currentDestination = destination
 
-                cancelAll = false
+        cancelAll = false
 
-                AppInstance.notificationManager.cancelAll()
+        AppInstance.notificationManager.cancelAll()
 
-                var isExtrasBackup = true
+        var isExtrasBackup = true
 
-                if (dpiText != null || keyboardText != null || adbState != null || fontScale != null) isSettingsNull = false
-                if (!isSettingsNull || contactsList != null || callsList != null || smsList != null || wifiData != null){
-                    isExtrasBackup = true
-                }
+        if (!isSettingsNull || contactsList.isNotEmpty() || contactsList.isNotEmpty() || contactsList.isNotEmpty() || wifiData != null){
+            isExtrasBackup = true
+        }
 
-                appBatches.run {
-                    if (!sharedPrefs.getBoolean(PREF_SEPARATE_EXTRAS_BACKUP, true)) workingAppBatches = this
-                    else if (this.size <= 1) workingAppBatches = this
-                    else if (!isExtrasBackup) workingAppBatches = this
+        appBatches.run {
+            if (!sharedPrefs.getBoolean(PREF_SEPARATE_EXTRAS_BACKUP, true)) workingAppBatches = this
+            else if (this.size <= 1) workingAppBatches = this
+            else if (!isExtrasBackup) workingAppBatches = this
 
-                    when (this.size) {
-                        1 -> doFallThroughJob(JOBCODE_PEFORM_SYSTEM_TEST)
-                        0 -> doFallThroughJob(JOBCODE_PEFORM_BACKUP_CONTACTS)
-                        else -> doFallThroughJob(JOBCODE_PEFORM_SYSTEM_TEST)
-                    }
-                }
+            when (this.size) {
+                1 -> doFallThroughJob(JOBCODE_PEFORM_SYSTEM_TEST)
+                0 -> doFallThroughJob(JOBCODE_PEFORM_BACKUP_CONTACTS)
+                else -> doFallThroughJob(JOBCODE_PEFORM_SYSTEM_TEST)
             }
         }
     }
@@ -335,7 +332,6 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
             commonTools.makeNotificationChannel(CHANNEL_BACKUP_CANCELLING, CHANNEL_BACKUP_CANCELLING, NotificationManager.IMPORTANCE_MIN)
         }
 
-        commonTools.LBM?.registerReceiver(startBatchBackupReceiver, IntentFilter(ACTION_START_BATCH_BACKUP))
         commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
         commonTools.LBM?.registerReceiver(cancelReceiver, IntentFilter(ACTION_BACKUP_CANCEL))
         registerReceiver(cancelReceiver, IntentFilter(ACTION_BACKUP_CANCEL))
@@ -343,8 +339,25 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
         startForeground(NOTIFICATION_ID_ONGOING, loadingNotification)
 
-        commonTools.LBM?.sendBroadcast(Intent(ACTION_BACKUP_SERVICE_STARTED))
+    }
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
+        intent?.run {
+            try {
+                if (!isBackupInitiated) {
+                    destination = getStringExtra(EXTRA_DESTINATION)
+                    backupName = getStringExtra(EXTRA_BACKUP_NAME)
+                    startBackup()
+                }
+            }
+            catch (e: Exception){
+                e.printStackTrace()
+                backupFinished("${getString(R.string.errorStartingBackup)}: ${e.message}")
+            }
+        }
+
+        return super.onStartCommand(intent, flags, startId)
     }
 
     private fun doFallThroughJob(jobCode: Int){
@@ -394,9 +407,9 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         }
 
         doJob(JOBCODE_PEFORM_SYSTEM_TEST, Any())
-        doJob(JOBCODE_PEFORM_BACKUP_CONTACTS, contactsList)
-        doJob(JOBCODE_PEFORM_BACKUP_SMS, smsList)
-        doJob(JOBCODE_PEFORM_BACKUP_CALLS, callsList)
+        doJob(JOBCODE_PEFORM_BACKUP_CONTACTS, contactsList.let { if (it.isNotEmpty()) it else null })
+        doJob(JOBCODE_PEFORM_BACKUP_SMS, smsList.let { if (it.isNotEmpty()) it else null })
+        doJob(JOBCODE_PEFORM_BACKUP_CALLS, callsList.let { if (it.isNotEmpty()) it else null })
         doJob(JOBCODE_PEFORM_BACKUP_WIFI, wifiData)
         doJob(JOBCODE_PEFORM_BACKUP_SETTINGS, if (isSettingsNull) null else Any())
 
@@ -429,9 +442,9 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
             }
 
             return UpdaterScriptMakerEngine(currentUpdaterScriptJobCode, bd, batch, timeStamp,
-                    if (contactsList != null) contactsBackupName else null,
-                    if (smsList != null) smsBackupName else null,
-                    if (callsList != null) callsBackupName else null,
+                    if (contactsList.isNotEmpty()) contactsBackupName else null,
+                    if (smsList.isNotEmpty()) smsBackupName else null,
+                    if (callsList.isNotEmpty()) callsBackupName else null,
                     if (!isSettingsNull) BACKUP_NAME_SETTINGS else null,
                     wifiData?.fileName)
 
@@ -529,7 +542,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
             } catch (e: Exception) {
 
                 e.printStackTrace()
-                addError("$ERR_BACKUP_SERVICE_ERROR${bd.errorTag}: RUN_CONDITIONAL_TASK ${e.message}")
+                addError("$ERR_BACKUP_SERVICE_ERROR${bd.errorTag}: $ERR_CONDITIONAL_TASK ${e.message}")
 
                 // go to next job
                 doFallThroughJob(JOBCODE_PERFORM_UPDATER_SCRIPT)
@@ -543,7 +556,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
             } catch (e: Exception) {
 
                 e.printStackTrace()
-                addError("$ERR_BACKUP_SERVICE_ERROR${bd.errorTag}: RUN_CONDITIONAL_TASK ${e.message}")
+                addError("$ERR_BACKUP_SERVICE_ERROR${bd.errorTag}: $ERR_CONDITIONAL_TASK ${e.message}")
 
                 // no need to check for zip verification
                 runNextBatch()
@@ -564,7 +577,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
             } catch (e: Exception) {
 
                 e.printStackTrace()
-                addError("$ERR_BACKUP_SERVICE_ERROR${bd.errorTag}: RUN_CONDITIONAL_TASK ${e.message}")
+                addError("$ERR_BACKUP_SERVICE_ERROR${bd.errorTag}: $ERR_CONDITIONAL_TASK ${e.message}")
                 runNextBatch()
 
             }
@@ -611,10 +624,13 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         }
 
         try {
-            if (allErrors.size == 0) {
+            if (allErrors.size == 0 && errorTitle == "") {
                 errorWriter?.write("--- No errors! ---\n")
-            } else for (e in allErrors) {
-                errorWriter?.write("$e\n")
+            } else {
+                if (errorTitle != "") errorWriter?.write("$errorTitle\n\n")
+                for (e in allErrors) {
+                    errorWriter?.write("$e\n")
+                }
             }
             errorWriter?.write("\n--- Backup Name : $backupName ---\n")
             if (cancelAll) errorWriter?.write("--- Cancelled! ---\n")
@@ -664,7 +680,6 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
     override fun onDestroy() {
         super.onDestroy()
-        commonTools.tryIt { commonTools.LBM?.unregisterReceiver(startBatchBackupReceiver) }
         commonTools.tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
         commonTools.tryIt { commonTools.LBM?.unregisterReceiver(cancelReceiver) }
         commonTools.tryIt { commonTools.LBM?.unregisterReceiver(requestProgressReceiver) }

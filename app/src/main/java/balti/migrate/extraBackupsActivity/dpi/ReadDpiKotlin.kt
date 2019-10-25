@@ -95,7 +95,6 @@ class ReadDpiKotlin(private val jobCode: Int,
                 onJobCompletion.onComplete(jobCode, true, dpiText)
             }
             else {
-                vOp.checkSet(doBackupCheckbox, false)
                 onJobCompletion.onComplete(jobCode, false, error)
             }
 

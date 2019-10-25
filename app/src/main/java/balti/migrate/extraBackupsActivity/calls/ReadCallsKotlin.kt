@@ -43,7 +43,6 @@ class ReadCallsKotlin(private val jobCode: Int,
                 vOp.enableSet(doBackupCheckbox, true)
             }
             if (cursor == null) {
-                vOp.enableSet(doBackupCheckbox, false)
                 vOp.checkSet(doBackupCheckbox, false)
                 vOp.textSet(menuSelectedStatus, R.string.reading_error)
                 vOp.visibilitySet(menuReadProgressBar, View.GONE)
