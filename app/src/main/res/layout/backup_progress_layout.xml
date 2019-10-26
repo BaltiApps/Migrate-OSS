@@ -2,11 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/log_bg_portrait"
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/backup_progress_top_status_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
@@ -65,19 +65,9 @@
                     android:gravity="center_vertical"
                     android:textColor="@color/colorAccent"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/part"/>
+                    tools:text="@string/part"/>
 
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/part_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorAccent"
-                android:textStyle="italic"
-                android:text="@string/please_wait"
-                android:visibility="gone"
-                />
 
         </LinearLayout>
 
@@ -163,34 +153,32 @@
 
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/backup_progress_bottom_button_bar"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/large_padding_width">
-
-        <Button
-            android:id="@+id/progressActionButton"
-            android:layout_width="@dimen/log_button_width"
-            android:layout_height="@dimen/button_height"
-            android:layout_alignParentEnd="true"
-            android:layout_gravity="end"
-            android:background="@drawable/cancel_backup"
-            android:foreground="?android:attr/selectableItemBackground" />
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/large_padding_width"
+        android:gravity="end"
+        >
 
         <Button
             android:id="@+id/reportLogButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_toStartOf="@id/progressActionButton"
             android:backgroundTint="@color/colorPrimary"
             android:text="@string/report"
             android:textColor="@color/colorAccent"
-            android:visibility="gone" />
+            android:visibility="gone"
+            />
 
-    </RelativeLayout>
+        <Button
+            android:id="@+id/progressActionButton"
+            android:layout_width="@dimen/log_button_width"
+            android:layout_height="@dimen/button_height"
+            android:background="@drawable/cancel_backup"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+    </LinearLayout>
 
 
     <!--<com.google.android.gms.ads.AdView

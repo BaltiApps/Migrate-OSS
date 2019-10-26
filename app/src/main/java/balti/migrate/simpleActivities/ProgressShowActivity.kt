@@ -58,12 +58,11 @@ class ProgressShowActivity: AppCompatActivity() {
     private val errors by lazy { ArrayList<String>(0) }
 
     private var lastLog = ""
-    private var lastType = ""
     private var lastIcon = ""
 
     private var lastTitle = ""
 
-    private lateinit var forceStopDialog: AlertDialog
+    private var forceStopDialog: AlertDialog? = null
 
     private fun setImageIcon(intent: Intent, type: String){
 
@@ -170,7 +169,7 @@ class ProgressShowActivity: AppCompatActivity() {
 
                 if (type == EXTRA_PROGRESS_TYPE_FINISHED) {
 
-                    commonTools.tryIt { forceStopDialog.dismiss() }
+                    commonTools.tryIt { forceStopDialog?.dismiss() }
 
                     window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                     closeWarning.visibility = View.GONE
@@ -287,7 +286,7 @@ class ProgressShowActivity: AppCompatActivity() {
 
                     }.create()
 
-                    forceStopDialog.show()
+                    forceStopDialog?.show()
                 }
                 else {
                     text = getString(R.string.force_stop)
@@ -328,5 +327,6 @@ class ProgressShowActivity: AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         commonTools.tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
+        commonTools.tryIt { forceStopDialog?.dismiss() }
     }
 }

@@ -341,7 +341,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 .setTitle(R.string.rate_dialog_title)
                 .setMessage(R.string.rate_dialog_message)
                 .setPositiveButton(R.string.sure) { _, _ ->
-                    commonTools.openWebLink("market://details?id=balti.migrate")
+                    commonTools.playStoreLink(packageName)
                     editor.putBoolean(PREF_ASK_FOR_RATING, false)
                     editor.commit()
                 }
@@ -442,7 +442,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 finish()
             }
             ad.setPositiveButton(R.string.install_original_migrate) { _, _ ->
-                commonTools.openWebLink("market://details?id=balti.migrate")
+                commonTools.playStoreLink("balti.migrate")
             }
             ad.show()
         }

@@ -300,9 +300,12 @@ class CommonToolKotlin(val context: Context) {
         val progressLog = File(context.externalCacheDir, FILE_PROGRESSLOG)
         val errorLog = File(context.externalCacheDir, FILE_ERRORLOG)
 
-        val backupScripts = context.externalCacheDir.listFiles { f: File ->
-            (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT) || f.name.startsWith(FILE_PREFIX_TAR_CHECK))
-                    && f.name.endsWith(".sh")
+        val backupScripts = context.externalCacheDir.let {
+            if (it != null) it.listFiles { f: File ->
+                (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT) || f.name.startsWith(FILE_PREFIX_TAR_CHECK))
+                        && f.name.endsWith(".sh")
+            }
+            else emptyArray<File>()
         }
 
         if (isErrorLogMandatory && !errorLog.exists()) {
@@ -369,7 +372,7 @@ class CommonToolKotlin(val context: Context) {
             if (!isTgClientInstalled){
                 eView.report_button_telegram.apply {
                     text = context.getString(R.string.install_tg)
-                    setOnClickListener { openWebLink("market://details?id=${TG_CLIENTS[0]}") }
+                    setOnClickListener { playStoreLink(TG_CLIENTS[0]) }
                 }
             }
             else {
@@ -560,6 +563,10 @@ class CommonToolKotlin(val context: Context) {
                 data = Uri.parse(url)
             })
         }
+    }
+
+    fun playStoreLink(packageName: String){
+        openWebLink("market://details?id=$packageName")
     }
 
     fun applyNamingCorrectionForShell(name: String) =
