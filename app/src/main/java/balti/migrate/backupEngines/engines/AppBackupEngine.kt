@@ -191,7 +191,8 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     commonTools.tryIt { if (isSystem) systemAppInstallScript(packageName, apkPath) }
 
                     backupUtils.makeMetadataFile(
-                            isSystem, appName, apkName, if (dataName != "NULL") "$dataName.tar.gz" else "NULL", appIconFileName,
+                            isSystem, appName, if (apkName != "NULL") "$packageName.apk" else "NULL",
+                            if (dataName != "NULL") "$dataName.tar.gz" else "NULL", appIconFileName,
                             versionName, packet.PERMISSION, packet, bd, doBackupInstallers, actualDestination,
                             if (appIconFileName != null) appIcon else null
                     )
