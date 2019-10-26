@@ -278,7 +278,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
 
         var isExtrasBackup = true
 
-        if (!isSettingsNull || contactsList.isNotEmpty() || contactsList.isNotEmpty() || contactsList.isNotEmpty() || wifiData != null){
+        if (!isSettingsNull || contactsList.isNotEmpty() || smsList.isNotEmpty() || callsList.isNotEmpty() || wifiData != null){
             isExtrasBackup = true
         }
 
@@ -353,6 +353,7 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
             }
             catch (e: Exception){
                 e.printStackTrace()
+                addError(e.message.toString())
                 backupFinished("${getString(R.string.errorStartingBackup)}: ${e.message}")
             }
         }
