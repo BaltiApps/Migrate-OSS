@@ -674,6 +674,17 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
         if ((errorTitle != "" || criticalErrors.size != 0) && sharedPrefs.getBoolean(PREF_DELETE_ERROR_BACKUP, true))
             commonTools.dirDelete("$destination/$backupName")
 
+        appBatches.clear()
+        contactsList.clear()
+        callsList.clear()
+        smsList.clear()
+        dpiText = null
+        keyboardText = null
+        adbState = null
+        fontScale = null
+        wifiData = null
+        doBackupInstallers = false
+
         stopSelf()
     }
 

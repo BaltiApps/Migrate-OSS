@@ -145,12 +145,14 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 val packet = appBatch.appPackets[c]
                 val packageName = packet.PACKAGE_INFO.packageName
 
-                if (packet.APP) {
+                if (packet.APP || packet.DATA || packet.PERMISSION) {
                     val appName = pm.getApplicationLabel(packet.PACKAGE_INFO.applicationInfo)
+                    updater_writer.write("ui_print(\"$appName (${c + 1}/$size)\");\n")
+                }
+
+                if (packet.APP) {
                     var apkPath = packet.PACKAGE_INFO.applicationInfo.sourceDir
                     apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'))
-
-                    updater_writer.write("ui_print(\"$appName (${c + 1}/$size)\");\n")
 
                     if (!apkPath.startsWith("/data")) {
                         updater_writer.write("package_extract_dir(\"$packageName.app\", \"/tmp/$packageName.app\");\n")

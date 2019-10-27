@@ -947,8 +947,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
         var n = 0
         newContactsList.forEach {
-            contactsList.add(it)
-            if (it.selected) n++
+            if (it.selected) {
+                n++
+                contactsList.add(it)
+            }
         }
 
         if (n > 0){
@@ -974,8 +976,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
         var n = 0
         newSmsList.forEach {
-            smsList.add(it)
-            if (it.selected) n++
+            if (it.selected) {
+                n++
+                smsList.add(it)
+            }
         }
 
         if (n > 0){
@@ -1001,8 +1005,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
         var n = 0
         newCallsList.forEach {
-            callsList.add(it)
-            if (it.selected) n++
+            if (it.selected) {
+                n++
+                callsList.add(it)
+            }
         }
 
         if (n > 0){
