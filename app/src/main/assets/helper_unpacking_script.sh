@@ -4,18 +4,20 @@
 
 TEMP_UNPACK_DIR=$1
 VERSION=$2
+MANUAL_CONFIG_DIR=$3
 
-OUTFD="$(cat /tmp/migrate/OUTFD)"
-SYSTEM="$(cat /tmp/migrate/SYSTEM)"
+OUTFD="$(cat /tmp/${MANUAL_CONFIG_DIR}/OUTFD)"
+SYSTEM="$(cat /tmp/${MANUAL_CONFIG_DIR}/SYSTEM)"
 
 echoIt() {
-    if [[ ${OUTFD} != "/dev/null" || ! -z ${OUTFD} ]]; then
+    if [[ ${OUTFD} != "/dev/null" || -n "${OUTFD}" ]]; then
         echo "ui_print $1" >> /proc/self/fd/${OUTFD};
     else
         echo "FD $OUTFD:: $1"
     fi
 }
 
+HELPER_EXTRACT_DIR=""
 if [[ -d ${SYSTEM}/product/app ]]; then
     HELPER_EXTRACT_DIR=${SYSTEM}/product
 else
@@ -69,6 +71,6 @@ if [[ -e ${TEMP_UNPACK_DIR} ]] && [[ -f ${TEMP_UNPACK_DIR} ]]; then
     mv ${TEMP_UNPACK_DIR} ${TEMP_UNPACK_DIR}.bak
 fi
 
-echo "${HELPER_EXTRACT_DIR}" > /tmp/migrate/HELPER_EXTRACT_DIR
+echo "${HELPER_EXTRACT_DIR}" > /tmp/${MANUAL_CONFIG_DIR}/HELPER_EXTRACT_DIR
 
 rm /tmp/helper_unpacking_script.sh

@@ -2,16 +2,29 @@
 
 # parameters:
 
-MIGRATE_CACHE=$1
+MIGRATE_CACHE_DEFAULT=$1
 TIMESTAMP=$2
 PACKAGE_DATA_NAME=$3
-
-# In case of errors, system app path and build.prop path can be manually mentioned under:
-# /tmp/migrate/SYSTEM_MANUAL and /tmp/migrate/BUILDPROP_MANUAL files respectively.
+TEMP_UNPACK_DIR=$4
+MANUAL_CONFIG_DIR=$5
 
 OUTFD="/dev/null"
 SYSTEM=""
-SAR="$(cat /tmp/migrate/SAR)"
+MIGRATE_CACHE=""
+
+# In case of errors, system app path and build.prop path can be manually mentioned under:
+# /tmp/${MANUAL_CONFIG_DIR}/SYSTEM_MANUAL and /tmp/${MANUAL_CONFIG_DIR}/BUILDPROP_MANUAL files respectively.
+# Also a manual location for migrate cache can be placed in the file /tmp/${MANUAL_CONFIG_DIR}/MIGRATE_CACHE_MANUAL
+
+echoIt() {
+    if [[ ${OUTFD} != "/dev/null" || -n "${OUTFD}" ]]; then
+        echo "ui_print $1" >> /proc/self/fd/${OUTFD};
+    else
+        echo "FD $OUTFD:: $1"
+    fi
+}
+
+SAR="$(cat /tmp/${MANUAL_CONFIG_DIR}/SAR)"
 
 for FD in `ls /proc/$$/fd`; do
     if readlink /proc/$$/fd/$FD | grep -q pipe; then
@@ -22,28 +35,40 @@ for FD in `ls /proc/$$/fd`; do
     fi
 done
 
-echoIt() {
-    if [[ ${OUTFD} != "/dev/null" || ! -z ${OUTFD} ]]; then
-        echo "ui_print $1" >> /proc/self/fd/${OUTFD};
-    else
-        echo "FD $OUTFD:: $1"
-    fi
-}
-
 exitNow() {
 
     # unmount data to signal that error has occurred
     umount /data
+
+    # delete temp dir
+    if [[ -n "${TEMP_UNPACK_DIR}" && ${TEMP_UNPACK_DIR} != "/" ]]; then
+        rm -rf ${TEMP_UNPACK_DIR}
+    fi
 
     sleep 2s
     exit 1
 }
 
 echoIt " "
+
+manual_migrate_cache="$(cat /tmp/${MANUAL_CONFIG_DIR}/MIGRATE_CACHE_MANUAL)"
+
+if [[ -n "${manual_migrate_cache}" ]]; then
+    MIGRATE_CACHE="$manual_migrate_cache"
+    echoIt "Manual migrate_cache: $MIGRATE_CACHE"
+    sleep 1s
+else
+    MIGRATE_CACHE=${MIGRATE_CACHE_DEFAULT}
+    echoIt "migrate_cache: $MIGRATE_CACHE"
+fi
+
+mkdir -p ${TEMP_UNPACK_DIR}
+
+echoIt " "
 echoIt "Checking parameters..."
 echoIt " "
 
-manual_entry_system="$(cat /tmp/migrate/SYSTEM_MANUAL)"
+manual_entry_system="$(cat /tmp/${MANUAL_CONFIG_DIR}/SYSTEM_MANUAL)"
 
 if [[ -n "$manual_entry_system" ]]; then
     echoIt "Manual system app location: $manual_entry_system"
@@ -117,7 +142,7 @@ sleep 1s
 
 # Check if ROM is present
 build_prop="$SYSTEM/build.prop"
-manual_entry_buildprop="$(cat /tmp/migrate/BUILDPROP_MANUAL)"
+manual_entry_buildprop="$(cat /tmp/${MANUAL_CONFIG_DIR}/BUILDPROP_MANUAL)"
 
 if [[ -n "$manual_entry_buildprop" ]]; then
     echoIt "Manual build.prop location: $manual_entry_buildprop"
@@ -205,7 +230,7 @@ if [[ -e /tmp/package-data.txt ]]; then
                 echoIt "* Check if a Migrate package is previously flashed"
                 echoIt "-- From TWRP main menu->'Mount'->'Data'"
                 echoIt "-- Main menu->'Advanced'->'File Manager'"
-                echoIt "-- Navigate to '/data/local/tmp/migrate_cache'"
+                echoIt "-- Navigate to '$MIGRATE_CACHE'"
                 echoIt "-- Delete the directory"
                 echoIt " "
                 echoIt "Additionally delete all tar.gz files from under /data/data/"
@@ -291,12 +316,12 @@ mkdir -p ${SYSTEM}/app/
 mkdir -p ${SYSTEM}/priv-app/
 mkdir -p /data/app/
 mkdir -p /data/data/
-
 mkdir -p ${MIGRATE_CACHE}
 cp /tmp/${PACKAGE_DATA_NAME} ${MIGRATE_CACHE}/"$PACKAGE_DATA_NAME"${TIMESTAMP}.txt && echoIt "Copied package data"
 
 # export variables
-echo "${OUTFD}" > /tmp/migrate/OUTFD
-echo "${SYSTEM}" > /tmp/migrate/SYSTEM
+echo "${OUTFD}" > /tmp/${MANUAL_CONFIG_DIR}/OUTFD
+echo "${SYSTEM}" > /tmp/${MANUAL_CONFIG_DIR}/SYSTEM
+echo "${MIGRATE_CACHE}" > /tmp/${MANUAL_CONFIG_DIR}/MIGRATE_CACHE
 
 rm /tmp/prep.sh

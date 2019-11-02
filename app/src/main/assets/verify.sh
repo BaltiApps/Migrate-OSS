@@ -3,14 +3,24 @@
 # parameters
 
 FILE_LIST=$1
-MIGRATE_CACHE=$2
-TIMESTAMP=$3
+TIMESTAMP=$2
+DEFAULT_MIGRATE_CACHE=$3
+TEMP_UNPACK_DIR=$4
+MANUAL_CONFIG_DIR=$5
 
-OUTFD="$(cat /tmp/migrate/OUTFD)"
-HELPER_EXTRACT_DIR="$(cat /tmp/migrate/HELPER_EXTRACT_DIR)"
+read_migrate_cache="$(cat /tmp/${MANUAL_CONFIG_DIR}/MIGRATE_CACHE)"
+
+if [[ -z "${read_migrate_cache}" ]]; then
+    MIGRATE_CACHE=${DEFAULT_MIGRATE_CACHE}
+else
+    MIGRATE_CACHE=${read_migrate_cache}
+fi
+
+OUTFD="$(cat /tmp/${MANUAL_CONFIG_DIR}/OUTFD)"
+HELPER_EXTRACT_DIR="$(cat /tmp/${MANUAL_CONFIG_DIR}/HELPER_EXTRACT_DIR)"
 
 echoIt() {
-    if [[ ${OUTFD} != "/dev/null" || ! -z ${OUTFD} ]]; then
+    if [[ ${OUTFD} != "/dev/null" || -n "${OUTFD}" ]]; then
         echo "ui_print $1" >> /proc/self/fd/${OUTFD};
     else
         echo "FD $OUTFD:: $1"
@@ -81,6 +91,11 @@ fi
 
 chmod -R 777 ${MIGRATE_CACHE}
 cp /tmp/${FILE_LIST} ${MIGRATE_CACHE}/"$FILE_LIST"${TIMESTAMP}.txt && echoIt "Copied file list"
+
+# delete temp dir
+if [[ -n "${TEMP_UNPACK_DIR}" && ${TEMP_UNPACK_DIR} != "/" ]]; then
+    rm -rf ${TEMP_UNPACK_DIR}
+fi
 
 echoIt "Verification complete"
 

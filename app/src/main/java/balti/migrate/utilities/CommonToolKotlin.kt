@@ -43,7 +43,13 @@ class CommonToolKotlin(val context: Context) {
         val PENDING_INTENT_BACKUP_CANCEL_ID = 912
 
         val DEFAULT_INTERNAL_STORAGE_DIR = "/sdcard/Migrate"
-        val MIGRATE_CACHE = "/data/local/tmp/migrate_cache"
+        val MIGRATE_CACHE_DEFAULT = "/data/local/tmp/migrate_cache"
+        val DATA_TEMP = "/data/migrateTemp"
+
+        val DIR_MANUAL_CONFIGS = "manualConfigs"
+        val FILE_MIGRATE_CACHE_MANUAL = "MIGRATE_CACHE_MANUAL"
+        val FILE_SYSTEM_MANUAL = "SYSTEM_MANUAL"
+        val FILE_BUILDPROP_MANUAL = "BUILDPROP_MANUAL"
 
         val FILE_MAIN_PREF = "main"
 
@@ -93,26 +99,10 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_DESTINATION = "destination"
         val EXTRA_ACTUAL_DESTINATION = "actualDestination"
         val EXTRA_ERRORS = "errors"
-        val EXTRA_PART_NO = "partNo"
-        val EXTRA_IS_FINAL_PROCESS = "final_process"
-        val EXTRA_FINISHED_MESSAGE = "finishedMessage"
         val EXTRA_TOTAL_TIME = "total_time"
-        val EXTRA_TEST_LOG = "test_log"
-        val EXTRA_APP_LOG = "app_log"
-        val EXTRA_ZIP_LOG = "zip_log"
-        val EXTRA_ZIP_VERIFICATION_LOG = "zip_veri_log"
-        val EXTRA_APP_NAME = "app_name"
-        val EXTRA_TAR_CHECK_LOG = "tar_check_log"
-        val EXTRA_SCRIPT_APP_NAME = "script_app_name"
-        val EXTRA_RETRY_LOG = "retry_log"
-        val EXTRA_DEFECT_NUMBER = "defect_number"
         val EXTRA_MADE_PART_NAME = "madePartName"
-        val EXTRA_CONTACT_NAME = "contact_name"
-        val EXTRA_CALLS_NAME = "calls_name"
-        val EXTRA_SMS_ADDRESS = "sms_address"
         val EXTRA_IS_CANCELLED = "isCancelled"
 
-        val ERR_ZIP = "ZIP_ERROR"
         val ERR_ZIP_TRY_CATCH = "ZIP_TRY_CATCH"
         val ERR_VERIFICATION_TRY_CATCH = "VERIFICATION_TRY_CATCH"
         val ERR_CORRECTION_SHELL = "CORRECTION_SHELL"
@@ -184,6 +174,10 @@ class CommonToolKotlin(val context: Context) {
         val PREF_FILELIST_IN_ZIP_VERIFICATION = "fileList_in__zip_verification"
 
         val PREF_IGNORE_APP_CACHE = "ignore_app_cache"
+
+        val PREF_MANUAL_MIGRATE_CACHE = "manual_migrate_cache"
+        val PREF_MANUAL_SYSTEM = "manual_system"
+        val PREF_MANUAL_BUILDPROP = "manual_buildProp"
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
         val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter

@@ -6,12 +6,16 @@ import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
+import balti.migrate.utilities.CommonToolKotlin.Companion.DATA_TEMP
+import balti.migrate.utilities.CommonToolKotlin.Companion.DIR_MANUAL_CONFIGS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_EXTRACT
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MIGRATE_CACHE_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PACKAGE_DATA
-import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_CACHE
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_SYSTEM_MANUAL
+import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_CACHE_DEFAULT
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
 import java.io.*
 import java.util.*
@@ -99,6 +103,8 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             extractFile("helper_unpacking_script.sh")
             extractFile("verify.sh")
             extractFile(FILE_FILE_LIST)
+            extractFile("mover.sh")
+            updater_writer.write("package_extract_dir(\"$DIR_MANUAL_CONFIGS\", \"/tmp/$DIR_MANUAL_CONFIGS\");\n")
 
             // set permission to scripts
             fun set777Permission(fileName: String) {
@@ -111,6 +117,10 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             set777Permission("helper_unpacking_script.sh")
             set777Permission("verify.sh")
             set777Permission(FILE_FILE_LIST)
+            set777Permission("mover.sh")
+            set777Permission("migrate/$FILE_MIGRATE_CACHE_MANUAL")
+            set777Permission("migrate/$FILE_SYSTEM_MANUAL")
+            set777Permission(DIR_MANUAL_CONFIGS)
 
             // mount partitions
             updater_writer.write("ui_print(\" \");\n")
@@ -123,7 +133,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                     "ui_print(\"Mount failed system! Migrate helper will not be automatically installed!\"));\n")
 
             // run prep.sh
-            updater_writer.write("run_program(\"/tmp/prep.sh\", \"$MIGRATE_CACHE\", \"$timeStamp\", \"$FILE_PACKAGE_DATA\");\n")
+            updater_writer.write("run_program(\"/tmp/prep.sh\", \"$MIGRATE_CACHE_DEFAULT\", \"$timeStamp\", \"$FILE_PACKAGE_DATA\", \"$DATA_TEMP\", \"$DIR_MANUAL_CONFIGS\");\n")
 
             // data will be unmounted if prep.sh aborted unsuccessfully
             updater_writer.write("ifelse(is_mounted(\"/data\"), ui_print(\"Parameters checked!\") && sleep(2s), abort(\"Exiting...\"));\n")
@@ -132,6 +142,12 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             // ready to restore to migrate cache
             updater_writer.write("ui_print(\"Restoring to Migrate cache...\");\n")
             updater_writer.write("ui_print(\" \");\n")
+
+            // use mover.sh to move to migrate cache
+            fun extractAndMoveIt(fileName: String, isFile: Boolean = true){
+                updater_writer.write("package_extract_${if (isFile) "file" else "dir"}(\"$fileName\", \"$DATA_TEMP/$fileName\");\n")
+                updater_writer.write("run_program(\"/tmp/mover.sh\", \"$DATA_TEMP/$fileName\", \"$MIGRATE_CACHE_DEFAULT\", \"$DIR_MANUAL_CONFIGS\");\n")
+            }
 
             // extract app files
             val size = appBatch.appPackets.size
@@ -159,18 +175,18 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                         updater_writer.write("package_extract_file(\"$packageName.sh\", \"/tmp/$packageName.sh\");\n")
                         updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"/tmp/$packageName.sh\");\n")
                         updater_writer.write("run_program(\"/tmp/$packageName.sh\");\n")
-                    } else
-                        updater_writer.write("package_extract_dir(\"$packageName.app\", \"$MIGRATE_CACHE/$packageName.app\");\n")
+                    }
+                    else extractAndMoveIt("$packageName.app", false)
                 }
 
                 if (packet.DATA)
                     updater_writer.write("package_extract_file(\"$packageName.tar.gz\", \"/data/data/$packageName.tar.gz\");\n")
 
                 if (packet.PERMISSION)
-                    updater_writer.write("package_extract_file(\"$packageName.perm\", \"$MIGRATE_CACHE/$packageName.perm\");\n")
+                    extractAndMoveIt("$packageName.perm")
 
-                updater_writer.write("package_extract_file(\"$packageName.icon\", \"$MIGRATE_CACHE/$packageName.icon\");\n")
-                updater_writer.write("package_extract_file(\"$packageName.json\", \"$MIGRATE_CACHE/$packageName.json\");\n")
+                extractAndMoveIt("$packageName.json")
+                extractAndMoveIt("$packageName.icon")
 
                 var pString = String.format(Locale.ENGLISH, "%.4f", (c + 1) * 1.0 / size)
                 pString = pString.replace(",", ".")
@@ -182,35 +198,35 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             updater_writer.write("ui_print(\" \");\n")
             contactsFileName?.let {
                 updater_writer.write("ui_print(\"Extracting contacts: $it\");\n")
-                updater_writer.write("package_extract_file(\"$it\", \"$MIGRATE_CACHE/$it\");\n")
+                extractAndMoveIt(it)
             }
             smsFileName?.let {
                 updater_writer.write("ui_print(\"Extracting sms: $it\");\n")
-                updater_writer.write("package_extract_file(\"$it\", \"$MIGRATE_CACHE/$it\");\n")
+                extractAndMoveIt(it)
             }
             callsFileName?.let {
                 updater_writer.write("ui_print(\"Extracting call logs: $it\");\n")
-                updater_writer.write("package_extract_file(\"$it\", \"$MIGRATE_CACHE/$it\");\n")
+                extractAndMoveIt(it)
             }
             settingsFileName?.let {
                 updater_writer.write("ui_print(\"Extracting dpi data: $it\");\n")
-                updater_writer.write("package_extract_file(\"$it\", \"$MIGRATE_CACHE/$it\");\n")
+                extractAndMoveIt(it)
             }
             wifiFileName?.let {
                 updater_writer.write("ui_print(\"Extracting keyboard data: $it\");\n")
-                updater_writer.write("package_extract_file(\"$it\", \"$MIGRATE_CACHE/$it\");\n")
+                extractAndMoveIt(it)
             }
             updater_writer.write("ui_print(\" \");\n")
 
             // unpack helper
             updater_writer.write("ui_print(\"Unpacking helper\");\n")
             updater_writer.write("package_extract_dir(\"system\", \"/tmp/system\");\n")
-            updater_writer.write("run_program(\"/tmp/helper_unpacking_script.sh\", \"/tmp/system/\", \"$THIS_VERSION\");\n")
+            updater_writer.write("run_program(\"/tmp/helper_unpacking_script.sh\", \"/tmp/system/\", \"$THIS_VERSION\", \"$DIR_MANUAL_CONFIGS\");\n")
 
             updater_writer.write("set_progress(1.0000);\n")
 
             // verification
-            updater_writer.write("run_program(\"/tmp/verify.sh\", \"$FILE_FILE_LIST\", \"$MIGRATE_CACHE\", \"$timeStamp\");\n")
+            updater_writer.write("run_program(\"/tmp/verify.sh\", \"$FILE_FILE_LIST\", \"$timeStamp\", \"$MIGRATE_CACHE_DEFAULT\", \"$DATA_TEMP\", \"$DIR_MANUAL_CONFIGS\");\n")
 
             // un-mount partitions
             updater_writer.write("ui_print(\" \");\n")
@@ -274,6 +290,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             extractToBackup("update-binary", "$actualDestination/META-INF/com/google/android/")
             extractToBackup("mount_script.sh", actualDestination)
             extractToBackup("prep.sh", actualDestination)
+            extractToBackup("mover.sh", actualDestination)
             extractToBackup("helper_unpacking_script.sh", actualDestination)
             extractToBackup("verify.sh", actualDestination)
             extractToBackup("MigrateHelper.apk", "$actualDestination/system/app/MigrateHelper/")
