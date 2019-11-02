@@ -11,7 +11,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PACKAGE_DATA
-import balti.migrate.utilities.CommonToolKotlin.Companion.TEMP_DIR_NAME
+import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_CACHE
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
 import java.io.*
 import java.util.*
@@ -123,7 +123,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                     "ui_print(\"Mount failed system! Migrate helper will not be automatically installed!\"));\n")
 
             // run prep.sh
-            updater_writer.write("run_program(\"/tmp/prep.sh\", \"$TEMP_DIR_NAME\", \"$timeStamp\", \"$FILE_PACKAGE_DATA\");\n")
+            updater_writer.write("run_program(\"/tmp/prep.sh\", \"$MIGRATE_CACHE\", \"$timeStamp\", \"$FILE_PACKAGE_DATA\");\n")
 
             // data will be unmounted if prep.sh aborted unsuccessfully
             updater_writer.write("ifelse(is_mounted(\"/data\"), ui_print(\"Parameters checked!\") && sleep(2s), abort(\"Exiting...\"));\n")
@@ -160,17 +160,17 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                         updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"/tmp/$packageName.sh\");\n")
                         updater_writer.write("run_program(\"/tmp/$packageName.sh\");\n")
                     } else
-                        updater_writer.write("package_extract_dir(\"$packageName.app\", \"$TEMP_DIR_NAME/$packageName.app\");\n")
+                        updater_writer.write("package_extract_dir(\"$packageName.app\", \"$MIGRATE_CACHE/$packageName.app\");\n")
                 }
 
                 if (packet.DATA)
                     updater_writer.write("package_extract_file(\"$packageName.tar.gz\", \"/data/data/$packageName.tar.gz\");\n")
 
                 if (packet.PERMISSION)
-                    updater_writer.write("package_extract_file(\"$packageName.perm\", \"$TEMP_DIR_NAME/$packageName.perm\");\n")
+                    updater_writer.write("package_extract_file(\"$packageName.perm\", \"$MIGRATE_CACHE/$packageName.perm\");\n")
 
-                updater_writer.write("package_extract_file(\"$packageName.icon\", \"$TEMP_DIR_NAME/$packageName.icon\");\n")
-                updater_writer.write("package_extract_file(\"$packageName.json\", \"$TEMP_DIR_NAME/$packageName.json\");\n")
+                updater_writer.write("package_extract_file(\"$packageName.icon\", \"$MIGRATE_CACHE/$packageName.icon\");\n")
+                updater_writer.write("package_extract_file(\"$packageName.json\", \"$MIGRATE_CACHE/$packageName.json\");\n")
 
                 var pString = String.format(Locale.ENGLISH, "%.4f", (c + 1) * 1.0 / size)
                 pString = pString.replace(",", ".")
@@ -182,23 +182,23 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             updater_writer.write("ui_print(\" \");\n")
             contactsFileName?.let {
                 updater_writer.write("ui_print(\"Extracting contacts: $it\");\n")
-                updater_writer.write("package_extract_file(\"$it\", \"$TEMP_DIR_NAME/$it\");\n")
+                updater_writer.write("package_extract_file(\"$it\", \"$MIGRATE_CACHE/$it\");\n")
             }
             smsFileName?.let {
                 updater_writer.write("ui_print(\"Extracting sms: $it\");\n")
-                updater_writer.write("package_extract_file(\"$it\", \"$TEMP_DIR_NAME/$it\");\n")
+                updater_writer.write("package_extract_file(\"$it\", \"$MIGRATE_CACHE/$it\");\n")
             }
             callsFileName?.let {
                 updater_writer.write("ui_print(\"Extracting call logs: $it\");\n")
-                updater_writer.write("package_extract_file(\"$it\", \"$TEMP_DIR_NAME/$it\");\n")
+                updater_writer.write("package_extract_file(\"$it\", \"$MIGRATE_CACHE/$it\");\n")
             }
             settingsFileName?.let {
                 updater_writer.write("ui_print(\"Extracting dpi data: $it\");\n")
-                updater_writer.write("package_extract_file(\"$it\", \"$TEMP_DIR_NAME/$it\");\n")
+                updater_writer.write("package_extract_file(\"$it\", \"$MIGRATE_CACHE/$it\");\n")
             }
             wifiFileName?.let {
                 updater_writer.write("ui_print(\"Extracting keyboard data: $it\");\n")
-                updater_writer.write("package_extract_file(\"$it\", \"$TEMP_DIR_NAME/$it\");\n")
+                updater_writer.write("package_extract_file(\"$it\", \"$MIGRATE_CACHE/$it\");\n")
             }
             updater_writer.write("ui_print(\" \");\n")
 
@@ -210,7 +210,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             updater_writer.write("set_progress(1.0000);\n")
 
             // verification
-            updater_writer.write("run_program(\"/tmp/verify.sh\", \"$FILE_FILE_LIST\", \"$TEMP_DIR_NAME\", \"$timeStamp\");\n")
+            updater_writer.write("run_program(\"/tmp/verify.sh\", \"$FILE_FILE_LIST\", \"$MIGRATE_CACHE\", \"$timeStamp\");\n")
 
             // un-mount partitions
             updater_writer.write("ui_print(\" \");\n")

@@ -7,7 +7,7 @@ MIGRATE_CACHE=$2
 TIMESTAMP=$3
 
 OUTFD="$(cat /tmp/migrate/OUTFD)"
-SYSTEM="$(cat /tmp/migrate/SYSTEM)"
+HELPER_EXTRACT_DIR="$(cat /tmp/migrate/HELPER_EXTRACT_DIR)"
 
 echoIt() {
     if [[ ${OUTFD} != "/dev/null" || ! -z ${OUTFD} ]]; then
@@ -22,7 +22,7 @@ echoIt "Verifying backup..."
 
 ext_helper_apk=/sdcard/Migrate/helper.apk
 
-if [[ ! -e ${SYSTEM}/app/MigrateHelper/MigrateHelper.apk ]]; then
+if [[ ! -e ${HELPER_EXTRACT_DIR}/app/MigrateHelper/MigrateHelper.apk ]]; then
     echoIt " "
     echoIt "------------!!!!!!!!!!------------"
     echoIt "Helper not installed successfully!"

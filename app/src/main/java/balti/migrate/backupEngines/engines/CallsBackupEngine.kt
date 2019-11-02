@@ -107,6 +107,8 @@ class CallsBackupEngine(private val jobcode: Int,
                         }
                         val dataPacket = callsPackets[i]
 
+                        if (!dataPacket.selected) continue
+
                         display = if (dataPacket.callsCachedName != null && dataPacket.callsCachedName != "")
                             dataPacket.callsCachedName
                         else dataPacket.callsNumber.toString()
@@ -170,12 +172,15 @@ class CallsBackupEngine(private val jobcode: Int,
 
             resetBroadcast(false, title)
 
+            var totalSelected = 0
+            callsPackets.forEach { if (it.selected) totalSelected++ }
+
             val dataBase: SQLiteDatabase = getDataBase(callsDBFile)
 
             val cursor = dataBase.query(CALLS_TABLE_NAME, arrayOf("id"), null, null, null, null, null)
             cursor.moveToFirst()
-            var c = 0
 
+            var c = 0
             do {
 
                 c++
@@ -186,8 +191,8 @@ class CallsBackupEngine(private val jobcode: Int,
             commonTools.tryIt { cursor.close() }
             commonTools.tryIt { dataBase.close() }
 
-            if (c != callsPackets.size)
-                errors.add("$ERR_CALLS_VERIFY${bd.errorTag}: ${engineContext.getString(R.string.call_logs_incomplete)} - $c/${callsPackets.size}}")
+            if (c != totalSelected)
+                errors.add("$ERR_CALLS_VERIFY${bd.errorTag}: ${engineContext.getString(R.string.call_logs_incomplete)} - $c/${totalSelected}}")
         }
         catch (e: Exception){
             e.printStackTrace()

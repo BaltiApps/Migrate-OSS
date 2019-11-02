@@ -38,8 +38,10 @@ class ContactsBackupEngine(private val jobcode: Int,
                     if (BackupServiceKotlin.cancelAll) break
 
                     val packet = contactPackets[i]
-                    this.write("${packet.vcfData}\n")
 
+                    if (!packet.selected) continue
+
+                    this.write("${packet.vcfData}\n")
                     broadcastProgress("", packet.fullName, true, commonTools.getPercentage((i+1), contactPackets.size))
                 }
 

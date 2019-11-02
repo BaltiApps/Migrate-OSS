@@ -35,6 +35,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ERRORLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
+import balti.migrate.utilities.CommonToolKotlin.Companion.LAST_SUPPORTED_ANDROID_API
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_ACCESS_ASKED
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ANDROID_VERSION_WARNING
@@ -141,7 +142,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         val cpuAbi = Build.SUPPORTED_ABIS[0]
 
         if (cpuAbi == "armeabi-v7a" || cpuAbi == "arm64-v8a" || cpuAbi == "x86" || cpuAbi == "x86_64"){
-            if (Build.VERSION.SDK_INT > 28 && !main.getBoolean(PREF_ANDROID_VERSION_WARNING, false)){
+            if (Build.VERSION.SDK_INT > LAST_SUPPORTED_ANDROID_API && !main.getBoolean(PREF_ANDROID_VERSION_WARNING, false)){
                 AlertDialog.Builder(this)
                         .setTitle(R.string.too_fast)
                         .setMessage(R.string.too_fast_desc)

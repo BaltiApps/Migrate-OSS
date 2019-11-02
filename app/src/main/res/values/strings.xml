@@ -12,7 +12,7 @@
 
     -->
 
-    <!--please also update last tested version in MainActivity-->
+    <!--please also update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt-->
 
     <string name="app_name">Migrate</string>
     <string name="current_version_name">3.0</string>
@@ -202,7 +202,7 @@
     <string name="adb_unknown">ADB state unknown! Value will not be backed up.</string>
     <string name="weird_font_scale">Weird font scale. Value will not be backed up.</string>
     <string name="empty_call_logs">No call logs found on the device. Nothing to backup</string>
-    <string name="empty_sms">No call SMS messages found on the device. Nothing to backup</string>
+    <string name="empty_sms">No SMS messages found on the device. Nothing to backup</string>
     <string name="empty_contacts">No contacts on the device. Nothing to backup</string>
 
     <!--ExtraBackups.java-->

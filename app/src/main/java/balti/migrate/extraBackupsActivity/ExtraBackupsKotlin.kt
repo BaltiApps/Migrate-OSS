@@ -19,6 +19,7 @@ import balti.migrate.AppInstance.Companion.adbState
 import balti.migrate.AppInstance.Companion.appBatches
 import balti.migrate.AppInstance.Companion.callsList
 import balti.migrate.AppInstance.Companion.contactsList
+import balti.migrate.AppInstance.Companion.doBackupInstallers
 import balti.migrate.AppInstance.Companion.dpiText
 import balti.migrate.AppInstance.Companion.fontScale
 import balti.migrate.AppInstance.Companion.keyboardText
@@ -121,7 +122,6 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 .setCancelable(false)
                 .create()
     }
-
 
     private val progressReceiver by lazy {
         object : BroadcastReceiver() {
@@ -425,6 +425,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
                 commonTools.tryIt { loadInstallers?.cancel(true) }
             }
+            doBackupInstallers = isChecked
+
         } else if (buttonView == do_backup_wifi){
             if (isChecked) {
 
@@ -676,6 +678,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                             fun startBackup(){
                                 backupName = this
                                 waitingDialog.show()
+
                                 makeAppPackets = MakeAppPackets(JOBCODE_MAKE_APP_PACKETS, this@ExtraBackupsKotlin, destination, appListCopied,
                                         dialogView)
                                 makeAppPackets?.execute()
@@ -939,21 +942,20 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
     }
 
-    private fun updateContacts(newContactsList: ArrayList<ContactsDataPacketKotlin>){
+    private fun updateContacts(newList: ArrayList<ContactsDataPacketKotlin>){
+
         contactsList.clear()
 
         contacts_selected_status.text = getString(R.string.reading)
         contacts_read_progress.visibility = View.GONE
 
         var n = 0
-        newContactsList.forEach {
-            if (it.selected) {
-                n++
-                contactsList.add(it)
-            }
+        newList.forEach {
+            if (it.selected) n++
+            contactsList.add(it)
         }
 
-        if (n > 0){
+        if (contactsList.size > 0){
             contacts_selected_status.text = "$n of ${contactsList.size}"
             contacts_main_item.setOnClickListener {
                 LoadContactsForSelectionKotlin(JOBCODE_LOAD_CONTACTS, this, contactsList).execute()
@@ -968,21 +970,20 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
     }
 
-    private fun updateSms(newSmsList: ArrayList<SmsDataPacketKotlin>){
+    private fun updateSms(newList: ArrayList<SmsDataPacketKotlin>){
+
         smsList.clear()
 
         sms_selected_status.text = getString(R.string.reading)
         sms_read_progress.visibility = View.GONE
 
         var n = 0
-        newSmsList.forEach {
-            if (it.selected) {
-                n++
-                smsList.add(it)
-            }
+        newList.forEach {
+            if (it.selected) n++
+            smsList.add(it)
         }
 
-        if (n > 0){
+        if (smsList.size > 0){
             sms_selected_status.text = "$n of ${smsList.size}"
             sms_main_item.setOnClickListener {
                 LoadSmsForSelectionKotlin(JOBCODE_LOAD_SMS, this, smsList).execute()
@@ -997,21 +998,20 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
     }
 
-    private fun updateCalls(newCallsList: ArrayList<CallsDataPacketsKotlin>){
+    private fun updateCalls(newList: ArrayList<CallsDataPacketsKotlin>){
+
         callsList.clear()
 
         calls_selected_status.text = getString(R.string.reading)
         calls_read_progress.visibility = View.GONE
 
         var n = 0
-        newCallsList.forEach {
-            if (it.selected) {
-                n++
-                callsList.add(it)
-            }
+        newList.forEach {
+            if (it.selected) n++
+            callsList.add(it)
         }
 
-        if (n > 0){
+        if (callsList.size > 0){
             calls_selected_status.text = "$n of ${callsList.size}"
             calls_main_item.setOnClickListener {
                 LoadCallsForSelectionKotlin(JOBCODE_LOAD_CALLS, this, callsList).execute()

@@ -16,8 +16,16 @@ echoIt() {
     fi
 }
 
-helper_apk_dir=${SYSTEM}/app/MigrateHelper
+if [[ -d ${SYSTEM}/product/app ]]; then
+    HELPER_EXTRACT_DIR=${SYSTEM}/product
+else
+    HELPER_EXTRACT_DIR=${SYSTEM}
+fi
+helper_apk_dir=${HELPER_EXTRACT_DIR}/app/MigrateHelper
 ext_helper_apk_dir=/sdcard/Migrate
+
+echoIt "Helper extract dir: $HELPER_EXTRACT_DIR/app"
+sleep 1s
 
 if [[ -e ${helper_apk_dir}/MigrateHelper.apk ]]; then
 
@@ -34,7 +42,7 @@ if [[ -e ${helper_apk_dir}/MigrateHelper.apk ]]; then
         echoIt "Upgrading helper."
         rm -rf ${helper_apk_dir}
         rm -rf /data/data/balti.migratehelper/
-        cp -a ${TEMP_UNPACK_DIR}/app ${SYSTEM}/
+        cp -a ${TEMP_UNPACK_DIR}/app ${HELPER_EXTRACT_DIR}/
         echo "$VERSION" > ${helper_apk_dir}/v
         mkdir -p ${ext_helper_apk_dir}
         cp -a ${helper_apk_dir}/MigrateHelper.apk ${ext_helper_apk_dir}/helper.apk
@@ -47,7 +55,7 @@ else
     echoIt "Injecting helper."
     rm -r ${helper_apk_dir}
     rm -r /data/data/balti.migratehelper/
-    cp -a ${TEMP_UNPACK_DIR}/app ${SYSTEM}/
+    cp -a ${TEMP_UNPACK_DIR}/app ${HELPER_EXTRACT_DIR}/
     touch ${helper_apk_dir}/v
     echo "$VERSION" > ${helper_apk_dir}/v
     mkdir -p ${ext_helper_apk_dir}
@@ -60,5 +68,7 @@ chmod 777 ${ext_helper_apk_dir}
 if [[ -e ${TEMP_UNPACK_DIR} ]] && [[ -f ${TEMP_UNPACK_DIR} ]]; then
     mv ${TEMP_UNPACK_DIR} ${TEMP_UNPACK_DIR}.bak
 fi
+
+echo "${HELPER_EXTRACT_DIR}" > /tmp/migrate/HELPER_EXTRACT_DIR
 
 rm /tmp/helper_unpacking_script.sh

@@ -25,6 +25,7 @@ class CommonToolKotlin(val context: Context) {
     companion object {
 
         val THIS_VERSION = 13
+        val LAST_SUPPORTED_ANDROID_API = 29
 
         val DEBUG_TAG = "migrate_tag"
         val MAIN_ACTIVITY_AD_ID = "ca-app-pub-6582325651261661/6749792408"
@@ -42,7 +43,7 @@ class CommonToolKotlin(val context: Context) {
         val PENDING_INTENT_BACKUP_CANCEL_ID = 912
 
         val DEFAULT_INTERNAL_STORAGE_DIR = "/sdcard/Migrate"
-        val TEMP_DIR_NAME = "/data/local/tmp/migrate_cache"
+        val MIGRATE_CACHE = "/data/local/tmp/migrate_cache"
 
         val FILE_MAIN_PREF = "main"
 

@@ -90,6 +90,8 @@ class SmsBackupEngine(private val jobcode: Int,
 
                         val dataPacket = smsPackets[i]
 
+                        if (!dataPacket.selected) continue
+
                         val contentValues = ContentValues()
                         contentValues.put(SMS_ADDRESS, dataPacket.smsAddress)
                         contentValues.put(SMS_BODY, dataPacket.smsBody)
@@ -144,12 +146,15 @@ class SmsBackupEngine(private val jobcode: Int,
 
             resetBroadcast(false, title)
 
+            var totalSelected = 0
+            smsPackets.forEach { if (it.selected) totalSelected++ }
+
             val dataBase: SQLiteDatabase = getDataBase(smsDBFile)
 
             val cursor = dataBase.query(SMS_TABLE_NAME, arrayOf("id"), null, null, null, null, null)
             cursor.moveToFirst()
-            var c = 0
 
+            var c = 0
             do {
 
                 c++
@@ -160,8 +165,8 @@ class SmsBackupEngine(private val jobcode: Int,
             commonTools.tryIt { cursor.close() }
             commonTools.tryIt { dataBase.close() }
 
-            if (c != smsPackets.size)
-                errors.add("$ERR_SMS_VERIFY${bd.errorTag}: ${engineContext.getString(R.string.sms_records_incomplete)} - $c/${smsPackets.size}}")
+            if (c != totalSelected)
+                errors.add("$ERR_SMS_VERIFY${bd.errorTag}: ${engineContext.getString(R.string.sms_records_incomplete)} - $c/${totalSelected}}")
         }
         catch (e: Exception){
             e.printStackTrace()
