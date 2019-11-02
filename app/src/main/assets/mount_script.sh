@@ -9,7 +9,7 @@ chmod +x /tmp/busybox
 SAR="false"
 
 SAR_PROP="$(getprop ro.build.system_root_image)"
-if [[ "$SAR_PROP" == "true" ]] || [[ -d /system_root && ! -f /system/build.prop ]]
+if [[ "$SAR_PROP" == "true" ]] || [[ -d /system_root && -n "$(cat /etc/fstab | grep system_root)" ]]
 then
     echo "Debug:: SAR device!"
     SAR="true"
