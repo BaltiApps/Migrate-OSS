@@ -21,7 +21,8 @@ class RestoreByTwrp: AppCompatActivity() {
                 R.layout.restore_2,
                 R.layout.restore_3,
                 R.layout.restore_4,
-                R.layout.restore_5
+                R.layout.restore_5,
+                R.layout.restore_6
         )
 
         val TOTAL_LAYOUTS = arrLayouts.size

@@ -542,8 +542,18 @@
     <string name="step_4_troubleshoot">In case you don\'t have the app, use the inbuilt Android file manager (or download a file manager temporarily from Google Play Store), install the \"helper.apk\" from Internal storage/Migrate directory</string>
 
     <!--restore_5.xml-->
-    <string name="step_5">Step 5 -\nDone! Enjoy!</string>
-    <string name="step_5_desc">Completed! Enjoy your new ROM!</string>
+    <string name="step_5">Step 5 - \nComplete post restore jobs</string>
+    <string name="step_5_desc_1">Some jobs are usually left after restore. This includes changing the default SMS app (if SMS\'s are restored) from Migrate helper to another app, and also changing the DPI</string>
+    <string name="step_5_desc_2">In Android 10+, after changing the SMS app, the system will force close the Migrate helper app. Please wait for a few seconds before it is automatically restarted.</string>
+    <string name="step_5_desc_3">Finally you will want to uninstall the helper app from the system. You may also want to disable the app to reuse later.</string>
+    <string name="step_5_troubleshoot">On Android 10+ the Migrate helper, in some cases, may not be able to restart itself. Please open the app manually.
+        You may also be prompted that a different app is being installed in background.
+        Don\'t worry, its a plugin \"watcher\" app which detects that Migrate helper has been force closed, and restarts it.
+        It will be automatically uninstalled by the helper itself.</string>
+
+    <!--restore_6.xml-->
+    <string name="step_6">Step 6 -\nDone! Enjoy!</string>
+    <string name="step_6_desc">Completed! Enjoy your new ROM!</string>
 
     <!--drawer_menu.xml-->
     <string name="aboutThisApp">About this app</string>

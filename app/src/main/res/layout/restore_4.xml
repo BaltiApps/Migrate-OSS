@@ -6,7 +6,6 @@
     android:padding="@dimen/guide_layouts_padding">
 
     <ScrollView
-        android:id="@+id/restore_4_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

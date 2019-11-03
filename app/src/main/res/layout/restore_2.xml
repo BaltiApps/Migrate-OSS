@@ -6,7 +6,6 @@
     android:padding="@dimen/guide_layouts_padding">
 
     <ScrollView
-        android:id="@+id/restore_2_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -46,6 +45,7 @@
                 android:text="@string/troubleshooting_tips"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/colorAccent"
+                android:paddingTop="@dimen/xlarge_padding_width"
                 />
 
             <Space

@@ -16,15 +16,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/step_0"
+                android:text="@string/step_6"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="20dp"
-                android:text="@string/step_0_desc" />
-
+                android:text="@string/step_6_desc" />
 
             <Space
                 android:layout_width="wrap_content"
@@ -32,8 +31,8 @@
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:src="@drawable/big_storage_icon" />
+                android:layout_height="150dp"
+                android:src="@drawable/enjoy" />
 
         </LinearLayout>
 
