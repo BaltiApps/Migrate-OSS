@@ -4,6 +4,9 @@
     <!--Version changes to be made in
 
     current_version_name (must not have blank spaces)
+    current_version_codename
+    last_tested_label
+    release_state
     changelog
     build.gradle
     MainActivity.java [showChangeLog()]
@@ -16,9 +19,15 @@
 
     <string name="app_name">Migrate</string>
     <string name="current_version_name">3.0</string>
+    <string name="current_version_codename">Mercury</string>
+    <string name="release_state">alpha1</string>
+    <string name="last_tested_label">Last tested on: Android 10</string>
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
+    <string name="codename">Codename:</string>
+    <string name="version">Version:</string>
+    <string name="release_state_label">Release state:</string>
 
     <!--changelog-->
     <string name="version_1.0" >Version 1.0(beta)</string>

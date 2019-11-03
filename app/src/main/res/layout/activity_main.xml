@@ -50,12 +50,58 @@
                         android:text="@string/app_name"
                         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/current_version_name"
-                        android:textColor="@color/colorAccent"
-                        android:textStyle="italic" />
+                        android:orientation="horizontal"
+                        >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/current_version_name"
+                            android:textColor="@color/colorAccent"
+                            android:textStyle="italic" />
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="  -  "
+                            android:textColor="@color/colorAccent"
+                            android:textStyle="italic" />
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/current_version_codename"
+                            android:textColor="@color/colorAccent"
+                            android:textStyle="italic" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" ("
+                            android:textColor="@color/colorAccent"
+                            android:textStyle="italic" />
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/release_state"
+                            android:textColor="@color/colorAccent"
+                            android:textStyle="italic" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=")"
+                            android:textColor="@color/colorAccent"
+                            android:textStyle="italic" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -69,8 +115,9 @@
             android:layout_height="0dp"
             android:layout_gravity="center_vertical|end"
             android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
+            android:gravity="center_vertical|end"
+            android:orientation="vertical"
+            >
 
             <Button
                 android:id="@+id/backupMain"
@@ -116,19 +163,34 @@
                 android:foreground="?android:attr/selectableItemBackground"
                 android:text="@string/restoreApp"
                 android:visibility="gone"/>
-
-            <TextView
-                android:id="@+id/learn_sd_card_support"
-                android:layout_width="match_parent"
+            
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/large_padding_width"
+                android:orientation="vertical"
                 android:gravity="end"
-                android:text="@string/learn_about_sd_card_support"
-                android:textColor="@color/colorAccent"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                />
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/last_tested_label"
+                    android:textColor="@color/colorAccent"
+                    android:gravity="end"
+                    />
+
+                <TextView
+                    android:id="@+id/learn_sd_card_support"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/learn_about_sd_card_support"
+                    android:textColor="@color/colorAccent"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    />
+
+            </LinearLayout>
 
         </LinearLayout>
 
