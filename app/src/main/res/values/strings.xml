@@ -636,6 +636,32 @@
     <string name="new_method_will_be_used">Use StorageStats or reflection</string>
     <string name="old_method_will_be_used">Use old terminal based method</string>
 
+    <string name="autoselect_extras_title">Auto-select extras</string>
+    <string name="autoselect_extras_desc">This will automatically select extras like contacts and sms if you had previously backed them up</string>
+    <string name="new_icon_method_title">New icon method</string>
+    <string name="new_icon_method_desc">This will use a separate .icon file to store icons of each app being backed up. If unchecked, app icons will be stored in the .json file.</string>
+    <string name="tar_gz_integrity_title">tar.gz integerity check</string>
+    <string name="tar_gz_integrity_desc">Check integrity of data backup of each app stored as a tar.gz file</string>
+    <string name="sms_verify_title">SMS verification</string>
+    <string name="sms_verify_desc">Check integrity of SMS database file stored in the backup</string>
+    <string name="calls_verify_title">Call logs verification</string>
+    <string name="calls_verify_desc">Check integrity of call logs database file stored in the backup</string>
+    <string name="perform_system_check_title">Perform system check</string>
+    <string name="perform_system_check_desc">This will perform a basic apk copy and data copy (of this app itself) via Su shell before each backup. Thus checking if backup of other apps will be successful or not.</string>
+    <string name="separate_extras_title">Separate extras backup</string>
+    <string name="separate_extras_desc">Store extras (contacts, sms etc) as a standalone zip file and apps in separate zip files. Applicable only for backups having more than 1 part.</string>
+    <string name="delete_error_backup_title">Delete backup with errors</string>
+    <string name="delete_error_backup_desc">Delete backup zip file if it finished with errors or was corrupted while backup.</string>
+    <string name="zip_verification_title">Zip integrity check</string>
+    <string name="zip_verification_desc">Verify if backup zips are corrupted and within the flashable memory constraints of the device.\nHIGHLY RECOMMENDED</string>
+    <string name="advanced">Advanced</string>
+    <string name="use_su_for_keyboard_title">Use Su shell to read keyboard</string>
+    <string name="use_su_for_keyboard_desc">Root shell will be used to read active keyboards in Extra backups</string>
+    <string name="ignore_cache_desc">Ignores the cache directory of apps while backup, thus backups get very small. Although usually safe, you might lose some data of the app.</string>
+
+    <string name="use_file_list_in_zip_verification">Use fileList.txt in zip verification</string>
+    <string name="use_file_list_in_zip_verification_desc">Migrate maintains a list of files it has backed up in a file \"fileList.txt\" inside the backup zip. This option will make zip verification engine compare the files present in the zip and entries in this file.</string>
+
     <!--app_search_layout.xml-->
     <string name="showing_apps_from">Showing apps from category:</string>
     <string name="enter_app_name">App/package name</string>

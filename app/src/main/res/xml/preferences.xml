@@ -1,12 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <Preference
-        android:key="disable_battery_optimisation"
-        android:title="@string/disable_battery_optimisation" />
+    <CheckBoxPreference
+        android:title="@string/autoselect_extras_title"
+        android:summary="@string/autoselect_extras_desc"
+        android:key="autoselectExtras"
+        />
 
     <CheckBoxPreference
-        android:key="use_new_sizing_method"
-        android:title="@string/use_new_sizing_method"/>
+        android:title="@string/new_icon_method_title"
+        android:summary="@string/new_icon_method_desc"
+        android:key="newIconMethod"
+        />
+
+    <CheckBoxPreference
+        android:title="@string/tar_gz_integrity_title"
+        android:summary="@string/tar_gz_integrity_desc"
+        android:key="tarGzIntegrityCheck"
+        />
+
+    <CheckBoxPreference
+        android:title="@string/sms_verify_title"
+        android:summary="@string/sms_verify_desc"
+        android:key="tarGzIntegrityCheck"
+        />
+
+    <CheckBoxPreference
+        android:title="@string/calls_verify_title"
+        android:summary="@string/calls_verify_desc"
+        android:key="tarGzIntegrityCheck"
+        />
+
+    <CheckBoxPreference
+        android:title="@string/perform_system_check_title"
+        android:summary="@string/perform_system_check_desc"
+        android:key="performSystemCheck"
+        />
+
+    <CheckBoxPreference
+        android:title="@string/separate_extras_title"
+        android:summary="@string/separate_extras_desc"
+        android:key="separateExtras"
+        />
+
+    <CheckBoxPreference
+        android:title="@string/delete_error_backup_title"
+        android:summary="@string/delete_error_backup_desc"
+        android:key="deleteErrorBackup"
+        />
+
+    <CheckBoxPreference
+        android:title="@string/zip_verification_title"
+        android:summary="@string/zip_verification_desc"
+        android:key="zipVerification"
+        />
+
+    <CheckBoxPreference
+        android:title="@string/ignore_cache"
+        android:summary="@string/ignore_cache_desc"
+        android:key="zipVerification"
+        />
+
+    <PreferenceCategory
+        android:title="@string/advanced">
+
+        <CheckBoxPreference
+            android:title="@string/use_su_for_keyboard_title"
+            android:summary="@string/use_su_for_keyboard_desc"
+            android:key="zipVerification"
+            />
+
+        <CheckBoxPreference
+            android:title="@string/use_su_for_keyboard_title"
+            android:summary="@string/use_su_for_keyboard_desc"
+            android:key="zipVerification"
+            />
+
+        <CheckBoxPreference
+            android:title="@string/use_file_list_in_zip_verification"
+            android:summary="@string/use_file_list_in_zip_verification_desc"
+            android:key="zipVerification"
+            />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

@@ -24,7 +24,7 @@ public class PreferenceScreen extends balti.migrate.AppCompatPreferenceActivity 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences);
+        addPreferencesFromResource(R.xml.preferences_old);
 
         main = getSharedPreferences("main", MODE_PRIVATE);
         editor = main.edit();
