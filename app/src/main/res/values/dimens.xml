@@ -10,6 +10,7 @@
     <dimen name="small_icon_wh">30dp</dimen>
     <dimen name="small_padding_width">5dp</dimen>
     <dimen name="large_padding_width">10dp</dimen>
+    <dimen name="xlarge_padding_width">18dp</dimen>
     <dimen name="app_icon_dimen">50dp</dimen>
     <dimen name="extra_items_padding">15dp</dimen>
     <dimen name="guide_layouts_padding">30dp</dimen>

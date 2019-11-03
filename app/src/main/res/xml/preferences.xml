@@ -22,13 +22,13 @@
     <CheckBoxPreference
         android:title="@string/sms_verify_title"
         android:summary="@string/sms_verify_desc"
-        android:key="tarGzIntegrityCheck"
+        android:key="smsVerification"
         />
 
     <CheckBoxPreference
         android:title="@string/calls_verify_title"
         android:summary="@string/calls_verify_desc"
-        android:key="tarGzIntegrityCheck"
+        android:key="callsVerification"
         />
 
     <CheckBoxPreference
@@ -58,7 +58,7 @@
     <CheckBoxPreference
         android:title="@string/ignore_cache"
         android:summary="@string/ignore_cache_desc"
-        android:key="zipVerification"
+        android:key="ignoreCache"
         />
 
     <PreferenceCategory
@@ -67,20 +67,23 @@
         <CheckBoxPreference
             android:title="@string/use_su_for_keyboard_title"
             android:summary="@string/use_su_for_keyboard_desc"
-            android:key="zipVerification"
-            />
-
-        <CheckBoxPreference
-            android:title="@string/use_su_for_keyboard_title"
-            android:summary="@string/use_su_for_keyboard_desc"
-            android:key="zipVerification"
+            android:key="suForKeyboard"
             />
 
         <CheckBoxPreference
             android:title="@string/use_file_list_in_zip_verification"
             android:summary="@string/use_file_list_in_zip_verification_desc"
-            android:key="zipVerification"
+            android:key="useFileListInZipVerification"
             />
+
+        <balti.migrate.preferences.subPreferences.ManualCachePref
+            android:layout="@layout/preferences_edittext"/>
+
+        <balti.migrate.preferences.subPreferences.ManualSystemPref
+            android:layout="@layout/preferences_edittext"/>
+
+        <balti.migrate.preferences.subPreferences.ManualBuildpropPref
+            android:layout="@layout/preferences_edittext"/>
 
     </PreferenceCategory>
 

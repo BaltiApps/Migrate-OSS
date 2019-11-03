@@ -76,15 +76,7 @@
             android:screenOrientation="portrait"
             />
 
-        <activity android:name=".PreferenceScreen"
-            android:screenOrientation="portrait"
-            />
-
-        <activity android:name=".inAppRestore.ZipPicker"
-            android:screenOrientation="portrait"
-            />
-
-        <activity android:name=".inAppRestore.InAppRestore"
+        <activity android:name=".preferences.MainPreferenceActivity"
             android:screenOrientation="portrait"
             />
 

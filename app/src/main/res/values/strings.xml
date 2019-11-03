@@ -636,6 +636,7 @@
     <string name="new_method_will_be_used">Use StorageStats or reflection</string>
     <string name="old_method_will_be_used">Use old terminal based method</string>
 
+    <string name="clear_to_reset">Clear and press OK to reset to default value</string>
     <string name="autoselect_extras_title">Auto-select extras</string>
     <string name="autoselect_extras_desc">This will automatically select extras like contacts and sms if you had previously backed them up</string>
     <string name="new_icon_method_title">New icon method</string>
@@ -658,6 +659,10 @@
     <string name="use_su_for_keyboard_title">Use Su shell to read keyboard</string>
     <string name="use_su_for_keyboard_desc">Root shell will be used to read active keyboards in Extra backups</string>
     <string name="ignore_cache_desc">Ignores the cache directory of apps while backup, thus backups get very small. Although usually safe, you might lose some data of the app.</string>
+    <string name="manual_cache">Specify path to migrate_cache</string>
+    <string name="manual_system">Specify path to system directory</string>
+    <string name="manual_buildprop">Specify path to ROM build.prop</string>
+    <string name="detect_while_flashing_hint">(Detect while flashing)</string>
 
     <string name="use_file_list_in_zip_verification">Use fileList.txt in zip verification</string>
     <string name="use_file_list_in_zip_verification_desc">Migrate maintains a list of files it has backed up in a file \"fileList.txt\" inside the backup zip. This option will make zip verification engine compare the files present in the zip and entries in this file.</string>

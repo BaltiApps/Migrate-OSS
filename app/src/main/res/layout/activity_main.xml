@@ -97,6 +97,18 @@
                 android:layout_height="20dp" />
 
             <Button
+                android:id="@+id/openPreferences"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="@dimen/button_height"
+                android:background="@drawable/normal_button"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:text="@string/preferences" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="20dp" />
+
+            <Button
                 android:id="@+id/inAppRestore"
                 android:layout_width="@dimen/button_width"
                 android:layout_height="@dimen/button_height"

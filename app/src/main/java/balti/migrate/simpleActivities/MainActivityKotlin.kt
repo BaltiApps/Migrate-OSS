@@ -28,6 +28,7 @@ import balti.migrate.PreferenceScreen
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.inAppRestore.ZipPicker
+import balti.migrate.preferences.MainPreferenceActivity
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELLING
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
@@ -122,6 +123,10 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         restoreMain.setOnClickListener {
             startActivity(Intent(this, HowToRestore::class.java))                           /*kotlin*/
+        }
+
+        openPreferences.setOnClickListener {
+            startActivity(Intent(this, MainPreferenceActivity::class.java))
         }
 
         inAppRestore.setOnClickListener {
