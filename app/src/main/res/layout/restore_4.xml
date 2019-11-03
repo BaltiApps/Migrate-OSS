@@ -65,6 +65,27 @@
                 android:paddingTop="20dp"
                 android:text="@string/step_4_desc_3" />
 
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/large_padding_width" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/troubleshooting_tips"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/colorAccent"
+                />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/large_padding_width" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/step_4_troubleshoot" />
+
         </LinearLayout>
 
     </ScrollView>

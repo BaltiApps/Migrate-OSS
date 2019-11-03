@@ -159,7 +159,7 @@ else
 
     echoIt " "
     echoIt "------------!!!!!!!!!!------------"
-    echoIt "No ROM is detected"
+    echoIt "No ROM detected"
     echoIt "Please flash a ROM first"
     echoIt "------------!!!!!!!!!!------------"
     echoIt " "

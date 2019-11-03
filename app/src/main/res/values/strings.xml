@@ -496,6 +496,7 @@
     <!--how_to_restore.xml-->
     <string name="prev">Previous</string>
     <string name="got_it">Got it!</string>
+    <string name="troubleshooting_tips">Troubleshooting tips</string>
 
     <!--restore_0.xml-->
     <string name="step_0">Step 0 -\nTake a backup!</string>
@@ -518,6 +519,9 @@
         In TWRP main menu, click INSTALL -> navigate to the backup file zip and install it.\n\n
         <b>Important:</b> Please do not wipe data after flashing the backup zips.
     </string>
+    <string name="step_2_troubleshoot">In some cases, after flashing Magisk, Migrate may falsely detect system_root for non system_root devices.
+        You may get a \"No ROM detected\" error.
+        Please reboot back to TWRP recovery and try again.</string>
 
     <!--restore_3.xml-->
     <string name="step_3">Step 3 -\nSetup your new ROM</string>
@@ -529,12 +533,13 @@
     <!--restore_4.xml-->
     <string name="step_4">Step 4 -\nRestore apps and data.</string>
     <string name="step_4_desc_1">You should be able to see a notification as shown. Open the notification.</string>
-    <string name="step_4_desc_2">If you don\'t see the notification, open app drawer and open \"Migrate helper\". You should get a screen like this:</string>
+    <string name="step_4_desc_2">If you don\'t see the notification, open app drawer and open \"Migrate helper\".\n
+        On opening, you should get a screen like this:</string>
     <string name="step_4_desc_3">
-        <b>RESTORE ALL APPS AND DATA</b>: Give root permission once and relax. All your apps and data will be restored.\n\n
-        <b>CHOOSE WHAT TO RESTORE</b>: Select which apps you would finally like to restore.\n\n
-        <b>UNINSTALL OR DISABLE</b>: Select if you want do delete all restored data and uninstall the app.\n\n
+        <b>RESTORE APPS AND DATA</b>: Give root permission and select the apps and extras to be restored.\n\n
+        <b>UNINSTALL APP OR FINALIZE RESTORE</b>: Select this to do post restore operations, uninstall the helper and reboot the device.\n\n
     </string>
+    <string name="step_4_troubleshoot">In case you don\'t have the app, use the inbuilt Android file manager (or download a file manager temporarily from Google Play Store), install the \"helper.apk\" from Internal storage/Migrate directory</string>
 
     <!--restore_5.xml-->
     <string name="step_5">Step 5 -\nDone! Enjoy!</string>
