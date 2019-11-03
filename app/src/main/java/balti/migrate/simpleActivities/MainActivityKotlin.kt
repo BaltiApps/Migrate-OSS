@@ -48,6 +48,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
 import balti.migrate.utilities.CommonToolKotlin.Companion.TG_DEV_LINK
 import balti.migrate.utilities.CommonToolKotlin.Companion.TG_LINK
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
+import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
@@ -190,8 +191,15 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         storageHandler.post(storageRunnable)
 
         MobileAds.initialize(this)
-        val adRequest = AdRequest.Builder().build()
-        main_activity_adView.loadAd(adRequest)
+        main_activity_adView.run {
+            loadAd(AdRequest.Builder().build())
+            adListener = object : AdListener(){
+                override fun onAdFailedToLoad(p0: Int) {
+                    super.onAdFailedToLoad(p0)
+                    visibility = View.GONE
+                }
+            }
+        }
     }
 
     private fun showChangeLog(onlyLatest: Boolean) {
