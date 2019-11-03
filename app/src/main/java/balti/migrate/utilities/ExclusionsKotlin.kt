@@ -15,8 +15,6 @@ class ExclusionsKotlin() {
     val predefinedPackageNames by lazy { Vector<ExclusionItem>(0) }
     val manualPackageNames by lazy { Vector<ExclusionItem>(0) }
 
-    val EXCLUSION_FILE_NAME = "Exclusions"
-
     companion object {
         val EXCLUDE_DATA = 234
         val EXCLUDE_APP = 35

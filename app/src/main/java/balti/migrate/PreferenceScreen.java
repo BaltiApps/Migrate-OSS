@@ -8,12 +8,13 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
+import android.preference.PreferenceActivity;
 import android.provider.Settings;
 import android.widget.Toast;
 
 import java.util.Objects;
 
-public class PreferenceScreen extends balti.migrate.AppCompatPreferenceActivity {
+public class PreferenceScreen extends PreferenceActivity {
 
     Preference disableBatteryOptimisation;
     CheckBoxPreference useNewSizingMethod;

@@ -25,11 +25,9 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import balti.migrate.CommonTools;
 import balti.migrate.R;
+import balti.migrate.utilities.CommonToolKotlin;
 
-import static balti.migrate.CommonTools.DEBUG_TAG;
-import static balti.migrate.CommonTools.DEFAULT_INTERNAL_STORAGE_DIR;
 
 public class ZipPicker extends AppCompatActivity implements OnZipItemClick {
 
@@ -42,12 +40,15 @@ public class ZipPicker extends AppCompatActivity implements OnZipItemClick {
 
     SharedPreferences main;
     SharedPreferences.Editor editor;
-    CommonTools commonTools;
+    CommonToolKotlin commonTools;
 
     String destination;
     String finalParent;
 
     static ArrayList<ZipFileItem> zipFileItems;
+
+    String DEFAULT_INTERNAL_STORAGE_DIR = "";
+    String DEBUG_TAG = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,7 +57,7 @@ public class ZipPicker extends AppCompatActivity implements OnZipItemClick {
 
         main = getSharedPreferences("main", MODE_PRIVATE);
         editor = main.edit();
-        commonTools = new CommonTools(this);
+        commonTools = new CommonToolKotlin(this);
 
         finalParent = destination = main.getString("defaultBackupPath", DEFAULT_INTERNAL_STORAGE_DIR);
         zipFileItems = new ArrayList<>(0);
