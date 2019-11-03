@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <Preference
+        android:title="@string/disable_battery_optimisation"
+        android:key="disableBatteryOptimisation"/>
+
+    <CheckBoxPreference
+        android:title="@string/use_new_sizing_method"
+        android:summary="@string/use_new_sizing_method_desc"
+        android:key="useNewSizingMethod" />
+
     <CheckBoxPreference
         android:title="@string/autoselect_extras_title"
         android:summary="@string/autoselect_extras_desc"
