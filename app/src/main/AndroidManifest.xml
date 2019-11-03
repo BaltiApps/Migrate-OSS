@@ -67,7 +67,7 @@
             android:screenOrientation="portrait"
             />
 
-        <activity android:name=".HowToRestore"
+        <activity android:name=".simpleActivities.RestoreByTwrp"
             android:screenOrientation="portrait"
             />
 
