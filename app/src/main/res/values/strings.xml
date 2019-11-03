@@ -122,14 +122,9 @@
     \u2022 Migrate helper no longer uninstalls app before installing.\n
     \u2022 Added Telegram group link!\n
     </string>
-    <string name="version_3.0">Version 3.0</string>
+    <string name="version_3.0">Version 3.0 alpha1</string>
     <string name="version_3.0_content">
-        \u2022 No compulsion to use grant usage access permission.\n
-        \u2022 Many more categories of apps in Select apps screen.\n
-        \u2022 Migrate now allows to backup Data without App.\n
-        \u2022 Search apps in Select apps screen.\n
-        \u2022 Backup and set app installer (Play store/F-Droid).\n
-        \u2022 Backup ADB state.\n
+        No changelog for alpha versions\n
     </string>
 
     <!--activity_main.xml-->
