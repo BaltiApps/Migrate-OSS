@@ -28,7 +28,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    implementation 'com.google.firebase:firebase-analytics:17.2.0'  //for fcm
+    implementation 'com.google.firebase:firebase-analytics:17.2.1'  //for fcm
 }
 repositories {
     mavenCentral()

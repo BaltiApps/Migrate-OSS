@@ -184,9 +184,6 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                     .show()
         }
 
-        /*val adRequest = AdRequest.Builder().build();
-        main_activity_adView.loadAd(adRequest)*/
-
         refreshStorageSizes()
         storageHandler.post(storageRunnable)
     }
