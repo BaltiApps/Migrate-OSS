@@ -71,8 +71,7 @@
             android:screenOrientation="portrait"
             />
 
-
-        <activity android:name=".HelpPage"
+        <activity android:name=".simpleActivities.HelpPageKotlin"
             android:screenOrientation="portrait"
             />
 
