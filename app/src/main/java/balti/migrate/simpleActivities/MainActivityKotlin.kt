@@ -22,9 +22,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import balti.migrate.CommonTools.DEFAULT_INTERNAL_STORAGE_DIR
-import balti.migrate.HelpPage
-import balti.migrate.HowToRestore
-import balti.migrate.PreferenceScreen
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.inAppRestore.ZipPicker
@@ -122,7 +119,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         }
 
         restoreMain.setOnClickListener {
-            startActivity(Intent(this, HowToRestore::class.java))                           /*kotlin*/
+            startActivity(Intent(this, RestoreByTwrp::class.java))                           /*kotlin*/
         }
 
         openPreferences.setOnClickListener {
@@ -258,7 +255,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         .show()
             }
 
-            R.id.helpPage -> startActivity(Intent(this, HelpPage::class.java))              /*kotlin*/
+            R.id.helpPage -> startActivity(Intent(this, HelpPageKotlin::class.java))              /*kotlin*/
 
             R.id.changelog -> showChangeLog(false)
 
@@ -274,8 +271,6 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         .setView(View.inflate(this, R.layout.thanks_layout, null))
                         .setPositiveButton(android.R.string.ok, null)
                         .show()
-
-            R.id.preferences -> startActivity(Intent(this, PreferenceScreen::class.java))   /*kotlin*/
 
             R.id.rate -> askForRating(true)
 

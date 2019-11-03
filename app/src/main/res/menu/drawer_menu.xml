@@ -1,19 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-    <item android:id="@+id/preferences"
-        android:icon="@drawable/ic_preferences"
-        android:title="@string/preferences"/>
-
+    <item android:id="@+id/lastLog"
+        android:icon="@drawable/ic_log"
+        android:title="@string/lastLog"/>
 
     <item android:id="@+id/helpPage"
         android:icon="@drawable/ic_help"
         android:title="@string/help"/>
-
-    <item android:id="@+id/lastLog"
-        android:icon="@drawable/ic_log"
-        android:title="@string/lastLog"/>
 
 
     <item android:id="@+id/appIntro"

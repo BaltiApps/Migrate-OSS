@@ -439,9 +439,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .show();
                 break;
 
-            case R.id.preferences:
+            /*case R.id.preferences:
                 startActivity(new Intent(this, PreferenceScreen.class));
-                break;
+                break;*/
 
             case R.id.rate:
                 askForRating(true);
