@@ -412,6 +412,7 @@
     <string name="currently_supported_cpu">Only <b>armeabi-v7a, arm64-v8a, x86, x86_64</b> CPU architectures are currently supported. Please contact via mail to help support your device.</string>
     <string name="proceed">Proceed</string>
     <string name="usage_permission_toast">Scroll and select \"Migrate\" and click \"Permit usage access\"!</string>
+    <string name="old_method_will_be_used">Use old terminal method</string>
 
     <!--AppListAdapter.java-->
     <string name="packageName">Package :</string>
@@ -654,12 +655,11 @@
     <string name="install_original_migrate">Install original app</string>
 
     <!--preference.xml-->
-    <string name="disable_battery_optimisation">Disable battery optimisation</string>
-    <string name="battery_optimisation_already_disabled">Battery optimisation already disabled</string>
-    <string name="use_new_sizing_method">Use new method to calculate size</string>
-    <string name="new_method_will_be_used">Use StorageStats or reflection</string>
-    <string name="old_method_will_be_used">Use old terminal based method</string>
 
+    <string name="disable_battery_optimisation">Disable battery optimisation</string>
+    <string name="use_new_sizing_method">Use new method to calculate size</string>
+    <string name="use_new_sizing_method_desc">Enabling this uses StorageStats in Android 8+ and by reflection in lower versions.
+        Disabling this uses terminal shell commands to calculate size.</string>
     <string name="clear_to_reset">Clear and press OK to reset to default value</string>
     <string name="autoselect_extras_title">Auto-select extras</string>
     <string name="autoselect_extras_desc">This will automatically select extras like contacts and sms if you had previously backed them up</string>
