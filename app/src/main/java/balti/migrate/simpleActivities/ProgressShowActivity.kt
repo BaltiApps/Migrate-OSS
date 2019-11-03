@@ -46,6 +46,8 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_PARTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolKotlin.Companion.TIMEOUT_WAITING_TO_KILL
 import balti.migrate.utilities.IconTools
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.backup_progress_layout.*
 import java.io.BufferedWriter
 import java.io.File
@@ -322,6 +324,17 @@ class ProgressShowActivity: AppCompatActivity() {
         }
 
         commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
+
+
+        backups_progress_activity_adView.run {
+            loadAd(AdRequest.Builder().build())
+            adListener = object : AdListener(){
+                override fun onAdFailedToLoad(p0: Int) {
+                    super.onAdFailedToLoad(p0)
+                    visibility = View.GONE
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
