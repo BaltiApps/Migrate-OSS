@@ -299,16 +299,6 @@ class BackupActivityKotlin : AppCompatActivity() {
             searchAD.window?.run { setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE) }
             searchAD.show()
 
-            backup_activity_adView.run {
-                loadAd(AdRequest.Builder().build())
-                adListener = object : AdListener(){
-                    override fun onAdFailedToLoad(p0: Int) {
-                        super.onAdFailedToLoad(p0)
-                        visibility = View.GONE
-                    }
-                }
-            }
-
         }
 
         backupLayoutBackButton.setOnClickListener { finish() }
@@ -323,6 +313,16 @@ class BackupActivityKotlin : AppCompatActivity() {
         commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
 
         commonTools.LBM?.sendBroadcast(Intent(ACTION_REQUEST_BACKUP_DATA))
+
+        backup_activity_adView.run {
+            loadAd(AdRequest.Builder().build())
+            adListener = object : AdListener(){
+                override fun onAdFailedToLoad(p0: Int) {
+                    super.onAdFailedToLoad(p0)
+                    visibility = View.GONE
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
