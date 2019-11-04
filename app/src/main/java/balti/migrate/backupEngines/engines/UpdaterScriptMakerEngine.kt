@@ -208,7 +208,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 extractItToTemp(it)
             }
             settingsFileName?.let {
-                updater_writer.write("ui_print(\"Extracting dpi data: $it\");\n")
+                updater_writer.write("ui_print(\"Extracting settings: $it\");\n")
                 extractItToTemp(it)
             }
             wifiFileName?.let {
