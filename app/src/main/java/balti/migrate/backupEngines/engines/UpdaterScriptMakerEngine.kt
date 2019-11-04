@@ -143,10 +143,9 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             updater_writer.write("ui_print(\"Restoring to Migrate cache...\");\n")
             updater_writer.write("ui_print(\" \");\n")
 
-            // use mover.sh to move to migrate cache
-            fun extractAndMoveIt(fileName: String, isFile: Boolean = true){
+            // extract to temp
+            fun extractItToTemp(fileName: String, isFile: Boolean = true){
                 updater_writer.write("package_extract_${if (isFile) "file" else "dir"}(\"$fileName\", \"$DATA_TEMP/$fileName\");\n")
-                updater_writer.write("run_program(\"/tmp/mover.sh\", \"$DATA_TEMP/$fileName\", \"$MIGRATE_CACHE_DEFAULT\", \"$DIR_MANUAL_CONFIGS\");\n")
             }
 
             // extract app files
@@ -176,17 +175,17 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                         updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"/tmp/$packageName.sh\");\n")
                         updater_writer.write("run_program(\"/tmp/$packageName.sh\");\n")
                     }
-                    else extractAndMoveIt("$packageName.app", false)
+                    else extractItToTemp("$packageName.app", false)
                 }
 
                 if (packet.DATA)
                     updater_writer.write("package_extract_file(\"$packageName.tar.gz\", \"/data/data/$packageName.tar.gz\");\n")
 
                 if (packet.PERMISSION)
-                    extractAndMoveIt("$packageName.perm")
+                    extractItToTemp("$packageName.perm")
 
-                extractAndMoveIt("$packageName.json")
-                extractAndMoveIt("$packageName.icon")
+                extractItToTemp("$packageName.json")
+                extractItToTemp("$packageName.icon")
 
                 var pString = String.format(Locale.ENGLISH, "%.4f", (c + 1) * 1.0 / size)
                 pString = pString.replace(",", ".")
@@ -198,24 +197,27 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             updater_writer.write("ui_print(\" \");\n")
             contactsFileName?.let {
                 updater_writer.write("ui_print(\"Extracting contacts: $it\");\n")
-                extractAndMoveIt(it)
+                extractItToTemp(it)
             }
             smsFileName?.let {
                 updater_writer.write("ui_print(\"Extracting sms: $it\");\n")
-                extractAndMoveIt(it)
+                extractItToTemp(it)
             }
             callsFileName?.let {
                 updater_writer.write("ui_print(\"Extracting call logs: $it\");\n")
-                extractAndMoveIt(it)
+                extractItToTemp(it)
             }
             settingsFileName?.let {
                 updater_writer.write("ui_print(\"Extracting dpi data: $it\");\n")
-                extractAndMoveIt(it)
+                extractItToTemp(it)
             }
             wifiFileName?.let {
                 updater_writer.write("ui_print(\"Extracting keyboard data: $it\");\n")
-                extractAndMoveIt(it)
+                extractItToTemp(it)
             }
+
+            // move everything
+            updater_writer.write("run_program(\"/tmp/mover.sh\", \"$DATA_TEMP\", \"$MIGRATE_CACHE_DEFAULT\", \"$DIR_MANUAL_CONFIGS\");\n")
             updater_writer.write("ui_print(\" \");\n")
 
             // unpack helper
