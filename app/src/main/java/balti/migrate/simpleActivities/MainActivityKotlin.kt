@@ -254,6 +254,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             R.id.helpPage -> startActivity(Intent(this, HelpPageKotlin::class.java))              /*kotlin*/
 
+            R.id.privacyPolicy -> startActivity(Intent(this, PrivacyPolicy::class.java))
+
             R.id.changelog -> showChangeLog(false)
 
             R.id.lastLog -> showLog()

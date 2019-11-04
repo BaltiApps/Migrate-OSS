@@ -733,7 +733,7 @@
     </string>
     <string name="what_is_intentional">What is \"No intentional attempt\"?</string>
     <string name="what_is_intentional_desc">
-        As a responsible developer, I want users to understand this point. Again, this is applicable only if you decide to share the logs.\n\n
+        As a developer, I want users to understand this point. Again, this is applicable only if you decide to share the logs.\n\n
         Migrate uses the linux \"tar\" utility to compress data files. As such, tar prints out file names it has processed, and this also helps to identify if there are any errors in the process. Contents of the files are not printed.\n\n
         Usually it is not possible to detect personally identifiable information from cryptic output of tar files.
         But in some rare cases, developers may not follow proper practices and place information on the file name itself.
