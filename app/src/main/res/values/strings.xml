@@ -440,18 +440,7 @@
     <string name="agree_and_send">Agree and send</string>
     <string name="error_report_disclaimer">Thanks for your interest in helping to improve this app. From now on, all error reports are to be sent in our Telegram group - https://t.me/migrateApp.
         As such, you will get faster resolution from many people in the group.\n\n
-        By sharing logs, you agree to <b>PUBLICLY</b> share some information. Click \"Agree and send\" to proceed.
-    </string>
-    <string name="what_is_shared">What is shared?</string>
-    <string name="shared_desc">
-        On sharing logs, you agree to share (publicly, if on Telegram):\n\n
-        - Some internal file structure of apps. This (in most cases) does not contain personally identifiable sensitive information.\n
-        - The backup name.\n
-        - Some backup details like number of backup parts.\n
-        - Device information like android version.\n\n
-        Migrate highly respects privacy of users. As such logs generated during back up of contacts, sms and call logs are NOT RECORDED and not sharable.
-        No intentional attempt is made to identify or make illicit use of personal data of users.\n\n
-        In any case, you agree that neither the developer, nor is the app responsible for any unintentional breach of privacy. In case you feel that your logs may contain sensitive information, please don\'t share them. In case you have already shared, please request for their deletion as soon as possible.
+        By sharing logs, you agree to <b>PUBLICLY</b> share some information.
     </string>
     <string name="not_joined_yet">Not joined in our group yet?</string>
     <string name="send_logs_using">Send logs using:</string>
@@ -701,6 +690,65 @@
     <!--MainBackupEngine.kt-->
     <string name="test_apk_not_found">Test apk not found or not properly created</string>
     <string name="test_data_not_found">Test data (tar.gz) not found or not properly created</string>
+
+    <!--privacy_policy.xml-->
+    <string name="privacy_policy_header">Privacy policy</string>
+    <string name="privacy_policy_desc">This is a formal-informal discussion regarding data privacy and Migrate, some things which users should be aware of.</string>
+    <string name="google_firebase">Google firebase</string>
+    <string name="google_firebase_desc">From v3.0 onwards, Migrate uses Firebase for crash analytics. No personal data of users is transmitted. If there is enough demand, I will also create a non Firebase version.</string>
+    <string name="data_that_is_read">Data that is read by Migrate</string>
+    <string name="data_that_is_read_desc">For app backup, the following data are read:\n
+        1. List of installed packages\n
+        2. Path to source apks\n
+        3. Path to data directory\n
+        4. Permissions used\n
+        5. Installer package of apps\n
+        Following are accessed using ROOT permission:\n
+        1. Apks of apps (only stored)\n
+        2. Private data of apps (compressed and stored)\n
+        Apk content of apps are not analysed. Private data of apps are not analysed.\n\n
+
+        For extra backups, the following are read, only after permission from user:
+        1. Contacts data (stored as vcf file)\n
+        2. SMS data (stored as a db file)\n
+        3. Call logs (stored as a db file)\n
+        4. Screen DPI, default keyboard, ADB state, Font scale\n
+        5. Wifi store config file (Android 8.0+)\n\n
+
+        All data read are stored locally on the device
+    </string>
+    <string name="what_is_shared">What is shared</string>
+    <string name="what_is_shared_desc">
+        Sharing in this context refers to voluntary reporting of app logs.\n
+        On sharing logs, you agree to share (publicly, if on Telegram group):\n\n
+        - Some internal file structure of apps. This (in most cases) does not contain personally identifiable sensitive information.\n
+        - The backup name.\n
+        - Some backup details like number of backup parts.\n
+        - Device information like android version.\n\n
+        Migrate highly respects privacy of users. As such logs generated during back up of contacts, sms and call logs are NOT RECORDED and not sharable.
+        No intentional attempt is made to identify or make illicit use of personal data of users.\n\n
+        In any case, you agree that neither the developer, nor is the app responsible for any unintentional breach of privacy.
+        In case you feel that your logs may contain sensitive information, please don\'t share them.
+        In case you have already shared, please request for their deletion as soon as possible.
+    </string>
+    <string name="what_is_intentional">What is \"No intentional attempt\"?</string>
+    <string name="what_is_intentional_desc">
+        As a responsible developer, I want users to understand this point. Again, this is applicable only if you decide to share the logs.\n\n
+        Migrate uses the linux \"tar\" utility to compress data files. As such, tar prints out file names it has processed, and this also helps to identify if there are any errors in the process. Contents of the files are not printed.\n\n
+        Usually it is not possible to detect personally identifiable information from cryptic output of tar files.
+        But in some rare cases, developers may not follow proper practices and place information on the file name itself.
+        Example: a chat app storing chat preferences with a participant as a file with name as the phone number of the participant. In this case, tar will print the name of the file, thus exposing the phone number. This is just one example.\n\n
+        Migrate cannot take responsibility of putting a custom filter for each of the millions of apps out there, fearing that they don\'t by mistake leak any information.\n\n
+        Again this is a VERY rare case, and usually always goes unnoticed. This happened with previous versions of Migrate and I got suggestion from few users that this be known to everyone.\n
+        You can continue to use Migrate as you have done.
+    </string>
+    <string name="avoid_unintentional_leak">I am still not convinced.</string>
+    <string name="avoid_unintentional_leak_desc">
+        As discussed previously, if you think your backup contains really sensitive data, please do not share logs. Nothing leaves your device if you do not voluntarily share logs.
+        <b>However, also note that without logs it becomes near impossible to provide any kind of support.\n\n</b>
+        Alternatively, you can choose to not share \"Progress log\". The \"Error log\" and other options are usually most important.
+    </string>
+    <string name="privacy_policy_footer">That\'s all everybody. Enjoy using the app. Feel free to contact me on Telegram.\n- SayantanRC</string>
 
     <!--thanks_layout.xml-->
     <string name="thanks_to_stericson">Huge thanks to Stephen (stericdroid) for allowing me to liberally use his busybox builds</string>

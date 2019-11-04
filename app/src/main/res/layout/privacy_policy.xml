@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/colorPrimary"
+        >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="@dimen/xlarge_padding_width"
+            android:paddingEnd="@dimen/xlarge_padding_width"
+            android:text="@string/privacy_policy_header"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/large_padding_width"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/privacy_policy_desc"
+                android:textSize="@dimen/privacy_policy_body"/>
+
+
+
+
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/google_firebase"
+                android:textSize="@dimen/privacy_policy_head"
+                android:textStyle="bold"
+                />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/large_padding_width"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/google_firebase_desc"
+                android:textSize="@dimen/privacy_policy_body"/>
+
+
+
+
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/data_that_is_read"
+                android:textSize="@dimen/privacy_policy_head"
+                android:textStyle="bold"
+                />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/large_padding_width"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/data_that_is_read_desc"
+                android:textSize="@dimen/privacy_policy_body"/>
+
+
+
+
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/what_is_shared"
+                android:textSize="@dimen/privacy_policy_head"
+                android:textStyle="bold"
+                />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/large_padding_width"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/what_is_shared_desc"
+                android:textSize="@dimen/privacy_policy_body"/>
+
+
+
+
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/what_is_intentional"
+                android:textSize="@dimen/privacy_policy_head"
+                android:textStyle="bold"
+                />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/large_padding_width"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/what_is_intentional_desc"
+                android:textSize="@dimen/privacy_policy_body"/>
+
+
+
+
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/avoid_unintentional_leak"
+                android:textSize="@dimen/privacy_policy_head"
+                android:textStyle="bold"
+                />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/large_padding_width"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/avoid_unintentional_leak_desc"
+                android:textSize="@dimen/privacy_policy_body"/>
+
+
+
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/privacy_policy_footer"
+                android:textSize="@dimen/privacy_policy_body"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

@@ -77,6 +77,10 @@
             android:screenOrientation="portrait"
             />
 
+        <activity android:name=".simpleActivities.PrivacyPolicy"
+            android:screenOrientation="portrait"
+            />
+
         <service android:name=".backupEngines.BackupServiceKotlin"/>
 
         <provider
