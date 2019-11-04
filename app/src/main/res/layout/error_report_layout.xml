@@ -38,8 +38,8 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/what_is_shared"
-        android:id="@+id/report_button_what_is_shared"
+        android:text="@string/privacy_policy_header"
+        android:id="@+id/report_button_privacy_policy"
         />
 
     <LinearLayout

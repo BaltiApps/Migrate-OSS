@@ -17,6 +17,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import balti.migrate.R
+import balti.migrate.simpleActivities.PrivacyPolicy
 import kotlinx.android.synthetic.main.error_report_layout.view.*
 import java.io.*
 
@@ -318,12 +319,8 @@ class CommonToolKotlin(val context: Context) {
             eView.share_errors_checkbox.isChecked = errorLog.exists()
             eView.share_errors_checkbox.isEnabled = errorLog.exists() && !isErrorLogMandatory
 
-            eView.report_button_what_is_shared.setOnClickListener {
-                AlertDialog.Builder(context)
-                        .setTitle(R.string.what_is_shared)
-                        .setMessage(R.string.shared_desc)
-                        .setPositiveButton(R.string.close, null)
-                        .show()
+            eView.report_button_privacy_policy.setOnClickListener {
+                context.startActivity(Intent(context, PrivacyPolicy::class.java))
             }
 
             eView.report_button_join_group.setOnClickListener {

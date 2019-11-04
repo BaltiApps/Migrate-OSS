@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/lastLog"
-        android:icon="@drawable/ic_log"
-        android:title="@string/lastLog"/>
+        android:title="@string/lastLog"
+        android:icon="@drawable/ic_log"/>
 
     <item android:id="@+id/helpPage"
-        android:icon="@drawable/ic_help"
-        android:title="@string/help"/>
+        android:title="@string/help"
+        android:icon="@drawable/ic_help"/>
 
 
     <item android:id="@+id/appIntro"
-        android:icon="@drawable/ic_initial_guide"
-        android:title="@string/app_intro"/>
+        android:title="@string/app_intro"
+        android:icon="@drawable/ic_initial_guide"/>
 
 
     <item android:title="@string/aboutThisApp"
@@ -26,6 +26,10 @@
                     android:title="@string/changelog"
                     android:icon="@drawable/ic_changelog"/>
 
+                <item android:id="@+id/privacyPolicy"
+                    android:title="@string/privacy_policy_header"
+                    android:icon="@drawable/ic_privacy_policy"/>
+
                 <item android:id="@+id/about"
                     android:title="@string/about"
                     android:icon="@drawable/ic_info"/>
@@ -37,7 +41,6 @@
                 <item android:id="@+id/rate"
                     android:title="@string/rateTheApp"
                     android:icon="@drawable/ic_rate"/>
-
 
                 <item android:id="@+id/older_builds"
                     android:title="@string/older_builds"

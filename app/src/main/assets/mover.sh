@@ -14,5 +14,10 @@ else
     DESTINATION=${read_migrate_cache}/
 fi
 
-echo "DEBUG:: --- Moving $SOURCE $DESTINATION ---"
-mv ${SOURCE} ${DESTINATION}
+if [[ -d ${SOURCE} ]]; then
+    echo "DEBUG:: --- Moving dir $SOURCE $DESTINATION ---"
+    mv ${SOURCE}/* ${DESTINATION}
+else
+    echo "DEBUG:: --- Moving file $SOURCE $DESTINATION ---"
+    mv ${SOURCE} ${DESTINATION}
+fi

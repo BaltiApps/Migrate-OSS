@@ -7,6 +7,7 @@ TIMESTAMP=$2
 DEFAULT_MIGRATE_CACHE=$3
 TEMP_UNPACK_DIR=$4
 MANUAL_CONFIG_DIR=$5
+MIGRATE_CACHE=""
 
 read_migrate_cache="$(cat /tmp/${MANUAL_CONFIG_DIR}/MIGRATE_CACHE)"
 
@@ -93,7 +94,7 @@ chmod -R 777 ${MIGRATE_CACHE}
 cp /tmp/${FILE_LIST} ${MIGRATE_CACHE}/"$FILE_LIST"${TIMESTAMP}.txt && echoIt "Copied file list"
 
 # delete temp dir
-if [[ -n "${TEMP_UNPACK_DIR}" && ${TEMP_UNPACK_DIR} != "/" ]]; then
+if [[ -n "${TEMP_UNPACK_DIR}" && "${TEMP_UNPACK_DIR}" != "${MIGRATE_CACHE}" && "${TEMP_UNPACK_DIR}" != "/" ]]; then
     rm -rf ${TEMP_UNPACK_DIR}
 fi
 
