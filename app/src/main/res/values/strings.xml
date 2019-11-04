@@ -693,9 +693,12 @@
 
     <!--privacy_policy.xml-->
     <string name="privacy_policy_header">Privacy policy</string>
-    <string name="privacy_policy_desc">This is a formal-informal discussion regarding data privacy and Migrate, some things which users should be aware of.</string>
-    <string name="google_firebase">Google firebase</string>
+    <string name="privacy_policy_desc">This is a formal-informal discussion regarding data privacy and Migrate, some things which users should be aware of.
+    These are subject to change on future updates, as more features are added.</string>
+    <string name="google_firebase">Google Firebase</string>
     <string name="google_firebase_desc">From v3.0 onwards, Migrate uses Firebase for crash analytics. No personal data of users is transmitted. If there is enough demand, I will also create a non Firebase version.</string>
+    <string name="google_admob">Google Admob</string>
+    <string name="google_admob_desc">Migrate has been using Google\'s Admob service to display Ads. That remains unchanged.</string>
     <string name="data_that_is_read">Data that is read by Migrate</string>
     <string name="data_that_is_read_desc">For app backup, the following data are read:\n
         1. List of installed packages\n
@@ -708,7 +711,7 @@
         2. Private data of apps (compressed and stored)\n
         Apk content of apps are not analysed. Private data of apps are not analysed.\n\n
 
-        For extra backups, the following are read, only after permission from user:
+        For extra backups, the following are read, only after permission from user:\n
         1. Contacts data (stored as vcf file)\n
         2. SMS data (stored as a db file)\n
         3. Call logs (stored as a db file)\n
@@ -719,7 +722,7 @@
     </string>
     <string name="what_is_shared">What is shared</string>
     <string name="what_is_shared_desc">
-        Sharing in this context refers to voluntary reporting of app logs.\n
+        Sharing in this context refers to voluntary reporting of app logs.\n\n
         On sharing logs, you agree to share (publicly, if on Telegram group):\n\n
         - Some internal file structure of apps. This (in most cases) does not contain personally identifiable sensitive information.\n
         - The backup name.\n
@@ -745,10 +748,10 @@
     <string name="avoid_unintentional_leak">I am still not convinced.</string>
     <string name="avoid_unintentional_leak_desc">
         As discussed previously, if you think your backup contains really sensitive data, please do not share logs. Nothing leaves your device if you do not voluntarily share logs.
-        <b>However, also note that without logs it becomes near impossible to provide any kind of support.\n\n</b>
+        <b>However, also note that without logs it becomes nearly impossible to provide any kind of support.\n\n</b>
         Alternatively, you can choose to not share \"Progress log\". The \"Error log\" and other options are usually most important.
     </string>
-    <string name="privacy_policy_footer">That\'s all everybody. Enjoy using the app. Feel free to contact me on Telegram.\n- SayantanRC</string>
+    <string name="privacy_policy_footer">That\'s all. Enjoy using the app. Feel free to contact me on Telegram.\n- SayantanRC</string>
 
     <!--thanks_layout.xml-->
     <string name="thanks_to_stericson">Huge thanks to Stephen (stericdroid) for allowing me to liberally use his busybox builds</string>
