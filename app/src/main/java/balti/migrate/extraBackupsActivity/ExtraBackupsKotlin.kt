@@ -166,10 +166,37 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
         fun doEverything() {
             startBackupButton.setOnClickListener {
-                if (appListCopied.size > 0 || do_backup_contacts.isChecked || do_backup_calls.isChecked
-                        || do_backup_sms.isChecked || do_backup_dpi.isChecked || do_backup_keyboard.isChecked
-                        || do_backup_installers.isChecked || do_backup_adb.isChecked || do_backup_wifi.isChecked || do_backup_fontScale.isChecked) {                  //extras_markers
-                    askForName()
+
+                val allReadTasks = arrayOf(
+                        readContacts,
+                        readSms,
+                        readCalls,
+                        readDpi,
+                        readAdb,
+                        readWifi,
+                        readFontScale
+                )
+
+                var isAnyRunning = false
+                for (t in allReadTasks.indices){
+                    allReadTasks[t]?.let {
+                        if (it.status == AsyncTask.Status.RUNNING) isAnyRunning = true
+                    }
+                    if (isAnyRunning) break
+                }
+
+                if (!isAnyRunning) {
+                    if (appListCopied.size > 0 || do_backup_contacts.isChecked || do_backup_calls.isChecked
+                            || do_backup_sms.isChecked || do_backup_dpi.isChecked || do_backup_keyboard.isChecked
+                            || do_backup_installers.isChecked || do_backup_adb.isChecked || do_backup_wifi.isChecked || do_backup_fontScale.isChecked) {                  //extras_markers
+                        askForName()
+                    }
+                } else {
+                    AlertDialog.Builder(this)
+                            .setTitle(R.string.wait_while_reading_data)
+                            .setMessage(R.string.wait_while_reading_data_desc)
+                            .setPositiveButton(R.string.close, null)
+                            .show()
                 }
             }
 
