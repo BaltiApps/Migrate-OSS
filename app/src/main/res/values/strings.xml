@@ -281,6 +281,8 @@
     <string name="no_busybox_binary">\"busybox\" not available!</string>
     <string name="re_calculating_size">Re-calculating size using terminal method</string>
     <string name="error_occurred">Error occurred!!</string>
+    <string name="wait_while_reading_data">Data is being read</string>
+    <string name="wait_while_reading_data_desc">Please wait till the data is completely read. Try again later.</string>
 
     <!--extra_item_selector.xml-->
     <string name="sms_selector_label">Select SMS</string>
