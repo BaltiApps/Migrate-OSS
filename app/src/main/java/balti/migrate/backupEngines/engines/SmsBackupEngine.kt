@@ -120,21 +120,18 @@ class SmsBackupEngine(private val jobcode: Int,
                     }
                     catch (e: Exception){
                         e.printStackTrace()
-                        errors.add("$ERR_SMS_WRITE${bd.errorTag}: ${e.message}")
+                        errors.add("$ERR_SMS_WRITE: ${e.message}")
                     }
                 }
 
                 db.close()
-
-                File(smsDBFile.absolutePath + "-shm").delete()
-                File(smsDBFile.absolutePath + "-wal").delete()
 
                 writeToFileList(smsDBFileName)
             }
         }
         catch (e: Exception){
             e.printStackTrace()
-            errors.add("$ERR_SMS_TRY_CATCH${bd.errorTag}: ${e.message}")
+            errors.add("$ERR_SMS_TRY_CATCH: ${e.message}")
         }
     }
 
@@ -166,11 +163,11 @@ class SmsBackupEngine(private val jobcode: Int,
             commonTools.tryIt { dataBase.close() }
 
             if (c != totalSelected)
-                errors.add("$ERR_SMS_VERIFY${bd.errorTag}: ${engineContext.getString(R.string.sms_records_incomplete)} - $c/${totalSelected}}")
+                errors.add("$ERR_SMS_VERIFY: ${engineContext.getString(R.string.sms_records_incomplete)} - $c/${totalSelected}}")
         }
         catch (e: Exception){
             e.printStackTrace()
-            errors.add("$ERR_SMS_VERIFY_TRY_CATCH${bd.errorTag}: ${e.message}")
+            errors.add("$ERR_SMS_VERIFY_TRY_CATCH: ${e.message}")
         }
     }
 

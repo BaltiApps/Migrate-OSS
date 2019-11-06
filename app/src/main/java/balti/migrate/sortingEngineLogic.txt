@@ -38,3 +38,7 @@
             e.printStackTrace()
             return arrayOf(false, vOp.getStringFromRes(R.string.error_making_batches), e.message.toString())
         }
+
+
+        File(smsDBFile.absolutePath + "-shm").delete()
+                        File(smsDBFile.absolutePath + "-wal").delete()

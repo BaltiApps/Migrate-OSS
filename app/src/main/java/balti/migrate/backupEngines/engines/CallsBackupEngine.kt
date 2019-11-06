@@ -149,7 +149,7 @@ class CallsBackupEngine(private val jobcode: Int,
                     }
                     catch (e: Exception){
                         e.printStackTrace()
-                        errors.add("$ERR_CALLS_WRITE${bd.errorTag}: $display ${e.message}")
+                        errors.add("$ERR_CALLS_WRITE: $display ${e.message}")
                     }
                 }
 
@@ -160,7 +160,7 @@ class CallsBackupEngine(private val jobcode: Int,
         }
         catch (e: Exception){
             e.printStackTrace()
-            errors.add("$ERR_CALLS_TRY_CATCH${bd.errorTag}: ${e.message}")
+            errors.add("$ERR_CALLS_TRY_CATCH: ${e.message}")
         }
     }
 
@@ -192,11 +192,11 @@ class CallsBackupEngine(private val jobcode: Int,
             commonTools.tryIt { dataBase.close() }
 
             if (c != totalSelected)
-                errors.add("$ERR_CALLS_VERIFY${bd.errorTag}: ${engineContext.getString(R.string.call_logs_incomplete)} - $c/${totalSelected}}")
+                errors.add("$ERR_CALLS_VERIFY: ${engineContext.getString(R.string.call_logs_incomplete)} - $c/${totalSelected}}")
         }
         catch (e: Exception){
             e.printStackTrace()
-            errors.add("$ERR_CALLS_VERIFY_TRY_CATCH${bd.errorTag}: ${e.message}")
+            errors.add("$ERR_CALLS_VERIFY_TRY_CATCH: ${e.message}")
         }
     }
 
