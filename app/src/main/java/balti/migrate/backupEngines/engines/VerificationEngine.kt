@@ -6,7 +6,7 @@ import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.BackupUtils
-import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
+import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_SHELL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_SUPPRESSED
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_TRY_CATCH
@@ -25,7 +25,7 @@ import balti.migrate.utilities.IconTools
 import java.io.*
 
 class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentData,
-                         private val appBatch: AppBatch,
+                         private val appList: ArrayList<AppPacket>,
                          private val busyboxBinaryPath: String) : ParentBackupClass(bd, "") {
 
     private var CORRECTION_PID = -999
@@ -78,85 +78,83 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
             resetBroadcast(true, title, EXTRA_PROGRESS_TYPE_VERIFYING)
 
-            appBatch.appPackets.let { packets ->
-                for (i in 0 until packets.size) {
+            for (i in appList.indices) {
 
-                    if (BackupServiceKotlin.cancelAll) break
+                if (BackupServiceKotlin.cancelAll) break
 
-                    val packet = packets[i]
-                    val pi = packet.PACKAGE_INFO
-                    val packageName = pi.packageName
-                    val appName = pm.getApplicationLabel(pi.applicationInfo).toString()
+                val packet = appList[i]
+                val pi = packet.PACKAGE_INFO
+                val packageName = pi.packageName
+                val appName = pm.getApplicationLabel(pi.applicationInfo).toString()
 
-                    broadcastProgress(appName, "verifying: $appName", false)
+                broadcastProgress(appName, "verifying: $appName", false)
 
-                    val expectedIconFile = File(actualDestination, "$packageName.icon")
-                    val expectedAppDir = File(actualDestination, "$packageName.app")
-                    val expectedApkFile = File("$actualDestination/$packageName.app", "$packageName.apk")
-                    val expectedDataFile = File("$actualDestination/$packageName.tar.gz")
-                    val expectedPermFile = File(actualDestination, "$packageName.perm")
+                val expectedIconFile = File(actualDestination, "$packageName.icon")
+                val expectedAppDir = File(actualDestination, "$packageName.app")
+                val expectedApkFile = File("$actualDestination/$packageName.app", "$packageName.apk")
+                val expectedDataFile = File("$actualDestination/$packageName.tar.gz")
+                val expectedPermFile = File(actualDestination, "$packageName.perm")
 
-                    if (!expectedIconFile.exists() && sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true)) {
-                        allRecovery.add("$MIGRATE_STATUS:icon:$packageName")
-                    }
+                if (sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true) && !expectedIconFile.exists()) {
+                    allRecovery.add("$MIGRATE_STATUS:icon:$packageName")
+                }
 
-                    if (packet.APP){
+                if (packet.APP) {
 
-                        val existsAppDir = expectedAppDir.exists()
-                        val sizeAppDir = commonTools.getDirLength(expectedAppDir.absolutePath)
-                        val existsApk = expectedApkFile.exists()
-                        val sizeApk = expectedApkFile.length()
+                    val existsAppDir = expectedAppDir.exists()
+                    val sizeAppDir = commonTools.getDirLength(expectedAppDir.absolutePath)
+                    val existsApk = expectedApkFile.exists()
+                    val sizeApk = expectedApkFile.length()
 
-                        if (!existsAppDir || sizeAppDir == 0L || !existsApk || sizeApk == 0L) {
+                    if (!existsAppDir || sizeAppDir == 0L || !existsApk || sizeApk == 0L) {
 
-                            var apkPath = pi.applicationInfo.sourceDir
-                            var apkName = apkPath.substring(apkPath.lastIndexOf('/') + 1)
-                            apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'))
+                        var apkPath = pi.applicationInfo.sourceDir
+                        var apkName = apkPath.substring(apkPath.lastIndexOf('/') + 1)
+                        apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'))
 
-                            apkName = commonTools.applyNamingCorrectionForShell(apkName)
+                        apkName = commonTools.applyNamingCorrectionForShell(apkName)
 
-                            expectedAppDir.absolutePath.let {
-                                allRecovery.add(
-                                        "echo \"Copy apk(s): $packageName\"\n" +
-                                                "rm -rf $it 2> /dev/null" +
-                                                "mkdir -p $it\n" +
-                                                "cd $apkPath\n" +
-                                                "cp *.apk $it/\n\n" +
-                                                "mv $it/$apkName $it/${pi.packageName}.apk\n"
-                                )
-                            }
-
-                            broadcastProgress(appName, "$packageName : appDir $existsAppDir, $sizeAppDir : apk $existsApk, $sizeApk", false)
+                        expectedAppDir.absolutePath.let {
+                            allRecovery.add(
+                                    "echo \"Copy apk(s): $packageName\"\n" +
+                                            "rm -rf $it 2> /dev/null" +
+                                            "mkdir -p $it\n" +
+                                            "cd $apkPath\n" +
+                                            "cp *.apk $it/\n\n" +
+                                            "mv $it/$apkName $it/${pi.packageName}.apk\n"
+                            )
                         }
-                    }
 
-                    if (packet.DATA){
-
-                        val existsData = expectedDataFile.exists()
-                        val sizeData = expectedDataFile.length()
-
-                        if (!existsData || sizeData == 0L) {
-                            allRecovery.add(getDataCorrectionCommand(pi, expectedDataFile))
-                            broadcastProgress(appName, "$packageName : data $existsData, $sizeData", false)
-                        }
-                    }
-
-                    if (packet.PERMISSION) {
-
-                        val existsPerm = expectedPermFile.exists()
-                        val sizePerm = expectedPermFile.length()
-
-                        if (!existsPerm || sizePerm == 0L) {
-                            allRecovery.add("$MIGRATE_STATUS:perm:$packageName")
-                            broadcastProgress(appName, "$packageName : perm $existsPerm, $sizePerm", false)
-                        }
+                        broadcastProgress(appName, "$packageName : appDir $existsAppDir, $sizeAppDir : apk $existsApk, $sizeApk", false)
                     }
                 }
 
-                if (sharedPreferences.getBoolean(PREF_TAR_GZ_INTEGRITY, true)){
-                    checkTars()?.let {
-                        allRecovery.addAll(it)
+                if (packet.DATA) {
+
+                    val existsData = expectedDataFile.exists()
+                    val sizeData = expectedDataFile.length()
+
+                    if (!existsData || sizeData == 0L) {
+                        allRecovery.add(getDataCorrectionCommand(pi, expectedDataFile))
+                        broadcastProgress(appName, "$packageName : data $existsData, $sizeData", false)
                     }
+                }
+
+                if (packet.PERMISSION) {
+
+                    val existsPerm = expectedPermFile.exists()
+                    val sizePerm = expectedPermFile.length()
+
+                    if (!existsPerm || sizePerm == 0L) {
+                        allRecovery.add("$MIGRATE_STATUS:perm:$packageName")
+                        broadcastProgress(appName, "$packageName : perm $existsPerm, $sizePerm", false)
+                    }
+                }
+            }
+
+            if (sharedPreferences.getBoolean(PREF_TAR_GZ_INTEGRITY, true)) {
+                checkTars()?.let {
+                    allRecovery.addAll(it)
                 }
             }
 
@@ -164,7 +162,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
         catch (e: Exception) {
             e.printStackTrace()
-            addToActualErrors("$ERR_VERIFICATION_TRY_CATCH${bd.errorTag}: ${e.message}")
+            addToActualErrors("$ERR_VERIFICATION_TRY_CATCH: ${e.message}")
             return null
         }
     }
@@ -180,7 +178,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
             resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_VERIFYING)
 
-            val tarCheckScript = File(engineContext.filesDir.absolutePath, "$FILE_PREFIX_TAR_CHECK${bd.partNumber}.sh")
+            val tarCheckScript = File(engineContext.filesDir.absolutePath, "$FILE_PREFIX_TAR_CHECK.sh")
             val scriptWriter = BufferedWriter(FileWriter(tarCheckScript))
 
             scriptWriter.write("#!sbin/sh\n\n")
@@ -203,9 +201,9 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                             "}\n"
             )
 
-            for (i in 0 until appBatch.appPackets.size) {
+            for (i in appList.indices) {
 
-                val packet = appBatch.appPackets[i]
+                val packet = appList[i]
                 val expectedDataFile = File("$actualDestination/${packet.PACKAGE_INFO.packageName}.tar.gz")
 
                 if (packet.DATA && expectedDataFile.exists() && expectedDataFile.length() != 0L) {
@@ -244,7 +242,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         }
                         line.startsWith("--- TAR_GZ") -> {
                             c++
-                            progress = commonTools.getPercentage(c, appBatch.appPackets.size)
+                            progress = commonTools.getPercentage(c, appList.size)
                             log = ""
                         }
                         line.startsWith("--- ERROR") -> {
@@ -273,8 +271,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     }
 
                     if (!ignorable)
-                        addToActualErrors("$ERR_TAR_SHELL${bd.errorTag}: $errorLine")
-                    else allErrors.add("$ERR_TAR_SUPPRESSED${bd.errorTag}: $errorLine")
+                        addToActualErrors("$ERR_TAR_SHELL: $errorLine")
+                    else allErrors.add("$ERR_TAR_SUPPRESSED: $errorLine")
 
                     return@iterateBufferedReader false
                 }, null)
@@ -284,14 +282,14 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
         catch (e: Exception){
             e.printStackTrace()
-            addToActualErrors("$ERR_TAR_CHECK_TRY_CATCH${bd.errorTag}: ${e.message}")
+            addToActualErrors("$ERR_TAR_CHECK_TRY_CATCH: ${e.message}")
             return null
         }
     }
 
     private fun correctBackups(defects: ArrayList<String>) {
 
-        if (appBatch.appPackets.size == 0 || defects.size == 0) return
+        if (appList.size == 0 || defects.size == 0) return
 
         lastProgress = 0
 
@@ -300,7 +298,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_CORRECTING)
 
         try {
-            val retryScript = File(engineContext.filesDir.absolutePath, "$FILE_PREFIX_RETRY_SCRIPT${bd.partNumber}.sh")
+            val retryScript = File(engineContext.filesDir.absolutePath, "$FILE_PREFIX_RETRY_SCRIPT.sh")
             val scriptWriter = BufferedWriter(FileWriter(retryScript))
 
             scriptWriter.write("#!sbin/sh\n\n")
@@ -388,8 +386,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     }
 
                     if (!ignorable)
-                        addToActualErrors("$ERR_CORRECTION_SHELL${bd.errorTag}: $errorLine")
-                    else allErrors.add("$ERR_CORRECTION_SUPPRESSED${bd.errorTag}: $errorLine")
+                        addToActualErrors("$ERR_CORRECTION_SHELL: $errorLine")
+                    else allErrors.add("$ERR_CORRECTION_SUPPRESSED: $errorLine")
 
                     return@iterateBufferedReader false
                 }, null)
@@ -397,7 +395,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
         catch (e: Exception){
             e.printStackTrace()
-            addToActualErrors("$ERR_CORRECTION_TRY_CATCH${bd.errorTag}: ${e.message}")
+            addToActualErrors("$ERR_CORRECTION_TRY_CATCH: ${e.message}")
         }
     }
 

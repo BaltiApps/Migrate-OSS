@@ -52,9 +52,9 @@ class CommonToolKotlin(val context: Context) {
         val FILE_PROGRESSLOG = "progressLog.txt"
         val FILE_ERRORLOG = "errorLog.txt"
         val FILE_DEVICE_INFO = "device_info.txt"
-        val FILE_PREFIX_BACKUP_SCRIPT = "the_backup_script_"
-        val FILE_PREFIX_RETRY_SCRIPT = "retry_script_"
-        val FILE_PREFIX_TAR_CHECK = "tar_check_"
+        val FILE_PREFIX_BACKUP_SCRIPT = "the_backup_script"
+        val FILE_PREFIX_RETRY_SCRIPT = "retry_script"
+        val FILE_PREFIX_TAR_CHECK = "tar_check"
 
         val FILE_ZIP_NAME_EXTRAS = "Extras"
 

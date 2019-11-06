@@ -47,7 +47,7 @@ class WifiBackupEngine(private val jobcode: Int,
         }
         catch (e: Exception){
             e.printStackTrace()
-            errors.add("$ERR_WIFI_TRY_CATCH${bd.errorTag}: ${e.message}")
+            errors.add("$ERR_WIFI_TRY_CATCH: ${e.message}")
         }
 
         return 0

@@ -75,7 +75,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                         if (errorLine.endsWith(warnings)) ignorable = true
                     }
 
-                    if (!ignorable) testingErrors.add("$ERR_TESTING_ERROR${bd.errorTag}: $errorLine")
+                    if (!ignorable) testingErrors.add("$ERR_TESTING_ERROR: $errorLine")
                     return@iterateBufferedReader false
                 })
 
@@ -90,7 +90,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
         }
         catch (e: Exception) {
             e.printStackTrace()
-            testingErrors.add("$ERR_TESTING_TRY_CATCH${bd.errorTag}: ${e.message}")
+            testingErrors.add("$ERR_TESTING_TRY_CATCH: ${e.message}")
         }
 
         return 0

@@ -51,7 +51,7 @@ class SettingsBackupEngine(private val jobcode: Int,
         }
         catch (e: Exception){
             e.printStackTrace()
-            errors.add("$ERR_SETTINGS_TRY_CATCH${bd.errorTag}: ${e.message}")
+            errors.add("$ERR_SETTINGS_TRY_CATCH: ${e.message}")
         }
 
         return 0
