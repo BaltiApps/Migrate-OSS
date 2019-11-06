@@ -37,7 +37,7 @@ class BackupUtils {
         if (doBreak) onCancelledFunction?.invoke()
     }
 
-    fun makeMetadataFile(appName: String, version: String,
+    fun makeMetadataFile(version: String,
                          iconFileName: String?, iconString: String?,
                          appPacket: AppPacket, bd: BackupIntentData): String{
 
@@ -49,7 +49,7 @@ class BackupUtils {
         val jsonObject = JSONObject()
         jsonObject.apply {
             put(MtdConstants.MTD_IS_SYSTEM, appPacket.isSystem)
-            put(MtdConstants.MTD_APP_NAME, appName)
+            put(MtdConstants.MTD_APP_NAME, appPacket.appName)
             put(MtdConstants.MTD_PACKAGE_NAME, packageName)
             put(MtdConstants.MTD_APK, if (appPacket.APP) "$packageName.apk" else "NULL")
             put(MtdConstants.MTD_DATA, if (appPacket.DATA) "$packageName.tar.gz" else "NULL")

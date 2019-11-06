@@ -128,8 +128,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
                     val packet = packets[i]
 
-                    val appName = formatName(pm.getApplicationLabel(packet.PACKAGE_INFO.applicationInfo).toString())
-                    val modifiedAppName = "$appName(${i+1}/${packets.size})"
+                    val modifiedAppName = "${packet.appName}(${i+1}/${packets.size})"
 
                     broadcastProgress(modifiedAppName, modifiedAppName, true, commonTools.getPercentage(i + 1, packets.size))
 
@@ -161,7 +160,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
                     commonTools.tryIt { if (packet.isSystem) systemAppInstallScript(packageName, packet.apkPath) }
 
-                    backupUtils.makeMetadataFile(appName, versionName, appIconFileName, appIcon, packet, bd)
+                    backupUtils.makeMetadataFile(versionName, appIconFileName, appIcon, packet, bd)
                 }
 
             }

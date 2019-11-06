@@ -13,6 +13,7 @@ import android.os.StatFs
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
@@ -98,6 +99,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             var dataSize = 0L
             var systemSize = 0L
             val dp = appList[i]
+            val appName = pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString()
 
             val apkPath: String? = if (dp.APP)
                 dp.PACKAGE_INFO.applicationInfo.sourceDir
@@ -142,13 +144,12 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             }
 
             appsScanned++
-            appPackets.add(AppPacket(dp, dataSize, systemSize))
+            appPackets.add(AppPacket(dp, appName, dataSize, systemSize))
             totalSize += dataSize + systemSize
 
             publishProgress(vOp.getStringFromRes(R.string.calculating_size),
                     (i + 1).toString() + " of " + appList.size,
-                    pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString() + "\n" +
-                            vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize + dataSize) + "\n")
+                    "$appName\n" + vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize + dataSize) + "\n")
 
         }
 
@@ -194,6 +195,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                         if (cancelThis) break
 
                         val dp = appList[i]
+                        val appName = pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString()
 
                         getPackageSizeInfo.invoke(pm, dp.PACKAGE_INFO, object : IPackageStatsObserver.Stub(){
                             override fun onGetStatsCompleted(pStats: PackageStats?, succeeded: Boolean) {
@@ -226,13 +228,12 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                                 systemSize /= 1024
 
                                 appsScanned++
-                                appPackets.add(AppPacket(dp, dataSize, systemSize))
+                                appPackets.add(AppPacket(dp, appName, dataSize, systemSize))
                                 totalSize += dataSize + systemSize
 
                                 publishProgress(vOp.getStringFromRes(R.string.calculating_size),
                                         (i + 1).toString() + " of " + appList.size,
-                                        pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString() + "\n" +
-                                                vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize+dataSize) + "\n")
+                                        "$appName\n" + vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize+dataSize) + "\n")
 
                             }
                         })
@@ -254,9 +255,10 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
                         if (cancelThis) break
 
-                        val dp = appList[i]
                         var dataSize = 0L
                         var systemSize = 0L
+                        val dp = appList[i]
+                        val appName = pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString()
 
                         val storageStats = storageStatsManager.queryStatsForUid(
                                 dp.PACKAGE_INFO.applicationInfo.storageUuid,
@@ -294,13 +296,12 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                         systemSize /= 1024
 
                         appsScanned++
-                        appPackets.add(AppPacket(dp, dataSize, systemSize))
+                        appPackets.add(AppPacket(dp, appName, dataSize, systemSize))
                         totalSize += dataSize + systemSize
 
                         publishProgress(vOp.getStringFromRes(R.string.calculating_size),
                                 (i + 1).toString() + " of " + appList.size,
-                                pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString() + "\n" +
-                                        vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize+dataSize) + "\n")
+                                "$appName\n" + vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize+dataSize) + "\n")
 
                     }
 
@@ -328,6 +329,15 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
         catch (e: Exception){
             e.printStackTrace()
             return arrayOf(false, vOp.getStringFromRes(R.string.error_calculating_size), e.message + "\n\n" + vOp.getStringFromRes(R.string.change_size_calculation_method))
+        }
+
+        // check if any app is there which is too large before comparing with device storage
+        val bigAppsNameConcat = StringBuilder("")
+        appPackets.forEach {
+            if ((it.dataSize + it.systemSize) > MAX_WORKING_SIZE) bigAppsNameConcat.append("${it.appName}\n")
+        }
+        if (bigAppsNameConcat.toString().trim() != ""){
+            return arrayOf(false, vOp.getStringFromRes(R.string.cannot_split), bigAppsNameConcat)
         }
 
         try {
