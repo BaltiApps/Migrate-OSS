@@ -43,7 +43,6 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
     val onBackupComplete by lazy { engineContext as OnBackupComplete }
 
     val commonTools by lazy { CommonToolKotlin(engineContext) }
-    val madePartName by lazy { commonTools.getMadePartName(bd.partNumber, bd.totalParts) }
     val actualDestination by lazy { formatName("${bd.destination}/${bd.backupName}") }
 
     private var lastProgress = 0

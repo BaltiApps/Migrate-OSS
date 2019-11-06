@@ -96,7 +96,6 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_ACTUAL_DESTINATION = "actualDestination"
         val EXTRA_ERRORS = "errors"
         val EXTRA_TOTAL_TIME = "total_time"
-        val EXTRA_MADE_PART_NAME = "madePartName"
         val EXTRA_IS_CANCELLED = "isCancelled"
 
         val ERR_ZIP_TRY_CATCH = "ZIP_TRY_CATCH"
@@ -235,10 +234,6 @@ class CommonToolKotlin(val context: Context) {
 
         // main backup engine
         val MIGRATE_STATUS_LABEL = "migrate_status"
-
-        val EXTRA_PART_NAME = "part_name"
-        val EXTRA_PART_NUMBER = "part_number"
-        val EXTRA_TOTAL_PARTS = "total_parts"
 
         val MIGRATE_STATUS = "MIGRATE_STATUS"
 
@@ -628,11 +623,6 @@ class CommonToolKotlin(val context: Context) {
 
     fun getPercentageText(count: Int, total: Int): String =
             "${getPercentage(count, total)}%"
-
-    fun getMadePartName(zeroIndexedPartName: Int, totalParts: Int): String =
-            if (totalParts > 1)
-                "${context.getString(R.string.part)}_${zeroIndexedPartName + 1}_${context.getString(R.string.of)}_$totalParts"
-            else ""
 
     fun doBackgroundTask(job: () -> Unit, postJob: () -> Unit){
         class Class : AsyncTask<Any, Any, Any>(){
