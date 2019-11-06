@@ -22,13 +22,11 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SUBTASK
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TASKLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
 import balti.migrate.utilities.CommonToolKotlin.Companion.NOTIFICATION_ID_ONGOING
 import balti.migrate.utilities.CommonToolKotlin.Companion.PENDING_INTENT_BACKUP_CANCEL_ID
 import balti.migrate.utilities.CommonToolKotlin.Companion.PENDING_INTENT_REQUEST_ID
 import java.io.BufferedWriter
 import java.io.File
-import java.io.FileWriter
 import java.io.OutputStreamWriter
 
 abstract class ParentBackupClass(private val bd: BackupIntentData,
@@ -44,8 +42,6 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     private var lastProgress = 0
     private var isIndeterminate = true
-
-    private var isFileListWriterOpened = false
 
     private val actualBroadcast by lazy {
         Intent(ACTION_BACKUP_PROGRESS).apply {
@@ -67,17 +63,6 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
     }
 
     private val activityIntent by lazy { Intent(serviceContext, ProgressShowActivity::class.java) }
-
-    private val fileListWriter: BufferedWriter? by lazy {
-        isFileListWriterOpened = true
-        val file = File(actualDestination, FILE_FILE_LIST)
-        if (!file.exists()) file.createNewFile()
-        BufferedWriter(FileWriter(file, true))
-    }
-
-    fun writeToFileList(fileName: String){
-        commonTools.tryIt { fileListWriter?.write("$fileName\n") }
-    }
 
     fun getTitle(stringRes: Int): String{
         return engineContext.getString(stringRes)
@@ -188,7 +173,6 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
-        if (isFileListWriterOpened) commonTools.tryIt { fileListWriter?.close() }
         postExecuteFunction()
     }
 }

@@ -138,6 +138,7 @@ class CommonToolKotlin(val context: Context) {
 
         val PACKAGE_NAME_PLAY_STORE = "com.android.vending"
         val PACKAGE_NAME_FDROID = "org.fdroid.fdroid.privileged"
+        val PACKAGE_NAMES_KNOWN = arrayOf(PACKAGE_NAME_PLAY_STORE, PACKAGE_NAME_FDROID)
         val PACKAGE_NAMES_PACKAGE_INSTALLER = arrayOf("com.google.android.packageinstaller")
 
         val PREF_FILE_APPS = "apps"
@@ -620,9 +621,6 @@ class CommonToolKotlin(val context: Context) {
         return if (total != 0) (count*100)/total
         else 0
     }
-
-    fun getPercentageText(count: Int, total: Int): String =
-            "${getPercentage(count, total)}%"
 
     fun doBackgroundTask(job: () -> Unit, postJob: () -> Unit){
         class Class : AsyncTask<Any, Any, Any>(){

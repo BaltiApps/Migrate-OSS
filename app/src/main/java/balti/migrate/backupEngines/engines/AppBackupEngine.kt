@@ -46,11 +46,6 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
     private val allErrors by lazy { ArrayList<String>(0) }
     private val actualErrors by lazy { ArrayList<String>(0) }
 
-    private fun writeFileList(fileName: String, appName: String){
-        writeToFileList(fileName)
-        broadcastProgress(appName, fileName, false)
-    }
-
     init {
         customPreExecuteFunction = {
 
@@ -140,35 +135,8 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
                     val packageName = packet.PACKAGE_INFO.packageName
 
-                    var apkPath = "NULL"
-                    var apkName = "NULL"       //has .apk extension
-                    var isSystem = false
-                    if (packet.APP) {
-
-                        apkPath = packet.PACKAGE_INFO.applicationInfo.sourceDir
-                        apkName = apkPath.substring(apkPath.lastIndexOf('/') + 1)
-                        apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'))
-                        apkName = commonTools.applyNamingCorrectionForShell(apkName)
-
-                        isSystem = !apkPath.startsWith("/data")
-
-                        if (!isSystem) writeFileList("$packageName.app", modifiedAppName)
-                        else writeFileList("$packageName.app_sys", modifiedAppName)
-                    }
-
-                    var dataPath = "NULL"
-                    var dataName = "NULL"
-                    if (packet.DATA) {
-                        dataPath = packet.PACKAGE_INFO.applicationInfo.dataDir
-                        dataName = dataPath.substring(dataPath.lastIndexOf('/') + 1)
-                        dataPath = dataPath.substring(0, dataPath.lastIndexOf('/'))
-
-                        writeFileList("$packageName.tar.gz", modifiedAppName)
-                    }
-
                     if (packet.PERMISSION) {
                         backupUtils.makePermissionFile(packageName, actualDestination, pm)
-                        writeFileList("$packageName.perm", modifiedAppName)
                     }
 
                     var versionName: String? = packet.PACKAGE_INFO.versionName
@@ -179,29 +147,21 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     var appIconFileName: String? = null
                     if (sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true)) {
                         appIconFileName = backupUtils.makeIconFile(packageName, appIcon, actualDestination)
-                        writeFileList("$appIconFileName", modifiedAppName)
                     }
 
                     val echoCopyCommand = "echo \"$MIGRATE_STATUS: $modifiedAppName icon: ${if (appIconFileName == null) appIcon else "$packageName.icon"}\"\n"
                     val scriptCommand = "sh $appAndDataBackupScript " +
                             "$packageName $actualDestination " +
-                            "$apkPath $apkName " +
-                            "$dataPath $dataName " +
+                            "${packet.apkPath} ${packet.apkName} " +
+                            "${packet.dataPath} ${packet.dataName} " +
                             "$busyboxBinaryPath $ignoreCache\n"
 
                     scriptWriter.write(echoCopyCommand, 0, echoCopyCommand.length)
                     scriptWriter.write(scriptCommand, 0, scriptCommand.length)
 
-                    commonTools.tryIt { if (isSystem) systemAppInstallScript(packageName, apkPath) }
+                    commonTools.tryIt { if (packet.isSystem) systemAppInstallScript(packageName, packet.apkPath) }
 
-                    backupUtils.makeMetadataFile(
-                            isSystem, appName, if (apkName != "NULL") "$packageName.apk" else "NULL",
-                            if (dataName != "NULL") "$dataName.tar.gz" else "NULL", appIconFileName,
-                            versionName, packet.PERMISSION, packet, bd, doBackupInstallers, actualDestination,
-                            if (appIconFileName != null) appIcon else null
-                    )
-
-                    writeFileList("$packageName.json", modifiedAppName)
+                    backupUtils.makeMetadataFile(appName, versionName, appIconFileName, appIcon, packet, bd)
                 }
 
             }
