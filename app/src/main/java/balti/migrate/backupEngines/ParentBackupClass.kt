@@ -55,9 +55,6 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
             putExtra(EXTRA_BACKUP_NAME, bd.backupName)
             putExtra(EXTRA_ACTUAL_DESTINATION, actualDestination)
             putExtra(EXTRA_PROGRESS_TYPE, intentType)
-            putExtra(EXTRA_TOTAL_PARTS, bd.totalParts)
-            putExtra(EXTRA_PART_NUMBER, bd.partNumber)
-            putExtra(EXTRA_MADE_PART_NAME, madePartName)
         }
     }
 
@@ -86,9 +83,7 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
     }
 
     fun getTitle(stringRes: Int): String{
-        return if (bd.totalParts > 1)
-            engineContext.getString(stringRes) + " : " + madePartName.replace("_", " ")
-        else engineContext.getString(stringRes)
+        return engineContext.getString(stringRes)
     }
 
     fun getDataBase(dataBaseFile: File): SQLiteDatabase{
