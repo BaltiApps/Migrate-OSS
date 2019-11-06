@@ -155,8 +155,6 @@ class CallsBackupEngine(private val jobcode: Int,
 
                 db.close()
             }
-
-            writeToFileList(callsDBFileName)
         }
         catch (e: Exception){
             e.printStackTrace()

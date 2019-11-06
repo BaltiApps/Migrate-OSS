@@ -125,8 +125,6 @@ class SmsBackupEngine(private val jobcode: Int,
                 }
 
                 db.close()
-
-                writeToFileList(smsDBFileName)
             }
         }
         catch (e: Exception){

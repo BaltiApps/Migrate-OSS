@@ -42,8 +42,6 @@ class WifiBackupEngine(private val jobcode: Int,
 
                 this.close()
             }
-
-            writeToFileList(wifiDataPacket.fileName)
         }
         catch (e: Exception){
             e.printStackTrace()

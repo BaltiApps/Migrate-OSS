@@ -46,8 +46,6 @@ class SettingsBackupEngine(private val jobcode: Int,
                 this.write(jsonObject.toString(4))
                 this.close()
             }
-
-            writeToFileList(BACKUP_NAME_SETTINGS)
         }
         catch (e: Exception){
             e.printStackTrace()

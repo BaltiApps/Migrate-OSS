@@ -47,8 +47,6 @@ class ContactsBackupEngine(private val jobcode: Int,
 
                 this.close()
             }
-
-            writeToFileList(vcfFileName)
         }
         catch (e: Exception){
             e.printStackTrace()
