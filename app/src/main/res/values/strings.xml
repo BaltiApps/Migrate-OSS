@@ -233,9 +233,7 @@
     <string name="make_sure_destination_exists">Make sure the destination is mounted and writable.</string>
     <string name="error_detecting_memory">Error detecting device memory</string>
     <string name="error_checking_destination">Error checking destination</string>
-    <string name="error_making_batches">Error making batches</string>
     <string name="cannot_split">Backup is not possible because these apps are too big!</string>
-    <string name="making_batches">Making batches</string>
     <string name="part">Part</string>
     <string name="parts">parts</string>
     <string name="of">of</string>
@@ -267,7 +265,7 @@
         \n
         After ticking a checkbox on an item, click on the item for further options.
     </string>
-    <string name="change_size_calculation_method">You can try going to the main screen of the app -> click top left green icon -> \"Preferences\" -> \"Use new method to calculate size\"</string>
+    <string name="change_size_calculation_method">You can try going to the main screen of the app -> \"Preferences\" -> Uncheck \"Use new method to calculate size\"</string>
     <string name="no_sd_card_detected">No SD card detected (or not mounted as R/W).</string>
     <string name="no_sd_card_detected_exp">Please make sure that you have mounted an external SD card (if supported by your device)\n
     Also make sure that you install the \"ExSDCard Access Enabler\" magisk module.\n\n

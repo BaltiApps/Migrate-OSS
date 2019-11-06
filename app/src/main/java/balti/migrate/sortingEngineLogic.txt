@@ -1,0 +1,40 @@
+
+        try {
+
+            val parts = ceil((totalSize * 1.0) / MAX_WORKING_SIZE).toInt()
+
+            for (i in 1..parts) {
+
+                if (cancelThis) break
+
+                val batchPackets = ArrayList<AppPacket>(0)
+                var batchSize = 0L
+                var c = 0
+
+                while (c < parentAppBatch.size && batchSize < MAX_WORKING_SIZE) {
+
+                    val dp = parentAppBatch[c]
+                    if (batchSize + dp.systemSize + dp.dataSize <= MAX_WORKING_SIZE) {
+                        batchPackets.add(dp)
+                        batchSize += dp.dataSize + dp.systemSize
+                        parentAppBatch.removeAt(c)
+                    } else c++
+                }
+
+                if (batchSize == 0L && parentAppBatch.size != 0) {
+                    // signifies that all apps were considered but none could be added to a batch due to memory constraints
+
+                    var concatenatedNames = ""
+                    for (dp in parentAppBatch) concatenatedNames += "${pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo)}\n"
+
+                    return arrayOf(false, vOp.getStringFromRes(R.string.cannot_split), concatenatedNames)
+                } else appBatches.add(AppBatch(batchPackets))
+
+            }
+
+            return arrayOf(true)
+        }
+        catch (e: Exception){
+            e.printStackTrace()
+            return arrayOf(false, vOp.getStringFromRes(R.string.error_making_batches), e.message.toString())
+        }
