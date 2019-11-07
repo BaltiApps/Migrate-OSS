@@ -276,6 +276,6 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
     override fun postExecuteFunction() {
         BACKUP_PID = -999
-        onBackupComplete.onBackupComplete(jobcode, actualErrors.size == 0, allErrors)
+        onEngineTaskComplete.onComplete(jobcode, actualErrors, jobResults = allErrors)
     }
 }
