@@ -1,6 +1,8 @@
 package balti.migrate.utilities
 
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 class ToolsNoContext {
 
@@ -19,6 +21,35 @@ class ToolsNoContext {
                     sum
                 }
             } else 0
+        }
+
+        fun copyFile(sourceFile: File, destinationAddress: String, differentName: String? = null): String {
+
+            if (!(sourceFile.exists() && sourceFile.canRead())) return ""
+            if (!File(destinationAddress).canWrite()) return ""
+
+            val destinationFile = File(destinationAddress, differentName ?: sourceFile.name)
+            if (destinationFile.exists()) destinationFile.delete()
+
+            var read: Int
+            val buffer = ByteArray(4096)
+
+            return try {
+                val inputStream = sourceFile.inputStream()
+                val writer = FileOutputStream(destinationFile)
+                while (true) {
+                    read = inputStream.read(buffer)
+                    if (read > 0) writer.write(buffer, 0, read)
+                    else break
+                }
+                writer.close()
+                destinationFile.setExecutable(true)
+                return destinationFile.absolutePath
+            } catch (e: IOException){
+                e.printStackTrace()
+                ""
+            }
+
         }
     }
 

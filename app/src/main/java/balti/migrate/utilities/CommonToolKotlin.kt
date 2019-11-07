@@ -133,6 +133,7 @@ class CommonToolKotlin(val context: Context) {
         val ERR_UPDATER_EXTRACT = "UPDATER_EXTRACT"
         val ERR_ZIP_PACKET_MAKING = "ZIP_PACKET_MAKING"
         val ERR_ZIP_BATCHING = "ZIP_BATCHING"
+        val ERR_ZIP_ENGINE_INIT = "ZIP_ENGINE_INIT"
 
         val ERR_BACKUP_SERVICE_ERROR = "BACKUP_SERVICE"
         val ERR_CONDITIONAL_TASK = "RUN_CONDITIONAL_TASK"
@@ -142,8 +143,9 @@ class CommonToolKotlin(val context: Context) {
         val WARNING_ZIP_BATCH = "ZIP_BATCH_WARNING"
         val WARNING_CALLS = "CALL_VERIFY_WARNING"
         val WARNING_SMS = "SMS_VERIFY_WARNING"
+        val WARNING_FILELIST_MAKE = "FILELIST_MAKING"
 
-        val ALL_WARNINGS = arrayOf(WARNING_ZIP_BATCH, WARNING_CALLS, WARNING_SMS)
+        val ALL_WARNINGS = arrayOf(WARNING_ZIP_BATCH, WARNING_CALLS, WARNING_SMS, WARNING_FILELIST_MAKE)
 
         val PACKAGE_NAME_PLAY_STORE = "com.android.vending"
         val PACKAGE_NAME_FDROID = "org.fdroid.fdroid.privileged"

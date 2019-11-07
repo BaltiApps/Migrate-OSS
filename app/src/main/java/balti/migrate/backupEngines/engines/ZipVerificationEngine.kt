@@ -22,8 +22,7 @@ import java.util.zip.ZipFile
 class ZipVerificationEngine(private val jobcode: Int,
                             private val bd: BackupIntentData,
                             private val zipList: ArrayList<String>,
-                            private val zipFile: File,
-                            private val fileList: File) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION) {
+                            private val zipFile: File) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION) {
 
     private val verificationErrors by lazy { ArrayList<String>(0) }
 

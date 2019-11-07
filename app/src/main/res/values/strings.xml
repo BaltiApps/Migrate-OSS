@@ -306,7 +306,8 @@
     <string name="close">Close</string>
     <string name="backingUp">Backing up apps</string>
     <string name="noErrors">Finished! No errors.</string>
-    <string name="zipping_all_files">Zipping all files</string>
+    <string name="zipping_all_files">Zipping files</string>
+    <string name="making_file_list">Making fileList</string>
     <string name="verifying_zip">Verifying zip</string>
     <string name="listing_zip_file">Listing zip file</string>
     <string name="comparing_zip_contents">Comparing zip contents</string>
