@@ -19,7 +19,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
 
     private var TESTING_PID = -999
 
-    private val testingErrors by lazy { ArrayList<String>(0) }
+    private val errors by lazy { ArrayList<String>(0) }
 
     override fun doInBackground(vararg params: Any?): Any {
 
@@ -75,7 +75,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                         if (errorLine.endsWith(warnings)) ignorable = true
                     }
 
-                    if (!ignorable) testingErrors.add("$ERR_TESTING_ERROR: $errorLine")
+                    if (!ignorable) errors.add("$ERR_TESTING_ERROR: $errorLine")
                     return@iterateBufferedReader false
                 })
 
@@ -83,14 +83,17 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                 val expectedDataFile = File(engineContext.externalCacheDir, "${thisPackageInfo.packageName}.tar.gz")
 
                 if (!expectedApkFile.exists() || expectedApkFile.length() == 0L)
-                    testingErrors.add(engineContext.getString(R.string.test_apk_not_found))
+                    errors.add(engineContext.getString(R.string.test_apk_not_found))
+                else expectedApkFile.delete()
+
                 if (!expectedDataFile.exists() || expectedDataFile.length() == 0L)
-                    testingErrors.add(engineContext.getString(R.string.test_data_not_found))
+                    errors.add(engineContext.getString(R.string.test_data_not_found))
+                else expectedDataFile.delete()
             }
         }
         catch (e: Exception) {
             e.printStackTrace()
-            testingErrors.add("$ERR_TESTING_TRY_CATCH: ${e.message}")
+            errors.add("$ERR_TESTING_TRY_CATCH: ${e.message}")
         }
 
         return 0
@@ -98,6 +101,6 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
     }
 
     override fun postExecuteFunction() {
-        onBackupComplete.onBackupComplete(jobcode, testingErrors.size == 0, testingErrors)
+        onEngineTaskComplete.onComplete(jobcode, errors)
     }
 }

@@ -39,6 +39,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     private val allErrors by lazy { ArrayList<String>(0) }
     private val actualErrors by lazy { ArrayList<String>(0) }
 
+
     private var suProcess : Process? = null
 
     private var lastProgress = 0
@@ -410,6 +411,6 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     override fun postExecuteFunction() {
         CORRECTION_PID = -999
         TAR_CHECK_CORRECTION_PID = -999
-        onBackupComplete.onBackupComplete(jobcode, actualErrors.size == 0, allErrors)
+        onEngineTaskComplete.onComplete(jobcode, actualErrors, jobResults = allErrors)
     }
 }
