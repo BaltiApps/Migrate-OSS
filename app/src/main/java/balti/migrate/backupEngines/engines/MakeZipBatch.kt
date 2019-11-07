@@ -101,7 +101,7 @@ class MakeZipBatch(private val jobcode: Int, private val bd: BackupIntentData,
 
     override fun postExecuteFunction() {
         if (errors.isEmpty()) {
-            onEngineTaskComplete.onComplete(jobcode, errors, zipBatches, warnings)
+            onEngineTaskComplete.onComplete(jobcode, errors, warnings, zipBatches)
         }
     }
 

@@ -139,9 +139,11 @@ class CommonToolKotlin(val context: Context) {
 
         val ALL_SUPPRESSED_ERRORS = arrayOf(ERR_APP_BACKUP_SUPPRESSED, ERR_CORRECTION_SUPPRESSED, ERR_TAR_SUPPRESSED)
 
-        val WARNING_ZIP_BATCH = "ZIP_BATCH"
+        val WARNING_ZIP_BATCH = "ZIP_BATCH_WARNING"
+        val WARNING_CALLS = "CALL_VERIFY_WARNING"
+        val WARNING_SMS = "SMS_VERIFY_WARNING"
 
-        val ALL_WARNINGS = arrayOf(WARNING_ZIP_BATCH)
+        val ALL_WARNINGS = arrayOf(WARNING_ZIP_BATCH, WARNING_CALLS, WARNING_SMS)
 
         val PACKAGE_NAME_PLAY_STORE = "com.android.vending"
         val PACKAGE_NAME_FDROID = "org.fdroid.fdroid.privileged"
