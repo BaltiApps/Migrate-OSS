@@ -390,6 +390,8 @@
     <string name="root_permission_denied_desc">Please make sure that your device is rooted and you have allowed root permission.\n\n
     If your ROM was pre-rooted, try flashing Magisk.
     </string>
+    <string name="making_packets">Making zip packets</string>
+    <string name="making_batches">Making zip batches</string>
     <string name="use_reflection">Use reflection?</string>
     <string name="use_reflection_exp">Reflection is an experimental way of calculating size in Nougat and below. This might provide a better way of calculating size. Recommended: Yes</string>
     <string name="use_usage_access_permission">Grant usage access permission?</string>

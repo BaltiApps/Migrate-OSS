@@ -11,6 +11,7 @@ class AppPacket(backupDataPacket: BackupDataPacketKotlin, val appName: String, v
     val installerName = backupDataPacket.installerName
 
     val appInfo = PACKAGE_INFO.applicationInfo
+    val packageName = PACKAGE_INFO.packageName
     val apkPath = if (!APP) "NULL" else {
         appInfo.sourceDir.let {
             it.substring(0, it.lastIndexOf('/'))

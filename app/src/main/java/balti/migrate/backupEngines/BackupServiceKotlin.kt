@@ -148,8 +148,6 @@ class BackupServiceKotlin: Service(), OnBackupComplete {
     private val smsBackupName = "Sms_$timeStamp.sms.db"
     private val callsBackupName = "Calls_$timeStamp.calls.db"
 
-    private var workingAppBatches = ArrayList<AppBatch>(0)
-
     private val toReturnIntent by lazy { Intent(ACTION_BACKUP_PROGRESS) }
 
     private val cancellingNotification by lazy {

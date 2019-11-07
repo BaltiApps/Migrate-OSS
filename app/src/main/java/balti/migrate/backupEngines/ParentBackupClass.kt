@@ -10,7 +10,7 @@ import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin.Companion.serviceContext
 import balti.migrate.backupEngines.containers.BackupIntentData
-import balti.migrate.backupEngines.utils.OnBackupComplete
+import balti.migrate.backupEngines.utils.OnEngineTaskComplete
 import balti.migrate.simpleActivities.ProgressShowActivity
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_CANCEL
@@ -35,7 +35,7 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
     val engineContext by lazy { serviceContext }
     val sharedPreferences by lazy { AppInstance.sharedPrefs }
 
-    val onBackupComplete by lazy { engineContext as OnBackupComplete }
+    val onEngineTaskComplete by lazy { engineContext as OnEngineTaskComplete }
 
     val commonTools by lazy { CommonToolKotlin(engineContext) }
     val actualDestination by lazy { formatName("${bd.destination}/${bd.backupName}") }

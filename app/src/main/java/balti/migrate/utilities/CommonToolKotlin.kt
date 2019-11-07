@@ -90,6 +90,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION = "zip_verification_progress"
         val EXTRA_PROGRESS_TYPE_FINISHED = "finished"
         val EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL = "waiting_to_cancel"
+        val EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH = "making_zip_batch"
 
         val EXTRA_BACKUP_NAME = "backupName"
         val EXTRA_DESTINATION = "destination"
@@ -130,11 +131,17 @@ class CommonToolKotlin(val context: Context) {
         val ERR_TESTING_TRY_CATCH = "SYSTEM_TESTING_TRY_CATCH"
         val ERR_UPDATER_TRY_CATCH = "UPDATER_TRY_CATCH"
         val ERR_UPDATER_EXTRACT = "UPDATER_EXTRACT"
+        val ERR_ZIP_PACKET_MAKING = "ZIP_PACKET_MAKING"
+        val ERR_ZIP_BATCHING = "ZIP_BATCHING"
 
         val ERR_BACKUP_SERVICE_ERROR = "BACKUP_SERVICE"
         val ERR_CONDITIONAL_TASK = "RUN_CONDITIONAL_TASK"
 
         val ALL_SUPPRESSED_ERRORS = arrayOf(ERR_APP_BACKUP_SUPPRESSED, ERR_CORRECTION_SUPPRESSED, ERR_TAR_SUPPRESSED)
+
+        val WARNING_ZIP_BATCH = "ZIP_BATCH"
+
+        val ALL_WARNINGS = arrayOf(WARNING_ZIP_BATCH)
 
         val PACKAGE_NAME_PLAY_STORE = "com.android.vending"
         val PACKAGE_NAME_FDROID = "org.fdroid.fdroid.privileged"
