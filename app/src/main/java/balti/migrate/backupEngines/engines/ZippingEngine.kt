@@ -117,7 +117,7 @@ class ZippingEngine(private val jobcode: Int,
         }
         catch (e: Exception){
             e.printStackTrace()
-            zipErrors.add("$ERR_ZIP_TRY_CATCH: ${e.message}")
+            zipErrors.add("$ERR_ZIP_TRY_CATCH${bd.batchErrorTag}: ${e.message}")
         }
 
         return 0
