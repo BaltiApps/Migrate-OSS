@@ -25,8 +25,11 @@ class ToolsNoContext {
 
         fun copyFile(sourceFile: File, destinationAddress: String, differentName: String? = null): String {
 
-            if (!(sourceFile.exists() && sourceFile.canRead())) return ""
-            if (!File(destinationAddress).canWrite()) return ""
+            if (!(sourceFile.exists() && sourceFile.canRead())) return "source does not exist: ${sourceFile.absolutePath}"
+            File(destinationAddress).run {
+                mkdirs()
+                if (canWrite()) return "cannot write on destination: $destinationAddress"
+            }
 
             val destinationFile = File(destinationAddress, differentName ?: sourceFile.name)
             if (destinationFile.exists()) destinationFile.delete()
@@ -44,12 +47,18 @@ class ToolsNoContext {
                 }
                 writer.close()
                 destinationFile.setExecutable(true)
-                return destinationFile.absolutePath
+                return ""
             } catch (e: IOException){
                 e.printStackTrace()
-                ""
+                e.message.toString()
             }
 
+        }
+
+        fun moveFile(sourceFile: File, destinationAddress: String, differentName: String? = null): String {
+            val r = copyFile(sourceFile, destinationAddress, differentName)
+            sourceFile.delete()
+            return r
         }
     }
 

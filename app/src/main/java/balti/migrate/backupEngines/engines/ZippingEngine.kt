@@ -68,7 +68,9 @@ class ZippingEngine(private val jobcode: Int, bd: BackupIntentData,
                     close()
                 }
 
-                ToolsNoContext.copyFile(fileList, engineContext.cacheDir.absolutePath)
+                ToolsNoContext.copyFile(fileList, engineContext.cacheDir.absolutePath).let {
+                    if (it != "") throw Exception(it)
+                }
 
             } catch (e: Exception) {
                 e.printStackTrace()
