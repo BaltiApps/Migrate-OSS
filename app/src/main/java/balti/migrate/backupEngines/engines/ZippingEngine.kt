@@ -16,12 +16,25 @@ import java.util.zip.CRC32
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-class ZippingEngine(private val jobcode: Int, bd: BackupIntentData, private val miscFiles : ArrayList<File> = ArrayList(0),
+class ZippingEngine(private val jobcode: Int, bd: BackupIntentData,
+                    private val miscExtras : ArrayList<File> = ArrayList(0),
+                    private val miscFiles : ArrayList<File> = ArrayList(0),
                     private val zipName: String, private val zipBatch: ZipAppBatch? = null) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_ZIP_PROGRESS) {
 
     private val zippedFiles = ArrayList<String>(0)
     private val errors = ArrayList<String>(0)
     private val warnings = ArrayList<String>(0)
+
+    private fun filterExisting(files: ArrayList<File>): ArrayList<File>{
+        var c = 0
+        while (c < files.size) {
+            files[c].let {
+                if (!it.exists()) files.remove(it)
+                else c++
+            }
+        }
+        return files
+    }
 
     override fun doInBackground(vararg params: Any?): Any {
 
@@ -29,35 +42,29 @@ class ZippingEngine(private val jobcode: Int, bd: BackupIntentData, private val 
 
             val fileList = File(actualDestination, FILE_FILE_LIST)
             val allFiles = ArrayList<File>(0)
+            val fileListEntries = ArrayList<File>(0)
 
             try {
 
                 val title = getTitle(R.string.making_file_list)
                 resetBroadcast(true, title)
 
-                allFiles.addAll(miscFiles)
-
-                var c = 0
-                while (c < allFiles.size) {
-                    val f = allFiles[c]
-                    if (!f.exists()) {
-                        warnings.add("$WARNING_FILELIST_MAKE: ${f.name} does not exist")
-                        allFiles.remove(f)
-                    } else c++
-                }
+                allFiles.addAll(filterExisting(miscFiles))
 
                 zipBatch?.let {
                     it.zipPackets.forEach { p ->
-                        allFiles.addAll(p.files)
+                        fileListEntries.addAll(filterExisting(p.files))
                     }
                 }
 
-                BufferedWriter(FileWriter(fileList)).run {
+                fileListEntries.addAll(filterExisting(miscExtras))
 
-                    allFiles.forEach {
+                allFiles.addAll(fileListEntries)
+
+                BufferedWriter(FileWriter(fileList)).run {
+                    fileListEntries.forEach {
                         write("${it.name}\n")
                     }
-
                     close()
                 }
 
