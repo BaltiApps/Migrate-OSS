@@ -789,4 +789,6 @@
     <!--ZipItemAdapter.java-->
     <string name="empty">Empty</string>
 
+    <string name="file_list_not_in_zip_batch">File list not present in zipBatch</string>
+
 </resources>

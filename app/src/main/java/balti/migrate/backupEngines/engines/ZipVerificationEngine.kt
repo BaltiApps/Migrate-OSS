@@ -8,7 +8,6 @@ import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_TOO_BIG
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_VERIFICATION_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILELIST_IN_ZIP_VERIFICATION
 import balti.migrate.utilities.CommonToolKotlin.Companion.WARNING_ZIP_FILELIST_ITEM_UNAVAILABLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.WARNING_ZIP_FILELIST_UNAVAILABLE
@@ -21,7 +20,8 @@ import java.util.zip.ZipFile
 class ZipVerificationEngine(private val jobcode: Int,
                             private val bd: BackupIntentData,
                             private val zipList: ArrayList<String>,
-                            private val zipFile: File) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION) {
+                            private val zipFile: File,
+                            private val fileListForComparison: File? = null) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION) {
 
     private val verificationErrors by lazy { ArrayList<String>(0) }
     private val warnings by lazy { ArrayList<String>(0) }
@@ -85,12 +85,10 @@ class ZipVerificationEngine(private val jobcode: Int,
 
             if (checkFileListContents) {
 
-                val fileListFile = File(engineContext.cacheDir, FILE_FILE_LIST)
-
-                if (!fileListFile.exists())
+                if (fileListForComparison == null || !fileListForComparison.exists())
                     warnings.add("$WARNING_ZIP_FILELIST_UNAVAILABLE${bd.batchErrorTag}")
                 else {
-                    BufferedReader(FileReader(fileListFile)).readLines().forEach {
+                    BufferedReader(FileReader(fileListForComparison)).readLines().forEach {
                         (if (it.endsWith(".app_sys")) "${it.substring(0, it.lastIndexOf('.'))}.app" else it).run {
                             if (this.trim() != "") {
                                 if (this.endsWith(".app")) {

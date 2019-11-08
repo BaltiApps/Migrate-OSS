@@ -37,6 +37,7 @@ import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_TRANSC
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_TYPE
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_VOICEMAIL_URI
 import java.io.File
+import java.io.FileFilter
 
 class CallsBackupEngine(private val jobcode: Int,
                         private val bd: BackupIntentData,
@@ -210,6 +211,9 @@ class CallsBackupEngine(private val jobcode: Int,
     }
 
     override fun postExecuteFunction() {
-        onEngineTaskComplete.onComplete(jobcode, errors, warnings, callsDBFile)
+        val filesGenerated = File(actualDestination).listFiles(FileFilter {
+            return@FileFilter it.name.startsWith(callsDBFile.name)
+        })
+        onEngineTaskComplete.onComplete(jobcode, errors, warnings, filesGenerated)
     }
 }

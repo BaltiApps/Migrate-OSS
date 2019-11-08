@@ -56,6 +56,6 @@ class SettingsBackupEngine(private val jobcode: Int,
     }
 
     override fun postExecuteFunction() {
-        onEngineTaskComplete.onComplete(jobcode, errors, jobResults = settingsFile)
+        onEngineTaskComplete.onComplete(jobcode, errors, jobResults = arrayOf(settingsFile))
     }
 }

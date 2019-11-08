@@ -30,6 +30,7 @@ import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_SUBJECT
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_TABLE_NAME
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_TYPE
 import java.io.File
+import java.io.FileFilter
 
 class SmsBackupEngine(private val jobcode: Int,
                       private val bd: BackupIntentData,
@@ -181,7 +182,10 @@ class SmsBackupEngine(private val jobcode: Int,
     }
 
     override fun postExecuteFunction() {
-        onEngineTaskComplete.onComplete(jobcode, errors, warnings, smsDBFile)
+        val filesGenerated = File(actualDestination).listFiles(FileFilter {
+            return@FileFilter it.name.startsWith(smsDBFile.name)
+        })
+        onEngineTaskComplete.onComplete(jobcode, errors, warnings, filesGenerated)
     }
 
 }

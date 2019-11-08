@@ -52,6 +52,6 @@ class WifiBackupEngine(private val jobcode: Int,
     }
 
     override fun postExecuteFunction() {
-        onEngineTaskComplete.onComplete(jobcode, errors, jobResults = wifiFile)
+        onEngineTaskComplete.onComplete(jobcode, errors, jobResults = arrayOf(wifiFile))
     }
 }
