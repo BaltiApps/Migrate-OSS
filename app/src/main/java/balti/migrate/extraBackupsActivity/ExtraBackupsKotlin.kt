@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import balti.migrate.AppInstance.Companion.adbState
-import balti.migrate.AppInstance.Companion.appBatches
+import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.AppInstance.Companion.callsList
 import balti.migrate.AppInstance.Companion.contactsList
 import balti.migrate.AppInstance.Companion.doBackupInstallers
@@ -31,7 +31,7 @@ import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.extraBackupsActivity.adb.ReadAdbKotlin
 import balti.migrate.extraBackupsActivity.apps.MakeAppPackets
-import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
+import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.calls.LoadCallsForSelectionKotlin
 import balti.migrate.extraBackupsActivity.calls.ReadCallsKotlin
 import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
@@ -945,8 +945,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 commonTools.tryIt ({
                     jobResult.toString().let {
                         if (jobSuccess) {
-                            appBatches.clear()
-                            appBatches.addAll(jobResult as ArrayList<AppBatch>)
+                            appPackets.clear()
+                            appPackets.addAll(jobResult as ArrayList<AppPacket>)
 
                             waitingDialog.waiting_head.setText(R.string.just_a_minute)
                             waitingDialog.waiting_progress.setText(R.string.starting_engine)

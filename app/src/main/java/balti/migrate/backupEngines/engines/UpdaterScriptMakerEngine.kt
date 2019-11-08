@@ -27,8 +27,7 @@ import kotlin.collections.ArrayList
 
 class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupIntentData,
                                private val zipAppBatch: ZipAppBatch,
-                               private val timeStamp: String,
-                               private val partName: String = "") : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT) {
+                               private val timeStamp: String) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT) {
 
     private val errors by lazy { ArrayList<String>(0) }
 
@@ -58,12 +57,14 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             updater_writer.write("ui_print(\" \");\n")
             updater_writer.write("ui_print(\"---------------------------------\");\n")
             updater_writer.write("ui_print(\"      Migrate Flash package      \");\n")
-            updater_writer.write("ui_print(\"---------------------------------\");\n")
             updater_writer.write("ui_print(\"Version: ${engineContext.getString(R.string.current_version_name)} - ${engineContext.getString(R.string.current_version_codename)}\");\n")
+            updater_writer.write("ui_print(\"---------------------------------\");\n")
 
-            if (partName != "") {
-                updater_writer.write("ui_print(\"*** $partName ***\");\n")
-                updater_writer.write("ui_print(\"---------------------------------\");\n")
+            zipAppBatch.partName.let {
+                if (it != "") {
+                    updater_writer.write("ui_print(\"*** $it ***\");\n")
+                    updater_writer.write("ui_print(\"---------------------------------\");\n")
+                }
             }
 
             // extract scripts and other files

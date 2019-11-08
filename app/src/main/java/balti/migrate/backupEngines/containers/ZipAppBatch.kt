@@ -11,6 +11,7 @@ data class ZipAppBatch(val zipPackets: ArrayList<ZipAppPacket> = ArrayList(0),
     var batchDataSize : Long = 0
     var zipFullSize : Long = 0
     val extrasFiles: ArrayList<File> = ArrayList(0)
+    var partName = ""
     var fileList: File? = null
     init {
         zipPackets.forEach {

@@ -18,7 +18,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SEPARATE_EXTRAS_B
 import balti.migrate.utilities.CommonToolKotlin.Companion.WARNING_ZIP_BATCH
 import java.io.File
 
-class MakeZipBatch(private val jobcode: Int, private val bd: BackupIntentData,
+class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                    private val appList: ArrayList<AppPacket>, private val extras: ArrayList<File>) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH) {
 
     private val zipBatches by lazy { ArrayList<ZipAppBatch>(0) }
@@ -156,8 +156,8 @@ class MakeZipBatch(private val jobcode: Int, private val bd: BackupIntentData,
                     // update directory paths
                     for (i in zipBatches.indices) {
                         val z = zipBatches[i]
-                        z.containerDirectoryName = File(actualDestination,
-                                "${engineContext.getString(R.string.part)}_${i + 1}_${engineContext.getString(R.string.of)}_${zipBatches.size}").absolutePath
+                        z.partName = "${engineContext.getString(R.string.part)}_${i + 1}_${engineContext.getString(R.string.of)}_${zipBatches.size}"
+                        z.containerDirectoryName = File(actualDestination, z.partName).absolutePath
                     }
 
                     if (toBeAdded != null) zipBatches.add(toBeAdded)
@@ -179,6 +179,8 @@ class MakeZipBatch(private val jobcode: Int, private val bd: BackupIntentData,
 
             zipBatches.forEach {
 
+                if (BackupServiceKotlin.cancelAll) return
+
                 if (it.containerDirectoryName != File(actualDestination).absolutePath) {
 
                     val cd = it.containerDirectoryName
@@ -188,6 +190,9 @@ class MakeZipBatch(private val jobcode: Int, private val bd: BackupIntentData,
 
                     // extras of each zipBatch
                     it.extrasFiles.forEach { ef ->
+
+                        if (BackupServiceKotlin.cancelAll) return
+
                         val newFile = File(cd, ef.absolutePath)
                         ef.renameTo(newFile)
                         newFiles.add(newFile)
@@ -199,6 +204,9 @@ class MakeZipBatch(private val jobcode: Int, private val bd: BackupIntentData,
                     it.zipPackets.forEach {zp ->
                         newFiles.clear()
                         zp.appFiles.forEach {af ->
+
+                            if (BackupServiceKotlin.cancelAll) return
+
                             val newFile = File(cd, af.absolutePath)
                             af.renameTo(newFile)
                             newFiles.add(newFile)

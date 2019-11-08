@@ -181,7 +181,7 @@ class SmsBackupEngine(private val jobcode: Int,
     }
 
     override fun postExecuteFunction() {
-        onEngineTaskComplete.onComplete(jobcode, errors, warnings)
+        onEngineTaskComplete.onComplete(jobcode, errors, warnings, smsDBFile)
     }
 
 }

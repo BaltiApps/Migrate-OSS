@@ -5,6 +5,7 @@ import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
+import balti.migrate.backupEngines.containers.ZipAppBatch
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
@@ -25,6 +26,7 @@ class AppInstance: Application() {
         var MAX_WORKING_SIZE = 0L
 
         val appPackets = ArrayList<AppPacket>(0)
+        val zipBatches = ArrayList<ZipAppBatch>(0)
 
         val contactsList = ArrayList<ContactsDataPacketKotlin>(0)
         val callsList = ArrayList<CallsDataPacketsKotlin>(0)
