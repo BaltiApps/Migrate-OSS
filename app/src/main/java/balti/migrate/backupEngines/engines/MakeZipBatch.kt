@@ -8,21 +8,25 @@ import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.containers.ZipAppBatch
 import balti.migrate.backupEngines.containers.ZipAppPacket
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_MOVING
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_ADDING_EXTRAS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_BATCHING
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_PACKET_MAKING
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ZIP_NAME_EXTRAS
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SEPARATE_EXTRAS_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.WARNING_ZIP_BATCH
 import java.io.File
 
 class MakeZipBatch(private val jobcode: Int, private val bd: BackupIntentData,
-                   private val appList: ArrayList<AppPacket>) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH) {
+                   private val appList: ArrayList<AppPacket>, private val extras: ArrayList<File>) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH) {
 
     private val zipBatches by lazy { ArrayList<ZipAppBatch>(0) }
     private val errors by lazy { ArrayList<String>(0) }
     private val warnings by lazy { ArrayList<String>(0) }
     private var totalSize = 0L
 
-    override fun doInBackground(vararg params: Any?): Any {
+    private fun makeBatches(){
 
         var title = getTitle(R.string.making_packets)
         resetBroadcast(true, title)
@@ -33,7 +37,7 @@ class MakeZipBatch(private val jobcode: Int, private val bd: BackupIntentData,
 
             try {
 
-                if (BackupServiceKotlin.cancelAll) return 0
+                if (BackupServiceKotlin.cancelAll) return
 
                 val associatedFiles = ArrayList<File>(0)
 
@@ -62,17 +66,46 @@ class MakeZipBatch(private val jobcode: Int, private val bd: BackupIntentData,
         title = getTitle(R.string.making_batches)
         resetBroadcast(true, title)
 
+        val doSeparateExtras = sharedPreferences.getBoolean(PREF_SEPARATE_EXTRAS_BACKUP, true)
+
         try {
+
+            var totalExtrasSize = 0L
+            if (extras.isNotEmpty()) {
+                extras.forEach {
+                    totalExtrasSize += it.length()
+                }
+                totalExtrasSize /= 1024
+            }
+
+            var firstAdjust : Long =
+            if (allZipPackets.isNotEmpty()) {
+                // if no packets were made, a new packet with only extras will be made
+
+                if (totalSize <= MAX_WORKING_SIZE) {
+                    // this means only one zip batch will be created.
+                    // So add extras size for adjustment
+                    totalExtrasSize
+                }
+                else if (!doSeparateExtras) {
+                    // this means more than one zip batch will be made
+                    // But user has turned off separate extras.
+                    // So add extras size for adjustment
+                    totalExtrasSize
+                }
+                else 0
+            }
+            else 0
 
             while (allZipPackets.isNotEmpty()) {
 
-                if (BackupServiceKotlin.cancelAll) return 0
+                if (BackupServiceKotlin.cancelAll) return
 
                 val zipAppBatchList = ArrayList<ZipAppPacket>(0)
                 var batchSize = 0L
                 var c = 0
 
-                while (c < allZipPackets.size && batchSize < MAX_WORKING_SIZE) {
+                while (c < allZipPackets.size && batchSize < MAX_WORKING_SIZE - firstAdjust) {
 
                     val p = allZipPackets[c]
                     when {
@@ -80,7 +113,7 @@ class MakeZipBatch(private val jobcode: Int, private val bd: BackupIntentData,
                             warnings.add("$WARNING_ZIP_BATCH: Removing, ${p.appPacket_z.appName}. Too big!")
                             allZipPackets.remove(p)
                         }
-                        (batchSize + p.zipPacketSize) <= MAX_WORKING_SIZE -> {
+                        (batchSize + p.zipPacketSize) <= (MAX_WORKING_SIZE - firstAdjust) -> {
                             zipAppBatchList.add(p)
                             batchSize += p.zipPacketSize
                             allZipPackets.remove(p)
@@ -89,12 +122,106 @@ class MakeZipBatch(private val jobcode: Int, private val bd: BackupIntentData,
                     }
                 }
 
+                // for now, point all batches to root backup directory
+                zipBatches.add(ZipAppBatch(zipAppBatchList, File(actualDestination).absolutePath))
+
+                zipAppBatchList.clear()
+
+                // size adjustment for extras to be made only for first batch. After that make it 0
+                firstAdjust = 0
             }
         }
         catch (e: Exception){
             e.printStackTrace()
             errors.add("$ERR_ZIP_BATCHING: ${e.message}")
         }
+
+        try {
+            when (zipBatches.size) {
+                0 -> {
+                    if (extras.isNotEmpty())
+                        zipBatches.add(ZipAppBatch(containerDirectoryName = File(actualDestination).absolutePath).apply { addExtras(extras) })
+                }
+                1 -> {
+                    zipBatches[0].addExtras(extras)
+                }
+                else -> {
+                    var toBeAdded: ZipAppBatch? = null
+                    if (doSeparateExtras) {
+                        toBeAdded = ZipAppBatch(containerDirectoryName = File(actualDestination, FILE_ZIP_NAME_EXTRAS).absolutePath).apply { addExtras(extras) }
+                    } else zipBatches[0].apply {
+                        addExtras(extras)
+                    }
+
+                    // update directory paths
+                    for (i in zipBatches.indices) {
+                        val z = zipBatches[i]
+                        z.containerDirectoryName = File(actualDestination,
+                                "${engineContext.getString(R.string.part)}_${i + 1}_${engineContext.getString(R.string.of)}_${zipBatches.size}").absolutePath
+                    }
+
+                    if (toBeAdded != null) zipBatches.add(toBeAdded)
+                }
+            }
+        }
+        catch (e: Exception){
+            e.printStackTrace()
+            errors.add("$ERR_ZIP_ADDING_EXTRAS: ${e.message}")
+        }
+    }
+
+    private fun movetoContainers() {
+
+        val title = getTitle(R.string.moving_files)
+        resetBroadcast(true, title)
+
+        try {
+
+            zipBatches.forEach {
+
+                if (it.containerDirectoryName != File(actualDestination).absolutePath) {
+
+                    val cd = it.containerDirectoryName
+
+                    File(actualDestination, cd).mkdirs()
+                    val newFiles = ArrayList<File>(0)
+
+                    // extras of each zipBatch
+                    it.extrasFiles.forEach { ef ->
+                        val newFile = File(cd, ef.absolutePath)
+                        ef.renameTo(newFile)
+                        newFiles.add(newFile)
+                    }
+                    it.extrasFiles.clear()
+                    it.extrasFiles.addAll(newFiles)
+
+                    // app files of each zipPacket of each zipBatch
+                    it.zipPackets.forEach {zp ->
+                        newFiles.clear()
+                        zp.appFiles.forEach {af ->
+                            val newFile = File(cd, af.absolutePath)
+                            af.renameTo(newFile)
+                            newFiles.add(newFile)
+                        }
+                        zp.appFiles.clear()
+                        zp.appFiles.addAll(newFiles)
+                    }
+                }
+
+                it.createFileList()
+            }
+
+        }
+        catch (e: Exception){
+            e.printStackTrace()
+            errors.add("$ERR_MOVING: ${e.message}")
+        }
+    }
+
+    override fun doInBackground(vararg params: Any?): Any {
+
+        makeBatches()
+        if (errors.isEmpty()) movetoContainers()
 
         return 0
     }

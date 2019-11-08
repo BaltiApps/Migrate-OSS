@@ -39,7 +39,7 @@ class BackupUtils {
 
     fun makeMetadataFile(version: String,
                          iconFileName: String?, iconString: String?,
-                         appPacket: AppPacket, bd: BackupIntentData): String{
+                         appPacket: AppPacket, bd: BackupIntentData, doBackupInstallerName: Boolean): String{
 
         val packageName = appPacket.PACKAGE_INFO.packageName
         val metadataFileName = "$packageName.json"
@@ -61,9 +61,13 @@ class BackupUtils {
                 iconFileName != null -> put(MtdConstants.MTD_ICON_FILE_NAME, iconFileName)
                 iconString != null -> put(MtdConstants.MTD_APP_ICON, iconString)
             }
-            put(MtdConstants.MTD_INSTALLER_NAME, appPacket.installerName.let {
-                if (it in PACKAGE_NAMES_KNOWN) it else "NULL"
-            })
+            put(MtdConstants.MTD_INSTALLER_NAME,
+                    if (doBackupInstallerName)
+                        appPacket.installerName.let {
+                            if (it in PACKAGE_NAMES_KNOWN) it else "NULL"
+                        }
+                    else "NULL"
+            )
         }
 
         actualDestination.mkdirs()

@@ -129,10 +129,9 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     val packet = packets[i]
 
                     val modifiedAppName = "${packet.appName}(${i+1}/${packets.size})"
+                    val packageName = packet.PACKAGE_INFO.packageName
 
                     broadcastProgress(modifiedAppName, modifiedAppName, true, commonTools.getPercentage(i + 1, packets.size))
-
-                    val packageName = packet.PACKAGE_INFO.packageName
 
                     if (packet.PERMISSION) {
                         backupUtils.makePermissionFile(packageName, actualDestination, pm)
@@ -160,7 +159,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
                     commonTools.tryIt { if (packet.isSystem) systemAppInstallScript(packageName, packet.apkPath) }
 
-                    backupUtils.makeMetadataFile(versionName, appIconFileName, appIcon, packet, bd)
+                    backupUtils.makeMetadataFile(versionName, appIconFileName, appIcon, packet, bd, doBackupInstallers)
                 }
 
             }

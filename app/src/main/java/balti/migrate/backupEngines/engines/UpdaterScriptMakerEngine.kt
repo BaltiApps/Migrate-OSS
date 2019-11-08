@@ -6,16 +6,13 @@ import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.containers.ZipAppBatch
-import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
 import balti.migrate.utilities.CommonToolKotlin.Companion.DATA_TEMP
 import balti.migrate.utilities.CommonToolKotlin.Companion.DIR_MANUAL_CONFIGS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_EXTRACT
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MIGRATE_CACHE_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PACKAGE_DATA
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_SYSTEM_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_CACHE_DEFAULT
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
 import balti.migrate.utilities.ToolsNoContext
@@ -29,38 +26,25 @@ import kotlin.collections.ArrayList
 // extract helper, busybox, update-binary, mount_script.sh, prep.sh, helper_unpacking_script.sh, verify.sh
 
 class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupIntentData,
-                               private val zipBatch: ZipAppBatch?,
+                               private val zipAppBatch: ZipAppBatch,
                                private val timeStamp: String,
-                               private val contactsFileName: String?,
-                               private val smsFileName: String?,
-                               private val callsFileName: String?,
-                               private val settingsFileName: String?,
-                               private val wifiFileName: String?,
                                private val partName: String = "") : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT) {
 
-    //private val pm by lazy { engineContext.packageManager }
-
-    private val miscFiles by lazy { ArrayList<File>(0) }
     private val errors by lazy { ArrayList<String>(0) }
 
-    private fun extractToBackup(fileName: String, destPath: String, customDir: String? = null){
+    private fun extractToBackup(fileName: String, targetPath: String){
         val assetFile = File(commonTools.unpackAssetToInternal(fileName, fileName, false))
-        val targetFile = File(destPath, fileName)
+        val targetFile = File(targetPath, fileName)
         var err = ""
 
-        File(destPath).mkdirs()
-        if (targetFile.exists()) targetFile.delete()
+        File(targetPath).mkdirs()
 
         if (assetFile.exists())
-            err = ToolsNoContext.moveFile(assetFile, destPath)
-        else errors.add("$ERR_UPDATER_EXTRACT: $fileName could not be unpacked")
+            err = ToolsNoContext.moveFile(assetFile, targetPath)
+        else errors.add("$ERR_UPDATER_EXTRACT${bd.batchErrorTag}: $fileName could not be unpacked")
 
         if (!targetFile.exists())
-            errors.add("$ERR_UPDATER_EXTRACT: $fileName could not be moved: $err")
-        else {
-            if (customDir != null) miscFiles.add(File(customDir))
-            else miscFiles.add(targetFile)
-        }
+            errors.add("$ERR_UPDATER_EXTRACT${bd.batchErrorTag}: $fileName could not be moved: $err")
     }
 
     private fun makeUpdaterScript() {
@@ -75,7 +59,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             updater_writer.write("ui_print(\"---------------------------------\");\n")
             updater_writer.write("ui_print(\"      Migrate Flash package      \");\n")
             updater_writer.write("ui_print(\"---------------------------------\");\n")
-            updater_writer.write("ui_print(\"${engineContext.getString(R.string.current_version_name)} - ${engineContext.getString(R.string.current_version_codename)} - ${engineContext.getString(R.string.release_state)}\");\n")
+            updater_writer.write("ui_print(\"Version: ${engineContext.getString(R.string.current_version_name)} - ${engineContext.getString(R.string.current_version_codename)}\");\n")
 
             if (partName != "") {
                 updater_writer.write("ui_print(\"*** $partName ***\");\n")
@@ -108,8 +92,6 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             set777Permission("verify.sh")
             set777Permission(FILE_FILE_LIST)
             set777Permission("mover.sh")
-            set777Permission("migrate/$FILE_MIGRATE_CACHE_MANUAL")
-            set777Permission("migrate/$FILE_SYSTEM_MANUAL")
             set777Permission(DIR_MANUAL_CONFIGS)
 
             // mount partitions
@@ -139,68 +121,60 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             }
 
             // extract app files
-            zipBatch?. run {
-                val size = zipPackets.size
-                for (c in zipPackets.indices) {
+            val packets = zipAppBatch.zipPackets
+            val size = packets.size
+            for (c in packets.indices) {
 
-                    if (BackupServiceKotlin.cancelAll) {
-                        updater_writer.close()
-                        break
-                    }
-
-                    val packet = zipPackets[c].appPacket_z
-                    val packageName = packet.packageName
-
-                    if (packet.APP || packet.DATA || packet.PERMISSION) {
-                        updater_writer.write("ui_print(\"${packet.appName} (${c + 1}/$size)\");\n")
-                    }
-
-                    if (packet.APP) {
-
-                        if (!packet.apkPath.startsWith("/data")) {
-                            updater_writer.write("package_extract_dir(\"$packageName.app\", \"/tmp/$packageName.app\");\n")
-                            updater_writer.write("package_extract_file(\"$packageName.sh\", \"/tmp/$packageName.sh\");\n")
-                            updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"/tmp/$packageName.sh\");\n")
-                            updater_writer.write("run_program(\"/tmp/$packageName.sh\");\n")
-                        } else extractItToTemp("$packageName.app", false)
-                    }
-
-                    if (packet.DATA)
-                        updater_writer.write("package_extract_file(\"$packageName.tar.gz\", \"/data/data/$packageName.tar.gz\");\n")
-
-                    if (packet.PERMISSION)
-                        extractItToTemp("$packageName.perm")
-
-                    extractItToTemp("$packageName.json")
-                    extractItToTemp("$packageName.icon")
-
-                    var pString = String.format(Locale.ENGLISH, "%.4f", (c + 1) * 1.0 / size)
-                    pString = pString.replace(",", ".")
-                    updater_writer.write("set_progress($pString);\n")
+                if (BackupServiceKotlin.cancelAll) {
+                    updater_writer.close()
+                    break
                 }
+
+                val packet = packets[c].appPacket_z
+                val packageName = packet.packageName
+
+                if (packet.APP || packet.DATA || packet.PERMISSION) {
+                    updater_writer.write("ui_print(\"${packet.appName} (${c + 1}/$size)\");\n")
+                }
+
+                if (packet.APP) {
+                    val apkPath = packet.apkPath
+
+                    if (!apkPath.startsWith("/data")) {
+                        updater_writer.write("package_extract_dir(\"$packageName.app\", \"/tmp/$packageName.app\");\n")
+                        updater_writer.write("package_extract_file(\"$packageName.sh\", \"/tmp/$packageName.sh\");\n")
+                        updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"/tmp/$packageName.sh\");\n")
+                        updater_writer.write("run_program(\"/tmp/$packageName.sh\");\n")
+                    }
+                    else extractItToTemp("$packageName.app", false)
+                }
+
+                if (packet.DATA)
+                    updater_writer.write("package_extract_file(\"$packageName.tar.gz\", \"/data/data/$packageName.tar.gz\");\n")
+
+                if (packet.PERMISSION)
+                    extractItToTemp("$packageName.perm")
+
+                extractItToTemp("$packageName.json")
+                extractItToTemp("$packageName.icon")
+
+                var pString = String.format(Locale.ENGLISH, "%.4f", (c + 1) * 1.0 / size)
+                pString = pString.replace(",", ".")
+                updater_writer.write("set_progress($pString);\n")
             }
 
-            // extract extras
-            updater_writer.write("ui_print(\" \");\n")
-            contactsFileName?.let {
-                updater_writer.write("ui_print(\"Extracting contacts: $it\");\n")
-                extractItToTemp(it)
-            }
-            smsFileName?.let {
-                updater_writer.write("ui_print(\"Extracting sms: $it\");\n")
-                extractItToTemp(it)
-            }
-            callsFileName?.let {
-                updater_writer.write("ui_print(\"Extracting call logs: $it\");\n")
-                extractItToTemp(it)
-            }
-            settingsFileName?.let {
-                updater_writer.write("ui_print(\"Extracting settings: $it\");\n")
-                extractItToTemp(it)
-            }
-            wifiFileName?.let {
-                updater_writer.write("ui_print(\"Extracting keyboard data: $it\");\n")
-                extractItToTemp(it)
+            zipAppBatch.extrasFiles.run {
+                if (isNotEmpty()) {
+
+                    // extract extras
+                    updater_writer.write("ui_print(\" \");\n")
+                    updater_writer.write("ui_print(\"Extracting extras...\");\n")
+
+                    forEach {
+                        updater_writer.write("ui_print(\"${it.name}\");\n")
+                        extractItToTemp(it.name)
+                    }
+                }
             }
 
             // move everything
@@ -252,18 +226,19 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
         contents += "device " + Build.DEVICE + "\n"
         contents += "sdk " + Build.VERSION.SDK_INT + "\n"
         contents += "cpu_abi " + Build.SUPPORTED_ABIS[0] + "\n"
-        contents += "data_required_size ${zipBatch?.batchDataSize ?: 0}\n"
-        contents += "system_required_size ${zipBatch?.batchSystemSize ?: 0}\n"
+        contents += "data_required_size ${zipAppBatch.batchDataSize}\n"
+        contents += "system_required_size ${zipAppBatch.batchSystemSize}\n"
+        contents += "zip_expected_size ${zipAppBatch.zipFullSize}\n"
         contents += "migrate_version " + engineContext.getString(R.string.current_version_name) + "\n"
 
         try {
             val writer = BufferedWriter(FileWriter(packageData))
             writer.write(contents)
             writer.close()
-            miscFiles.add(packageData)
         } catch (e: IOException) {
             e.printStackTrace()
         }
+
     }
 
     override fun doInBackground(vararg params: Any?): Any {
@@ -276,26 +251,26 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
             makePackageData()
             extractToBackup("busybox", actualDestination)
-            extractToBackup("update-binary", "$actualDestination/META-INF/com/google/android/", "$actualDestination/META-INF")
+            extractToBackup("update-binary", "$actualDestination/META-INF/com/google/android/")
             extractToBackup("mount_script.sh", actualDestination)
             extractToBackup("prep.sh", actualDestination)
             extractToBackup("mover.sh", actualDestination)
             extractToBackup("helper_unpacking_script.sh", actualDestination)
             extractToBackup("verify.sh", actualDestination)
-            extractToBackup("MigrateHelper.apk", "$actualDestination/system/app/MigrateHelper/", "$actualDestination/system")
+            extractToBackup("MigrateHelper.apk", "$actualDestination/system/app/MigrateHelper/")
 
             makeUpdaterScript()
         }
         catch (e: Exception){
             e.printStackTrace()
-            errors.add("$ERR_UPDATER_TRY_CATCH${bd.errorTag}: ${e.message}")
+            errors.add("$ERR_UPDATER_TRY_CATCH${bd.batchErrorTag}: ${e.message}")
         }
 
         return 0
     }
 
     override fun postExecuteFunction() {
-        onBackupComplete.onBackupComplete(jobcode, errors.size == 0, errors)
+        onEngineTaskComplete.onComplete(jobcode, errors)
     }
 
 }
