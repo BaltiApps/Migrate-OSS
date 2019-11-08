@@ -128,20 +128,20 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
     private var compressionLevel = 0
 
-    private var currentTask: ParentBackupClass? = null
-    private var current_UpdaterScriptJobCode = 0
-    private var current_ZippingJobCode = 0
-    private var current_ZipVerificationJobCode = 0
+    private var cTask: ParentBackupClass? = null
+    private var cUpdaterJobCode = 0
+    private var cZippingJobCode = 0
+    private var cZipVerificationJobCode = 0
 
     private val extrasFiles by lazy { ArrayList<File>(0) }
 
     private val isSettingsNull : Boolean
         get() = (dpiText == null && keyboardText == null && adbState == null && fontScale == null)
 
-    private var currentBackupName = ""
-    private var currentDestination = ""
-    private var currentBatchNumber = 0
-    private var currentZipBatch: ZipAppBatch? = null
+    private var cBackupName = ""
+    private var cDestination = ""
+    private var cBatchNumber = 0
+    private var cZipBatch: ZipAppBatch? = null
 
     private val timeStamp by lazy { SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(Calendar.getInstance().time)}
 
@@ -203,7 +203,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
                     commonTools.doBackgroundTask({
 
-                        currentTask?.let {
+                        cTask?.let {
                             while (it.status != AsyncTask.Status.FINISHED) {
                                 commonTools.tryIt { Thread.sleep(100) }
                             }
@@ -268,8 +268,8 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
         isBackupInitiated = true
 
-        currentBackupName = backupName
-        currentDestination = destination
+        cBackupName = backupName
+        cDestination = destination
 
         cancelAll = false
         AppInstance.notificationManager.cancelAll()
@@ -278,19 +278,19 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
     }
 
     private fun getBackupIntentData(): BackupIntentData {
-        if (currentZipBatch == null) {
-            currentDestination = destination
-            currentBackupName = backupName
+        if (cZipBatch == null) {
+            cDestination = destination
+            cBackupName = backupName
         }
         else {
-            currentZipBatch?.run {
+            cZipBatch?.run {
                 if (containerDirectoryName != File(destination, backupName).absolutePath){
-                    currentDestination = "$destination/$backupName"
-                    currentBackupName = partName
+                    cDestination = "$destination/$backupName"
+                    cBackupName = partName
                 }
             }
         }
-        return BackupIntentData(currentBackupName, currentDestination).apply { setErrorTag("[${currentBatchNumber+1}/${zipBatches.size}]") }
+        return BackupIntentData(cBackupName, cDestination).apply { setErrorTag("[${cBatchNumber+1}/${zipBatches.size}]") }
     }
 
     override fun onCreate() {
@@ -359,7 +359,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                 fallThrough = true
                 workingObject?.let {
 
-                    currentTask = try {
+                    cTask = try {
                         when (jCode) {
                             JOBCODE_PEFORM_SYSTEM_TEST -> if (sharedPrefs.getBoolean(PREF_SYSTEM_CHECK, true)) SystemTestingEngine(jCode, bd, busyboxBinaryPath) else null
                             JOBCODE_PEFORM_BACKUP_CONTACTS -> ContactsBackupEngine(jCode, bd, workingObject as ArrayList<ContactsDataPacketKotlin>, contactsBackupName)
@@ -383,8 +383,8 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                         null
                     }
 
-                    fallThrough = currentTask == null
-                    currentTask?.executeOnExecutor(THREAD_POOL_EXECUTOR)
+                    fallThrough = cTask == null
+                    cTask?.executeOnExecutor(THREAD_POOL_EXECUTOR)
                 }
             }
         }
@@ -474,13 +474,13 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     backupFinished(getString(R.string.failed_to_make_batches))
                 }
 
-                current_UpdaterScriptJobCode -> {
+                cUpdaterJobCode -> {
                     if (jobSuccess)
                         runConditionalTask(JOBCODE_PERFORM_ZIP_BACKUP)
                     else runNextZipBatch()
                 }
 
-                current_ZippingJobCode -> {
+                cZippingJobCode -> {
                     if (jobSuccess) {
                         val result = jobResults as Array<*>
                         val zippedFiles = result[0] as ArrayList<String>
@@ -490,7 +490,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     else runNextZipBatch()
                 }
 
-                current_ZipVerificationJobCode -> {
+                cZipVerificationJobCode -> {
                     runNextZipBatch(lastErrorCount == criticalErrors.size)
                 }
             }
@@ -506,7 +506,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
         if (cancelAll) return
 
-        val label = if (currentZipBatch != null) "[${currentZipBatch!!.partName}]" else ""
+        val label = if (cZipBatch != null) "[${cZipBatch!!.partName}]" else ""
         if (!isThisBatchSuccessful)
             addError("$ERR_BACKUP_SERVICE_ERROR$label: " +
                     "${getString(R.string.errors_in_batch)} ${criticalErrors.size - lastErrorCount}")
@@ -514,12 +514,12 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         lastErrorCount = criticalErrors.size
 
 
-        if (currentBatchNumber < zipBatches.size) {
-            currentZipBatch = if (currentZipBatch == null)
-                zipBatches[currentBatchNumber]
+        if (cBatchNumber < zipBatches.size) {
+            cZipBatch = if (cZipBatch == null)
+                zipBatches[cBatchNumber]
             else {
-                ++currentBatchNumber
-                zipBatches[currentBatchNumber]
+                ++cBatchNumber
+                zipBatches[cBatchNumber]
             }
             runConditionalTask(JOBCODE_PERFORM_UPDATER_SCRIPT)
         }
@@ -542,37 +542,37 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
 
                 JOBCODE_PERFORM_UPDATER_SCRIPT -> {
-                    currentZipBatch?.let {
-                        current_UpdaterScriptJobCode = jobCode + currentBatchNumber
-                        task = UpdaterScriptMakerEngine(current_UpdaterScriptJobCode, bd, it, timeStamp)
+                    cZipBatch?.let {
+                        cUpdaterJobCode = jobCode + cBatchNumber
+                        task = UpdaterScriptMakerEngine(cUpdaterJobCode, bd, it, timeStamp)
                     }
-                    if (currentZipBatch == null)
-                        throw Exception("${getString(R.string.zip_batch_null_updater)}: [$currentBatchNumber]")
+                    if (cZipBatch == null)
+                        throw Exception("${getString(R.string.zip_batch_null_updater)}: [$cBatchNumber]")
                 }
 
                 JOBCODE_PERFORM_ZIP_BACKUP -> {
-                    currentZipBatch?.let {
-                        current_ZippingJobCode = jobCode + currentBatchNumber
-                        task = ZippingEngine(current_ZippingJobCode, bd, it)
+                    cZipBatch?.let {
+                        cZippingJobCode = jobCode + cBatchNumber
+                        task = ZippingEngine(cZippingJobCode, bd, it)
                     }
-                    if (currentZipBatch == null)
-                        throw Exception("${getString(R.string.zip_batch_null_zipping_engine)}: [$currentBatchNumber]")
+                    if (cZipBatch == null)
+                        throw Exception("${getString(R.string.zip_batch_null_zipping_engine)}: [$cBatchNumber]")
                 }
 
                 JOBCODE_PERFORM_ZIP_VERIFICATION -> {
-                    currentZipBatch?.let {
-                        current_ZipVerificationJobCode = jobCode + currentBatchNumber
-                        task = ZipVerificationEngine(current_ZipVerificationJobCode, bd,
-                                zipListIfAny!!, File(currentDestination, "$currentBackupName.zip"), fileListIfAny)
+                    cZipBatch?.let {
+                        cZipVerificationJobCode = jobCode + cBatchNumber
+                        task = ZipVerificationEngine(cZipVerificationJobCode, bd,
+                                zipListIfAny!!, File(cDestination, "$cBackupName.zip"), fileListIfAny)
                     }
-                    if (currentZipBatch == null)
-                        throw Exception("${getString(R.string.zip_batch_null_zip_verification)}: [$currentBatchNumber]")
+                    if (cZipBatch == null)
+                        throw Exception("${getString(R.string.zip_batch_null_zip_verification)}: [$cBatchNumber]")
                 }
             }
 
             task?.run {
                 executeOnExecutor(THREAD_POOL_EXECUTOR)
-                currentTask = this
+                cTask = this
             }
 
         } catch (e: Exception) {
@@ -668,7 +668,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         commonTools.tryIt { commonTools.LBM?.unregisterReceiver(requestProgressReceiver) }
         commonTools.tryIt { unregisterReceiver(cancelReceiver) }
 
-        commonTools.tryIt { currentTask?.cancel(true) }
+        commonTools.tryIt { cTask?.cancel(true) }
 
         commonTools.tryIt { progressWriter?.close() }
         commonTools.tryIt { errorWriter?.close() }

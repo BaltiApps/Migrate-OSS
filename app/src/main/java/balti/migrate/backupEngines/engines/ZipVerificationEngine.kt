@@ -115,6 +115,7 @@ class ZipVerificationEngine(private val jobcode: Int,
     }
 
     override fun postExecuteFunction() {
+        fileListForComparison?.run { delete() }
         onEngineTaskComplete.onComplete(jobcode, verificationErrors, warnings)
     }
 
