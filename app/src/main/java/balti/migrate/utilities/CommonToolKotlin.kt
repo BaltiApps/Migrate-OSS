@@ -96,6 +96,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_DESTINATION = "destination"
         val EXTRA_ACTUAL_DESTINATION = "actualDestination"
         val EXTRA_ERRORS = "errors"
+        val EXTRA_WARNINGS = "warnings"
         val EXTRA_TOTAL_TIME = "total_time"
         val EXTRA_IS_CANCELLED = "isCancelled"
 

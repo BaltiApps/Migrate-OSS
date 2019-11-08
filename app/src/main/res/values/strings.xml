@@ -339,6 +339,7 @@
     <string name="incompleteZip">Not all files could be combined.</string>
     <string name="no_keyboard_data">No keyboard data</string>
 
+    <string name="failed_to_make_batches">Failed to make batches</string>
     <string name="backup_error_system_check_failed">Backup cancelled because system check failed.</string>
     <string name="backup_error_updater_script">Backup failed at updater script.</string>
     <string name="backup_error_at_app_verification">Backup failed at app verification.</string>
@@ -790,5 +791,8 @@
     <string name="empty">Empty</string>
 
     <string name="file_list_not_in_zip_batch">File list not present in zipBatch</string>
+    <string name="zip_batch_null_updater">Zip Batch is null before updater script</string>
+    <string name="zip_batch_null_zipping_engine">Zip Batch is null before starting zipping</string>
+    <string name="zip_batch_null_zip_verification">Zip Batch is null before zip verification</string>
 
 </resources>

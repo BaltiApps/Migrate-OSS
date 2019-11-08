@@ -41,7 +41,6 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
 import balti.migrate.utilities.CommonToolKotlin.Companion.ALL_SUPPRESSED_ERRORS
-import balti.migrate.utilities.CommonToolKotlin.Companion.BACKUP_NAME_SETTINGS
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELLING
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
@@ -61,8 +60,8 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_WA
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TASKLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_WARNINGS
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ERRORLOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_CONTACTS
@@ -83,7 +82,6 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_COMPRESSION_LEVEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_COMPRESSION_LEVEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DELETE_ERROR_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_CHECK
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ZIP_VERIFICATION
 import balti.migrate.utilities.CommonToolKotlin.Companion.TIMEOUT_WAITING_TO_CANCEL_TASK
 import java.io.BufferedWriter
 import java.io.File
@@ -121,6 +119,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
     private val allErrors by lazy { ArrayList<String>(0) }
     private val criticalErrors by lazy { ArrayList<String>(0) }
+    private val allWarnings by lazy { ArrayList<String>(0) }
 
     private var lastErrorCount = 0
 
@@ -141,7 +140,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
     private var currentBackupName = ""
     private var currentDestination = ""
-    private var currentBatchNumber = 1
+    private var currentBatchNumber = 0
     private var currentZipBatch: ZipAppBatch? = null
 
     private val timeStamp by lazy { SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(Calendar.getInstance().time)}
@@ -273,28 +272,9 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         currentDestination = destination
 
         cancelAll = false
-
         AppInstance.notificationManager.cancelAll()
 
-        var isExtrasBackup = true
-
-        if (!isSettingsNull || contactsList.isNotEmpty() || smsList.isNotEmpty() || callsList.isNotEmpty() || wifiData != null){
-            isExtrasBackup = true
-        }
-
         doFallThroughJob(JOBCODE_PEFORM_SYSTEM_TEST)
-
-        /*appBatches.run {
-            if (!sharedPrefs.getBoolean(PREF_SEPARATE_EXTRAS_BACKUP, true)) workingAppBatches = this
-            else if (this.size <= 1) workingAppBatches = this
-            else if (!isExtrasBackup) workingAppBatches = this
-
-            when (this.size) {
-                1 -> doFallThroughJob(JOBCODE_PEFORM_SYSTEM_TEST)
-                0 -> doFallThroughJob(JOBCODE_PEFORM_BACKUP_CONTACTS)
-                else -> doFallThroughJob(JOBCODE_PEFORM_SYSTEM_TEST)
-            }
-        }*/
     }
 
     private fun getBackupIntentData(): BackupIntentData {
@@ -306,20 +286,11 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
             currentZipBatch?.run {
                 if (containerDirectoryName != File(destination, backupName).absolutePath){
                     currentDestination = "$destination/$backupName"
-                    currentBackupName = containerDirectoryName
+                    currentBackupName = partName
                 }
             }
         }
-        return BackupIntentData(currentBackupName, currentDestination).apply { setErrorTag("[$currentBatchNumber/${zipBatches.size}]") }
-        /*appBatches.size.run {
-            if (this > 1) {
-                currentDestination = "$destination/$backupName"
-                currentBackupName =
-                        if (workingAppBatches.size > 0) commonTools.getMadePartName(currentPartNumber, this)
-                        else FILE_ZIP_NAME_EXTRAS
-            }
-            return BackupIntentData(currentBackupName, currentDestination, currentPartNumber, workingAppBatches.size)
-        }*/
+        return BackupIntentData(currentBackupName, currentDestination).apply { setErrorTag("[${currentBatchNumber+1}/${zipBatches.size}]") }
     }
 
     override fun onCreate() {
@@ -435,195 +406,182 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         // fall through logic ends here. All further engines to be manually called from callback
     }
 
-    /*private fun getAppBatchBackupTask(bd: BackupIntentData): AppBackupEngine?{
-        return if (currentPartNumber < workingAppBatches.size) {
-            commonTools.tryIt {
-                progressWriter?.write("\n\n--- Next batch backup: ${currentPartNumber + 1} ---\n\n")
-            }
-            AppBackupEngine(currentAppBackupJobCode, bd, workingAppBatches[currentPartNumber], doBackupInstallers, busyboxBinaryPath)
-        } else null
-    }*/
+    override fun onComplete(jobCode: Int, jobErrors: ArrayList<String>, jobWarnings: ArrayList<String>, jobResults: Any?, jobSuccess: Boolean) {
 
-    private fun getUpdaterScriptTask(bd: BackupIntentData): UpdaterScriptMakerEngine?{
 
         try {
 
-            val batch = when {
-                workingAppBatches.size == 0 -> AppBatch(ArrayList(0))
-                else -> workingAppBatches[currentPartNumber]
+            allWarnings.addAll(jobWarnings)
+
+            if (jobCode in arrayOf(
+                            JOBCODE_PEFORM_BACKUP_CONTACTS,
+                            JOBCODE_PEFORM_BACKUP_SMS,
+                            JOBCODE_PEFORM_BACKUP_CALLS,
+                            JOBCODE_PEFORM_BACKUP_WIFI,
+                            JOBCODE_PEFORM_BACKUP_SETTINGS
+                    )) {
+                jobResults?.let { extrasFiles.addAll(it as Array<File>) }
             }
 
-            return UpdaterScriptMakerEngine(currentUpdaterScriptJobCode, bd, batch, timeStamp,
-                    if (contactsList.isNotEmpty()) contactsBackupName else null,
-                    if (smsList.isNotEmpty()) smsBackupName else null,
-                    if (callsList.isNotEmpty()) callsBackupName else null,
-                    if (!isSettingsNull) BACKUP_NAME_SETTINGS else null,
-                    wifiData?.fileName)
+            if (jobCode in arrayOf(JOBCODE_PERFORM_APP_BACKUP, JOBCODE_PERFORM_APP_BACKUP_VERIFICATION))
+                addError(jobErrors, false)
+            else addError(jobErrors)
 
+            when (jobCode) {
+
+                JOBCODE_PEFORM_SYSTEM_TEST -> {
+                    if (!jobSuccess) {
+                        backupFinished(getString(R.string.backup_error_system_check_failed))
+                    } else {
+                        doFallThroughJob(JOBCODE_PEFORM_BACKUP_CONTACTS)
+                    }
+                }
+
+                JOBCODE_PEFORM_BACKUP_CONTACTS -> {
+                    doFallThroughJob(JOBCODE_PEFORM_BACKUP_SMS)
+                }
+
+                JOBCODE_PEFORM_BACKUP_SMS -> {
+                    doFallThroughJob(JOBCODE_PEFORM_BACKUP_CALLS)
+                }
+
+                JOBCODE_PEFORM_BACKUP_CALLS -> {
+                    doFallThroughJob(JOBCODE_PEFORM_BACKUP_WIFI)
+                }
+
+                JOBCODE_PEFORM_BACKUP_WIFI -> {
+                    doFallThroughJob(JOBCODE_PEFORM_BACKUP_SETTINGS)
+                }
+
+                JOBCODE_PEFORM_BACKUP_SETTINGS -> {
+                    doFallThroughJob(JOBCODE_PERFORM_APP_BACKUP)
+                }
+
+                JOBCODE_PERFORM_APP_BACKUP -> {
+                    runConditionalTask(JOBCODE_PERFORM_APP_BACKUP_VERIFICATION)
+                }
+
+                JOBCODE_PERFORM_APP_BACKUP_VERIFICATION -> {
+                    doFallThroughJob(JOBCODE_PERFORM_ZIP_BATCHING)
+                }
+
+                JOBCODE_PERFORM_ZIP_BATCHING -> {
+                    if (jobSuccess) {
+                        zipBatches.clear()
+                        zipBatches.addAll(jobResults as ArrayList<ZipAppBatch>)
+                        runNextZipBatch(lastErrorCount == criticalErrors.size)
+                    }
+                    backupFinished(getString(R.string.failed_to_make_batches))
+                }
+
+                current_UpdaterScriptJobCode -> {
+                    if (jobSuccess)
+                        runConditionalTask(JOBCODE_PERFORM_ZIP_BACKUP)
+                    else runNextZipBatch()
+                }
+
+                current_ZippingJobCode -> {
+                    if (jobSuccess) {
+                        val result = jobResults as Array<*>
+                        val zippedFiles = result[0] as ArrayList<String>
+                        val fileList = result[1] as File?
+                        runConditionalTask(JOBCODE_PERFORM_ZIP_VERIFICATION, zippedFiles, fileList)
+                    }
+                    else runNextZipBatch()
+                }
+
+                current_ZipVerificationJobCode -> {
+                    runNextZipBatch(lastErrorCount == criticalErrors.size)
+                }
+            }
         }
         catch (e: Exception){
             e.printStackTrace()
-            addError("$ERR_BACKUP_SERVICE_ERROR${bd.errorTag}: UPDATER_SCRIPT ${e.message}")
-            return null
+            addError(e.message.toString())
+            backupFinished("$ERR_BACKUP_SERVICE_ERROR: ${e.message}")
         }
     }
 
-    override fun onBackupComplete(jobCode: Int, jobSuccess: Boolean, jobResults: ArrayList<String>?) {
+    private fun runNextZipBatch(isThisBatchSuccessful: Boolean = false){
 
-        when (jobCode){
+        if (cancelAll) return
 
-            JOBCODE_PEFORM_SYSTEM_TEST -> {
-                if (!jobSuccess) {
-                    jobResults?.let { addError(it) }
-                    backupFinished(getString(R.string.backup_error_system_check_failed))
-                }
-                else {
-                    doFallThroughJob(JOBCODE_PEFORM_BACKUP_CONTACTS)
-                }
+        val label = if (currentZipBatch != null) "[${currentZipBatch!!.partName}]" else ""
+        if (!isThisBatchSuccessful)
+            addError("$ERR_BACKUP_SERVICE_ERROR$label: " +
+                    "${getString(R.string.errors_in_batch)} ${criticalErrors.size - lastErrorCount}")
+
+        lastErrorCount = criticalErrors.size
+
+
+        if (currentBatchNumber < zipBatches.size) {
+            currentZipBatch = if (currentZipBatch == null)
+                zipBatches[currentBatchNumber]
+            else {
+                ++currentBatchNumber
+                zipBatches[currentBatchNumber]
             }
-
-            JOBCODE_PEFORM_BACKUP_CONTACTS -> {
-                if (!jobSuccess) jobResults?.let { addError(it) }
-                doFallThroughJob(JOBCODE_PEFORM_BACKUP_SMS)
-            }
-
-            JOBCODE_PEFORM_BACKUP_SMS -> {
-                if (!jobSuccess) jobResults?.let { addError(it) }
-                doFallThroughJob(JOBCODE_PEFORM_BACKUP_CALLS)
-            }
-
-            JOBCODE_PEFORM_BACKUP_CALLS -> {
-                if (!jobSuccess) jobResults?.let { addError(it) }
-                doFallThroughJob(JOBCODE_PEFORM_BACKUP_WIFI)
-            }
-
-            JOBCODE_PEFORM_BACKUP_WIFI -> {
-                if (!jobSuccess) jobResults?.let { addError(it) }
-                doFallThroughJob(JOBCODE_PEFORM_BACKUP_SETTINGS)
-            }
-
-            JOBCODE_PEFORM_BACKUP_SETTINGS -> {
-                if (!jobSuccess) jobResults?.let { addError(it) }
-                doFallThroughJob(JOBCODE_PERFORM_APP_BACKUP)
-            }
-
-            currentAppBackupJobCode -> {
-                jobResults?.let { addError(it, false) }
-                runConditionalTask(JOBCODE_PERFORM_APP_BACKUP_VERIFICATION)
-            }
-
-            currentAppVerificationJobCode -> {
-                jobResults?.let { addError(it, false) }
-                doFallThroughJob(JOBCODE_PERFORM_UPDATER_SCRIPT)
-            }
-
-            currentUpdaterScriptJobCode -> {
-                if (!jobSuccess) jobResults?.let { addError(it) }
-                runConditionalTask(JOBCODE_PERFORM_ZIP_BACKUP)
-            }
-
-            currentZippingJobCode -> {
-                if (jobSuccess) runConditionalTask(JOBCODE_PERFORM_ZIP_VERIFICATION, jobResults)
-                else {
-                    jobResults?.let { addError(it) }
-                    runNextBatch()
-                }
-            }
-
-            currentZipVerificationJobCode -> {
-                if (!jobSuccess) jobResults?.let { addError(it) }
-                runNextBatch(criticalErrors.size == lastErrorCount)
-            }
+            runConditionalTask(JOBCODE_PERFORM_UPDATER_SCRIPT)
         }
+        else backupFinished("")
     }
 
-    private fun runConditionalTask(jobCode: Int, zipListIfAny: ArrayList<String>? = null){
+    private fun runConditionalTask(jobCode: Int, zipListIfAny: ArrayList<String>? = null, fileListIfAny: File? = null){
 
         val bd = getBackupIntentData()
         var task : ParentBackupClass? = null
 
         if (cancelAll) return
 
-        when (jobCode) {
+        try {
 
-            JOBCODE_PERFORM_APP_BACKUP_VERIFICATION -> try {
+            when (jobCode) {
 
-                currentAppVerificationJobCode = jobCode + currentPartNumber
-                task = VerificationEngine(currentAppVerificationJobCode, bd, workingAppBatches[currentPartNumber], busyboxBinaryPath)
+                JOBCODE_PERFORM_APP_BACKUP_VERIFICATION ->
+                    task = VerificationEngine(jobCode, bd, appPackets, busyboxBinaryPath)
 
-            } catch (e: Exception) {
 
-                e.printStackTrace()
-                addError("$ERR_BACKUP_SERVICE_ERROR${bd.errorTag}: $ERR_CONDITIONAL_TASK ${e.message}")
-
-                // go to next job
-                doFallThroughJob(JOBCODE_PERFORM_UPDATER_SCRIPT)
-            }
-
-            JOBCODE_PERFORM_ZIP_BACKUP -> try {
-
-                currentZippingJobCode = jobCode + currentPartNumber
-                task = ZippingEngine(currentZippingJobCode, bd)
-
-            } catch (e: Exception) {
-
-                e.printStackTrace()
-                addError("$ERR_BACKUP_SERVICE_ERROR${bd.errorTag}: $ERR_CONDITIONAL_TASK ${e.message}")
-
-                // no need to check for zip verification
-                runNextBatch()
-            }
-
-            JOBCODE_PERFORM_ZIP_VERIFICATION -> try {
-
-                if (sharedPrefs.getBoolean(PREF_ZIP_VERIFICATION, true)) {
-
-                    currentZipVerificationJobCode = jobCode + currentPartNumber
-
-                    task = ZipVerificationEngine(currentZipVerificationJobCode, bd, zipListIfAny!!,
-                            File(currentDestination, "$currentBackupName.zip"),
-                            File(currentDestination, FILE_FILE_LIST))
+                JOBCODE_PERFORM_UPDATER_SCRIPT -> {
+                    currentZipBatch?.let {
+                        current_UpdaterScriptJobCode = jobCode + currentBatchNumber
+                        task = UpdaterScriptMakerEngine(current_UpdaterScriptJobCode, bd, it, timeStamp)
+                    }
+                    if (currentZipBatch == null)
+                        throw Exception("${getString(R.string.zip_batch_null_updater)}: [$currentBatchNumber]")
                 }
-                else runNextBatch(criticalErrors.size == lastErrorCount)
 
-            } catch (e: Exception) {
+                JOBCODE_PERFORM_ZIP_BACKUP -> {
+                    currentZipBatch?.let {
+                        current_ZippingJobCode = jobCode + currentBatchNumber
+                        task = ZippingEngine(current_ZippingJobCode, bd, it)
+                    }
+                    if (currentZipBatch == null)
+                        throw Exception("${getString(R.string.zip_batch_null_zipping_engine)}: [$currentBatchNumber]")
+                }
 
-                e.printStackTrace()
-                addError("$ERR_BACKUP_SERVICE_ERROR${bd.errorTag}: $ERR_CONDITIONAL_TASK ${e.message}")
-                runNextBatch()
-
-            }
-        }
-
-        task?.run {
-            task.executeOnExecutor(THREAD_POOL_EXECUTOR)
-            currentTask = this
-        }
-    }
-
-    private fun runNextBatch(isThisBatchSuccessful: Boolean = false){
-
-        if (cancelAll){
-            return
-        }
-        else {
-            commonTools.dirDelete("$currentDestination/$currentBackupName")
-
-            if (!isThisBatchSuccessful)
-                addError("$ERR_BACKUP_SERVICE_ERROR[$currentPartNumber/${workingAppBatches.size}]: " +
-                        "${getString(R.string.errors_in_batch)} ${criticalErrors.size - lastErrorCount}")
-
-            lastErrorCount = criticalErrors.size
-
-            if (workingAppBatches.size == 0 && appBatches.size != 0){
-                workingAppBatches = appBatches
-                currentPartNumber -= 1
+                JOBCODE_PERFORM_ZIP_VERIFICATION -> {
+                    currentZipBatch?.let {
+                        current_ZipVerificationJobCode = jobCode + currentBatchNumber
+                        task = ZipVerificationEngine(current_ZipVerificationJobCode, bd,
+                                zipListIfAny!!, File(currentDestination, "$currentBackupName.zip"), fileListIfAny)
+                    }
+                    if (currentZipBatch == null)
+                        throw Exception("${getString(R.string.zip_batch_null_zip_verification)}: [$currentBatchNumber]")
+                }
             }
 
-            if (currentPartNumber + 1 < workingAppBatches.size) {
-                currentPartNumber++
-                doFallThroughJob(JOBCODE_PERFORM_APP_BACKUP)
-            } else backupFinished("")
+            task?.run {
+                executeOnExecutor(THREAD_POOL_EXECUTOR)
+                currentTask = this
+            }
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+            addError("$ERR_BACKUP_SERVICE_ERROR${bd.batchErrorTag}: $ERR_CONDITIONAL_TASK ${e.message}")
+
+            // go to next job
+            doFallThroughJob(JOBCODE_PERFORM_ZIP_BATCHING)
         }
     }
 
@@ -649,7 +607,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
             errorWriter?.write("--- Migrate version ${getString(R.string.current_version_name)} ---\n")
 
             progressWriter?.write("\n--- Backup Name : $backupName ---\n")
-            progressWriter?.write("--- Total parts : ${workingAppBatches.size} ---\n")
+            progressWriter?.write("--- Total parts : ${zipBatches.size} ---\n")
             progressWriter?.write("--- Migrate version ${getString(R.string.current_version_name)} ---\n")
         }
         catch (e: Exception){
@@ -663,6 +621,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     putExtra(EXTRA_PROGRESS_TYPE, EXTRA_PROGRESS_TYPE_FINISHED)
                     putExtra(EXTRA_TITLE, title)
                     putStringArrayListExtra(EXTRA_ERRORS, criticalErrors)
+                    putStringArrayListExtra(EXTRA_WARNINGS, allWarnings)
                     putExtra(EXTRA_IS_CANCELLED, cancelAll)
                     putExtra(EXTRA_TOTAL_TIME, endTime - startTime)
                     putExtra(EXTRA_PROGRESS_PERCENTAGE, if (criticalErrors.size == 0 && !cancelAll) 100 else lastDeterminateProgress)
@@ -685,7 +644,8 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         if ((errorTitle != "" || criticalErrors.size != 0) && sharedPrefs.getBoolean(PREF_DELETE_ERROR_BACKUP, true))
             commonTools.dirDelete("$destination/$backupName")
 
-        appBatches.clear()
+        appPackets.clear()
+        zipBatches.clear()
         contactsList.clear()
         callsList.clear()
         smsList.clear()
