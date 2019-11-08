@@ -284,7 +284,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         }
         else {
             cZipBatch?.run {
-                if (containerDirectoryName != File(destination, backupName).absolutePath){
+                if (partName != ""){
                     cDestination = "$destination/$backupName"
                     cBackupName = partName
                 }

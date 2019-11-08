@@ -5,8 +5,7 @@ import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 
-data class ZipAppBatch(val zipPackets: ArrayList<ZipAppPacket> = ArrayList(0),
-                       var containerDirectoryName: String) {
+data class ZipAppBatch(val zipPackets: ArrayList<ZipAppPacket> = ArrayList(0)) {
     var batchSystemSize : Long = 0
     var batchDataSize : Long = 0
     var zipFullSize : Long = 0
@@ -28,8 +27,8 @@ data class ZipAppBatch(val zipPackets: ArrayList<ZipAppPacket> = ArrayList(0),
             zipFullSize += it.length() / 1024
         }
     }
-    fun createFileList(){
-        val fl = File(containerDirectoryName, FILE_FILE_LIST)
+    fun createFileList(destination: String){
+        val fl = File("$destination/$partName", FILE_FILE_LIST)
 
         fl.delete()
         BufferedWriter(FileWriter(fl)).run {

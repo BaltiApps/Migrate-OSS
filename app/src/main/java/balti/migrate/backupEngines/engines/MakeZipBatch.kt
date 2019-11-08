@@ -122,8 +122,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                     }
                 }
 
-                // for now, point all batches to root backup directory
-                zipBatches.add(ZipAppBatch(zipAppBatchList, File(actualDestination).absolutePath))
+                zipBatches.add(ZipAppBatch(zipAppBatchList))
 
                 zipAppBatchList.clear()
 
@@ -140,7 +139,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
             when (zipBatches.size) {
                 0 -> {
                     if (extras.isNotEmpty())
-                        zipBatches.add(ZipAppBatch(containerDirectoryName = File(actualDestination).absolutePath).apply { addExtras(extras) })
+                        zipBatches.add(ZipAppBatch().apply { addExtras(extras) })
                 }
                 1 -> {
                     zipBatches[0].addExtras(extras)
@@ -148,16 +147,15 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 else -> {
                     var toBeAdded: ZipAppBatch? = null
                     if (doSeparateExtras) {
-                        toBeAdded = ZipAppBatch(containerDirectoryName = File(actualDestination, FILE_ZIP_NAME_EXTRAS).absolutePath).apply { addExtras(extras) }
+                        toBeAdded = ZipAppBatch().apply { addExtras(extras); partName = FILE_ZIP_NAME_EXTRAS }
                     } else zipBatches[0].apply {
                         addExtras(extras)
                     }
 
-                    // update directory paths
+                    // update partNames
                     for (i in zipBatches.indices) {
                         val z = zipBatches[i]
                         z.partName = "${engineContext.getString(R.string.part)}_${i + 1}_${engineContext.getString(R.string.of)}_${zipBatches.size}"
-                        z.containerDirectoryName = File(actualDestination, z.partName).absolutePath
                     }
 
                     if (toBeAdded != null) zipBatches.add(toBeAdded)
@@ -181,11 +179,13 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                 if (BackupServiceKotlin.cancelAll) return
 
-                if (it.containerDirectoryName != File(actualDestination).absolutePath) {
+                val fullDirToMoveTo: File
 
-                    val cd = it.containerDirectoryName
+                if (it.partName != "") {
 
-                    File(actualDestination, cd).mkdirs()
+                    fullDirToMoveTo = File(actualDestination, it.partName)
+
+                    fullDirToMoveTo.mkdirs()
                     val newFiles = ArrayList<File>(0)
 
                     // extras of each zipBatch
@@ -193,7 +193,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                         if (BackupServiceKotlin.cancelAll) return
 
-                        val newFile = File(cd, ef.absolutePath)
+                        val newFile = File(fullDirToMoveTo, ef.name)
                         ef.renameTo(newFile)
                         newFiles.add(newFile)
                     }
@@ -207,7 +207,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                             if (BackupServiceKotlin.cancelAll) return
 
-                            val newFile = File(cd, af.absolutePath)
+                            val newFile = File(fullDirToMoveTo, af.name)
                             af.renameTo(newFile)
                             newFiles.add(newFile)
                         }
@@ -215,8 +215,9 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                         zp.appFiles.addAll(newFiles)
                     }
                 }
+                else fullDirToMoveTo = File(actualDestination)
 
-                it.createFileList()
+                it.createFileList(fullDirToMoveTo.absolutePath)
             }
 
         }
