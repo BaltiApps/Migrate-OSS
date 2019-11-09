@@ -794,5 +794,6 @@
     <string name="zip_batch_null_updater">Zip Batch is null before updater script</string>
     <string name="zip_batch_null_zipping_engine">Zip Batch is null before starting zipping</string>
     <string name="zip_batch_null_zip_verification">Zip Batch is null before zip verification</string>
+    <string name="improper_result_received">Improper result received.</string>
 
 </resources>

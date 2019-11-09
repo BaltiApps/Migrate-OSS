@@ -408,6 +408,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
     override fun onComplete(jobCode: Int, jobErrors: ArrayList<String>, jobWarnings: ArrayList<String>, jobResults: Any?, jobSuccess: Boolean) {
 
+        if (cancelAll) return
 
         try {
 
@@ -420,7 +421,11 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                             JOBCODE_PEFORM_BACKUP_WIFI,
                             JOBCODE_PEFORM_BACKUP_SETTINGS
                     )) {
-                jobResults?.let { extrasFiles.addAll(it as Array<File>) }
+                if (jobResults == null || jobResults !is Array<*>){
+                    val label = if (cZipBatch != null) "[${cZipBatch!!.partName}]" else ""
+                    addError("${getString(R.string.improper_result_received)}$label: $jobCode : ${jobResults.toString()}")
+                }
+                else jobResults.let { extrasFiles.addAll(it as Array<File>) }
             }
 
             if (jobCode in arrayOf(JOBCODE_PERFORM_APP_BACKUP, JOBCODE_PERFORM_APP_BACKUP_VERIFICATION))
