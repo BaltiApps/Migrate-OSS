@@ -8,4 +8,5 @@
     <color name="grey_bg">#424242</color>
     <color name="stock_android_label_color">#5A5A5A</color>
     <color name="error_color">#C62828</color>
+    <color name="warning_color">#FFD600</color>
 </resources>

@@ -594,14 +594,28 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
         val title = when {
             errorTitle != "" -> errorTitle
-            criticalErrors.size != 0 -> getString(R.string.backupFinishedWithErrors)
+            criticalErrors.isNotEmpty() -> getString(R.string.backupFinishedWithErrors)
+            allWarnings.isNotEmpty() -> getString(R.string.backupFinishedWithWarnings)
             else -> getString(R.string.noErrors)
         }
 
         try {
+
+            if (allWarnings.size == 0) {
+                errorWriter?.write("--- No warnings! ---\n")
+            } else {
+                errorWriter?.write("--- All warnings ---\n\n")
+                for (w in allWarnings) {
+                    errorWriter?.write("$w\n")
+                }
+            }
+
+            errorWriter?.write("\n")
+
             if (allErrors.size == 0 && errorTitle == "") {
                 errorWriter?.write("--- No errors! ---\n")
             } else {
+                errorWriter?.write("--- All errors ---\n\n")
                 if (errorTitle != "") errorWriter?.write("$errorTitle\n\n")
                 for (e in allErrors) {
                     errorWriter?.write("$e\n")

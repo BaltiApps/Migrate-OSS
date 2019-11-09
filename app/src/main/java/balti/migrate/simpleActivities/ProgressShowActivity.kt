@@ -6,10 +6,14 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.method.ScrollingMovementMethod
+import android.text.style.ForegroundColorSpan
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -30,6 +34,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CO
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_FINISHED
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_SETTINGS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_SMS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_TESTING
@@ -42,8 +47,8 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZI
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SUBTASK
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TASKLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_PARTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_WARNINGS
 import balti.migrate.utilities.CommonToolKotlin.Companion.TIMEOUT_WAITING_TO_KILL
 import balti.migrate.utilities.IconTools
 import kotlinx.android.synthetic.main.backup_progress_layout.*
@@ -56,6 +61,7 @@ class ProgressShowActivity: AppCompatActivity() {
     private val commonTools by lazy { CommonToolKotlin(this) }
     private val iconTools by lazy { IconTools() }
     private val errors by lazy { ArrayList<String>(0) }
+    private val warnings by lazy { ArrayList<String>(0) }
 
     private var lastLog = ""
     private var lastIcon = ""
@@ -90,7 +96,8 @@ class ProgressShowActivity: AppCompatActivity() {
             app_icon.setImageResource(
                     when {
                         isCancelled -> R.drawable.ic_cancelled_icon
-                        errors.size > 0 -> R.drawable.ic_error
+                        errors.isNotEmpty() -> R.drawable.ic_error
+                        warnings.isNotEmpty() -> R.drawable.ic_finished_warning
                         else -> R.drawable.ic_finished_icon
                     }
             )
@@ -114,6 +121,8 @@ class ProgressShowActivity: AppCompatActivity() {
 
                     EXTRA_PROGRESS_TYPE_VERIFYING -> R.drawable.ic_verify_icon
                     EXTRA_PROGRESS_TYPE_CORRECTING -> R.drawable.ic_correcting_icon
+
+                    EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH -> R.drawable.ic_making_batches
 
                     EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT -> R.drawable.ic_updater_script_icon
 
@@ -177,11 +186,28 @@ class ProgressShowActivity: AppCompatActivity() {
                     if (intent.hasExtra(EXTRA_ERRORS))
                         errors.addAll(intent.getStringArrayListExtra(EXTRA_ERRORS))
 
-                    if (errors.size > 0) {
+                    if (intent.hasExtra(EXTRA_WARNINGS))
+                        warnings.addAll(intent.getStringArrayListExtra(EXTRA_WARNINGS))
+
+                    if (errors.isNotEmpty() || warnings.isNotEmpty()) {
                         reportLogButton.visibility = View.VISIBLE
                         errorLogTextView.visibility = View.VISIBLE
-                        errors.forEach {
-                            errorLogTextView.append("$it\n")
+
+                        if (warnings.isNotEmpty()){
+                            val builder = SpannableStringBuilder()
+                            warnings.forEach {
+                                SpannableString("$it\n").run {
+                                    setSpan(ForegroundColorSpan(resources.getColor(R.color.warning_color)), 0, it.length, 0)
+                                    builder.append(this)
+                                }
+                            }
+                            errorLogTextView.setText(builder, TextView.BufferType.SPANNABLE)
+                        }
+
+                        if (errors.isNotEmpty()) {
+                            errors.forEach {
+                                errorLogTextView.append("$it\n")
+                            }
                         }
                     }
 
@@ -309,16 +335,6 @@ class ProgressShowActivity: AppCompatActivity() {
 
         if (intent.extras != null) {
             handleProgress(intent)
-            intent.getIntExtra(EXTRA_TOTAL_PARTS, 1).run {
-                if (this > 1){
-                    val head = "$this ${getString(R.string.parts)}"
-                    AlertDialog.Builder(this@ProgressShowActivity)
-                            .setTitle(head)
-                            .setMessage(getString(R.string.split_desc_1) + " " + head + "\n\n" + getString(R.string.split_desc_2))
-                            .setPositiveButton(android.R.string.ok, null)
-                            .show()
-                }
-            }
         }
 
         commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))

@@ -65,7 +65,8 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
     private val activityIntent by lazy { Intent(serviceContext, ProgressShowActivity::class.java) }
 
     fun getTitle(stringRes: Int): String{
-        return engineContext.getString(stringRes)
+        return if (bd.batchErrorTag == "") engineContext.getString(stringRes)
+        else "${engineContext.getString(stringRes)} : ${bd.batchErrorTag}"
     }
 
     fun getDataBase(dataBaseFile: File): SQLiteDatabase{

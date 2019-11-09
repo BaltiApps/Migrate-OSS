@@ -335,6 +335,7 @@
     <string name="errorStartingBackup">Error starting backup (onStartCommand).</string>
     <string name="deletingFiles">Deleting files</string>
     <string name="backupFinishedWithErrors">Backup finished with errors!</string>
+    <string name="backupFinishedWithWarnings">Backup finished with warnings!</string>
     <string name="backupPartHadErrors">Backup part had errors.</string>
     <string name="incompleteZip">Not all files could be combined.</string>
     <string name="no_keyboard_data">No keyboard data</string>
