@@ -132,6 +132,7 @@ class CommonToolKotlin(val context: Context) {
         val ERR_TESTING_TRY_CATCH = "SYSTEM_TESTING_TRY_CATCH"
         val ERR_UPDATER_TRY_CATCH = "UPDATER_TRY_CATCH"
         val ERR_UPDATER_EXTRACT = "UPDATER_EXTRACT"
+        val ERR_UPDATER_CONFIG_FILE = "UPDATER_CONFIG_FILE"
         val ERR_ZIP_PACKET_MAKING = "ZIP_PACKET_MAKING"
         val ERR_ZIP_BATCHING = "ZIP_BATCHING"
         val ERR_ZIP_ADDING_EXTRAS = "ZIP_ADDING_EXTRAS"
@@ -515,7 +516,6 @@ class CommonToolKotlin(val context: Context) {
                 for (f in files)
                     dirDelete(f.absolutePath)
             }
-            file.delete()
         }
     }
 

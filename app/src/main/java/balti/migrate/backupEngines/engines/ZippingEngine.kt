@@ -126,12 +126,11 @@ class ZippingEngine(private val jobcode: Int,
                     broadcastProgress("", "zipped: ${file.name}", true,
                             commonTools.getPercentage((i+1), files.size))
                 }
-
                 zippedFiles.add(relativeFilePath)
             }
 
             zipOutputStream.close()
-            commonTools.dirDelete(actualDestination)
+            File(actualDestination).deleteRecursively()
         }
         catch (e: Exception){
             e.printStackTrace()
@@ -143,6 +142,6 @@ class ZippingEngine(private val jobcode: Int,
 
     override fun postExecuteFunction() {
         onEngineTaskComplete.onComplete(jobcode, zipErrors, warnings,
-                arrayOf(zippedFiles, if(this::fileListCopied.isInitialized) fileListCopied else null))
+                arrayOf(zippedFiles, if(this::fileListCopied.isInitialized) fileListCopied else null, actualDestination))
     }
 }

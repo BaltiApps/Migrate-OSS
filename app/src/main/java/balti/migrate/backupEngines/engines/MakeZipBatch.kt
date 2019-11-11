@@ -149,6 +149,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                         zipBatches.add(ZipAppBatch().apply { addExtras(extras) })
                 }
                 1 -> {
+                    //zipBatches[0].apply { partName = "TEST_PART" }.addExtras(extras)
                     zipBatches[0].addExtras(extras)
                 }
                 else -> {

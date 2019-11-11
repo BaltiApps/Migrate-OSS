@@ -11,6 +11,7 @@ import android.os.AsyncTask
 import android.os.AsyncTask.THREAD_POOL_EXECUTOR
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import balti.migrate.AppInstance
 import balti.migrate.AppInstance.Companion.adbState
@@ -44,6 +45,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ALL_SUPPRESSED_ERRORS
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELLING
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
+import balti.migrate.utilities.CommonToolKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_BACKUP_SERVICE_ERROR
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CONDITIONAL_TASK
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
@@ -142,6 +144,8 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
     private var cDestination = ""
     private var cBatchNumber = 0
     private var cZipBatch: ZipAppBatch? = null
+
+    private val zipParentPaths by lazy { ArrayList<String>(0) }
 
     private val timeStamp by lazy { SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(Calendar.getInstance().time)}
 
@@ -502,6 +506,10 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                         val result = jobResults as Array<*>
                         val zippedFiles = result[0] as ArrayList<String>
                         val fileList = result[1] as File?
+                        val dest = result[2] as String
+
+                        zipParentPaths.add(dest)
+
                         runConditionalTask(JOBCODE_PERFORM_ZIP_VERIFICATION, zippedFiles, fileList)
                     }
                     else runNextZipBatch()
@@ -603,7 +611,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         }
     }
 
-    private fun backupFinished(errorTitle: String){
+    private fun backupFinished(errorTitle: String) {
 
         val title = when {
             errorTitle != "" -> errorTitle
@@ -641,8 +649,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
             progressWriter?.write("\n--- Backup Name : $backupName ---\n")
             progressWriter?.write("--- Total parts : ${zipBatches.size} ---\n")
             progressWriter?.write("--- Migrate version ${getString(R.string.current_version_name)} ---\n")
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
 
@@ -673,8 +680,25 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                                         PendingIntent.FLAG_UPDATE_CURRENT))
                         .build())
 
-        if (cancelAll || ((errorTitle != "" || criticalErrors.size != 0) && sharedPrefs.getBoolean(PREF_DELETE_ERROR_BACKUP, true)))
-            commonTools.dirDelete("$destination/$backupName")
+        val errorCondition = errorTitle != "" || criticalErrors.size != 0
+
+        if (cancelAll || errorCondition && sharedPrefs.getBoolean(PREF_DELETE_ERROR_BACKUP, true)) {
+            File("$destination/$backupName").run {
+                Log.d(DEBUG_TAG, "Cleaning up on error or cancel: ${this.absolutePath}")
+                deleteRecursively()
+            }
+        }
+        else if (!cancelAll && !errorCondition) {
+
+            // clean empty folders and other files if remaining if no errors
+            zipParentPaths.forEach {
+
+                File(it).run {
+                    Log.d(DEBUG_TAG, "Cleaning up : ${this.absolutePath}")
+                    deleteRecursively()
+                }
+            }
+        }
 
         appPackets.clear()
         zipBatches.clear()

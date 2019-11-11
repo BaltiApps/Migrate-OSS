@@ -8,12 +8,19 @@ import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.containers.ZipAppBatch
 import balti.migrate.utilities.CommonToolKotlin.Companion.DATA_TEMP
 import balti.migrate.utilities.CommonToolKotlin.Companion.DIR_MANUAL_CONFIGS
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_CONFIG_FILE
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_EXTRACT
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_BUILDPROP_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MIGRATE_CACHE_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PACKAGE_DATA
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_SYSTEM_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_CACHE_DEFAULT
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_BUILDPROP
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_MIGRATE_CACHE
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_SYSTEM
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
 import balti.migrate.utilities.ToolsNoContext
 import java.io.BufferedWriter
@@ -30,6 +37,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                                private val timeStamp: String) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT) {
 
     private val errors by lazy { ArrayList<String>(0) }
+    private val warnings by lazy { ArrayList<String>(0) }
 
     private fun extractToBackup(fileName: String, targetPath: String){
         val assetFile = File(commonTools.unpackAssetToInternal(fileName, fileName, false))
@@ -242,6 +250,27 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
     }
 
+    private fun getBusyboxAssetName(): String {
+        val cpuAbi = Build.SUPPORTED_ABIS[0]
+        return if (cpuAbi == "x86" || cpuAbi == "x86_64") "busybox-x86" else "busybox"
+    }
+
+    private fun writeManualConfig(fileName: String, value: String){
+        try {
+            File(actualDestination, DIR_MANUAL_CONFIGS).run {
+                mkdirs()
+                BufferedWriter(FileWriter(File(this, fileName))).run {
+                    sharedPreferences.getString(value, "")?.let { write(it) }
+                    close()
+                }
+            }
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            warnings.add("$ERR_UPDATER_CONFIG_FILE${bd.batchErrorTag}: $fileName - ${e.message}")
+        }
+    }
+
     override fun doInBackground(vararg params: Any?): Any {
 
         try {
@@ -260,6 +289,12 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             extractToBackup("verify.sh", actualDestination)
             extractToBackup("MigrateHelper.apk", "$actualDestination/system/app/MigrateHelper/")
 
+            extractToBackup(getBusyboxAssetName(), actualDestination)
+
+            writeManualConfig(FILE_MIGRATE_CACHE_MANUAL, PREF_MANUAL_MIGRATE_CACHE)
+            writeManualConfig(FILE_SYSTEM_MANUAL, PREF_MANUAL_SYSTEM)
+            writeManualConfig(FILE_BUILDPROP_MANUAL, PREF_MANUAL_BUILDPROP)
+
             makeUpdaterScript()
         }
         catch (e: Exception){
@@ -271,7 +306,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
     }
 
     override fun postExecuteFunction() {
-        onEngineTaskComplete.onComplete(jobcode, errors)
+        onEngineTaskComplete.onComplete(jobcode, errors, warnings)
     }
 
 }

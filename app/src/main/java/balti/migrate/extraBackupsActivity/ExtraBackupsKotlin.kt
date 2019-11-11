@@ -716,7 +716,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                                         .setTitle(R.string.overwrite)
                                         .setMessage(R.string.overwriteMessage)
                                         .setPositiveButton(R.string.yes) { _, _ ->
-                                            if (dir.exists()) commonTools.dirDelete(dir.absolutePath)
+                                            if (dir.exists()) dir.deleteRecursively()
                                             if (zip.exists()) zip.delete()
                                             nameDialog.dismiss()
                                             startBackup()

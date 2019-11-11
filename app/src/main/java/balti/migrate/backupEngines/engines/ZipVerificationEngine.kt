@@ -71,9 +71,6 @@ class ZipVerificationEngine(private val jobcode: Int,
 
             resetBroadcast(true, title)
 
-            subTask = "${engineContext.getString(R.string.comparing_zip_contents)}(${zipList.size}/${contents.size})"
-            broadcastProgress(subTask, subTask, false)
-
             for (i in 0 until zipList.size){
 
                 val zipItem = zipList[i]
@@ -84,25 +81,41 @@ class ZipVerificationEngine(private val jobcode: Int,
                 }
             }
 
+            subTask = "${engineContext.getString(R.string.compared_zip_contents)}(${zipList.size}/${contents.size})"
+            broadcastProgress(subTask, subTask, false)
+
             if (checkFileListContents) {
 
                 if (fileListForComparison == null || !fileListForComparison.exists())
                     warnings.add("$WARNING_ZIP_FILELIST_UNAVAILABLE${bd.batchErrorTag}")
                 else {
+
+                    var filesCompared = 0
+                    var filesPresent = 0
+
                     BufferedReader(FileReader(fileListForComparison)).readLines().forEach {
                         (if (it.endsWith(".app_sys")) "${it.substring(0, it.lastIndexOf('.'))}.app" else it).run {
-                            if (this.trim() != "") {
+
+                            if (this.trim() != "" && !this.endsWith(".db-wal")) {
+                                // ignore wal and shm files
+
+                                filesCompared++
+
                                 if (this.endsWith(".app")) {
                                     if (!appDirectories.contains(this))
                                         warnings.add("$WARNING_ZIP_FILELIST_ITEM_UNAVAILABLE${bd.batchErrorTag}: $this")
-                                }
-                                else {
+                                    else filesPresent++
+                                } else {
                                     if (!contents.contains(this))
                                         warnings.add("$WARNING_ZIP_FILELIST_ITEM_UNAVAILABLE${bd.batchErrorTag}: $this")
+                                    else filesPresent++
                                 }
                             }
                         }
                     }
+
+                    subTask = "${engineContext.getString(R.string.compared_fileList_contents)}($filesPresent/$filesCompared)"
+                    broadcastProgress(subTask, subTask, false)
                 }
             }
 

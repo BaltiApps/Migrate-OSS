@@ -311,7 +311,8 @@
     <string name="making_file_list">Making fileList</string>
     <string name="verifying_zip">Verifying zip</string>
     <string name="listing_zip_file">Listing zip file</string>
-    <string name="comparing_zip_contents">Comparing zip contents</string>
+    <string name="compared_zip_contents">Compared zip contents</string>
+    <string name="compared_fileList_contents">Compared file list contents</string>
     <string name="zip_size_too_big">Zip size is greater than the maximum allowed size. Please go to Preferences -> Max. Zip size</string>
     <string name="storing_wifi_data">Storing wifi data</string>
     <string name="testing_system">Testing system</string>

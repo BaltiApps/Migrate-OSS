@@ -6,23 +6,16 @@ import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
-import balti.migrate.utilities.CommonToolKotlin.Companion.DIR_MANUAL_CONFIGS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_APP_BACKUP_SHELL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_APP_BACKUP_SUPPRESSED
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_APP_BACKUP_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_SCRIPT_MAKING_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_APP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_BUILDPROP_MANUAL
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MIGRATE_CACHE_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_BACKUP_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_SYSTEM_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_IGNORE_APP_CACHE
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_BUILDPROP
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_MIGRATE_CACHE
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_SYSTEM
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.IconTools
 import java.io.*
@@ -119,7 +112,6 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
             scriptWriter.write("sleep 1\n")
             scriptWriter.write("echo \"--- PID: $$\"\n")
             scriptWriter.write("cp ${scriptFile.absolutePath} ${engineContext.externalCacheDir}/\n")
-            scriptWriter.write("cp $busyboxBinaryPath $actualDestination/\n")
 
             appList.let {packets ->
                 for (i in 0 until packets.size) {
@@ -163,11 +155,6 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                 }
 
             }
-
-            scriptWriter.write("mkdir -p $actualDestination/$DIR_MANUAL_CONFIGS\n")
-            scriptWriter.write("echo ${sharedPreferences.getString(PREF_MANUAL_MIGRATE_CACHE, "")} > $actualDestination/$DIR_MANUAL_CONFIGS/$FILE_MIGRATE_CACHE_MANUAL\n")
-            scriptWriter.write("echo ${sharedPreferences.getString(PREF_MANUAL_SYSTEM, "")} > $actualDestination/$DIR_MANUAL_CONFIGS/$FILE_SYSTEM_MANUAL\n")
-            scriptWriter.write("echo ${sharedPreferences.getString(PREF_MANUAL_BUILDPROP, "")} > $actualDestination/$DIR_MANUAL_CONFIGS/$FILE_BUILDPROP_MANUAL\n")
 
             scriptWriter.write("echo \"--- App files copied ---\"\n")
             scriptWriter.close()
