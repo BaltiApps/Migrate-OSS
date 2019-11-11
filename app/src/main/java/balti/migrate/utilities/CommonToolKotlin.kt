@@ -520,10 +520,14 @@ class CommonToolKotlin(val context: Context) {
     }
 
     fun getHumanReadableStorageSpace(space: Long): String {
-        var res = "KB"
+        var res = "B"
 
         var s = space.toDouble()
 
+        if (s > 1024) {
+            s /= 1024.0
+            res = "KB"
+        }
         if (s > 1024) {
             s /= 1024.0
             res = "MB"
@@ -573,6 +577,9 @@ class CommonToolKotlin(val context: Context) {
 
     fun applyNamingCorrectionForShell(name: String) =
             name.replace("(", "\\(").replace(")", "\\)").replace(" ", "\\ ")
+
+    fun applyNamingCorrectionForDisplay(name: String) =
+            name.replace("`", "'").replace("\\s+".toRegex(), "_").replace("[^\\x20-\\x7E]".toRegex(), "")
 
     fun makeNotificationChannel(channelId: String, channelDesc: CharSequence, importance: Int){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

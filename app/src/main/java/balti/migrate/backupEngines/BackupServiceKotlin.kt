@@ -278,19 +278,26 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
     }
 
     private fun getBackupIntentData(): BackupIntentData {
-        if (cZipBatch == null) {
-            cDestination = destination
-            cBackupName = backupName
-        }
+
+        fun resetDest() { cDestination = destination; cBackupName = backupName }
+
+        if (cZipBatch == null) resetDest()
         else {
             cZipBatch?.run {
                 if (partName != ""){
                     cDestination = "$destination/$backupName"
                     cBackupName = partName
                 }
+                else resetDest()
             }
         }
-        return BackupIntentData(cBackupName, cDestination).apply { setErrorTag("[${cBatchNumber+1}/${zipBatches.size}]") }
+
+        return BackupIntentData(cBackupName, cDestination).apply {
+            cZipBatch?.run {
+                if (partName != "")
+                    setErrorTag("[${cBatchNumber}/${zipBatches.size}]")
+            }
+        }
     }
 
     override fun onCreate() {
@@ -361,7 +368,10 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
                     cTask = try {
                         when (jCode) {
-                            JOBCODE_PEFORM_SYSTEM_TEST -> if (sharedPrefs.getBoolean(PREF_SYSTEM_CHECK, true)) SystemTestingEngine(jCode, bd, busyboxBinaryPath) else null
+                            JOBCODE_PEFORM_SYSTEM_TEST -> if (sharedPrefs.getBoolean(PREF_SYSTEM_CHECK, true)) {
+                                File(cDestination, cBackupName).mkdirs()
+                                SystemTestingEngine(jCode, bd, busyboxBinaryPath)
+                            } else null
                             JOBCODE_PEFORM_BACKUP_CONTACTS -> ContactsBackupEngine(jCode, bd, workingObject as ArrayList<ContactsDataPacketKotlin>, contactsBackupName)
                             JOBCODE_PEFORM_BACKUP_SMS -> SmsBackupEngine(jCode, bd, workingObject as ArrayList<SmsDataPacketKotlin>, smsBackupName)
                             JOBCODE_PEFORM_BACKUP_CALLS -> CallsBackupEngine(jCode, bd, workingObject as ArrayList<CallsDataPacketsKotlin>, callsBackupName)
@@ -471,12 +481,14 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                 }
 
                 JOBCODE_PERFORM_ZIP_BATCHING -> {
+                    commonTools.tryIt {
+                    }
                     if (jobSuccess) {
                         zipBatches.clear()
                         zipBatches.addAll(jobResults as ArrayList<ZipAppBatch>)
                         runNextZipBatch(lastErrorCount == criticalErrors.size)
                     }
-                    backupFinished(getString(R.string.failed_to_make_batches))
+                    else backupFinished(getString(R.string.failed_to_make_batches))
                 }
 
                 cUpdaterJobCode -> {
@@ -503,7 +515,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         catch (e: Exception){
             e.printStackTrace()
             addError(e.message.toString())
-            backupFinished("$ERR_BACKUP_SERVICE_ERROR: ${e.message}")
+            backupFinished("")
         }
     }
 
@@ -518,14 +530,15 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
         lastErrorCount = criticalErrors.size
 
-
         if (cBatchNumber < zipBatches.size) {
-            cZipBatch = if (cZipBatch == null)
+            cZipBatch = zipBatches[cBatchNumber]
+            ++cBatchNumber
+            /*if (cZipBatch == null)
                 zipBatches[cBatchNumber]
             else {
                 ++cBatchNumber
                 zipBatches[cBatchNumber]
-            }
+            }*/
             runConditionalTask(JOBCODE_PERFORM_UPDATER_SCRIPT)
         }
         else backupFinished("")
@@ -660,7 +673,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                                         PendingIntent.FLAG_UPDATE_CURRENT))
                         .build())
 
-        if ((errorTitle != "" || criticalErrors.size != 0) && sharedPrefs.getBoolean(PREF_DELETE_ERROR_BACKUP, true))
+        if (cancelAll || ((errorTitle != "" || criticalErrors.size != 0) && sharedPrefs.getBoolean(PREF_DELETE_ERROR_BACKUP, true)))
             commonTools.dirDelete("$destination/$backupName")
 
         appPackets.clear()

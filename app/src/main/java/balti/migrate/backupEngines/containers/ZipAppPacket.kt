@@ -12,6 +12,5 @@ data class ZipAppPacket(val appPacket_z: AppPacket, val appFiles: ArrayList<File
         appFiles.forEach {
             zipPacketSize += ToolsNoContext.getDirLength(it)
         }
-        zipPacketSize /= 1024
     }
 }

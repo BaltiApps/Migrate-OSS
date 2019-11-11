@@ -17,7 +17,7 @@ class AppPacket(backupDataPacket: BackupDataPacketKotlin, val appName: String, v
             it.substring(0, it.lastIndexOf('/'))
         }
     }
-    val apkName = if (!APP) "NULL" else ToolsNoContext.applyNamingCorrectionForShell(
+    val apkName = if (!APP) "NULL" else ToolsNoContext.applyNamingCorrectionForShell(    // this is base apk name, not packageName.apk
         appInfo.sourceDir.let {
             it.substring(it.lastIndexOf('/') + 1)
         }
@@ -27,7 +27,7 @@ class AppPacket(backupDataPacket: BackupDataPacketKotlin, val appName: String, v
             it.substring(0, it.lastIndexOf('/'))
         }
     }
-    val dataName = if (!DATA) "NULL" else {
+    val dataName = if (!DATA) "NULL" else {    // this just points to the data director, does not have tar.gz in the end.
         appInfo.dataDir.let {
             it.substring(it.lastIndexOf('/') + 1)
         }

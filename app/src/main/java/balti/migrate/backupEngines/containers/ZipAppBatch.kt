@@ -23,8 +23,8 @@ data class ZipAppBatch(val zipPackets: ArrayList<ZipAppPacket> = ArrayList(0)) {
         extrasFiles.clear()
         extrasFiles.addAll(extras)
         extrasFiles.forEach {
-            batchDataSize += it.length() / 1024
-            zipFullSize += it.length() / 1024
+            batchDataSize += it.length()
+            zipFullSize += it.length()
         }
     }
     fun createFileList(destination: String){
@@ -40,6 +40,7 @@ data class ZipAppBatch(val zipPackets: ArrayList<ZipAppPacket> = ArrayList(0)) {
             extrasFiles.forEach {ef ->
                 write("${ef.name}\n")
             }
+            close()
         }
 
         fileList = fl

@@ -43,7 +43,8 @@ class ZipVerificationEngine(private val jobcode: Int,
 
             val fileSize = zipFile.length()/1024
             if (fileSize > MAX_WORKING_SIZE){
-                verificationErrors.add("$ERR_ZIP_TOO_BIG: ${commonTools.getHumanReadableStorageSpace(fileSize)}")
+                verificationErrors.add("$ERR_ZIP_TOO_BIG: ${commonTools.getHumanReadableStorageSpace(fileSize)} (${fileSize}B) " +
+                        "${engineContext.getString(R.string.allowed)}: ${commonTools.getHumanReadableStorageSpace(MAX_WORKING_SIZE)} (${MAX_WORKING_SIZE}B)")
                 return 0
             }
 

@@ -66,7 +66,7 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     fun getTitle(stringRes: Int): String{
         return if (bd.batchErrorTag == "") engineContext.getString(stringRes)
-        else "${engineContext.getString(stringRes)} : ${bd.batchErrorTag}"
+        else "${engineContext.getString(stringRes)} : ${engineContext.getString(R.string.part)} - ${bd.batchErrorTag}"
     }
 
     fun getDataBase(dataBaseFile: File): SQLiteDatabase{

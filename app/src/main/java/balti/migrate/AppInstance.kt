@@ -38,14 +38,16 @@ class AppInstance: Application() {
         var wifiData : WifiDataPacket? = null
 
         var doBackupInstallers = false
+
+        val RESERVED_SPACE = 6553000L          // this accounts for the helper apk and other scripts
     }
 
-    private val MAX_TWRP_SIZE = 4194300L
+    private val MAX_TWRP_SIZE = 4194300000L
     private val DEVICE_RAM_SIZE : Long by lazy {
         val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         ActivityManager.MemoryInfo().let {
             activityManager.getMemoryInfo(it)
-            it.totalMem / 1024
+            it.totalMem
         }
     }
 

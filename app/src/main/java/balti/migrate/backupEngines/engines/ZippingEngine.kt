@@ -131,7 +131,7 @@ class ZippingEngine(private val jobcode: Int,
             }
 
             zipOutputStream.close()
-            commonTools.dirDelete(directory.absolutePath)
+            commonTools.dirDelete(actualDestination)
         }
         catch (e: Exception){
             e.printStackTrace()

@@ -237,6 +237,7 @@
     <string name="part">Part</string>
     <string name="parts">parts</string>
     <string name="of">of</string>
+    <string name="allowed">allowed</string>
     <string name="error_reading_dpi">Error reading DPI</string>
     <string name="error_reading_adb">Error reading ADB</string>
     <string name="error_reading_wifi">Error reading wifi password store</string>

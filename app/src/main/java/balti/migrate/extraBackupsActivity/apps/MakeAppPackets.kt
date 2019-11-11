@@ -99,7 +99,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             var dataSize = 0L
             var systemSize = 0L
             val dp = appList[i]
-            val appName = pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString()
+            val appName = commonTools.applyNamingCorrectionForDisplay(pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString())
 
             val apkPath: String? = if (dp.APP)
                 dp.PACKAGE_INFO.applicationInfo.sourceDir
@@ -195,7 +195,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                         if (cancelThis) break
 
                         val dp = appList[i]
-                        val appName = pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString()
+                        val appName = commonTools.applyNamingCorrectionForDisplay(pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString())
 
                         getPackageSizeInfo.invoke(pm, dp.PACKAGE_INFO, object : IPackageStatsObserver.Stub(){
                             override fun onGetStatsCompleted(pStats: PackageStats?, succeeded: Boolean) {
@@ -223,9 +223,6 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                                         if (!ignoreCache) dataSize += it.cacheSize
                                     }
                                 }
-
-                                dataSize /= 1024
-                                systemSize /= 1024
 
                                 appsScanned++
                                 appPackets.add(AppPacket(dp, appName, dataSize, systemSize))
@@ -258,7 +255,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                         var dataSize = 0L
                         var systemSize = 0L
                         val dp = appList[i]
-                        val appName = pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString()
+                        val appName = commonTools.applyNamingCorrectionForDisplay(pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString())
 
                         val storageStats = storageStatsManager.queryStatsForUid(
                                 dp.PACKAGE_INFO.applicationInfo.storageUuid,
@@ -291,9 +288,6 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                             if (ignoreCache) dataSize -= storageStats.cacheBytes
 
                         }
-
-                        dataSize /= 1024
-                        systemSize /= 1024
 
                         appsScanned++
                         appPackets.add(AppPacket(dp, appName, dataSize, systemSize))
@@ -355,7 +349,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
         try {
 
             StatFs(destination).let {
-                availableKb = it.blockSizeLong * it.availableBlocksLong / 1024
+                availableKb = it.blockSizeLong * it.availableBlocksLong
             }
 
         }

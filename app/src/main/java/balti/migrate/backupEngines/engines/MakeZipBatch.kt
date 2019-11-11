@@ -1,6 +1,8 @@
 package balti.migrate.backupEngines.engines
 
+import android.util.Log
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
+import balti.migrate.AppInstance.Companion.RESERVED_SPACE
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
@@ -8,6 +10,7 @@ import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.containers.ZipAppBatch
 import balti.migrate.backupEngines.containers.ZipAppPacket
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
+import balti.migrate.utilities.CommonToolKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_MOVING
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_ADDING_EXTRAS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_BATCHING
@@ -37,12 +40,12 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
             try {
 
-                if (BackupServiceKotlin.cancelAll) return
+                if (BackupServiceKotlin.cancelAll) return@forEach
 
                 val associatedFiles = ArrayList<File>(0)
 
                 val expectedAppDir = File(actualDestination, "${it.packageName}.app")
-                val expectedDataFile = File(actualDestination, it.dataName)
+                val expectedDataFile = File(actualDestination, "${it.packageName}.tar.gz")
                 val expectedPermFile = File(actualDestination, "${it.packageName}.perm")
                 val expectedJsonFile = File(actualDestination, "${it.packageName}.json")
                 val expectedIconFile = File(actualDestination, "${it.packageName}.icon")
@@ -75,8 +78,9 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 extras.forEach {
                     totalExtrasSize += it.length()
                 }
-                totalExtrasSize /= 1024
             }
+
+            Log.d(DEBUG_TAG, "total extras size: $totalExtrasSize")
 
             var firstAdjust : Long =
             if (allZipPackets.isNotEmpty()) {
@@ -97,6 +101,8 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
             }
             else 0
 
+            Log.d(DEBUG_TAG, "first adjust size: $firstAdjust")
+
             while (allZipPackets.isNotEmpty()) {
 
                 if (BackupServiceKotlin.cancelAll) return
@@ -105,7 +111,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 var batchSize = 0L
                 var c = 0
 
-                while (c < allZipPackets.size && batchSize < MAX_WORKING_SIZE - firstAdjust) {
+                while (c < allZipPackets.size && batchSize < (MAX_WORKING_SIZE - RESERVED_SPACE - firstAdjust)) {
 
                     val p = allZipPackets[c]
                     when {
@@ -122,9 +128,10 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                     }
                 }
 
-                zipBatches.add(ZipAppBatch(zipAppBatchList))
-
-                zipAppBatchList.clear()
+                ZipAppBatch(zipAppBatchList).run {
+                    zipBatches.add(this)
+                    Log.d(DEBUG_TAG, "No. of packets added: ${zipAppBatchList.size} zipFullSize: ${this.zipFullSize}")
+                }
 
                 // size adjustment for extras to be made only for first batch. After that make it 0
                 firstAdjust = 0
@@ -146,10 +153,13 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 }
                 else -> {
                     var toBeAdded: ZipAppBatch? = null
-                    if (doSeparateExtras) {
-                        toBeAdded = ZipAppBatch().apply { addExtras(extras); partName = FILE_ZIP_NAME_EXTRAS }
-                    } else zipBatches[0].apply {
-                        addExtras(extras)
+
+                    if (extras.isNotEmpty()) {
+                        if (doSeparateExtras) {
+                            toBeAdded = ZipAppBatch().apply { addExtras(extras); partName = FILE_ZIP_NAME_EXTRAS }
+                        } else zipBatches[0].apply {
+                            addExtras(extras)
+                        }
                     }
 
                     // update partNames
@@ -217,7 +227,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 }
                 else fullDirToMoveTo = File(actualDestination)
 
-                it.createFileList(fullDirToMoveTo.absolutePath)
+                it.createFileList(File(actualDestination).absolutePath)
             }
 
         }

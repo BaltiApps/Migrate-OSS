@@ -16,7 +16,7 @@ class ToolsNoContext {
                 if (!file.isDirectory) file.length()
                 else {
                     val files = file.listFiles()
-                    var sum = 0L
+                    var sum = file.length()
                     for (f in files) sum += getDirLength(f)
                     sum
                 }
@@ -28,7 +28,7 @@ class ToolsNoContext {
             if (!(sourceFile.exists() && sourceFile.canRead())) return "source does not exist: ${sourceFile.absolutePath}"
             File(destinationAddress).run {
                 mkdirs()
-                if (canWrite()) return "cannot write on destination: $destinationAddress"
+                if (!canWrite()) return "cannot write on destination: $destinationAddress"
             }
 
             val destinationFile = File(destinationAddress, differentName ?: sourceFile.name)

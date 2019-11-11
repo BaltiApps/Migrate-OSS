@@ -391,8 +391,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         fun calculateStorage(path: String) {
             val statFs = StatFs(path)
 
-            availableKb = (statFs.blockSizeLong * statFs.availableBlocksLong) / 1024
-            fullKb = (statFs.blockSizeLong * statFs.blockCountLong) / 1024
+            availableKb = (statFs.blockSizeLong * statFs.availableBlocksLong)
+            fullKb = (statFs.blockSizeLong * statFs.blockCountLong)
             consumedKb = fullKb - availableKb
         }
 
