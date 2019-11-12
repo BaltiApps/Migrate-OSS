@@ -106,7 +106,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             // mount partitions
             updater_writer.write("ui_print(\" \");\n")
             updater_writer.write("ui_print(\"Mounting partition...\");\n")
-            updater_writer.write("run_program(\"/tmp/mount_script.sh\", \"m\");\n")
+            updater_writer.write("run_program(\"/tmp/mount_script.sh\", \"m\", \"$DIR_MANUAL_CONFIGS\");\n")
 
             // exit if mount failed
             updater_writer.write("ifelse(is_mounted(\"/data\"), ui_print(\"Mounted data!\"), abort(\"Mount failed data! Exiting...\"));\n")

@@ -5,6 +5,12 @@ chmod +x /tmp/busybox
 # SAR detection kanged from Rockstar kernel zip of Violet
 # And F-Droid scripts
 
+MANUAL_CONFIG_DIR="$2"
+
+if [[ -n ${MANUAL_CONFIG_DIR} ]]; then
+    echo "DEBUG:: --- making config dir (/tmp/$MANUAL_CONFIG_DIR) if does not exist ---"
+    mkdir -p /tmp/${MANUAL_CONFIG_DIR}
+fi
 
 SAR="false"
 

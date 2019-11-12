@@ -51,7 +51,7 @@ exitNow() {
 
 echoIt " "
 
-manual_migrate_cache="$(cat /tmp/${MANUAL_CONFIG_DIR}/MIGRATE_CACHE_MANUAL)"
+manual_migrate_cache="$(cat /tmp/${MANUAL_CONFIG_DIR}/MIGRATE_CACHE_MANUAL)" 2>/dev/null
 
 if [[ -n "${manual_migrate_cache}" ]]; then
     MIGRATE_CACHE="$manual_migrate_cache"
@@ -68,7 +68,7 @@ echoIt " "
 echoIt "Checking parameters..."
 echoIt " "
 
-manual_entry_system="$(cat /tmp/${MANUAL_CONFIG_DIR}/SYSTEM_MANUAL)"
+manual_entry_system="$(cat /tmp/${MANUAL_CONFIG_DIR}/SYSTEM_MANUAL)" 2>/dev/null
 
 if [[ -n "$manual_entry_system" ]]; then
     echoIt "Manual system app location: $manual_entry_system"
@@ -142,7 +142,7 @@ sleep 1s
 
 # Check if ROM is present
 build_prop="$SYSTEM/build.prop"
-manual_entry_buildprop="$(cat /tmp/${MANUAL_CONFIG_DIR}/BUILDPROP_MANUAL)"
+manual_entry_buildprop="$(cat /tmp/${MANUAL_CONFIG_DIR}/BUILDPROP_MANUAL)" 2>/dev/null
 
 if [[ -n "$manual_entry_buildprop" ]]; then
     echoIt "Manual build.prop location: $manual_entry_buildprop"
