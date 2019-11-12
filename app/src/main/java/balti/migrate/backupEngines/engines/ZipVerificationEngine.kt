@@ -96,7 +96,7 @@ class ZipVerificationEngine(private val jobcode: Int,
                     BufferedReader(FileReader(fileListForComparison)).readLines().forEach {
                         (if (it.endsWith(".app_sys")) "${it.substring(0, it.lastIndexOf('.'))}.app" else it).run {
 
-                            if (this.trim() != "" && !this.endsWith(".db-wal")) {
+                            if (this.trim() != "" && !this.endsWith(".db-wal") && !this.endsWith(".db-shm")) {
                                 // ignore wal and shm files
 
                                 filesCompared++

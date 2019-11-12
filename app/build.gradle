@@ -10,7 +10,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 13
-        versionName "3.0"
+        versionName "mercury (v3.0) [alpha2]"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
