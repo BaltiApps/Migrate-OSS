@@ -34,7 +34,10 @@ data class ZipAppBatch(val zipPackets: ArrayList<ZipAppPacket> = ArrayList(0)) {
         BufferedWriter(FileWriter(fl)).run {
             zipPackets.forEach { zp ->
                 zp.appFiles.forEach { af ->
-                    write("${af.name}\n")
+                    if (af.name.endsWith(".app") && af.isDirectory && !zp.appPacket_z.apkPath.startsWith("/data")) {
+                        write("${af.name}_sys\n")
+                    }
+                    else write("${af.name}\n")
                 }
             }
             extrasFiles.forEach {ef ->

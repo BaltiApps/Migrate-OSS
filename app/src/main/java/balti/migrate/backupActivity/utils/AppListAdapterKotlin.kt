@@ -158,9 +158,9 @@ class AppListAdapterKotlin(val context: Context,
         }
 
         if (appItem.PACKAGE_INFO.applicationInfo.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) > 0) {
-            if (appItem.PACKAGE_INFO.applicationInfo.sourceDir.startsWith("/system")
-                    || appItem.PACKAGE_INFO.applicationInfo.sourceDir.startsWith("/vendor")) viewHolder.appName.setTextColor(Color.RED)
-            else viewHolder.appName.setTextColor(Color.YELLOW)
+            if (appItem.PACKAGE_INFO.applicationInfo.sourceDir.startsWith("/data"))
+                    viewHolder.appName.setTextColor(Color.YELLOW)
+            else viewHolder.appName.setTextColor(Color.RED)
         }
 
         viewHolder.appCheckBox.setFromProperty(appItem.PACKAGE_INFO.packageName, appItem)
