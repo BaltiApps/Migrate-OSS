@@ -203,7 +203,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             // un-mount partitions
             updater_writer.write("ui_print(\" \");\n")
             updater_writer.write("ui_print(\"Unmounting partition...\");\n")
-            updater_writer.write("run_program(\"/tmp/mount_script.sh\", \"u\");\n")
+            updater_writer.write("run_program(\"/tmp/mount_script.sh\", \"u\", \"$DIR_MANUAL_CONFIGS\");\n")
 
             updater_writer.write("ui_print(\" \");\n")
             updater_writer.write("ui_print(\"Finished!\");\n")

@@ -22,8 +22,7 @@ then
 fi
 
 # export SAR status
-mkdir -p /tmp/migrate
-echo "${SAR}" > /tmp/migrate/SAR
+echo "${SAR}" > /tmp/${MANUAL_CONFIG_DIR}/SAR
 
 echo "DEBUG:: --- fstab ---"
 echo "$(cat /etc/fstab)"
