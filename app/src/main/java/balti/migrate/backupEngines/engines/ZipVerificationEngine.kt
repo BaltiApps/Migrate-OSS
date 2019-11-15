@@ -45,7 +45,6 @@ class ZipVerificationEngine(private val jobcode: Int,
 
             val fileSizeString = "${engineContext.getString(R.string.zip_size)}: ${commonTools.getHumanReadableStorageSpace(fileSize)} (${fileSize} B) " +
             "${engineContext.getString(R.string.allowed)}: ${commonTools.getHumanReadableStorageSpace(MAX_WORKING_SIZE)} (${MAX_WORKING_SIZE} B)"
-            broadcastProgress(engineContext.getString(R.string.zip_size), fileSizeString, false)
 
             if (fileSize > MAX_WORKING_SIZE){
                 verificationErrors.add("$ERR_ZIP_TOO_BIG: $fileSizeString")
@@ -53,7 +52,7 @@ class ZipVerificationEngine(private val jobcode: Int,
             }
 
             var subTask = engineContext.getString(R.string.listing_zip_file)
-            broadcastProgress(subTask, subTask, false)
+            broadcastProgress(subTask, "${subTask}\n${fileSizeString}", false)
 
             while (enumeration.hasMoreElements()) {
 
