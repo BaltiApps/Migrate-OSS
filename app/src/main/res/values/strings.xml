@@ -347,6 +347,7 @@
     <string name="backup_error_updater_script">Backup failed at updater script.</string>
     <string name="backup_error_at_app_verification">Backup failed at app verification.</string>
     <string name="errors_in_batch">Errors found in batch</string>
+    <string name="zip_size">Zip size</string>
 
     <!--BackupActivity.java-->
     <string name="setBackupName">Set backup name</string>

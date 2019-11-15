@@ -104,6 +104,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
             val ignoreCache = sharedPreferences.getBoolean(PREF_IGNORE_APP_CACHE, false)
 
             val scriptFile = File(engineContext.filesDir, "$FILE_PREFIX_BACKUP_SCRIPT.sh")
+            scriptFile.parentFile?.mkdirs()
             val scriptWriter = BufferedWriter(FileWriter(scriptFile))
             val appAndDataBackupScript = commonTools.unpackAssetToInternal("backup_app_and_data.sh", "backup_app_and_data.sh", false)
 

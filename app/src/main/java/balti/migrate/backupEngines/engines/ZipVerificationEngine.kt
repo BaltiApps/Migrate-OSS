@@ -41,10 +41,14 @@ class ZipVerificationEngine(private val jobcode: Int,
             val zip = ZipFile(zipFile)
             val enumeration = zip.entries()
 
-            val fileSize = zipFile.length()/1024
+            val fileSize = zipFile.length()
+
+            val fileSizeString = "${engineContext.getString(R.string.zip_size)}: ${commonTools.getHumanReadableStorageSpace(fileSize)} (${fileSize} B) " +
+            "${engineContext.getString(R.string.allowed)}: ${commonTools.getHumanReadableStorageSpace(MAX_WORKING_SIZE)} (${MAX_WORKING_SIZE} B)"
+            broadcastProgress(engineContext.getString(R.string.zip_size), fileSizeString, false)
+
             if (fileSize > MAX_WORKING_SIZE){
-                verificationErrors.add("$ERR_ZIP_TOO_BIG: ${commonTools.getHumanReadableStorageSpace(fileSize)} (${fileSize}B) " +
-                        "${engineContext.getString(R.string.allowed)}: ${commonTools.getHumanReadableStorageSpace(MAX_WORKING_SIZE)} (${MAX_WORKING_SIZE}B)")
+                verificationErrors.add("$ERR_ZIP_TOO_BIG: $fileSizeString")
                 return 0
             }
 

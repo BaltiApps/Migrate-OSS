@@ -47,7 +47,9 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_BACKUP_SERVICE_ERROR
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_BACKUP_SERVICE_INIT
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CONDITIONAL_TASK
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ON_COMPLETE_TASK
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_DESTINATION
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ERRORS
@@ -350,7 +352,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
             }
             catch (e: Exception){
                 e.printStackTrace()
-                addError(e.message.toString())
+                addError("$ERR_BACKUP_SERVICE_INIT: ${e.message.toString()}")
                 backupFinished("${getString(R.string.errorStartingBackup)}: ${e.message}")
             }
         }
@@ -373,7 +375,6 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     cTask = try {
                         when (jCode) {
                             JOBCODE_PEFORM_SYSTEM_TEST -> if (sharedPrefs.getBoolean(PREF_SYSTEM_CHECK, true)) {
-                                File(cDestination, cBackupName).mkdirs()
                                 SystemTestingEngine(jCode, bd, busyboxBinaryPath)
                             } else null
                             JOBCODE_PEFORM_BACKUP_CONTACTS -> ContactsBackupEngine(jCode, bd, workingObject as ArrayList<ContactsDataPacketKotlin>, contactsBackupName)
@@ -393,12 +394,15 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                         }
                     } catch (e: Exception){
                         e.printStackTrace()
-                        addError("$ERR_BACKUP_SERVICE_ERROR${bd.batchErrorTag}: DO_JOB ${e.message}")
+                        addError("$ERR_BACKUP_SERVICE_ERROR${bd.batchErrorTag}: $jCode: DO_JOB ${e.message}")
                         null
                     }
 
                     fallThrough = cTask == null
-                    cTask?.executeOnExecutor(THREAD_POOL_EXECUTOR)
+                    cTask?.run {
+                        File(cDestination, cBackupName).mkdirs()
+                        executeOnExecutor(THREAD_POOL_EXECUTOR)
+                    }
                 }
             }
         }
@@ -437,7 +441,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     )) {
                 if (jobResults == null || jobResults !is Array<*>){
                     val label = if (cZipBatch != null) "[${cZipBatch!!.partName}]" else ""
-                    addError("${getString(R.string.improper_result_received)}$label: $jobCode : ${jobResults.toString()}")
+                    addError("${getString(R.string.improper_result_received)}$label: $jobCode: ${jobResults.toString()}")
                 }
                 else jobResults.let { extrasFiles.addAll(it as Array<File>) }
             }
@@ -522,7 +526,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         }
         catch (e: Exception){
             e.printStackTrace()
-            addError(e.message.toString())
+            addError("$ERR_BACKUP_SERVICE_ERROR: $jobCode: $ERR_ON_COMPLETE_TASK ${e.message}")
             backupFinished("")
         }
     }
@@ -541,12 +545,6 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         if (cBatchNumber < zipBatches.size) {
             cZipBatch = zipBatches[cBatchNumber]
             ++cBatchNumber
-            /*if (cZipBatch == null)
-                zipBatches[cBatchNumber]
-            else {
-                ++cBatchNumber
-                zipBatches[cBatchNumber]
-            }*/
             runConditionalTask(JOBCODE_PERFORM_UPDATER_SCRIPT)
         }
         else backupFinished("")
@@ -604,10 +602,10 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         } catch (e: Exception) {
 
             e.printStackTrace()
-            addError("$ERR_BACKUP_SERVICE_ERROR${bd.batchErrorTag}: $ERR_CONDITIONAL_TASK ${e.message}")
+            addError("$ERR_BACKUP_SERVICE_ERROR${bd.batchErrorTag}: $jobCode: $ERR_CONDITIONAL_TASK ${e.message}")
 
             // go to next job
-            doFallThroughJob(JOBCODE_PERFORM_ZIP_BATCHING)
+            runNextZipBatch()
         }
     }
 
