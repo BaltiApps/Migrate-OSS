@@ -136,7 +136,6 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
         commonTools.LBM?.sendBroadcast(actualBroadcast)
         updateNotification("", progress)
-
     }
 
     fun cancelTask(suProcess: Process?, vararg pids: Int) {

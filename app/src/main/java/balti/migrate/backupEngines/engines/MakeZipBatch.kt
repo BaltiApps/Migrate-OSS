@@ -28,6 +28,15 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
     private val errors by lazy { ArrayList<String>(0) }
     private val warnings by lazy { ArrayList<String>(0) }
     private var totalSize = 0L
+    private var allSize = 0
+
+    private fun shareProgress(string: String, progress : Int){
+        Thread.sleep(50)
+        broadcastProgress("", string, false, progress)
+    }
+
+    private fun getPercentage(allPacketsSize: Int): Int =
+            commonTools.getPercentage((allSize - allPacketsSize), allSize)
 
     private fun makeBatches(){
 
@@ -66,8 +75,10 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
             }
         }
 
+        Thread.sleep(100)
+
         title = getTitle(R.string.making_batches)
-        resetBroadcast(true, title)
+        resetBroadcast(false, title)
 
         val doSeparateExtras = sharedPreferences.getBoolean(PREF_SEPARATE_EXTRAS_BACKUP, true)
 
@@ -81,6 +92,8 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
             }
 
             Log.d(DEBUG_TAG, "total extras size: $totalExtrasSize")
+            shareProgress("${engineContext.getString(R.string.total_extra_size)}: " +
+                    "${commonTools.getHumanReadableStorageSpace(totalExtrasSize)} ($totalExtrasSize B)", 0)
 
             var firstAdjust : Long =
             if (allZipPackets.isNotEmpty()) {
@@ -103,38 +116,101 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
             Log.d(DEBUG_TAG, "first adjust size: $firstAdjust")
 
-            while (allZipPackets.isNotEmpty()) {
+            (MAX_WORKING_SIZE - RESERVED_SPACE).run {
 
-                if (BackupServiceKotlin.cancelAll) return
+                val localMax = (this * 0.8).toLong()
+                // Initially set a cap of 80% of max.
+                // Apps which will not fit here, but within allowed size
+                // will get zips of their own.
 
-                val zipAppBatchList = ArrayList<ZipAppPacket>(0)
-                var batchSize = 0L
+                val parts = (totalSize / localMax) + 1
+                /* Examples: assume
+                 * max size = 4 GB, totalSize = 10 kb
+                 *    parts = (0 by decimal division) + 1 = 1
+                 * max size = 4 GB, totalSize = 4 GB
+                 *    parts = (1 by decimal division) + 1 = 2  => Backup will be split into two parts of 2 GB
+                 * max size = 4 GB, totalSize = 4.1 GB
+                 *    parts = (1 by decimal division) + 1 = 2  => Backup will be split into two parts of greater than 2 GB
+                 */
+                shareProgress("${engineContext.getString(R.string.parts)}: $parts", 0)
+
+                val capSize = totalSize / parts
+                shareProgress("${engineContext.getString(R.string.capping_size)}: " +
+                        "${commonTools.getHumanReadableStorageSpace(capSize)} ($capSize B)", 0)
+
+                // remove all apps which are too big
                 var c = 0
-
-                while (c < allZipPackets.size && batchSize < (MAX_WORKING_SIZE - RESERVED_SPACE - firstAdjust)) {
-
+                while (c < allZipPackets.size){
                     val p = allZipPackets[c]
-                    when {
-                        p.zipPacketSize > MAX_WORKING_SIZE -> {
-                            warnings.add("$WARNING_ZIP_BATCH: Removing, ${p.appPacket_z.appName}. Too big!")
-                            allZipPackets.remove(p)
-                        }
-                        (batchSize + p.zipPacketSize) <= (MAX_WORKING_SIZE - firstAdjust) -> {
+                    if (p.zipPacketSize > this) {
+                        warnings.add("$WARNING_ZIP_BATCH: Removing, ${p.appPacket_z.appName}. Too big!")
+                        allZipPackets.remove(p)
+                        --c
+                    }
+                    ++c
+                }
+
+                allSize = allZipPackets.size
+
+                var maxOuterLoop = 1000   // break if outerloop has scanned over this number.
+                while (allZipPackets.isNotEmpty() && maxOuterLoop > 0) {
+                    // all eligible apps must be put in packets
+
+                    if (BackupServiceKotlin.cancelAll) return
+
+                    val zipAppBatchList = ArrayList<ZipAppPacket>(0)
+                    var batchSize = 0L
+                    c = 0
+
+                    // initially add small apps within 80% max size
+                    while (c < allZipPackets.size && batchSize < (capSize - firstAdjust)) {
+
+                        val p = allZipPackets[c]
+
+                        if ((batchSize + p.zipPacketSize) <= (capSize - firstAdjust)) {
                             zipAppBatchList.add(p)
                             batchSize += p.zipPacketSize
                             allZipPackets.remove(p)
-                        }
-                        else -> c++
+                            shareProgress("${engineContext.getString(R.string.adding)}: ${p.appPacket_z.appName} | " +
+                                    "${engineContext.getString(R.string.packet)}: ${zipBatches.size + 1}", getPercentage(allZipPackets.size))
+                        } else c++
                     }
+
+                    if (firstAdjust == 0L && zipAppBatchList.isEmpty()) break
+                    // this condition will only work if, out of all remaining apps,
+                    // none can be satisfied with the reduced cap size
+
+                    else zipBatches.add(ZipAppBatch(zipAppBatchList))
+
+                    firstAdjust = 0
+                    --maxOuterLoop
                 }
 
-                ZipAppBatch(zipAppBatchList).run {
-                    zipBatches.add(this)
-                    Log.d(DEBUG_TAG, "No. of packets added: ${zipAppBatchList.size} zipFullSize: ${this.zipFullSize}")
+                // make dedicated batches for bigger apps needing full max size
+                maxOuterLoop = 1000
+                while (allZipPackets.isNotEmpty() && maxOuterLoop > 0) {
+
+                    if (BackupServiceKotlin.cancelAll) return
+                    c = 0
+
+                    val p = allZipPackets[c]
+
+                    if (p.zipPacketSize <= (this)) {
+                        zipBatches.add(ZipAppBatch(arrayListOf(p)))
+                        shareProgress("${engineContext.getString(R.string.adding_bigger_apps)}: ${p.appPacket_z.appName}",
+                                getPercentage(allZipPackets.size))
+                        allZipPackets.remove(p)
+                    }
+                    else ++c
+
+                    --maxOuterLoop
                 }
 
-                // size adjustment for extras to be made only for first batch. After that make it 0
-                firstAdjust = 0
+                // show errors for packets could not be added
+                allZipPackets.forEach {
+                    errors.add("$ERR_ZIP_BATCHING: Could not batch, ${it.appPacket_z.appName}.")
+                }
+
             }
         }
         catch (e: Exception){

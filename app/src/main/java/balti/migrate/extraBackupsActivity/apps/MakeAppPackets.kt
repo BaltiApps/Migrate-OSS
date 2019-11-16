@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
+import balti.migrate.AppInstance.Companion.RESERVED_SPACE
 import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
@@ -328,7 +329,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
         // check if any app is there which is too large before comparing with device storage
         val bigAppsNameConcat = StringBuilder("")
         appPackets.forEach {
-            if ((it.dataSize + it.systemSize) > MAX_WORKING_SIZE) bigAppsNameConcat.append("${it.appName}\n")
+            if ((it.dataSize + it.systemSize) > (MAX_WORKING_SIZE - RESERVED_SPACE)) bigAppsNameConcat.append("${it.appName}\n")
         }
         if (bigAppsNameConcat.toString().trim() != ""){
             return arrayOf(false, vOp.getStringFromRes(R.string.cannot_split), bigAppsNameConcat)
