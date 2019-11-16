@@ -31,7 +31,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
     private var allSize = 0
 
     private fun shareProgress(string: String, progress : Int){
-        Thread.sleep(50)
+    Thread.sleep(50)
         broadcastProgress("", string, false, progress)
     }
 

@@ -52,6 +52,7 @@ class ZipVerificationEngine(private val jobcode: Int,
             }
 
             var subTask = engineContext.getString(R.string.listing_zip_file)
+            Thread.sleep(50)
             broadcastProgress(subTask, "${subTask}\n${fileSizeString}", false)
 
             while (enumeration.hasMoreElements()) {
@@ -85,6 +86,7 @@ class ZipVerificationEngine(private val jobcode: Int,
             }
 
             subTask = "${engineContext.getString(R.string.compared_zip_contents)}(${zipList.size}/${contents.size})"
+            Thread.sleep(50)
             broadcastProgress(subTask, subTask, false)
 
             if (checkFileListContents) {
@@ -118,6 +120,7 @@ class ZipVerificationEngine(private val jobcode: Int,
                     }
 
                     subTask = "${engineContext.getString(R.string.compared_fileList_contents)}($filesPresent/$filesCompared)"
+                    Thread.sleep(50)
                     broadcastProgress(subTask, subTask, false)
                 }
             }
