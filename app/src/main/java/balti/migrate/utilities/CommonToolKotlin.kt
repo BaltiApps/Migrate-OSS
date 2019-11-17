@@ -52,9 +52,9 @@ class CommonToolKotlin(val context: Context) {
         val FILE_PROGRESSLOG = "progressLog.txt"
         val FILE_ERRORLOG = "errorLog.txt"
         val FILE_DEVICE_INFO = "device_info.txt"
-        val FILE_PREFIX_BACKUP_SCRIPT = "the_backup_script_"
-        val FILE_PREFIX_RETRY_SCRIPT = "retry_script_"
-        val FILE_PREFIX_TAR_CHECK = "tar_check_"
+        val FILE_PREFIX_BACKUP_SCRIPT = "the_backup_script"
+        val FILE_PREFIX_RETRY_SCRIPT = "retry_script"
+        val FILE_PREFIX_TAR_CHECK = "tar_check"
 
         val FILE_ZIP_NAME_EXTRAS = "Extras"
 
@@ -90,13 +90,14 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION = "zip_verification_progress"
         val EXTRA_PROGRESS_TYPE_FINISHED = "finished"
         val EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL = "waiting_to_cancel"
+        val EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH = "making_zip_batch"
 
         val EXTRA_BACKUP_NAME = "backupName"
         val EXTRA_DESTINATION = "destination"
         val EXTRA_ACTUAL_DESTINATION = "actualDestination"
         val EXTRA_ERRORS = "errors"
+        val EXTRA_WARNINGS = "warnings"
         val EXTRA_TOTAL_TIME = "total_time"
-        val EXTRA_MADE_PART_NAME = "madePartName"
         val EXTRA_IS_CANCELLED = "isCancelled"
 
         val ERR_ZIP_TRY_CATCH = "ZIP_TRY_CATCH"
@@ -131,14 +132,34 @@ class CommonToolKotlin(val context: Context) {
         val ERR_TESTING_TRY_CATCH = "SYSTEM_TESTING_TRY_CATCH"
         val ERR_UPDATER_TRY_CATCH = "UPDATER_TRY_CATCH"
         val ERR_UPDATER_EXTRACT = "UPDATER_EXTRACT"
+        val ERR_UPDATER_CONFIG_FILE = "UPDATER_CONFIG_FILE"
+        val ERR_ZIP_PACKET_MAKING = "ZIP_PACKET_MAKING"
+        val ERR_ZIP_BATCHING = "ZIP_BATCHING"
+        val ERR_ZIP_ADDING_EXTRAS = "ZIP_ADDING_EXTRAS"
+        val ERR_ZIP_ENGINE_INIT = "ZIP_ENGINE_INIT"
+        val ERR_MOVING = "MOVING_FILES"
 
         val ERR_BACKUP_SERVICE_ERROR = "BACKUP_SERVICE"
         val ERR_CONDITIONAL_TASK = "RUN_CONDITIONAL_TASK"
+        val ERR_ON_COMPLETE_TASK = "ON_COMPLETE_TASK"
+        val ERR_BACKUP_SERVICE_INIT = "BACKUP_SERVICE_INIT"
 
         val ALL_SUPPRESSED_ERRORS = arrayOf(ERR_APP_BACKUP_SUPPRESSED, ERR_CORRECTION_SUPPRESSED, ERR_TAR_SUPPRESSED)
 
+        val WARNING_ZIP_BATCH = "ZIP_BATCH_WARNING"
+        val WARNING_CALLS = "CALL_VERIFY_WARNING"
+        val WARNING_SMS = "SMS_VERIFY_WARNING"
+        val WARNING_ZIP_FILELIST_VERIFICATION = "ZIP_FILELIST"
+        val WARNING_ZIP_FILELIST_UNAVAILABLE = "ZIP_FILELIST_UNAVAILABLE"
+        val WARNING_ZIP_FILELIST_ITEM_UNAVAILABLE = "FILELIST_ITEM_UNAVAILABLE"
+        val WARNING_FILE_LIST_COPY = "FILE_LIST_COPY"
+
+        val ALL_WARNINGS = arrayOf(WARNING_ZIP_BATCH, WARNING_CALLS, WARNING_SMS, WARNING_ZIP_FILELIST_VERIFICATION,
+                WARNING_ZIP_FILELIST_UNAVAILABLE, WARNING_ZIP_FILELIST_ITEM_UNAVAILABLE, WARNING_FILE_LIST_COPY)
+
         val PACKAGE_NAME_PLAY_STORE = "com.android.vending"
         val PACKAGE_NAME_FDROID = "org.fdroid.fdroid.privileged"
+        val PACKAGE_NAMES_KNOWN = arrayOf(PACKAGE_NAME_PLAY_STORE, PACKAGE_NAME_FDROID)
         val PACKAGE_NAMES_PACKAGE_INSTALLER = arrayOf("com.google.android.packageinstaller")
 
         val PREF_FILE_APPS = "apps"
@@ -206,6 +227,7 @@ class CommonToolKotlin(val context: Context) {
         val JOBCODE_PEFORM_BACKUP_SETTINGS = 60000
         val JOBCODE_PERFORM_APP_BACKUP = 70000
         val JOBCODE_PERFORM_APP_BACKUP_VERIFICATION = 80000
+        val JOBCODE_PERFORM_ZIP_BATCHING = 85000
         val JOBCODE_PERFORM_UPDATER_SCRIPT = 90000
         val JOBCODE_PERFORM_ZIP_BACKUP = 100000
         val JOBCODE_PERFORM_ZIP_VERIFICATION = 110000
@@ -235,10 +257,6 @@ class CommonToolKotlin(val context: Context) {
 
         // main backup engine
         val MIGRATE_STATUS_LABEL = "migrate_status"
-
-        val EXTRA_PART_NAME = "part_name"
-        val EXTRA_PART_NUMBER = "part_number"
-        val EXTRA_TOTAL_PARTS = "total_parts"
 
         val MIGRATE_STATUS = "MIGRATE_STATUS"
 
@@ -500,15 +518,18 @@ class CommonToolKotlin(val context: Context) {
                 for (f in files)
                     dirDelete(f.absolutePath)
             }
-            file.delete()
         }
     }
 
     fun getHumanReadableStorageSpace(space: Long): String {
-        var res = "KB"
+        var res = "B"
 
         var s = space.toDouble()
 
+        if (s > 1024) {
+            s /= 1024.0
+            res = "KB"
+        }
         if (s > 1024) {
             s /= 1024.0
             res = "MB"
@@ -558,6 +579,9 @@ class CommonToolKotlin(val context: Context) {
 
     fun applyNamingCorrectionForShell(name: String) =
             name.replace("(", "\\(").replace(")", "\\)").replace(" ", "\\ ")
+
+    fun applyNamingCorrectionForDisplay(name: String) =
+            name.replace("`", "'").replace("\\s+".toRegex(), "_").replace("[^\\x20-\\x7E]".toRegex(), "")
 
     fun makeNotificationChannel(channelId: String, channelDesc: CharSequence, importance: Int){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -625,14 +649,6 @@ class CommonToolKotlin(val context: Context) {
         return if (total != 0) (count*100)/total
         else 0
     }
-
-    fun getPercentageText(count: Int, total: Int): String =
-            "${getPercentage(count, total)}%"
-
-    fun getMadePartName(zeroIndexedPartName: Int, totalParts: Int): String =
-            if (totalParts > 1)
-                "${context.getString(R.string.part)}_${zeroIndexedPartName + 1}_${context.getString(R.string.of)}_$totalParts"
-            else ""
 
     fun doBackgroundTask(job: () -> Unit, postJob: () -> Unit){
         class Class : AsyncTask<Any, Any, Any>(){

@@ -20,7 +20,7 @@
     <string name="app_name">Migrate</string>
     <string name="current_version_name">3.0</string>
     <string name="current_version_codename">Mercury</string>
-    <string name="release_state">alpha1</string>
+    <string name="release_state">alpha2</string>
     <string name="last_tested_label">Last tested on: Android 10</string>
 
     <!--about_app.xml-->
@@ -233,12 +233,11 @@
     <string name="make_sure_destination_exists">Make sure the destination is mounted and writable.</string>
     <string name="error_detecting_memory">Error detecting device memory</string>
     <string name="error_checking_destination">Error checking destination</string>
-    <string name="error_making_batches">Error making batches</string>
     <string name="cannot_split">Backup is not possible because these apps are too big!</string>
-    <string name="making_batches">Making batches</string>
     <string name="part">Part</string>
     <string name="parts">parts</string>
     <string name="of">of</string>
+    <string name="allowed">allowed</string>
     <string name="error_reading_dpi">Error reading DPI</string>
     <string name="error_reading_adb">Error reading ADB</string>
     <string name="error_reading_wifi">Error reading wifi password store</string>
@@ -267,7 +266,7 @@
         \n
         After ticking a checkbox on an item, click on the item for further options.
     </string>
-    <string name="change_size_calculation_method">You can try going to the main screen of the app -> click top left green icon -> \"Preferences\" -> \"Use new method to calculate size\"</string>
+    <string name="change_size_calculation_method">You can try going to the main screen of the app -> \"Preferences\" -> Uncheck \"Use new method to calculate size\"</string>
     <string name="no_sd_card_detected">No SD card detected (or not mounted as R/W).</string>
     <string name="no_sd_card_detected_exp">Please make sure that you have mounted an external SD card (if supported by your device)\n
     Also make sure that you install the \"ExSDCard Access Enabler\" magisk module.\n\n
@@ -308,10 +307,12 @@
     <string name="close">Close</string>
     <string name="backingUp">Backing up apps</string>
     <string name="noErrors">Finished! No errors.</string>
-    <string name="zipping_all_files">Zipping all files</string>
+    <string name="zipping_all_files">Zipping files</string>
+    <string name="making_file_list">Making fileList</string>
     <string name="verifying_zip">Verifying zip</string>
     <string name="listing_zip_file">Listing zip file</string>
-    <string name="comparing_zip_contents">Comparing zip contents</string>
+    <string name="compared_zip_contents">Compared zip contents</string>
+    <string name="compared_fileList_contents">Compared file list contents</string>
     <string name="zip_size_too_big">Zip size is greater than the maximum allowed size. Please go to Preferences -> Max. Zip size</string>
     <string name="storing_wifi_data">Storing wifi data</string>
     <string name="testing_system">Testing system</string>
@@ -336,14 +337,17 @@
     <string name="errorStartingBackup">Error starting backup (onStartCommand).</string>
     <string name="deletingFiles">Deleting files</string>
     <string name="backupFinishedWithErrors">Backup finished with errors!</string>
+    <string name="backupFinishedWithWarnings">Backup finished with warnings!</string>
     <string name="backupPartHadErrors">Backup part had errors.</string>
     <string name="incompleteZip">Not all files could be combined.</string>
     <string name="no_keyboard_data">No keyboard data</string>
 
+    <string name="failed_to_make_batches">Failed to make batches</string>
     <string name="backup_error_system_check_failed">Backup cancelled because system check failed.</string>
     <string name="backup_error_updater_script">Backup failed at updater script.</string>
     <string name="backup_error_at_app_verification">Backup failed at app verification.</string>
     <string name="errors_in_batch">Errors found in batch</string>
+    <string name="zip_size">Zip size</string>
 
     <!--BackupActivity.java-->
     <string name="setBackupName">Set backup name</string>
@@ -392,6 +396,14 @@
     <string name="root_permission_denied_desc">Please make sure that your device is rooted and you have allowed root permission.\n\n
     If your ROM was pre-rooted, try flashing Magisk.
     </string>
+    <string name="making_packets">Making zip packets</string>
+    <string name="making_batches">Making zip batches</string>
+    <string name="total_extra_size">Extras size</string>
+    <string name="capping_size">Capping size</string>
+    <string name="adding_bigger_apps">Adding bigger apps</string>
+    <string name="adding">Adding</string>
+    <string name="packet">Packet</string>
+    <string name="moving_files">Moving files</string>
     <string name="use_reflection">Use reflection?</string>
     <string name="use_reflection_exp">Reflection is an experimental way of calculating size in Nougat and below. This might provide a better way of calculating size. Recommended: Yes</string>
     <string name="use_usage_access_permission">Grant usage access permission?</string>
@@ -786,5 +798,11 @@
 
     <!--ZipItemAdapter.java-->
     <string name="empty">Empty</string>
+
+    <string name="file_list_not_in_zip_batch">File list not present in zipBatch</string>
+    <string name="zip_batch_null_updater">Zip Batch is null before updater script</string>
+    <string name="zip_batch_null_zipping_engine">Zip Batch is null before starting zipping</string>
+    <string name="zip_batch_null_zip_verification">Zip Batch is null before zip verification</string>
+    <string name="improper_result_received">Improper result received.</string>
 
 </resources>

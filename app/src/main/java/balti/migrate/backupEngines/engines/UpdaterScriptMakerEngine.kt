@@ -5,59 +5,39 @@ import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
-import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
+import balti.migrate.backupEngines.containers.ZipAppBatch
 import balti.migrate.utilities.CommonToolKotlin.Companion.DATA_TEMP
 import balti.migrate.utilities.CommonToolKotlin.Companion.DIR_MANUAL_CONFIGS
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_CONFIG_FILE
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_EXTRACT
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_BUILDPROP_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MIGRATE_CACHE_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PACKAGE_DATA
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_SYSTEM_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_CACHE_DEFAULT
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_BUILDPROP
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_MIGRATE_CACHE
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_SYSTEM
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
-import java.io.*
+import balti.migrate.utilities.ToolsNoContext
+import java.io.BufferedWriter
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
 // extract helper, busybox, update-binary, mount_script.sh, prep.sh, helper_unpacking_script.sh, verify.sh
 
 class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupIntentData,
-                               private val appBatch: AppBatch,
-                               private val timeStamp: String,
-                               private val contactsFileName: String?,
-                               private val smsFileName: String?,
-                               private val callsFileName: String?,
-                               private val settingsFileName: String?,
-                               private val wifiFileName: String?) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT) {
-
-    private val pm by lazy { engineContext.packageManager }
+                               private val zipAppBatch: ZipAppBatch,
+                               private val timeStamp: String) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT) {
 
     private val errors by lazy { ArrayList<String>(0) }
-
-    private fun moveFile(source: File, destination: File): String {
-        return try {
-            val bufferedInputStream = BufferedInputStream(FileInputStream(source))
-            val fileOutputStream = FileOutputStream(destination)
-
-            val buffer = ByteArray(2048)
-            var read: Int
-
-            while (true) {
-                read = bufferedInputStream.read(buffer)
-                if (read > 0) fileOutputStream.write(buffer, 0, read)
-                else break
-            }
-            fileOutputStream.close()
-            source.delete()
-            ""
-        } catch (e: Exception) {
-            e.printStackTrace()
-            e.message.toString()
-        }
-
-    }
+    private val warnings by lazy { ArrayList<String>(0) }
 
     private fun extractToBackup(fileName: String, targetPath: String){
         val assetFile = File(commonTools.unpackAssetToInternal(fileName, fileName, false))
@@ -67,11 +47,11 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
         File(targetPath).mkdirs()
 
         if (assetFile.exists())
-            err = moveFile(assetFile, targetFile)
-        else errors.add("$ERR_UPDATER_EXTRACT${bd.errorTag}: $fileName could not be unpacked")
+            err = ToolsNoContext.moveFile(assetFile, targetPath)
+        else errors.add("$ERR_UPDATER_EXTRACT${bd.batchErrorTag}: $fileName could not be unpacked")
 
         if (!targetFile.exists())
-            errors.add("$ERR_UPDATER_EXTRACT${bd.errorTag}: $fileName could not be moved: $err")
+            errors.add("$ERR_UPDATER_EXTRACT${bd.batchErrorTag}: $fileName could not be moved: $err")
     }
 
     private fun makeUpdaterScript() {
@@ -85,11 +65,14 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             updater_writer.write("ui_print(\" \");\n")
             updater_writer.write("ui_print(\"---------------------------------\");\n")
             updater_writer.write("ui_print(\"      Migrate Flash package      \");\n")
+            updater_writer.write("ui_print(\"      Version ${engineContext.getString(R.string.current_version_name)} - ${engineContext.getString(R.string.current_version_codename)}       \");\n")
             updater_writer.write("ui_print(\"---------------------------------\");\n")
 
-            if (madePartName != "") {
-                updater_writer.write("ui_print(\"*** $madePartName ***\");\n")
-                updater_writer.write("ui_print(\"---------------------------------\");\n")
+            zipAppBatch.partName.let {
+                if (it != "") {
+                    updater_writer.write("ui_print(\"*** $it ***\");\n")
+                    updater_writer.write("ui_print(\"---------------------------------\");\n")
+                }
             }
 
             // extract scripts and other files
@@ -118,14 +101,12 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             set777Permission("verify.sh")
             set777Permission(FILE_FILE_LIST)
             set777Permission("mover.sh")
-            set777Permission("migrate/$FILE_MIGRATE_CACHE_MANUAL")
-            set777Permission("migrate/$FILE_SYSTEM_MANUAL")
             set777Permission(DIR_MANUAL_CONFIGS)
 
             // mount partitions
             updater_writer.write("ui_print(\" \");\n")
             updater_writer.write("ui_print(\"Mounting partition...\");\n")
-            updater_writer.write("run_program(\"/tmp/mount_script.sh\", \"m\");\n")
+            updater_writer.write("run_program(\"/tmp/mount_script.sh\", \"m\", \"$DIR_MANUAL_CONFIGS\");\n")
 
             // exit if mount failed
             updater_writer.write("ifelse(is_mounted(\"/data\"), ui_print(\"Mounted data!\"), abort(\"Mount failed data! Exiting...\"));\n")
@@ -149,25 +130,24 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             }
 
             // extract app files
-            val size = appBatch.appPackets.size
-            for (c in 0 until appBatch.appPackets.size) {
+            val packets = zipAppBatch.zipPackets
+            val size = packets.size
+            for (c in packets.indices) {
 
                 if (BackupServiceKotlin.cancelAll) {
                     updater_writer.close()
                     break
                 }
 
-                val packet = appBatch.appPackets[c]
-                val packageName = packet.PACKAGE_INFO.packageName
+                val packet = packets[c].appPacket_z
+                val packageName = packet.packageName
 
                 if (packet.APP || packet.DATA || packet.PERMISSION) {
-                    val appName = pm.getApplicationLabel(packet.PACKAGE_INFO.applicationInfo)
-                    updater_writer.write("ui_print(\"$appName (${c + 1}/$size)\");\n")
+                    updater_writer.write("ui_print(\"${packet.appName} (${c + 1}/$size)\");\n")
                 }
 
                 if (packet.APP) {
-                    var apkPath = packet.PACKAGE_INFO.applicationInfo.sourceDir
-                    apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'))
+                    val apkPath = packet.apkPath
 
                     if (!apkPath.startsWith("/data")) {
                         updater_writer.write("package_extract_dir(\"$packageName.app\", \"/tmp/$packageName.app\");\n")
@@ -192,28 +172,18 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 updater_writer.write("set_progress($pString);\n")
             }
 
+            zipAppBatch.extrasFiles.run {
+                if (isNotEmpty()) {
 
-            // extract extras
-            updater_writer.write("ui_print(\" \");\n")
-            contactsFileName?.let {
-                updater_writer.write("ui_print(\"Extracting contacts: $it\");\n")
-                extractItToTemp(it)
-            }
-            smsFileName?.let {
-                updater_writer.write("ui_print(\"Extracting sms: $it\");\n")
-                extractItToTemp(it)
-            }
-            callsFileName?.let {
-                updater_writer.write("ui_print(\"Extracting call logs: $it\");\n")
-                extractItToTemp(it)
-            }
-            settingsFileName?.let {
-                updater_writer.write("ui_print(\"Extracting settings: $it\");\n")
-                extractItToTemp(it)
-            }
-            wifiFileName?.let {
-                updater_writer.write("ui_print(\"Extracting keyboard data: $it\");\n")
-                extractItToTemp(it)
+                    // extract extras
+                    updater_writer.write("ui_print(\" \");\n")
+                    updater_writer.write("ui_print(\"Extracting extras...\");\n")
+
+                    forEach {
+                        updater_writer.write("ui_print(\"${it.name}\");\n")
+                        extractItToTemp(it.name)
+                    }
+                }
             }
 
             // move everything
@@ -233,7 +203,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             // un-mount partitions
             updater_writer.write("ui_print(\" \");\n")
             updater_writer.write("ui_print(\"Unmounting partition...\");\n")
-            updater_writer.write("run_program(\"/tmp/mount_script.sh\", \"u\");\n")
+            updater_writer.write("run_program(\"/tmp/mount_script.sh\", \"u\", \"$DIR_MANUAL_CONFIGS\");\n")
 
             updater_writer.write("ui_print(\" \");\n")
             updater_writer.write("ui_print(\"Finished!\");\n")
@@ -265,8 +235,9 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
         contents += "device " + Build.DEVICE + "\n"
         contents += "sdk " + Build.VERSION.SDK_INT + "\n"
         contents += "cpu_abi " + Build.SUPPORTED_ABIS[0] + "\n"
-        contents += "data_required_size ${appBatch.dataSize}\n"
-        contents += "system_required_size ${appBatch.dataSize}\n"
+        contents += "data_required_size ${zipAppBatch.batchDataSize}\n"
+        contents += "system_required_size ${zipAppBatch.batchSystemSize}\n"
+        contents += "zip_expected_size ${zipAppBatch.zipFullSize}\n"
         contents += "migrate_version " + engineContext.getString(R.string.current_version_name) + "\n"
 
         try {
@@ -277,6 +248,27 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             e.printStackTrace()
         }
 
+    }
+
+    private fun getBusyboxAssetName(): String {
+        val cpuAbi = Build.SUPPORTED_ABIS[0]
+        return if (cpuAbi == "x86" || cpuAbi == "x86_64") "busybox-x86" else "busybox"
+    }
+
+    private fun writeManualConfig(fileName: String, value: String){
+        try {
+            File(actualDestination, DIR_MANUAL_CONFIGS).run {
+                mkdirs()
+                BufferedWriter(FileWriter(File(this, fileName))).run {
+                    sharedPreferences.getString(value, "")?.let { write(it) }
+                    close()
+                }
+            }
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            warnings.add("$ERR_UPDATER_CONFIG_FILE${bd.batchErrorTag}: $fileName - ${e.message}")
+        }
     }
 
     override fun doInBackground(vararg params: Any?): Any {
@@ -297,18 +289,24 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             extractToBackup("verify.sh", actualDestination)
             extractToBackup("MigrateHelper.apk", "$actualDestination/system/app/MigrateHelper/")
 
+            extractToBackup(getBusyboxAssetName(), actualDestination)
+
+            writeManualConfig(FILE_MIGRATE_CACHE_MANUAL, PREF_MANUAL_MIGRATE_CACHE)
+            writeManualConfig(FILE_SYSTEM_MANUAL, PREF_MANUAL_SYSTEM)
+            writeManualConfig(FILE_BUILDPROP_MANUAL, PREF_MANUAL_BUILDPROP)
+
             makeUpdaterScript()
         }
         catch (e: Exception){
             e.printStackTrace()
-            errors.add("$ERR_UPDATER_TRY_CATCH${bd.errorTag}: ${e.message}")
+            errors.add("$ERR_UPDATER_TRY_CATCH${bd.batchErrorTag}: ${e.message}")
         }
 
         return 0
     }
 
     override fun postExecuteFunction() {
-        onBackupComplete.onBackupComplete(jobcode, errors.size == 0, errors)
+        onEngineTaskComplete.onComplete(jobcode, errors, warnings)
     }
 
 }

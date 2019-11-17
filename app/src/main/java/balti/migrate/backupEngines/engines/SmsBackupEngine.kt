@@ -8,11 +8,10 @@ import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_SMS_TRY_CATCH
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_SMS_VERIFY
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_SMS_VERIFY_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_SMS_WRITE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_SMS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SMS_VERIFY
+import balti.migrate.utilities.CommonToolKotlin.Companion.WARNING_SMS
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_ADDRESS
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_BODY
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_CREATOR
@@ -31,6 +30,7 @@ import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_SUBJECT
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_TABLE_NAME
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_TYPE
 import java.io.File
+import java.io.FileFilter
 
 class SmsBackupEngine(private val jobcode: Int,
                       private val bd: BackupIntentData,
@@ -40,6 +40,7 @@ class SmsBackupEngine(private val jobcode: Int,
 
     private val smsDBFile by lazy { File(actualDestination, smsDBFileName) }
     private val errors by lazy { ArrayList<String>(0) }
+    private val warnings by lazy { ArrayList<String>(0) }
 
     private fun writeSms(){
         try {
@@ -120,21 +121,16 @@ class SmsBackupEngine(private val jobcode: Int,
                     }
                     catch (e: Exception){
                         e.printStackTrace()
-                        errors.add("$ERR_SMS_WRITE${bd.errorTag}: ${e.message}")
+                        errors.add("$ERR_SMS_WRITE: ${e.message}")
                     }
                 }
 
                 db.close()
-
-                File(smsDBFile.absolutePath + "-shm").delete()
-                File(smsDBFile.absolutePath + "-wal").delete()
-
-                writeToFileList(smsDBFileName)
             }
         }
         catch (e: Exception){
             e.printStackTrace()
-            errors.add("$ERR_SMS_TRY_CATCH${bd.errorTag}: ${e.message}")
+            errors.add("$ERR_SMS_TRY_CATCH: ${e.message}")
         }
     }
 
@@ -166,11 +162,11 @@ class SmsBackupEngine(private val jobcode: Int,
             commonTools.tryIt { dataBase.close() }
 
             if (c != totalSelected)
-                errors.add("$ERR_SMS_VERIFY${bd.errorTag}: ${engineContext.getString(R.string.sms_records_incomplete)} - $c/${totalSelected}}")
+                warnings.add("$WARNING_SMS: ${engineContext.getString(R.string.sms_records_incomplete)} - $c/${totalSelected}}")
         }
         catch (e: Exception){
             e.printStackTrace()
-            errors.add("$ERR_SMS_VERIFY_TRY_CATCH${bd.errorTag}: ${e.message}")
+            warnings.add("$WARNING_SMS: ${e.message}")
         }
     }
 
@@ -186,7 +182,10 @@ class SmsBackupEngine(private val jobcode: Int,
     }
 
     override fun postExecuteFunction() {
-        onBackupComplete.onBackupComplete(jobcode, errors.size == 0, errors)
+        val filesGenerated = File(actualDestination).listFiles(FileFilter {
+            return@FileFilter it.name.startsWith(smsDBFile.name)
+        })
+        onEngineTaskComplete.onComplete(jobcode, errors, warnings, filesGenerated)
     }
 
 }

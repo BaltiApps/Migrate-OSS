@@ -5,30 +5,23 @@ import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.BackupUtils
-import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
-import balti.migrate.utilities.CommonToolKotlin.Companion.DIR_MANUAL_CONFIGS
+import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_APP_BACKUP_SHELL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_APP_BACKUP_SUPPRESSED
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_APP_BACKUP_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_SCRIPT_MAKING_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_APP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_BUILDPROP_MANUAL
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MIGRATE_CACHE_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_BACKUP_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_SYSTEM_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_IGNORE_APP_CACHE
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_BUILDPROP
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_MIGRATE_CACHE
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_SYSTEM
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.IconTools
 import java.io.*
 
 class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData,
-                               private val appBatch: AppBatch,
+                               private val appList: ArrayList<AppPacket>,
                                private val doBackupInstallers : Boolean,
                                private val busyboxBinaryPath: String) : ParentBackupClass(bd, "") {
 
@@ -46,29 +39,21 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
     private val allErrors by lazy { ArrayList<String>(0) }
     private val actualErrors by lazy { ArrayList<String>(0) }
 
-    private fun writeFileList(fileName: String, appName: String){
-        writeToFileList(fileName)
-        broadcastProgress(appName, fileName, false)
-    }
-
     init {
-
         customPreExecuteFunction = {
-            if (bd.partNumber == 0){
 
-                var previousBackupScripts = engineContext.filesDir.listFiles {
+            var previousBackupScripts = engineContext.filesDir.listFiles {
+                f -> (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
+                    f.name.endsWith(".sh")
+            }
+            for (f in previousBackupScripts) f.delete()
+
+            engineContext.externalCacheDir?.let {
+                previousBackupScripts = it.listFiles {
                     f -> (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
                         f.name.endsWith(".sh")
                 }
                 for (f in previousBackupScripts) f.delete()
-
-                engineContext.externalCacheDir?.let {
-                    previousBackupScripts = it.listFiles {
-                        f -> (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
-                            f.name.endsWith(".sh")
-                    }
-                    for (f in previousBackupScripts) f.delete()
-                }
             }
         }
     }
@@ -84,7 +69,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
         val scriptLocation = "$actualDestination/$scriptName"
         val script = File(scriptLocation)
 
-        var pastingDir: String = if (apkPath.contains("priv-app"))
+        val pastingDir: String = if (apkPath.contains("priv-app"))
             apkPath.substring(apkPath.indexOf("/priv-app"))
         else apkPath.substring(apkPath.indexOf("/app"))
 
@@ -118,7 +103,8 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
             val ignoreCache = sharedPreferences.getBoolean(PREF_IGNORE_APP_CACHE, false)
 
-            val scriptFile = File(engineContext.filesDir, "$FILE_PREFIX_BACKUP_SCRIPT${bd.partNumber}.sh")
+            val scriptFile = File(engineContext.filesDir, "$FILE_PREFIX_BACKUP_SCRIPT.sh")
+            scriptFile.parentFile?.mkdirs()
             val scriptWriter = BufferedWriter(FileWriter(scriptFile))
             val appAndDataBackupScript = commonTools.unpackAssetToInternal("backup_app_and_data.sh", "backup_app_and_data.sh", false)
 
@@ -127,51 +113,21 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
             scriptWriter.write("sleep 1\n")
             scriptWriter.write("echo \"--- PID: $$\"\n")
             scriptWriter.write("cp ${scriptFile.absolutePath} ${engineContext.externalCacheDir}/\n")
-            scriptWriter.write("cp $busyboxBinaryPath $actualDestination/\n")
 
-            appBatch.appPackets.let {packets ->
+            appList.let {packets ->
                 for (i in 0 until packets.size) {
 
                     if (BackupServiceKotlin.cancelAll) break
 
                     val packet = packets[i]
 
-                    val appName = formatName(pm.getApplicationLabel(packet.PACKAGE_INFO.applicationInfo).toString())
-                    val modifiedAppName = "$appName(${i+1}/${packets.size})"
+                    val modifiedAppName = "${packet.appName}(${i+1}/${packets.size})"
+                    val packageName = packet.PACKAGE_INFO.packageName
 
                     broadcastProgress(modifiedAppName, modifiedAppName, true, commonTools.getPercentage(i + 1, packets.size))
 
-                    val packageName = packet.PACKAGE_INFO.packageName
-
-                    var apkPath = "NULL"
-                    var apkName = "NULL"       //has .apk extension
-                    var isSystem = false
-                    if (packet.APP) {
-
-                        apkPath = packet.PACKAGE_INFO.applicationInfo.sourceDir
-                        apkName = apkPath.substring(apkPath.lastIndexOf('/') + 1)
-                        apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'))
-                        apkName = commonTools.applyNamingCorrectionForShell(apkName)
-
-                        isSystem = !apkPath.startsWith("/data")
-
-                        if (!isSystem) writeFileList("$packageName.app", modifiedAppName)
-                        else writeFileList("$packageName.app_sys", modifiedAppName)
-                    }
-
-                    var dataPath = "NULL"
-                    var dataName = "NULL"
-                    if (packet.DATA) {
-                        dataPath = packet.PACKAGE_INFO.applicationInfo.dataDir
-                        dataName = dataPath.substring(dataPath.lastIndexOf('/') + 1)
-                        dataPath = dataPath.substring(0, dataPath.lastIndexOf('/'))
-
-                        writeFileList("$packageName.tar.gz", modifiedAppName)
-                    }
-
                     if (packet.PERMISSION) {
                         backupUtils.makePermissionFile(packageName, actualDestination, pm)
-                        writeFileList("$packageName.perm", modifiedAppName)
                     }
 
                     var versionName: String? = packet.PACKAGE_INFO.versionName
@@ -182,37 +138,24 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     var appIconFileName: String? = null
                     if (sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true)) {
                         appIconFileName = backupUtils.makeIconFile(packageName, appIcon, actualDestination)
-                        writeFileList("$appIconFileName", modifiedAppName)
                     }
 
                     val echoCopyCommand = "echo \"$MIGRATE_STATUS: $modifiedAppName icon: ${if (appIconFileName == null) appIcon else "$packageName.icon"}\"\n"
                     val scriptCommand = "sh $appAndDataBackupScript " +
                             "$packageName $actualDestination " +
-                            "$apkPath $apkName " +
-                            "$dataPath $dataName " +
+                            "${packet.apkPath} ${packet.apkName} " +
+                            "${packet.dataPath} ${packet.dataName} " +
                             "$busyboxBinaryPath $ignoreCache\n"
 
                     scriptWriter.write(echoCopyCommand, 0, echoCopyCommand.length)
                     scriptWriter.write(scriptCommand, 0, scriptCommand.length)
 
-                    commonTools.tryIt { if (isSystem) systemAppInstallScript(packageName, apkPath) }
+                    commonTools.tryIt { if (packet.isSystem) systemAppInstallScript(packageName, packet.apkPath) }
 
-                    backupUtils.makeMetadataFile(
-                            isSystem, appName, if (apkName != "NULL") "$packageName.apk" else "NULL",
-                            if (dataName != "NULL") "$dataName.tar.gz" else "NULL", appIconFileName,
-                            versionName, packet.PERMISSION, packet, bd, doBackupInstallers, actualDestination,
-                            if (appIconFileName != null) appIcon else null
-                    )
-
-                    writeFileList("$packageName.json", modifiedAppName)
+                    backupUtils.makeMetadataFile(versionName, appIconFileName, appIcon, packet, bd, doBackupInstallers)
                 }
 
             }
-
-            scriptWriter.write("mkdir -p $actualDestination/$DIR_MANUAL_CONFIGS\n")
-            scriptWriter.write("echo ${sharedPreferences.getString(PREF_MANUAL_MIGRATE_CACHE, "")} > $actualDestination/$DIR_MANUAL_CONFIGS/$FILE_MIGRATE_CACHE_MANUAL\n")
-            scriptWriter.write("echo ${sharedPreferences.getString(PREF_MANUAL_SYSTEM, "")} > $actualDestination/$DIR_MANUAL_CONFIGS/$FILE_SYSTEM_MANUAL\n")
-            scriptWriter.write("echo ${sharedPreferences.getString(PREF_MANUAL_BUILDPROP, "")} > $actualDestination/$DIR_MANUAL_CONFIGS/$FILE_BUILDPROP_MANUAL\n")
 
             scriptWriter.write("echo \"--- App files copied ---\"\n")
             scriptWriter.close()
@@ -223,7 +166,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
         }
         catch (e: Exception){
             e.printStackTrace()
-            addToActualErrors("$ERR_SCRIPT_MAKING_TRY_CATCH${bd.errorTag}: ${e.message}")
+            addToActualErrors("$ERR_SCRIPT_MAKING_TRY_CATCH: ${e.message}")
             return null
         }
     }
@@ -278,7 +221,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                         }
 
                         appName = line
-                        progress = commonTools.getPercentage(++c, appBatch.appPackets.size)
+                        progress = commonTools.getPercentage(++c, appList.size)
                         broadcastProgress(appName, "\n${appName}", true, progress)
                     }
                     else broadcastProgress(appName, line, false)
@@ -297,8 +240,8 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     }
 
                     if (!ignorable)
-                        addToActualErrors("$ERR_APP_BACKUP_SHELL${bd.errorTag}: $errorLine")
-                    else allErrors.add("$ERR_APP_BACKUP_SUPPRESSED${bd.errorTag}: $errorLine")
+                        addToActualErrors("$ERR_APP_BACKUP_SHELL: $errorLine")
+                    else allErrors.add("$ERR_APP_BACKUP_SUPPRESSED: $errorLine")
 
                     return@iterateBufferedReader false
                 })
@@ -308,7 +251,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
         }
         catch (e: Exception){
             e.printStackTrace()
-            addToActualErrors("$ERR_APP_BACKUP_TRY_CATCH${bd.errorTag}: ${e.message}")
+            addToActualErrors("$ERR_APP_BACKUP_TRY_CATCH: ${e.message}")
         }
     }
 
@@ -320,6 +263,6 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
     override fun postExecuteFunction() {
         BACKUP_PID = -999
-        onBackupComplete.onBackupComplete(jobcode, actualErrors.size == 0, allErrors)
+        onEngineTaskComplete.onComplete(jobcode, actualErrors, jobResults = allErrors)
     }
 }

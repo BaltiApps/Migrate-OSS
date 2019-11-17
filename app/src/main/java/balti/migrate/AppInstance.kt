@@ -5,7 +5,8 @@ import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
-import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
+import balti.migrate.backupEngines.containers.ZipAppBatch
+import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
@@ -24,7 +25,8 @@ class AppInstance: Application() {
         var MAX_CUSTOM_ZIP_SIZE = 0L
         var MAX_WORKING_SIZE = 0L
 
-        val appBatches = ArrayList<AppBatch>(0)
+        val appPackets = ArrayList<AppPacket>(0)
+        val zipBatches = ArrayList<ZipAppBatch>(0)
 
         val contactsList = ArrayList<ContactsDataPacketKotlin>(0)
         val callsList = ArrayList<CallsDataPacketsKotlin>(0)
@@ -36,14 +38,16 @@ class AppInstance: Application() {
         var wifiData : WifiDataPacket? = null
 
         var doBackupInstallers = false
+
+        val RESERVED_SPACE = 6553000L          // this accounts for the helper apk and other scripts
     }
 
-    private val MAX_TWRP_SIZE = 4194300L
+    private val MAX_TWRP_SIZE = 4194300000L
     private val DEVICE_RAM_SIZE : Long by lazy {
         val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         ActivityManager.MemoryInfo().let {
             activityManager.getMemoryInfo(it)
-            it.totalMem / 1024
+            it.totalMem
         }
     }
 

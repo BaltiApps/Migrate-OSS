@@ -8,11 +8,10 @@ import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CALLS_TRY_CATCH
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CALLS_VERIFY
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CALLS_VERIFY_TRY_CATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CALLS_WRITE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALLS_VERIFY
+import balti.migrate.utilities.CommonToolKotlin.Companion.WARNING_CALLS
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_CACHED_FORMATTED_NUMBER
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_CACHED_LOOKUP_URI
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_CACHED_MATCHED_NUMBER
@@ -38,6 +37,7 @@ import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_TRANSC
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_TYPE
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_VOICEMAIL_URI
 import java.io.File
+import java.io.FileFilter
 
 class CallsBackupEngine(private val jobcode: Int,
                         private val bd: BackupIntentData,
@@ -47,6 +47,7 @@ class CallsBackupEngine(private val jobcode: Int,
 
     private val callsDBFile by lazy { File(actualDestination, callsDBFileName) }
     private val errors by lazy { ArrayList<String>(0) }
+    private val warnings by lazy { ArrayList<String>(0) }
 
     private fun writeCalls(){
         try {
@@ -149,18 +150,16 @@ class CallsBackupEngine(private val jobcode: Int,
                     }
                     catch (e: Exception){
                         e.printStackTrace()
-                        errors.add("$ERR_CALLS_WRITE${bd.errorTag}: $display ${e.message}")
+                        errors.add("$ERR_CALLS_WRITE: $display ${e.message}")
                     }
                 }
 
                 db.close()
             }
-
-            writeToFileList(callsDBFileName)
         }
         catch (e: Exception){
             e.printStackTrace()
-            errors.add("$ERR_CALLS_TRY_CATCH${bd.errorTag}: ${e.message}")
+            errors.add("$ERR_CALLS_TRY_CATCH: ${e.message}")
         }
     }
 
@@ -192,11 +191,11 @@ class CallsBackupEngine(private val jobcode: Int,
             commonTools.tryIt { dataBase.close() }
 
             if (c != totalSelected)
-                errors.add("$ERR_CALLS_VERIFY${bd.errorTag}: ${engineContext.getString(R.string.call_logs_incomplete)} - $c/${totalSelected}}")
+                warnings.add("$WARNING_CALLS: ${engineContext.getString(R.string.call_logs_incomplete)} - $c/${totalSelected}}")
         }
         catch (e: Exception){
             e.printStackTrace()
-            errors.add("$ERR_CALLS_VERIFY_TRY_CATCH${bd.errorTag}: ${e.message}")
+            warnings.add("$WARNING_CALLS: ${e.message}")
         }
     }
 
@@ -212,6 +211,9 @@ class CallsBackupEngine(private val jobcode: Int,
     }
 
     override fun postExecuteFunction() {
-        onBackupComplete.onBackupComplete(jobcode, errors.size == 0, errors)
+        val filesGenerated = File(actualDestination).listFiles(FileFilter {
+            return@FileFilter it.name.startsWith(callsDBFile.name)
+        })
+        onEngineTaskComplete.onComplete(jobcode, errors, warnings, filesGenerated)
     }
 }

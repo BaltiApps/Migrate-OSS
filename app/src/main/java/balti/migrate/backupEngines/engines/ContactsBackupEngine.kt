@@ -47,19 +47,17 @@ class ContactsBackupEngine(private val jobcode: Int,
 
                 this.close()
             }
-
-            writeToFileList(vcfFileName)
         }
         catch (e: Exception){
             e.printStackTrace()
-            errors.add("$ERR_CONTACTS_TRY_CATCH${bd.errorTag}: ${e.message}")
+            errors.add("$ERR_CONTACTS_TRY_CATCH: ${e.message}")
         }
 
         return 0
     }
 
     override fun postExecuteFunction() {
-        onBackupComplete.onBackupComplete(jobcode, errors.size == 0, errors)
+        onEngineTaskComplete.onComplete(jobcode, errors, jobResults = arrayOf(vcfFile))
     }
 
 }

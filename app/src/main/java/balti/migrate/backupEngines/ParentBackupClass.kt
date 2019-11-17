@@ -10,28 +10,23 @@ import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin.Companion.serviceContext
 import balti.migrate.backupEngines.containers.BackupIntentData
-import balti.migrate.backupEngines.utils.OnBackupComplete
+import balti.migrate.backupEngines.utils.OnEngineTaskComplete
 import balti.migrate.simpleActivities.ProgressShowActivity
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ACTUAL_DESTINATION
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_MADE_PART_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PART_NUMBER
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SUBTASK
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TASKLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_PARTS
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
 import balti.migrate.utilities.CommonToolKotlin.Companion.NOTIFICATION_ID_ONGOING
 import balti.migrate.utilities.CommonToolKotlin.Companion.PENDING_INTENT_BACKUP_CANCEL_ID
 import balti.migrate.utilities.CommonToolKotlin.Companion.PENDING_INTENT_REQUEST_ID
 import java.io.BufferedWriter
 import java.io.File
-import java.io.FileWriter
 import java.io.OutputStreamWriter
 
 abstract class ParentBackupClass(private val bd: BackupIntentData,
@@ -40,25 +35,19 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
     val engineContext by lazy { serviceContext }
     val sharedPreferences by lazy { AppInstance.sharedPrefs }
 
-    val onBackupComplete by lazy { engineContext as OnBackupComplete }
+    val onEngineTaskComplete by lazy { engineContext as OnEngineTaskComplete }
 
     val commonTools by lazy { CommonToolKotlin(engineContext) }
-    val madePartName by lazy { commonTools.getMadePartName(bd.partNumber, bd.totalParts) }
     val actualDestination by lazy { formatName("${bd.destination}/${bd.backupName}") }
 
     private var lastProgress = 0
     private var isIndeterminate = true
-
-    private var isFileListWriterOpened = false
 
     private val actualBroadcast by lazy {
         Intent(ACTION_BACKUP_PROGRESS).apply {
             putExtra(EXTRA_BACKUP_NAME, bd.backupName)
             putExtra(EXTRA_ACTUAL_DESTINATION, actualDestination)
             putExtra(EXTRA_PROGRESS_TYPE, intentType)
-            putExtra(EXTRA_TOTAL_PARTS, bd.totalParts)
-            putExtra(EXTRA_PART_NUMBER, bd.partNumber)
-            putExtra(EXTRA_MADE_PART_NAME, madePartName)
         }
     }
 
@@ -75,21 +64,9 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     private val activityIntent by lazy { Intent(serviceContext, ProgressShowActivity::class.java) }
 
-    private val fileListWriter: BufferedWriter? by lazy {
-        isFileListWriterOpened = true
-        val file = File(actualDestination, FILE_FILE_LIST)
-        if (!file.exists()) file.createNewFile()
-        BufferedWriter(FileWriter(file, true))
-    }
-
-    fun writeToFileList(fileName: String){
-        commonTools.tryIt { fileListWriter?.write("$fileName\n") }
-    }
-
     fun getTitle(stringRes: Int): String{
-        return if (bd.totalParts > 1)
-            engineContext.getString(stringRes) + " : " + madePartName.replace("_", " ")
-        else engineContext.getString(stringRes)
+        return if (bd.batchErrorTag == "") engineContext.getString(stringRes)
+        else "${engineContext.getString(stringRes)} : ${engineContext.getString(R.string.part)} - ${bd.batchErrorTag}"
     }
 
     fun getDataBase(dataBaseFile: File): SQLiteDatabase{
@@ -159,7 +136,6 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
         commonTools.LBM?.sendBroadcast(actualBroadcast)
         updateNotification("", progress)
-
     }
 
     fun cancelTask(suProcess: Process?, vararg pids: Int) {
@@ -197,7 +173,6 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
-        if (isFileListWriterOpened) commonTools.tryIt { fileListWriter?.close() }
         postExecuteFunction()
     }
 }

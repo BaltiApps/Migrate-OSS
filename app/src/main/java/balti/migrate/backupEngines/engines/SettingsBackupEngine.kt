@@ -46,18 +46,16 @@ class SettingsBackupEngine(private val jobcode: Int,
                 this.write(jsonObject.toString(4))
                 this.close()
             }
-
-            writeToFileList(BACKUP_NAME_SETTINGS)
         }
         catch (e: Exception){
             e.printStackTrace()
-            errors.add("$ERR_SETTINGS_TRY_CATCH${bd.errorTag}: ${e.message}")
+            errors.add("$ERR_SETTINGS_TRY_CATCH: ${e.message}")
         }
 
         return 0
     }
 
     override fun postExecuteFunction() {
-        onBackupComplete.onBackupComplete(jobcode, errors.size == 0, errors)
+        onEngineTaskComplete.onComplete(jobcode, errors, jobResults = arrayOf(settingsFile))
     }
 }

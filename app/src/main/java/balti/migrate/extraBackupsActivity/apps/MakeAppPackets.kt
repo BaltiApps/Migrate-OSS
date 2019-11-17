@@ -14,9 +14,9 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
+import balti.migrate.AppInstance.Companion.RESERVED_SPACE
 import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
-import balti.migrate.extraBackupsActivity.apps.containers.AppBatch
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
@@ -29,7 +29,6 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
 import kotlinx.android.synthetic.main.please_wait.view.*
 import java.io.*
-import kotlin.math.ceil
 
 class MakeAppPackets(private val jobCode: Int, private val context: Context, private val destination: String,
                      private val appList: ArrayList<BackupDataPacketKotlin> = ArrayList(0), val dialogView: View):
@@ -37,12 +36,13 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
     private val onJobCompletion by lazy { context as OnJobCompletion }
     private val vOp by lazy { ViewOperations(context) }
-    private val appBatches by lazy { ArrayList<AppBatch>(0) }
-    private val parentAppBatch by lazy { ArrayList<AppPacket>(0) }
     private val notificationManager by lazy { context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
     private val main by lazy { context.getSharedPreferences(FILE_MAIN_PREF, MODE_PRIVATE) }
     private val commonTools by lazy { CommonToolKotlin(context) }
     private val pm by lazy { context.packageManager }
+    private val appPackets by lazy { ArrayList<AppPacket>(0) }
+
+    private var appsScanned = 0
 
     private val ignoreCache by lazy { main.getBoolean(PREF_IGNORE_APP_CACHE, false) }
 
@@ -71,6 +71,10 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
     private fun calculateSizesByTerminalMethod(): String {
 
+        totalSize = 0
+        appsScanned = 0
+        appPackets.clear()
+
         Log.d(DEBUG_TAG, "Method terminal")
 
         val busyboxPath: String = Build.SUPPORTED_ABIS[0].run {
@@ -96,6 +100,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             var dataSize = 0L
             var systemSize = 0L
             val dp = appList[i]
+            val appName = commonTools.applyNamingCorrectionForDisplay(pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString())
 
             val apkPath: String? = if (dp.APP)
                 dp.PACKAGE_INFO.applicationInfo.sourceDir
@@ -139,13 +144,13 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 }
             }
 
-            parentAppBatch.add(AppPacket(dp, dataSize, systemSize))
+            appsScanned++
+            appPackets.add(AppPacket(dp, appName, dataSize, systemSize))
             totalSize += dataSize + systemSize
 
             publishProgress(vOp.getStringFromRes(R.string.calculating_size),
                     (i + 1).toString() + " of " + appList.size,
-                    pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString() + "\n" +
-                            vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize + dataSize) + "\n")
+                    "$appName\n" + vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize + dataSize) + "\n")
 
         }
 
@@ -179,6 +184,10 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
 
+                    totalSize = 0
+                    appsScanned = 0
+                    appPackets.clear()
+
                     val getPackageSizeInfo = pm.javaClass.getMethod(
                             "getPackageSizeInfo", String::class.java, IPackageStatsObserver::class.java)
 
@@ -187,6 +196,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                         if (cancelThis) break
 
                         val dp = appList[i]
+                        val appName = commonTools.applyNamingCorrectionForDisplay(pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString())
 
                         getPackageSizeInfo.invoke(pm, dp.PACKAGE_INFO, object : IPackageStatsObserver.Stub(){
                             override fun onGetStatsCompleted(pStats: PackageStats?, succeeded: Boolean) {
@@ -215,26 +225,27 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                                     }
                                 }
 
-                                dataSize /= 1024
-                                systemSize /= 1024
-
-                                parentAppBatch.add(AppPacket(dp, dataSize, systemSize))
+                                appsScanned++
+                                appPackets.add(AppPacket(dp, appName, dataSize, systemSize))
                                 totalSize += dataSize + systemSize
 
                                 publishProgress(vOp.getStringFromRes(R.string.calculating_size),
                                         (i + 1).toString() + " of " + appList.size,
-                                        pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString() + "\n" +
-                                                vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize+dataSize) + "\n")
+                                        "$appName\n" + vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize+dataSize) + "\n")
 
                             }
                         })
 
                     }
 
-                    while (parentAppBatch.size < appList.size)
+                    while (appsScanned < appList.size)
                         if(!cancelThis) Thread.sleep(100)
 
                 } else {
+
+                    totalSize = 0
+                    appsScanned = 0
+                    appPackets.clear()
 
                     val storageStatsManager = context.getSystemService(STORAGE_STATS_SERVICE) as StorageStatsManager
 
@@ -242,9 +253,10 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
                         if (cancelThis) break
 
-                        val dp = appList[i]
                         var dataSize = 0L
                         var systemSize = 0L
+                        val dp = appList[i]
+                        val appName = commonTools.applyNamingCorrectionForDisplay(pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString())
 
                         val storageStats = storageStatsManager.queryStatsForUid(
                                 dp.PACKAGE_INFO.applicationInfo.storageUuid,
@@ -278,16 +290,13 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
                         }
 
-                        dataSize /= 1024
-                        systemSize /= 1024
-
-                        parentAppBatch.add(AppPacket(dp, dataSize, systemSize))
+                        appsScanned++
+                        appPackets.add(AppPacket(dp, appName, dataSize, systemSize))
                         totalSize += dataSize + systemSize
 
                         publishProgress(vOp.getStringFromRes(R.string.calculating_size),
                                 (i + 1).toString() + " of " + appList.size,
-                                pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString() + "\n" +
-                                        vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize+dataSize) + "\n")
+                                "$appName\n" + vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize+dataSize) + "\n")
 
                     }
 
@@ -303,7 +312,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
         try {
 
-            if (parentAppBatch.size != appList.size && method == PREF_ALTERNATE_METHOD){
+            if (appsScanned != appList.size && method == PREF_ALTERNATE_METHOD){
 
                 publishProgress(vOp.getStringFromRes(R.string.re_calculating_size), "", "")
 
@@ -317,7 +326,14 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             return arrayOf(false, vOp.getStringFromRes(R.string.error_calculating_size), e.message + "\n\n" + vOp.getStringFromRes(R.string.change_size_calculation_method))
         }
 
-        publishProgress(vOp.getStringFromRes(R.string.making_batches), "", "")
+        // check if any app is there which is too large before comparing with device storage
+        val bigAppsNameConcat = StringBuilder("")
+        appPackets.forEach {
+            if ((it.dataSize + it.systemSize) > (MAX_WORKING_SIZE - RESERVED_SPACE)) bigAppsNameConcat.append("${it.appName}\n")
+        }
+        if (bigAppsNameConcat.toString().trim() != ""){
+            return arrayOf(false, vOp.getStringFromRes(R.string.cannot_split), bigAppsNameConcat)
+        }
 
         try {
             File(destination).let {
@@ -334,7 +350,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
         try {
 
             StatFs(destination).let {
-                availableKb = it.blockSizeLong * it.availableBlocksLong / 1024
+                availableKb = it.blockSizeLong * it.availableBlocksLong
             }
 
         }
@@ -343,53 +359,14 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             return arrayOf(false, vOp.getStringFromRes(R.string.error_detecting_memory), e.message.toString())
         }
 
-        if (totalSize > availableKb){
-            return arrayOf(false, vOp.getStringFromRes(R.string.insufficient_storage),
+        return if (totalSize > availableKb){
+            arrayOf(false, vOp.getStringFromRes(R.string.insufficient_storage),
                     "${vOp.getStringFromRes(R.string.estimated_files_size)} ${commonTools.getHumanReadableStorageSpace(totalSize)}\n" +
                             "${vOp.getStringFromRes(R.string.available_space)} ${commonTools.getHumanReadableStorageSpace(availableKb)}\n\n" +
                             "${vOp.getStringFromRes(R.string.required_storage)} ${commonTools.getHumanReadableStorageSpace(totalSize - availableKb)}\n\n" +
                             vOp.getStringFromRes(R.string.will_be_compressed))
         }
-
-        try {
-
-            val parts = ceil((totalSize * 1.0) / MAX_WORKING_SIZE).toInt()
-
-            for (i in 1..parts) {
-
-                if (cancelThis) break
-
-                val batchPackets = ArrayList<AppPacket>(0)
-                var batchSize = 0L
-                var c = 0
-
-                while (c < parentAppBatch.size && batchSize < MAX_WORKING_SIZE) {
-
-                    val dp = parentAppBatch[c]
-                    if (batchSize + dp.systemSize + dp.dataSize <= MAX_WORKING_SIZE) {
-                        batchPackets.add(dp)
-                        batchSize += dp.dataSize + dp.systemSize
-                        parentAppBatch.removeAt(c)
-                    } else c++
-                }
-
-                if (batchSize == 0L && parentAppBatch.size != 0) {
-                    // signifies that all apps were considered but none could be added to a batch due to memory constraints
-
-                    var concatenatedNames = ""
-                    for (dp in parentAppBatch) concatenatedNames += "${pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo)}\n"
-
-                    return arrayOf(false, vOp.getStringFromRes(R.string.cannot_split), concatenatedNames)
-                } else appBatches.add(AppBatch(batchPackets))
-
-            }
-
-            return arrayOf(true)
-        }
-        catch (e: Exception){
-            e.printStackTrace()
-            return arrayOf(false, vOp.getStringFromRes(R.string.error_making_batches), e.message.toString())
-        }
+        else arrayOf(true)
     }
 
     override fun onProgressUpdate(vararg values: String?) {
@@ -427,7 +404,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                     errorDialog.show()
                     onJobCompletion.onComplete(jobCode, false, result[1] as String)
                 } else {
-                    onJobCompletion.onComplete(jobCode, true, appBatches)
+                    onJobCompletion.onComplete(jobCode, true, appPackets)
                 }
             }
         }
