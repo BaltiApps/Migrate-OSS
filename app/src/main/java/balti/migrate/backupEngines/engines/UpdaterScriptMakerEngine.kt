@@ -17,6 +17,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MIGRATE_CACHE_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PACKAGE_DATA
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_SYSTEM_MANUAL
+import balti.migrate.utilities.CommonToolKotlin.Companion.KB_DIVISION_SIZE
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_CACHE_DEFAULT
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_BUILDPROP
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_MIGRATE_CACHE
@@ -235,9 +236,9 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
         contents += "device " + Build.DEVICE + "\n"
         contents += "sdk " + Build.VERSION.SDK_INT + "\n"
         contents += "cpu_abi " + Build.SUPPORTED_ABIS[0] + "\n"
-        contents += "data_required_size ${zipAppBatch.batchDataSize}\n"
-        contents += "system_required_size ${zipAppBatch.batchSystemSize}\n"
-        contents += "zip_expected_size ${zipAppBatch.zipFullSize}\n"
+        contents += "data_required_size ${zipAppBatch.batchDataSize / KB_DIVISION_SIZE}\n"
+        contents += "system_required_size ${zipAppBatch.batchSystemSize / KB_DIVISION_SIZE}\n"
+        contents += "zip_expected_size ${zipAppBatch.zipFullSize / KB_DIVISION_SIZE}\n"
         contents += "migrate_version " + engineContext.getString(R.string.current_version_name) + "\n"
 
         try {
