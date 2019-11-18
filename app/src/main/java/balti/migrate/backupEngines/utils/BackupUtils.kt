@@ -4,6 +4,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
+import balti.migrate.utilities.CommonToolKotlin.Companion.KB_DIVISION_SIZE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAMES_KNOWN
 import balti.migrate.utilities.constants.MtdConstants
 import org.json.JSONObject
@@ -54,8 +55,8 @@ class BackupUtils {
             put(MtdConstants.MTD_APK, if (appPacket.APP) "$packageName.apk" else "NULL")
             put(MtdConstants.MTD_DATA, if (appPacket.DATA) "$packageName.tar.gz" else "NULL")
             put(MtdConstants.MTD_VERSION, version)
-            put(MtdConstants.MTD_DATA_SIZE, appPacket.dataSize)
-            put(MtdConstants.MTD_SYSTEM_SIZE, appPacket.systemSize)
+            put(MtdConstants.MTD_DATA_SIZE, appPacket.dataSize / KB_DIVISION_SIZE)
+            put(MtdConstants.MTD_SYSTEM_SIZE, appPacket.systemSize / KB_DIVISION_SIZE)
             put(MtdConstants.MTD_PERMISSION, appPacket.PERMISSION)
             when {
                 iconFileName != null -> put(MtdConstants.MTD_ICON_FILE_NAME, iconFileName)

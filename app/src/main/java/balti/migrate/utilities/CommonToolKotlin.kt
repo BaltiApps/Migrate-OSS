@@ -255,6 +255,8 @@ class CommonToolKotlin(val context: Context) {
         val PLAY_STORE_POSITION = 1
         val FDROID_POSITION = 2
 
+        val KB_DIVISION_SIZE = 1024
+
         // main backup engine
         val MIGRATE_STATUS_LABEL = "migrate_status"
 
