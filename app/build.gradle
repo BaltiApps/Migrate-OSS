@@ -9,7 +9,7 @@ android {
         applicationId "balti.migrate"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 13
+        versionCode 14
         versionName "mercury (v3.0) [alpha2]"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
