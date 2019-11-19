@@ -15,21 +15,49 @@
             android:orientation="vertical">
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/version_3.0"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/contr_3.0"/>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/prev_contri"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="20dp"
                 android:text="@string/thanks_1" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="30dp"
                 android:text="@string/thanks_2" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="30dp"
                 android:text="@string/thanks_3" />
 
             <ImageView
@@ -37,23 +65,31 @@
                 android:layout_height="@dimen/third_party_logo_width"
                 android:src="@drawable/stericson_busybox_logo" />
 
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="20dp"
-                android:paddingBottom="30dp"
                 android:text="@string/thanks_to_stericson" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
 
             <ImageView
                 android:layout_width="@dimen/third_party_logo_width"
                 android:layout_height="@dimen/third_party_logo_width"
                 android:src="@drawable/magisk_logo" />
 
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="20dp"
-                android:paddingBottom="30dp"
                 android:text="@string/thanks_to_magisk" />
 
         </LinearLayout>

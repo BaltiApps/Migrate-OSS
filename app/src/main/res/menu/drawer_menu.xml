@@ -34,8 +34,8 @@
                     android:title="@string/about"
                     android:icon="@drawable/ic_info"/>
 
-                <item android:id="@+id/thanks"
-                    android:title="@string/specialThanks"
+                <item android:id="@+id/contributors"
+                    android:title="@string/contributors"
                     android:icon="@drawable/ic_thanks"/>
 
                 <item android:id="@+id/rate"

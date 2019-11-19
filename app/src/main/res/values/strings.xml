@@ -25,6 +25,7 @@
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
+    <string name="made_with_love">Made with &#10084; in India</string>
     <string name="codename">Codename:</string>
     <string name="version">Version:</string>
     <string name="release_state_label">Release state:</string>
@@ -122,7 +123,7 @@
     \u2022 Migrate helper no longer uninstalls app before installing.\n
     \u2022 Added Telegram group link!\n
     </string>
-    <string name="version_3.0">Version 3.0 alpha1</string>
+    <string name="version_3.0">Version 3.0</string>
     <string name="version_3.0_content">
         No changelog for alpha versions\n
     </string>
@@ -571,7 +572,7 @@
     <string name="app_intro">App intro</string>
     <string name="changelog">Changelog</string>
     <string name="lastLog">Last logs</string>
-    <string name="specialThanks">Special thanks</string>
+    <string name="contributors">Contributors</string>
     <string name="rateTheApp">Rate the app</string>
     <string name="xda_thread">XDA thread</string>
     <string name="other_options">Other options</string>
@@ -767,7 +768,15 @@
     </string>
     <string name="privacy_policy_footer">That\'s all. Enjoy using the app. Feel free to contact me on Telegram.\n- SayantanRC</string>
 
-    <!--thanks_layout.xml-->
+    <!--contributors.xml-->
+    <string name="contr_3.0">
+        <b>Patrick Perfectly III mtl</b>: Providing logs, writing exhaustive troubleshooting guides… Basically keeping the app alive till now.\n
+        <b>@anoop142 (Anoop)</b>: Made the first SAR modified version of the app. That helped a lot in v3.0\n
+        <b>@cruzer_blaze (Gokul)</b>: Helped in scripts\n
+        <b>@indianets (Vijay)</b>: Made the script to restore split apks efficiently\n\n
+    Obviously I adequately thank all the thousands of users who have tried out this app instead of being in alpha. You mean a lot to me. Thanks.
+    </string>
+    <string name="prev_contri">Previous contributors</string>
     <string name="thanks_to_stericson">Huge thanks to Stephen (stericdroid) for allowing me to liberally use his busybox builds</string>
     <string name="thanks_to_magisk">Without topjohnwu\'s Magisk, this app would not be possible. I learned a lot from Magisk installer scripts.</string>
     <string name="thanks_1">Tireless help for Xiaomi Mi A1:\n@ishubhamsingh\n@su_bin</string>

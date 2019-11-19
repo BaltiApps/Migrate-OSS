@@ -265,9 +265,9 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             R.id.appIntro ->
                 startActivity(Intent(this, InitialGuideKotlin::class.java))
 
-            R.id.thanks ->
+            R.id.contributors ->
                 AlertDialog.Builder(this)
-                        .setView(View.inflate(this, R.layout.thanks_layout, null))
+                        .setView(View.inflate(this, R.layout.contributors, null))
                         .setPositiveButton(android.R.string.ok, null)
                         .show()
 
