@@ -33,7 +33,8 @@ class ExclusionsKotlin() {
         predefinedPackageNames.add(ExclusionItem("com.koushikdutta.superuser", EXCLUDE_DATA))
         predefinedPackageNames.add(ExclusionItem("dev.rupansh.kernelsu", EXCLUDE_DATA))
         predefinedPackageNames.add(ExclusionItem("de.robv.android.xposed.installer", EXCLUDE_DATA))
-        predefinedPackageNames.add(ExclusionItem("balti.migratehelper", EXCLUDE_APP, EXCLUDE_DATA))
+        predefinedPackageNames.add(ExclusionItem("balti.migratehelper", EXCLUDE_APP, EXCLUDE_DATA, EXCLUDE_PERMISSION))
+        predefinedPackageNames.add(ExclusionItem("balti.migrate.helper", EXCLUDE_APP, EXCLUDE_DATA, EXCLUDE_PERMISSION))
         predefinedPackageNames.add(ExclusionItem("android", EXCLUDE_APP, EXCLUDE_DATA, EXCLUDE_PERMISSION))
     }
 

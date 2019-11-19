@@ -264,6 +264,10 @@
         <b>Call logs</b> : Backup call logs. This does not include favourites\n
         <b>Screen DPI</b> : Backup current screen density\n
         <b>Default keyboard</b> : Backup the default keyboard selection. Manual selection is required\n
+        <b>App installers</b> : The system treats that apps restored are installed from Play Store or F-droid.\n
+        <b>ADB state</b> : Backup the ADB state (USB debugging)\n
+        <b>Wifi passwords file</b> : (Android 8.0+) Backup the WifiConfigStore.xml file\n
+        <b>Font scale</b> : Size of font is backed up\n
         \n
         After ticking a checkbox on an item, click on the item for further options.
     </string>
