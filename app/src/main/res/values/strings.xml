@@ -414,7 +414,6 @@
     <string name="use_usage_access_permission">Grant usage access permission?</string>
     <string name="usage_access_permission_needed_desc">A new, faster and more reliable method has been added to calculate size of apps before backup.\n\nPlease click Proceed, scroll and select \"Migrate\" then enable \"Permit usage access\"</string>
     <string name="storage_access_required">Please grant storage access to write backups.</string>
-    <string name="storage_access_required_restore">Please grant storage access to read backups.</string>
     <string name="checking_permissions">Checking Storage and Root access</string>
     <string name="rate_dialog_title">Your opinion is important</string>
     <string name="rate_dialog_message">If this app has helped you, please consider giving a rating and/or a review.</string>

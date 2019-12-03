@@ -108,89 +108,98 @@
 
         </Toolbar>
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_gravity="center_vertical|end"
             android:layout_weight="1"
             android:gravity="center_vertical|end"
-            android:orientation="vertical"
+            android:layout_gravity="end"
             >
 
-            <Button
-                android:id="@+id/backupMain"
-                android:layout_width="@dimen/button_width"
-                android:layout_height="@dimen/button_height"
-                android:background="@drawable/normal_button"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:text="@string/backupButton" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="20dp" />
-
-            <Button
-                android:id="@+id/restoreMain"
-                android:layout_width="@dimen/button_width"
-                android:layout_height="@dimen/button_height"
-                android:background="@drawable/normal_button"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:text="@string/restoreTwrp" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="20dp" />
-
-            <Button
-                android:id="@+id/openPreferences"
-                android:layout_width="@dimen/button_width"
-                android:layout_height="@dimen/button_height"
-                android:background="@drawable/normal_button"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:text="@string/preferences" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="20dp" />
-
-            <Button
-                android:id="@+id/inAppRestore"
-                android:layout_width="@dimen/button_width"
-                android:layout_height="@dimen/button_height"
-                android:background="@drawable/normal_button"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:text="@string/restoreApp"
-                android:visibility="gone"/>
-            
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|end"
                 android:orientation="vertical"
-                android:gravity="end"
                 >
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/last_tested_label"
-                    android:textColor="@color/colorAccent"
-                    android:gravity="end"
-                    />
+                <Button
+                    android:id="@+id/backupMain"
+                    android:layout_width="@dimen/button_width"
+                    android:layout_height="@dimen/button_height"
+                    android:background="@drawable/normal_button"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:text="@string/backupButton" />
 
-                <TextView
-                    android:id="@+id/learn_sd_card_support"
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/xlarge_padding_width" />
+
+                <Button
+                    android:id="@+id/restoreMain"
+                    android:layout_width="@dimen/button_width"
+                    android:layout_height="@dimen/button_height"
+                    android:background="@drawable/normal_button"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:text="@string/restoreTwrp" />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/xlarge_padding_width" />
+
+                <Button
+                    android:id="@+id/openPreferences"
+                    android:layout_width="@dimen/button_width"
+                    android:layout_height="@dimen/button_height"
+                    android:background="@drawable/normal_button"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:text="@string/preferences" />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/xlarge_padding_width" />
+
+                <Button
+                    android:id="@+id/inAppRestore"
+                    android:layout_width="@dimen/button_width"
+                    android:layout_height="@dimen/button_height"
+                    android:background="@drawable/normal_button"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:text="@string/restoreApp"
+                    android:visibility="gone"/>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/learn_about_sd_card_support"
-                    android:textColor="@color/colorAccent"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    />
+                    android:orientation="vertical"
+                    android:gravity="end"
+                    android:layout_gravity="end"
+                    >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/last_tested_label"
+                        android:textColor="@color/colorAccent"
+                        android:gravity="end"
+                        />
+
+                    <TextView
+                        android:id="@+id/learn_sd_card_support"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/learn_about_sd_card_support"
+                        android:textColor="@color/colorAccent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        />
+
+                </LinearLayout>
 
             </LinearLayout>
 
-        </LinearLayout>
+        </ScrollView>
 
         <LinearLayout
             android:layout_width="match_parent"
