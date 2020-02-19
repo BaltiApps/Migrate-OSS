@@ -682,8 +682,10 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
         if (cancelAll || errorCondition && sharedPrefs.getBoolean(PREF_DELETE_ERROR_BACKUP, true)) {
             File("$destination/$backupName").run {
-                Log.d(DEBUG_TAG, "Cleaning up on error or cancel: ${this.absolutePath}")
-                deleteRecursively()
+                if (CommonToolKotlin.isDeletable(this)) {
+                    Log.d(DEBUG_TAG, "Cleaning up on error or cancel: ${this.absolutePath}")
+                    deleteRecursively()
+                }
             }
         }
         else if (!cancelAll && !errorCondition) {
@@ -692,8 +694,10 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
             zipParentPaths.forEach {
 
                 File(it).run {
-                    Log.d(DEBUG_TAG, "Cleaning up : ${this.absolutePath}")
-                    deleteRecursively()
+                    if (CommonToolKotlin.isDeletable(this)) {
+                        Log.d(DEBUG_TAG, "Cleaning up : ${this.absolutePath}")
+                        deleteRecursively()
+                    }
                 }
             }
         }

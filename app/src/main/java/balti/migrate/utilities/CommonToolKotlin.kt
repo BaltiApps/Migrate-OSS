@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.simpleActivities.PrivacyPolicy
 import kotlinx.android.synthetic.main.error_report_layout.view.*
@@ -271,6 +272,12 @@ class CommonToolKotlin(val context: Context) {
                 "org.thunderdog.challegram",       // Telegram X
                 "org.telegram.plus"                // Plus messenger
         )
+
+        fun isDeletable(f: File): Boolean{
+            val d = AppInstance.sharedPrefs.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
+            val parentPath = File(d).absolutePath
+            return f.absolutePath.startsWith(parentPath)
+        }
     }
 
     var LBM : androidx.localbroadcastmanager.content.LocalBroadcastManager? = null

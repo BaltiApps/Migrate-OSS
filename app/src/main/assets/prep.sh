@@ -41,7 +41,7 @@ exitNow() {
     umount /data
 
     # delete temp dir
-    if [[ -n "${TEMP_UNPACK_DIR}" && ${TEMP_UNPACK_DIR} != "/" ]]; then
+    if [[ -n "${TEMP_UNPACK_DIR}" && ${TEMP_UNPACK_DIR} != "/" && ${TEMP_UNPACK_DIR} != "/sdcard" ]]; then
         rm -rf ${TEMP_UNPACK_DIR}
     fi
 
