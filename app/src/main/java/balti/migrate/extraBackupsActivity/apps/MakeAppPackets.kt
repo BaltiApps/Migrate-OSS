@@ -67,13 +67,13 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 it.delete()
             }
         }
-    }
-
-    private fun calculateSizesByTerminalMethod(): String {
 
         totalSize = 0
         appsScanned = 0
         appPackets.clear()
+    }
+
+    private fun calculateSizesByTerminalMethod(): String {
 
         Log.d(DEBUG_TAG, "Method terminal")
 
@@ -144,6 +144,11 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 }
             }
 
+            // du shows files in KB, but rest of the calculations in the whole app is in bytes.
+            // so convert KB to bytes
+            dataSize *= 1024
+            systemSize *= 1034
+
             appsScanned++
             appPackets.add(AppPacket(dp, appName, dataSize, systemSize))
             totalSize += dataSize + systemSize
@@ -183,10 +188,6 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 Log.d(DEBUG_TAG, "Method alternate")
 
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
-
-                    totalSize = 0
-                    appsScanned = 0
-                    appPackets.clear()
 
                     val getPackageSizeInfo = pm.javaClass.getMethod(
                             "getPackageSizeInfo", String::class.java, IPackageStatsObserver::class.java)
@@ -242,10 +243,6 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                         if(!cancelThis) Thread.sleep(100)
 
                 } else {
-
-                    totalSize = 0
-                    appsScanned = 0
-                    appPackets.clear()
 
                     val storageStatsManager = context.getSystemService(STORAGE_STATS_SERVICE) as StorageStatsManager
 
@@ -366,7 +363,13 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                             "${vOp.getStringFromRes(R.string.required_storage)} ${commonTools.getHumanReadableStorageSpace(totalSize - availableKb)}\n\n" +
                             vOp.getStringFromRes(R.string.will_be_compressed))
         }
-        else arrayOf(true)
+        else {
+            publishProgress(vOp.getStringFromRes(R.string.total_size_ok),
+                    "${vOp.getStringFromRes(R.string.total_size)} ${commonTools.getHumanReadableStorageSpace(totalSize)}\n" +
+                            "${vOp.getStringFromRes(R.string.available_space)} ${commonTools.getHumanReadableStorageSpace(availableKb)}", "")
+            commonTools.tryIt { Thread.sleep(1000) }
+            arrayOf(true)
+        }
     }
 
     override fun onProgressUpdate(vararg values: String?) {

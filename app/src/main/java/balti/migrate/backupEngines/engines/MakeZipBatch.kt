@@ -17,6 +17,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_BATCHING
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_PACKET_MAKING
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ZIP_NAME_EXTRAS
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FORCE_SEPARATE_EXTRAS_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SEPARATE_EXTRAS_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.WARNING_ZIP_BATCH
 import java.io.File
@@ -27,23 +28,25 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
     private val zipBatches by lazy { ArrayList<ZipAppBatch>(0) }
     private val errors by lazy { ArrayList<String>(0) }
     private val warnings by lazy { ArrayList<String>(0) }
-    private var totalSize = 0L
-    private var allSize = 0
+    private var totalAppSize = 0L
+    private var totalSizeConditionalExtras = 0L
+    private var numberOfAppZipPackets = 0
+    private var doSeparateExtras = false
 
     private fun shareProgress(string: String, progress : Int){
-    Thread.sleep(50)
+        Thread.sleep(50)
         broadcastProgress("", string, false, progress)
     }
 
     private fun getPercentage(allPacketsSize: Int): Int =
-            commonTools.getPercentage((allSize - allPacketsSize), allSize)
+            commonTools.getPercentage((numberOfAppZipPackets - allPacketsSize), numberOfAppZipPackets)
 
     private fun makeBatches(){
 
         var title = getTitle(R.string.making_packets)
         resetBroadcast(true, title)
 
-        val allZipPackets = ArrayList<ZipAppPacket>(0)
+        val allAppZipPackets = ArrayList<ZipAppPacket>(0)
 
         appList.forEach {
 
@@ -66,8 +69,8 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 if (expectedJsonFile.exists()) associatedFiles.add(expectedJsonFile)
 
                 val zipPacket = ZipAppPacket(it, associatedFiles)
-                allZipPackets.add(zipPacket)
-                totalSize += zipPacket.zipPacketSize
+                allAppZipPackets.add(zipPacket)
+                totalAppSize += zipPacket.zipPacketSize
             }
             catch (e: Exception){
                 e.printStackTrace()
@@ -80,8 +83,6 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
         title = getTitle(R.string.making_batches)
         resetBroadcast(false, title)
 
-        val doSeparateExtras = sharedPreferences.getBoolean(PREF_SEPARATE_EXTRAS_BACKUP, true)
-
         try {
 
             var totalExtrasSize = 0L
@@ -92,27 +93,22 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
             }
 
             Log.d(DEBUG_TAG, "total extras size: $totalExtrasSize")
+
             shareProgress("${engineContext.getString(R.string.total_extra_size)}: " +
                     "${commonTools.getHumanReadableStorageSpace(totalExtrasSize)} ($totalExtrasSize B)", 0)
 
-            var firstAdjust : Long =
-            if (allZipPackets.isNotEmpty()) {
-                // if no packets were made, a new packet with only extras will be made
+            doSeparateExtras = totalExtrasSize > 0
+                    && (sharedPreferences.getBoolean(PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false)
+                        || ((totalAppSize + totalExtrasSize) > (MAX_WORKING_SIZE + RESERVED_SPACE)
+                        && sharedPreferences.getBoolean(PREF_SEPARATE_EXTRAS_BACKUP, true)
+                        )
+                    )
 
-                if (totalSize <= MAX_WORKING_SIZE) {
-                    // this means only one zip batch will be created.
-                    // So add extras size for adjustment
-                    totalExtrasSize
-                }
-                else if (!doSeparateExtras) {
-                    // this means more than one zip batch will be made
-                    // But user has turned off separate extras.
-                    // So add extras size for adjustment
-                    totalExtrasSize
-                }
-                else 0
-            }
-            else 0
+            var firstAdjust = // this is the adjustment size due to extras to be subtracted from first zip in the following cases:
+                    when {
+                        doSeparateExtras -> 0  // extras are completely separate. Hence no need for any adjustment.
+                        else -> totalExtrasSize // no separate extras, hence adjust in the first zip
+                    }
 
             Log.d(DEBUG_TAG, "first adjust size: $firstAdjust")
 
@@ -123,7 +119,13 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 // Apps which will not fit here, but within allowed size
                 // will get zips of their own.
 
-                val parts = (totalSize / localMax) + 1
+                totalSizeConditionalExtras = (totalAppSize + if (doSeparateExtras) 0 else totalExtrasSize)
+                    // this is the total including apps + extras if extras are not separate
+
+                Log.d(DEBUG_TAG, "totalSizeConditionalExtras: $totalSizeConditionalExtras")
+                Log.d(DEBUG_TAG, "totalAppSize: $totalAppSize")
+
+                val parts = (totalSizeConditionalExtras / localMax) + 1
                 /* Examples: assume
                  * max size = 4 GB, totalSize = 10 kb
                  *    parts = (0 by decimal division) + 1 = 1
@@ -132,28 +134,30 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                  * max size = 4 GB, totalSize = 4.1 GB
                  *    parts = (1 by decimal division) + 1 = 2  => Backup will be split into two parts of greater than 2 GB
                  */
+
                 shareProgress("${engineContext.getString(R.string.parts)}: $parts", 0)
 
-                val capSize = totalSize / parts
+                val capSize = totalSizeConditionalExtras / parts
                 shareProgress("${engineContext.getString(R.string.capping_size)}: " +
                         "${commonTools.getHumanReadableStorageSpace(capSize)} ($capSize B)", 0)
 
                 // remove all apps which are too big
                 var c = 0
-                while (c < allZipPackets.size){
-                    val p = allZipPackets[c]
+                while (c < allAppZipPackets.size){
+                    val p = allAppZipPackets[c]
                     if (p.zipPacketSize > this) {
-                        warnings.add("$WARNING_ZIP_BATCH: Removing, ${p.appPacket_z.appName}. Too big!")
-                        allZipPackets.remove(p)
+                        warnings.add("$WARNING_ZIP_BATCH: Removing ${p.appPacket_z.appName}. Cannot backup. Too big!")
+                        allAppZipPackets.remove(p)
                         --c
                     }
                     ++c
                 }
 
-                allSize = allZipPackets.size
+                numberOfAppZipPackets = allAppZipPackets.size
 
                 var maxOuterLoop = 1000   // break if outerloop has scanned over this number.
-                while (allZipPackets.isNotEmpty() && maxOuterLoop > 0) {
+
+                while (allAppZipPackets.isNotEmpty() && maxOuterLoop > 0) {
                     // all eligible apps must be put in packets
 
                     if (BackupServiceKotlin.cancelAll) return
@@ -163,24 +167,29 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                     c = 0
 
                     // initially add small apps within 80% max size
-                    while (c < allZipPackets.size && batchSize < (capSize - firstAdjust)) {
+                    while (c < allAppZipPackets.size && batchSize < (capSize - firstAdjust)) {
 
-                        val p = allZipPackets[c]
+                        val p = allAppZipPackets[c]
 
                         if ((batchSize + p.zipPacketSize) <= (capSize - firstAdjust)) {
                             zipAppBatchList.add(p)
                             batchSize += p.zipPacketSize
-                            allZipPackets.remove(p)
+                            allAppZipPackets.remove(p)
                             shareProgress("${engineContext.getString(R.string.adding)}: ${p.appPacket_z.appName} | " +
-                                    "${engineContext.getString(R.string.packet)}: ${zipBatches.size + 1}", getPercentage(allZipPackets.size))
+                                    "${engineContext.getString(R.string.packet)}: ${zipBatches.size + 1}", getPercentage(allAppZipPackets.size))
                         } else c++
                     }
 
                     if (firstAdjust == 0L && zipAppBatchList.isEmpty()) break
-                    // this condition will only work if, out of all remaining apps,
-                    // none can be satisfied with the reduced cap size
+                    // firstAdjust will be always zero if separate extras,
+                        // in that case if zipAppBatchList is empty, none of the apps none can be satisfied with the 20% reduced cap size
+                    // firstAdjust will not be zero if not separate extras, only in the first iteration,
+                        // in that case do not break even if zipAppBatchList is empty.
+                    // firstAdjust will be zero after first iteration
+                        // in that case if zipAppBatchList is empty, none of the apps none can be satisfied with the 20% reduced cap size
 
                     else zipBatches.add(ZipAppBatch(zipAppBatchList))
+                    // if zipAppBatchList is empty but firstAdjust not 0, an empty batch is added for accommodating only extras
 
                     firstAdjust = 0
                     --maxOuterLoop
@@ -188,18 +197,18 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                 // make dedicated batches for bigger apps needing full max size
                 maxOuterLoop = 1000
-                while (allZipPackets.isNotEmpty() && maxOuterLoop > 0) {
+                while (allAppZipPackets.isNotEmpty() && maxOuterLoop > 0) {
 
                     if (BackupServiceKotlin.cancelAll) return
                     c = 0
 
-                    val p = allZipPackets[c]
+                    val p = allAppZipPackets[c]
 
                     if (p.zipPacketSize <= (this)) {
                         zipBatches.add(ZipAppBatch(arrayListOf(p)))
                         shareProgress("${engineContext.getString(R.string.adding_bigger_apps)}: ${p.appPacket_z.appName}",
-                                getPercentage(allZipPackets.size))
-                        allZipPackets.remove(p)
+                                getPercentage(allAppZipPackets.size))
+                        allAppZipPackets.remove(p)
                     }
                     else ++c
 
@@ -207,7 +216,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 }
 
                 // show errors for packets could not be added
-                allZipPackets.forEach {
+                allAppZipPackets.forEach {
                     errors.add("$ERR_ZIP_BATCHING: Could not batch, ${it.appPacket_z.appName}.")
                 }
 
@@ -219,7 +228,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
         }
 
         try {
-            when (zipBatches.size) {
+            /*when (zipBatches.size) {
                 0 -> {
                     if (extras.isNotEmpty())
                         zipBatches.add(ZipAppBatch().apply { addExtras(extras) })
@@ -247,7 +256,25 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                     if (toBeAdded != null) zipBatches.add(toBeAdded)
                 }
-            }
+            }*/
+
+            // if separate extras, that is added later.
+            // ELse, space for extras is already made in first zip by firstAdjust
+            if (!doSeparateExtras && extras.isNotEmpty() && zipBatches.isNotEmpty()) zipBatches[0].addExtras(extras)
+
+            // update partNames
+            // later, depending on partName containers are made.
+            // if partName is empty, means no container. This is the case for only one final zip.
+            // hence update partNames only if multiple zip batches and/or separate extras
+            if (zipBatches.size > 1 || doSeparateExtras)
+                for (i in zipBatches.indices) {
+                    val z = zipBatches[i]
+                    z.partName = "${engineContext.getString(R.string.part)}_${i + 1}_${engineContext.getString(R.string.of)}_${zipBatches.size}"
+                }
+
+            if (doSeparateExtras) zipBatches.add(ZipAppBatch().apply { addExtras(extras); partName = FILE_ZIP_NAME_EXTRAS })
+            // add a zipBatch if extras are separate
+
         }
         catch (e: Exception){
             e.printStackTrace()

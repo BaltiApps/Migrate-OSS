@@ -228,6 +228,8 @@
     <string name="error_reading_sms">Error reading SMS</string>
     <string name="error_reading_calls">Error reading calls</string>
     <string name="calculating_size">Calculating size</string>
+    <string name="total_size_ok">Total size OK!</string>
+    <string name="total_size">Total size:</string>
     <string name="error_reading_backup_data">Error reading backup data</string>
     <string name="error_calculating_size">Error calculating size</string>
     <string name="could_not_create_destination">Could not create backup directory.</string>
@@ -676,12 +678,15 @@
     <string name="perform_system_check_title">Perform system check</string>
     <string name="perform_system_check_desc">This will perform a basic apk copy and data copy (of this app itself) via Su shell before each backup. Thus checking if backup of other apps will be successful or not.</string>
     <string name="separate_extras_title">Separate extras backup</string>
+    <string name="force_separate_extras">Force separate extras</string>
+    <string name="force_separate_extras_desc">Extras will be backed up separately even for small backups</string>
     <string name="separate_extras_desc">Store extras (contacts, sms etc) as a standalone zip file and apps in separate zip files. Applicable only for backups having more than 1 part.</string>
     <string name="delete_error_backup_title">Delete backup with errors</string>
     <string name="delete_error_backup_desc">Delete backup zip file if it finished with errors or was corrupted while backup.</string>
     <string name="zip_verification_title">Zip integrity check</string>
     <string name="zip_verification_desc">Verify if backup zips are corrupted and within the flashable memory constraints of the device.\nHIGHLY RECOMMENDED</string>
     <string name="advanced">Advanced</string>
+    <string name="max_zip_size">Max zip size</string>
     <string name="use_su_for_keyboard_title">Use Su shell to read keyboard</string>
     <string name="use_su_for_keyboard_desc">Root shell will be used to read active keyboards in Extra backups</string>
     <string name="ignore_cache_desc">Ignores the cache directory of apps while backup, thus backups get very small. Although usually safe, you might lose some data of the app.</string>

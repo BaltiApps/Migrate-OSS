@@ -52,6 +52,14 @@
         android:key="separateExtras"
         />
 
+
+    <CheckBoxPreference
+        android:title="@string/force_separate_extras"
+        android:summary="@string/force_separate_extras_desc"
+        android:key="forceSeparateExtras"
+        android:dependency="separateExtras"
+        />
+
     <CheckBoxPreference
         android:title="@string/delete_error_backup_title"
         android:summary="@string/delete_error_backup_desc"
