@@ -687,6 +687,8 @@
     <string name="zip_verification_desc">Verify if backup zips are corrupted and within the flashable memory constraints of the device.\nHIGHLY RECOMMENDED</string>
     <string name="advanced">Advanced</string>
     <string name="max_zip_size">Max zip size</string>
+    <string name="max_zip_size_desc">This is the maximum allowable size of a backup zip which can be safely flashed via TWRP.
+        This does not mean that zips will actually be of this size, but this value determines the number of parts to be created of the entire backup. Zips may be much smaller than this size to maintain uniformity.</string>
     <string name="use_su_for_keyboard_title">Use Su shell to read keyboard</string>
     <string name="use_su_for_keyboard_desc">Root shell will be used to read active keyboards in Extra backups</string>
     <string name="ignore_cache_desc">Ignores the cache directory of apps while backup, thus backups get very small. Although usually safe, you might lose some data of the app.</string>

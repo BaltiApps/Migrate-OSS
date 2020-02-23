@@ -356,6 +356,8 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             return arrayOf(false, vOp.getStringFromRes(R.string.error_detecting_memory), e.message.toString())
         }
 
+        Log.d(DEBUG_TAG, "Total size: $totalSize, availableKb: $availableKb")
+
         return if (totalSize > availableKb){
             arrayOf(false, vOp.getStringFromRes(R.string.insufficient_storage),
                     "${vOp.getStringFromRes(R.string.estimated_files_size)} ${commonTools.getHumanReadableStorageSpace(totalSize)}\n" +

@@ -99,7 +99,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
             doSeparateExtras = totalExtrasSize > 0
                     && (sharedPreferences.getBoolean(PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false)
-                        || ((totalAppSize + totalExtrasSize) > (MAX_WORKING_SIZE + RESERVED_SPACE)
+                        || ((totalAppSize + totalExtrasSize) > (MAX_WORKING_SIZE - RESERVED_SPACE)
                         && sharedPreferences.getBoolean(PREF_SEPARATE_EXTRAS_BACKUP, true)
                         )
                     )
