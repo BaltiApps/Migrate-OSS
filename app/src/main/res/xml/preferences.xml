@@ -11,6 +11,11 @@
         android:key="useNewSizingMethod" />
 
     <CheckBoxPreference
+        android:title="@string/auto_check_updates"
+        android:summary="@string/auto_check_updates_desc"
+        android:key="autoCheckUpdates" />
+
+    <CheckBoxPreference
         android:title="@string/autoselect_extras_title"
         android:summary="@string/autoselect_extras_desc"
         android:key="autoselectExtras"

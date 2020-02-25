@@ -661,13 +661,15 @@
     <string name="copied_app_exp">Please get the original app from BaltiApps by clicking the Install button.</string>
     <string name="install_original_migrate">Install original app</string>
 
-    <!--preference.xml-->
+    <!--preferences.xml-->
 
     <string name="disable_battery_optimisation">Disable battery optimisation</string>
     <string name="use_new_sizing_method">Use new method to calculate size</string>
     <string name="use_new_sizing_method_desc">Enabling this uses StorageStats in Android 8+ and by reflection in lower versions.
         Disabling this uses terminal shell commands to calculate size.</string>
     <string name="clear_to_reset">Clear and press OK to reset to default value</string>
+    <string name="auto_check_updates">Auto check for updates</string>
+    <string name="auto_check_updates_desc">Check for updates at startup</string>
     <string name="autoselect_extras_title">Auto-select extras</string>
     <string name="autoselect_extras_desc">This will automatically select extras like contacts and sms if you had previously backed them up</string>
     <string name="new_icon_method_title">New icon method</string>

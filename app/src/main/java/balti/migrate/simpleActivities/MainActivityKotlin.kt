@@ -43,6 +43,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FIRST_RUN
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_UPDATE_AUTO_CHECK
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_VERSION_CURRENT
 import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
 import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
@@ -196,14 +197,16 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         refreshStorageSizes()
         storageHandler.post(storageRunnable)
 
-        CoroutineScope(Main).launch {
-            val json = GetUpdateInfo().getInfo()
-            if (json.has(UPDATE_VERSION)) {
-                commonTools.tryIt {
-                    if (json.getInt(UPDATE_VERSION) > THIS_VERSION)
-                        Snackbar.make(check_for_updates, R.string.update_available, Snackbar.LENGTH_LONG).setAction(R.string.download) {
-                            startActivity(Intent(this@MainActivityKotlin, Updater::class.java))
-                        }.show()
+        if (main.getBoolean(PREF_UPDATE_AUTO_CHECK, true)) {
+            CoroutineScope(Main).launch {
+                val json = GetUpdateInfo().getInfo()
+                if (json.has(UPDATE_VERSION)) {
+                    commonTools.tryIt {
+                        if (json.getInt(UPDATE_VERSION) > THIS_VERSION)
+                            Snackbar.make(check_for_updates, R.string.update_available, Snackbar.LENGTH_LONG).setAction(R.string.download) {
+                                startActivity(Intent(this@MainActivityKotlin, Updater::class.java))
+                            }.show()
+                    }
                 }
             }
         }

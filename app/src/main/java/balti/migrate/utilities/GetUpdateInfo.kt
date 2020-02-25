@@ -25,8 +25,9 @@ class GetUpdateInfo {
     private val dFile by lazy {File(AppInstance.appContext.filesDir, "update_info.txt")}
 
     private fun downloadData(){
+        dFile.delete()
         URL(UPDATE_URL()).openStream().use { input ->
-            FileOutputStream(dFile.apply { this.delete() }).use { output ->
+            FileOutputStream(dFile).use { output ->
                 input.copyTo(output)
             }
         }

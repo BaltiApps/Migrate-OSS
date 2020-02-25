@@ -23,12 +23,14 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SMS_VERIFY
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_CHECK
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TAR_GZ_INTEGRITY
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_UPDATE_AUTO_CHECK
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_USE_SU_FOR_KEYBOARD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ZIP_VERIFICATION
 
 class MainPreferenceActivity: PreferenceActivity() {
 
     private val useNewSizingMethod by lazy { findPreference("useNewSizingMethod") as CheckBoxPreference }
+    private val autoCheckUpdates by lazy { findPreference("autoCheckUpdates") as CheckBoxPreference }
     private val autoselectExtras by lazy { findPreference("autoselectExtras") as CheckBoxPreference }
     private val newIconMethod by lazy { findPreference("newIconMethod") as CheckBoxPreference }
     private val tarGzIntegrityCheck by lazy { findPreference("tarGzIntegrityCheck") as CheckBoxPreference }
@@ -69,6 +71,7 @@ class MainPreferenceActivity: PreferenceActivity() {
             }
 
             setValue(useNewSizingMethod, PREF_AUTOSELECT_EXTRAS)
+            setValue(autoCheckUpdates, PREF_UPDATE_AUTO_CHECK)
             setValue(autoselectExtras, PREF_AUTOSELECT_EXTRAS)
             setValue(newIconMethod, PREF_NEW_ICON_METHOD)
             setValue(tarGzIntegrityCheck, PREF_TAR_GZ_INTEGRITY)
