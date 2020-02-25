@@ -24,6 +24,7 @@ import androidx.core.view.GravityCompat
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.inAppRestore.ZipPicker
+import balti.migrate.inbuiltUpdater.Updater
 import balti.migrate.preferences.MainPreferenceActivity
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELLING
@@ -48,10 +49,16 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
 import balti.migrate.utilities.CommonToolKotlin.Companion.TG_DEV_LINK
 import balti.migrate.utilities.CommonToolKotlin.Companion.TG_LINK
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
+import balti.migrate.utilities.GetUpdateInfo
+import balti.migrate.utilities.GetUpdateInfo.Companion.UPDATE_VERSION
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
 import kotlinx.android.synthetic.main.please_wait.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 import java.io.File
 
 class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -183,6 +190,18 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         refreshStorageSizes()
         storageHandler.post(storageRunnable)
+
+        CoroutineScope(Main).launch {
+            val json = GetUpdateInfo().getInfo()
+            if (json.has(UPDATE_VERSION)) {
+                commonTools.tryIt {
+                    if (json.getInt(UPDATE_VERSION) > THIS_VERSION)
+                        Snackbar.make(check_for_updates, R.string.update_available, Snackbar.LENGTH_LONG).setAction(R.string.download) {
+                            startActivity(Intent(this@MainActivityKotlin, Updater::class.java))
+                        }.show()
+                }
+            }
+        }
     }
 
     private fun showChangeLog(onlyLatest: Boolean) {

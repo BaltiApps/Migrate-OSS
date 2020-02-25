@@ -177,6 +177,20 @@
                     >
 
                     <TextView
+                        android:id="@+id/check_for_updates"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/check_for_updates"
+                        android:textColor="@color/colorAccent"
+                        android:gravity="end"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        />
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/small_padding_width"/>
+
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/last_tested_label"
