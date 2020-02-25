@@ -4,7 +4,9 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_list_bg">
+    android:background="@drawable/app_list_bg"
+    tools:context=".inbuiltUpdater.Updater"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -66,118 +68,137 @@
 
         </LinearLayout>
 
-        <ScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fillViewport="true"
-            android:id="@+id/update_download_layout"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/large_padding_width"
+            android:id="@+id/updater_content"
+            android:visibility="gone"
             >
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:fillViewport="true"
+                android:layout_weight="1"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:id="@+id/update_name"
+                        android:textColor="@color/colorAccent"
+                        tools:text="Migrate 3.0" />
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/small_padding_width"/>
+
+                    <TableLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        >
+
+                        <TableRow>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/version"
+                                android:layout_column="1"
+                                />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_column="2"
+                                android:layout_marginStart="@dimen/small_padding_width"
+                                android:id="@+id/update_version"
+                                tools:text="17"/>
+
+                        </TableRow>
+
+                        <TableRow>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/last_tested_android"
+                                android:layout_column="1"
+                                />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_column="2"
+                                android:layout_marginStart="@dimen/small_padding_width"
+                                android:id="@+id/update_last_android_version"
+                                tools:text="10"/>
+
+                        </TableRow>
+
+                        <TableRow>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/status"
+                                android:layout_column="1"
+                                />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_column="2"
+                                android:layout_marginStart="@dimen/small_padding_width"
+                                android:id="@+id/update_status"
+                                tools:text="Beta"/>
+
+                        </TableRow>
+
+                    </TableLayout>
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/small_padding_width"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/update_imp_info"
+                        android:textColor="@color/colorAccent"
+                        android:textStyle="bold"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/update_info"
+                        tools:text="Update information"
+                        />
+
+                </LinearLayout>
+
+            </ScrollView>
+
+
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/large_padding_width"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/update_name"
-                    android:textColor="@color/colorAccent"
-                    tools:text="Migrate 3.0" />
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/small_padding_width"/>
-
-                <TableLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
-
-                    <TableRow>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/version"
-                            android:layout_column="1"
-                            />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="2"
-                            android:layout_marginStart="@dimen/small_padding_width"
-                            android:id="@+id/update_version"
-                            tools:text="17"/>
-
-                    </TableRow>
-
-                    <TableRow>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/last_tested_android"
-                            android:layout_column="1"
-                            />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="2"
-                            android:layout_marginStart="@dimen/small_padding_width"
-                            android:id="@+id/update_last_android_version"
-                            tools:text="10"/>
-
-                    </TableRow>
-
-                    <TableRow>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/status"
-                            android:layout_column="1"
-                            />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_column="2"
-                            android:layout_marginStart="@dimen/small_padding_width"
-                            android:id="@+id/update_status"
-                            tools:text="Beta"/>
-
-                    </TableRow>
-
-                </TableLayout>
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/small_padding_width"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/update_imp_info"
-                    android:textColor="@color/colorAccent"
-                    android:textStyle="bold"
-                    />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/update_info"
-                    tools:text="Update information"
-                    />
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/xlarge_padding_width"/>
+                android:orientation="vertical">
 
                 <ProgressBar
                     android:layout_width="match_parent"
@@ -197,57 +218,61 @@
                     android:background="@drawable/log_action_button"
                     android:text="@string/download"
                     android:layout_gravity="end"
+                    android:id="@+id/update_button_download"
+                    android:foreground="?android:attr/selectableItemBackground"
                     />
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/xlarge_padding_width"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:id="@+id/update_installer_layout"
-                    android:visibility="gone"
-                    >
-
-                    <RadioGroup
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                        <RadioButton
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/install_by_package_manager"
-                            android:id="@+id/update_install_by_pm_radio"
-                            />
-
-                        <RadioButton
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/install_by_root"
-                            android:id="@+id/update_install_by_root_radio"
-                            />
-
-                    </RadioGroup>
-
-                    <Space
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/large_padding_width"/>
-
-                    <Button
-                        android:layout_width="@dimen/next_button_width"
-                        android:layout_height="@dimen/next_button_height"
-                        android:background="@drawable/log_action_button"
-                        android:text="@string/install"
-                        android:layout_gravity="end"
-                        android:foreground="?android:attr/selectableItemBackground"/>
-
-                </LinearLayout>
 
             </LinearLayout>
 
-        </ScrollView>
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+                <RadioGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/install_by_package_manager"
+                        android:id="@+id/update_radio_install_by_pm"
+
+                        />
+
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/install_by_root"
+                        android:id="@+id/update_radio_install_by_root"
+                        />
+
+                </RadioGroup>
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/large_padding_width"/>
+
+                <Button
+                    android:layout_width="@dimen/next_button_width"
+                    android:layout_height="@dimen/next_button_height"
+                    android:background="@drawable/log_action_button"
+                    android:text="@string/install"
+                    android:layout_gravity="end"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:id="@+id/update_button_install"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </RelativeLayout>
 

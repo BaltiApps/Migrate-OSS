@@ -1,5 +1,6 @@
 package balti.migrate.inbuiltUpdater
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
@@ -34,52 +35,80 @@ class Updater: AppCompatActivity() {
         setContentView(R.layout.updater_activity)
 
         CoroutineScope(Main).launch {
+
             toggleLayout(1)
             val json = GetUpdateInfo().getInfo()
-            if (json.has(UPDATE_ERROR)){
-                commonTools.showErrorDialog(json.getString(UPDATE_ERROR), getString(R.string.update_check_error), false)
-                toggleLayout(0)
-            }
-            else if (json.has(UPDATE_VERSION) && json.getInt(UPDATE_VERSION) <= THIS_VERSION){
-                val ad = AlertDialog.Builder(this@Updater).apply {
-                    val m = SpannableString(getString(R.string.no_new_version_desc))
-                    Linkify.addLinks(m, Linkify.ALL)
-                    setTitle(R.string.you_are_on_latest)
-                    setMessage(m)
-                    setCancelable(false)
-                    setPositiveButton(R.string.close) {_, _ ->
-                        finish()
+
+            commonTools.tryIt {
+                if (!isFinishing) {
+
+                    if (json.has(UPDATE_ERROR)) {
+                        commonTools.showErrorDialog(json.getString(UPDATE_ERROR), getString(R.string.update_check_error), false)
+                        toggleLayout(0)
+                    } else if (json.has(UPDATE_VERSION) && json.getInt(UPDATE_VERSION) <= THIS_VERSION) {
+
+                        toggleLayout(0)
+                        val ad = AlertDialog.Builder(this@Updater).apply {
+                            val m = SpannableString(getString(R.string.no_new_version_desc))
+                            Linkify.addLinks(m, Linkify.ALL)
+                            setTitle(R.string.you_are_on_latest)
+                            setMessage(m)
+                            setCancelable(false)
+                            setPositiveButton(R.string.close) { _, _ ->
+                                finish()
+                            }
+                        }
+                                .create()
+
+                        ad.show()
+                        ad.findViewById<TextView>(android.R.id.message)?.movementMethod = LinkMovementMethod.getInstance()
+
+                    } else if (!json.has(UPDATE_URL)) {
+                        commonTools.showErrorDialog(getString(R.string.no_update_url), getString(R.string.update_check_error), false)
+                        toggleLayout(0)
+                    } else {
+                        toggleLayout(2)
+                        UPDATE_NAME.let { if (json.has(it)) update_name.text = json.getString(it) }
+                        UPDATE_VERSION.let { if (json.has(it)) update_version.text = json.getInt(it).toString() }
+                        UPDATE_LAST_TESTED_ANDROID.let { if (json.has(it)) update_last_android_version.text = json.get(it).toString() }
+                        UPDATE_STATUS.let { if (json.has(it)) update_status.text = json.getString(it) }
+                        UPDATE_MESSAGE.let { if (json.has(it)) update_info.text = json.getString(it) }
+                        updateUrl = json.getString(UPDATE_URL)
                     }
                 }
-                        .create()
-
-                ad.show()
-
-                ad.findViewById<TextView>(android.R.id.message)?.movementMethod = LinkMovementMethod.getInstance()
-            }
-            else if (!json.has(UPDATE_URL)) {
-                commonTools.showErrorDialog(getString(R.string.no_update_url), getString(R.string.update_check_error), false)
-                toggleLayout(0)
-            }
-            else {
-                toggleLayout(2)
-                UPDATE_NAME.let { if (json.has(it)) update_name.text = json.getString(it) }
-                UPDATE_VERSION.let { if (json.has(it)) update_version.text = json.getInt(it).toString() }
-                UPDATE_LAST_TESTED_ANDROID.let { if (json.has(it)) update_last_android_version.text = json.get(it).toString() }
-                UPDATE_STATUS.let { if (json.has(it)) update_status.text = json.getString(it) }
-                UPDATE_MESSAGE.let { if (json.has(it)) update_info.text = json.getString(it) }
-                updateUrl = json.getString(UPDATE_URL)
             }
         }
     }
 
-    private fun toggleLayout(mode: Int){  // mode = 0 -> hide all layouts, else visible only layout with index (mode-1)
-        val layouts = arrayOf(update_check_wait_layout, update_download_layout, update_installer_layout)
-        if (mode >= 0 && mode < layouts.size)
-            for (i in layouts.indices){
-                layouts[i].visibility =
-                        if (i == (mode-1)) View.VISIBLE
-                        else View.GONE
+    private fun toggleLayout(mode: Int){
+        // mode = 0 -> hide all layouts
+        // mode = 1 -> show only waiting layout
+        // mode = 2 -> enable download layout
+        // mode = 3 -> enable install layout
+
+        if (mode == 0){
+            update_check_wait_layout.visibility = View.GONE
+            updater_content.visibility = View.GONE
+        }
+        else if (mode == 1) {
+            update_check_wait_layout.visibility = View.VISIBLE
+            updater_content.visibility = View.GONE
+        }
+        else if (mode > 1) {
+            update_check_wait_layout.visibility = View.GONE
+            updater_content.visibility = View.VISIBLE
+            if (mode == 2) {
+                update_button_install.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.grey_bg))
+                update_button_install.isEnabled = false
+                update_radio_install_by_pm.isEnabled = false
+                update_radio_install_by_root.isEnabled = false
             }
+            if (mode == 3) {
+                update_button_install.backgroundTintList = null
+                update_button_install.isEnabled = true
+                update_radio_install_by_pm.isEnabled = true
+                update_radio_install_by_root.isEnabled = true
+            }
+        }
     }
 }
