@@ -183,6 +183,8 @@
                         android:text="@string/check_for_updates"
                         android:textColor="@color/colorAccent"
                         android:gravity="end"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackground"
                         />
 

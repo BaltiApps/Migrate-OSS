@@ -46,6 +46,7 @@
             android:gravity="center"
             android:orientation="vertical"
             android:layout_centerVertical="true"
+            android:visibility="gone"
             >
 
             <ProgressBar
@@ -70,7 +71,6 @@
             android:layout_height="wrap_content"
             android:fillViewport="true"
             android:id="@+id/update_download_layout"
-            android:visibility="gone"
             >
 
             <LinearLayout
@@ -183,7 +183,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="?android:attr/progressBarStyleHorizontal"
-                    android:id="@+id/update_download_progressbar"/>
+                    android:id="@+id/update_download_progressbar"
+                    android:visibility="invisible"
+                    />
 
                 <Space
                     android:layout_width="wrap_content"

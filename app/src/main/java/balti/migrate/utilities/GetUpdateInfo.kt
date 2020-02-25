@@ -19,6 +19,7 @@ class GetUpdateInfo {
         val UPDATE_STATUS = "status"
         val UPDATE_MESSAGE = "message"
         val UPDATE_URL = "url"
+        val UPDATE_ERROR = "error"
     }
 
     private val dFile by lazy {File(AppInstance.appContext.filesDir, "update_info.txt")}
@@ -31,7 +32,7 @@ class GetUpdateInfo {
         }
     }
 
-    suspend fun getInfo(): JSONObject {
+    suspend fun getInfo(getError: Boolean = false): JSONObject {
         return try {
             withContext(IO) {
                 downloadData()
@@ -45,7 +46,8 @@ class GetUpdateInfo {
             }
         }
         catch (e: Exception){
-            JSONObject()
+            if (getError) JSONObject().put(UPDATE_ERROR, "${e.message}")
+            else JSONObject()
         }
     }
 
