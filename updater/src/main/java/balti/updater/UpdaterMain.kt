@@ -49,7 +49,10 @@ internal class UpdaterMain: AppCompatActivity() {
 
                         toggleLayout(0)
                         val ad = AlertDialog.Builder(this@UpdaterMain).apply {
-                            val m = SpannableString(String.format(getString(R.string.no_new_version_desc), TELEGRAM_GROUP))
+                            val m = SpannableString(TELEGRAM_GROUP.let {
+                                if (it != "") String.format(getString(R.string.no_new_version_desc_tg), TELEGRAM_GROUP)
+                                else getString(R.string.no_new_version_desc)
+                            })
                             Linkify.addLinks(m, Linkify.ALL)
                             setTitle(R.string.you_are_on_latest)
                             setMessage(m)

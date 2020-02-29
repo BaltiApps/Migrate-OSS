@@ -11,13 +11,12 @@ import balti.updater.Constants.Companion.PREF_CHANNEL_STABLE
 import balti.updater.Constants.Companion.PREF_SERVER
 import balti.updater.Constants.Companion.PREF_SERVER_GITHUB
 import balti.updater.Constants.Companion.PREF_SERVER_GITLAB
-import balti.updater.Constants.Companion.UPDATE_ERROR
-import balti.updater.Constants.Companion.UPDATE_LAST_TESTED_ANDROID
-import balti.updater.Constants.Companion.UPDATE_MESSAGE
-import balti.updater.Constants.Companion.UPDATE_NAME
-import balti.updater.Constants.Companion.UPDATE_STATUS
-import balti.updater.Constants.Companion.UPDATE_URL
-import balti.updater.Constants.Companion.UPDATE_VERSION
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class Updater {
 
@@ -34,14 +33,16 @@ class Updater {
             this.thisVersion = thisVersion
         }
 
-        suspend fun isUpdateAvailable(): Boolean = GetUpdateInfo(context).isUpdateAvailable()
+        fun isUpdateAvailable(): Boolean = runBlocking {  GetUpdateInfo(context).isUpdateAvailable() }
+        fun onUpdateAvailable(f: () -> Unit){
+            CoroutineScope(Default).launch{
+                if (isUpdateAvailable()) withContext(Main) { Tools().tryIt(f) }
+            }
+        }
 
         fun launchUpdaterScreen(){
             context.startActivity(Intent(context, UpdaterMain::class.java).setFlags(FLAG_ACTIVITY_NEW_TASK))
         }
-
-        fun getJsonKeys(): Array<String> = arrayOf(UPDATE_NAME, UPDATE_VERSION, UPDATE_LAST_TESTED_ANDROID,
-                UPDATE_STATUS, UPDATE_MESSAGE, UPDATE_URL, UPDATE_ERROR)
 
         fun getUpdateServers(): Array<String> = arrayOf(PREF_SERVER_GITHUB, PREF_SERVER_GITLAB)
         fun getUpdateActiveServer(): String = sharedPreferences.getString(PREF_SERVER, PREF_SERVER_GITLAB).let { it?:"" }

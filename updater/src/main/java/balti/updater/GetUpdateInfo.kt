@@ -47,15 +47,14 @@ internal class GetUpdateInfo(context: Context) {
 
     suspend fun isUpdateAvailable(): Boolean {
         val info = getInfo(false)
-        return if (info.has(UPDATE_VERSION)){
+        return if (info.has(UPDATE_VERSION)) {
             try {
                 info.getInt(UPDATE_VERSION) > thisVersion
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
                 false
             }
-        }
-        else false
+        } else false
     }
 
 }

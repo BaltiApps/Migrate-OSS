@@ -6,7 +6,8 @@
     <string name="update_check_error">Update check error</string>
     <string name="no_update_url">No update url found</string>
     <string name="you_are_on_latest">You are on latest version!</string>
-    <string name="no_new_version_desc">No new version available. You may join our telegram group %s for latest news.</string>
+    <string name="no_new_version_desc_tg">No new version available. You may join our telegram group %s for latest news.</string>
+    <string name="no_new_version_desc">No new version available.</string>
     <string name="updater">Updater</string>
     <string name="last_tested_android">Last tested Android:</string>
     <string name="status">Status:</string>

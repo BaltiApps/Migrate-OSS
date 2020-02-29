@@ -5,7 +5,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
-class Tools(val context: Context?) {
+class Tools(val context: Context? = null) {
 
     fun tryIt(f: () -> Unit){
         try { f() } catch (e: Exception){}

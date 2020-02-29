@@ -55,9 +55,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
 import kotlinx.android.synthetic.main.please_wait.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.launch
 import java.io.File
 
 class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -196,12 +193,11 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         storageHandler.post(storageRunnable)
 
         if (main.getBoolean(PREF_UPDATE_AUTO_CHECK, true)) {
-            CoroutineScope(Main).launch {
+            Updater.onUpdateAvailable {
 
-                if (Updater.isUpdateAvailable())
-                    Snackbar.make(check_for_updates, R.string.update_available, Snackbar.LENGTH_LONG).setAction(R.string.download) {
-                        Updater.launchUpdaterScreen()
-                    }.show()
+                Snackbar.make(check_for_updates, R.string.update_available, Snackbar.LENGTH_LONG).setAction(R.string.download) {
+                    Updater.launchUpdaterScreen()
+                }.show()
 
             }
         }

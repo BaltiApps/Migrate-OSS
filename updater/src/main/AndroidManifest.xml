@@ -4,3 +4,43 @@
         <activity android:name=".UpdaterMain"/>
     </application>
 </manifest>
+
+<!--
+
+Implementation instructions:
+
+================
+A. Set support Telegram group in: Constants.TELEGRAM_GROUP
+   If not required, set it as ""
+B. Change update URLs under: Constants.UPDATE_URL()
+================
+
+1. In Application instance: onCreate()......... Updater.init(<context>: Context, <current app version number>: Int)
+2. To check for updates:....................... Updater.isUpdateAvailable() : Boolean
+   The above function is a suspend function
+3. If main app is not using coroutines:........ Updater.onUpdateAvailable(<function to run>: () -> Unit)
+   The above function is run in main thread.
+   So updating UI is possible.
+4. To open updater:............................ Updater.launchUpdaterScreen()
+
+5. To set server:
+5a. To get servers:............................ Updater.getUpdateServers() : Array<String>
+5b. To get active server:...................... Updater.getUpdateActiveServer() : String
+5c. To set active server:...................... Updater.setUpdateActiveServer(<server name>: String)
+    The above set function only accepts a server if it was present in Updater.getUpdateServers()
+
+6. To set channel:
+6a. To get channel:............................ Updater.getChannels() : Array<String>
+6b. To get active channel:..................... Updater.getActiveChannel() : String
+6c. To set active channel:..................... Updater.setActiveChannel(<channel name>: String)
+    The above set function only accepts a channel if it was present in Updater.getChannels()
+
+
+
+Customisation:
+
+1. Colors are available in colors.xml
+2. Change updater background with bg.png
+3. Theme is set by main app.
+
+-->
