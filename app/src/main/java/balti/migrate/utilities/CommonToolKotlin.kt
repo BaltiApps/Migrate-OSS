@@ -198,9 +198,6 @@ class CommonToolKotlin(val context: Context) {
         val PREF_MANUAL_SYSTEM = "manual_system"
         val PREF_MANUAL_BUILDPROP = "manual_buildProp"
 
-        val PREF_UPDATE_CHANNEL = "update_channel"
-        val PREF_UPDATE_CHANNEL_BETA = 1
-        val PREF_UPDATE_CHANNEL_STABLE = 2
         val PREF_UPDATE_AUTO_CHECK = "update_auto_check"
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
@@ -278,11 +275,6 @@ class CommonToolKotlin(val context: Context) {
                 "org.thunderdog.challegram",       // Telegram X
                 "org.telegram.plus"                // Plus messenger
         )
-
-        fun UPDATE_URL() : String =
-                if (AppInstance.sharedPrefs.getInt(PREF_UPDATE_CHANNEL, PREF_UPDATE_CHANNEL_BETA) == PREF_UPDATE_CHANNEL_BETA)
-                    "https://gitlab.com/SayantanRC/update-files/-/raw/master/migrate_update_info_beta+stable.txt"
-                else "https://gitlab.com/SayantanRC/update-files/-/raw/master/migrate_update_info_stable.txt"
 
         fun isDeletable(f: File): Boolean{
             val d = AppInstance.sharedPrefs.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)

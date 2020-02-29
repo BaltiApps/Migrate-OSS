@@ -721,20 +721,6 @@
     <string name="test_apk_not_found">Test apk not found or not properly created</string>
     <string name="test_data_not_found">Test data (tar.gz) not found or not properly created</string>
 
-    <!--updater_activity.xml-->
-    <string name="checking_update">Checking update</string>
-    <string name="update_check_error">Update check error</string>
-    <string name="no_update_url">No update url found</string>
-    <string name="you_are_on_latest">You are on latest version!</string>
-    <string name="no_new_version_desc">No new version available. You may join our telegram group t.me/migrateApp for latest news.</string>
-    <string name="updater">Updater</string>
-    <string name="last_tested_android">Last tested Android:</string>
-    <string name="status">Status:</string>
-    <string name="update_imp_info">Important info:</string>
-    <string name="install_by_package_manager">Install by package manager</string>
-    <string name="install_by_root">Install by root</string>
-    <string name="install">Install</string>
-
     <!--privacy_policy.xml-->
     <string name="privacy_policy_header">Privacy policy</string>
     <string name="privacy_policy_desc">This is a formal-informal discussion regarding data privacy and Migrate, some things which users should be aware of.

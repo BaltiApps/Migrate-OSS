@@ -1,7 +1,10 @@
-package balti.migrate.utilities
+package balti.updater
 
-import balti.migrate.AppInstance
-import balti.migrate.utilities.CommonToolKotlin.Companion.UPDATE_URL
+import android.content.Context
+import balti.updater.Constants.Companion.UPDATE_ERROR
+import balti.updater.Constants.Companion.UPDATE_URL
+import balti.updater.Constants.Companion.UPDATE_VERSION
+import balti.updater.Updater.Companion.thisVersion
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
@@ -10,19 +13,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
 
-class GetUpdateInfo {
+internal class GetUpdateInfo(context: Context) {
 
-    companion object {
-        val UPDATE_NAME = "name"
-        val UPDATE_VERSION = "version"
-        val UPDATE_LAST_TESTED_ANDROID = "last_tested_android"
-        val UPDATE_STATUS = "status"
-        val UPDATE_MESSAGE = "message"
-        val UPDATE_URL = "url"
-        val UPDATE_ERROR = "error"
-    }
-
-    private val dFile by lazy {File(AppInstance.appContext.filesDir, "update_info.txt")}
+    private val dFile by lazy { File(context.filesDir, "update_info.txt") }
 
     private fun downloadData(){
         dFile.delete()
@@ -50,6 +43,19 @@ class GetUpdateInfo {
             if (getError) JSONObject().put(UPDATE_ERROR, "${e.message}")
             else JSONObject()
         }
+    }
+
+    suspend fun isUpdateAvailable(): Boolean {
+        val info = getInfo(false)
+        return if (info.has(UPDATE_VERSION)){
+            try {
+                info.getInt(UPDATE_VERSION) > thisVersion
+            }catch (e: Exception){
+                e.printStackTrace()
+                false
+            }
+        }
+        else false
     }
 
 }

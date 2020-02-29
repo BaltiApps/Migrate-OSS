@@ -4,8 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_list_bg"
-    tools:context=".inbuiltUpdater.Updater"
+    android:background="@drawable/bg"
+    tools:context=".UpdaterMain"
     >
 
     <RelativeLayout
@@ -213,9 +213,9 @@
                     android:layout_height="@dimen/small_padding_width"/>
 
                 <Button
-                    android:layout_width="@dimen/next_button_width"
-                    android:layout_height="@dimen/next_button_height"
-                    android:background="@drawable/log_action_button"
+                    android:layout_width="@dimen/button_width"
+                    android:layout_height="@dimen/button_height"
+                    android:backgroundTint="@color/colorButtons"
                     android:text="@string/download"
                     android:layout_gravity="end"
                     android:id="@+id/update_button_download"
@@ -261,9 +261,9 @@
                     android:layout_height="@dimen/large_padding_width"/>
 
                 <Button
-                    android:layout_width="@dimen/next_button_width"
-                    android:layout_height="@dimen/next_button_height"
-                    android:background="@drawable/log_action_button"
+                    android:layout_width="@dimen/button_width"
+                    android:layout_height="@dimen/button_height"
+                    android:background="@color/colorButtons"
                     android:text="@string/install"
                     android:layout_gravity="end"
                     android:foreground="?android:attr/selectableItemBackground"

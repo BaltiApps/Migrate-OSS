@@ -1,1 +1,6 @@
-<manifest package="balti.updater" />
+<manifest package="balti.updater"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity android:name=".UpdaterMain"/>
+    </application>
+</manifest>

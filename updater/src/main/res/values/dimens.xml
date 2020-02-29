@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="small_padding_width">5dp</dimen>
+    <dimen name="large_padding_width">10dp</dimen>
+    <dimen name="xlarge_padding_width">18dp</dimen>
+    <dimen name="button_width">wrap_content</dimen>
+    <dimen name="button_height">wrap_content</dimen>
+</resources>

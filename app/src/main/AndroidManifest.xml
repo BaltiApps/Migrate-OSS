@@ -82,10 +82,6 @@
             android:screenOrientation="portrait"
             />
 
-        <activity android:name=".inbuiltUpdater.Updater"
-            android:screenOrientation="portrait"
-            />
-
         <service android:name=".backupEngines.BackupServiceKotlin"/>
 
         <provider

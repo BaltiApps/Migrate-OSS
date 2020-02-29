@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">Updater</string>
+
+    <!--updater_activity.xml-->
+    <string name="checking_update">Checking update</string>
+    <string name="update_check_error">Update check error</string>
+    <string name="no_update_url">No update url found</string>
+    <string name="you_are_on_latest">You are on latest version!</string>
+    <string name="no_new_version_desc">No new version available. You may join our telegram group %s for latest news.</string>
+    <string name="updater">Updater</string>
+    <string name="last_tested_android">Last tested Android:</string>
+    <string name="status">Status:</string>
+    <string name="update_imp_info">Important info:</string>
+    <string name="version">Version:</string>
+    <string name="install_by_package_manager">Install by package manager</string>
+    <string name="install_by_root">Install by root</string>
+    <string name="install">Install</string>
+    <string name="download">Download</string>
+
+    <string name="error_occurred">Error occurred!!</string>
+    <string name="close">Close</string>
+
 </resources>
