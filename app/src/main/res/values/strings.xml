@@ -668,8 +668,6 @@
     <string name="use_new_sizing_method_desc">Enabling this uses StorageStats in Android 8+ and by reflection in lower versions.
         Disabling this uses terminal shell commands to calculate size.</string>
     <string name="clear_to_reset">Clear and press OK to reset to default value</string>
-    <string name="auto_check_updates">Auto check for updates</string>
-    <string name="auto_check_updates_desc">Check for updates at startup</string>
     <string name="autoselect_extras_title">Auto-select extras</string>
     <string name="autoselect_extras_desc">This will automatically select extras like contacts and sms if you had previously backed them up</string>
     <string name="new_icon_method_title">New icon method</string>
@@ -690,6 +688,13 @@
     <string name="delete_error_backup_desc">Delete backup zip file if it finished with errors or was corrupted while backup.</string>
     <string name="zip_verification_title">Zip integrity check</string>
     <string name="zip_verification_desc">Verify if backup zips are corrupted and within the flashable memory constraints of the device.\nHIGHLY RECOMMENDED</string>
+    <string name="updates">Updates</string>
+    <string name="auto_check_updates">Auto check for updates</string>
+    <string name="auto_check_updates_desc">Check for updates at startup</string>
+    <string name="update_host">Select host for updates</string>
+    <string name="update_host_desc">Updates are stored as releases in GitHub/GitLab</string>
+    <string name="select_update_channel">Select update channel</string>
+    <string name="select_update_channel_desc">Stable channel or beta+stable</string>
     <string name="advanced">Advanced</string>
     <string name="max_zip_size">Max zip size</string>
     <string name="max_zip_size_desc">This is the maximum allowable size of a backup zip which can be safely flashed via TWRP.

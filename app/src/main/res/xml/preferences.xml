@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".preferences.MainPreferenceActivity"
+    >
 
     <Preference
         android:title="@string/disable_battery_optimisation"
@@ -9,11 +12,6 @@
         android:title="@string/use_new_sizing_method"
         android:summary="@string/use_new_sizing_method_desc"
         android:key="useNewSizingMethod" />
-
-    <CheckBoxPreference
-        android:title="@string/auto_check_updates"
-        android:summary="@string/auto_check_updates_desc"
-        android:key="autoCheckUpdates" />
 
     <CheckBoxPreference
         android:title="@string/autoselect_extras_title"
@@ -82,6 +80,28 @@
         android:summary="@string/ignore_cache_desc"
         android:key="ignoreCache"
         />
+
+    <PreferenceCategory
+        android:title="@string/updates">
+
+        <CheckBoxPreference
+            android:title="@string/auto_check_updates"
+            android:summary="@string/auto_check_updates_desc"
+            android:key="autoCheckUpdates" />
+
+        <ListPreference
+            android:title="@string/update_host"
+            android:summary="@string/update_host_desc"
+            android:key="updateHosts"
+            />
+
+        <ListPreference
+            android:title="@string/select_update_channel"
+            android:summary="@string/select_update_channel_desc"
+            android:key="updateChannel"
+            />
+
+    </PreferenceCategory>
 
     <PreferenceCategory
         android:title="@string/advanced">
