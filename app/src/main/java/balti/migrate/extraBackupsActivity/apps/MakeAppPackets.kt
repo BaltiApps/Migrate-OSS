@@ -147,7 +147,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             // du shows files in KB, but rest of the calculations in the whole app is in bytes.
             // so convert KB to bytes
             dataSize *= 1024
-            systemSize *= 1034
+            systemSize *= 1024
 
             appsScanned++
             appPackets.add(AppPacket(dp, appName, dataSize, systemSize))
