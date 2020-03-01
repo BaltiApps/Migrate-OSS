@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".preferences.MainPreferenceActivity"
+    >
 
     <Preference
         android:title="@string/disable_battery_optimisation"
@@ -52,6 +55,14 @@
         android:key="separateExtras"
         />
 
+
+    <CheckBoxPreference
+        android:title="@string/force_separate_extras"
+        android:summary="@string/force_separate_extras_desc"
+        android:key="forceSeparateExtras"
+        android:dependency="separateExtras"
+        />
+
     <CheckBoxPreference
         android:title="@string/delete_error_backup_title"
         android:summary="@string/delete_error_backup_desc"
@@ -71,6 +82,28 @@
         />
 
     <PreferenceCategory
+        android:title="@string/updates">
+
+        <CheckBoxPreference
+            android:title="@string/auto_check_updates"
+            android:summary="@string/auto_check_updates_desc"
+            android:key="autoCheckUpdates" />
+
+        <ListPreference
+            android:title="@string/update_host"
+            android:summary="@string/update_host_desc"
+            android:key="updateHosts"
+            />
+
+        <ListPreference
+            android:title="@string/select_update_channel"
+            android:summary="@string/select_update_channel_desc"
+            android:key="updateChannel"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/advanced">
 
         <CheckBoxPreference
@@ -84,6 +117,9 @@
             android:summary="@string/use_file_list_in_zip_verification_desc"
             android:key="useFileListInZipVerification"
             />
+
+        <balti.migrate.preferences.subPreferences.ZipMaxSizePref
+            android:layout="@layout/preference_seekbar"/>
 
         <balti.migrate.preferences.subPreferences.ManualCachePref
             android:layout="@layout/preferences_edittext"/>

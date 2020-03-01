@@ -42,16 +42,19 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FIRST_RUN
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_UPDATE_AUTO_CHECK
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_VERSION_CURRENT
 import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
 import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
 import balti.migrate.utilities.CommonToolKotlin.Companion.TG_DEV_LINK
 import balti.migrate.utilities.CommonToolKotlin.Companion.TG_LINK
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
+import balti.updater.Updater
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
 import kotlinx.android.synthetic.main.please_wait.view.*
@@ -64,7 +67,6 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     private val commonTools by lazy { CommonToolKotlin(this) }                                               /*kotlin*/
 
     private val REQUEST_CODE_BACKUP = 43
-    private val REQUEST_CODE_RESTORE = 5443
 
     private var rootErrorMessage = ""
     private var loadingDialog: AlertDialog? = null
@@ -105,9 +107,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             v.waiting_progress.setText(R.string.checking_permissions)
 
-            try {
-                loadingDialog?.dismiss()
-            } catch (ignored: Exception){}
+            commonTools.tryIt { loadingDialog?.dismiss() }
 
             loadingDialog = AlertDialog.Builder(this)
                     .setView(v)
@@ -140,6 +140,11 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         learn_sd_card_support.paintFlags = Paint.UNDERLINE_TEXT_FLAG
         learn_sd_card_support.setOnClickListener {
             commonTools.showSdCardSupportDialog()
+        }
+
+        check_for_updates.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+        check_for_updates.setOnClickListener {
+            Updater.launchUpdaterScreen()
         }
 
         navigationDrawer.setNavigationItemSelectedListener(this)
@@ -189,6 +194,16 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         refreshStorageSizes()
         storageHandler.post(storageRunnable)
+
+        if (main.getBoolean(PREF_UPDATE_AUTO_CHECK, true)) {
+            Updater.onUpdateAvailable {
+
+                Snackbar.make(check_for_updates, R.string.update_available, Snackbar.LENGTH_LONG).setAction(R.string.download) {
+                    Updater.launchUpdaterScreen()
+                }.show()
+                
+            }
+        }
 
         MobileAds.initialize(this)
         main_activity_adView.run {
@@ -543,21 +558,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         .show()
             }
 
-            try {
-                loadingDialog?.dismiss()
-            } catch (ignored: Exception) {
-            }
-        }
-        else if (requestCode == REQUEST_CODE_RESTORE) {
-            if (grantResults.size == 2 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                startActivity(Intent(this, ZipPicker::class.java))                          /*kotlin*/
-            } else {
-                AlertDialog.Builder(this)
-                        .setMessage(R.string.storage_access_required_restore)
-                        .setPositiveButton(android.R.string.ok, null)
-                        .show()
-            }
+            commonTools.tryIt { loadingDialog?.dismiss() }
         }
     }
 

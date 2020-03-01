@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.preference.CheckBoxPreference
+import android.preference.ListPreference
 import android.preference.Preference
 import android.preference.PreferenceActivity
 import android.provider.Settings
@@ -15,6 +16,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALLS_VERIFY
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DELETE_ERROR_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILELIST_IN_ZIP_VERIFICATION
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FORCE_SEPARATE_EXTRAS_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SEPARATE_EXTRAS_BACKUP
@@ -22,8 +24,10 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SMS_VERIFY
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_CHECK
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TAR_GZ_INTEGRITY
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_UPDATE_AUTO_CHECK
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_USE_SU_FOR_KEYBOARD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ZIP_VERIFICATION
+import balti.updater.Updater
 
 class MainPreferenceActivity: PreferenceActivity() {
 
@@ -35,9 +39,14 @@ class MainPreferenceActivity: PreferenceActivity() {
     private val callsVerification by lazy { findPreference("callsVerification") as CheckBoxPreference }
     private val performSystemCheck by lazy { findPreference("performSystemCheck") as CheckBoxPreference }
     private val separateExtras by lazy { findPreference("separateExtras") as CheckBoxPreference }
+    private val forceSeparateExtras by lazy { findPreference("forceSeparateExtras") as CheckBoxPreference }
     private val deleteErrorBackup by lazy { findPreference("deleteErrorBackup") as CheckBoxPreference }
     private val zipVerification by lazy { findPreference("zipVerification") as CheckBoxPreference }
     private val ignoreCache by lazy { findPreference("ignoreCache") as CheckBoxPreference }
+
+    private val autoCheckUpdates by lazy { findPreference("autoCheckUpdates") as CheckBoxPreference }
+    private val updateHosts by lazy { findPreference("updateHosts") as ListPreference }
+    private val updateChannel by lazy { findPreference("updateChannel") as ListPreference }
 
     private val suForKeyboard by lazy { findPreference("suForKeyboard") as CheckBoxPreference }
     private val useFileListInZipVerification by lazy { findPreference("useFileListInZipVerification") as CheckBoxPreference }
@@ -57,6 +66,10 @@ class MainPreferenceActivity: PreferenceActivity() {
                 checkbox.isChecked = getBoolean(field, defaultValue)
                 checkbox.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                     editor.putBoolean(field, newValue as Boolean)
+                    if (field == PREF_SEPARATE_EXTRAS_BACKUP && newValue == false) {
+                        forceSeparateExtras.isChecked = false
+                        editor.putBoolean(PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false)
+                    }
                     editor.apply()
                     true
                 }
@@ -70,9 +83,12 @@ class MainPreferenceActivity: PreferenceActivity() {
             setValue(callsVerification, PREF_CALLS_VERIFY)
             setValue(performSystemCheck, PREF_SYSTEM_CHECK)
             setValue(separateExtras, PREF_SEPARATE_EXTRAS_BACKUP)
+            setValue(forceSeparateExtras, PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false)
             setValue(deleteErrorBackup, PREF_DELETE_ERROR_BACKUP)
             setValue(zipVerification, PREF_ZIP_VERIFICATION)
             setValue(ignoreCache, PREF_IGNORE_APP_CACHE, false)
+
+            setValue(autoCheckUpdates, PREF_UPDATE_AUTO_CHECK)
 
             setValue(suForKeyboard, PREF_USE_SU_FOR_KEYBOARD)
             setValue(useFileListInZipVerification, PREF_FILELIST_IN_ZIP_VERIFICATION)
@@ -84,6 +100,29 @@ class MainPreferenceActivity: PreferenceActivity() {
                 true
             }
 
+            updateHosts.apply {
+                Updater.getUpdateHosts().let {
+                    entries = it
+                    entryValues = it
+                    setValueIndex(it.indexOf(Updater.getUpdateActiveHost()))
+                }
+                onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    Updater.setUpdateActiveHost(newValue.toString())
+                    true
+                }
+            }
+
+            updateChannel.apply {
+                Updater.getChannels().let {
+                    entries = it
+                    entryValues = it
+                    setValueIndex(it.indexOf(Updater.getActiveChannel()))
+                }
+                onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    Updater.setActiveChannel(newValue.toString())
+                    true
+                }
+            }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

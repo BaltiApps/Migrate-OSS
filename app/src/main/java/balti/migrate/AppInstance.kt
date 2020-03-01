@@ -13,6 +13,8 @@ import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MAX_BACKUP_SIZE
+import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
+import balti.updater.Updater
 import java.io.File
 
 
@@ -22,7 +24,7 @@ class AppInstance: Application() {
         lateinit var appContext: Context
         lateinit var sharedPrefs: SharedPreferences
         lateinit var notificationManager: NotificationManager
-        var MAX_CUSTOM_ZIP_SIZE = 0L
+        var MAX_EFFECTIVE_ZIP_SIZE = 0L
         var MAX_WORKING_SIZE = 0L
 
         val appPackets = ArrayList<AppPacket>(0)
@@ -57,11 +59,21 @@ class AppInstance: Application() {
         sharedPrefs = getSharedPreferences(FILE_MAIN_PREF, Context.MODE_PRIVATE)
         notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
-        MAX_CUSTOM_ZIP_SIZE = if (DEVICE_RAM_SIZE < MAX_TWRP_SIZE) DEVICE_RAM_SIZE else MAX_TWRP_SIZE
+        MAX_EFFECTIVE_ZIP_SIZE = if (DEVICE_RAM_SIZE < MAX_TWRP_SIZE) DEVICE_RAM_SIZE else MAX_TWRP_SIZE
 
-        MAX_WORKING_SIZE = sharedPrefs.getLong(PREF_MAX_BACKUP_SIZE, MAX_CUSTOM_ZIP_SIZE)
+        MAX_WORKING_SIZE = sharedPrefs.getLong(PREF_MAX_BACKUP_SIZE, MAX_EFFECTIVE_ZIP_SIZE).let {
+            if (it > MAX_EFFECTIVE_ZIP_SIZE){
+                sharedPrefs.edit().putLong(PREF_MAX_BACKUP_SIZE, MAX_EFFECTIVE_ZIP_SIZE).apply()
+                MAX_EFFECTIVE_ZIP_SIZE
+            }
+            else it
+        }
 
-        File(externalCacheDir.absolutePath).mkdirs()
+        externalCacheDir?.run { File(this.absolutePath).mkdirs() }
+        Updater.init(appContext, THIS_VERSION)
+    }
+
+    fun refreshMaxSize() {
     }
 
 }

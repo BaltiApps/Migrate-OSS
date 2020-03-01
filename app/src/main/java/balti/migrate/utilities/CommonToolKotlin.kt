@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.simpleActivities.PrivacyPolicy
 import kotlinx.android.synthetic.main.error_report_layout.view.*
@@ -25,7 +26,7 @@ class CommonToolKotlin(val context: Context) {
 
     companion object {
 
-        val THIS_VERSION = 13
+        val THIS_VERSION = 17
         val LAST_SUPPORTED_ANDROID_API = 29
 
         val DEBUG_TAG = "migrate_tag"
@@ -185,6 +186,7 @@ class CommonToolKotlin(val context: Context) {
         val PREF_CALLS_VERIFY = "calls_verify"
         val PREF_SYSTEM_CHECK = "do_system_check"
         val PREF_SEPARATE_EXTRAS_BACKUP = "separate_extras"
+        val PREF_FORCE_SEPARATE_EXTRAS_BACKUP = "force_separate_extras"
         val PREF_DELETE_ERROR_BACKUP = "delete_backup_on_error"
         val PREF_USE_SU_FOR_KEYBOARD = "use_su_for_keyboard"
         val PREF_ZIP_VERIFICATION = "do_zip_verification"
@@ -195,6 +197,8 @@ class CommonToolKotlin(val context: Context) {
         val PREF_MANUAL_MIGRATE_CACHE = "manual_migrate_cache"
         val PREF_MANUAL_SYSTEM = "manual_system"
         val PREF_MANUAL_BUILDPROP = "manual_buildProp"
+
+        val PREF_UPDATE_AUTO_CHECK = "update_auto_check"
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
         val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter
@@ -271,6 +275,12 @@ class CommonToolKotlin(val context: Context) {
                 "org.thunderdog.challegram",       // Telegram X
                 "org.telegram.plus"                // Plus messenger
         )
+
+        fun isDeletable(f: File): Boolean{
+            val d = AppInstance.sharedPrefs.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
+            val parentPath = File(d).absolutePath
+            return f.absolutePath.startsWith(parentPath)
+        }
     }
 
     var LBM : androidx.localbroadcastmanager.content.LocalBroadcastManager? = null

@@ -7,6 +7,7 @@ import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
+import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_SHELL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_SUPPRESSED
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_TRY_CATCH
@@ -116,14 +117,16 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         apkName = commonTools.applyNamingCorrectionForShell(apkName)
 
                         expectedAppDir.absolutePath.let {
-                            allRecovery.add(
-                                    "echo \"Copy apk(s): $packageName\"\n" +
-                                            "rm -rf $it 2> /dev/null" +
-                                            "mkdir -p $it\n" +
-                                            "cd $apkPath\n" +
-                                            "cp *.apk $it/\n\n" +
-                                            "mv $it/$apkName $it/${pi.packageName}.apk\n"
-                            )
+                            if (CommonToolKotlin.isDeletable(expectedAppDir)) {
+                                allRecovery.add(
+                                        "echo \"Copy apk(s): $packageName\"\n" +
+                                                "rm -rf $it 2> /dev/null" +
+                                                "mkdir -p $it\n" +
+                                                "cd $apkPath\n" +
+                                                "cp *.apk $it/\n\n" +
+                                                "mv $it/$apkName $it/${pi.packageName}.apk\n"
+                                )
+                            }
                         }
 
                         broadcastProgress(appName, "$packageName : appDir $existsAppDir, $sizeAppDir : apk $existsApk, $sizeApk", false)
