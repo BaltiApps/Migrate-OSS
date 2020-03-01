@@ -49,8 +49,8 @@ internal class Constants {
                     else "https://gitlab.com/SayantanRC/update-files/-/raw/master/migrate/migrate_update_info_stable.txt"
                 } else {
                     if (Updater.sharedPreferences.getString(PREF_CHANNEL, PREF_CHANNEL_BETA_STABLE) == PREF_CHANNEL_BETA_STABLE)
-                        ""
-                    else ""
+                        "https://raw.githubusercontent.com/SayantanRC/Migrate-files/master/update_info_beta+stable.txt"
+                    else "https://raw.githubusercontent.com/SayantanRC/Migrate-files/master/update_info_stable.txt"
                 }
     }
 }
