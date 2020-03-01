@@ -219,7 +219,6 @@
                     android:text="@string/download"
                     android:layout_gravity="end"
                     android:id="@+id/update_button_download"
-                    android:foreground="?android:attr/selectableItemBackground"
                     />
 
             </LinearLayout>
@@ -263,10 +262,9 @@
                 <Button
                     android:layout_width="@dimen/button_width"
                     android:layout_height="@dimen/button_height"
-                    android:background="@color/colorButtons"
+                    android:backgroundTint="@color/colorButtons"
                     android:text="@string/install"
                     android:layout_gravity="end"
-                    android:foreground="?android:attr/selectableItemBackground"
                     android:id="@+id/update_button_install"
                     />
 

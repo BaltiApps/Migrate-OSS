@@ -1,6 +1,8 @@
 package balti.updater
 
+import android.content.Intent
 import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
@@ -9,6 +11,8 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import balti.updater.Constants.Companion.EXTRA_CANCEL_DOWNLOAD
+import balti.updater.Constants.Companion.EXTRA_DOWNLOAD_URL
 import balti.updater.Constants.Companion.TELEGRAM_GROUP
 import balti.updater.Constants.Companion.UPDATE_ERROR
 import balti.updater.Constants.Companion.UPDATE_LAST_TESTED_ANDROID
@@ -18,6 +22,7 @@ import balti.updater.Constants.Companion.UPDATE_STATUS
 import balti.updater.Constants.Companion.UPDATE_URL
 import balti.updater.Constants.Companion.UPDATE_VERSION
 import balti.updater.Updater.Companion.thisVersion
+import balti.updater.downloader.DownloaderService
 import kotlinx.android.synthetic.main.updater_activity.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
@@ -77,6 +82,7 @@ internal class UpdaterMain: AppCompatActivity() {
                         UPDATE_STATUS.let { if (json.has(it)) update_status.text = json.getString(it) }
                         UPDATE_MESSAGE.let { if (json.has(it)) update_info.text = json.getString(it) }
                         updateUrl = json.getString(UPDATE_URL)
+                        setDownloadButton()
                     }
                 }
             }
@@ -111,6 +117,32 @@ internal class UpdaterMain: AppCompatActivity() {
                 update_button_install.isEnabled = true
                 update_radio_install_by_pm.isEnabled = true
                 update_radio_install_by_root.isEnabled = true
+            }
+        }
+    }
+
+    private fun setDownloadButton() {
+        update_button_download.apply {
+
+            fun start(doCancel: Boolean) {
+                Intent(this@UpdaterMain, DownloaderService::class.java)
+                        .putExtra(EXTRA_CANCEL_DOWNLOAD, doCancel)
+                        .putExtra(EXTRA_DOWNLOAD_URL, updateUrl).let { i ->
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(i)
+                            else startService(i)
+                        }
+            }
+
+            setOnClickListener {
+                if (text == getString(R.string.download)) {
+                    if (updateUrl != "") {
+                        start(false)
+                        text = getString(android.R.string.cancel)
+                    }
+                } else {
+                    start(true)
+                    text = getString(R.string.download)
+                }
             }
         }
     }

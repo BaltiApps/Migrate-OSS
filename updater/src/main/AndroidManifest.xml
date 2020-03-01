@@ -2,6 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <application>
         <activity android:name=".UpdaterMain"/>
+        <service android:name=".downloader.DownloaderService"/>
     </application>
 </manifest>
 

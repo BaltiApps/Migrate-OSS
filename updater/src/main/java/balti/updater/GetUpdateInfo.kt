@@ -1,6 +1,7 @@
 package balti.updater
 
 import android.content.Context
+import balti.updater.Constants.Companion.FILE_UPDATER_INFO
 import balti.updater.Constants.Companion.UPDATE_ERROR
 import balti.updater.Constants.Companion.UPDATE_URL
 import balti.updater.Constants.Companion.UPDATE_VERSION
@@ -15,7 +16,7 @@ import java.net.URL
 
 internal class GetUpdateInfo(context: Context) {
 
-    private val dFile by lazy { File(context.filesDir, "update_info.txt") }
+    private val dFile by lazy { File(context.filesDir, FILE_UPDATER_INFO) }
 
     private fun downloadData(){
         dFile.delete()
