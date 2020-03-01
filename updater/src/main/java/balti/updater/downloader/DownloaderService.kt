@@ -68,8 +68,9 @@ internal class DownloaderService: LifecycleService() {
     override fun onCreate() {
         super.onCreate()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(NOTIFICATION_CHANNEL_DOWNLOAD, NOTIFICATION_CHANNEL_DOWNLOAD, NotificationManager.IMPORTANCE_DEFAULT)
+                    .apply { setSound(null, null) }
             notificationManager.createNotificationChannel(channel)
         }
 
