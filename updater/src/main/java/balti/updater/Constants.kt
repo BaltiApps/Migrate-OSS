@@ -17,6 +17,10 @@ internal class Constants {
         val PREF_CHANNEL_BETA_STABLE = "Beta+Stable"
         val PREF_CHANNEL_STABLE = "Stable"
 
+        val PREF_INSTALL_METHOD = "install_method"
+        val PREF_INSTALL_PM = 332
+        val PREF_INSTALL_SU = 333
+
         val TELEGRAM_GROUP = "t.me/migrateApp"
 
         val UPDATE_NAME = "name"

@@ -8,6 +8,7 @@ import android.text.SpannableString
 import android.text.method.LinkMovementMethod
 import android.text.util.Linkify
 import android.view.View
+import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -20,7 +21,11 @@ import balti.updater.Constants.Companion.EXTRA_DOWNLOAD_URL
 import balti.updater.Constants.Companion.EXTRA_ENTIRE_JSON_DATA
 import balti.updater.Constants.Companion.EXTRA_FILE_SIZE
 import balti.updater.Constants.Companion.EXTRA_HOST
+import balti.updater.Constants.Companion.FILE_UPDATE_APK
 import balti.updater.Constants.Companion.OK
+import balti.updater.Constants.Companion.PREF_INSTALL_METHOD
+import balti.updater.Constants.Companion.PREF_INSTALL_PM
+import balti.updater.Constants.Companion.PREF_INSTALL_SU
 import balti.updater.Constants.Companion.TELEGRAM_GROUP
 import balti.updater.Constants.Companion.UPDATE_ERROR
 import balti.updater.Constants.Companion.UPDATE_LAST_TESTED_ANDROID
@@ -31,11 +36,14 @@ import balti.updater.Constants.Companion.UPDATE_URL
 import balti.updater.Constants.Companion.UPDATE_VERSION
 import balti.updater.Updater.Companion.thisVersion
 import balti.updater.downloader.DownloaderService
+import balti.updater.installers.InstallerPM
 import kotlinx.android.synthetic.main.updater_activity.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.io.File
+
 
 // Do not forget to declare in main app manifest
 
@@ -49,7 +57,33 @@ internal class UpdaterMain: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.updater_activity)
 
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         resetProgress()
+
+        if (Updater.sharedPreferences.getInt(PREF_INSTALL_METHOD, PREF_INSTALL_PM) == PREF_INSTALL_PM)
+            update_radio_install_by_pm.isChecked = true
+        else update_radio_install_by_root.isChecked = true
+
+        update_radio_install_by_pm.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) Updater.editor.putInt(PREF_INSTALL_METHOD, PREF_INSTALL_PM).apply()
+        }
+
+        update_radio_install_by_root.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) Updater.editor.putInt(PREF_INSTALL_METHOD, PREF_INSTALL_SU).apply()
+        }
+
+        update_button_install.setOnClickListener {
+            CoroutineScope(Main).launch {
+                install_wait_progressBar.visibility = View.VISIBLE
+                if (update_radio_install_by_pm.isChecked) {
+                    InstallerPM(File(filesDir, FILE_UPDATE_APK)).startInstall().let {
+                        if (it != "") showErrorDialog(it)
+                    }
+                }
+                install_wait_progressBar.visibility = View.GONE
+            }
+        }
 
         if (intent.hasExtra(EXTRA_ENTIRE_JSON_DATA)){
             tools.tryIt {

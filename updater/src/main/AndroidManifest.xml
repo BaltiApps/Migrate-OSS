@@ -1,9 +1,26 @@
 <manifest package="balti.updater"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+
     <application>
+
         <activity android:name=".UpdaterMain"/>
         <service android:name=".downloader.DownloaderService"/>
+
+        <!--<provider
+            android:authorities="updater.provider"
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/paths"/>
+        </provider>-->
+
     </application>
+
 </manifest>
 
 <!--

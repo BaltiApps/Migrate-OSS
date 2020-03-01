@@ -294,15 +294,35 @@
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/large_padding_width"/>
 
-                <Button
-                    android:layout_width="@dimen/updater_button_width"
-                    android:layout_height="@dimen/updater_button_height"
-                    android:background="@drawable/button_drawable"
-                    android:text="@string/install"
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     android:layout_gravity="end"
-                    android:id="@+id/update_button_install"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    />
+                    android:gravity="center_vertical"
+                    >
+
+                    <ProgressBar
+                        android:layout_width="@dimen/updater_button_height"
+                        android:layout_height="@dimen/updater_button_height"
+                        android:id="@+id/install_wait_progressBar"
+                        android:visibility="gone"/>
+
+                    <Space
+                        android:layout_width="@dimen/small_padding_width"
+                        android:layout_height="wrap_content"/>
+
+                    <Button
+                        android:layout_width="@dimen/updater_button_width"
+                        android:layout_height="@dimen/updater_button_height"
+                        android:background="@drawable/button_drawable"
+                        android:text="@string/install"
+                        android:id="@+id/update_button_install"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        />
+
+                </LinearLayout>
+
 
             </LinearLayout>
 
