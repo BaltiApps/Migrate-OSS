@@ -37,6 +37,7 @@ import balti.updater.Constants.Companion.UPDATE_VERSION
 import balti.updater.Updater.Companion.thisVersion
 import balti.updater.downloader.DownloaderService
 import balti.updater.installers.InstallerPM
+import balti.updater.installers.InstallerSU
 import kotlinx.android.synthetic.main.updater_activity.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
@@ -75,12 +76,22 @@ internal class UpdaterMain: AppCompatActivity() {
 
         update_button_install.setOnClickListener {
             CoroutineScope(Main).launch {
+
                 install_wait_progressBar.visibility = View.VISIBLE
-                if (update_radio_install_by_pm.isChecked) {
-                    InstallerPM(File(filesDir, FILE_UPDATE_APK)).startInstall().let {
-                        if (it != "") showErrorDialog(it)
+
+                val error = when {
+                    update_radio_install_by_pm.isChecked -> {
+                        InstallerPM(File(filesDir, FILE_UPDATE_APK)).startInstall()
                     }
+                    update_radio_install_by_root.isChecked -> {
+                        InstallerSU(File(filesDir, FILE_UPDATE_APK)).startInstall()
+                    }
+                    else -> ""
                 }
+
+                if (error != "") showErrorDialog(error)
+                else Toast.makeText(this@UpdaterMain, R.string.update_complete, Toast.LENGTH_SHORT).show()
+
                 install_wait_progressBar.visibility = View.GONE
             }
         }

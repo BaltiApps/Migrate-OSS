@@ -27,6 +27,7 @@
 
     <!--UpdaterMain.kt-->
     <string name="host">Host</string>
+    <string name="update_complete">Update complete!</string>
 
     <!--DownloadJob.kt-->
     <string name="download_error_null">Download error NULL</string>
