@@ -6,15 +6,23 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import balti.updater.Constants.Companion.EXTRA_CANCEL_DOWNLOAD
+import balti.updater.Constants.Companion.EXTRA_DOWNLOAD_FINISHED
+import balti.updater.Constants.Companion.EXTRA_DOWNLOAD_MESSAGE
 import balti.updater.Constants.Companion.EXTRA_DOWNLOAD_URL
+import balti.updater.Constants.Companion.EXTRA_ENTIRE_JSON_DATA
+import balti.updater.Constants.Companion.EXTRA_FILE_SIZE
 import balti.updater.Constants.Companion.NOTIFICATION_CHANNEL_DOWNLOAD
 import balti.updater.Constants.Companion.NOTIFICATION_ID
 import balti.updater.R
+import balti.updater.Tools
+import balti.updater.Updater
+import balti.updater.UpdaterMain
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -36,6 +44,7 @@ internal class DownloaderService: LifecycleService() {
     }
 
     private lateinit var cJob: CompletableJob
+    private var jsonData = ""
 
     companion object {
         val size = MutableLiveData<Int>()
@@ -65,9 +74,25 @@ internal class DownloaderService: LifecycleService() {
         startForeground(NOTIFICATION_ID, downloadNotif.build())
     }
 
+    private fun setContentIntentExtras(bundle: Bundle = Bundle()){
+        downloadNotif.setContentIntent(PendingIntent.getActivity(this@DownloaderService, 10,
+                Intent(Updater.context, UpdaterMain::class.java).putExtra(EXTRA_ENTIRE_JSON_DATA, jsonData)
+                        .putExtra(EXTRA_FILE_SIZE, size.value)
+                        .putExtras(bundle),
+                PendingIntent.FLAG_UPDATE_CURRENT
+        ))
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         intent?.run {
+
+            Tools().tryIt {
+                if (hasExtra(EXTRA_ENTIRE_JSON_DATA))
+                    jsonData = getStringExtra(EXTRA_ENTIRE_JSON_DATA)
+
+                setContentIntentExtras()
+            }
 
             if (getBooleanExtra(EXTRA_CANCEL_DOWNLOAD, false)){
                 cJob.cancel()
@@ -91,8 +116,35 @@ internal class DownloaderService: LifecycleService() {
                         progress.value = it
                     })
 
-                    messageOnComplete.value = withContext(IO) {
+                    withContext(IO) {
                         downloadJob.execute(url)
+                    }.let {
+                        if (it != ""){
+                            downloadNotif.apply {
+                                setContentTitle(getString(R.string.download_error))
+                                setContentText(it)
+                                setSmallIcon(R.drawable.ic_error_notif_icon)
+                            }
+                            setContentIntentExtras(Bundle().apply { putString(EXTRA_DOWNLOAD_MESSAGE, it) })
+                        }
+                        else {
+                            downloadNotif.apply {
+                                setContentTitle(getString(R.string.download_complete))
+                                setContentText(getString(R.string.click_to_install))
+                            }
+                            setContentIntentExtras(Bundle().apply {
+                                putBoolean(EXTRA_DOWNLOAD_FINISHED, true)
+                            })
+                        }
+                        downloadNotif.apply {
+                            mActions.clear()
+                            setProgress(0, 0, false)
+                            setAutoCancel(true)
+                        }
+
+                        isJobActive = false
+                        messageOnComplete.value = it
+                        notificationManager.notify(NOTIFICATION_ID+1, downloadNotif.build())
                     }
 
                     stopSelf()

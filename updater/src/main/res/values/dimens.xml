@@ -3,6 +3,6 @@
     <dimen name="small_padding_width">5dp</dimen>
     <dimen name="large_padding_width">10dp</dimen>
     <dimen name="xlarge_padding_width">18dp</dimen>
-    <dimen name="button_width">wrap_content</dimen>
-    <dimen name="button_height">wrap_content</dimen>
+    <dimen name="updater_button_width">150dp</dimen>
+    <dimen name="updater_button_height">45dp</dimen>
 </resources>

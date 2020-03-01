@@ -74,7 +74,6 @@
             android:orientation="vertical"
             android:padding="@dimen/large_padding_width"
             android:id="@+id/updater_content"
-            android:visibility="gone"
             >
 
             <ScrollView
@@ -200,25 +199,48 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <ProgressBar
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:id="@+id/update_download_progressbar"
+                    android:orientation="vertical"
+                    android:gravity="center_vertical"
+                    android:id="@+id/update_progress_layout"
                     android:visibility="invisible"
-                    />
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/update_size_in_text"
+                        tools:text="0 MB/14 MB"
+                        android:layout_gravity="end"
+                        />
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/small_padding_width"/>
+
+                    <ProgressBar
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:id="@+id/update_download_progressbar"
+                        />
+
+                </LinearLayout>
 
                 <Space
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/small_padding_width"/>
 
                 <Button
-                    android:layout_width="@dimen/button_width"
-                    android:layout_height="@dimen/button_height"
-                    android:backgroundTint="@color/colorButtons"
+                    android:layout_width="@dimen/updater_button_width"
+                    android:layout_height="@dimen/updater_button_height"
+                    android:background="@drawable/button_drawable"
                     android:text="@string/download"
                     android:layout_gravity="end"
                     android:id="@+id/update_button_download"
+                    android:foreground="?android:attr/selectableItemBackground"
                     />
 
             </LinearLayout>
@@ -260,12 +282,13 @@
                     android:layout_height="@dimen/large_padding_width"/>
 
                 <Button
-                    android:layout_width="@dimen/button_width"
-                    android:layout_height="@dimen/button_height"
-                    android:backgroundTint="@color/colorButtons"
+                    android:layout_width="@dimen/updater_button_width"
+                    android:layout_height="@dimen/updater_button_height"
+                    android:background="@drawable/button_drawable"
                     android:text="@string/install"
                     android:layout_gravity="end"
                     android:id="@+id/update_button_install"
+                    android:foreground="?android:attr/selectableItemBackground"
                     />
 
             </LinearLayout>

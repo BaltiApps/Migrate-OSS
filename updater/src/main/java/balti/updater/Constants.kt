@@ -30,6 +30,10 @@ internal class Constants {
 
         val EXTRA_DOWNLOAD_URL = "download_url"
         val EXTRA_CANCEL_DOWNLOAD = "cancel_download"
+        val EXTRA_ENTIRE_JSON_DATA = "entire_json_data"
+        val EXTRA_DOWNLOAD_FINISHED = "download_finished"
+        val EXTRA_DOWNLOAD_MESSAGE = "download_final_message"
+        val EXTRA_FILE_SIZE = "download_file_size"
 
         fun UPDATE_URL() : String =
                 if (Updater.sharedPreferences.getString(PREF_SERVER, PREF_SERVER_GITLAB) == PREF_SERVER_GITLAB) {

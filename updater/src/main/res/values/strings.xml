@@ -21,6 +21,9 @@
     <!--DownloaderService.kt-->
     <string name="loading">Loading…</string>
     <string name="downloading">Downloading…</string>
+    <string name="download_error">Error downloading update</string>
+    <string name="download_complete">Download complete</string>
+    <string name="click_to_install">Click to install</string>
 
     <!--DownloadJob.kt-->
     <string name="download_error_null">Download error NULL</string>
