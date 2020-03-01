@@ -31,6 +31,12 @@ Implementation instructions:
 A. Set support Telegram group in: Constants.TELEGRAM_GROUP
    If not required, set it as ""
 B. Change update URLs under: Constants.UPDATE_URL()
+C. If the main app has uri provider in manifest:
+   i) Under Tools.kt -> getUri() change the file provider authority to the corresponding provider
+
+   If the main app does not have uri provider in manifest:
+   i) uncomment the <provider> tags in this xml
+   ii) Under Tools.kt -> getUri() change the file provider authority to "updater.provider"
 ================
 
 1. In Application instance: onCreate()......... Updater.init(<context>: Context, <current app version number>: Int)
