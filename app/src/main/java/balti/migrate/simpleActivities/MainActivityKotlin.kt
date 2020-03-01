@@ -50,6 +50,9 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.TG_DEV_LINK
 import balti.migrate.utilities.CommonToolKotlin.Companion.TG_LINK
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
 import balti.updater.Updater
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
@@ -198,7 +201,18 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 Snackbar.make(check_for_updates, R.string.update_available, Snackbar.LENGTH_LONG).setAction(R.string.download) {
                     Updater.launchUpdaterScreen()
                 }.show()
+                
+            }
+        }
 
+        MobileAds.initialize(this)
+        main_activity_adView.run {
+            loadAd(AdRequest.Builder().build())
+            adListener = object : AdListener(){
+                override fun onAdFailedToLoad(p0: Int) {
+                    super.onAdFailedToLoad(p0)
+                    visibility = View.GONE
+                }
             }
         }
     }
