@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
 import android.text.util.Linkify
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -20,6 +19,8 @@ import balti.updater.Constants.Companion.EXTRA_DOWNLOAD_MESSAGE
 import balti.updater.Constants.Companion.EXTRA_DOWNLOAD_URL
 import balti.updater.Constants.Companion.EXTRA_ENTIRE_JSON_DATA
 import balti.updater.Constants.Companion.EXTRA_FILE_SIZE
+import balti.updater.Constants.Companion.EXTRA_HOST
+import balti.updater.Constants.Companion.OK
 import balti.updater.Constants.Companion.TELEGRAM_GROUP
 import balti.updater.Constants.Companion.UPDATE_ERROR
 import balti.updater.Constants.Companion.UPDATE_LAST_TESTED_ANDROID
@@ -53,11 +54,19 @@ internal class UpdaterMain: AppCompatActivity() {
         if (intent.hasExtra(EXTRA_ENTIRE_JSON_DATA)){
             tools.tryIt {
                 JSONObject(intent.getStringExtra(EXTRA_ENTIRE_JSON_DATA)).let {
+
                     toggleLayout(2)
                     showDataFromJson(it)
                     setDownloadButton()
+
                     if (intent.getBooleanExtra(EXTRA_DOWNLOAD_FINISHED, false)) toggleLayout(3)
+
                     intent.getIntExtra(EXTRA_FILE_SIZE, 0).let { s-> if (s > 0) updateSize = s }
+
+                    if (intent.hasExtra(EXTRA_HOST)) {
+                        intent.getStringExtra(EXTRA_HOST).let { h -> update_host.text = "${getString(R.string.host)}: ${h?:""}" }
+                    }
+
                     if (intent.hasExtra(EXTRA_DOWNLOAD_MESSAGE)) {
                         intent.getStringExtra(EXTRA_DOWNLOAD_MESSAGE).let {m ->
                             if (!m.isBlank()) showErrorDialog(m, "", false)
@@ -120,9 +129,16 @@ internal class UpdaterMain: AppCompatActivity() {
             if (it < 100) setDownloadProgress(it) else resetProgress()
         })
 
+        DownloaderService.downladJobFinishedOrCancelled.observe(this, Observer {
+            if (it) {
+                resetProgress()
+                setDownloadButton()
+            }
+        })
+
         DownloaderService.messageOnComplete.observe(this, Observer {
-            if (!it.isBlank()) showErrorDialog(it, getString(R.string.download_error))
-            else toggleLayout(3)
+            if (it == OK) toggleLayout(3)
+            else if (!it.isBlank()) showErrorDialog(it, getString(R.string.download_error))
             setDownloadButton()
         })
     }
@@ -137,10 +153,13 @@ internal class UpdaterMain: AppCompatActivity() {
     }
 
     private fun setDownloadProgress(p: Int){
-        update_progress_layout.visibility = View.VISIBLE
-        update_download_progressbar.progress = p
-        val progressInBytes = (updateSize*(p/100.0)).toLong()
-        update_size_in_text.text = "${tools.getHumanReadableStorageSpace(progressInBytes)}/${tools.getHumanReadableStorageSpace(updateSize.toLong())}"
+        if (DownloaderService.isJobActive) {
+            update_progress_layout.visibility = View.VISIBLE
+            update_download_progressbar.progress = p
+            val progressInBytes = (updateSize * (p / 100.0)).toLong()
+            update_size_in_text.text = "${tools.getHumanReadableStorageSpace(progressInBytes)}/${tools.getHumanReadableStorageSpace(updateSize.toLong())}"
+        }
+        else resetProgress()
     }
 
     private fun showDataFromJson(json: JSONObject){
@@ -187,6 +206,8 @@ internal class UpdaterMain: AppCompatActivity() {
     private fun setDownloadButton(jsonObject: JSONObject? = null) {
         update_button_download.apply {
 
+            val host = Updater.getUpdateActiveHost()
+
             fun start(doCancel: Boolean) {
                 Intent(this@UpdaterMain, DownloaderService::class.java).apply {
 
@@ -195,6 +216,7 @@ internal class UpdaterMain: AppCompatActivity() {
                         putExtra(EXTRA_DOWNLOAD_URL, updateUrl)
                     }
                     putExtra(EXTRA_CANCEL_DOWNLOAD, doCancel)
+                    putExtra(EXTRA_HOST, host)
 
                 }.let { i ->
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(i)
@@ -202,7 +224,6 @@ internal class UpdaterMain: AppCompatActivity() {
                 }
             }
 
-            Log.d("migrate_tag", "ictive: ${DownloaderService.isJobActive}")
             text = if (DownloaderService.isJobActive)
                 getString(android.R.string.cancel)
             else getString(R.string.download)
@@ -210,9 +231,11 @@ internal class UpdaterMain: AppCompatActivity() {
             setOnClickListener {
                 if (text == getString(R.string.download)) {
                     if (updateUrl != "") {
+                        update_host.text = "${getString(R.string.host)}: ${host}"
                         start(false)
                         text = getString(android.R.string.cancel)
                         setDownloadProgress(0)
+                        toggleLayout(2)
                     }
                 } else {
                     start(true)

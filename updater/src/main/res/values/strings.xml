@@ -25,6 +25,9 @@
     <string name="download_complete">Download complete</string>
     <string name="click_to_install">Click to install</string>
 
+    <!--UpdaterMain.kt-->
+    <string name="host">Host</string>
+
     <!--DownloadJob.kt-->
     <string name="download_error_null">Download error NULL</string>
 

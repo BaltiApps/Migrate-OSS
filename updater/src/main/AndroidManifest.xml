@@ -24,11 +24,11 @@ B. Change update URLs under: Constants.UPDATE_URL()
    So updating UI is possible.
 4. To open updater:............................ Updater.launchUpdaterScreen()
 
-5. To set server:
-5a. To get servers:............................ Updater.getUpdateServers() : Array<String>
-5b. To get active server:...................... Updater.getUpdateActiveServer() : String
-5c. To set active server:...................... Updater.setUpdateActiveServer(<server name>: String)
-    The above set function only accepts a server if it was present in Updater.getUpdateServers()
+5. To set host:
+5a. To get host:..........................,.... Updater.getUpdateHosts() : Array<String>
+5b. To get active host:........................ Updater.getUpdateActiveHost() : String
+5c. To set active host:........................ Updater.setUpdateActiveHost(<server name>: String)
+    The above set function only accepts a host if it was present in Updater.getUpdateServers()
 
 6. To set channel:
 6a. To get channel:............................ Updater.getChannels() : Array<String>

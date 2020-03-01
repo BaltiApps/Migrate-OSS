@@ -8,9 +8,9 @@ import balti.updater.Constants.Companion.FILE_PREF
 import balti.updater.Constants.Companion.PREF_CHANNEL
 import balti.updater.Constants.Companion.PREF_CHANNEL_BETA_STABLE
 import balti.updater.Constants.Companion.PREF_CHANNEL_STABLE
-import balti.updater.Constants.Companion.PREF_SERVER
-import balti.updater.Constants.Companion.PREF_SERVER_GITHUB
-import balti.updater.Constants.Companion.PREF_SERVER_GITLAB
+import balti.updater.Constants.Companion.PREF_HOST
+import balti.updater.Constants.Companion.PREF_HOST_GITHUB
+import balti.updater.Constants.Companion.PREF_HOST_GITLAB
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.Main
@@ -44,10 +44,10 @@ class Updater {
             context.startActivity(Intent(context, UpdaterMain::class.java).setFlags(FLAG_ACTIVITY_NEW_TASK))
         }
 
-        fun getUpdateServers(): Array<String> = arrayOf(PREF_SERVER_GITHUB, PREF_SERVER_GITLAB)
-        fun getUpdateActiveServer(): String = sharedPreferences.getString(PREF_SERVER, PREF_SERVER_GITLAB).let { it?:"" }
-        fun setUpdateActiveServer(server : String) {
-            if (server in getUpdateServers()) editor.putString(PREF_SERVER, server).apply()
+        fun getUpdateHosts(): Array<String> = arrayOf(PREF_HOST_GITHUB, PREF_HOST_GITLAB)
+        fun getUpdateActiveHost(): String = sharedPreferences.getString(PREF_HOST, PREF_HOST_GITLAB).let { it?:"" }
+        fun setUpdateActiveHost(host : String) {
+            if (host in getUpdateHosts()) editor.putString(PREF_HOST, host).apply()
         }
 
         fun getChannels(): Array<String> = arrayOf(PREF_CHANNEL_BETA_STABLE, PREF_CHANNEL_STABLE)

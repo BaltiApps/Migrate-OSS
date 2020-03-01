@@ -17,8 +17,10 @@ import balti.updater.Constants.Companion.EXTRA_DOWNLOAD_MESSAGE
 import balti.updater.Constants.Companion.EXTRA_DOWNLOAD_URL
 import balti.updater.Constants.Companion.EXTRA_ENTIRE_JSON_DATA
 import balti.updater.Constants.Companion.EXTRA_FILE_SIZE
+import balti.updater.Constants.Companion.EXTRA_HOST
 import balti.updater.Constants.Companion.NOTIFICATION_CHANNEL_DOWNLOAD
 import balti.updater.Constants.Companion.NOTIFICATION_ID
+import balti.updater.Constants.Companion.OK
 import balti.updater.R
 import balti.updater.Tools
 import balti.updater.Updater
@@ -45,11 +47,13 @@ internal class DownloaderService: LifecycleService() {
 
     private lateinit var cJob: CompletableJob
     private var jsonData = ""
+    private var host = ""
 
     companion object {
         val size = MutableLiveData<Int>()
         val progress = MutableLiveData<Int>()
         val messageOnComplete = MutableLiveData<String>()
+        val downladJobFinishedOrCancelled = MutableLiveData<Boolean>(false)
         var isJobActive = false
     }
 
@@ -78,6 +82,7 @@ internal class DownloaderService: LifecycleService() {
         downloadNotif.setContentIntent(PendingIntent.getActivity(this@DownloaderService, 10,
                 Intent(Updater.context, UpdaterMain::class.java).putExtra(EXTRA_ENTIRE_JSON_DATA, jsonData)
                         .putExtra(EXTRA_FILE_SIZE, size.value)
+                        .putExtra(EXTRA_HOST, host)
                         .putExtras(bundle),
                 PendingIntent.FLAG_UPDATE_CURRENT
         ))
@@ -91,10 +96,17 @@ internal class DownloaderService: LifecycleService() {
                 if (hasExtra(EXTRA_ENTIRE_JSON_DATA))
                     jsonData = getStringExtra(EXTRA_ENTIRE_JSON_DATA)
 
+                if (hasExtra(EXTRA_HOST))
+                    host = getStringExtra(EXTRA_HOST)
+
                 setContentIntentExtras()
             }
 
             if (getBooleanExtra(EXTRA_CANCEL_DOWNLOAD, false)){
+
+                isJobActive = false
+                downladJobFinishedOrCancelled.value = true
+
                 cJob.cancel()
                 stopSelf()
             }
@@ -103,7 +115,10 @@ internal class DownloaderService: LifecycleService() {
 
                 CoroutineScope(Main + cJob).launch {
 
+                    downladJobFinishedOrCancelled.value = false
                     isJobActive = true
+
+                    notificationManager.cancelAll()
 
                     val downloadJob = DownloadJob()
 
@@ -143,7 +158,9 @@ internal class DownloaderService: LifecycleService() {
                         }
 
                         isJobActive = false
-                        messageOnComplete.value = it
+                        downladJobFinishedOrCancelled.value = true
+
+                        messageOnComplete.value = if (it.isBlank()) OK else it
                         notificationManager.notify(NOTIFICATION_ID+1, downloadNotif.build())
                     }
 
@@ -156,6 +173,8 @@ internal class DownloaderService: LifecycleService() {
 
     override fun onDestroy() {
         isJobActive = false
+        downladJobFinishedOrCancelled.value = true
+        messageOnComplete.value = ""
         super.onDestroy()
     }
 }
