@@ -124,7 +124,7 @@ internal class UpdaterMain: AppCompatActivity() {
             CoroutineScope(Main).launch {
 
                 toggleLayout(1)
-                val json = GetUpdateInfo(this@UpdaterMain).getInfo()
+                val json = GetUpdateInfo(this@UpdaterMain).getInfo(true)
 
                 tools.tryIt {
                     if (!isFinishing) {

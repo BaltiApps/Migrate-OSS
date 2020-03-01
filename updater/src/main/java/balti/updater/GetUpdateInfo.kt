@@ -14,7 +14,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
 
-internal class GetUpdateInfo(context: Context) {
+internal class GetUpdateInfo(private val context: Context) {
 
     private val dFile by lazy { File(context.filesDir, FILE_UPDATER_INFO) }
 
@@ -41,7 +41,9 @@ internal class GetUpdateInfo(context: Context) {
             }
         }
         catch (e: Exception){
-            if (getError) JSONObject().put(UPDATE_ERROR, "${e.message}")
+            if (getError) {
+                JSONObject().put(UPDATE_ERROR, Tools().validateError(e.message.toString()))
+            }
             else JSONObject()
         }
     }

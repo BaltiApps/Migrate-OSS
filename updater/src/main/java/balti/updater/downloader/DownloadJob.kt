@@ -3,6 +3,7 @@ package balti.updater.downloader
 import androidx.lifecycle.MutableLiveData
 import balti.updater.Constants.Companion.FILE_UPDATE_APK
 import balti.updater.R
+import balti.updater.Tools
 import balti.updater.Updater.Companion.context
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -81,7 +82,7 @@ class DownloadJob {
     suspend fun execute(url: String): String{
         return withContext(IO) {
             preExecute()
-            doInBackground(URL(url))
+            Tools().validateError(doInBackground(URL(url)))
         }
     }
 
