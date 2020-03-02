@@ -25,7 +25,6 @@
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
-    <string name="made_with_love">Made with &#10084; in India</string>
     <string name="codename">Codename:</string>
     <string name="version">Version:</string>
     <string name="release_state_label">Release state:</string>
