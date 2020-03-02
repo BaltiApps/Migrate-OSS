@@ -131,15 +131,5 @@
         android:gravity="center"
         android:text="@string/made_with_android_studio" />
 
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/small_padding_width" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/made_with_love" />
-
 
 </LinearLayout>
