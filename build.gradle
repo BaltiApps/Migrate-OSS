@@ -27,7 +27,3 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
-
-ext {
-    dagger_version = '2.24'
-}
