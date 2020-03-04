@@ -228,39 +228,13 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
         }
 
         try {
-            /*when (zipBatches.size) {
-                0 -> {
-                    if (extras.isNotEmpty())
-                        zipBatches.add(ZipAppBatch().apply { addExtras(extras) })
-                }
-                1 -> {
-                    //zipBatches[0].apply { partName = "TEST_PART" }.addExtras(extras)
-                    zipBatches[0].addExtras(extras)
-                }
-                else -> {
-                    var toBeAdded: ZipAppBatch? = null
-
-                    if (extras.isNotEmpty()) {
-                        if (doSeparateExtras) {
-                            toBeAdded = ZipAppBatch().apply { addExtras(extras); partName = FILE_ZIP_NAME_EXTRAS }
-                        } else zipBatches[0].apply {
-                            addExtras(extras)
-                        }
-                    }
-
-                    // update partNames
-                    for (i in zipBatches.indices) {
-                        val z = zipBatches[i]
-                        z.partName = "${engineContext.getString(R.string.part)}_${i + 1}_${engineContext.getString(R.string.of)}_${zipBatches.size}"
-                    }
-
-                    if (toBeAdded != null) zipBatches.add(toBeAdded)
-                }
-            }*/
 
             // if separate extras, that is added later.
             // ELse, space for extras is already made in first zip by firstAdjust
-            if (!doSeparateExtras && extras.isNotEmpty() && zipBatches.isNotEmpty()) zipBatches[0].addExtras(extras)
+            if (!doSeparateExtras && extras.isNotEmpty()) {
+                if (zipBatches.isNotEmpty()) zipBatches[0].addExtras(extras)
+                else zipBatches.add(ZipAppBatch().apply { addExtras(extras) })  // this is a case if only extras are being backed-up without any app
+            }
 
             // update partNames
             // later, depending on partName containers are made.
