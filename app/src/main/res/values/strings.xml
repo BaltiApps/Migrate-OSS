@@ -791,6 +791,7 @@
     <!--contributors.xml-->
     <string name="contr_3.0">
         <b>Patrick Perfectly III mtl</b>: Providing logs, writing exhaustive troubleshooting guides… Basically keeping the app alive till now.\n
+        <b>Isaac Baihua</b>: Detecting a case where zip isn\'t being made if only extras are selected.\n
         <b>@anoop142 (Anoop)</b>: Made the first SAR modified version of the app. That helped a lot in v3.0\n
         <b>@cruzer_blaze (Gokul)</b>: Helped in scripts\n
         <b>@indianets (Vijay)</b>: Made the script to restore split apks efficiently\n\n
