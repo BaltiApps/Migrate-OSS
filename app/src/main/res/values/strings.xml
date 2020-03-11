@@ -20,8 +20,8 @@
 
     <!--please also update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt-->
 
-    <string name="app_name">Migrate-NG</string>
-    <string name="gpe_label">Non-Google/Beta Edition</string>
+    <string name="app_name">Migrate-GPE</string>
+    <string name="gpe_label">Google Play Edition</string>
     <string name="current_version_name">3.0</string>
     <string name="current_version_codename">Mercury</string>
     <string name="release_state">alpha3.1</string>
@@ -137,7 +137,8 @@
     <string name="restoreApp">In app restore</string>
     <string name="internal_storage">Internal storage</string>
     <string name="learn_about_sd_card_support">Learn about SD card support</string>
-    <string name="check_for_updates">Check for updates</string>
+    <string name="check_for_updates">Switch to Migrate-NG</string>
+    <string name="migrate_ng_desc">Migrate-NG is an alpha version of the app. The version on Google Play is stable. The alpha version is available as a separate app to download on the XDA thread.</string>
 
     <!--backup_layout.xml-->
     <string name="select_apps">Select apps</string>
@@ -691,13 +692,6 @@
     <string name="delete_error_backup_desc">Delete backup zip file if it finished with errors or was corrupted while backup.</string>
     <string name="zip_verification_title">Zip integrity check</string>
     <string name="zip_verification_desc">Verify if backup zips are corrupted and within the flashable memory constraints of the device.\nHIGHLY RECOMMENDED</string>
-    <string name="updates">Updates</string>
-    <string name="auto_check_updates">Auto check for updates</string>
-    <string name="auto_check_updates_desc">Check for updates at startup</string>
-    <string name="update_host">Select host for updates</string>
-    <string name="update_host_desc">Updates are stored as releases in GitHub/GitLab</string>
-    <string name="select_update_channel">Select update channel</string>
-    <string name="select_update_channel_desc">Stable channel or beta+stable</string>
     <string name="advanced">Advanced</string>
     <string name="max_zip_size">Max zip size</string>
     <string name="max_zip_size_desc">This is the maximum allowable size of a backup zip which can be safely flashed via TWRP.
