@@ -65,7 +65,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             updater_writer.write("show_progress(0, 0);\n")
             updater_writer.write("ui_print(\" \");\n")
             updater_writer.write("ui_print(\"---------------------------------\");\n")
-            updater_writer.write("ui_print(\"      Migrate Flash package      \");\n")
+            updater_writer.write("ui_print(\"      ${engineContext.getString(R.string.app_name)} Flash package      \");\n")
             updater_writer.write("ui_print(\"      Version ${engineContext.getString(R.string.current_version_name)} - ${engineContext.getString(R.string.release_state)}       \");\n")
             updater_writer.write("ui_print(\"---------------------------------\");\n")
 
