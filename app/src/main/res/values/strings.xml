@@ -3,6 +3,8 @@
 
     <!--Version changes to be made in
 
+    app_name (Migrate-GPE or Migrate-NG)
+    gpe_label
     current_version_name (must not have blank spaces)
     current_version_codename
     last_tested_label
@@ -18,7 +20,8 @@
 
     <!--please also update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt-->
 
-    <string name="app_name">Migrate</string>
+    <string name="app_name">Migrate-GPE</string>
+    <string name="gpe_label">Google Play Edition</string>
     <string name="current_version_name">3.0</string>
     <string name="current_version_codename">Mercury</string>
     <string name="release_state">alpha3.1</string>
@@ -134,7 +137,7 @@
     <string name="restoreApp">In app restore</string>
     <string name="internal_storage">Internal storage</string>
     <string name="learn_about_sd_card_support">Learn about SD card support</string>
-    <string name="check_for_updates">Check for updates</string>
+    <string name="check_for_updates">Switch to Migrate-NG</string>
 
     <!--backup_layout.xml-->
     <string name="select_apps">Select apps</string>
