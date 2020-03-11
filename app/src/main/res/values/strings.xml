@@ -8,7 +8,7 @@
     current_version_name (must not have blank spaces)
     current_version_codename
     last_tested_label
-    release_state
+    release_state (must not have blank spaces)
     changelog
     build.gradle
     MainActivity.java [showChangeLog()]

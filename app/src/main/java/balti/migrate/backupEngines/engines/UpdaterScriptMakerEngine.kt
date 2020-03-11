@@ -236,7 +236,9 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
         contents += "data_required_size ${zipAppBatch.batchDataSize / KB_DIVISION_SIZE}\n"
         contents += "system_required_size ${zipAppBatch.batchSystemSize / KB_DIVISION_SIZE}\n"
         contents += "zip_expected_size ${zipAppBatch.zipFullSize / KB_DIVISION_SIZE}\n"
-        contents += "migrate_version " + engineContext.getString(R.string.current_version_name) + "\n"
+        contents += "migrate_version " + "${engineContext.getString(R.string.app_name)}_" +
+                "${engineContext.getString(R.string.current_version_name)}_" +
+                engineContext.getString(R.string.release_state) + "\n"
 
         try {
             val writer = BufferedWriter(FileWriter(packageData))
