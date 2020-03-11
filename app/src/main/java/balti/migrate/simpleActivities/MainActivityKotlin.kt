@@ -136,14 +136,6 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             commonTools.showSdCardSupportDialog()
         }
 
-        check_for_updates.paintFlags = Paint.UNDERLINE_TEXT_FLAG
-        check_for_updates.setOnClickListener {
-            AlertDialog.Builder(this).apply {
-                setMessage(R.string.migrate_ng_desc)
-                setPositiveButton(R.string.close, null)
-            }.show()
-        }
-
         navigationDrawer.setNavigationItemSelectedListener(this)
 
         val cpuAbi = Build.SUPPORTED_ABIS[0]
