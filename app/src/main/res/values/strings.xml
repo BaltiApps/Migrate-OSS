@@ -3,6 +3,8 @@
 
     <!--Version changes to be made in
 
+    app_name (Migrate-GPE or Migrate-NG)
+    gpe_label
     current_version_name (must not have blank spaces)
     current_version_codename
     last_tested_label
