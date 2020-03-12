@@ -70,7 +70,4 @@ class AppInstance: Application() {
         externalCacheDir?.run { File(this.absolutePath).mkdirs() }
     }
 
-    fun refreshMaxSize() {
-    }
-
 }
