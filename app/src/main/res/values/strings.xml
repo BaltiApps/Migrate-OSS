@@ -134,6 +134,7 @@
         \u2022 Helper app is now available on Google Play.
         \u2022 Many fixes in recovery. Support for SAR and Android 10.
         \u2022 Added options for backup of app installer, font scale, adb state
+        \u2022 Set max zip size in preferences.
         \u2022 Verification of zips after backup is complete.
         \u2022 Many more changes and improvements…
     </string>
