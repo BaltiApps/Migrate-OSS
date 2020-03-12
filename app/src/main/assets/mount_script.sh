@@ -28,6 +28,14 @@ echo "DEBUG:: --- fstab ---"
 echo "$(cat /etc/fstab)"
 echo "DEBUG:: --- end of fstab ---"
 
+AWK1="awk"
+
+if [[ ! -x "$(command -v ${AWK1})" ]]; then
+    AWK1="/tmp/busybox awk"
+    echo "DEBUG:: Using busybox awk....."
+    sleep 1s
+fi
+
 mountIt()
 {
     echo "Debug:: mount $1"
@@ -44,7 +52,7 @@ mountIt()
     res="$(cat /proc/mounts | grep $1)"
     if [[ -z "$res" ]]; then
         echo "Debug:: Using fstab"
-        res="$(cat /etc/fstab | grep $1 | awk '{print $1}')"
+        res="$(cat /etc/fstab | grep $1 | ${AWK1} '{print $1}')"
         mount "$res" "$1"
     fi
 

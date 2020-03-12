@@ -12,6 +12,8 @@ OUTFD="/dev/null"
 SYSTEM=""
 MIGRATE_CACHE=""
 
+AWK1="awk"
+
 # In case of errors, system app path and build.prop path can be manually mentioned under:
 # /tmp/${MANUAL_CONFIG_DIR}/SYSTEM_MANUAL and /tmp/${MANUAL_CONFIG_DIR}/BUILDPROP_MANUAL files respectively.
 # Also a manual location for migrate cache can be placed in the file /tmp/${MANUAL_CONFIG_DIR}/MIGRATE_CACHE_MANUAL
@@ -48,6 +50,12 @@ exitNow() {
     sleep 2s
     exit 1
 }
+
+if [[ ! -x "$(command -v ${AWK1})" ]]; then
+    AWK1="/tmp/busybox awk"
+    echoIt "Using busybox awk....."
+    sleep 1s
+fi
 
 echoIt " "
 
@@ -198,14 +206,14 @@ if [[ -e /tmp/package-data.txt ]]; then
     # Check free space in /data
         elif [[ "$key" == "data_required_size" ]]; then
 
-            data_free=$(df -k /data | tail -1 | awk '{print $4}')
+            data_free=$(df -k /data | tail -1 | ${AWK1} '{print $4}')
 
     # sometimes, the above data command gets the percentage of data used
     # In that case, the data_free variable will contain % at the end
             case ${data_free} in
                 *%)
                 echoIt "Using third argument..."
-                data_free=$(df -k /data | tail -1 | awk '{print $3}')
+                data_free=$(df -k /data | tail -1 | ${AWK1} '{print $3}')
                 ;;
             esac
 
@@ -242,12 +250,12 @@ if [[ -e /tmp/package-data.txt ]]; then
         # check free space in /system
         elif [[ "$key" == "system_required_size" ]]; then
 
-            system_free=$(df -k ${SYSTEM} | tail -1 | awk '{print $4}')
+            system_free=$(df -k ${SYSTEM} | tail -1 | ${AWK1} '{print $4}')
 
             case ${system_free} in
                 *%)
                 echoIt "Using third argument..."
-                system_free=$(df -k /system | tail -1 | awk '{print $3}')
+                system_free=$(df -k /system | tail -1 | ${AWK1} '{print $3}')
                 ;;
             esac
 
