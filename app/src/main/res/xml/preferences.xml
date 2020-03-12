@@ -82,28 +82,6 @@
         />
 
     <PreferenceCategory
-        android:title="@string/updates">
-
-        <CheckBoxPreference
-            android:title="@string/auto_check_updates"
-            android:summary="@string/auto_check_updates_desc"
-            android:key="autoCheckUpdates" />
-
-        <ListPreference
-            android:title="@string/update_host"
-            android:summary="@string/update_host_desc"
-            android:key="updateHosts"
-            />
-
-        <ListPreference
-            android:title="@string/select_update_channel"
-            android:summary="@string/select_update_channel_desc"
-            android:key="updateChannel"
-            />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
         android:title="@string/advanced">
 
         <CheckBoxPreference

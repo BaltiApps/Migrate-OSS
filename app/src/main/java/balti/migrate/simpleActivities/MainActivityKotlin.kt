@@ -42,16 +42,13 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FIRST_RUN
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_UPDATE_AUTO_CHECK
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_VERSION_CURRENT
 import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
 import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
 import balti.migrate.utilities.CommonToolKotlin.Companion.TG_DEV_LINK
 import balti.migrate.utilities.CommonToolKotlin.Companion.TG_LINK
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
-import balti.updater.Updater
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
 import kotlinx.android.synthetic.main.please_wait.view.*
@@ -139,11 +136,6 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             commonTools.showSdCardSupportDialog()
         }
 
-        check_for_updates.paintFlags = Paint.UNDERLINE_TEXT_FLAG
-        check_for_updates.setOnClickListener {
-            Updater.launchUpdaterScreen()
-        }
-
         navigationDrawer.setNavigationItemSelectedListener(this)
 
         val cpuAbi = Build.SUPPORTED_ABIS[0]
@@ -192,15 +184,6 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         refreshStorageSizes()
         storageHandler.post(storageRunnable)
 
-        if (main.getBoolean(PREF_UPDATE_AUTO_CHECK, true)) {
-            Updater.onUpdateAvailable {
-
-                Snackbar.make(check_for_updates, R.string.update_available, Snackbar.LENGTH_LONG).setAction(R.string.download) {
-                    Updater.launchUpdaterScreen()
-                }.show()
-
-            }
-        }
     }
 
     private fun showChangeLog(onlyLatest: Boolean) {
