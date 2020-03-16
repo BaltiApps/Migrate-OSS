@@ -73,4 +73,7 @@ class AppInstance: Application() {
         Updater.init(appContext, THIS_VERSION)
     }
 
+    fun refreshMaxSize() {
+    }
+
 }
