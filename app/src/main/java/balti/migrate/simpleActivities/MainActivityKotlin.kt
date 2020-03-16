@@ -47,6 +47,10 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
 import balti.migrate.utilities.CommonToolKotlin.Companion.TG_DEV_LINK
 import balti.migrate.utilities.CommonToolKotlin.Companion.TG_LINK
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
+import balti.updater.Updater
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
@@ -179,6 +183,26 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         refreshStorageSizes()
         storageHandler.post(storageRunnable)
 
+        if (main.getBoolean(PREF_UPDATE_AUTO_CHECK, true)) {
+            Updater.onUpdateAvailable {
+
+                Snackbar.make(check_for_updates, R.string.update_available, Snackbar.LENGTH_LONG).setAction(R.string.download) {
+                    Updater.launchUpdaterScreen()
+                }.show()
+                
+            }
+        }
+
+        MobileAds.initialize(this)
+        main_activity_adView.run {
+            loadAd(AdRequest.Builder().build())
+            adListener = object : AdListener(){
+                override fun onAdFailedToLoad(p0: Int) {
+                    super.onAdFailedToLoad(p0)
+                    visibility = View.GONE
+                }
+            }
+        }
     }
 
     private fun showChangeLog(onlyLatest: Boolean) {
