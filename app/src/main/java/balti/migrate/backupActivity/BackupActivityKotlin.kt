@@ -26,8 +26,6 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_REQUEST_BACKUP_
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_APPS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_APPS_WARNING
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.app_search_layout.view.*
 import kotlinx.android.synthetic.main.backup_layout.*
 
@@ -313,16 +311,6 @@ class BackupActivityKotlin : AppCompatActivity() {
         commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
 
         commonTools.LBM?.sendBroadcast(Intent(ACTION_REQUEST_BACKUP_DATA))
-
-        backup_activity_adView.run {
-            loadAd(AdRequest.Builder().build())
-            adListener = object : AdListener(){
-                override fun onAdFailedToLoad(p0: Int) {
-                    super.onAdFailedToLoad(p0)
-                    visibility = View.GONE
-                }
-            }
-        }
     }
 
     override fun onDestroy() {
