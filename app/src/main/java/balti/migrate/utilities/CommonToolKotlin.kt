@@ -26,7 +26,7 @@ class CommonToolKotlin(val context: Context) {
 
     companion object {
 
-        val THIS_VERSION = 19
+        val THIS_VERSION = 18
         val LAST_SUPPORTED_ANDROID_API = 29
 
         val DEBUG_TAG = "migrate_tag"
@@ -590,21 +590,10 @@ class CommonToolKotlin(val context: Context) {
     }
 
     fun applyNamingCorrectionForShell(name: String) =
-            name
-                    .replace("(", "\\(")
-                    .replace(")", "\\)")
-                    .replace("`", "\\`")
-                    .replace(" ", "\\ ")
-                    .replace("\"", "\\\"")
-                    .replace("\'", "\\\'")
+            name.replace("(", "\\(").replace(")", "\\)").replace(" ", "\\ ")
 
     fun applyNamingCorrectionForDisplay(name: String) =
-            name
-                    .replace("\"", "'")
-                    .replace("`", "'")
-                    .replace("\\s+".toRegex(), "_")
-                    .replace("[^\\x20-\\x7E]".toRegex(), "")
-
+            name.replace("`", "'").replace("\\s+".toRegex(), "_").replace("[^\\x20-\\x7E]".toRegex(), "")
 
     fun makeNotificationChannel(channelId: String, channelDesc: CharSequence, importance: Int){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
