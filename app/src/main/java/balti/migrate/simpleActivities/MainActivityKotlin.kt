@@ -23,7 +23,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
-import balti.migrate.inAppRestore.ZipPicker
 import balti.migrate.preferences.MainPreferenceActivity
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELLING
@@ -121,10 +120,6 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         openPreferences.setOnClickListener {
             startActivity(Intent(this, MainPreferenceActivity::class.java))
-        }
-
-        inAppRestore.setOnClickListener {
-            startActivity(Intent(this, ZipPicker::class.java))                           /*kotlin*/
         }
 
         drawerButton.setOnClickListener {
