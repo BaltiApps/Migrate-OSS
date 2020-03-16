@@ -13,6 +13,8 @@ import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MAX_BACKUP_SIZE
+import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
+import balti.updater.Updater
 import java.io.File
 
 
@@ -68,6 +70,7 @@ class AppInstance: Application() {
         }
 
         externalCacheDir?.run { File(this.absolutePath).mkdirs() }
+        Updater.init(appContext, THIS_VERSION)
     }
 
     fun refreshMaxSize() {

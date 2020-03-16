@@ -159,6 +159,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/xlarge_padding_width" />
 
+                <Button
+                    android:id="@+id/inAppRestore"
+                    android:layout_width="@dimen/button_width"
+                    android:layout_height="@dimen/button_height"
+                    android:background="@drawable/normal_button"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:text="@string/restoreApp"
+                    android:visibility="gone"/>
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -166,6 +175,22 @@
                     android:gravity="end"
                     android:layout_gravity="end"
                     >
+
+                    <TextView
+                        android:id="@+id/check_for_updates"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/check_for_updates"
+                        android:textColor="@color/colorAccent"
+                        android:gravity="end"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        />
+
+                    <Space
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/small_padding_width"/>
 
                     <TextView
                         android:layout_width="match_parent"

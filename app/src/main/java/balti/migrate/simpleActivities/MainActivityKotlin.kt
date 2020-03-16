@@ -23,6 +23,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
+import balti.migrate.inAppRestore.ZipPicker
 import balti.migrate.preferences.MainPreferenceActivity
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELLING
@@ -41,6 +42,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FIRST_RUN
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_UPDATE_AUTO_CHECK
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_VERSION_CURRENT
 import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
 import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
@@ -52,6 +54,7 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
 import kotlinx.android.synthetic.main.please_wait.view.*
@@ -126,6 +129,10 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             startActivity(Intent(this, MainPreferenceActivity::class.java))
         }
 
+        inAppRestore.setOnClickListener {
+            startActivity(Intent(this, ZipPicker::class.java))                           /*kotlin*/
+        }
+
         drawerButton.setOnClickListener {
             drawer_layout.openDrawer(GravityCompat.START)
         }
@@ -133,6 +140,11 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         learn_sd_card_support.paintFlags = Paint.UNDERLINE_TEXT_FLAG
         learn_sd_card_support.setOnClickListener {
             commonTools.showSdCardSupportDialog()
+        }
+
+        check_for_updates.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+        check_for_updates.setOnClickListener {
+            Updater.launchUpdaterScreen()
         }
 
         navigationDrawer.setNavigationItemSelectedListener(this)
