@@ -33,6 +33,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
     implementation 'com.google.firebase:firebase-analytics:17.2.3'  //for fcm
+    implementation 'com.google.android.gms:play-services-ads:18.3.0'
+    
     implementation project(path: ':updater')
 }
 repositories {
