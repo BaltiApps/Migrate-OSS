@@ -3,12 +3,14 @@
 
     <!--Version changes to be made in
 
+    app_name (Migrate-GPE or Migrate-NG)
+    gpe_label
     current_version_name (must not have blank spaces)
     current_version_codename
     last_tested_label
-    release_state
+    release_state (must not have blank spaces)
     changelog
-    build.gradle
+    build.gradle [versionCode, versionName]
     MainActivity.java [showChangeLog()]
     CommonToolsKotlin [THIS_VERSION]
     CommonToolsKotlin [LAST_SUPPORTED_ANDROID_API]
@@ -19,9 +21,10 @@
     <!--please also update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt-->
 
     <string name="app_name">Migrate</string>
+    <string name="gpe_label"></string>
     <string name="current_version_name">3.0</string>
     <string name="current_version_codename">Mercury</string>
-    <string name="release_state">alpha3.1</string>
+    <string name="release_state">release</string>
     <string name="last_tested_label">Last tested on: Android 10</string>
 
     <!--about_app.xml-->
@@ -125,7 +128,15 @@
     </string>
     <string name="version_3.0">Version 3.0</string>
     <string name="version_3.0_content">
-        No changelog for alpha versions\n
+        From 2.1 to 3.0\n\n
+        \u2022 App is rewritten in Kotlin
+        \u2022 Many new preferences have been added.
+        \u2022 Helper app is now available on Google Play.
+        \u2022 Many fixes in recovery. Support for SAR and Android 10.
+        \u2022 Added options for backup of app installer, font scale, adb state
+        \u2022 Set max zip size in preferences.
+        \u2022 Verification of zips after backup is complete.
+        \u2022 Many more changes and improvements…
     </string>
 
     <!--activity_main.xml-->
@@ -134,7 +145,6 @@
     <string name="restoreApp">In app restore</string>
     <string name="internal_storage">Internal storage</string>
     <string name="learn_about_sd_card_support">Learn about SD card support</string>
-    <string name="check_for_updates">Check for updates</string>
 
     <!--backup_layout.xml-->
     <string name="select_apps">Select apps</string>
@@ -688,13 +698,6 @@
     <string name="delete_error_backup_desc">Delete backup zip file if it finished with errors or was corrupted while backup.</string>
     <string name="zip_verification_title">Zip integrity check</string>
     <string name="zip_verification_desc">Verify if backup zips are corrupted and within the flashable memory constraints of the device.\nHIGHLY RECOMMENDED</string>
-    <string name="updates">Updates</string>
-    <string name="auto_check_updates">Auto check for updates</string>
-    <string name="auto_check_updates_desc">Check for updates at startup</string>
-    <string name="update_host">Select host for updates</string>
-    <string name="update_host_desc">Updates are stored as releases in GitHub/GitLab</string>
-    <string name="select_update_channel">Select update channel</string>
-    <string name="select_update_channel_desc">Stable channel or beta+stable</string>
     <string name="advanced">Advanced</string>
     <string name="max_zip_size">Max zip size</string>
     <string name="max_zip_size_desc">This is the maximum allowable size of a backup zip which can be safely flashed via TWRP.
