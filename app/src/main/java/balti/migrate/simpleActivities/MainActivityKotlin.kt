@@ -163,7 +163,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         val email = Intent(Intent.ACTION_SENDTO).apply {
                             data = Uri.parse("mailto:")
                             putExtra(Intent.EXTRA_EMAIL, arrayOf("help.baltiapps@gmail.com"))
-                            putExtra(Intent.EXTRA_SUBJECT, "Unsupported device")
+                            putExtra(Intent.EXTRA_SUBJECT, "Unsupported device.")
                             putExtra(Intent.EXTRA_TEXT, commonTools.deviceSpecifications)
                         }
                         try {
