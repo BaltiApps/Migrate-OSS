@@ -63,7 +63,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     private val main : SharedPreferences by lazy { getSharedPreferences(FILE_MAIN_PREF, Context.MODE_PRIVATE) }
     private val editor : SharedPreferences.Editor by lazy { main.edit() }
-    private val commonTools by lazy { CommonToolKotlin(this) }                                               /*kotlin*/
+    private val commonTools by lazy { CommonToolKotlin(this) }
 
     private val REQUEST_CODE_BACKUP = 43
 
@@ -121,7 +121,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         }
 
         restoreMain.setOnClickListener {
-            startActivity(Intent(this, RestoreByTwrp::class.java))                           /*kotlin*/
+            startActivity(Intent(this, RestoreByTwrp::class.java))
         }
 
         openPreferences.setOnClickListener {
@@ -276,7 +276,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         .show()
             }
 
-            R.id.helpPage -> startActivity(Intent(this, HelpPageKotlin::class.java))              /*kotlin*/
+            R.id.helpPage -> startActivity(Intent(this, HelpPageKotlin::class.java))
 
             R.id.privacyPolicy -> startActivity(Intent(this, PrivacyPolicy::class.java))
 
@@ -334,7 +334,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             val f = File(externalCacheDir, FILE_PROGRESSLOG)
             if (f.exists())
                 startActivity(
-                        Intent(this, SimpleLogViewer::class.java)                          /*kotlin*/
+                        Intent(this, SimpleLogViewer::class.java)
                                 .putExtra(SIMPLE_LOG_VIEWER_HEAD, getString(R.string.progressLog))
                                 .putExtra(SIMPLE_LOG_VIEWER_FILEPATH, f.absolutePath)
                 )
@@ -345,7 +345,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             val f = File(externalCacheDir, FILE_ERRORLOG)
             if (f.exists())
                 startActivity(
-                        Intent(this, SimpleLogViewer::class.java)                          /*kotlin*/
+                        Intent(this, SimpleLogViewer::class.java)
                                 .putExtra(SIMPLE_LOG_VIEWER_HEAD, getString(R.string.errorLog))
                                 .putExtra(SIMPLE_LOG_VIEWER_FILEPATH, f.absolutePath)
                 )
@@ -491,7 +491,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                                     editor.putBoolean(PREF_ALTERNATE_ACCESS_ASKED, true)
                                     editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
                                     editor.commit()
-                                    startActivity(Intent(this, BackupActivityKotlin::class.java)) /*kotlin*/
+                                    startActivity(Intent(this, BackupActivityKotlin::class.java))
                                 }
                                 .setNeutralButton(android.R.string.cancel) { _, _ ->
                                     editor.putBoolean(PREF_ALTERNATE_ACCESS_ASKED, false)
@@ -506,7 +506,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                                         editor.putBoolean(PREF_ALTERNATE_ACCESS_ASKED, true)
                                         editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD)
                                         editor.commit()
-                                        startActivity(Intent(this, BackupActivityKotlin::class.java)) /*kotlin*/
+                                        startActivity(Intent(this, BackupActivityKotlin::class.java))
                                     }
 
                             accessPermissionDialog.show()
@@ -531,12 +531,12 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                                 editor.putBoolean(PREF_ALTERNATE_ACCESS_ASKED, true)
                                 editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD)
                                 editor.commit()
-                                startActivity(Intent(this, BackupActivityKotlin::class.java))     /*kotlin*/
+                                startActivity(Intent(this, BackupActivityKotlin::class.java))
                             }
                         }
 
                     } else {
-                        startActivity(Intent(this, BackupActivityKotlin::class.java))             /*kotlin*/
+                        startActivity(Intent(this, BackupActivityKotlin::class.java))
                     }
 
                 } else {
