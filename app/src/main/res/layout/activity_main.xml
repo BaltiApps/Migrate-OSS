@@ -159,15 +159,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/xlarge_padding_width" />
 
-                <Button
-                    android:id="@+id/inAppRestore"
-                    android:layout_width="@dimen/button_width"
-                    android:layout_height="@dimen/button_height"
-                    android:background="@drawable/normal_button"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    android:text="@string/restoreApp"
-                    android:visibility="gone"/>
-
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -311,16 +302,6 @@
             </TableLayout>
 
         </LinearLayout>
-
-        <com.google.android.gms.ads.AdView
-            xmlns:ads="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/main_activity_adView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|bottom"
-            ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-6582325651261661/6749792408"
-            />
 
 
     </LinearLayout>

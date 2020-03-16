@@ -80,8 +80,6 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SHOW_STOCK_WARNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.SMS_AND_CALLS_PERMISSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.SMS_PERMISSION
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.ask_for_backup_name.view.*
 import kotlinx.android.synthetic.main.extra_backups.*
 import kotlinx.android.synthetic.main.please_wait.*
@@ -290,16 +288,6 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
 
         Copy().execute()
-
-        extra_backups_activity_adView.run {
-            loadAd(AdRequest.Builder().build())
-            adListener = object : AdListener(){
-                override fun onAdFailedToLoad(p0: Int) {
-                    super.onAdFailedToLoad(p0)
-                    visibility = View.GONE
-                }
-            }
-        }
     }
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {        //extras_markers
