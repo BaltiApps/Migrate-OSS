@@ -103,7 +103,8 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
             lastAppInfo = if (i > 0){
                 try {
-                    "${commonTools.applyNamingCorrectionForDisplay(pm.getApplicationLabel(appList[i - 1].PACKAGE_INFO.applicationInfo).toString())} -> " +
+                    "${vOp.getStringFromRes(R.string.last_app)} " +
+                            "${commonTools.applyNamingCorrectionForDisplay(pm.getApplicationLabel(appList[i - 1].PACKAGE_INFO.applicationInfo).toString())} -> " +
                             commonTools.getHumanReadableStorageSpace(lastSize)
                 }
                 catch (e: Exception) {"Error: ${e.message}"}
@@ -117,9 +118,9 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
             publishProgress(vOp.getStringFromRes(R.string.calculating_size),
                     (i + 1).toString() + " of " + appList.size,
-                    "${vOp.getStringFromRes(R.string.current_app)}: $appName\n" +
+                    "${vOp.getStringFromRes(R.string.current_app)} $appName\n" +
                             "$lastAppInfo\n" +
-                            "${vOp.getStringFromRes(R.string.calculated)} ${commonTools.getHumanReadableStorageSpace(totalSize)}")
+                            "${vOp.getStringFromRes(R.string.calculated_total)} ${commonTools.getHumanReadableStorageSpace(totalSize)}")
 
             val apkPath: String? = if (dp.APP)
                 dp.PACKAGE_INFO.applicationInfo.sourceDir
@@ -268,7 +269,8 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
                         lastAppInfo = if (i > 0){
                             try {
-                                "${commonTools.applyNamingCorrectionForDisplay(pm.getApplicationLabel(appList[i - 1].PACKAGE_INFO.applicationInfo).toString())} -> " +
+                                "${vOp.getStringFromRes(R.string.last_app)} " +
+                                        "${commonTools.applyNamingCorrectionForDisplay(pm.getApplicationLabel(appList[i - 1].PACKAGE_INFO.applicationInfo).toString())} -> " +
                                         commonTools.getHumanReadableStorageSpace(lastSize)
                             }
                             catch (e: Exception) {"Error: ${e.message}"}
@@ -282,9 +284,9 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
                         publishProgress(vOp.getStringFromRes(R.string.calculating_size),
                                 (i + 1).toString() + " of " + appList.size,
-                                "${vOp.getStringFromRes(R.string.current_app)}: $appName\n" +
+                                "${vOp.getStringFromRes(R.string.current_app)} $appName\n" +
                                         "$lastAppInfo\n" +
-                                        "${vOp.getStringFromRes(R.string.calculated)} ${commonTools.getHumanReadableStorageSpace(totalSize)}")
+                                        "${vOp.getStringFromRes(R.string.calculated_total)} ${commonTools.getHumanReadableStorageSpace(totalSize)}")
 
                         val storageStats = storageStatsManager.queryStatsForUid(
                                 dp.PACKAGE_INFO.applicationInfo.storageUuid,
