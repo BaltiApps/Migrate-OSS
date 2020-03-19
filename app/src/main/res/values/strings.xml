@@ -129,14 +129,16 @@
     <string name="version_3.0">Version 3.0</string>
     <string name="version_3.0_content">
         From 2.1 to 3.0\n\n
-        \u2022 App is rewritten in Kotlin
-        \u2022 Many new preferences have been added.
-        \u2022 Helper app is now available on Google Play.
-        \u2022 Many fixes in recovery. Support for SAR and Android 10.
-        \u2022 Added options for backup of app installer, font scale, adb state
-        \u2022 Set max zip size in preferences.
-        \u2022 Verification of zips after backup is complete.
-        \u2022 Many more changes and improvements…
+        \u2022 App is rewritten in Kotlin\n
+        \u2022 Many new preferences have been added.\n
+        \u2022 Helper app is now available on Google Play.\n
+        \u2022 Many fixes in recovery. Support for SAR and Android 10.\n
+        \u2022 Added options for backup of app installer, font scale, adb state\n
+        \u2022 Set max zip size in preferences.\n
+        \u2022 Verification of zips after backup is complete.\n
+        \u2022 Many more changes and improvements…\n\n
+        From 3.0 alpha to 3.0 release\n\n
+        \u2022 Wifi backup is disabled till it becomes stable.\n
     </string>
 
     <!--activity_main.xml-->
@@ -284,7 +286,6 @@
         <b>Default keyboard</b> : Backup the default keyboard selection. Manual selection is required\n
         <b>App installers</b> : The system treats that apps restored are installed from Play Store or F-droid.\n
         <b>ADB state</b> : Backup the ADB state (USB debugging)\n
-        <b>Wifi passwords file</b> : (Android 8.0+) Backup the WifiConfigStore.xml file\n
         <b>Font scale</b> : Size of font is backed up\n
         \n
         After ticking a checkbox on an item, click on the item for further options.
