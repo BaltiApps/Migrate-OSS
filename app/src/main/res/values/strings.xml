@@ -805,7 +805,7 @@
         <b>@indianets (Vijay)</b>: Made the script to restore split apks efficiently\n
         <b>BillGoss(XDA)</b>: If no awk present in recovery, hence use busybox awk.\n
         <b>AndDiSa(XDA)</b>: Fix no-newline correction.\n\n
-    Obviously I adequately thank all the thousands of users who have tried out this app instead of being in alpha. You mean a lot to me. Thanks.
+    Obviously I adequately thank all the thousands of users who use this app and help to make the app better. You mean a lot to me. Thanks.
     </string>
     <string name="prev_contri">Previous contributors</string>
     <string name="thanks_to_stericson">Huge thanks to Stephen (stericdroid) for allowing me to liberally use his busybox builds</string>
