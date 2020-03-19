@@ -30,29 +30,19 @@
         android:paddingBottom="@dimen/large_padding_width"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/waiting_details"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:paddingBottom="@dimen/small_padding_width" />
 
-        <TextView
-            android:id="@+id/waiting_details"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingBottom="@dimen/small_padding_width" />
-
-        <Button
-            android:id="@+id/waiting_cancel"
-            android:layout_width="100dp"
-            android:layout_height="40dp"
-            android:layout_gravity="end"
-            android:background="@drawable/cancel_backup"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:text="@android:string/cancel" />
-
-    </LinearLayout>
-
+    <Button
+        android:id="@+id/waiting_cancel"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_gravity="end"
+        android:background="@drawable/cancel_backup"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:text="@android:string/cancel" />
 
 </LinearLayout>
