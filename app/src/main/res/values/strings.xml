@@ -138,7 +138,8 @@
         \u2022 Verification of zips after backup is complete.\n
         \u2022 Many more changes and improvements…\n\n
         From 3.0 alpha to 3.0 release\n\n
-        \u2022 Wifi backup is disabled till it becomes stable.\n
+        \u2022 Wifi backup is disabled till it becomes stable.\n\n
+        <b>This is Google Play edition of Migrate. It will be the stable release. Also, in-app updates has been removed.</b>
     </string>
 
     <!--activity_main.xml-->
