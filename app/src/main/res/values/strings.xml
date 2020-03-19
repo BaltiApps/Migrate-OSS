@@ -734,7 +734,7 @@
     <string name="privacy_policy_desc">This is a formal-informal discussion regarding data privacy and Migrate, some things which users should be aware of.
     These are subject to change on future updates, as more features are added.</string>
     <string name="google_firebase">Google Firebase</string>
-    <string name="google_firebase_desc">From v3.0 onwards, Migrate uses Firebase for crash analytics. No personal data of users is transmitted. If there is enough demand, I will also create a non Firebase version.</string>
+    <string name="google_firebase_desc">From v3.0 onwards on Google Play edition only, Migrate uses Firebase for crash analytics. No personal data of users is transmitted. Builds of Migrate-NG (available on XDA) do not have crash analytics anymore.</string>
     <string name="google_admob">Google Admob</string>
     <string name="google_admob_desc">Migrate has been using Google\'s Admob service to display Ads. That remains unchanged.</string>
     <string name="data_that_is_read">Data that is read by Migrate</string>
@@ -797,6 +797,7 @@
         <b>Isaac Baihua</b>: Detecting a case where zip isn\'t being made if only extras are selected.\n
         <b>@anoop142 (Anoop)</b>: Made the first SAR modified version of the app. That helped a lot in v3.0\n
         <b>@cruzer_blaze (Gokul)</b>: Helped in scripts\n
+        <b>BillGoss(XDA)</b>: If no awk present in recovery, hence use busybox awk.
         <b>@indianets (Vijay)</b>: Made the script to restore split apks efficiently\n\n
     Obviously I adequately thank all the thousands of users who have tried out this app instead of being in alpha. You mean a lot to me. Thanks.
     </string>
