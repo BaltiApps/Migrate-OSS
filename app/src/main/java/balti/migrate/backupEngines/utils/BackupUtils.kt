@@ -155,16 +155,21 @@ class BackupUtils {
             val writer = BufferedWriter(FileWriter(backupPerm))
 
             val pi = pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
-            if (pi.requestedPermissions == null) {
-                writer.write("no_permissions_granted")
-            } else {
-                for (i in pi.requestedPermissions.indices) {
+            val perms = pi.requestedPermissions
+            val granted = ArrayList<String>(0)
+
+            if (perms != null && perms.isNotEmpty()) {
+                for (i in perms.indices) {
                     if (pi.requestedPermissionsFlags[i] and PackageInfo.REQUESTED_PERMISSION_GRANTED != 0) {
-                        val p = pi.requestedPermissions[i].trim { it <= ' ' }
-                        if (p.startsWith("android.permission"))
-                            writer.write(p + "\n")
+                        val p = perms[i].trim()
+                        if (p.startsWith("android.permission")) granted.add(p)
                     }
                 }
+            }
+
+            if (granted.isEmpty()) writer.write("no_permissions_granted\n")
+            else granted.forEach {
+                writer.write("$it\n")
             }
 
             writer.close()
