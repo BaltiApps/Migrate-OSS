@@ -230,8 +230,12 @@
     <string name="backup_contacts_anyway">Backup contacts anyway</string>
     <string name="estimated_files_size">Estimated total backup size:</string>
     <string name="estimated_app_size">Estimated app size:</string>
+    <string name="current_app">Current app:</string>
     <string name="available_space">Available space:</string>
+    <string name="calculated_total">Calculated total:</string>
+    <string name="last_app">Last app:</string>
     <string name="insufficient_storage">Insufficient storage!</string>
+    <string name="long_press_to_force_stop">Long press Cancelling to force stop app.</string>
     <string name="required_storage">Migrate needs more free space:</string>
     <string name="will_be_compressed">We need the estimated size to copy the app files. The final package will take much less space than the estimated size due to compression.</string>
     <string name="contacts_access_needed">Need to read contacts for contacts backup</string>
@@ -241,6 +245,7 @@
     <string name="error_reading_sms">Error reading SMS</string>
     <string name="error_reading_calls">Error reading calls</string>
     <string name="calculating_size">Calculating size</string>
+    <string name="calculating_size_reflection">Calculating size [reflection]</string>
     <string name="total_size_ok">Total size OK!</string>
     <string name="total_size">Total size:</string>
     <string name="error_reading_backup_data">Error reading backup data</string>
@@ -736,7 +741,7 @@
     <string name="privacy_policy_desc">This is a formal-informal discussion regarding data privacy and Migrate, some things which users should be aware of.
     These are subject to change on future updates, as more features are added.</string>
     <string name="google_firebase">Google Firebase</string>
-    <string name="google_firebase_desc">From v3.0 onwards, Migrate uses Firebase for crash analytics. No personal data of users is transmitted. If there is enough demand, I will also create a non Firebase version.</string>
+    <string name="google_firebase_desc">From v3.0 onwards on Google Play edition only, Migrate uses Firebase for crash analytics. No personal data of users is transmitted. Builds of Migrate-NG (available on XDA) do not have crash analytics anymore.</string>
     <string name="google_admob">Google Admob</string>
     <string name="google_admob_desc">Migrate has been using Google\'s Admob service to display Ads. That remains unchanged.</string>
     <string name="data_that_is_read">Data that is read by Migrate</string>
@@ -799,8 +804,10 @@
         <b>Isaac Baihua</b>: Detecting a case where zip isn\'t being made if only extras are selected.\n
         <b>@anoop142 (Anoop)</b>: Made the first SAR modified version of the app. That helped a lot in v3.0\n
         <b>@cruzer_blaze (Gokul)</b>: Helped in scripts\n
-        <b>@indianets (Vijay)</b>: Made the script to restore split apks efficiently\n\n
-    Obviously I adequately thank all the thousands of users who have tried out this app instead of being in alpha. You mean a lot to me. Thanks.
+        <b>@indianets (Vijay)</b>: Made the script to restore split apks efficiently\n
+        <b>BillGoss(XDA)</b>: If no awk present in recovery, hence use busybox awk.\n
+        <b>AndDiSa(XDA)</b>: Fix no-newline correction.\n\n
+    Obviously I adequately thank all the thousands of users who use this app and help to make the app better. You mean a lot to me. Thanks.
     </string>
     <string name="prev_contri">Previous contributors</string>
     <string name="thanks_to_stericson">Huge thanks to Stephen (stericdroid) for allowing me to liberally use his busybox builds</string>
