@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Environment
+import android.os.Handler
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -684,5 +685,21 @@ class CommonToolKotlin(val context: Context) {
             }
         }
         Class().execute()
+    }
+
+    fun forceCloseThis(){
+        Runtime.getRuntime().exec("su").apply {
+            BufferedWriter(OutputStreamWriter(this.outputStream)).run {
+                this.write("am force-stop ${AppInstance.appContext.packageName}\n")
+                this.write("exit\n")
+                this.flush()
+            }
+        }
+
+        val handler = Handler()
+        handler.postDelayed({
+            Toast.makeText(AppInstance.appContext, R.string.killing_programmatically, Toast.LENGTH_SHORT).show()
+            android.os.Process.killProcess(android.os.Process.myPid())
+        }, TIMEOUT_WAITING_TO_KILL)
     }
 }

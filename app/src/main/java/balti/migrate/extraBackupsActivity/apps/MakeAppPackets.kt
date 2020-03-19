@@ -53,14 +53,6 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
     private var cancelThis = false
 
-    init {
-        dialogView.waiting_cancel.setOnClickListener {
-            cancelThis = true
-        }
-        vOp.visibilitySet(dialogView.waiting_progress, View.GONE)
-        vOp.visibilitySet(dialogView.waiting_details, View.GONE)
-    }
-
     override fun onPreExecute() {
         super.onPreExecute()
         vOp.doSomething {
@@ -69,6 +61,24 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 it.delete()
             }
         }
+
+        dialogView.waiting_cancel.apply {
+
+            visibility = View.VISIBLE
+            setText(android.R.string.cancel)
+            val cancellingText = vOp.getStringFromRes(R.string.cancelling)
+
+            setOnClickListener {
+                cancelThis = true
+                text = cancellingText
+            }
+            setOnLongClickListener {
+                if (text == cancellingText) commonTools.forceCloseThis()
+                true
+            }
+        }
+        vOp.visibilitySet(dialogView.waiting_progress, View.GONE)
+        vOp.visibilitySet(dialogView.waiting_details, View.GONE)
 
         totalSize = 0
         lastSize = 0
