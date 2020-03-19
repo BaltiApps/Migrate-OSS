@@ -1,6 +1,7 @@
 package balti.migrate.backupEngines.engines
 
 import android.content.pm.PackageInfo
+import android.util.Log
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
@@ -8,6 +9,7 @@ import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolKotlin
+import balti.migrate.utilities.CommonToolKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_SHELL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_SUPPRESSED
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_TRY_CATCH
@@ -58,7 +60,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
         return "if [ -e $fullDataPath ]; then\n" +
                 "   cd $dataPathParent\n" +
-                "   echo \"Copy data: $expectedDataFile\"" +
+                "   echo \"Copy data: ${expectedDataFile.name}\"\n" +
                 "   $busyboxBinaryPath tar -vczpf ${expectedDataFile.absolutePath} $actualDataName\n" +
                 "fi\n\n"
     }
@@ -120,7 +122,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                             if (CommonToolKotlin.isDeletable(expectedAppDir)) {
                                 allRecovery.add(
                                         "echo \"Copy apk(s): $packageName\"\n" +
-                                                "rm -rf $it 2> /dev/null" +
+                                                "rm -rf $it 2> /dev/null\n" +
                                                 "mkdir -p $it\n" +
                                                 "cd $apkPath\n" +
                                                 "cp *.apk $it/\n\n" +
@@ -295,6 +297,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
         if (appList.size == 0 || defects.size == 0) return
 
+        Log.d(DEBUG_TAG, defects.toString())
+
         lastProgress = 0
 
         val title = getTitle(R.string.correcting_errors)
@@ -328,7 +332,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                             }
                         }
                         scriptWriter.write("echo \"--- DEFECT: ${i + 1}\"\n")
-                        scriptWriter.write("echo \"$defect\"")
+                        scriptWriter.write("echo \"$defect\"\n")
                     }
                 }
                 else {
