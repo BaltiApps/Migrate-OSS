@@ -434,7 +434,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
         else {
             vOp.visibilitySet(dialogView.waiting_cancel, View.GONE)
 
-            vOp.doSomething {
+            try {
 
                 if (!(result[0] as Boolean)) {
 
@@ -453,6 +453,10 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 } else {
                     onJobCompletion.onComplete(jobCode, true, appPackets)
                 }
+            }
+            catch (e: Exception){
+                e.printStackTrace()
+                Toast.makeText(context, "App size postExecute: ${e.message.toString()}", Toast.LENGTH_SHORT).show()
             }
         }
     }
