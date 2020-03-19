@@ -226,8 +226,11 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             do_backup_wifi.setOnCheckedChangeListener(this)
             do_backup_fontScale.setOnCheckedChangeListener(this)
 
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                wifi_main_item.visibility = View.GONE
+            // Disable wifi backup for now because it is unstable.
+            wifi_main_item.visibility = View.GONE
+            //if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            //    wifi_main_item.visibility = View.GONE
+
 
             if (main.getBoolean(PREF_AUTOSELECT_EXTRAS, true)) {        //extras_markers
                 val isSmsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
