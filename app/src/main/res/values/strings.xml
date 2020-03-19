@@ -233,6 +233,7 @@
     <string name="calculated_total">Calculated total:</string>
     <string name="last_app">Last app:</string>
     <string name="insufficient_storage">Insufficient storage!</string>
+    <string name="long_press_to_force_stop">Long press Cancelling to force stop app.</string>
     <string name="required_storage">Migrate needs more free space:</string>
     <string name="will_be_compressed">We need the estimated size to copy the app files. The final package will take much less space than the estimated size due to compression.</string>
     <string name="contacts_access_needed">Need to read contacts for contacts backup</string>

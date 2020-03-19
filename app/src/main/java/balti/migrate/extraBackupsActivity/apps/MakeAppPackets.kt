@@ -12,6 +12,7 @@ import android.os.Environment
 import android.os.StatFs
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.AppInstance.Companion.RESERVED_SPACE
@@ -71,6 +72,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             setOnClickListener {
                 cancelThis = true
                 text = cancellingText
+                Toast.makeText(context, R.string.long_press_to_force_stop, Toast.LENGTH_SHORT).show()
             }
             setOnLongClickListener {
                 if (text == cancellingText) commonTools.forceCloseThis()
