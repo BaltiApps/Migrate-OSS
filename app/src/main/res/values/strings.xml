@@ -853,5 +853,12 @@
     <string name="check_for_updates_ng">Check for updates</string>
     <string name="switch_to_ng_in_gpe">Switch to Migrate-NG</string>
     <string name="ng_desc">Migrate-NG is an beta version of the app. The version on Google Play is stable. The alpha version is available as a separate app to download on the XDA thread.</string>
+    <string name="updates_ng">Updates</string>
+    <string name="auto_check_updates_ng">Auto check for updates</string>
+    <string name="auto_check_updates_desc_ng">Check for updates at startup</string>
+    <string name="update_host_ng">Select host for updates</string>
+    <string name="update_host_desc_ng">Updates are stored as releases in GitHub/GitLab</string>
+    <string name="select_update_channel_ng">Select update channel</string>
+    <string name="select_update_channel_desc_ng">Stable channel or beta+stable</string>
 
 </resources>
