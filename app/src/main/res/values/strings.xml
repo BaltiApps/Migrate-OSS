@@ -798,6 +798,16 @@
     </string>
     <string name="privacy_policy_footer">That\'s all. Enjoy using the app. Feel free to contact me on Telegram.\n- SayantanRC</string>
 
+    <!--translation-->
+    <string name="want_to_translate">Want to translate?</string>
+    <string name="translation_avalable_at">The strings.xml file is available at: https://github.com/SayantanRC/translations\n
+    Follow the README instructions to submit a translation.
+    </string>
+    <string name="translators">
+        Translators:\n
+        <b>@Trexfat</b>: Turkish
+    </string>
+
     <!--contributors.xml-->
     <string name="contr_3.0">
         <b>Patrick Perfectly III mtl</b>: Providing logs, writing exhaustive troubleshooting guides… Basically keeping the app alive till now.\n
@@ -807,7 +817,8 @@
         <b>@indianets (Vijay)</b>: Made the script to restore split apks efficiently\n
         <b>BillGoss(XDA)</b>: If no awk present in recovery, hence use busybox awk.\n
         <b>AndDiSa(XDA)</b>: Fix no-newline correction.\n\n
-    Obviously I adequately thank all the thousands of users who use this app and help to make the app better. You mean a lot to me. Thanks.
+    Obviously I adequately thank all the thousands of users who use this app and help to make the app better. You mean a lot to me.\n
+    Also a huge thank you to translators of the app. Thanks.
     </string>
     <string name="prev_contri">Previous contributors</string>
     <string name="thanks_to_stericson">Huge thanks to Stephen (stericdroid) for allowing me to liberally use his busybox builds</string>
