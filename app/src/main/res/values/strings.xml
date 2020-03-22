@@ -598,6 +598,7 @@
     <string name="changelog">Changelog</string>
     <string name="lastLog">Last logs</string>
     <string name="contributors">Contributors</string>
+    <string name="translate_the_app">Translate app</string>
     <string name="rateTheApp">Rate the app</string>
     <string name="xda_thread">XDA thread</string>
     <string name="other_options">Other options</string>

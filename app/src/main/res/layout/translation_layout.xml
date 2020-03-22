@@ -10,6 +10,8 @@
         android:layout_height="wrap_content"
         android:text="@string/want_to_translate"
         android:textAppearance="?android:attr/textAppearanceLarge"
+        android:drawableStart="@drawable/ic_translate"
+        android:drawablePadding="@dimen/large_padding_width"
         />
 
     <Space
