@@ -846,4 +846,11 @@
     <string name="zip_batch_null_zip_verification">Zip Batch is null before zip verification</string>
     <string name="improper_result_received">Improper result received.</string>
 
+    <!--some branch specific strings-->
+    <!--Needs to be translated-->
+    <string name="gpe_label"></string>
+    <string name="ng_label"></string>
+    <string name="check_for_updates"></string>
+    <string name="switch_to_ng"></string>
+
 </resources>
