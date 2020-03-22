@@ -848,9 +848,10 @@
 
     <!--some branch specific strings-->
     <!--Needs to be translated-->
-    <string name="label_for_gpe"></string>
-    <string name="label_for_ng"></string>
-    <string name="check_for_updates"></string>
-    <string name="switch_to_ng"></string>
+    <string name="label_for_gpe">Google Play Edition</string>
+    <string name="label_for_ng">Non-Google/Beta Edition</string>
+    <string name="check_for_updates_ng">Check for updates</string>
+    <string name="switch_to_ng_in_gpe">Switch to Migrate-NG</string>
+    <string name="ng_desc">Migrate-NG is an beta version of the app. The version on Google Play is stable. The alpha version is available as a separate app to download on the XDA thread.</string>
 
 </resources>
