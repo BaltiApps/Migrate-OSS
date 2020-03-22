@@ -1,5 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="ExtraTranslation">
+    tools:ignore="MissingTranslation,ExtraTranslation"
+    >
 
     <!--Version changes to be made in
 
