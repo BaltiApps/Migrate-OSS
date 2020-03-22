@@ -23,7 +23,7 @@
 
     <string name="app_name">Migrate-NG</string>
     <string name="gpe_label">@string/label_for_ng</string>
-    <string name="current_version_name">3.0</string>
+    <string name="current_version_name">3.0.1</string>
     <string name="current_version_codename">Mercury</string>
     <string name="release_state">release</string>
     <string name="last_tested_label">Last tested on: Android 10</string>
@@ -141,6 +141,10 @@
         From 3.0 alpha to 3.0 release\n\n
         \u2022 Wifi backup is disabled till it becomes stable.\n\n
         <b>This is Non-Google edition of Migrate. It is the beta version. This edition retains in-app updates.</b>
+    </string>
+    <string name="version_3.0.1">Version 3.0.1</string>
+    <string name="version_3.0.1_content">
+        \u2022 Add turkish translation (@Trexfat)\n
     </string>
 
     <!--activity_main.xml-->
@@ -600,6 +604,7 @@
     <string name="changelog">Changelog</string>
     <string name="lastLog">Last logs</string>
     <string name="contributors">Contributors</string>
+    <string name="translate_the_app">Translate app</string>
     <string name="rateTheApp">Rate the app</string>
     <string name="xda_thread">XDA thread</string>
     <string name="other_options">Other options</string>
@@ -807,6 +812,16 @@
     </string>
     <string name="privacy_policy_footer">That\'s all. Enjoy using the app. Feel free to contact me on Telegram.\n- SayantanRC</string>
 
+    <!--translation_layout.xml-->
+    <string name="want_to_translate">Want to translate?</string>
+    <string name="translation_available_at">The strings.xml file is available at:\n<a href="https://github.com/SayantanRC/translations">https://github.com/SayantanRC/translations</a>\n
+    Follow the README instructions to submit a translation.
+    </string>
+    <string name="translators">Translators</string>
+    <string name="translators_list">
+        <b>@Trexfat</b>: Turkish
+    </string>
+
     <!--contributors.xml-->
     <string name="contr_3.0">
         <b>Patrick Perfectly III mtl</b>: Providing logs, writing exhaustive troubleshooting guides… Basically keeping the app alive till now.\n
@@ -816,7 +831,8 @@
         <b>@indianets (Vijay)</b>: Made the script to restore split apks efficiently\n
         <b>BillGoss(XDA)</b>: If no awk present in recovery, hence use busybox awk.\n
         <b>AndDiSa(XDA)</b>: Fix no-newline correction.\n\n
-    Obviously I adequately thank all the thousands of users who use this app and help to make the app better. You mean a lot to me. Thanks.
+    Obviously I adequately thank all the thousands of users who use this app and help to make the app better. You mean a lot to me.\n
+    Also a huge thank you to translators of the app. Thanks.
     </string>
     <string name="prev_contri">Previous contributors</string>
     <string name="thanks_to_stericson">Huge thanks to Stephen (stericdroid) for allowing me to liberally use his busybox builds</string>

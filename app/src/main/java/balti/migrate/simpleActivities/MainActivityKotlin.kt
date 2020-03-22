@@ -205,8 +205,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         if (onlyLatest) {
             if (currVer < THIS_VERSION) {
                 /*Put only the latest version here*/
-                changelog.setTitle(R.string.version_3_0)
-                        .setMessage(R.string.version_3_0_content)
+                changelog.setTitle(R.string.version_3_0_1)
+                        .setMessage(R.string.version_3_0_1_content)
                         .setPositiveButton(R.string.close, null)
                         .show()
 
@@ -229,6 +229,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             /*Add increasing versions here*/
 
+            allVersions.append("\n" + getString(R.string.version_3_0_1) + "\n" + getString(R.string.version_3_0_1_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_3_0) + "\n" + getString(R.string.version_3_0_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_2_1) + "\n" + getString(R.string.version_2_1_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_2_0_1) + "\n" + getString(R.string.version_2_0_1_content) + "\n")
@@ -274,6 +275,12 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             R.id.appIntro ->
                 startActivity(Intent(this, InitialGuideKotlin::class.java))
+
+            R.id.translate ->
+                AlertDialog.Builder(this)
+                        .setView(View.inflate(this, R.layout.translation_layout, null))
+                        .setPositiveButton(R.string.close, null)
+                        .show()
 
             R.id.contributors ->
                 AlertDialog.Builder(this)
