@@ -21,7 +21,7 @@
     <!--please also update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt-->
 
     <string name="app_name">Migrate-NG</string>
-    <string name="gpe_label">Non-Google/Beta Edition</string>
+    <string name="gpe_label">@string/label_for_ng</string>
     <string name="current_version_name">3.0</string>
     <string name="current_version_codename">Mercury</string>
     <string name="release_state">release</string>
@@ -148,7 +148,7 @@
     <string name="restoreApp">In app restore</string>
     <string name="internal_storage">Internal storage</string>
     <string name="learn_about_sd_card_support">Learn about SD card support</string>
-    <string name="check_for_updates">Check for updates</string>
+    <string name="check_for_updates">@string/check_for_updates_ng</string>
 
     <!--backup_layout.xml-->
     <string name="select_apps">Select apps</string>
