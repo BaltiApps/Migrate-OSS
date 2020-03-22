@@ -384,48 +384,53 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     private fun refreshStorageSizes() {
 
-        var availableKb = 0L
-        var fullKb = 0L
-        var consumedKb = 0L
+        try {
 
-        fun calculateStorage(path: String) {
-            val statFs = StatFs(path)
+            var availableKb = 0L
+            var fullKb = 0L
+            var consumedKb = 0L
 
-            availableKb = (statFs.blockSizeLong * statFs.availableBlocksLong)
-            fullKb = (statFs.blockSizeLong * statFs.blockCountLong)
-            consumedKb = fullKb - availableKb
-        }
+            fun calculateStorage(path: String) {
+                val statFs = StatFs(path)
 
-        calculateStorage(Environment.getExternalStorageDirectory().absolutePath)
+                availableKb = (statFs.blockSizeLong * statFs.availableBlocksLong)
+                fullKb = (statFs.blockSizeLong * statFs.blockCountLong)
+                consumedKb = fullKb - availableKb
+            }
 
-        internal_storage_bar.progress = ((consumedKb * 100) / fullKb).toInt()
-        internal_storage_text.text = commonTools.getHumanReadableStorageSpace(consumedKb) + "/" +
+            calculateStorage(Environment.getExternalStorageDirectory().absolutePath)
+
+            internal_storage_bar.progress = ((consumedKb * 100) / fullKb).toInt()
+            internal_storage_text.text = commonTools.getHumanReadableStorageSpace(consumedKb) + "/" +
+                    commonTools.getHumanReadableStorageSpace(fullKb)
+
+            var sdCardRoot: File? = null
+            val defaultPath = main.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
+
+            if (defaultPath != DEFAULT_INTERNAL_STORAGE_DIR && File(defaultPath).canWrite()) {
+                sdCardRoot = File(defaultPath).parentFile
+            } else {
+                val sdCardPaths = commonTools.getSdCardPaths()
+                if (sdCardPaths.size == 1 && File(sdCardPaths[0]).canWrite()) {
+                    sdCardRoot = File(sdCardPaths[0])
+                }
+            }
+
+            if (sdCardRoot != null) {
+                sd_card_storage_use_view.visibility = View.VISIBLE
+
+                calculateStorage(sdCardRoot.absolutePath)
+
+                sd_card_name.text = sdCardRoot.name
+                sd_card_storage_bar.progress = ((consumedKb * 100) / fullKb).toInt()
+                sd_card_storage_text.text = commonTools.getHumanReadableStorageSpace(consumedKb) + "/" +
                         commonTools.getHumanReadableStorageSpace(fullKb)
-
-        var sdCardRoot : File? = null
-        val defaultPath = main.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
-
-        if (defaultPath != DEFAULT_INTERNAL_STORAGE_DIR && File(defaultPath).canWrite()){
-            sdCardRoot = File(defaultPath).parentFile
-        }
-        else {
-            val sdCardPaths = commonTools.getSdCardPaths()
-            if (sdCardPaths.size == 1 && File(sdCardPaths[0]).canWrite()){
-                sdCardRoot = File(sdCardPaths[0])
+            } else {
+                sd_card_storage_use_view.visibility = View.GONE
             }
         }
-
-        if (sdCardRoot != null){
-            sd_card_storage_use_view.visibility = View.VISIBLE
-
-            calculateStorage(sdCardRoot.absolutePath)
-
-            sd_card_name.text = sdCardRoot.name
-            sd_card_storage_bar.progress = ((consumedKb * 100) / fullKb).toInt()
-            sd_card_storage_text.text = commonTools.getHumanReadableStorageSpace(consumedKb) + "/" +
-                    commonTools.getHumanReadableStorageSpace(fullKb)
-        }
-        else {
+        catch(_: Exception){
+            internal_storage_use_view.visibility = View.GONE
             sd_card_storage_use_view.visibility = View.GONE
         }
     }
