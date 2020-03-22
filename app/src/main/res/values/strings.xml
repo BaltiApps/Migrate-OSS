@@ -799,7 +799,7 @@
     </string>
     <string name="privacy_policy_footer">That\'s all. Enjoy using the app. Feel free to contact me on Telegram.\n- SayantanRC</string>
 
-    <!--translation-->
+    <!--translation_layout.xml-->
     <string name="want_to_translate">Want to translate?</string>
     <string name="translation_available_at">The strings.xml file is available at:\n<a href="https://github.com/SayantanRC/translations">https://github.com/SayantanRC/translations</a>\n
     Follow the README instructions to submit a translation.
