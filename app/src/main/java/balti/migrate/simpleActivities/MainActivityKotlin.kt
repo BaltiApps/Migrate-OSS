@@ -258,6 +258,12 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             R.id.appIntro ->
                 startActivity(Intent(this, InitialGuideKotlin::class.java))
 
+            R.id.translate ->
+                AlertDialog.Builder(this)
+                        .setView(View.inflate(this, R.layout.translation_layout, null))
+                        .setPositiveButton(R.string.close, null)
+                        .show()
+
             R.id.contributors ->
                 AlertDialog.Builder(this)
                         .setView(View.inflate(this, R.layout.contributors, null))
