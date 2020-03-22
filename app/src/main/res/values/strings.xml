@@ -141,6 +141,10 @@
         From 3.0 alpha to 3.0 release\n\n
         \u2022 Wifi backup is disabled till it becomes stable.\n
     </string>
+    <string name="version_3.0.1">Version 3.0.1</string>
+    <string name="version_3.0.1_content">
+        \u2022 Add turkish translation (@Trexfat)\n
+    </string>
 
     <!--activity_main.xml-->
     <string name="backupButton">Backup</string>
