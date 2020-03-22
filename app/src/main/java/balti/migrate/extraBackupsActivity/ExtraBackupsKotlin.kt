@@ -986,7 +986,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
 
         if (contactsList.size > 0){
-            contacts_selected_status.text = "$n of ${contactsList.size}"
+            contacts_selected_status.text = "$n ${getString(R.string.of)} ${contactsList.size}"
             contacts_main_item.setOnClickListener {
                 LoadContactsForSelectionKotlin(JOBCODE_LOAD_CONTACTS, this, contactsList).execute()
             }
@@ -1014,7 +1014,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
 
         if (smsList.size > 0){
-            sms_selected_status.text = "$n of ${smsList.size}"
+            sms_selected_status.text = "$n ${getString(R.string.of)} ${smsList.size}"
             sms_main_item.setOnClickListener {
                 LoadSmsForSelectionKotlin(JOBCODE_LOAD_SMS, this, smsList).execute()
             }
@@ -1042,7 +1042,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
 
         if (callsList.size > 0){
-            calls_selected_status.text = "$n of ${callsList.size}"
+            calls_selected_status.text = "$n ${getString(R.string.of)} ${callsList.size}"
             calls_main_item.setOnClickListener {
                 LoadCallsForSelectionKotlin(JOBCODE_LOAD_CALLS, this, callsList).execute()
             }
@@ -1073,7 +1073,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 if (it.installerName == PACKAGE_NAME_PLAY_STORE || it.installerName == PACKAGE_NAME_FDROID) n++
             }
             installer_selected_status.visibility = View.VISIBLE
-            installer_selected_status.text = "$n of ${appListCopied.size}"
+            installer_selected_status.text = "$n ${getString(R.string.of)} ${appListCopied.size}"
             installers_main_item.isClickable = true
             installers_main_item.setOnClickListener {
                 doWaitingJob {
