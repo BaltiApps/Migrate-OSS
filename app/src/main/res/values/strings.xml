@@ -848,8 +848,8 @@
 
     <!--some branch specific strings-->
     <!--Needs to be translated-->
-    <string name="gpe_label"></string>
-    <string name="ng_label"></string>
+    <string name="label_for_gpe"></string>
+    <string name="label_for_ng"></string>
     <string name="check_for_updates"></string>
     <string name="switch_to_ng"></string>
 
