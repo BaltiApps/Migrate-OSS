@@ -1,0 +1,823 @@
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="ExtraTranslation">
+
+    <string name="app_name">Migrate</string>
+    <string name="gpe_label"></string>
+    <string name="current_version_name">3.0</string>
+    <string name="current_version_codename">Mercury</string>
+    <string name="release_state">release</string>
+    <string name="last_tested_label">Son test: Android 10 üzerinde</string>
+
+    <!--about_app.xml-->
+    <string name="made_with_android_studio">Android Studio ile yapıldı</string>
+    <string name="codename">Kod adı:</string>
+    <string name="version">Sürüm:</string>
+    <string name="release_state_label">Yayınlama durumu:</string>
+
+    <!--changelog-->
+    <string name="version_1.0" >Version 1.0(beta)</string>
+    <string name="version_1.0_content">\u2022 Initial release</string>
+    <string name="version_1.0.1">Version 1.0.1(beta)</string>
+    <string name="version_1.0.1_content">\u2022 Fixed app intro SKIP button</string>
+    <string name="version_1.0.2">Version 1.0.2(beta)</string>
+    <string name="version_1.0.2_content">\u2022 Added more names in thanks list</string>
+    <string name="version_1.0.3">Version 1.0.3(beta)</string>
+    <string name="version_1.0.3_content">
+        \u2022 Fixed log sharing\n
+        \u2022 Also share script file in log\n
+        \u2022 Blacklist Android system from backup list (prevents tar socket error)
+    </string>
+    <string name="version_1.0.4">Version 1.0.4(beta)</string>
+    <string name="version_1.0.4_content">
+        \u2022 Improvements to logging\n
+        \u2022 Ignore tar socket warnings\n
+        \u2022 New update-binary should prevent TWRP error 3 issue\n
+        \u2022 Should fix an issue of null String while reading backup data
+    </string>
+    <string name="version_1.0.5">Version 1.0.5(beta)</string>
+    <string name="version_1.0.5_content">
+        \u2022 Probable fix to \"android.os.TransactionTooLargeException\"\n
+        \u2022 Better in app protection to prevent zips from not being made\n
+        \u2022 App version is now written in logs\n
+        \u2022 App now targets Oreo instead of Pie to potentially avoid some crashes\n
+        \u2022 Fixed unexpected \'(\' in restore process
+    </string>
+    <string name="version_1.1">Version 1.1(beta)</string>
+    <string name="version_1.1_content">
+        \u2022 [New] Backup verification before zipping\n
+        \u2022 Major code refactoring and under-the-hood changes\n
+        \u2022 CANCEL button now kills the backup process\n
+        \u2022 Fix to \"set_progress()\" in recovery\n
+        \u2022 Probable fix to \"Failed to change locale for db\"\n
+        \u2022 Probable fix to missing updater-script\n
+        \u2022 Probable fix to some \"Operation not permitted\" issues\n
+        \u2022 Remove illegal characters from backup name\n
+        \u2022 \"Share scripts\" option should now work properly.
+    </string>
+    <string name="version_1.1.1">Version 1.1.1(beta)</string>
+    <string name="version_1.1.1_content">
+        v1.1\n\n
+    \u2022 [New] Backup verification before zipping\n
+    \u2022 Major code refactoring and under-the-hood changes\n
+    \u2022 CANCEL button now kills the backup process\n
+    \u2022 Fix to \"set_progress()\" in recovery\n
+    \u2022 Probable fix to \"Failed to change locale for db\"\n
+    \u2022 Probable fix to missing updater-script\n
+    \u2022 Probable fix to some \"Operation not permitted\" issues\n
+    \u2022 Remove illegal characters from backup name\n
+    \u2022 \"Share scripts\" option should now work properly.\n\n
+    v1.1.1\n\n
+    \u2022 Fixed an issue of no-closing-quote in helper
+    </string>
+    <string name="version_1.1.1_only_content">
+    \u2022 Fixed an issue of no-closing-quote in helper
+    </string>
+    <string name="version_1.2">Version 1.2(beta)</string>
+    <string name="version_1.2_content">
+    \u2022 Completely avoid "dumpsys" while backing app permissions\n
+    \u2022 Now app data in tar.gz is unpacked in /data/data\n
+        (probable fix to Operation not permitted issues in Google Pixel)
+    </string>
+    <string name="version_2.0">Version 2.0(christmas_beta)</string>
+    <string name="version_2.0_content">
+        Merry Christmas and Happy New Year!!\n\n
+    \u2022 Some under the hood changes.\n
+    \u2022 Experimental SD card support (with Magisk module)\n
+    \u2022 Support for split apks\n
+    \u2022 Apks are now unpacked under /data/local/tmp/migrate_cache\n
+    \u2022 A new alternative method to calculate app size.\n
+        (probable fix to freezing in calculating app size)\n
+    \u2022 Now every migrate zip package has a busybox binary as a fallback\n
+    \u2022 Migrate helper gets new Temporary Disable option.\n
+    \u2022 Migrate helper gets new Abort option.\n
+    </string>
+    <string name="version_2.0.1">Version 2.0.1(christmas_beta)</string>
+    <string name="version_2.0.1_content">
+    \u2022 Fixed a probable crash in Migrate helper.\n
+    </string>
+    <string name="version_2.1">Version 2.1</string>
+    <string name="version_2.1_content">
+    \u2022 Minor errors are now suppressed, but recorded in log.\n
+    \u2022 Fix icon retention form previous backup.\n
+    \u2022 Fix wrong backup duration display.\n
+    \u2022 Fixed a bug in error correction mechanism.\n
+    \u2022 Probable fix for some apps not being backed up.\n
+    \u2022 Fix for error 6 in TWRP for some locales.\n
+    \u2022 Fixed a long standing wrong /data space calculation in TWRP.\n
+    \u2022 Migrate helper no longer uninstalls app before installing.\n
+    \u2022 Added Telegram group link!\n
+    </string>
+    <string name="version_3.0">Version 3.0</string>
+    <string name="version_3.0_content">
+        From 2.1 to 3.0\n\n
+        \u2022 App is rewritten in Kotlin\n
+        \u2022 Many new preferences have been added.\n
+        \u2022 Helper app is now available on Google Play.\n
+        \u2022 Many fixes in recovery. Support for SAR and Android 10.\n
+        \u2022 Added options for backup of app installer, font scale, adb state\n
+        \u2022 Set max zip size in preferences.\n
+        \u2022 Verification of zips after backup is complete.\n
+        \u2022 Many more changes and improvements…\n\n
+        From 3.0 alpha to 3.0 release\n\n
+        \u2022 Wifi backup is disabled till it becomes stable.\n
+    </string>
+
+    <!--activity_main.xml-->
+    <string name="backupButton">Yedekle</string>
+    <string name="restoreTwrp">TWRP ile geri yükle</string>
+    <string name="restoreApp">Uygulama içi geri yükleme</string>
+    <string name="internal_storage">Dahili depolama</string>
+    <string name="learn_about_sd_card_support">SD kart desteği hakkında bilgi edinin</string>
+
+    <!--backup_layout.xml-->
+    <string name="select_apps">Uygulama seç</string>
+    <string name="backupLabel">Yedekle</string>
+    <string name="fullBackupLabel">Tam_yedek</string>
+    <string name="permission">İzin</string>
+    <string name="data">Veri</string>
+    <string name="app">Uyg</string>
+    <string-array name="appTypeList">
+        <item>Kullanıcı uygulamaları</item>
+        <item>Sistem (güncellenmemiş)</item>
+        <item>Sistem (yalnızca güncellenmiş)</item>
+        <item>Tüm sistem</item>
+        <item>Kullanıcı + Sistem (yalnızca güncellenmiş)</item>
+        <item>Tümü</item>
+    </string-array>
+    <string name="next">İleri</string>
+    <string name="no_apps">Bu kategoride\nkullanılabilir uygulama yok!</string>
+
+    <!--ask_for_backup_name.xml-->
+    <string name="enter_backup_name">Yedek adını gir</string>
+    <string name="sd_card">SD kart</string>
+    <string name="advanced_options">Gelişmiş seçenekler</string>
+    <string name="ignore_cache">Uygulama önbelleğini yoksay</string>
+
+    <!--learn_about_sd_card.xml-->
+    <string name="p1">1. SD kart desteği deneyseldir ve bir magisk modülü gerektirir.</string>
+    <string name="p2">2. Mevcut uygulama, ROM\'unuzun son android sürümlerinde SDCARDFS ile değiştirilen FUSE\'yi desteklemesini gerektiriyor. FUSE bazı ROM\'larda eski destek için hala yürürlükte.</string>
+    <string name="p3">3. Yukarıdaki nedenden dolayı, SD kart seçeneği cihaza, ROM ve Android sürümüne bağlı olarak çalışabilir veya çalışmayabilir.</string>
+    <string name="p4">4. Mevcut uygulama sizde işe yaramıyorsa, lütfen modül geliştiricisi yeni bir modül yazana kadar veya başka bir alternatif bulana kadar bekleyin. Sabrınız için teşekkürler.</string>
+    <string name="p5">SD kart desteği almaya çalışmak için \"ExSDCard Access Enabler\" magisk modülünü indirip yükleyin ve yeniden başlatın
+ Bu modül geliştirici Romain tarafından yapılmıştır.
+    </string>
+
+    <!--in_app_restore-->
+    <string name="in_app_restore">Uygulama içi geri yükleme</string>
+    
+    <!--zip_picker.xml-->
+    <string name="select_storage">Depolama seç</string>
+    <string name="expected_zip_location">Yedek zip\'i, Migrate dizininin altında olmalıdır</string>
+    <string name="zip_picker">Zip seçici</string>
+    <string name="up_one_dir">Bir seviye yukarı</string>
+
+    <!--extra_backups-->
+    <string name="extras">Ekstralar</string>
+    <string name="contacts_label">Kişiler</string>
+    <string name="sms_label">SMS mesajları</string>
+    <string name="call_log_label">Arama kayıtları</string>
+    <string name="keyboard_label">Varsayılan klavye</string>
+    <string name="dpi_label">Ekran DPI</string>
+    <string name="adb_label">ADB durumu</string>
+    <string name="no_default_adb_scale">Sistemin varsayılan ADB bağlantı değeri yok. Çoğu durumda bu, 0 olarak ayarlandığı anlamına gelir (ADB devre dışı). Bu değeri 0 olarak yedeklemek istiyor musunuz?</string>
+    <string name="installer_label">Uygulama yükleyicileri</string>
+    <string name="wifi_label">WiFi şifreler dosyası</string>
+    <string name="fontScale_label">Yazı tipi ölçeği</string>
+    <string name="no_default_font_scale">Sistemin varsayılan yazı tipi ölçeği değeri yok. Çoğu durumda, bu 1.0 olarak ayarlandığı anlamına gelir. Bu değeri 1.0 olarak yedeklemek istiyor musunuz?</string>
+    <string name="yes_recommended">Evet (Önerilen)</string>
+    <string name="only_for_android_8">Sadece Android Oreo ve üstü için (8.0+)</string>
+    <string name="filtering_duplicates">Çiftleri\nfiltreleme</string>
+    <string name="reading_sms">Sms okunuyor</string>
+    <string name="reading_calls">Aramalar okunuyor</string>
+    <string name="reading">Okuma</string>
+    <string name="reading_error">Okuma hatası</string>
+    <string name="no_app_selected">Hiçbir uygulama seçilmedi!</string>
+    <string name="filtering_apps">Uygulamaları filtreleme</string>
+    <string name="tap_to_see_values">Değerleri görmek için dokun</string>
+    <string name="adb_enabled">ADB hata ayıklama etkin</string>
+    <string name="adb_disabled">ADB hata ayıklama devre dışı</string>
+    <string name="adb_unknown">ADB durumu bilinmiyor! Değer yedeklenmeyecek.</string>
+    <string name="weird_font_scale">Tuhaf yazı tipi ölçeği. Değer yedeklenmeyecek.</string>
+    <string name="empty_call_logs">Cihazda arama kaydı bulunamadı. Yedeklenecek bir şey yok</string>
+    <string name="empty_sms">Cihazda SMS mesajı bulunamadı. Yedeklenecek bir şey yok</string>
+    <string name="empty_contacts">Cihazda kişi bulunamadı. Yedeklenecek bir şey yok</string>
+
+    <!--ExtraBackups.java-->
+    <string name="not_recommended">Önerilmez!</string>
+    <string name="contacts_not_recommended">Bir sonraki ROM\'unuzda <b>Google ile oturum açmayı düşünüyorsanız</b> kişilerin yedeklenmesi ve geri yüklenmesi önerilmez. Kişileri geri yüklemek, aynı kişilerin gereksiz kopyalarını oluşturur.</string>
+    <string name="dont_backup">Yedekleme</string>
+    <string name="backup_contacts_anyway">Yine de kişileri yedekle</string>
+    <string name="estimated_files_size">Tahmini toplam yedekleme boyutu:</string>
+    <string name="estimated_app_size">Tahmini uygulama boyutu:</string>
+    <string name="current_app">Geçerli uygulama:</string>
+    <string name="available_space">Kullanılabilir alan:</string>
+    <string name="calculated_total">Hesaplanan toplam:</string>
+    <string name="last_app">Son uygulama:</string>
+    <string name="insufficient_storage">Yetersiz depolama!</string>
+    <string name="long_press_to_force_stop">Uygulamayı durdurmaya zorlamak için uzun basın.</string>
+    <string name="required_storage">Migrate\'in daha fazla boş alana ihtiyacı var:</string>
+    <string name="will_be_compressed">Uygulama dosyalarını kopyalamak için tahmini boyuta ihtiyacımız var. Son paket, sıkıştırma nedeniyle tahmini boyuttan çok daha az yer kaplar.</string>
+    <string name="contacts_access_needed">Kişilerin yedeklenmesi için kişilerin okunması gerekir</string>
+    <string name="sms_access_needed">SMS mesajları yedekleme için SMS okumak gerekir</string>
+    <string name="calls_access_needed">Aramaları yedeklemek için arama kayıtlarını okumak gerekir</string>
+    <string name="error_reading_contacts">Kişileri okuma hatası</string>
+    <string name="error_reading_sms">SMS okuma hatası</string>
+    <string name="error_reading_calls">Aramaları okuma hatası</string>
+    <string name="calculating_size">Boyut hesaplanıyor</string>
+    <string name="calculating_size_reflection">Boyut hesaplanıyor [yansıma]</string>
+    <string name="total_size_ok">Toplam boyut Tamam!</string>
+    <string name="total_size">Toplam boyut:</string>
+    <string name="error_reading_backup_data">Yedekleme verilerini okuma hatası</string>
+    <string name="error_calculating_size">Boyut hesaplama hatası</string>
+    <string name="could_not_create_destination">Yedek dizini oluşturulamadı.</string>
+    <string name="make_sure_destination_exists">Hedefin takıldığından ve yazılabilir olduğundan emin olun.</string>
+    <string name="error_detecting_memory">Cihaz belleğini algılama hatası</string>
+    <string name="error_checking_destination">Hedef kontrol edilirken hata oluştu</string>
+    <string name="cannot_split">Bu uygulamalar çok büyük olduğu için yedekleme yapılamıyor!</string>
+    <string name="part">Bölüm</string>
+    <string name="parts">parts</string>
+    <string name="of">-</string>
+    <string name="allowed">izin verildi</string>
+    <string name="error_reading_dpi">DPI okuma hatası</string>
+    <string name="error_reading_adb">ADB okuma hatası</string>
+    <string name="error_reading_wifi">Wifi şifre deposu okunurken hata oluştu</string>
+    <string name="error_reading_fontScale">Yazı tipi ölçeği okuma hatası</string>
+    <string name="stock_android_title">Stok Android tabanlı ROM\'u hedefliyor!</string>
+    <string name="stock_android_desc">
+        - Samsung (TouchWiz/One UI), Huawei (EMUI), Xiaomi (MIUI) vb. rom\'larda başarısız olabilir.\n
+        - ROM\'unuzun stok android\'e dayalı olduğundan emin değilseniz, seçeneği işaretlememeniz daha iyi olur.\n
+        - Örneğin, şu rom\'lardan biri değilse: <b>Lineage OS, AEX, PEX, Carbon, RR vb.</b>
+    </string>
+    <string name="go_ahead">Devam et</string>
+    <string name="error_reading_keyboard_list">Klavye listesi okunurken hata oluştu</string>
+    <string name="no_keyboard_enabled">Etkin klavye yok!</string>
+    <string name="no_keyboard_enabled_desc">Lütfen bir klavye etkinleştirmek için,\n
+        Ayarlar ->  Diller ve giriş -> Sanal klavye -> Klavyeleri yönet\n
+        menüsüne gidin
+    </string>
+    <string name="selected_keyboard_not_present_in_backup">yedekte yok</string>
+    <string name="selected_keyboard_not_present_in_backup_desc">Yedekleme uygulama listesinde seçilen klavye yok. Lütfen \"Uygulama seç\" sayfasına dönün ve klavye uygulamasını seçin.</string>
+    <string name="extra_backups_help">
+        <b>Kişiler</b> : Kişi verilerini vcf olarak yedekle\n
+        <b>SMS mesajları</b> : Metin mesajlarını yedekle\n
+        <b>Arama kayıtları</b> : Arama kayıtlarını yedekle. Bu favorileri içermez\n
+        <b>Ekran DPI</b> : Geçerli ekran yoğunluğunu yedekle\n
+        <b>Varsayılan klavye</b> : Varsayılan klavye seçimini yedekle. Manuel seçim gerekli\n
+        <b>Uygulama yükleyicileri</b> : Sistem, geri yüklenen uygulamaların Play Store veya F-droid\'den yüklendiğini kabul eder.\n
+        <b>ADB durumu</b> : ADB durumunu yedekle (USB hata ayıklama)\n
+        <b>Yazı tipi ölçeği</b> : Yazı tipi boyutunu yedekle\n
+        \n
+        Bir öğenin üzerindeki onay kutusunu işaretledikten sonra, diğer seçenekler için öğeye tıklayın.
+    </string>
+    <string name="change_size_calculation_method">Uygulama tercihlerinin ana ekranına gidip, -> \"Tercihler\" -> \"Boyutu hesaplamak için yeni yöntemi kullan\" seçeneğinin işaretini kaldırmayı deneyebilirsiniz</string>
+    <string name="no_sd_card_detected">SD kart algılanmadı (veya R/W olarak takılmadı).</string>
+    <string name="no_sd_card_detected_exp">Lütfen harici bir SD kart taktığınızdan emin olun (cihazınız tarafından destekleniyorsa)
+ Ayrıca \"ExSDCard Access Enabler\" magisk modülünü yüklediğinizden emin olun.\n\n
+    [geliştirici Romain tarafından yapılan modül.]
+    </string>
+    <string name="please_select_sd_card">Lütfen sd kartı seçin</string>
+    <string name="sd_card_not_rw">SD Kart R/W olarak takılmamış olabilir</string>
+    <string name="sd_card_not_rw_exp">Harici SD karta erişilemeyebilir. Magisk\'te \"ExSDCard Access Enabler\" modülünün yüklü olduğundan emin olun.\n\n
+    [modül geliştirici Romain tarafından yapılmıştır.]
+    </string>
+    <string name="no_busybox_binary">\"busybox\" mevcut değil!</string>
+    <string name="re_calculating_size">Terminal yöntemini kullanarak boyutu yeniden hesaplıyor</string>
+    <string name="error_occurred">Hata oluştu!!</string>
+    <string name="wait_while_reading_data">Veri okunuyor</string>
+    <string name="wait_while_reading_data_desc">Lütfen veriler tamamen okunana kadar bekleyin. Daha sonra tekrar deneyin.</string>
+
+    <!--extra_item_selector.xml-->
+    <string name="sms_selector_label">SMS seç</string>
+    <string name="contacts_selector_label">Kişileri seç</string>
+    <string name="calls_selector_label">Aramaları seç</string>
+    <string name="installer_selector_label">Yükleyici seç</string>
+    <string name="set_installer_for_all">Seçilen tüm uygulamalar için ayarlanacak yükleyiciyi seçin</string>
+    <string name="no_contacts">Kişi yok!</string>
+    <string name="no_sms">Sms yok!</string>
+    <string name="no_calls">Arama kaydı yok!</string>
+    <string name="fdroid_extension">F-Droid\'i yükleyici olarak ayarlamak için F-Droid ayrıcalıklı uzantısını yanıp flashlamalısınız.</string>
+
+    <!--progress_layout-->
+    <string name="loading">Yükleniyor…</string>
+    <string name="cancelling">İptal ediliyor…</string>
+    <string name="start_backup">Başlat</string>
+
+    <!--BackupProgressLayout.java-->
+    <string name="split_desc_1">Büyük yedekleme boyutu nedeniyle, yedeklemeniz bölünüyor</string>
+    <string name="split_desc_2">In TWRP, please install all the zips for full restore.</string>
+
+    <!--BackupEngine.java-->
+    <string name="close">Kapat</string>
+    <string name="backingUp">Uygulamalar yedekleniyor</string>
+    <string name="noErrors">Tamamlandı! Hata yok.</string>
+    <string name="zipping_all_files">Dosyalar sıkıştırılıyor</string>
+    <string name="making_file_list">Dosya listesi oluşturuluyor</string>
+    <string name="verifying_zip">Zip doğrulanıyor</string>
+    <string name="listing_zip_file">Zip dosyası listeleniyor</string>
+    <string name="compared_zip_contents">Karşılaştırılan zip içeriği</string>
+    <string name="compared_fileList_contents">Karşılaştırılan dosya listesi içeriği</string>
+    <string name="zip_size_too_big">Zip boyutu, izin verilen maksimum boyuttan büyük. Lütfen Tercihler -> Maksimum zip boyutu\'na gidin</string>
+    <string name="storing_wifi_data">Wifi verileri depolanıyor</string>
+    <string name="testing_system">Sistem test ediliyor</string>
+    <string name="writing_settings">Ayarlar yazılıyor</string>
+    <string name="making_package_flash_ready">Paket flashlamaya hazır hale getiriliyor</string>
+    <string name="making_updater_script">Güncelleyici-komut dosyası yapılıyor</string>
+    <string name="backing_app_permissions">Uygulama izinleri yedekleniyor</string>
+    <string name="verifying_backups">Yedek doğrulanıyor</string>
+    <string name="verifying_tar">Tar doğrulanıyor</string>
+    <string name="correcting_errors">Hatalar düzeltiliyor</string>
+    <string name="backing_contacts">Kişiler yedekleniyor</string>
+    <string name="backing_sms">Sms yedekleniyor</string>
+    <string name="backing_calls">Aramalar yedekleniyor</string>
+    <string name="verifying_calls">Aramalar doğrulanıyor</string>
+    <string name="verifying_sms">Sms doğrulanıyor</string>
+    <string name="call_logs_incomplete">Arama kayıtları eksik</string>
+    <string name="sms_records_incomplete">Sms kayıtları eksik</string>
+    <string name="backing_dpi">DPI yedekleniyor</string>
+    <string name="backing_keyboard">Klavye yedekleniyor</string>
+    <string name="errorMakingScripts">Komut dosyaları oluşturulurken hata oluştu</string>
+    <string name="backupCancelled">Yedekleme iptal edildi</string>
+    <string name="errorStartingBackup">Yedekleme başlatılırken hata oluştu (onStartCommand).</string>
+    <string name="deletingFiles">Dosyalar siliniyor</string>
+    <string name="backupFinishedWithErrors">Yedekleme hatalarla tamamlandı!</string>
+    <string name="backupFinishedWithWarnings">Yedekleme uyarılarla tamamlandı!</string>
+    <string name="backupPartHadErrors">Yedek bölümünde hatalar var.</string>
+    <string name="incompleteZip">Tüm dosyalar birleştirilemedi.</string>
+    <string name="no_keyboard_data">Klavye verisi yok</string>
+
+    <string name="failed_to_make_batches">Toplu iş yapılamadı</string>
+    <string name="backup_error_system_check_failed">Sistem kontrolü başarısız olduğu için yedekleme iptal edildi.</string>
+    <string name="backup_error_updater_script">Güncelleyici komut dosyasında yedekleme başarısız oldu.</string>
+    <string name="backup_error_at_app_verification">Uygulama doğrulamasında yedekleme başarısız oldu.</string>
+    <string name="errors_in_batch">Toplu işte hatalar var</string>
+    <string name="zip_size">Zip boyutu</string>
+
+    <!--BackupActivity.java-->
+    <string name="setBackupName">Yedek adını ayarla</string>
+    <string name="overwrite">Üzerine yazılsın mı?</string>
+    <string name="overwriteMessage">Aynı ada sahip bir yedekleme zaten var. Üzerine yazmak istiyor musunuz?</string>
+    <string name="yes">Evet</string>
+    <string name="rename">Hayır, yeniden adlandır</string>
+    <string name="backupNameCannotBeEmpty">Yedek adı boş olamaz</string>
+    <string name="backup_activity_help_0">
+        <b>Uyg</b> : Apk\'yı yedekle\n
+        <b>Veri</b> : Tüm özel verileri yedekle\n
+        <b>İzin</b> : Tüm ayrıntılı izinleri yedekle\n
+        \n<i>Aşağıda, Google Fotoğraflar uygulamasından ayrıntılı izin örnekleri verilmiştir</i>\n
+    </string>
+    <string name="backup_activity_help_1">
+        \n
+        Önceden, bir uygulamanın <b>Veri</b>lerini seçmek <b>Uygulama</b>yı da yedeklemeniz gerektiği anlamına geliyordu. Artık durum böyle değil. Ayrıca, Migrate artık yedekleme için seçilen uygulamaları hatırlıyor. <b>Uygulama</b>yı değil bir uygulamanın <b>Veri</b>lerini ve/veya <b>İzin</b>lerini yedeklemeye karar verdiyseniz, uygulamanın <b>Migrate yardımcısı</b> aracılığıyla geri yüklemeye başlamadan önce yüklenmemişse, söz konusu uygulamanın, <b>Veri</b>leri ve/veya <b>İzin</b>lerinin geri yüklenmeyeceğini lütfen unutmayın.
+    </string>
+    <string name="backup_activity_help_2">
+        \n
+        <b>Beyaz renkli uygulamalar:</b> Normal kullanıcı uygulamaları\n
+        <b>Sarı renkli uygulamalar:</b> Google Play Store\'dan veya başka bir yerden güncellenen sistem uygulamaları. Güncellenen APK\'lar sistem dizinlerinde değil <b>/veri</b> dizininde bulunur.\n
+        <b>Kırmızı renkli uygulamalar:</b> Güncellenmemiş sistem uygulamaları.
+    </string>
+    <string name="bootloop_warning">Bootloop uyarısı!</string>
+    <string name="bootloop_warning_desc">Sistem uygulamalarının yedeklenmesi ve geri yüklenmesi bootloop ile sonuçlanabilir. Lütfen dikkatli ilerleyin.</string>
+
+    
+    <!--BackupService.java-->
+    <string name="error_loading_engine">Motor yüklenirken hata oluştu</string>
+
+    <!--MainActivity.java-->
+    <string name="too_fast">Vay, çok hızlı!!</string>
+    <string name="too_fast_desc">Uygulama, Pie\'ın (9.0) üzerindeki Android sürümünde açıkçası test edilmemiştir.\n\nLütfen uygulamanın çalışıp çalışmadığına dair görüşlerinizi gönderin.</string>
+    <string name="dont_show_again">Bir daha gösterme</string>
+    <string name="dont_show_stock_warning">Bir daha gösterme</string>
+    <string name="stock_android_rom">Stok android ROM önerilir</string>
+    <string name="please_wait">Lütfen bekleyin</string>
+    <string name="reading_data">Yedek verileri okunuyor</string>
+    <string name="making_app_script">Uygulama yardımcı dosyaları yapılıyor</string>
+    <string name="just_a_minute">Bir dakika…</string>
+    <string name="starting_engine">Yedekleme motoru başlatılıyor</string>
+    <string name="root_permission_denied">Root izni reddedildi!</string>
+    <string name="root_permission_denied_desc">Lütfen cihazınızın rootlu olduğundan ve root iznini verdiğinizden emin olun.\n\n
+    ROM\'unuz kendinden rootlu ise, Magisk\'i flashlamayı deneyin.
+    </string>
+    <string name="making_packets">Zip paketleri yapılıyor</string>
+    <string name="making_batches">Toplu zip yapılıyor</string>
+    <string name="total_extra_size">Ekstralar boyutu</string>
+    <string name="capping_size">Kapak boyutu</string>
+    <string name="adding_bigger_apps">Daha büyük uygulamalar ekleniyor</string>
+    <string name="adding">Ekleme</string>
+    <string name="packet">Paket</string>
+    <string name="moving_files">Dosyalar taşınıyor</string>
+    <string name="use_reflection">Yansıma kullanılsın mı?</string>
+    <string name="use_reflection_exp">Yansıma, Nougat ve altındaki boyutları hesaplamanın deneysel bir yoludur. Bu, boyutu hesaplamanın daha iyi bir yolunu sağlayabilir. Önerilir mi: Evet</string>
+    <string name="use_usage_access_permission">Kullanım erişim izni verilsin mi?</string>
+    <string name="usage_access_permission_needed_desc">Yedeklemeden önce uygulamaların boyutunu hesaplamak için yeni, daha hızlı ve daha güvenilir bir yöntem eklendi.\n\nLütfen Devam Et\'i tıklayın, kaydırın ve \"Migrate\"i seçin ve ardından \"Kullanım erişimine izin ver\"i seçin</string>
+    <string name="storage_access_required">Lütfen yedekleri yazmak için depolama alanına erişim izni verin.</string>
+    <string name="checking_permissions">Depolama ve Root erişimi kontrol ediliyor</string>
+    <string name="rate_dialog_title">Fikriniz önemlidir</string>
+    <string name="rate_dialog_message">Bu uygulama size yardımcı olduysa, lütfen bir derecelendirme ve/veya inceleme vermeyi düşünün.</string>
+    <string name="sure">Elbette</string>
+    <string name="later">Sonra</string>
+    <string name="never_show">Asla gösterme</string>
+    <string name="unsupported_device">Desteklenmeyen cihaz.</string>
+    <string name="cpu_arch_is">CPU mimariniz:</string>
+    <string name="currently_supported_cpu">Yalnızca <b>armeabi-v7a, arm64-v8a, x86, x86_64</b> CPU mimarileri şu anda desteklenmektedir. Cihazınızı desteklemeye yardımcı olması için lütfen posta yoluyla iletişime geçin.</string>
+    <string name="proceed">İlerle</string>
+    <string name="usage_permission_toast">Kaydırın ve \"Migrate\"i seçin ve \"Kullanım erişimine izin ver\"i tıklayın!</string>
+    <string name="old_method_will_be_used">Eski terminal yöntemini kullan</string>
+    <string name="update_available">Güncelleme mevcut!</string>
+    <string name="download">İndir</string>
+
+    <!--AppListAdapter.java-->
+    <string name="packageName">Paket :</string>
+    <string name="versionName">Sürüm adı :</string>
+    <string name="uid">Kimlik :</string>
+    <string name="sourceDir">Kaynak dizini :</string>
+    <string name="dataDir">Veri dizini :</string>
+    <string name="installer">Yükleyici: </string>
+    <string name="play_store">Play Store</string>
+    <string name="package_installer">Paket yükleyici</string>
+    <string name="f_droid">F-Droid</string>
+    <string name="not_set">Ayarlama</string>
+
+    <!--AppBackupEngine.kt-->
+    <string name="script_file_does_not_exist">Komut dosyası yok</string>
+
+    <!--VerificationEngine.kt-->
+    <string name="defect_no">Hata numarası:</string>
+    
+    <!--keyboard_selector.xml-->
+    <string name="select_default_keyboard_from_enabled">Etkin klavyelerden varsayılan klavyeyi seç</string>
+    <string name="present_in_backup">Yedekte mevcut</string>
+
+    <!--error_report_layout.xml-->
+    <string name="report_header">Telegram yoluyla bildir</string>
+    <string name="share_progress_logs">İlerleme günlüklerini paylaş</string>
+    <string name="share_error_logs">Hata günlüklerini paylaş</string>
+    <string name="share_script">Komut dosyasını paylaş</string>
+    <string name="send_to_tg">Telegram\'a gönder</string>
+    <string name="agree_and_send">Kabul et ve gönder</string>
+    <string name="error_report_disclaimer">Bu uygulamayı geliştirmek üzere yardım etmeye olan ilginiz için teşekkürler. Şu andan itibaren, tüm hata raporları Telegram grubumuza (https://t.me/migrateApp) gönderilecek.
+        Bu sayede, gruptaki birçok kişiden daha hızlı çözüm elde edeceksiniz.\n\n
+        Günlükleri paylaşarak, bazı bilgileri <b>KAMUYLA</b> paylaşmayı kabul edersiniz.
+    </string>
+    <string name="not_joined_yet">Henüz grubumuza katılmadınız mı?</string>
+    <string name="send_logs_using">Günlükleri şununla gönder:</string>
+    <string name="log_files_do_not_exist">Günlük dosyaları mevcut değil</string>
+    <string name="progress_log_does_not_exist">\"progressLog\" mevcut değil</string>
+    <string name="error_log_does_not_exist">\"errorLog\" mevcut değil</string>
+    <string name="backup_script_does_not_exist">Yedekleme komut dosyaları mevcut değil</string>
+    <string name="tg_not_installed">Telegram grubumuz sorunlara hızlı çözüm bulmanıza yardımcı olur.</string>
+    <string name="tg_not_installed_desc">Lütfen Telegram\'ı yükleyin ve grubumuza katılın.</string>
+    <string name="install_tg">Telegram\'ı yükle</string>
+    <string name="join_group">Gruba katıl</string>
+    <string name="use_email_instead">Eski e-postayı kullan</string>
+
+    <!--backup_progress_layout.xml-->
+    <string name="report">Bildir</string>
+    <string name="minimizing_may_decrease_speed">Bu ekranı küçültmek yedekleme hızını düşürebilir!</string>
+    
+    <!--initial_guide.xml-->
+    <string name="skip">Atla</string>
+    <string name="accept">Kabul et</string>
+    
+    <!--initial_guide_0.xml-->
+    <string name="greet1">Migrate\'e hoş geldiniz!</string>
+    <string name="body_0_0">Migrate, çeşitli custom ROM\'lar arasında kolayca dolaşmak için hayati bir araçtır.\n\nUygulamalarınızı, verilerinizi, kişilerinizi, sms\'lerinizi ve çok daha fazlasını aktarmanıza yardımcı olur.</string>
+    <string name="body_0_1">Kısa bir tur için İleri\'ye basın.</string>
+    
+    <!--initial_guide_1.xml-->
+    <string name="greet2">Her şeyi yedekleyin!</string>
+    <string name="body_1_0">Tüm uygulamaları yedekle</string>
+    <string name="body_1_1">Uygulamalar\nUygulama verileri\nUygulama izinleri</string>
+    <string name="body_1_2">Diğer ekstralar</string>
+    
+    <!--initial_guide_2.xml-->
+    <string name="greet3">ROM ile Flashlayın!</string>
+    <string name="body_2_0">Migrate yedekleme paketleri TWRP\'den flashlanabilen zip dosyalarıdır.\n\nBir yardımcı uygulama, yeni ROM\'unuzu başlattıktan sonra uygulama geri yükleme işlemini üstlenir.</string>
+    <string name="body_2_1">Açılıştan sonra otomatik olarak geri yüklemeye devam etmeniz istenir</string>
+
+    <!--initial_guide_3.xml-->
+    <string name="greet4">Başlamadan önce birkaç şey…</string>
+    <string name="body_3_0"><b>LÜTFEN MAGISK KULLANIN</b>. Lineage OS su eklentisi beklenmedik davranışlara neden oluyor.</string>
+    <string name="body_3_1">Bu uygulama hala bebeklik döneminde. Sonuç olarak, hatalar olabilir.\n\n
+        Migrate root tabanlı bir uygulamadır.\n\n
+        BU UYGULAMAYI KULLANARAK ROOTLAMA TEHLİKELERİNİ VE ROOT BAZLI BİR UYGULAMAYI KULLANMAYI KABUL ETMİŞ OLURSUNUZ. GELİŞTİRİCİNİN ÇÖKMÜŞ CİHAZLARDAN VEYA HASAR GÖREN DONANIMLARDAN SORUMLU TUTULMAYACAĞINI VE VERİLERİNİZE GELEBİLECEK HERHANGİ BİR KAYIPTAN SORUMLU OLMADIĞINI KABUL EDERSİNİZ.\n\n
+        Bir nandroid yedekleme, herhangi bir uygulama tabanlı yedekleme yöntemine kıyasla en güvenli yedekleme yöntemidir. Herhangi bir sorun olması durumunda lütfen geliştiriciyle iletişim kurun.
+    </string>
+
+    <!--how_to_restore.xml-->
+    <string name="prev">Geri</string>
+    <string name="got_it">Anladım!</string>
+    <string name="troubleshooting_tips">Sorun giderme ipuçları</string>
+
+    <!--restore_0.xml-->
+    <string name="step_0">Adım 0 -\nBir yedek alın!</string>
+    <string name="step_0_desc">(besbelli..)</string>
+
+    <!--restore_1.xml-->
+    <string name="step_1">Adım 1 -\nYeni bir ROM flashlayın</string>
+    <string name="step_1_desc">
+        1. Cihazı TWRP\'de açın\n
+        2. Verileri temizleyin <b>(Şiddetle önerilir!)</b>\n
+        3. Yeni rom\'unuzu ve GApps\'ı flashlayın (isteğe bağlı)\n
+        4. <b>Önemli: Root\'u flashlayın!</b> Magisk önerilir.\n
+    </string>
+
+    <!--restore_2.xml-->
+    <string name="step_2">Adım 2 -\nYedek zip\'ini flashlayın!</string>
+    <string name="step_2_desc">
+        Varsayılan olarak, oluşturulan yedek zip dosyanız şuradadır:\n
+        <b>Dahili depolama ->\nMigrate ->\n[yedekleme.zip veya yedekleme -> parts.zip]</b>\n\n
+         TWRP ana menüsünden, YÜKLE -> yedek dosya zip\'ine gidin ve yükleyin.\n\n
+        <b>Önemli:</b> Lütfen yedek zip\'lerini flashladıktan sonra verileri silmeyin.
+    </string>
+    <string name="step_2_troubleshoot">Bazı durumlarda, Magisk\'i flashladıktan sonra Migrate, system_rootu olmayan aygıtlar için system_rootu yanlış algılayabilir.
+        \"ROM algılanmadı\" hatası alabilirsiniz.
+        Lütfen TWRP recovery\'ye geri dönün ve tekrar deneyin.</string>
+
+    <!--restore_3.xml-->
+    <string name="step_3">Adım 3 -\nYeni ROM\'unuzu kurun</string>
+    <string name="step_3_desc">
+        1. Sistemi yeniden başlatın.\n
+        2. Tüm GApps/ROM kurulumunu tamamlayın.
+    </string>
+
+    <!--restore_4.xml-->
+    <string name="step_4">Adım 4 -\nUygulamaları ve verileri geri yükleyin.</string>
+    <string name="step_4_desc_1">Gösterildiği gibi bir bildirim görebilmeniz gerekir. Bildirimi açın.</string>
+    <string name="step_4_desc_2">Bildirimi görmüyorsanız uygulama çekmecesini açın ve \"Migrate helper\"ı açın.\n
+        Açtığınızda, böyle bir ekran görmelisiniz:</string>
+    <string name="step_4_desc_3">
+        <b>UYGULAMALARI VE VERİLERİ GERİ YÜKLE</b>: Root izni verin ve geri yüklenecek uygulamaları ve ekstraları seçin.\n\n
+        <b>UYGULAMAYI KALDIR VEYA GERİ YÜKLE</b>: Geri yükleme sonrası işlemleri yapmak, yardımcıyı kaldırmak ve cihazı yeniden başlatmak için bunu seçin.\n\n
+    </string>
+    <string name="step_4_troubleshoot">Uygulamanız yoksa dahili Android dosya yöneticisini kullanın (veya geçici olarak Google Play Store\'dan bir dosya yöneticisi indirin), Dahili depolama/Migrate dizininden \"helper.apk\"yı yükleyin</string>
+
+    <!--restore_5.xml-->
+    <string name="step_5">Adım 5 - \nGeri yükleme işlerini tamamlayın</string>
+    <string name="step_5_desc_1">Bazı işler genellikle geri yüklendikten sonra bırakılır. Bu, varsayılan SMS uygulamasını (SMS\'ler geri yüklendiyse) Migrate helper\'dan başka bir uygulamaya değiştirmeyi ve ayrıca DPI\'ı değiştirmeyi içerir</string>
+    <string name="step_5_desc_2">Android 10 ve üzeri sürümlerde, SMS uygulamasını değiştirdikten sonra, sistem Migrate helper uygulamasını kapatmaya zorlayacaktır. Lütfen otomatik olarak yeniden başlatılmadan önce birkaç saniye bekleyin.</string>
+    <string name="step_5_desc_3">Son olarak yardımcı uygulamayı sistemden kaldırmak isteyeceksiniz. Daha sonra yeniden kullanmak için uygulamayı devre dışı bırakmak da isteyebilirsiniz.</string>
+    <string name="step_5_troubleshoot">Android 10 ve sonraki sürümlerde Migrate helper bazı durumlarda kendini yeniden başlatamayabilir. Lütfen uygulamayı elle açın. Ayrıca, arka planda farklı bir uygulamanın yüklü olduğu da sorulabilir. Endişelenmeyin, Migrate helper\'ın zorla kapatıldığını algılayan ve yeniden başlatan bir eklenti \"izleme\" uygulamasıdır. Yardımcının kendisi tarafından otomatik olarak kaldırılacaktır.</string>
+
+    <!--restore_6.xml-->
+    <string name="step_6">Adım 6 -\nBitti! Keyfini çıkarın!</string>
+    <string name="step_6_desc">Tamamlandı! Yeni ROM\'unuzun keyfini çıkarın!</string>
+
+    <!--drawer_menu.xml-->
+    <string name="aboutThisApp">Bu uygulama hakkında</string>
+    <string name="about">Hakkında</string>
+    <string name="help">Yardım</string>
+    <string name="preferences">Tercihler</string>
+    <string name="app_intro">Uygulama tanıtımı</string>
+    <string name="changelog">Değişiklikler</string>
+    <string name="lastLog">Son kayıtlar</string>
+    <string name="contributors">Katkıda bulunanlar</string>
+    <string name="rateTheApp">Uygulamayı oyla</string>
+    <string name="xda_thread">XDA konusu</string>
+    <string name="other_options">Diğer seçenekler</string>
+    <string name="other_apps">Diğer uygulamalar</string>
+    <string name="contact">Telegram ile iletişim</string>
+    <string name="contact_over_telegram">Telegram grubu</string>
+    <string name="older_builds">AFH\'deki eski yapılar</string>
+    
+    <!--help_page.xml-->
+    <string name="q1">Uygulama yedeklemesindeki İzin etiketi nedir?</string>
+    <string name="a1"><i>İzin</i> bir uygulamanın izinleri anlamına gelir. Migrate, Android Marshmallow (6.0) ve sonraki sürümler için bir uygulamaya verilen ayrıntılı izinleri yedekleyebilir.
+  Seçeneği seçmek, uygulama geri yüklendiğinde uygulama izinlerini geri yüklemenize olanak tanır.
+    </string>
+    <string name="q2">Bu uygulamanın Titanium Backup\'tan ne farkı var?</string>
+    <string name="a2">Bu uygulama bir ROM taşıma aracıdır ve şunları yapabilir:\n
+        \u2022 Tüm uygulama ve verileri TWRP\'den flashlanabilir zip ile birleştirir\n
+        \u2022 Kişiler, sms, arama kayıtları vb. gibi farklı ekstraları yedekler\n
+        \u2022 Yalnızca birkaç zip dosyası taşımanız gerektiğinden daha yüksek taşınabilirlik sunar\n
+        \u2022 Gerekirse yedekler başka bir cihazda flashlanabilir.\n
+    </string>
+    <string name="q3">Ama nandroid yedekleme yerine neden kullanılmıyor?</string>
+    <string name="a3">Nandroid yedekleme mevcut en güvenli yedekleme seçeneğidir. Ancak, uygulamaları bir nandroid yedeklemeden yeni bir ROM\'a geri yükleyemezsiniz.\n
+    Bu uygulama olmazsa olmaz bir ROM taşıma aracıdır. Nandroid yedekleme bu işi yapamaz.
+    </string>
+    <string name="q4">Neden tüm uygulamalar ve veriler recovery\'nin kendisinden geri yüklenemiyor?</string>
+    <string name="a4">Recovery, Android işletim sisteminden farklı bir ortamdır. Linux dağıtımında bir Windows oyununu yüklemeye benzer.\n\n
+    Yani sistem bölümüne, sistem önyüklemesini başlatan bir yardımcı uygulama enjekte edilir. Root iznini alır ve uygulamayı ve verileri otomatik olarak geri yükler.
+    </string>
+    <string name="q5">Yedek zip dosyasını geri yüklemek için Migrate uygulamasını Play Store\'dan indirmem gerekiyor mu?</string>
+    <string name="a5">
+        Kesinlikle hayır!\n\n
+        İhtiyacınız olan tek şey TWRP recovery ve yeni ROM\'unuzun rootlanması. Yedek zip\'i flashlanırken, sisteme bir yardımcı uygulama enjekte edilir, bu da uygulama geri yükleme işlemini yapar.
+    </string>
+    <string name="q6">TWRP gerekli mi? Onsuz yedeklemeyi geri yükleyemez miyim?</string>
+    <string name="a6">
+        Yedek zip\'ini flaşlamak için TWRP recovery gerekir. O olmadan, bir yedeklemeyi geri yükleyemezsiniz. Diğer recovery\'ler işe yarayabilir, ancak test edilmemiştir.\n\n
+        Şu anda Migrate zip\'leri uygulamanın kendisinden geri yüklemeyi desteklemiyor. Ama bu gelecekte eklenebilecek bir şey.
+    </string>
+    <string name="q7">Magisk kullanmak gerekli mi?</string>
+    <string name="a7">
+        Bu uygulama en iyi Magisk ile çalışır. SuperSU test edilmedi. Lineage OS su eklentisi bazen çalışır, ancak bazen çok garip hatalar verir. Lütfen Magisk kullanın.
+    </string>
+    <string name="more_questions">Daha fazla sorunuz mu var? Telegram\'dan iletişime geçmekten çekinmeyin</string>
+
+    <!--last_log_report.xml-->
+    <string name="seeProgressLog">İlerleme günlüğüne bak</string>
+    <string name="seeErrorLog">Hata günlüğüne bak</string>
+    <string name="report_logs">Günlükleri bildir</string>
+    <string name="progressLog">İlerleme günlüğü</string>
+    <string name="errorLog">Hata günlüğü</string>
+
+    <!--SimpleLogDisplay.java-->
+    <string name="no_header">Başlık yok</string>
+    <string name="no_filepath">Dosya yolu yok</string>
+    <string name="log_reading_error">Günlük okuma hatası</string>
+
+    <!--other_apps.xml-->
+    <string name="instamean">Sistem çapında çevrimiçi sözlük</string>
+    <string name="pickRingStop">Çalmayı durdurmak için telefonu kaldır</string>
+    <string name="opcode8085">8085 programlarını hex koduna dönüştürme</string>
+    <string name="mdh">El hareketleriyle Moto Display\'e eriş</string>
+    <string name="bg_video">Videoları arka planda oynat</string>
+    <string name="more_coming_soon">Daha fazlası çok yakında…</string>
+
+    <!--miscellaneous-->
+    <string name="contact_via_telegram">Telegram ile ulaş</string>
+    <string name="contact_via_telegram_desc">Geri bildirim ve destek için lütfen Telegram grubumuzla iletişime geçin. Grup üyelerinden daha iyi ve daha hızlı destek alırsınız.\n\nTelegram\'da geliştiriciyle kişisel olarak iletişime geçmeyi de seçebilirsiniz.</string>
+    <string name="contact_dev">Geliştiriciye ulaş</string>
+    <string name="post_in_group">Grupta yayınla</string>
+    <string name="select_mail">Gmail gibi bir posta uygulaması seç</string>
+    <string name="select_telegram">Telegram\'ı aç ve Migrate grubunu seç</string>
+    <!--<string name="sem_apology">Yarıyıl özürü!</string>
+    <string name="sem_apology_desc">Önümüzdeki yarıyıl nedeniyle, bir ay kadar uygulama geliştirmeye odaklanamayacağım. Özür dilerim.\n\n
+    Bu arada, uygulamayı kullanmaya devam edin ve hata raporlarını paylaşın. Sevgin ve desteğin benim için çok şey ifade ediyor. Teşekkürler!\n\n
+    - SayantanRC</string>-->
+
+    <string name="copied_app">Bu uygulama kopyalandı ve sahte.</string>
+    <string name="copied_app_exp">Lütfen Yükle düğmesini tıklayarak orijinal uygulamayı BaltiApps\'ten edinin.</string>
+    <string name="install_original_migrate">Orijinal uygulamayı yükle</string>
+
+    <!--preferences.xml-->
+
+    <string name="disable_battery_optimisation">Pil optimizasyonunu devre dışı bırak</string>
+    <string name="use_new_sizing_method">Boyutu hesaplamak için yeni yöntemi kullan</string>
+    <string name="use_new_sizing_method_desc">Bunu etkinleştirmek, Android 8 ve sonraki sürümlerde StorageStats ve daha düşük sürümlerde yansıma kullanır.
+        Bu devre dışı bırakıldığında, boyutu hesaplamak için terminal kabuğu komutları kullanılır.</string>
+    <string name="clear_to_reset">Varsayılan değere sıfırlamak için Temizleyin ve Tamam\'a basın.</string>
+    <string name="autoselect_extras_title">Ekstraları otomatik seç</string>
+    <string name="autoselect_extras_desc">Daha önce yedeklediyseniz, kişiler ve sms gibi ekstraları otomatik olarak seçer</string>
+    <string name="new_icon_method_title">Yeni simge yöntemi</string>
+    <string name="new_icon_method_desc">Bu, yedeklenen her uygulamanın simgelerini saklamak için ayrı bir .icon dosyası kullanır. İşaretlenmezse, uygulama simgeleri .json dosyasında saklanır.</string>
+    <string name="tar_gz_integrity_title">tar.gz bütünlük kontrolü</string>
+    <string name="tar_gz_integrity_desc">tar.gz dosyası olarak depolanan her uygulamanın veri yedeklemesinin bütünlüğünü kontrol eder</string>
+    <string name="sms_verify_title">SMS doğrulaması</string>
+    <string name="sms_verify_desc">Yedekte depolanan SMS veritabanı dosyasının bütünlüğünü kontrol eder</string>
+    <string name="calls_verify_title">Arama kayıtlarını doğrulama</string>
+    <string name="calls_verify_desc">Yedekte depolanan arama kayıtları veritabanı dosyasının bütünlüğünü kontrol eder</string>
+    <string name="perform_system_check_title">Sistem kontrolü yap</string>
+    <string name="perform_system_check_desc">Bu, her yedeklemeden önce Su kabuğu üzerinden temel bir apk kopyası ve veri kopyası (bu uygulamanın kendisi) gerçekleştirecektir. Böylece diğer uygulamaların yedeklenmesinin başarılı olup olmadığını kontrol eder.</string>
+    <string name="separate_extras_title">Ayrı ekstralar yedeği</string>
+    <string name="force_separate_extras">Ayrı ekstraları zorla</string>
+    <string name="force_separate_extras_desc">Küçük yedeklemeler için bile ekstralar yedeklenir</string>
+    <string name="separate_extras_desc">Ekstraları (kişiler, sms vb.) bağımsız bir zip dosyası ve uygulamalar gibi ayrı zip dosyalarında saklar. Yalnızca 1\'den fazla parçası olan yedeklemeler için geçerlidir.</string>
+    <string name="delete_error_backup_title">Hatalı yedeklemeyi sil</string>
+    <string name="delete_error_backup_desc">Yedek zip dosyasını hatalarla bitirdiyse veya yedekleme sırasında bozulmuşsa siler.</string>
+    <string name="zip_verification_title">Zip bütünlüğü kontrolü</string>
+    <string name="zip_verification_desc">Yedek zip\'lerinin bozuk ve aygıtın esnek bellek kısıtlamaları içinde olup olmadığını kontrol eder.\nŞİDDETLE ÖNERİLİR</string>
+    <string name="advanced">Gelişmiş</string>
+    <string name="max_zip_size">Maksimum zip boyutu</string>
+    <string name="max_zip_size_desc">Bu, TWRP ile güvenle flashlanabilen bir yedek zip\'inin izin verilen maksimum boyutudur.
+        Bu, zip\'lerin aslında bu boyutta olacağı anlamına gelmez, ancak bu değer tüm yedeklemede oluşturulacak parça sayısını belirler. Tekdüzeliği korumak için zip\'ler bu boyuttan çok daha küçük olabilir.</string>
+    <string name="use_su_for_keyboard_title">Klavyeyi okumak için Su kabuğunu kullan</string>
+    <string name="use_su_for_keyboard_desc">Ekstra yedeklemelerinde etkin klavyeleri okumak için root kabuğu kullanılır</string>
+    <string name="ignore_cache_desc">Yedekleme sırasında uygulamaların önbellek dizinini yok sayar, böylece yedeklemeler çok küçük olur. Genellikle güvenli olmasına rağmen, uygulamanın bazı verilerini kaybedebilirsiniz.</string>
+    <string name="manual_cache">Migrate önbelleğinin yolunu belirt</string>
+    <string name="manual_system">Sistem dizininin yolunu belirt</string>
+    <string name="manual_buildprop">ROM build.prop yolunu belirt</string>
+    <string name="detect_while_flashing_hint">(Flashlanırken algılama)</string>
+
+    <string name="use_file_list_in_zip_verification">Zip doğrulamasında fileList.txt dosyasını kullan</string>
+    <string name="use_file_list_in_zip_verification_desc">Migrate, yedek zip\'inin içindeki \"fileList.txt\" dosyasında yedeklediği dosyaların listesini tutar. Bu seçenek zip doğrulama motorunun zip\'te bulunan dosyaları ve bu dosyadaki girişleri karşılaştırmasını sağlar.</string>
+
+    <!--app_search_layout.xml-->
+    <string name="showing_apps_from">Kategoriden uygulamaları gösterme:</string>
+    <string name="enter_app_name">Uygulama/paket adı</string>
+
+    <!--ProgressShowActivity.kt-->
+    <string name="force_stop">Durdurmaya zorla</string>
+    <string name="force_stop_alert_title">Uygulamayı durdurmaya zorlansın mı?</string>
+    <string name="force_stop_alert_desc">Durdurmaya zorlamak tüm uygulamayı sonlandırmaya çalışacaktır. Zaten bir kez İptal\'e bastıysanız, lütfen bir süre bekleyin.\n\nZorla durdurmada, yapılan yedek dosyalarını elle silmeniz gerekir.</string>
+    <string name="kill_app">Tamam, sonlandır!</string>
+    <string name="wait_to_cancel">Bekle…</string>
+    <string name="killing_programmatically">Programlı olarak sonlandırma</string>
+
+    <!--MainBackupEngine.kt-->
+    <string name="test_apk_not_found">Test apk bulunamadı veya doğru oluşturulmadı</string>
+    <string name="test_data_not_found">Test verileri (tar.gz) bulunamadı veya doğru oluşturulmadı</string>
+
+    <!--privacy_policy.xml-->
+    <string name="privacy_policy_header">Gizlilik politikası</string>
+    <string name="privacy_policy_desc">Bu, veri gizliliği ve Migrate ile ilgili resmi-gayri resmi bir tartışmadır.
+    Daha fazla özellik eklendiğinden bunlar gelecekteki güncellemelerde değiştirilebilir.</string>
+    <string name="google_firebase">Google Firebase</string>
+    <string name="google_firebase_desc">V3.0\'dan itibaren Migrate, çökme analizi için Firebase\'i kullanıyor. Hiçbir kişisel veri iletilmez. Migrate-NG yapılarının (XDA\'da mevcut) artık çökme analizleri yok.</string>
+    <string name="google_admob">Google Admob</string>
+    <string name="google_admob_desc">Migrate, Reklamları görüntülemek için Google\'ın Admob hizmetini kullanıyor. Bu değişmeden kalır.</string>
+    <string name="data_that_is_read">Migrate tarafından okunan veriler</string>
+    <string name="data_that_is_read_desc">Uygulama yedekleme için aşağıdaki veriler okunur:\n
+        1. Yüklü paketlerin listesi\n
+        2. Kaynak apk\'ların yolu\n
+        3. Veri dizininin yolu\n
+        4. Kullanılan izinler\n
+        5. Yükleyici uygulama paketi\n
+        Aşağıdakilere ROOT izni kullanılarak erişilir:\n
+        1. Uygulamaların apk\'ları (yalnızca depolanmış)\n
+        2. Uygulamaların özel verileri (sıkıştırılmış ve depolanmış)\n
+        Uygulamaların apk içeriği analiz edilmez. Uygulamaların özel verileri analiz edilmez.\n\n
+
+        Ekstra yedeklemeler için, yalnızca kullanıcıdan izin alındıktan sonra aşağıdakiler okunur:\n
+        1. Kişi verileri (vcf dosyası olarak saklanır)\n
+        2. SMS verileri (db dosyası olarak saklanır)\n
+        3. Arama kayıtları (db dosyası olarak saklanır)\n
+        4. Ekran DPI, varsayılan klavye, ADB durumu, Yazı tipi ölçeği\n
+        5. Wifi deposu yapılandırma dosyası (Android 8.0+)\n\n
+
+        Okunan tüm veriler cihazda yerel olarak saklanır
+    </string>
+    <string name="what_is_shared">Paylaşılan nedir</string>
+    <string name="what_is_shared_desc">
+        Bu bağlamda paylaşım, uygulama günlüklerinin gönüllü olarak bildirilmesi anlamına gelir.\n\n
+        Günlükleri paylaşırken, paylaşmayı kabul edersiniz (Telegram grubundaysa herkese açık olarak):\n\n
+        - Uygulamaların bazı dahili dosya yapısı. Bu (çoğu durumda) kişisel olarak tanımlanabilir hassas bilgiler içermez.\n
+        - Yedek adı.\n
+        - Yedek parça sayısı gibi bazı yedekleme ayrıntıları.\n
+        - Android sürümü gibi cihaz bilgileri.\n\n
+        Migrate, kullanıcıların gizliliğine büyük saygı gösterir. Kişilerin yedeklenmesi sırasında oluşturulan bu günlükler, sms ve arama kayıtları KAYDEDİLMEMEKTEDİR ve paylaşılamaz.
+        Kullanıcıların kişisel verilerini belirlemek veya yasadışı olarak kullanmak için kasıtlı bir girişimde bulunulmamıştır.\n\n
+        Her durumda, geliştiricinin veya uygulamanın kasıtsız gizlilik ihlallerinden sorumlu olmadığını kabul edersiniz.
+        Günlüklerinizin hassas bilgiler içerebileceğini düşünüyorsanız, lütfen bunları paylaşmayın.
+        Daha önce paylaşmış olmanız durumunda, lütfen en kısa zamanda silinmelerini isteyin.
+    </string>
+    <string name="what_is_intentional">\"Kasıtlı deneme yok\" nedir?</string>
+    <string name="what_is_intentional_desc">
+        Bir geliştirici olarak, kullanıcıların bu noktayı anlamasını istiyorum. Yine, bu yalnızca günlükleri paylaşmaya karar verirseniz geçerlidir.\n\n
+        Migrate, veri dosyalarını sıkıştırmak için linux \"tar\" yardımcı programını kullanır. Bu nedenle, tar işlediği dosya adlarını yazdırır ve bu da işlemde herhangi bir hata olup olmadığını belirlemeye yardımcı olur. Dosyaların içeriği yazdırılmaz.\n\n
+        Genellikle tar dosyalarının şifreli çıktısından kişisel olarak tanımlanabilir bilgileri tespit etmek mümkün değildir.
+        Ancak bazı nadir durumlarda, geliştiriciler uygun uygulamaları izlemeyebilir ve dosya adının kendisine bilgi koyabilir.
+        Örnek: Bir katılımcıyla sohbet tercihlerini, katılımcının telefon numarası olarak adlandırılmış bir dosya olarak saklayan bir sohbet uygulaması. Bu durumda, tar dosyanın adını yazdırarak telefon numarasını gösterecektir. Bu sadece bir örnek.\n\n
+        Migrate, yanlışlıkla herhangi bir bilgi sızdırmadıklarından korkan milyonlarca uygulamanın her biri için özel bir filtre koyma sorumluluğunu üstlenemez.\n\n
+        Yine bu ÇOK nadir bir durumdur ve genellikle her zaman fark edilmez. Bu, Migrate\'in önceki sürümlerinde oldu ve birkaç kullanıcıdan bunu herkesin bildiği yönünde bir öneri aldım.\n
+        Migrate\'i yaptığınız gibi kullanmaya devam edebilirsiniz.
+    </string>
+    <string name="avoid_unintentional_leak">Hala ikna olmadım.</string>
+    <string name="avoid_unintentional_leak_desc">
+        Daha önce de tartışıldığı gibi, yedeklemenizin gerçekten hassas veriler içerdiğini düşünüyorsanız, lütfen günlükleri paylaşmayın. Günlükleri gönüllü olarak paylaşmazsanız hiçbir şey cihazınızdan ayrılmaz.
+        <b>Ancak, günlükler olmadan her türlü destek sağlamanın neredeyse imkansız hale geldiğini de unutmayın.\n\n</b>
+        Alternatif olarak, \"İlerleme günlüğü\"nü paylaşmamayı seçebilirsiniz. \"Hata günlüğü\" ve diğer seçenekler genellikle en önemlisidir.
+    </string>
+    <string name="privacy_policy_footer">Bu kadar. Uygulamayı kullanmanın keyfini çıkarın. Telegram\'dan benimle iletişime geçmekten çekinmeyin.\n- SayantanRC</string>
+
+    <!--contributors.xml-->
+    <string name="contr_3.0">
+        <b>Patrick Perfectly III mtl</b>: Günlük sağlama, kapsamlı sorun giderme kılavuzları yazma… Temel olarak uygulamayı şimdiye kadar canlı tutma.\n
+        <b>Isaac Baihua</b>: Yalnızca ekstralar seçilirse zipin yapılamadığı bir durumu algılama.\n
+        <b>@anoop142 (Anoop)</b>: Uygulamanın ilk SAR değiştirilmiş sürümünü yaptı. Bu v3.0\'da çok yardımcı oldu\n
+        <b>@cruzer_blaze (Gokul)</b>: Komut dosyalarında yardımcı oldu\n
+        <b>@indianets (Vijay)</b>: Bölünmüş apk\'ları verimli bir şekilde geri yüklemek için komut dosyası yaptı\n
+        <b>BillGoss(XDA)</b>: Recovery\'de herhangi bir awk yoksa, bu nedenle busybox awk kullanma.\n
+        <b>AndDiSa(XDA)</b>: Yeni satır sonu doğrulamasını düzeltme.\n\n
+    Açıkçası bu uygulamayı kullanan ve uygulamayı daha iyi hale getirmeye yardımcı olan binlerce kullanıcının hepsine çok teşekkür ediyorum. Benim için çok şey ifade ediyorsunuz. Teşekkürler.
+    </string>
+    <string name="prev_contri">Önceki katkıda bulunanlar</string>
+    <string name="thanks_to_stericson">Busybox yapılarını serbestçe kullanmama izin verdiği için Stephen\'a (stericdroid) çok teşekkürler</string>
+    <string name="thanks_to_magisk">Topjohnwu\'nun Magisk\'i olmadan, bu uygulama mümkün olmazdı. Magisk yükleyici komut dosyalarından çok şey öğrendim.</string>
+    <string name="thanks_1">Xiaomi Mi için yorulmadan yardım A1:\n@ishubhamsingh\n@su_bin</string>
+    <string name="thanks_2">Büyük böcek avcıları:\n
+        Sınıf arkadaşım <b>Shivam</b> uygulamayı benden daha fazla test etti!\n
+        @akshayrohida\n
+        @raj3303\n
+        \n
+        XDA üyesi <b>djseltus</b>, yeni bir güncelleme ikiliğine işaret ettiği için\n
+        <b>Vinyas N S</b>, \"android.os.TransactionTooLargeException\" sorunu için\n
+        <b>C Tab</b>, yardımcı uygulamayla ilgili bir sorun bulmaya yardımcı oldu\n
+        XDA üyesi <b>SevenSlevin</b> updater_script sorununu tespit ettiği için\n
+        XDA üyesi <b>kdrag0n</b> bazı yararlı öneriler için\n
+    </string>
+    <string name="thanks_3">Uygulama, aşağıdaki test kullanıcıları olmadan mümkün olmazdı:\n\n
+        @TusharG03\n
+        @arghyac35\n
+        @pavanjadhaw\n
+        @Johnkator\n
+        @samirkushwaha\n
+        Pranay\n
+        @Sachith_Hedge\n
+        @Akianonymus\n
+        @SubhrajyotiSen\n
+        @rm_rfasterisk\n
+        @facumo\n
+    </string>
+
+    <!--ZipItemAdapter.java-->
+    <string name="empty">Boş</string>
+
+    <string name="file_list_not_in_zip_batch">Zip Toplu İşlemi dosya listesi yok</string>
+    <string name="zip_batch_null_updater">Güncelleyici komut dosyasından önce Zip Toplu İşlemi boş</string>
+    <string name="zip_batch_null_zipping_engine">Zip Toplu işlemi, sıkıştırmaya başlamadan önce boş</string>
+    <string name="zip_batch_null_zip_verification">Zip Toplu İşlemi, zip doğrulamasından önce boş</string>
+    <string name="improper_result_received">Yanlış sonuç alındı.</string>
+
+</resources>
