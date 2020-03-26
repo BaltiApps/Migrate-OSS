@@ -143,6 +143,7 @@
     </string>
     <string name="version_3.0.1">Version 3.0.1</string>
     <string name="version_3.0.1_content">
+        \u2022 Probable fix to freezing in app size calculation\n
         \u2022 Add turkish translation (@Trexfat)\n
         \u2022 Add russian translation (@vladrevers)\n
         \u2022 Add indonesian translation (@rzlamrr)\n
