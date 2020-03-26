@@ -827,7 +827,8 @@
         <b>@cruzer_blaze (Gokul)</b>: Helped in scripts\n
         <b>@indianets (Vijay)</b>: Made the script to restore split apks efficiently\n
         <b>BillGoss(XDA)</b>: If no awk present in recovery, hence use busybox awk.\n
-        <b>AndDiSa(XDA)</b>: Fix no-newline correction.\n\n
+        <b>AndDiSa(XDA)</b>: Fix no-newline correction.\n
+        <b>ANKIT</b>: Helped fix hanging of app in size calculation\n\n
     Obviously I adequately thank all the thousands of users who use this app and help to make the app better. You mean a lot to me.\n
     Also a huge thank you to translators of the app. Thanks.
     </string>
