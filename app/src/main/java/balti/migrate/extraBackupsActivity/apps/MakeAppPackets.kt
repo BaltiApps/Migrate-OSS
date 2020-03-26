@@ -371,7 +371,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             if ((it.dataSize + it.systemSize) > (MAX_WORKING_SIZE - RESERVED_SPACE)) bigAppsNameConcat.append("${it.appName}\n")
         }
         if (bigAppsNameConcat.toString().trim() != ""){
-            return arrayOf(false, vOp.getStringFromRes(R.string.cannot_split), bigAppsNameConcat)
+            return arrayOf(false, vOp.getStringFromRes(R.string.cannot_split), bigAppsNameConcat.toString())
         }
 
         try {
@@ -439,8 +439,8 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 if (!(result[0] as Boolean)) {
 
                     val errorDialog = AlertDialog.Builder(context)
-                            .setTitle(result[1] as String)
-                            .setMessage(result[2] as String)
+                            .setTitle(result[1].toString())
+                            .setMessage(result[2].toString())
                             .setPositiveButton(R.string.close, null)
                             .create()
 
