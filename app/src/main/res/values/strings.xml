@@ -144,6 +144,9 @@
     <string name="version_3.0.1">Version 3.0.1</string>
     <string name="version_3.0.1_content">
         \u2022 Add turkish translation (@Trexfat)\n
+        \u2022 Add russian translation (@vladrevers)\n
+        \u2022 Add indonesian translation (@rzlamrr)\n
+        \u2022 Add Simplified Chinese translation (@atfmxyl,@dwughjsd)\n
     </string>
 
     <!--activity_main.xml-->
@@ -188,7 +191,7 @@
 
     <!--in_app_restore-->
     <string name="in_app_restore">In app restore</string>
-    
+
     <!--zip_picker.xml-->
     <string name="select_storage">Select storage</string>
     <string name="expected_zip_location">Backup zip should be under Migrate directory</string>
@@ -406,7 +409,7 @@
     <string name="bootloop_warning">Bootloop warning!</string>
     <string name="bootloop_warning_desc">Backing up and restoring system apps may result in a bootloop. Please proceed with caution.</string>
 
-    
+
     <!--BackupService.java-->
     <string name="error_loading_engine">Error loading engine</string>
 
@@ -470,7 +473,7 @@
 
     <!--VerificationEngine.kt-->
     <string name="defect_no">Defect number:</string>
-    
+
     <!--keyboard_selector.xml-->
     <string name="select_default_keyboard_from_enabled">Select default keyboard from enabled keyboards</string>
     <string name="present_in_backup">Present in backup</string>
@@ -501,22 +504,22 @@
     <!--backup_progress_layout.xml-->
     <string name="report">Report</string>
     <string name="minimizing_may_decrease_speed">Minimizing this screen may decrease backup speed!</string>
-    
+
     <!--initial_guide.xml-->
     <string name="skip">Skip</string>
     <string name="accept">Accept</string>
-    
+
     <!--initial_guide_0.xml-->
     <string name="greet1">Welcome to migrate!</string>
     <string name="body_0_0">Migrate is a vital tool to jump between various custom ROMs with ease.\n\nIt helps you to transfer your apps, data, contacts, sms and much more.</string>
     <string name="body_0_1">Press Next for a short tour.</string>
-    
+
     <!--initial_guide_1.xml-->
     <string name="greet2">Backup everything!</string>
     <string name="body_1_0">Backup all applications</string>
     <string name="body_1_1">Apps\nApp data\nApp permissions</string>
     <string name="body_1_2">Other extras</string>
-    
+
     <!--initial_guide_2.xml-->
     <string name="greet3">Flash with the ROM!</string>
     <string name="body_2_0">Migrate backup packages are TWRP flashable zip files.\n\nA helper app takes over the app restoration process once you boot up your new ROM.</string>
@@ -610,7 +613,7 @@
     <string name="contact">Contact via Telegram</string>
     <string name="contact_over_telegram">Telegram group</string>
     <string name="older_builds">Older builds on AFH</string>
-    
+
     <!--help_page.xml-->
     <string name="q1">What is the Perm label in app backup?</string>
     <string name="a1"><i>Perm</i> means permissions of an app. Migrate can backup the granular permissions granted to an app for Android Marshmallow (6.0) and above.\n
@@ -810,7 +813,10 @@
     </string>
     <string name="translators">Translators</string>
     <string name="translators_list">
-        <b>@Trexfat</b>: Turkish
+        <b>@Fatih Fırıncı(@Trexfat)</b>: Turkish\n
+        <b>@rzlamrr</b>: Indonesia\n
+        <b>@vladrevers</b>: Russian\n
+        <b>@atfmxyl,@dwughjsd</b>: Simplified Chinese
     </string>
 
     <!--contributors.xml-->

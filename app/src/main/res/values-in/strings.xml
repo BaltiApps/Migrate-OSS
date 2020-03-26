@@ -1,0 +1,867 @@
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation,ExtraTranslation">
+
+    <string name="app_name">Migrate</string>
+    <string name="gpe_label"></string>
+    <string name="current_version_name">3.0.1</string>
+    <string name="current_version_codename">Mercury</string>
+    <string name="release_state">rilis</string>
+    <string name="last_tested_label">Terakhir dites di: Android 10</string>
+
+    <!--about_app.xml-->
+    <string name="made_with_android_studio">Dibuat dengan Android Studio</string>
+    <string name="codename">Nama kode:</string>
+    <string name="version">Versi:</string>
+    <string name="release_state_label">Status rilis:</string>
+
+    <!--changelog-->
+    <string name="version_1.0" >Versi 1.0(beta)</string>
+    <string name="version_1.0_content">\u2022 Rilis perdana</string>
+    <string name="version_1.0.1">Versi 1.0.1(beta)</string>
+    <string name="version_1.0.1_content">\u2022 Memperbaiki tombol SKIP intro aplikasi</string>
+    <string name="version_1.0.2">Versi 1.0.2(beta)</string>
+    <string name="version_1.0.2_content">\u2022 Menambahkan lebih banyak nama dalam daftar terima kasih</string>
+    <string name="version_1.0.3">Versi 1.0.3(beta)</string>
+    <string name="version_1.0.3_content">
+        \u2022 Memperbaiki pembagian log\n
+        \u2022 Juga bagikan file skrip dalam log\n
+        \u2022 Daftarhitam sistem Android dari daftar cadangan (mencegah kesalahan soket tar)
+    </string>
+    <string name="version_1.0.4">Versi 1.0.4(beta)</string>
+    <string name="version_1.0.4_content">
+        \u2022 Perbaikan log\n
+        \u2022 Abaikan peringatan soket tar\n
+        \u2022 Updater-binary seharusnya mencegah masalah TWRP error 3\n
+        \u2022 Harusnya memperbaiki masalah null String saat membaca data cadangan
+    </string>
+    <string name="version_1.0.5">Versi 1.0.5(beta)</string>
+    <string name="version_1.0.5_content">
+        \u2022 Memperbaiki kemungkinan untuk \"android.os.TransactionTooLargeException\"\n
+        \u2022 Perlindungan aplikasi yang lebih baik untuk mencegah kegagalan zip\n
+        \u2022 Versi aplikasi sekarang ditulis dalam log\n
+        \u2022 Aplikasi sekarang menargetkan Oreo alih-alih Pie untuk menghindari beberapa gangguan\n
+        \u2022 Perbaikan masalah tak terduga \'(\' pada proses pemulihan
+    </string>
+    <string name="version_1.1">Versi 1.1(beta)</string>
+    <string name="version_1.1_content">
+        \u2022 [Baru] Verifikasi cadangan sebelum zip\n
+        \u2022 Refactoring kode utama dan perubahan\n
+        \u2022 Tombol BATAL sekarang mengakhiri proses pencadangan\n
+        \u2022 Perbaikan pada \"set_progress()\" di TWRP\n
+        \u2022 Memperbaiki kemungkinan \"Gagal mengubah lokasi untuk db\"\n
+        \u2022 Kemungkinan perbaikan ke skrip updater yang hilang\n
+        \u2022 Memperbaiki kemungkinan untuk beberapa isu \"Operasi tidak diizinkan\"\n
+        \u2022 Hapus karakter ilegal dari nama cadangan\n
+        \u2022 Opsi \"Bagikan skrip\" sekarang seharusnya berfungsi dengan baik.
+    </string>
+    <string name="version_1.1.1">Versi 1.1.1(beta)</string>
+    <string name="version_1.1.1_content">
+        v1.1\n\n
+        \u2022 [Baru] Verifikasi cadangan sebelum zip\n
+        \u2022 Refactoring kode utama dan perubahan\n
+        \u2022 Tombol BATAL sekarang mengakhiri proses pencadangan\n
+        \u2022 Perbaikan pada \"set_progress()\" di TWRP\n
+        \u2022 Memperbaiki kemungkinan untuk \"Gagal mengubah lokasi untuk db\"\n
+        \u2022 Kemungkinan perbaikan ke skrip updater yang hilang\n
+        \u2022 Memperbaiki kemungkinan untuk beberapa isu \"Operasi tidak diizinkan\"\n
+        \u2022 Hapus karakter ilegal dari nama cadangan\n
+        \u2022 Opsi \"Bagikan skrip\" sekarang seharusnya berfungsi dengan baik.\n\n
+    v1.1.1\n\n
+    \u2022 Memperbaiki masalah no-closing-quote di helper
+    </string>
+    <string name="version_1.1.1_only_content">
+    \u2022 Memperbaiki masalah no-closing-quote di helper
+    </string>
+    <string name="version_1.2">Versi 1.2(beta)</string>
+    <string name="version_1.2_content">
+    \u2022 Menghindari "dumpsys" saat mencadangkan izin aplikasi\n
+    \u2022 Sekarang data aplikasi di tar.gz dibuka di /data/data\n
+        (perbaikan untuk masalah Operasi tidak diizinkan di Google Pixel)
+    </string>
+    <string name="version_2.0">Versi 2.0(christmas_beta)</string>
+    <string name="version_2.0_content">
+        Merry Christmas and Selamat Tahun Baru!!\n\n
+    \u2022 Berapa perubahan.\n
+    \u2022 Dukungan eksperimental kartu SD (dengan modul Magisk)\n
+    \u2022 Dukugan untuk aplikasi split\n
+    \u2022 Aplikasi sekarang dibongkar di /data/local/tmp/migrate_cache\n
+    \u2022 Metode alternatif baru untuk menghitung ukuran aplikasi.\n
+        (perbaikan kemungkinan pembekuan dalam menghitung ukuran aplikasi)\n
+    \u2022 Sekarang setiap paket zip Migrate memiliki binary busybox sebagai cadangan\n
+    \u2022 Migrate helper mendapat opsi baru, Nonaktifkan Sementara.\n
+    \u2022 Migrate helper mendapat opsi baru, Batalkan.\n
+    </string>
+    <string name="version_2.0.1">Versi 2.0.1(christmas_beta)</string>
+    <string name="version_2.0.1_content">
+    \u2022 Memperbaiki kemungkinan kerusakan pada Migrasi helper.\n
+    </string>
+    <string name="version_2.1">Versi 2.1</string>
+    <string name="version_2.1_content">
+    \u2022 Kesalahan kecil sekarang ditekan, tetapi dicatat dalam log.\n
+    \u2022 Perbaiki bentuk retensi ikon cadangan sebelumnya.\n
+    \u2022 Perbaiki tampilan durasi cadangan yang salah.\n
+    \u2022 Memperbaiki bug dalam mekanisme koreksi kesalahan.\n
+    \u2022 Perbaikan kemungkinan untuk beberapa aplikasi yang tidak didukung.\n
+    \u2022 Perbaiki untuk error 6 di TWRP untuk beberapa lokal.\n
+    \u2022 Memperbaiki perhitungan ruang /data yang salah dalam TWRP.\n
+    \u2022 Migrate helper tidak lagi mencopot pemasangan aplikasi sebelum menginstal.\n
+    \u2022 Menambahkan tautan grup Telegram!\n
+    </string>
+    <string name="version_3.0">Versi 3.0</string>
+    <string name="version_3.0_content">
+        Dari 2.1 ke 3.0\n\n
+        \u2022 Aplikasi ditulis ulang di Kotlin\n
+        \u2022 Banyak preferensi baru telah ditambahkan.\n
+        \u2022 Aplikasi Helper sekarang tersedia di Google Play.\n
+        \u2022 Banyak perbaikan dalam TWRP. Dukungan untuk SAR dan Android 10.\n
+        \u2022 Tambahan Opsi untuk cadangan penginstal aplikasi, ukuran font, status adb\n
+        \u2022 Tetapkan ukuran zip maksimal di preferensi.\n
+        \u2022 Verifikasi zip setelah cadangan selesai.\n
+        \u2022 Banyak lagi perubahan dan peningkatan…\n\n
+        Dari 3.0 alpha ke 3.0 riis\n\n
+        \u2022 Cadangan Wifi dinonaktifkan hingga stabil.\n
+    </string>
+	<string name="version_3.0.1">Versi 3.0.1</string>
+    <string name="version_3.0.1_content">
+        \u2022 Ditambahkan bahasa turki (@Trexfat)\n
+        \u2022 Ditambahkan bahasa russia (@vladrevers)\n
+        \u2022 Ditambahkan bahasa indonesia (@rzlamrr)\n
+        \u2022 Ditambahkan bahasa Cina(Simplified) (@atfmxyl,@dwughjsd)\n
+    </string>
+
+    <!--activity_main.xml-->
+    <string name="backupButton">Cadangkan</string>
+    <string name="restoreTwrp">Pulihkan di TWRP</string>
+    <string name="restoreApp">Pemulihan In app</string>
+    <string name="internal_storage">Penyimpanan Internal</string>
+    <string name="learn_about_sd_card_support">Pelajari tentang dukungan kartu SD</string>
+
+    <!--backup_layout.xml-->
+    <string name="select_apps">Pilih aplikasi</string>
+    <string name="backupLabel">Cadangkan</string>
+    <string name="fullBackupLabel">Full_backup</string>
+    <string name="permission"></string>
+    <string name="data">Data</string>
+    <string name="app">App</string>
+    <string-array name="appTypeList">
+        <item>App pengguna</item>
+        <item>Sistem (tidak diperbarui)</item>
+        <item>Sistem (diperbarui)</item>
+        <item>Semua sistem</item>
+        <item>Pengguna + Sistem (diperbarui)</item>
+        <item>Semua</item>
+    </string-array>
+    <string name="next">Lanjut</string>
+    <string name="no_apps">Tidak ada aplikasi yang tersedia\ndi kategori ini!</string>
+
+    <!--ask_for_backup_name.xml-->
+    <string name="enter_backup_name">Masukkan nama cadangan</string>
+    <string name="sd_card">Kartu SD</string>
+    <string name="advanced_options">Opsi lanjutan</string>
+    <string name="ignore_cache">Abaikan cache aplikasi</string>
+
+    <!--learn_about_sd_card.xml-->
+    <string name="p1">1. Dukungan kartu SD bersifat eksperimental, dan memerlukan modul magisk.</string>
+    <string name="p2">2. Implementasi saat ini membutuhkan ROM dengan dukungan FUSE, yang telah digantikan oleh SDCARDFS di versi android terbaru. FUSE masih ada untuk dukungan legacy di beberapa ROM.</string>
+    <string name="p3">3. Karena alasan di atas, opsi kartu SD bisa atau tidak berfungsi tergantung pada perangkat, versi ROM dan Android.</string>
+    <string name="p4">4. Jika implementasi saat ini tidak berhasil untuk Anda, harap tunggu hingga pengembang modul menulis ulang modul baru atau saya menemukan alternatif lain. Terima kasih atas kesabaran Anda.</string>
+    <string name="p5">Untuk mencoba mendapatkan dukungan kartu SD, unduh dan instal modul magisk \ "ExSDCard Access Enabler \" dan reboot\n
+    Modul ini dibuat oleh pengembang Romain.
+    </string>
+
+    <!--in_app_restore-->
+    <string name="in_app_restore">Pemulihan In App</string>
+    
+    <!--zip_picker.xml-->
+    <string name="select_storage">Pilih Penyimpanan</string>
+    <string name="expected_zip_location">Zip cadangan seharusnya berada di direktori Migrate</string>
+    <string name="zip_picker">Pilih ZIP</string>
+    <string name="up_one_dir">Tingkat atas</string>
+
+    <!--extra_backups-->
+    <string name="extras">Extra</string>
+    <string name="contacts_label">Kontak</string>
+    <string name="sms_label">Pesan SMS</string>
+    <string name="call_log_label">Log panggilan</string>
+    <string name="keyboard_label">Keyboard default</string>
+    <string name="dpi_label">DPI Layar</string>
+    <string name="adb_label">Status ADB</string>
+    <string name="no_default_adb_scale">Sistem tidak memiliki nilai koneksi ADB standar. Dalam kebanyakan kasus, ini berarti ditetapkan 0 (ADB dinonaktifkan)
+    Apakah Anda ingin mencadangkan nilai ini sebagai 0?</string>
+    <string name="installer_label">Penginstall App</string>
+    <string name="wifi_label">File kata sandi wifi</string>
+    <string name="fontScale_label">Ukuran font</string>
+    <string name="no_default_font_scale">Sistem tidak memiliki ukuran font default. Umumnya, ini berarti ditetapkan 1.0
+    Apakah Anda ingin mencadangkan nilai ini sebagai 1.0?</string>
+    <string name="yes_recommended">Ya (Disarankan)</string>
+    <string name="only_for_android_8">Hanya untuk Android Oreo ke atas (8.0+)</string>
+    <string name="filtering_duplicates">Filter\nduplikat</string>
+    <string name="reading_sms">Membaca sms</string>
+    <string name="reading_calls">Membaca panggilan</string>
+    <string name="reading">Sedang membaca</string>
+    <string name="reading_error">Gagal membaca</string>
+    <string name="no_app_selected">Tidak ada aplikasi yang dipilih!</string>
+    <string name="filtering_apps">Menyaring aplikasi</string>
+    <string name="tap_to_see_values">Klik untuk melihat nilai</string>
+    <string name="adb_enabled">ADB debugging diaktifkan</string>
+    <string name="adb_disabled">ADB debugging dinonaktifkan</string>
+    <string name="adb_unknown">Status ADB tidak diketahui! Tidak akan dicadangkan</string>
+    <string name="weird_font_scale">Weird ukuran font. Tidak akan dicadangkan</string>
+    <string name="empty_call_logs">Log panggian tidak ditemukan. Tidak akan dicadangkan</string>
+    <string name="empty_sms">Pesan SMS tidak ditemukan. Tidak akan dicadangkan</string>
+    <string name="empty_contacts">Kontak tidak ditemukan. Tidak akan dicadangkan</string>
+
+    <!--ExtraBackups.java-->
+    <string name="not_recommended">Tidak disarankan!</string>
+    <string name="contacts_not_recommended">Cadangan dan pemulihan Kontak tidak disarankan <b>jika anda berniat login dengan Google</b> di ROM barumu. Memulihkan kontak akan menduplikat beberapa kontak.</string>
+    <string name="dont_backup">Jangan cadangkan</string>
+    <string name="backup_contacts_anyway">Cadangkan kontak</string>
+    <string name="estimated_files_size">Ukuran cadangan yang diperkirakan:</string>
+    <string name="estimated_app_size">Ukuran aplikasi yang dicadangkan:</string>
+    <string name="current_app">Aplikasi:</string>
+    <string name="available_space">Ruang yang tersedia:</string>
+    <string name="calculated_total">Total perhitungan:</string>
+    <string name="last_app">Aplikasi terakhir:</string>
+    <string name="insufficient_storage">Penyimpanan tidak cukup!</string>
+    <string name="long_press_to_force_stop">Tekan dan tahan untuk batalkan paksa tutup aplikasi.</string>
+    <string name="required_storage">Penyimpanan yang dibutuhkan Migrate:</string>
+    <string name="will_be_compressed">Kami membutuhkan ukuran yang diperkirakan untuk menyalin berkas aplikasi. Paket asli akan butuh lebih sedikit ruang dari pada yang diperkirakan karena pengompresan.</string>
+    <string name="contacts_access_needed">Butuh pembacaan kontak untuk mencadangkan kontak</string>
+    <string name="sms_access_needed">Butuh pembacaan SMS untuk mencadangkan pesan SMS</string>
+    <string name="calls_access_needed">Butuh pembacaan panggilan untuk mencadangkan log panggilan</string>
+    <string name="error_reading_contacts">Gagal membaca kontak</string>
+    <string name="error_reading_sms">Gagal membaca SMS</string>
+    <string name="error_reading_calls">Gagal membaca panggilan</string>
+    <string name="calculating_size">Menghitung ukuran</string>
+    <string name="calculating_size_reflection">Menghitung ukuran [refleksi]</string>
+    <string name="total_size_ok">Ukuran total OK!</string>
+    <string name="total_size">Ukuran total:</string>
+    <string name="error_reading_backup_data">Gagal membaca data cadangan</string>
+    <string name="error_calculating_size">Gagal memperhitungkan ukuran</string>
+    <string name="could_not_create_destination">Tidak bisa membuat folder cadangan.</string>
+    <string name="make_sure_destination_exists">Pastikan berkas yang dituju di Mount dan bisa ditulis.</string>
+    <string name="error_detecting_memory">Gagal mendeteksi perangkat</string>
+    <string name="error_checking_destination">Gagal memeriksa folder yang dituju</string>
+    <string name="cannot_split">Tidak bisa mencadangkan karena aplikasi terlalu besar!</string>
+    <string name="part">Bagian</string>
+    <string name="parts">Bagian</string>
+    <string name="of">dari</string>
+    <string name="allowed">yang diizinkan</string>
+    <string name="error_reading_dpi">Gagal membaca DPI</string>
+    <string name="error_reading_adb">Gagal membaca ADB</string>
+    <string name="error_reading_wifi">Gagal membaca kata sandi wifi</string>
+    <string name="error_reading_fontScale">Gagal membaca ukuran font</string>
+    <string name="stock_android_title">Ditargetkan untuk ROM berbasis Stok Android!</string>
+    <string name="stock_android_desc">
+        - Bisa gagal di Samsung (TouchWiz/One UI), Huawei (EMUI), Xiaomi (MIUI) dll.\n
+        - Jika kamu tidak yakin ROM berbasis Stok Android atau tidak, lebih baik jangan dicentang.\n
+        - Contoh (dimana opsi ini akan berfungsi): <b>Lineage OS, AEX, PEX, Carbon, RR dll</b>
+    </string>
+    <string name="go_ahead">Lanjutkan</string>
+    <string name="error_reading_keyboard_list">Gagal membaca daftar keyboard</string>
+    <string name="no_keyboard_enabled">Tidak ada keyboard yang diaktifkan!</string>
+    <string name="no_keyboard_enabled_desc">Silakan ke\n
+        Pengaturan -> Sistem -> Bahasa &amp; masukan -> Keyboard virtual -> Atur keyboard\n
+        untuk mengatifkan keyboard
+    </string>
+    <string name="selected_keyboard_not_present_in_backup">tidak ada di cadangan</string>
+    <string name="selected_keyboard_not_present_in_backup_desc">Daftar aplikasi cadangan tidak memiliki keyboard yang dipilih. Silakan kembali ke \ "Pilih app \" dan pilih aplikasi keyboard.</string>
+    <string name="extra_backups_help">
+        <b>Kontak</b> : Cadangkan kontak sebagai vcf\n
+        <b>Pesan SMS</b> : Cadangkan pesan SMS\n
+        <b>Log panggian</b> : Cadangkan log panggilan. Tidak termasuk favorit\n
+        <b>DPI Layar</b> : Cadangkan kepadatan layar saat ini\n
+        <b>Keyboard default</b> : Cadangkan keyboard default. Perlu dipilih manual\n
+        <b>Penginstall app</b> : Sistem memperlakukan aplikasi yang dipulihkan diinstal dari Play Store atau F-droid.\n
+        <b>Status ADB</b> : Cadangkan status ADB{USB debugging)\n
+        <b>Ukuran font</b> : Ukuran font dicadangkan\n
+        \n
+        Setelah mencentang kotak centang pada item, klik pada item untuk opsi lebih lanjut.
+    </string>
+    <string name="change_size_calculation_method">Anda dapat mencoba masuk ke layar utama aplikasi -> \"Preferensi\" -> Hapus centang \"Gunakan metode baru untuk menghitung ukuran \"</string>
+    <string name="no_sd_card_detected">Tidak ada kartu SD yang terdeteksi (atau tidak dipasang sebagai R/W).</string>
+    <string name="no_sd_card_detected_exp">Pastikan Anda telah memasang kartu SD eksternal (jika didukung oleh perangkat Anda)\n
+    Dan pastikan modul \"ExSDCard Access Enabler\" terinstall di Magisk.\n\n
+    [modul dibuat oleh pengembang Romain.]
+    </string>
+    <string name="please_select_sd_card">Silakan pilih kartu SD</string>
+    <string name="sd_card_not_rw">Kartu SD mungkin tidak di mount R/W</string>
+    <string name="sd_card_not_rw_exp">Kartu SD eksternal ,mungkin tidak bisa diakses. Pastikan modul \"ExSDCard Access Enabler\" terinstall di Magisk.\n\n
+    [modul dibuat oleh pengembang Romain.]
+    </string>
+    <string name="no_busybox_binary">\"busybox\" tidak tersedia!</string>
+    <string name="re_calculating_size">Menghitung kembali ukuran menggunakan metode terminal</string>
+    <string name="error_occurred">Terjadi kesalahan!!</string>
+    <string name="wait_while_reading_data">Data sedang dibaca</string>
+    <string name="wait_while_reading_data_desc">Harap tunggu hingga data benar-benar dibaca. Coba lagi nanti.</string>
+
+    <!--extra_item_selector.xml-->
+    <string name="sms_selector_label">Pilih SMS</string>
+    <string name="contacts_selector_label">Pilih kontak</string>
+    <string name="calls_selector_label">Pilih panggilan</string>
+    <string name="installer_selector_label">Pilih penginstall</string>
+    <string name="set_installer_for_all">Pilih penginstal yang akan ditetapkan untuk semua aplikasi yang dipilih</string>
+    <string name="no_contacts">Tidak ada kontak!</string>
+    <string name="no_sms">Tidak ada sms!</string>
+    <string name="no_calls">Tidak ada log panggian!</string>
+    <string name="fdroid_extension">Untuk menetapkan F-Droid sebagai penginstal, Anda harus menginstal ekstensi F-Droid.</string>
+
+    <!--progress_layout-->
+    <string name="loading">Memuat…</string>
+    <string name="cancelling">Membatalkan…</string>
+    <string name="start_backup">Mulai pencadangan</string>
+
+    <!--BackupProgressLayout.java-->
+    <string name="split_desc_1">Karena ukuran cadangan yang sangat besar, cadangan Anda sedang dibagi</string>
+    <string name="split_desc_2">Di TWRP, silakan instal semua zip untuk pemulihan penuh.</string>
+
+    <!--BackupEngine.java-->
+    <string name="close">Tutup</string>
+    <string name="backingUp">Mencadangkan aplikasi</string>
+    <string name="noErrors">Selesai! Tidak ada kesalahan.</string>
+    <string name="zipping_all_files">Membuat berkas Zip</string>
+    <string name="making_file_list">Membuat fileList</string>
+    <string name="verifying_zip">Memverifikasi zip</string>
+    <string name="listing_zip_file">Mendaftarkan file zip</string>
+    <string name="compared_zip_contents">Konten zip yang dibandingkan</string>
+    <string name="compared_fileList_contents">Konten daftar file yang dibandingkan</string>
+    <string name="zip_size_too_big">Ukuran zip lebih besar dari ukuran maksimum yang diizinkan. Silakan buka Preferensi -> Ukuran Maksimal zip</string>
+    <string name="storing_wifi_data">Menyimpan data wifi</string>
+    <string name="testing_system">Pengujian sistem</string>
+    <string name="writing_settings">Menulis pengaturan</string>
+    <string name="making_package_flash_ready">Menyiapkan paket flash</string>
+    <string name="making_updater_script">Membuat updater-script</string>
+    <string name="backing_app_permissions">Mencadangkan izin aplikasi</string>
+    <string name="verifying_backups">Memverifikasi cadangan</string>
+    <string name="verifying_tar">Memverifikasi_tar</string>
+    <string name="correcting_errors">Memperbaiki kesalahan</string>
+    <string name="backing_contacts">Mencadangkan kontak</string>
+    <string name="backing_sms">Mencadangkan sms</string>
+    <string name="backing_calls">Mencadangkan panggilan</string>
+    <string name="verifying_calls">Memverifikasi panggilan</string>
+    <string name="verifying_sms">Memverifikasi sms</string>
+    <string name="call_logs_incomplete">Log panggilan tidak lengkap</string>
+    <string name="sms_records_incomplete">Catatan Sms tidak lengkap</string>
+    <string name="backing_dpi">Mencadangkan DPI</string>
+    <string name="backing_keyboard">Mencadangkan keyboard</string>
+    <string name="errorMakingScripts">Kesalahan membuat skrip</string>
+    <string name="backupCancelled">Pencadangan dibatalkan</string>
+    <string name="errorStartingBackup">Kesalahan saat memulai pencadangan (padaPerintahMulai).</string>
+    <string name="deletingFiles">Menghapus file</string>
+    <string name="backupFinishedWithErrors">Pencadangan selesai dengan kesalahan!</string>
+    <string name="backupFinishedWithWarnings">Pencadangan selesai dengan peringatan!</string>
+    <string name="backupPartHadErrors">Bagian cadangan memiliki kesalahan.</string>
+    <string name="incompleteZip">Tidak semua file dapat digabungkan.</string>
+    <string name="no_keyboard_data">Tidak ada data keyboard</string>
+
+    <string name="failed_to_make_batches">Gagal membuat batch</string>
+    <string name="backup_error_system_check_failed">Pencadangan dibatalkan karena pemeriksaan sistem gagal.</string>
+    <string name="backup_error_updater_script">Pencadangan gagal pada updater script.</string>
+    <string name="backup_error_at_app_verification">Pencadangan gagal di verifikasi aplikasi.</string>
+    <string name="errors_in_batch">Kesalahan ditemukan dalam batch</string>
+    <string name="zip_size">Ukuran zip</string>
+
+    <!--BackupActivity.java-->
+    <string name="setBackupName">Tetapkan nama cadangan</string>
+    <string name="overwrite">Timpa?</string>
+    <string name="overwriteMessage">Cadangan dengan nama yang sama sudah ada. Apakah Anda ingin menimpanya?</string>
+    <string name="yes">Ya</string>
+    <string name="rename">Tidak, ganti nama</string>
+    <string name="backupNameCannotBeEmpty">Nama cadangan tidak boleh kosong</string>
+    <string name="backup_activity_help_0">
+        <b>App</b> : Cadangkan apk\n
+        <b>Data</b> : Cadangkan semua data pribadi\n
+        <b>Izin</b> : Cadangkan semua izin terperinci\n
+        \n<i>Berikut ini adalah contoh izin dari aplikasi Foto Google</i>\n
+    </string>
+    <string name="backup_activity_help_1">
+        \n
+        Sebelumnya, memilih <b>Data</b> aplikasi berarti Anda harus membuat cadangan <b>App</b> juga. Ini bukan lagi masalahnya. Selain itu, Migrate sekarang mengingat aplikasi yang dipilih untuk cadangan.
+        Harap dicatat bahwa jika Anda memutuskan untuk tidak membuat cadangan <b>App</b> tapi <b>Data</b> dan/atau <b>Izin</b> aplikasi, maka jika aplikasi belum diinstal sebelum mulai mengembalikan via <b>Migrate helper</b>,
+        <b>Data</b> dan/atau <b>Izin</b> aplikasi itu tidak akan dikembalikan.
+    </string>
+    <string name="backup_activity_help_2">
+        \n
+        <b>Aplikasi putih:</b> Aplikasi pengguna normal\n
+        <b>Aplikasi kuning:</b> Aplikasi sistem yang telah diperbarui dari Google Play Store atau di tempat lain. APK yang diperbarui berada di direktori <b>/data</b> dan bukan di direktori sistem.\n
+        <b>Aplikasi merah:</b> Aplikasi sistem yang belum diperbarui.
+    </string>
+    <string name="bootloop_warning">Peringatan bootloop!</string>
+    <string name="bootloop_warning_desc">Mencadangkan dan memulihkan aplikasi sistem dapat menyebabkan bootloop. Silakan lanjutkan dengan hati-hati.</string>
+
+    
+    <!--BackupService.java-->
+    <string name="error_loading_engine">Kesalahan saat memuat</string>
+
+    <!--MainActivity.java-->
+    <string name="too_fast">Wah, terlalu cepat!!</string>
+    <string name="too_fast_desc">Aplikasi belum diuji secara eksplisit pada versi Android di atas Pie (9.0). \n\nSilakan kirimkan tanggapan Anda tentang apakah aplikasi berfungsi atau tidak.</string>
+    <string name="dont_show_again">Jangan tampilkan lagi</string>
+    <string name="dont_show_stock_warning">Jangan tampilkan lagi</string>
+    <string name="stock_android_rom">Disarankan stok ROM android</string>
+    <string name="please_wait">Silakan tunggu</string>
+    <string name="reading_data">Membaca data cadangan</string>
+    <string name="making_app_script">Membuat file tambahan aplikasi</string>
+    <string name="just_a_minute">Sebentar…</string>
+    <string name="starting_engine">Mulai pencadangan</string>
+    <string name="root_permission_denied">Izin root ditolak!</string>
+    <string name="root_permission_denied_desc">Pastikan perangkat Anda di-root dan Anda telah mengizinkan izin root. \n\n
+    Jika ROM Anda sudah di-root, coba install Magisk.
+    </string>
+    <string name="making_packets">Membuat paket zip</string>
+    <string name="making_batches">Membuat batch zip</string>
+    <string name="total_extra_size">Ukuran ekstra</string>
+    <string name="capping_size">Membatasi ukuran</string>
+    <string name="adding_bigger_apps">Menambahkan aplikasi yang lebih besar</string>
+    <string name="adding">Menambahkan</string>
+    <string name="packet">Paket</string>
+    <string name="moving_files">Memindahkan file</string>
+    <string name="use_reflection">Gunakan refleksi?</string>
+    <string name="use_reflection_exp">Refleksi adalah cara eksperimental menghitung ukuran pada android Nougat dan dibawahnya. Ini mungkin cara yang lebih baik untuk menghitung ukuran. Direkomendasikan: Ya</string>
+    <string name="use_usage_access_permission">Berikan izin akses penggunaan?</string>
+    <string name="usage_access_permission_needed_desc">Metode baru, lebih cepat, dan lebih andal telah ditambahkan untuk menghitung ukuran aplikasi sebelum pencadangan. \n\nSilakan klik Lanjutkan, gulir dan pilih \"Migrate\" lalu aktifkan \"Izinkan akses penggunaan\"</string>
+    <string name="storage_access_required">Tolong beri akses penyimpanan untuk menulis cadangan.</string>
+    <string name="checking_permissions">Memeriksa akses Penyimpanan dan Root</string>
+    <string name="rate_dialog_title">Pendapat Anda penting</string>
+    <string name="rate_dialog_message">Jika aplikasi ini telah membantu Anda, pertimbangkan untuk memberi peringkat dan/atau ulasan.</string>
+    <string name="sure">Yakin</string>
+    <string name="later">Nanti</string>
+    <string name="never_show">Jangan tampilkan lagi</string>
+    <string name="unsupported_device">Perangkat tidak didukung.</string>
+    <string name="cpu_arch_is">Arsitektur CPU Anda:</string>
+    <string name="currently_supported_cpu">Hanya <b>armeabi-v7a, arm64-v8a, x86, x86_64</b> Arsitektur CPU saat ini belum didukung. Silakan hubungi melalui email untuk membantu mendukung perangkat Anda.</string>
+    <string name="proceed">Proses</string>
+    <string name="usage_permission_toast">Gulir dan pilih \"Migrate\" dan klik \"Izinkan akses penggunaan\"!</string>
+    <string name="old_method_will_be_used">Gunakan metode terminal lama</string>
+    <string name="update_available">Pembaruan tersedia!</string>
+    <string name="download">Unduh</string>
+
+    <!--AppListAdapter.java-->
+    <string name="packageName">Paket :</string>
+    <string name="versionName">Nama versi :</string>
+    <string name="uid">UID :</string>
+    <string name="sourceDir">Sumber  :</string>
+    <string name="dataDir">Data :</string>
+    <string name="installer">Penginstall: </string>
+    <string name="play_store">Play Store</string>
+    <string name="package_installer">Pemasang paket</string>
+    <string name="f_droid">F-Droid</string>
+    <string name="not_set">Jangan atur</string>
+
+    <!--AppBackupEngine.kt-->
+    <string name="script_file_does_not_exist">File skrip tidak ada</string>
+
+    <!--VerificationEngine.kt-->
+    <string name="defect_no">Nomor cacat:</string>
+    
+    <!--keyboard_selector.xml-->
+    <string name="select_default_keyboard_from_enabled">Pilih keyboard default dari keyboard yang diaktifkan</string>
+    <string name="present_in_backup">Ada dalam cadangan</string>
+
+    <!--error_report_layout.xml-->
+    <string name="report_header">Laporkan melalui Telegram</string>
+    <string name="share_progress_logs">Bagikan log proses</string>
+    <string name="share_error_logs">Bagikan log kesalahan</string>
+    <string name="share_script">Bagikan skrip</string>
+    <string name="send_to_tg">Kirim ke Telegram</string>
+    <string name="agree_and_send">Setuju dan kirim</string>
+    <string name="error_report_disclaimer">Terima kasih atas minat Anda untuk membantu meningkatkan aplikasi ini. Mulai sekarang, semua laporan kesalahan akan dikirim dalam grup Telegram kami - https://t.me/migrateApp.
+        Dengan demikian, Anda akan mendapatkan solusi lebih cepat dari banyak orang di grup. \n\n
+        Dengan membagikan log, Anda setuju untuk berbagi beberapa informasi <b>SECARA PUBLIK</b>.
+    </string>
+    <string name="not_joined_yet">Belum bergabung dengan grup kami?</string>
+    <string name="send_logs_using">Kirim log melalui:</string>
+    <string name="log_files_do_not_exist">File log tidak ada</string>
+    <string name="progress_log_does_not_exist">\"LogProses\" tidak ada</string>
+    <string name="error_log_does_not_exist">\"LogKesalahan\" tidak ada</string>
+    <string name="backup_script_does_not_exist">Skrip cadangan tidak ada</string>
+    <string name="tg_not_installed">Grup Telegram kami membantu mendapatkan solusi cepat untuk masalah.</string>
+    <string name="tg_not_installed_desc">Silakan instal Telegram dan bergabung dengan grup kami.</string>
+    <string name="install_tg">Install Telegram</string>
+    <string name="join_group">Gabung grup</string>
+    <string name="use_email_instead">Gunakan email lama</string>
+
+    <!--backup_progress_layout.xml-->
+    <string name="report">Laporkan</string>
+    <string name="minimizing_may_decrease_speed">Meminimalkan aplikasi dapat menurunkan kecepatan cadangan!</string>
+    
+    <!--initial_guide.xml-->
+    <string name="skip">Lewati</string>
+    <string name="accept">Terima</string>
+    
+    <!--initial_guide_0.xml-->
+    <string name="greet1">Selamat datang di migrate!</string>
+    <string name="body_0_0">Migrate adalah alat untuk beralih antara berbagai ROM kustom dengan mudah. ​​\n\nMembantu Anda mentransfer aplikasi, data, kontak, sms, dan banyak lagi lainnya.</string>
+    <string name="body_0_1">Tekan Lanjut untuk pengenalan singkat.</string>
+    
+    <!--initial_guide_1.xml-->
+    <string name="greet2">Cadangkan semuanya!</string>
+    <string name="body_1_0">Cadangkan semua aplikasi</string>
+    <string name="body_1_1">Aplikasi\nData aplikasi\nIzin aplikasi</string>
+    <string name="body_1_2">Dan lainnya</string>
+    
+    <!--initial_guide_2.xml-->
+    <string name="greet3">Flash dengan ROM!</string>
+    <string name="body_2_0">Paket cadangan Migrate adalah file zip yang bisa diflash di TWRP. \n\nSebuah aplikasi pembantu akan mengambil alih proses pemulihan aplikasi setelah ROM baru Anda berhasil boot.</string>
+    <string name="body_2_1">Setelah boot, Anda akan secara otomatis diminta untuk melanjutkan pemulihan</string>
+
+    <!--initial_guide_3.xml-->
+    <string name="greet4">Few things before you start…</string>
+    <string name="body_3_0"><b>HARAP GUNAKAN MAGISK</b>. Lineage OS dan addon menyebabkan hal yang tidak terduga.</string>
+    <string name="body_3_1">Aplikasi ini masih dalam masa pengembangan. Akibatnya, mungkin ada bug. \n\n
+        Migrate adalah aplikasi berbasis root. \n\n
+        DENGAN MENGGUNAKAN APLIKASI INI, ANDA MENERIMA BAHWA ANDA MENGETAHUI BAHAYA ROOTING DAN PENGGUNAAN APLIKASI BERBASIS ROOT. ANDA MENGAKUI BAHWA PENGEMBANG TIDAK AKAN BERTANGGUNG JAWAB UNTUK PERANGKAT YANG RUSAK ATAU MATI, DAN BAHWA KERUGIAN YANG MUNGKIN TERJADI KE DATA ANDA SEPENUHNYA TIDAK DITANGGUNG.
+        Cadangan nandroid adalah metode pencadangan paling aman dibandingkan dengan metode pencadangan berbasis aplikasi apa pun. Jika ada masalah, silakan hubungi pengembang.
+    </string>
+
+    <!--how_to_restore.xml-->
+    <string name="prev">Sebelumnya</string>
+    <string name="got_it">Mengerti!</string>
+    <string name="troubleshooting_tips">Kiat pemecahan masalah</string>
+
+    <!--restore_0.xml-->
+    <string name="step_0">Langkah 0 -\nLakukan pencadangan!</string>
+    <string name="step_0_desc">(jelas..)</string>
+
+    <!--restore_1.xml-->
+    <string name="step_1">Langkah 1 -\nFlash ROM baru</string>
+    <string name="step_1_desc">
+        1. Boot ke TWRP\n
+        2. Hapus data <b>(Sangat direkomendasikan!)</b>\n
+        3. Flash ROM baru Anda + GApps (opsional)\n
+        4. <b>Penting: Flash root!</b> Disarankan MAGISK.\n
+    </string>
+
+    <!--restore_2.xml-->
+    <string name="step_2">Langkah 2 -\nFlash cadangan zip!</string>
+    <string name="step_2_desc">
+        Secara default, file zip cadangan yang Anda buat harusnya berada di:\n
+        <b>Penyimpanan internal ->\nMigrate ->\n[nama_cadangan.zip atau nama_cadangan -> parts.zip]</b>\n\n
+        Di menu utama TWRP, klik INSTALL -> arahkan ke file cadangan zip dan instal.\n\n
+        <b>Penting:</b> Harap jangan menghapus data setelah menginstal cadangan zip.
+    </string>
+    <string name="step_2_troubleshoot">Dalam beberapa kasus, setelah flash Magisk, Migrate mungkin mendeteksi system_root palsu untuk perangkat non system_root.
+        Anda mungkin mendapat kesalahan \"Tidak ad ROM terdeteksi\".
+        Harap reboot kembali ke pemulihan TWRP dan coba lagi.</string>
+
+    <!--restore_3.xml-->
+    <string name="step_3">Langkah 3 -\nAtur ROM barumu</string>
+    <string name="step_3_desc">
+        1. Reboot ke system.\n
+        2. Selesaikan pengaturan GApps/ROM.
+    </string>
+
+    <!--restore_4.xml-->
+    <string name="step_4">Langkah 4 -\nPulihkan aplikasi dan data.</string>
+    <string name="step_4_desc_1">Anda seharusnya dapat melihat pemberitahuan seperti yang ditunjukkan. Buka notifikasi.</string>
+    <string name="step_4_desc_2">Jika Anda tidak melihat notifikasi, buka laci aplikasi dan buka \"Migrate helper\".\n
+        Saat membuka, Anda seharusnya mendapatkan layar seperti ini:</string>
+    <string name="step_4_desc_3">
+        <b>PULIHKAN APLIKASI DAN DATA</b>: Berikan izin root dan pilih aplikasi dan ekstra untuk dipulihkan.\n\n
+        <b>COPOT APLIKASI ATAU FINALISASI PEMULIHAN</b>: Pilih ini untuk melakukan operasi pasca pemulihan, copot helper dan reboot perangkat.\n\n
+    </string>
+    <string name="step_4_troubleshoot">Jika Anda tidak memiliki aplikasi tersebut, gunakan file manager Android bawaan (atau unduh file manager sementara dari Google Play Store), instal \"helper.apk \" dari direktori Penyimpanan Internal/Migrate</string>
+
+    <!--restore_5.xml-->
+    <string name="step_5">Langkah 5 - \nSelesaikan pemulihan</string>
+    <string name="step_5_desc_1">Beberapa pekerjaan biasanya ditinggalkan setelah pemulihan. Ini termasuk mengubah aplikasi SMS default (jika SMS dipulihkan) dari Migrate helper ke aplikasi lain, dan juga mengubah DPI</string>
+    <string name="step_5_desc_2">Di Android 10+, setelah mengubah aplikasi SMS, sistem akan memaksa tutup aplikasi Migrate helper. Harap tunggu beberapa detik sebelum secara otomatis dimulai kembali.</string>
+    <string name="step_5_desc_3">Akhirnya Anda ingin menghapus aplikasi helper dari sistem. Anda mungkin juga ingin menonaktifkan aplikasi untuk digunakan kembali nanti.</string>
+    <string name="step_5_troubleshoot">Pada Android 10+,  migrate helper, dalam beberapa kasus, mungkin tidak dapat memulai ulang sendiri. Silakan buka aplikasi secara manual.
+        Anda juga mungkin akan diminta untuk menginstal aplikasi lain di latar belakang.
+        Jangan khawatir, ini adalah aplikasi plugin \"watcher \" yang mendeteksi bahwa migrate helper telah ditutup paksa, dan restart.
+        Ini akan dihapus secara otomatis oleh helper itu sendiri.</string>
+
+    <!--restore_6.xml-->
+    <string name="step_6">Langkah 6 -\nSelesai!Nikmati!</string>
+    <string name="step_6_desc">Nikmati ROM baru Anda!</string>
+
+    <!--drawer_menu.xml-->
+    <string name="aboutThisApp">Tentang aplikasi</string>
+    <string name="about">Tentang</string>
+    <string name="help">Bantuan</string>
+    <string name="preferences">Preferensi</string>
+    <string name="app_intro">Intro aplikasi</string>
+    <string name="changelog">Changelog</string>
+    <string name="lastLog">Log terakhir</string>
+    <string name="contributors">Kontributor</string>
+	<string name="translate_the_app">Terjemahkan aplikasi</string>
+    <string name="rateTheApp">Beri peringkat aplikasi</string>
+    <string name="xda_thread">Utas XDA</string>
+    <string name="other_options">Pilihan lain</string>
+    <string name="other_apps">Aplikasi lain</string>
+    <string name="contact">Hubungi via Telegram</string>
+    <string name="contact_over_telegram">Grup Telegram</string>
+    <string name="older_builds">Versi lawas ada di AFH</string>
+    
+    <!--help_page.xml-->
+    <string name="q1">Apa label Izin di cadangan aplikasi?</string>
+    <string name="a1"><i>Izin</i> berarti izin aplikasi. Migrate dapat mencadangkan izin yang diberikan ke aplikasi untuk Android Marshmallow (6.0) dan di atasnya. \n
+    Memilih opsi ini akan memungkinkan Anda untuk mengembalikan izin aplikasi ketika aplikasi dikembalikan.
+    </string>
+    <string name="q2">Bagaimana aplikasi ini berbeda dari Titanium Backup?</string>
+    <string name="a2">Aplikasi ini adalah alat migrasi ROM. Aplikasi ini bisa:\n
+        \u2022 Menggabungkan semua aplikasi dan data ke zip yang dapat di-flash di TWRP\n
+        \u2022 Cadangkan berbagai ekstra seperti kontak, sms, log panggilan dll\n
+        \u2022 Portabilitas lebih tinggi karena Anda hanya perlu membawa sedikit file zip\n
+        \u2022 Jika perlu, Cadangan ini dapat di-flash di perangkat lain.\n
+    </string>
+    <string name="q3">Tapi mengapa tidak menggunakan cadangan nandroid saja?</string>
+    <string name="a3">Cadangan Nandroid adalah opsi cadangan teraman yang tersedia. Namun Anda tidak dapat mengembalikan aplikasi dari satu cadangan nandroid ke ROM baru. \n
+    Aplikasi ini tentu merupakan alat migrasi ROM. Cadangan Nandroid tidak dapat melakukan pekerjaan itu.
+    </string>
+    <string name="q4">Mengapa semua aplikasi dan data tidak dapat dipulihkan dari pemulihan itu sendiri?</string>
+    <string name="a4">Pemulihan adalah lingkungan yang berbeda dari OS Android. Bayangkan menginstal game Windows dari distro Linux.\n\n
+    Jadi aplikasi pembantu disuntikkan ke partisi sistem, yang berjalan saat boot sistem. Dibutuhkan izin root dan secara otomatis mengembalikan aplikasi dan data.
+    </string>
+    <string name="q5">Apakah saya perlu mengunduh aplikasi Migrate dari Play Store untuk memulihkan zip cadangan?</string>
+    <string name="a5">
+        TIDAK!\n\n
+        Yang Anda butuhkan adalah TWRP dan ROM baru Anda sudah di-root. Saat mem-flash zip cadangan, aplikasi pembantu disuntikkan ke dalam sistem, yang membutuhkan proses pemulihan aplikasi.
+    </string>
+    <string name="q6">Apakah TWRP perlu? Tidak bisakah saya mengembalikan cadangan tanpa itu?</string>
+    <string name="a6">
+        TWRP diperlukan untuk mem-flash zip cadangan. Tanpa itu, Anda tidak dapat memulihkan cadangan. Pemulihan lain mungkin berhasil, tetapi tidak diuji. \n\n
+        Saat ini migrate tidak mendukung pemulihan zip dari aplikasi itu sendiri. Tapi itu adalah sesuatu yang bisa ditambahkan di masa depan.
+    </string>
+    <string name="q7">Apakah perlu menggunakan Magisk?</string>
+    <string name="a7">
+        Aplikasi ini bekerja maksimal dengan Magisk. SuperSU belum diuji. Lineage OS su addon terkadang berfungsi tetapi terkadang memberikan kesalahan yang sangat aneh. Jadi tolong gunakan Magisk.
+    </string>
+    <string name="more_questions">Lebih banyak pertanyaan? Jangan ragu untuk menghubungi di Telegram</string>
+
+    <!--last_log_report.xml-->
+    <string name="seeProgressLog">Lihat log Proses</string>
+    <string name="seeErrorLog">Lihat log Kesalahan</string>
+    <string name="report_logs">Laporkan log</string>
+    <string name="progressLog">Log Proses</string>
+    <string name="errorLog">Log Kesalahan</string>
+
+    <!--SimpleLogDisplay.java-->
+    <string name="no_header">Tanpa tajuk</string>
+    <string name="no_filepath">Tidak ada filepath</string>
+    <string name="log_reading_error">Kesalahan pembacaan log</string>
+
+    <!--other_apps.xml-->
+    <string name="instamean">Kamus online berskala sistem</string>
+    <string name="pickRingStop">Angkat telepon Anda agar berhenti berdering</string>
+    <string name="opcode8085">Konversi 8085 program menjadi kode hex</string>
+    <string name="mdh">Akses Moto Display dengan lambaian tangan</string>
+    <string name="bg_video">Putar video di latar belakang</string>
+    <string name="more_coming_soon">Selebihnya akan datang segera…</string>
+
+    <!--miscellaneous-->
+    <string name="contact_via_telegram">Hubungi via Telegram</string>
+    <string name="contact_via_telegram_desc">Untuk umpan balik dan dukungan, silakan hubungi grup Telegram kami. Anda akan mendapatkan dukungan yang lebih baik dan lebih cepat dari anggota grup. \n\nAnda juga dapat memilih untuk secara pribadi menghubungi pengembang di Telegram.</string>
+    <string name="contact_dev">Hubungi pengembang</string>
+    <string name="post_in_group">Posting dalam grup</string>
+    <string name="select_mail">Pilih aplikasi email seperti Gmail</string>
+    <string name="select_telegram">Buka Telegram dan pilih grup Migrate</string>
+    <!--<string name="sem_apology">Semester apology!</string>
+    <string name="sem_apology_desc">Due to upcoming semesters, I will not be able to focus on the app development for a month or so. I am sorry.\n\n
+    Meanwhile, please continue using the app and share bug reports. Your love and support means a lot to me. Thanks!\n\n
+    - SayantanRC</string>-->
+
+    <string name="copied_app">Aplikasi ini telah disalin dan palsu.</string>
+    <string name="copied_app_exp">Silakan dapatkan aplikasi asli dari BaltiApps dengan mengklik tombol Install.</string>
+    <string name="install_original_migrate">Instal aplikasi asli</string>
+
+    <!--preferences.xml-->
+
+    <string name="disable_battery_optimisation">Nonaktifkan optimisasi baterai</string>
+    <string name="use_new_sizing_method">Gunakan metode baru untuk menghitung ukuran cadangan</string>
+    <string name="use_new_sizing_method_desc">Jika diaktifkan, menggunakan StorageStats di Android 8+ dan dengan refleksi di versi yang lebih rendah.
+        Jika dinonaktifkan, menggunakan perintah shell terminal untuk menghitung ukuran.</string>
+    <string name="clear_to_reset">Hapus dan pilih OK untuk mengatur ulang ke nilai default</string>
+    <string name="autoselect_extras_title">Pilih ekstra otomatis</string>
+    <string name="autoselect_extras_desc">Ini akan secara otomatis memilih ekstra seperti kontak dan sms jika sebelumnya Anda telah membuat cadangannya</string>
+    <string name="new_icon_method_title">Metode ikon baru</string>
+    <string name="new_icon_method_desc">Ini akan menggunakan file .icon terpisah untuk menyimpan ikon setiap aplikasi yang didukung. Jika tidak dicentang, ikon aplikasi akan disimpan dalam file .json.</string>
+    <string name="tar_gz_integrity_title">pemeriksaan integritas tar.gz</string>
+    <string name="tar_gz_integrity_desc">Periksa integritas cadangan data setiap aplikasi yang disimpan sebagai file tar.gz</string>
+    <string name="sms_verify_title">Verifikasi SMS</string>
+    <string name="sms_verify_desc">Periksa integritas file basis data SMS yang disimpan dalam cadangan</string>
+    <string name="calls_verify_title">Verifikasi log panggilan</string>
+    <string name="calls_verify_desc">Periksa integritas file database panggilan log yang disimpan dalam cadangan</string>
+    <string name="perform_system_check_title">Lakukan pemeriksaan sistem</string>
+    <string name="perform_system_check_desc">Ini akan melakukan penyalinan apk dasar dan salinan data (dari aplikasi ini sendiri) melalui Su shell sebelum setiap pencadangan. Dengan demikian dapat memeriksa apakah cadangan aplikasi lain akan berhasil atau tidak.</string>
+    <string name="separate_extras_title">Pisahkan cadangan ekstra</string>
+    <string name="force_separate_extras">Paksa pisahkan ekstra</string>
+    <string name="force_separate_extras_desc">Ekstra akan dicadangkan secara terpisah bahkan untuk cadangan kecil</string>
+    <string name="separate_extras_desc">Simpan ekstra (kontak, sms, dll) sebagai file zip mandiri dan aplikasi dalam file zip terpisah. Hanya berlaku untuk cadangan yang memiliki lebih dari 1 bagian.</string>
+    <string name="delete_error_backup_title">Hapus cadangan dengan kesalahan</string>
+    <string name="delete_error_backup_desc">Hapus file zip cadangan jika selesai dengan kesalahan atau rusak saat cadangan.</string>
+    <string name="zip_verification_title">Pemeriksaan integritas zip</string>
+    <string name="zip_verification_desc">Verifikasi apakah zip cadangan rusak dan berada dalam batasan memori perangkat. \nSANGAT DIANJURKAN</string>
+    <string name="advanced">Lanjutan</string>
+    <string name="max_zip_size">Ukuran zip maksimal</string>
+    <string name="max_zip_size_desc">Ini adalah ukuran maksimum zip cadangan yang dapat di-flash dengan aman melalui TWRP.
+        Ini tidak berarti bahwa zip sebenarnya akan sebesar perkiraan, tetapi nilai perkiraan menentukan jumlah bagian yang akan dibuat dari seluruh cadangan. Zip mungkin jauh lebih kecil dari ukuran perkiraan untuk menjaga keseragaman.</string>
+    <string name="use_su_for_keyboard_title">Gunakan Su shell untuk membaca keyboard</string>
+    <string name="use_su_for_keyboard_desc">Root shell akan digunakan untuk membaca keyboard aktif di cadangan tambahan</string>
+    <string name="ignore_cache_desc">Abaikan direktori cache aplikasi saat cadangan, sehingga cadangan menjadi sangat kecil. Meskipun biasanya aman, Anda mungkin kehilangan beberapa data aplikasi.</string>
+    <string name="manual_cache">Tentukan jalur ke migrate_cache</string>
+    <string name="manual_system">Tentukan jalur ke direktori sistem</string>
+    <string name="manual_buildprop">Tentukan jalur ke ROM build.prop</string>
+    <string name="detect_while_flashing_hint">(Deteksi saat berkedip)</string>
+
+    <string name="use_file_list_in_zip_verification">Gunakan fileList.txt dalam verifikasi zip</string>
+    <string name="use_file_list_in_zip_verification_desc">Migrate membuat daftar file yang telah dicadangkan di file \"fileList.txt\" di dalam zip cadangan. Opsi ini akan membuat verifikasi zip membandingkan file yang ada di zip dan entri dalam file ini.</string>
+
+    <!--app_search_layout.xml-->
+    <string name="showing_apps_from">Menampilkan aplikasi dari kategori:</string>
+    <string name="enter_app_name">Nama aplikasi/paket</string>
+
+    <!--ProgressShowActivity.kt-->
+    <string name="force_stop">Paksa berhenti</string>
+    <string name="force_stop_alert_title">Hentikan paksa aplikasi?</string>
+    <string name="force_stop_alert_desc">Berhenti secara paksa akan berusaha menghentikan seluruh aplikasi. Jika Anda telah menekan Batalkan, harap tunggu beberapa saat. \n\nSaat berhenti, Anda harus menghapus secara manual file cadangan apa pun yang dibuat.</string>
+    <string name="kill_app">Oke, hentikan!</string>
+    <string name="wait_to_cancel">Tunggu…</string>
+    <string name="killing_programmatically">Menghentikan secara pemrograman</string>
+
+    <!--MainBackupEngine.kt-->
+    <string name="test_apk_not_found">Tes apk tidak ditemukan atau tidak dibuat dengan benar</string>
+    <string name="test_data_not_found">Tes data (tar.gz) tidak ditemukan atau tidak dibuat dengan benar</string>
+
+    <!--privacy_policy.xml-->
+    <string name="privacy_policy_header">Privacy policy</string>
+    <string name="privacy_policy_desc">Ini adalah diskusi formal-informal mengenai privasi data dan Migrate, beberapa hal yang harus diperhatikan pengguna.
+    Ini dapat berubah pada pembaruan selanjutnya, karena lebih banyak fitur ditambahkan.</string>
+    <string name="google_firebase">Google Firebase</string>
+    <string name="google_firebase_desc">Mulai dari v3.0 dan seterusnya hanya pada edisi Google Play, Migrate menggunakan Firebase untuk analisis kerusakan. Tidak ada data pribadi pengguna yang dikirimkan. Versi Migrate-NG (tersedia di XDA) tidak lagi memiliki analytics crash.</string>
+    <string name="google_admob">Google Admob</string>
+    <string name="google_admob_desc">Migrate telah menggunakan layanan Admob Google untuk menampilkan Iklan. Itu tetap tidak berubah.</string>
+    <string name="data_that_is_read">Data yang dibaca oleh Migrate</string>
+    <string name="data_that_is_read_desc">Untuk cadangan aplikasi, data berikut ini dibaca:\n
+        1. Daftar paket yang diinstal\n
+        2. Path ke sumber aplikasi\n
+        3. Path ke direktori data\n
+        4. Izin yang digunakan\n
+        5. Paket penginstal aplikasi\n
+        Berikut ini diakses menggunakan izin ROOT:\n
+        1. Aplikasi .apk (hanya disimpan)\n
+        2. Data pribadi aplikasi (dikompresi dan disimpan)\n
+        Konten Apk dan Data pribadi aplikasi tidak dianalisis.\n\n
+
+        Untuk cadangan tambahan, hal berikut dibaca, hanya setelah izin dari pengguna: \n
+        1. Data kontak (disimpan sebagai file vcf) \n
+        2. Data SMS (disimpan sebagai file db) \n
+        3. Log panggilan (disimpan sebagai file db) \n
+        4. DPI layar, keyboard default, status ADB, Font ukuran \n
+        5. File konfigurasi penyimpanan Wifi (Android 8.0 +) \n\n
+
+        Semua data yang dibaca disimpan secara lokal di perangkat
+    </string>
+    <string name="what_is_shared">Apa yang dibagikan</string>
+    <string name="what_is_shared_desc">
+        Berbagi dalam konteks ini mengacu pada pelaporan log aplikasi. \n\n
+        Saat membagikan log, Anda setuju untuk membagikan (secara publik, jika pada grup Telegram): \n\n
+        - Beberapa struktur file internal aplikasi. Ini (dalam banyak kasus) tidak mengandung informasi sensitif yang dapat diidentifikasi secara pribadi. \n
+        - Nama cadangan. \n
+        - Beberapa detail cadangan seperti jumlah bagian cadangan. \n
+        - Informasi perangkat seperti versi android. \n\n
+        Migrate sangat menghormati privasi pengguna. Karena log seperti itu dihasilkan selama cadangan Kontak, sms dan log panggilan TIDAK DICATAT dan tidak dapat dibagi.
+        Tidak ada upaya yang disengaja untuk mengidentifikasi atau menggunakan data pribadi pengguna secara tidak sah. \n\n
+        Dalam kasus apa pun, Anda setuju bahwa baik pengembang, maupun aplikasi tidak bertanggung jawab atas pelanggaran privasi yang tidak disengaja.
+        Jika Anda merasa bahwa log Anda mungkin berisi informasi sensitif, jangan bagikan.
+        Jika Anda terlanjur, silakan hapus segera mungkin.
+    </string>
+    <string name="what_is_intentional">Apa itu \"Tidak ada upaya yang disengaja\"?</string>
+    <string name="what_is_intentional_desc">
+        Sebagai pengembang, saya ingin pengguna memahami hal ini. Sekali lagi, ini hanya berlaku jika Anda memutuskan untuk membagikan log. \n\n
+        Migrate menggunakan utilitas linux \"tar\" untuk mengompres file data. Dengan demikian, tar mencetak nama file yang telah diproses, dan ini juga membantu mengidentifikasi apakah ada kesalahan dalam proses. Isi file tidak dicetak. \n\n
+        Biasanya tidak mungkin mendeteksi informasi yang dapat diidentifikasi secara pribadi dari output samar file tar.
+        Tetapi dalam beberapa kasus yang jarang terjadi, pengembang mungkin tidak mengikuti praktik yang benar dan menempatkan informasi pada nama file itu sendiri.
+        Contoh: aplikasi obrolan menyimpan preferensi obrolan dengan peserta sebagai file dengan nama sebagai nomor telepon peserta. Dalam hal ini, tar akan mencetak nama, sehingga memperlihatkan nomor telepon. Ini hanya satu contoh. \n\n
+        Migrate tidak dapat mengambil tanggung jawab menempatkan filter khusus untuk masing-masing dari jutaan aplikasi di luar sana, takut mereka tidak sengaja membocorkan informasi apa pun. \n\n
+        Sekali lagi ini adalah kasus yang SANGAT langka, dan biasanya selalu luput dari perhatian. Ini terjadi dengan versi Migrate sebelumnya dan saya mendapat saran dari beberapa pengguna bahwa ini diketahui semua orang. \n
+        Anda dapat terus menggunakan Migrate seperti yang telah Anda lakukan.
+    </string>
+    <string name="avoid_unintentional_leak">Saya masih belum yakin.</string>
+    <string name="avoid_unintentional_leak_desc">
+        Seperti yang dibahas sebelumnya, jika menurut Anda cadangan Anda berisi data yang sangat sensitif, jangan bagikan log. Tidak ada yang memaksa jika Anda tidak ingin membagikan log.
+        <b> Namun, juga perhatikan bahwa tanpa log hampir mustahil untuk memberikan segala jenis dukungan. \n\n </b>
+        Atau, Anda dapat memilih untuk tidak membagikan \"Log proses\". \"Log kesalahan\" dan opsi lain biasanya paling penting.
+    </string>
+    <string name="privacy_policy_footer">Itu saja. Nikmati aplikasi ini. Jangan ragu untuk menghubungi saya di Telegram.\n- SayantanRC</string>
+
+    <!--translation_layout.xml-->
+    <string name="want_to_translate">Ingin menerjemahkan aplikasi?</string>
+    <string name="translation_available_at">Strings.xml tersedia di:\n<a href="https://github.com/SayantanRC/translations">https://github.com/SayantanRC/translations</a>\n
+    Ikuti petunjuk di README untuk mengirim sebuah terjemahan.
+    </string>
+    <string name="translators">Penerjemah</string>
+    <string name="translators_list">
+        <b>@Fatih Fırıncı(@Trexfat)</b>: Turki\n
+        <b>@rzlamrr</b>: Indonesia\n
+        <b>@vladrevers</b>: Russia\n
+        <b>@atfmxyl,@dwughjsd</b>: Cina(Simplified)
+    </string>
+
+    <!--contributors.xml-->
+    <string name="contr_3.0">
+        <b>Patrick Perfectly III mtl</b>: Memberikan log, menulis panduan pemecahan masalah lengkap... Pada dasarnya membantu aplikasi tetap berkembang sampai sekarang.\n
+        <b>Isaac Baihua</b>: Menemukan isu di mana zip tidak dibuat jika hanya extra yang dipilih.\n
+        <b>@anoop142 (Anoop)</b>: Membuat versi modifikasi aplikasi SAR yang pertama. Itu sangat membantu di v3.0\n
+        <b>@cruzer_blaze (Gokul)</b>: Membantu skrip\n
+        <b>@indianets (Vijay)</b>: Membuat skrip untuk mengembalikan aplikasi split secara efisien\n
+        <b>BillGoss(XDA)</b>: Jika tidak ada awk yang ada dalam pemulihan, maka gunakan busybox awk.\n
+        <b>AndDiSa(XDA)</b>: Perbaikan koreksi no-newline.\n\n
+    Jelas saya sangat berterima kasih kepada semua ribuan pengguna yang menggunakan aplikasi ini dan membantu membuat aplikasi ini lebih baik. Kalian sangat berarti.\n
+    Juga terimakasih banyak untuk para penerjemah. Terimakasih.
+    </string>
+    <string name="prev_contri">Kontributor sebelumnya</string>
+    <string name="thanks_to_stericson">Terima kasih banyak kepada Stephen (stericdroid) karena mengizinkan saya untuk secara bebas menggunakan build busybox-nya</string>
+    <string name="thanks_to_magisk">Tanpa topjohnwu dan Magisk, aplikasi ini tidak akan mungkin berkembang. Saya belajar banyak dari skrip installer Magisk.</string>
+    <string name="thanks_1">Bantuan tak kenal lelah untuk Xiaomi Mi A1:\n@ishubhamsingh\n@su_bin</string>
+    <string name="thanks_2">Bug hunter:\n
+        Teman kelas saya <b>Shivam</b> yang telah menguji aplikasi!\n
+        @akshayrohida\n
+        @raj3303\n
+        \n
+        Anggota XDA <b>djseltus</b>, untuk update-binary baru\n
+        <b>Vinyas N S</b>, untuk isu \"android.os.TransactionTooLargeException\" \n
+        <b>C Tab</b>, membantu menemukan masalah dengan aplikasi pembantu\n
+        Anggota XDA <b>SevenSlevin</b> untuk isu updater_script\n
+        Anggota XDA <b>kdrag0n</b> memberi sejumlah saran yang bermanfaat\n
+    </string>
+    <string name="thanks_3">Aplikasi tidak akan berkembang tanpa adanya tester:\n\n
+        @TusharG03\n
+        @arghyac35\n
+        @pavanjadhaw\n
+        @Johnkator\n
+        @samirkushwaha\n
+        Pranay\n
+        @Sachith_Hedge\n
+        @Akianonymus\n
+        @SubhrajyotiSen\n
+        @rm_rfasterisk\n
+        @facumo\n
+    </string>
+
+    <!--ZipItemAdapter.java-->
+    <string name="empty">Kosong</string>
+
+    <string name="file_list_not_in_zip_batch">Daftar file tidak ada di zipBatch</string>
+    <string name="zip_batch_null_updater">Zip Batch null sebelum updater script</string>
+    <string name="zip_batch_null_zipping_engine">Zip Batch null sebelum mulai pengompresan</string>
+    <string name="zip_batch_null_zip_verification">Zip Batch null sebelum verifikasi zip</string>
+    <string name="improper_result_received">Kesalahan hasil yang diterima.</string>
+
+<!--some branch specific strings-->
+    <!--Needs to be translated-->
+    <string name="label_for_gpe">Edisi Google Play</string>
+    <string name="label_for_ng">Edisi Non-Google/Beta</string>
+    <string name="check_for_updates_ng">Periksa pembaruan</string>
+    <string name="switch_to_ng_in_gpe">Beralih ke Migrate-NG</string>
+    <string name="ng_desc">Migrate-NG adalah versi beta. Versi di Google Play sudah stabil. Versi beta tersedia sebagai aplikasi terpisah dan bisa diunduh di utas XDA.</string>
+    <string name="updates_ng">Pembaruan</string>
+    <string name="auto_check_updates_ng">Periksa pembaruan otomatis</string>
+    <string name="auto_check_updates_desc_ng">Periksa pembaruan saat startup</string>
+    <string name="update_host_ng">Pilih host pembaruan</string>
+    <string name="update_host_desc_ng">Pembaruan disimpan sebagai rilis di GitHub/GitLab</string>
+    <string name="select_update_channel_ng">Pilih jenis pembaruan</string>
+    <string name="select_update_channel_desc_ng">Stabil atau beta+stable</string>
+	
+</resources>
