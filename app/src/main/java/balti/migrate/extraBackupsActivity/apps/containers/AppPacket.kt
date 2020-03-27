@@ -3,7 +3,7 @@ package balti.migrate.extraBackupsActivity.apps.containers
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.utilities.ToolsNoContext
 
-class AppPacket(backupDataPacket: BackupDataPacketKotlin, val appName: String, val dataSize : Long, val systemSize : Long) {
+class AppPacket(backupDataPacket: BackupDataPacketKotlin, val appName: String, val dataSizeBytes : Long, val systemSizeBytes : Long) {
     val PACKAGE_INFO = backupDataPacket.PACKAGE_INFO
     val APP = backupDataPacket.APP
     val DATA = backupDataPacket.DATA

@@ -386,23 +386,23 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         try {
 
-            var availableKb = 0L
-            var fullKb = 0L
-            var consumedKb = 0L
+            var availableBytes = 0L
+            var fullBytes = 0L
+            var consumedBytes = 0L
 
             fun calculateStorage(path: String) {
                 val statFs = StatFs(path)
 
-                availableKb = (statFs.blockSizeLong * statFs.availableBlocksLong)
-                fullKb = (statFs.blockSizeLong * statFs.blockCountLong)
-                consumedKb = fullKb - availableKb
+                availableBytes = (statFs.blockSizeLong * statFs.availableBlocksLong)
+                fullBytes = (statFs.blockSizeLong * statFs.blockCountLong)
+                consumedBytes = fullBytes - availableBytes
             }
 
             calculateStorage(Environment.getExternalStorageDirectory().absolutePath)
 
-            internal_storage_bar.progress = ((consumedKb * 100) / fullKb).toInt()
-            internal_storage_text.text = commonTools.getHumanReadableStorageSpace(consumedKb) + "/" +
-                    commonTools.getHumanReadableStorageSpace(fullKb)
+            internal_storage_bar.progress = ((consumedBytes * 100) / fullBytes).toInt()
+            internal_storage_text.text = commonTools.getHumanReadableStorageSpace(consumedBytes) + "/" +
+                    commonTools.getHumanReadableStorageSpace(fullBytes)
 
             var sdCardRoot: File? = null
             val defaultPath = main.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
@@ -422,9 +422,9 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 calculateStorage(sdCardRoot.absolutePath)
 
                 sd_card_name.text = sdCardRoot.name
-                sd_card_storage_bar.progress = ((consumedKb * 100) / fullKb).toInt()
-                sd_card_storage_text.text = commonTools.getHumanReadableStorageSpace(consumedKb) + "/" +
-                        commonTools.getHumanReadableStorageSpace(fullKb)
+                sd_card_storage_bar.progress = ((consumedBytes * 100) / fullBytes).toInt()
+                sd_card_storage_text.text = commonTools.getHumanReadableStorageSpace(consumedBytes) + "/" +
+                        commonTools.getHumanReadableStorageSpace(fullBytes)
             } else {
                 sd_card_storage_use_view.visibility = View.GONE
             }

@@ -14,8 +14,8 @@ data class ZipAppBatch(val zipPackets: ArrayList<ZipAppPacket> = ArrayList(0)) {
     var fileList: File? = null
     init {
         zipPackets.forEach {
-            batchDataSize += it.appPacket_z.dataSize
-            batchSystemSize += it.appPacket_z.systemSize
+            batchDataSize += it.appPacket_z.dataSizeBytes
+            batchSystemSize += it.appPacket_z.systemSizeBytes
             zipFullSize += it.zipPacketSize
         }
     }

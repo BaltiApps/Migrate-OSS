@@ -47,7 +47,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
     private val ignoreCache by lazy { main.getBoolean(PREF_IGNORE_APP_CACHE, false) }
 
-    private var availableKb = 0L
+    private var availableBytes = 0L
     private var totalSize = 0L
     private var lastSize = 0L
     private var lastAppInfo = ""
@@ -368,7 +368,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
         // check if any app is there which is too large before comparing with device storage
         val bigAppsNameConcat = StringBuilder("")
         appPackets.forEach {
-            if ((it.dataSize + it.systemSize) > (MAX_WORKING_SIZE - RESERVED_SPACE)) bigAppsNameConcat.append("${it.appName}\n")
+            if ((it.dataSizeBytes + it.systemSizeBytes) > (MAX_WORKING_SIZE - RESERVED_SPACE)) bigAppsNameConcat.append("${it.appName}\n")
         }
         if (bigAppsNameConcat.toString().trim() != ""){
             return arrayOf(false, vOp.getStringFromRes(R.string.cannot_split), bigAppsNameConcat.toString())
@@ -389,7 +389,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
         try {
 
             StatFs(destination).let {
-                availableKb = it.blockSizeLong * it.availableBlocksLong
+                availableBytes = it.blockSizeLong * it.availableBlocksLong
             }
 
         }
@@ -398,19 +398,19 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             return arrayOf(false, vOp.getStringFromRes(R.string.error_detecting_memory), e.message.toString())
         }
 
-        Log.d(DEBUG_TAG, "Total size: $totalSize, availableKb: $availableKb")
+        Log.d(DEBUG_TAG, "Total size: $totalSize, availableBytes: $availableBytes")
 
-        return if (totalSize > availableKb){
+        return if (totalSize > availableBytes){
             arrayOf(false, vOp.getStringFromRes(R.string.insufficient_storage),
                     "${vOp.getStringFromRes(R.string.estimated_files_size)} ${commonTools.getHumanReadableStorageSpace(totalSize)}\n" +
-                            "${vOp.getStringFromRes(R.string.available_space)} ${commonTools.getHumanReadableStorageSpace(availableKb)}\n\n" +
-                            "${vOp.getStringFromRes(R.string.required_storage)} ${commonTools.getHumanReadableStorageSpace(totalSize - availableKb)}\n\n" +
+                            "${vOp.getStringFromRes(R.string.available_space)} ${commonTools.getHumanReadableStorageSpace(availableBytes)}\n\n" +
+                            "${vOp.getStringFromRes(R.string.required_storage)} ${commonTools.getHumanReadableStorageSpace(totalSize - availableBytes)}\n\n" +
                             vOp.getStringFromRes(R.string.will_be_compressed))
         }
         else {
             publishProgress(vOp.getStringFromRes(R.string.total_size_ok),
                     "${vOp.getStringFromRes(R.string.total_size)} ${commonTools.getHumanReadableStorageSpace(totalSize)}\n" +
-                            "${vOp.getStringFromRes(R.string.available_space)} ${commonTools.getHumanReadableStorageSpace(availableKb)}", "")
+                            "${vOp.getStringFromRes(R.string.available_space)} ${commonTools.getHumanReadableStorageSpace(availableBytes)}", "")
             commonTools.tryIt { Thread.sleep(1000) }
             arrayOf(true)
         }

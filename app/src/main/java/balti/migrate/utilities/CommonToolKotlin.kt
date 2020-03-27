@@ -532,10 +532,10 @@ class CommonToolKotlin(val context: Context) {
         }
     }
 
-    fun getHumanReadableStorageSpace(space: Long): String {
+    fun getHumanReadableStorageSpace(spaceInBytes: Long): String {
         var res = "B"
 
-        var s = space.toDouble()
+        var s = spaceInBytes.toDouble()
 
         if (s > 1024) {
             s /= 1024.0
