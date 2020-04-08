@@ -55,8 +55,8 @@ class BackupUtils {
             put(MtdConstants.MTD_APK, if (appPacket.APP) "$packageName.apk" else "NULL")
             put(MtdConstants.MTD_DATA, if (appPacket.DATA) "$packageName.tar.gz" else "NULL")
             put(MtdConstants.MTD_VERSION, version)
-            put(MtdConstants.MTD_DATA_SIZE, appPacket.dataSize / KB_DIVISION_SIZE)
-            put(MtdConstants.MTD_SYSTEM_SIZE, appPacket.systemSize / KB_DIVISION_SIZE)
+            put(MtdConstants.MTD_DATA_SIZE, appPacket.dataSizeBytes / KB_DIVISION_SIZE)
+            put(MtdConstants.MTD_SYSTEM_SIZE, appPacket.systemSizeBytes / KB_DIVISION_SIZE)
             put(MtdConstants.MTD_PERMISSION, appPacket.PERMISSION)
             when {
                 iconFileName != null -> put(MtdConstants.MTD_ICON_FILE_NAME, iconFileName)
