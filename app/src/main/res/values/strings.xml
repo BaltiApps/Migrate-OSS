@@ -1,5 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="ExtraTranslation">
+    tools:ignore="MissingTranslation,ExtraTranslation"
+    >
 
     <!--Version changes to be made in
 
@@ -21,8 +22,8 @@
     <!--please also update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt-->
 
     <string name="app_name">Migrate-GPE</string>
-    <string name="gpe_label">Google Play Edition</string>
-    <string name="current_version_name">3.0</string>
+    <string name="gpe_label">@string/label_for_gpe</string>
+    <string name="current_version_name">3.0.1</string>
     <string name="current_version_codename">Mercury</string>
     <string name="release_state">release</string>
     <string name="last_tested_label">Last tested on: Android 10</string>
@@ -141,6 +142,14 @@
         \u2022 Wifi backup is disabled till it becomes stable.\n\n
         <b>This is Google Play edition of Migrate. It will be the stable release. Also, in-app updates has been removed.</b>
     </string>
+    <string name="version_3.0.1">Version 3.0.1</string>
+    <string name="version_3.0.1_content">
+        \u2022 Probable fix to freezing in app size calculation\n
+        \u2022 Add turkish translation (@Trexfat)\n
+        \u2022 Add russian translation (@vladrevers)\n
+        \u2022 Add indonesian translation (@rzlamrr)\n
+        \u2022 Add Simplified Chinese translation (@atfmxyl,@dwughjsd)\n
+    </string>
 
     <!--activity_main.xml-->
     <string name="backupButton">Backup</string>
@@ -148,8 +157,8 @@
     <string name="restoreApp">In app restore</string>
     <string name="internal_storage">Internal storage</string>
     <string name="learn_about_sd_card_support">Learn about SD card support</string>
-    <string name="check_for_updates">Switch to Migrate-NG</string>
-    <string name="migrate_ng_desc">Migrate-NG is an alpha version of the app. The version on Google Play is stable. The alpha version is available as a separate app to download on the XDA thread.</string>
+    <string name="check_for_updates">@string/switch_to_ng_in_gpe</string>
+    <string name="migrate_ng_desc">@string/ng_desc</string>
 
     <!--backup_layout.xml-->
     <string name="select_apps">Select apps</string>
@@ -186,7 +195,7 @@
 
     <!--in_app_restore-->
     <string name="in_app_restore">In app restore</string>
-    
+
     <!--zip_picker.xml-->
     <string name="select_storage">Select storage</string>
     <string name="expected_zip_location">Backup zip should be under Migrate directory</string>
@@ -404,7 +413,7 @@
     <string name="bootloop_warning">Bootloop warning!</string>
     <string name="bootloop_warning_desc">Backing up and restoring system apps may result in a bootloop. Please proceed with caution.</string>
 
-    
+
     <!--BackupService.java-->
     <string name="error_loading_engine">Error loading engine</string>
 
@@ -468,7 +477,7 @@
 
     <!--VerificationEngine.kt-->
     <string name="defect_no">Defect number:</string>
-    
+
     <!--keyboard_selector.xml-->
     <string name="select_default_keyboard_from_enabled">Select default keyboard from enabled keyboards</string>
     <string name="present_in_backup">Present in backup</string>
@@ -499,22 +508,22 @@
     <!--backup_progress_layout.xml-->
     <string name="report">Report</string>
     <string name="minimizing_may_decrease_speed">Minimizing this screen may decrease backup speed!</string>
-    
+
     <!--initial_guide.xml-->
     <string name="skip">Skip</string>
     <string name="accept">Accept</string>
-    
+
     <!--initial_guide_0.xml-->
     <string name="greet1">Welcome to migrate!</string>
     <string name="body_0_0">Migrate is a vital tool to jump between various custom ROMs with ease.\n\nIt helps you to transfer your apps, data, contacts, sms and much more.</string>
     <string name="body_0_1">Press Next for a short tour.</string>
-    
+
     <!--initial_guide_1.xml-->
     <string name="greet2">Backup everything!</string>
     <string name="body_1_0">Backup all applications</string>
     <string name="body_1_1">Apps\nApp data\nApp permissions</string>
     <string name="body_1_2">Other extras</string>
-    
+
     <!--initial_guide_2.xml-->
     <string name="greet3">Flash with the ROM!</string>
     <string name="body_2_0">Migrate backup packages are TWRP flashable zip files.\n\nA helper app takes over the app restoration process once you boot up your new ROM.</string>
@@ -600,6 +609,7 @@
     <string name="changelog">Changelog</string>
     <string name="lastLog">Last logs</string>
     <string name="contributors">Contributors</string>
+    <string name="translate_the_app">Translate app</string>
     <string name="rateTheApp">Rate the app</string>
     <string name="xda_thread">XDA thread</string>
     <string name="other_options">Other options</string>
@@ -607,7 +617,7 @@
     <string name="contact">Contact via Telegram</string>
     <string name="contact_over_telegram">Telegram group</string>
     <string name="older_builds">Older builds on AFH</string>
-    
+
     <!--help_page.xml-->
     <string name="q1">What is the Perm label in app backup?</string>
     <string name="a1"><i>Perm</i> means permissions of an app. Migrate can backup the granular permissions granted to an app for Android Marshmallow (6.0) and above.\n
@@ -800,6 +810,19 @@
     </string>
     <string name="privacy_policy_footer">That\'s all. Enjoy using the app. Feel free to contact me on Telegram.\n- SayantanRC</string>
 
+    <!--translation_layout.xml-->
+    <string name="want_to_translate">Want to translate?</string>
+    <string name="translation_available_at">The strings.xml file is available at:\n<a href="https://github.com/SayantanRC/translations">https://github.com/SayantanRC/translations</a>\n
+    Follow the README instructions to submit a translation.
+    </string>
+    <string name="translators">Translators</string>
+    <string name="translators_list">
+        <b>@Fatih Fırıncı(@Trexfat)</b>: Turkish\n
+        <b>@rzlamrr</b>: Indonesia\n
+        <b>@vladrevers</b>: Russian\n
+        <b>@atfmxyl,@dwughjsd</b>: Simplified Chinese
+    </string>
+
     <!--contributors.xml-->
     <string name="contr_3.0">
         <b>Patrick Perfectly III mtl</b>: Providing logs, writing exhaustive troubleshooting guides… Basically keeping the app alive till now.\n
@@ -808,8 +831,10 @@
         <b>@cruzer_blaze (Gokul)</b>: Helped in scripts\n
         <b>@indianets (Vijay)</b>: Made the script to restore split apks efficiently\n
         <b>BillGoss(XDA)</b>: If no awk present in recovery, hence use busybox awk.\n
-        <b>AndDiSa(XDA)</b>: Fix no-newline correction.\n\n
-    Obviously I adequately thank all the thousands of users who use this app and help to make the app better. You mean a lot to me. Thanks.
+        <b>AndDiSa(XDA)</b>: Fix no-newline correction.\n
+        <b>ANKIT</b>: Helped fix hanging of app in size calculation\n\n
+    Obviously I adequately thank all the thousands of users who use this app and help to make the app better. You mean a lot to me.\n
+    Also a huge thank you to translators of the app. Thanks.
     </string>
     <string name="prev_contri">Previous contributors</string>
     <string name="thanks_to_stericson">Huge thanks to Stephen (stericdroid) for allowing me to liberally use his busybox builds</string>
@@ -848,5 +873,20 @@
     <string name="zip_batch_null_zipping_engine">Zip Batch is null before starting zipping</string>
     <string name="zip_batch_null_zip_verification">Zip Batch is null before zip verification</string>
     <string name="improper_result_received">Improper result received.</string>
+
+    <!--some branch specific strings-->
+    <!--Needs to be translated-->
+    <string name="label_for_gpe">Google Play Edition</string>
+    <string name="label_for_ng">Non-Google/Beta Edition</string>
+    <string name="check_for_updates_ng">Check for updates</string>
+    <string name="switch_to_ng_in_gpe">Switch to Migrate-NG</string>
+    <string name="ng_desc">Migrate-NG is an beta version of the app. The version on Google Play is stable. The beta version is available as a separate app to download on the XDA thread.</string>
+    <string name="updates_ng">Updates</string>
+    <string name="auto_check_updates_ng">Auto check for updates</string>
+    <string name="auto_check_updates_desc_ng">Check for updates at startup</string>
+    <string name="update_host_ng">Select host for updates</string>
+    <string name="update_host_desc_ng">Updates are stored as releases in GitHub/GitLab</string>
+    <string name="select_update_channel_ng">Select update channel</string>
+    <string name="select_update_channel_desc_ng">Stable channel or beta+stable</string>
 
 </resources>
