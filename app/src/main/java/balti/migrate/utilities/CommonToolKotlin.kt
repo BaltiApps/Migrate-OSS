@@ -27,7 +27,7 @@ class CommonToolKotlin(val context: Context) {
 
     companion object {
 
-        val THIS_VERSION = 19
+        val THIS_VERSION = 20
         val LAST_SUPPORTED_ANDROID_API = 29
 
         val DEBUG_TAG = "migrate_tag"
@@ -534,10 +534,10 @@ class CommonToolKotlin(val context: Context) {
         }
     }
 
-    fun getHumanReadableStorageSpace(space: Long): String {
+    fun getHumanReadableStorageSpace(spaceInBytes: Long): String {
         var res = "B"
 
-        var s = space.toDouble()
+        var s = spaceInBytes.toDouble()
 
         if (s > 1024) {
             s /= 1024.0

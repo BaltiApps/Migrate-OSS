@@ -1,0 +1,863 @@
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation,ExtraTranslation">
+
+    <string name="app_name">Migrate</string>
+    <string name="gpe_label"></string>
+    <string name="current_version_name">3.0.1</string>
+    <string name="current_version_codename">Mercury</string>
+    <string name="release_state">release</string>
+    <string name="last_tested_label">最后测试:Android 10</string>
+
+    <!--about_app.xml-->
+    <string name="made_with_android_studio">用Android Studio 开发</string>
+    <string name="codename">开发代号:</string>
+    <string name="version">版本:</string>
+    <string name="release_state_label">发布状态:</string>
+
+    <!--changelog-->
+    <string name="version_1.0" >版本 1.0(测试版)</string>
+    <string name="version_1.0_content">\u2022 最初公开发布版本</string>
+    <string name="version_1.0.1">版本 1.0.1(测试版)</string>
+    <string name="version_1.0.1_content">\u2022 修复了应用介绍的“跳过”按钮</string>
+    <string name="version_1.0.2">版本 1.0.2(测试版)</string>
+    <string name="version_1.0.2_content">\u2022 在感谢名单中添加了更多人的名字</string>
+    <string name="version_1.0.3">版本 1.0.3(测试版)</string>
+    <string name="version_1.0.3_content">
+        \u2022 修复了日志发送功能\n
+        \u2022 增加了发送刷入脚本文件的功能\n
+        \u2022 从备份列表中移除 Android 系统(防止出现“tar 套接字 错误”)
+    </string>
+    <string name="version_1.0.4">版本 1.0.4(测试版)</string>
+    <string name="version_1.0.4_content">
+        \u2022 日志记录的改进\n
+        \u2022 忽略 tar 套接字 警告\n
+        \u2022 更换新的update-binary文件，应该能解决 TWRP 错误 3 的问题\n
+        \u2022 应该解决了读取备份数据时的“null String”问题
+    </string>
+    <string name="version_1.0.5">版本 1.0.5(测试版)</string>
+    <string name="version_1.0.5_content">
+        \u2022 可能修复了 android.os.TransactionTooLargeException\"\n
+        \u2022 应用保护机制改进，防止恢复 zip 无法生成的问题出现\n
+        \u2022 现在日志中会记录 Migrate 应用的版本\n
+        \u2022 应用现在的 targetSDK 版本从 28 下降到 26，从而可以避免某些崩溃\n
+        \u2022 修复了还原过程中出现的“unexpected”错误
+    </string>
+    <string name="version_1.1">版本 1.1(测试版)</string>
+    <string name="version_1.1_content">
+        \u2022 [新增]压缩前的备份验证\n
+        \u2022 重大代码重构和底层更改\n
+        \u2022 CANCEL按钮现在会强行停止备份进程\n
+        \u2022 修复 recovery 中的 set_progress()\n
+        \u2022 可能修复了“Failed to change locale for db”错误\n
+        \u2022 解决了一些updater-script丢失的错误\n
+        \u2022 解决了一些“Operation not permitted”错误\n
+        \u2022 备份名称将会自动删除非法的文件名字符\n
+        \u2022 “发送脚本”选项现在应该可以正常工作
+    </string>
+    <string name="version_1.1.1">版本 1.1.1(测试版)</string>
+    <string name="version_1.1.1_content">
+        v1.1\n\n
+        \u2022 [新增]压缩前的备份验证\n
+        \u2022 重大代码重构和底层更改\n
+        \u2022 CANCEL按钮现在会强行停止备份进程\n
+        \u2022 修复 recovery 中的 set_progress()\n
+        \u2022 可能修复了“Failed to change locale for db”错误\n
+        \u2022 解决了一些updater-script丢失的错误\n
+        \u2022 解决了一些“Operation not permitted”错误\n
+        \u2022 备份名称将会自动删除非法的文件名字符\n
+        \u2022 “发送脚本”选项现在应该可以正常工作\n\n
+    v1.1.1\n\n
+    \u2022 修复了一个助手应用中的“no closing quote”的错误
+    </string>
+    <string name="version_1.1.1_only_content">
+    \u2022 修复了一个助手应用中的“no closing quote”的错误
+    </string>
+    <string name="version_1.2">版本 1.2(测试版)</string>
+    <string name="version_1.2_content">
+    \u2022 在备份应用程序权限时完全避免使用dumpsys\n
+    \u2022 现在，tar.gz中的应用程序数据已在/ data / data中解压缩\n
+        (可能修复了Google Pixel中的“操作不允许”问题)
+    </string>
+    <string name="version_2.0">版本 2.0(christmas_beta)</string>
+    <string name="version_2.0_content">
+        圣诞节和新年快乐！！\n\n
+    •一些底层改动。\n
+    •实验性 SD 卡支持（使用 Magisk 模块）\n
+    •支持拆分的 APK\n
+    •APK 现在在 /data/local/tmp/migrate_cache 下解压\n
+    •新增一种计算应用程序大小的新方法。\n
+    （可能可以修复计算应用程序大小时卡死的问题）\n
+    •现在，每个 Migrate 恢复压缩包都附带一个 busybox 二进制文件作为后备\n
+    •Migrate 恢复助手增加新的“临时禁用”选项。\n
+    •Migrate 恢复助手获得新的中止选项。\n
+    </string>
+    <string name="version_2.0.1">版本 2.0.1(christmas_beta)</string>
+    <string name="version_2.0.1_content">
+    •修复了一个可能导致Migrate恢复助手崩溃的问题。\n
+    </string>
+    <string name="version_2.1">版本 2.1</string>
+    <string name="version_2.1_content">
+    •轻微错误不会再显示，但仍会记录在日志中。\n
+    •修复图标保留着先前备份的形式的问题。\n
+    •修复了备份时的保持屏幕常亮。\n
+    •修复了错误纠正机制中的错误。\n
+    •可能修复了一些应用程序不被备份的问题。\n
+    •修复了 TWRP 设为某些地区时出现错误 6 的问题。\n
+    •修复了 TWRP 中长期存在的错算 /data 分区的可用空间的问题。\n
+    •Migrate 回复助手不会再在安装应用之前先卸载应用。\n
+    •添加了 Telegram 群组链接！\n
+    </string>
+    <string name="version_3.0">版本 3.0</string>
+    <string name="version_3.0_content">
+        从2.1到3.0\n\n
+        •应用程序用Kotlin语言重写\n
+        •添加了许多新的设置。\n
+        •现在可以在Google Play上下载Migrate Helper应用程序。\n
+        •recovery中的许多修复。 支持SAR和Android 10。\n
+        •添加了用于备份应用安装程序，字体大小，adb状态的选项\n
+        •在首选项中设置最大zip大小。\n
+        •备份完成后验证zip。\n
+        •更多更改和改进…\n\n
+        从3.0 Alpha到3.0版本\n\n
+        •禁用Wifi备份，直到其它得稳定为止。\n\n这是非Google版本的Migrate,它是测试版,此版本保留了应用内更新。\n
+    </string>
+    <string name="version_3.0.1">Version 3.0.1</string>
+    <string name="version_3.0.1_content">
+        \u2022 Add turkish translation (@Trexfat)\n
+        \u2022 Add Simplified Chinese translation (@atfmxyl,@dwughjsd)\n
+    </string>
+
+    <!--activity_main.xml-->
+    <string name="backupButton">备份</string>
+    <string name="restoreTwrp">如何通过TWRP还原</string>
+    <string name="restoreApp">应用内还原</string>
+    <string name="internal_storage">内部存储器</string>
+    <string name="learn_about_sd_card_support">了解有关SD卡的支持</string>
+
+    <!--backup_layout.xml-->
+    <string name="select_apps">选择应用</string>
+    <string name="backupLabel">备份</string>
+    <string name="fullBackupLabel">全部备份</string>
+    <string name="permission">权限</string>
+    <string name="data">数据</string>
+    <string name="app">应用</string>
+    <string-array name="appTypeList">
+        <item>所有用户应用</item>
+        <item>系统应用(未更新)</item>
+        <item>系统应用(已更新)</item>
+        <item>所有系统应用</item>
+        <item>所有应用(已更新)</item>
+        <item>所  有    应  用</item>
+    </string-array>
+    <string name="next">下一步</string>
+    <string name="no_apps">没有可用的应用\n在这个类别中！</string>
+
+    <!--ask_for_backup_name.xml-->
+    <string name="enter_backup_name">输入备份名称</string>
+    <string name="sd_card">SD 卡</string>
+    <string name="advanced_options">高级选项</string>
+    <string name="ignore_cache">忽略应用程序缓存</string>
+
+    <!--learn_about_sd_card.xml-->
+    <string name="p1">1. SD卡支持目前是实验性的，需要Magisk模块。</string>
+    <string name="p2">2.当前实现需要您的 ROM 支持 FUSE，它在新近的 Android 版本中已被 SDCARDFS 取代。FUSE 仍然存在于一些 ROM 中，用于向后兼容。</string>
+    <string name="p3">3.由于上述原因，取决于不同的设备、ROM 和 Android版本，SD卡选项可能有效，也可能无效。</string>
+    <string name="p4">4.如果当前实现不适合您，请等待模块开发人员重写新模块或找到任何其他替代方案。感谢您的耐心等待。</string>
+    <string name="p5">要尝试获得SD卡支持，请下载并安装“ ExSDCard Access Enabler” magisk模块，然后重新启动\n
+     该模块由开发人员 Romain 制作。
+    </string>
+
+    <!--in_app_restore-->
+    <string name="in_app_restore">应用内还原</string>
+
+    <!--zip_picker.xml-->
+    <string name="select_storage">选择存储</string>
+    <string name="expected_zip_location">备份zip应该在Migrate目录下</string>
+    <string name="zip_picker">Zip 选择器</string>
+    <string name="up_one_dir">上一级</string>
+
+    <!--extra_backups-->
+    <string name="extras">附加功能</string>
+    <string name="contacts_label">通讯录</string>
+    <string name="sms_label">短信</string>
+    <string name="call_log_label">通话记录</string>
+    <string name="keyboard_label">默认键盘应用（输入法）</string>
+    <string name="dpi_label">屏幕DPI</string>
+    <string name="adb_label">ADB 状态</string>
+    <string name="no_default_adb_scale">系统没有默认的 ADB 连接值。在大多数情况下，这意味着将其设置为0（禁用ADB）。
+    是否要将此值备份为0？</string>
+    <string name="installer_label">应用安装程序</string>
+    <string name="wifi_label">Wi-Fi 密码文件</string>
+    <string name="fontScale_label">字体缩放比例</string>
+    <string name="no_default_font_scale">系统没有默认的字体缩放比例值。在大多数情况下，这意味着将其设置为1.0。
+    是否要将此值备份为1.0？</string>
+    <string name="yes_recommended">是 (推荐)</string>
+    <string name="only_for_android_8">仅适用于 Android Oreo 及更高版本(8.0及以上)</string>
+    <string name="filtering_duplicates">过滤\n重复项</string>
+    <string name="reading_sms">读取短信</string>
+    <string name="reading_calls">读取电话</string>
+    <string name="reading">读取</string>
+    <string name="reading_error">读取错误</string>
+    <string name="no_app_selected">未选择任何应用！</string>
+    <string name="filtering_apps">过滤应用</string>
+    <string name="tap_to_see_values">点按即可查看值</string>
+    <string name="adb_enabled">启用 ADB 调试</string>
+    <string name="adb_disabled">禁用 ADB 调试</string>
+    <string name="adb_unknown">ADB 状态未知！其设置值将不会被备份。</string>
+    <string name="weird_font_scale">字体缩放比例的值有问题。其值将不会被备份。</string>
+    <string name="empty_call_logs">在设备上找不到通话记录,没有内容可以备份。</string>
+    <string name="empty_sms">在设备上找不到短信,没有内容可以备份。</string>
+    <string name="empty_contacts">设备上的通讯录为空,无内容可备份。</string>
+
+    <!--ExtraBackups.java-->
+    <string name="not_recommended">不建议！</string>
+    <string name="contacts_not_recommended">如果您打算在下一个ROM上使用Google登录，则不建议使用联系人备份和还原。恢复联系人将不必要地复制相同的联系人条目。</string>
+    <string name="dont_backup">不要备份</string>
+    <string name="backup_contacts_anyway">仍然要备份通讯录</string>
+    <string name="estimated_files_size">预计总备份大小：</string>
+    <string name="estimated_app_size">预计应用大小：</string>
+    <string name="current_app">当前应用：</string>
+    <string name="available_space">可用空间：</string>
+    <string name="calculated_total">计算总数:</string>
+    <string name="last_app">Last app:</string>
+    <string name="insufficient_storage">存储空间不足！</string>
+    <string name="long_press_to_force_stop">长按取消以强制停止应用程序</string>
+    <string name="required_storage">Migrate 需要更多可用空间:</string>
+    <string name="will_be_compressed">我们需要估计大小来复制应用程序文件。由于压缩，最后生成的备份文件将比估计的大小占用更少的空间。</string>
+    <string name="contacts_access_needed">需要读取通讯录权限以进行通讯录备份</string>
+    <string name="sms_access_needed">需要读取短信权限以备份短信</string>
+    <string name="calls_access_needed">需要读取通话记录权限以进行通话记录备份</string>
+    <string name="error_reading_contacts">读取通讯录时出错</string>
+    <string name="error_reading_sms">读取短信时出错</string>
+    <string name="error_reading_calls">读取通话记录时出错</string>
+    <string name="calculating_size">计算大小</string>
+    <string name="calculating_size_reflection">计算大小 [reflection]</string>
+    <string name="total_size_ok">总大小确定!</string>
+    <string name="total_size">总大小:</string>
+    <string name="error_reading_backup_data">读取备份数据时出错</string>
+    <string name="error_calculating_size">计算大小时出错</string>
+    <string name="could_not_create_destination">无法创建备份目录。</string>
+    <string name="make_sure_destination_exists">确保目标目录已挂载且可写</string>
+    <string name="error_detecting_memory">检测设备内存错误</string>
+    <string name="error_checking_destination">检查目标时出错</string>
+    <string name="cannot_split">这些应用过大，因此无法备份！</string>
+    <string name="part">部分</string>
+    <string name="parts">分卷</string>
+    <string name="of">共计</string>
+    <string name="allowed">允许</string>
+    <string name="error_reading_dpi">读取 DPI 时出错</string>
+    <string name="error_reading_adb">读取 ADB 时出错</string>
+    <string name="error_reading_wifi">读取 Wi-Fi 密码存储区时出错</string>
+    <string name="error_reading_fontScale">读取字体缩放比例时出错</string>
+    <string name="stock_android_title">专为原生 Android ROM 制作！</string>
+    <string name="stock_android_desc">
+        -在三星（TouchWiz/One UI），华为（EMUI），小米（MIUI）等定制ROM上可能会失败。\n
+         -如果不确定您的ROM是否基于原生Android，最好不要选这个选项。\n
+         -示例（这些选项应在这些ROM中起作用）：<b>LineageOS、AospExtended(AEX)、PixelExperience(PE)、CarbonROM、Resurrection Remix(RR)、Syberia(syb) 等</b>
+    </string>
+    <string name="go_ahead">继续</string>
+    <string name="error_reading_keyboard_list">读取输入法列表时出错</string>
+    <string name="no_keyboard_enabled">没有启用输入法！</string>
+    <string name="no_keyboard_enabled_desc">请到\n
+     设置->系统->语言和输入法->虚拟键盘->管理键盘\n
+     启用一个键盘应用
+    </string>
+    <string name="selected_keyboard_not_present_in_backup">备份中不存在</string>
+    <string name="selected_keyboard_not_present_in_backup_desc">备份应用程序列表没有选定的输入法。请返回“选择应用程序”页面，然后选择输入法应用程序。</string>
+    <string name="extra_backups_help">
+        联系人：将联系人数据备份为vcf\n
+        短信：备份短信\n
+        通话记录：备份通话记录。 这不包括收藏夹\n
+        屏幕DPI：备用当前屏幕密度\n
+        默认键盘：备份默认键盘选择。 需要手动选择\n
+        应用安装程序：系统认为从Play商店或F-droid安装了还原的应用。\n
+        ADB状态：备份ADB状态（USB调试）\n
+        字体比例：备份字体大小\n
+        \n
+        在项目上打勾后，单击该项目以获取更多选项。
+        </string>
+    <string name="change_size_calculation_method">您可以尝试转到应用程序的主屏幕->单击左上绿色图标->“设置”->“使用新方法来计算大小”</string>
+    <string name="no_sd_card_detected">未检测到 SD 卡(或未挂载为可读写(R/W))</string>
+    <string name="no_sd_card_detected_exp">请确保已安装外部SD卡（如果设备支持）\n
+    还要确保安装了“ ExSDCard Access Enabler” Magisk模块。\n\n
+    [模块开发者为 Romain]
+    </string>
+    <string name="please_select_sd_card">请选择 SD 卡</string>
+    <string name="sd_card_not_rw">SD卡可能未挂载为可读写(R/W)</string>
+    <string name="sd_card_not_rw_exp">可能无法访问外部SD卡。确保在Magisk中安装了“ ExSDCard Access Enabler”模块。\n\n
+    [开发人员Romain制造的模块]
+    </string>
+    <string name="no_busybox_binary">\"busybox\"不可用！</string>
+    <string name="re_calculating_size">使用终端方法重新计算大小</string>
+    <string name="error_occurred">发生了错误！！</string>
+    <string name="wait_while_reading_data">正在读取数据</string>
+    <string name="wait_while_reading_data_desc">请等待直到数据被完全读取后再试</string>
+
+    <!--extra_item_selector.xml-->
+    <string name="sms_selector_label">选择短信</string>
+    <string name="contacts_selector_label">选择通讯录</string>
+    <string name="calls_selector_label">选择通话记录</string>
+    <string name="installer_selector_label">选择安装程序</string>
+    <string name="set_installer_for_all">选择要为所有选定应用设置的安装程序</string>
+    <string name="no_contacts">通讯录为空！</string>
+    <string name="no_sms">没有短信！</string>
+    <string name="no_calls">通话记录为空！</string>
+    <string name="fdroid_extension">要将F-Droid设置为安装程序，必须刷新F-Droid特权扩展</string>
+
+    <!--progress_layout-->
+    <string name="loading">载入中...</string>
+    <string name="cancelling">正在取消...</string>
+    <string name="start_backup">开始备份</string>
+
+    <!--BackupProgressLayout.java-->
+    <string name="split_desc_1">由于备份文件过大，您的备份文件被拆分为多个zip文件</string>
+    <string name="split_desc_2">在 TWRP 中，请刷入所有 zip 文件以进行完全还原。</string>
+
+    <!--BackupEngine.java-->
+    <string name="close">关闭</string>
+    <string name="backingUp">备份应用</string>
+    <string name="noErrors">完成了！没有出现错误。</string>
+    <string name="zipping_all_files">压缩文件</string>
+    <string name="making_file_list">制作文件列表</string>
+    <string name="verifying_zip">验证Zip</string>
+    <string name="listing_zip_file">正在列出 zip 文件</string>
+    <string name="compared_zip_contents">检验 zip 内容</string>
+    <string name="compared_fileList_contents">校验文件列表内容</string>
+    <string name="zip_size_too_big">Zip 大小大于最大允许大小。请转到设置->最大Zip大小 进行设置</string>
+    <string name="storing_wifi_data">Storing wifi data</string>
+    <string name="testing_system">测试系统</string>
+    <string name="writing_settings">写入设置</string>
+    <string name="making_package_flash_ready">正在制作可刷入的恢复数据包</string>
+    <string name="making_updater_script">制作更新脚本</string>
+    <string name="backing_app_permissions">备份应用程序权限</string>
+    <string name="verifying_backups">验证备份</string>
+    <string name="verifying_tar">验证tar</string>
+    <string name="correcting_errors">正在修正错误</string>
+    <string name="backing_contacts">备份通讯录</string>
+    <string name="backing_sms">备份短信</string>
+    <string name="backing_calls">备份电话</string>
+    <string name="verifying_calls">验证电话</string>
+    <string name="verifying_sms">验证短信</string>
+    <string name="call_logs_incomplete">通话记录不完整</string>
+    <string name="sms_records_incomplete">短信记录不完整</string>
+    <string name="backing_dpi">备份DPI</string>
+    <string name="backing_keyboard">备份输入法</string>
+    <string name="errorMakingScripts">制作脚本时出错</string>
+    <string name="backupCancelled">备份已取消</string>
+    <string name="errorStartingBackup">启动备份时出错（在启动命令上）</string>
+    <string name="deletingFiles">删除文件</string>
+    <string name="backupFinishedWithErrors">备份完成，但出现错误！</string>
+    <string name="backupFinishedWithWarnings">备份完成，出现警告！</string>
+    <string name="backupPartHadErrors">备份分卷有错误</string>
+    <string name="incompleteZip">并非所有文件都可以合并</string>
+    <string name="no_keyboard_data">没有输入法数据</string>
+
+    <string name="failed_to_make_batches">制作批处理失败</string>
+    <string name="backup_error_system_check_failed">备份已取消，因为系统检查失败。</string>
+    <string name="backup_error_updater_script">生成刷机脚本出错，备份失败。</string>
+    <string name="backup_error_at_app_verification">应用验证出错，备份失败。</string>
+    <string name="errors_in_batch">批处理中发现错误</string>
+    <string name="zip_size">Zip 大小</string>
+
+    <!--BackupActivity.java-->
+    <string name="setBackupName">设定备份名称</string>
+    <string name="overwrite">覆盖？</string>
+    <string name="overwriteMessage">已存在具有相同名称的备份。你想覆盖吗？</string>
+    <string name="yes">是</string>
+    <string name="rename">不，重命名</string>
+    <string name="backupNameCannotBeEmpty">备份名称不能为空</string>
+    <string name="backup_activity_help_0">
+        App：备份应用apk文件\n
+        Data：备份所有私人数据\n
+        Perm：备份所有细化权限\n
+        \n以下是Google相册应用的细化权限示例\n
+    </string>
+    <string name="backup_activity_help_1">
+    \n以前，选择备份软件的数据意味着您还必须备份该软件。
+    现在不是这样了。此外，Migrate现在可以记住选择用于备份的应用程序。
+    请注意，如果您决定不备份应用程序，而是备份应用程序的数据或权限。则在通过Migrate恢复助手开始还原数据之前，
+    如果尚未安装该应用程序，则该应用程序的数据或权限将不会被还原。
+    </string>
+    <string name="backup_activity_help_2">
+    \n
+    白色应用：普通用户应用\n
+    黄色应用：已从Google Play商店或其他地方更新的系统应用程序,更新后的APK位于/ data目录中，而不位于系统目录中\n
+    红色应用：尚未更新的系统应用程序
+    </string>
+    <string name="bootloop_warning">循环重启警告！</string>
+    <string name="bootloop_warning_desc">备份和还原系统应用程序可能会导致不断重启,请谨慎操作。</string>
+
+
+    <!--BackupService.java-->
+    <string name="error_loading_engine">加载引擎时出错</string>
+
+    <!--MainActivity.java-->
+    <string name="too_fast">哇，太快了！</string>
+    <string name="too_fast_desc">该应用尚未在高于 9.0 的 Android 版本上进行明确测试。\n\n请提交有关该应用是否可用的反馈。</string>
+    <string name="dont_show_again">不再提示</string>
+    <string name="dont_show_stock_warning">不再提示</string>
+    <string name="stock_android_rom">推荐在原生 Android ROM 上使用</string>
+    <string name="please_wait">请耐心等待</string>
+    <string name="reading_data">读取备份数据</string>
+    <string name="making_app_script">正在生成应用附加文件</string>
+    <string name="just_a_minute">请稍等…</string>
+    <string name="starting_engine">启动备份引擎</string>
+    <string name="root_permission_denied">root 权限请求被拒绝！</string>
+    <string name="root_permission_denied_desc">请确保你的设备已 root，并且您已获得 root 权限。\n\n
+     如果您的 ROM 已预置了 root，请尝试刷入 Magisk。
+    </string>
+    <string name="making_packets">制作zip压缩包</string>
+    <string name="making_batches">批量制作可刷入zip</string>
+    <string name="total_extra_size">附加大小</string>
+    <string name="capping_size">封装大小</string>
+    <string name="adding_bigger_apps">添加更大的 apps</string>
+    <string name="adding">添加中</string>
+    <string name="packet">包</string>
+    <string name="moving_files">移动文件</string>
+    <string name="use_reflection">使用reflection方法？</string>
+    <string name="use_reflection_exp">使用反射 (reflection) 方法，一种在 Android 7.0 及以下版本使用的实验性方法计算备份大小，也许效果更好，推荐打开。</string>
+    <string name="use_usage_access_permission">授予使用情况访问权限？</string>
+    <string name="usage_access_permission_needed_desc">添加了一种新的，更快，更可靠的方法来在备份之前计算应用程序的大小。\n\n请点击继续，滑动并选择“Migrate”，然后开启“允许查看使用情况”开关</string>
+    <string name="storage_access_required">请授予存储访问权限以写入备份。</string>
+    <string name="checking_permissions">检查存储权限和 root</string>
+    <string name="rate_dialog_title">您的意见很重要</string>
+    <string name="rate_dialog_message">如果这个应用程序对您有帮助，请考虑给予五星评分或好评。</string>
+    <string name="sure">当然</string>
+    <string name="later">以后</string>
+    <string name="never_show">不再显示</string>
+    <string name="unsupported_device">不支持的设备</string>
+    <string name="cpu_arch_is">您的CPU架构是：</string>
+    <string name="currently_supported_cpu">当前仅支持 armeabi-v7a，arm64-v8a，x86，x86_64 CPU 架构。请通过邮件联系作者以帮助支持你的设备。</string>
+    <string name="proceed">继续</string>
+    <string name="usage_permission_toast">滑动屏幕并选择“Migrate”，然后点击“允许查看使用情况”！</string>
+    <string name="old_method_will_be_used">使用旧的终端方法</string>
+    <string name="update_available">更新可用!</string>
+    <string name="download">下载</string>
+
+    <!--AppListAdapter.java-->
+    <string name="packageName">包名 :</string>
+    <string name="versionName">版本号 :</string>
+    <string name="uid">UID :</string>
+    <string name="sourceDir">APK 源文件目录:</string>
+    <string name="dataDir">软件数据目录</string>
+    <string name="installer">安装来源: </string>
+    <string name="play_store">Play商店</string>
+    <string name="package_installer">软件包安装程序</string>
+    <string name="f_droid">F-Droid</string>
+    <string name="not_set">不要设定</string>
+
+    <!--AppBackupEngine.kt-->
+    <string name="script_file_does_not_exist">脚本文件不存在</string>
+
+    <!--VerificationEngine.kt-->
+    <string name="defect_no">错误数：</string>
+
+    <!--keyboard_selector.xml-->
+    <string name="select_default_keyboard_from_enabled">从启用的键盘应用中选择默认键盘应用</string>
+    <string name="present_in_backup">存在于备份中</string>
+
+    <!--error_report_layout.xml-->
+    <string name="report_header">通过 Telegram 反馈</string>
+    <string name="share_progress_logs">发送进度日志</string>
+    <string name="share_error_logs">发送错误日志</string>
+    <string name="share_script">发送脚本</string>
+    <string name="send_to_tg">发送到 Telegram</string>
+    <string name="agree_and_send">同意并发送</string>
+    <string name="error_report_disclaimer">感谢您对帮助改进此应用程序的关注,从现在开始，所有错误报告都将在我们的 Telegram 群组-https://t.me/migrateApp中发送。
+        这样，您将从小组中的许多人那里获得更快的解决方案。\n\n
+        通过分享日志，您同意公开共享某些信息。
+    </string>
+    <string name="not_joined_yet">还没有加入我们的群组吗？</string>
+    <string name="send_logs_using">使用以下方式发送日志:</string>
+    <string name="log_files_do_not_exist">日志文件不存在</string>
+    <string name="progress_log_does_not_exist">“过程日志”不存在</string>
+    <string name="error_log_does_not_exist">“错误日志”不存在</string>
+    <string name="backup_script_does_not_exist">备份脚本不存在</string>
+    <string name="tg_not_installed">我们的 Telegram 小组可帮助您快速解决问题。</string>
+    <string name="tg_not_installed_desc">请安装 Telegram 并加入我们的小组。</string>
+    <string name="install_tg">安装 Telegram</string>
+    <string name="join_group">加入群组</string>
+    <string name="use_email_instead">旧的方法:电子邮件</string>
+
+    <!--backup_progress_layout.xml-->
+    <string name="report">报告</string>
+    <string name="minimizing_may_decrease_speed">最小化此屏幕可能会降低还原速度！</string>
+
+    <!--initial_guide.xml-->
+    <string name="skip">跳过</string>
+    <string name="accept">我已确定</string>
+
+    <!--initial_guide_0.xml-->
+    <string name="greet1">欢迎使用 Migrate！</string>
+    <string name="body_0_0">Migrate 是在各种第三方 ROM 之间轻松转移的重要工具。\n\n它可以帮助您转移应用程序，数据，联系人，短信等等。</string>
+    <string name="body_0_1">Press Next for a short tour.</string>
+
+    <!--initial_guide_1.xml-->
+    <string name="greet2">全部备份！</string>
+    <string name="body_1_0">备份所有应用程序</string>
+    <string name="body_1_1">应用\n应用程序数据\n应用权限</string>
+    <string name="body_1_2">其他附加数据</string>
+
+    <!--initial_guide_2.xml-->
+    <string name="greet3">Flash with the ROM!</string>
+    <string name="body_2_0">Migrate 是在各种第三方 ROM 之间轻松转移的重要工具。\n\n它可以帮助您转移应用程序，数据，联系人，短信等等。</string>
+    <string name="body_2_1">启动后，系统会自动提示您继续还原</string>
+
+    <!--initial_guide_3.xml-->
+    <string name="greet4">在使用前需要注意的几个事项…</string>
+    <string name="body_3_0"><b>请使用 Magisk</b>，LineageOS su 附加包可能会导致意外错误发生</string>
+    <string name="body_3_1">这个程序还处于开发阶段。可能会存在未知错误。\n\n
+        Migrate是基于root的应用程序。\n\n
+        使用此应用程序即表示您已经知道root手机可能造成的风险，因此使用基于root的应用程序。\n\n
+        注意！！在您按下 “我已确定” 后开发人员将不对你的硬件问题负责，并且如果对您的数据造成了任何损失都是您完全自愿的。\n\n    事实上与任何基于应用程序的备份方法相比，nandroid备份是最安全的备份方法。如有任何问题，请与开发人员联系。
+    </string>
+
+    <!--how_to_restore.xml-->
+    <string name="prev">上一步</string>
+    <string name="got_it">了解！</string>
+    <string name="troubleshooting_tips">故障排除技巧</string>
+
+    <!--restore_0.xml-->
+    <string name="step_0">步骤0-\n做个备份！</string>
+    <string name="step_0_desc">（很显然你要先做一个备份啦，靓仔¯\\(◉‿◉)/¯）</string>
+
+    <!--restore_1.xml-->
+    <string name="step_1">步骤1 -\n刷入新的ROM</string>
+    <string name="step_1_desc">
+        1.重启到TWRP\n
+        2.清除 /data 分区（通常称为双清，强烈建议！）\n
+        3.刷入新的ROM + GApp（可选）\n
+        4.重要：刷入 root！推荐Magisk
+    </string>
+
+    <!--restore_2.xml-->
+    <string name="step_2">步骤2 -\n刷入备份zip！</string>
+    <string name="step_2_desc">
+        默认情况下，您创建的备份zip文件应位于以下位置：\n
+        内部存储->\nMigrate->\n[backup_name.zip或backup_name-> parts.zip]\n\n
+        在TWRP主菜单中，单击安装->找到备份文件zip并安装。\n\n
+        重要提示：请不要在刷新备份zip后擦除数据。
+    </string>
+    <string name="step_2_troubleshoot">在某些情况下，在刷入 Magisk 之后，Migrate可能会把system-as-root设备错认为非system-as-root。
+    您可能会收到“未检测到 ROM”错误。
+    请重新引导回 TWRP 恢复，然后重试。</string>
+
+    <!--restore_3.xml-->
+    <string name="step_3">步骤3-\n设置新的ROM</string>
+    <string name="step_3_desc">
+        1.重新启动到系统。\n
+        2.完成所有GApps / ROM的设置
+    </string>
+
+    <!--restore_4.xml-->
+    <string name="step_4">步骤4 -\n还原应用程序和数据。</string>
+    <string name="step_4_desc_1">您应该能够看到如下所示的通知,打开这个通知。</string>
+    <string name="step_4_desc_2">如果您没有看到通知，请打开Migrate恢复助手应用。\n
+        打开时，您应该会看到如下屏幕:</string>
+    <string name="step_4_desc_3">
+    还原应用程序和数据：授予root权限，然后选择要还原的应用程序和附加功能。\n\n
+    卸载应用程序或完成还原：选择此项以执行还原操作，卸载帮助程序并重新启动设备。
+</string>
+    <string name="step_4_troubleshoot">如果您没有该应用，请使用内置的Android文件管理器（或从Google Play商店下载到文件管理器,或者下载询问酷安用户“梦想妤乐”），然后从内部存储/Migrate目录中安装“helper.apk”</string>
+
+    <!--restore_5.xml-->
+    <string name="step_5">步骤5-\n完成还原后的工作</string>
+    <string name="step_5_desc_1">恢复后通常会保留一些作业。这包括将默认的SMS应用程序（如果已还原SMS）从Migrate帮助程序更改为另一个应用程序，还更改了DPI</string>
+    <string name="step_5_desc_2">在 Android 10 及以后的版本中更改默认短信应用后，系统将强行停止 Migrate 恢复助手。请等待其自动重启，这需要几秒钟时间。</string>
+    <string name="step_5_desc_3">最后，您将要从系统中卸载Magisk恢复助手。您或许还可以禁用该应用程序以便以后继续使用。</string>
+    <string name="step_5_troubleshoot">在 Android 10 及以后版本上，Migrate 恢复助手在某些情况下可能无法自行重启。
+    此时请手动打开该应用程序。系统可能还会提示您在后台安装了其他应用程序。
+    不用担心，这是恢复助手的监视应用，会检测 Migrate 恢复助手是否被强行停止，并将它重新启动。
+    恢复完成后助手会自动将其卸载。</string>
+
+    <!--restore_6.xml-->
+    <string name="step_6">步骤6-\n做完了！请享用！</string>
+    <string name="step_6_desc">完成了！享受您的新ROM！</string>
+
+    <!--drawer_menu.xml-->
+    <string name="aboutThisApp">关于这个程序</string>
+    <string name="about">关于应用</string>
+    <string name="help">应用帮助</string>
+    <string name="preferences">设置</string>
+    <string name="app_intro">应用介绍</string>
+    <string name="changelog">更新日志</string>
+    <string name="lastLog">最近日志</string>
+    <string name="contributors">贡献人员</string>
+    <string name="translate_the_app">翻译应用</string>
+    <string name="rateTheApp">评价应用</string>
+    <string name="xda_thread">XDA帖子</string>
+    <string name="other_options">其他选择</string>
+    <string name="other_apps">其他应用</string>
+    <string name="contact">联系我们</string>
+    <string name="contact_over_telegram">Telegram 群组</string>
+    <string name="older_builds">旧的版本</string>
+
+    <!--help_page.xml-->
+    <string name="q1">应用程序备份中的“权限”是什么意思？</string>
+    <string name="a1"><i>权限</i> 是指应用程序的权限.Migrate可以备份授予Android Marshmallow（6.0）及更高版本的应用程序的精细权限。\n
+    选择该选项将允许您在还原应用程序时还原应用程序权限.
+    </string>
+    <string name="q2">这个应用和钛备份有何不同？</string>
+    <string name="a2">本应用是一个 ROM 数据迁移工具。它可以：\n
+     •将所有应用程序包括数据打包成 TWRP 下的可刷入Zip\n
+     •备份不同的额外数据，如通讯录，短信，通话记录等\n
+     •便携性更高，只需携带几个zip文件\n
+     •如果有需要，可以将备份刷入另一台设备。
+    </string>
+    <string name="q3">但是，为什么不换用 Nandroid 备份呢？</string>
+    <string name="a3">Nandroid 备份是最安全的备份选项。但是，您无法用一个 Nandroid 备份把应用装到到新的 ROM 上。\n
+    本软件是一个 ROM 迁移工具，Nandroid 备份能做到吗？
+    </string>
+    <string name="q4">为什么不能从 recovery 中恢复所有应用程序和数据？</string>
+    <string name="a4">Recovery是与Android OS不同的环境。从Linux发行版安装Windows游戏的映像。\n\n
+    所以，Migrate恢复助手将会被安装为系统应用,他将会开机启动并提示授予root权限然后自动恢复应用和数据。
+    </string>
+    <string name="q5">我需要从 Play 商店下载 Migrate 应用才能还原备份压缩包吗？</string>
+    <string name="a5">
+        没有这个必要啦！\n\n
+        你所要做的就是是在TWRP刷入新系统的时候把备份的zip文件按顺序和其他刷机包一起刷入就好啦(◠‿・)—☆。在刷入备份zip时，会向系统中安装一个Migrate恢复助手应用程序和写入备份的数据缓存，这会占用了一点时间
+    </string>
+    <string name="q6">TWRP 是否必要？没有 TWRP 就不能还原备份吗？</string>
+    <string name="a6">
+        需要 TWRP recovery 才能刷入备份zip。否则，您将无法还原备份。其他恢复可能会起作用，但未经测试。\n\n
+        目前，Migrate 不支持从应用程序本身还原 zip。但这可以在将来添加。
+    </string>
+    <string name="q7">一定要使用 Magisk 吗？</string>
+    <string name="a7">
+        这个应用最适合与 Magisk 搭配使用。 SuperSU尚未经过测试。 Lineage OS su有时可以工作，但有时会给出非常奇怪的错误。因此，请使用 Magisk。
+    </string>
+    <string name="more_questions">还有问题吗？可以通过 Telegram 随时联系</string>
+
+    <!--last_log_report.xml-->
+    <string name="seeProgressLog">查看进度日志</string>
+    <string name="seeErrorLog">查看错误日志</string>
+    <string name="report_logs">发送日志</string>
+    <string name="progressLog">进度日志</string>
+    <string name="errorLog">错误日志</string>
+
+    <!--SimpleLogDisplay.java-->
+    <string name="no_header">没有标题</string>
+    <string name="no_filepath">没有文件路径</string>
+    <string name="log_reading_error">日志读取错误</string>
+
+    <!--other_apps.xml-->
+    <string name="instamean">系统范围的在线词典</string>
+    <string name="pickRingStop">拿起手机停止响铃</string>
+    <string name="opcode8085">将8085程序转换为十六进制代码</string>
+    <string name="mdh">摇晃手机访问 Moto Display</string>
+    <string name="bg_video">在后台播放视频</string>
+    <string name="more_coming_soon">更多功能即将推出…</string>
+
+    <!--miscellaneous-->
+    <string name="contact_via_telegram">联系我们</string>
+    <string name="contact_via_telegram_desc">有关反馈和支持，请联系我们的 Telegram 群组。群组成员将为您提供更好，更快的支持。\n\n您也可以选择通过 Telegram 私聊开发者。</string>
+    <string name="contact_dev">联系开发者</string>
+    <string name="post_in_group">发送到群组</string>
+    <string name="select_mail">选择邮件应用，例如Gmail</string>
+    <string name="select_telegram">打开 Telegram 并选择 Migrate 群组</string>
+    <!--<string name="sem_apology">Semester apology!</string>
+    <string name="sem_apology_desc">Due to upcoming semesters, I will not be able to focus on the app development for a month or so. I am sorry.\n\n
+    Meanwhile, please continue using the app and share bug reports. Your love and support means a lot to me. Thanks!\n\n
+    - SayantanRC</string>-->
+
+    <string name="copied_app">此应用被非法复制且为盗版</string>
+    <string name="copied_app_exp">请通过单击“安装”按钮从 BaltiApps 获取原始应用程序。</string>
+    <string name="install_original_migrate">安装原应用</string>
+
+    <!--preferences.xml-->
+
+    <string name="disable_battery_optimisation">禁用电池优化</string>
+    <string name="use_new_sizing_method">使用新方法计算大小</string>
+    <string name="use_new_sizing_method_desc">启用此功能将使用Android 8+中的StorageStats以及较低版本中的reflection。
+    禁用此功能将使用terminal shell命令来计算大小。</string>
+    <string name="clear_to_reset">清除并按确定以重置为默认值</string>
+    <string name="autoselect_extras_title">自动选择附加功能</string>
+    <string name="autoselect_extras_desc">如果您之前已经备份过，自动勾选通讯录和短信等附加数据</string>
+    <string name="new_icon_method_title">新的图标方法</string>
+    <string name="new_icon_method_desc">这将使用单独的.icon文件存储要备份的每个应用程序的图标。如果未选中，则应用程序图标将存储在.json文件中。</string>
+    <string name="tar_gz_integrity_title">tar.gz完整性检查</string>
+    <string name="tar_gz_integrity_desc">检查存储为tar.gz文件的每个应用程序的数据备份的完整性</string>
+    <string name="sms_verify_title">短信验证</string>
+    <string name="sms_verify_desc">检查备份中存储的短信数据库文件的完整性</string>
+    <string name="calls_verify_title">通话记录验证</string>
+    <string name="calls_verify_desc">检查备份中存储的通话记录数据库文件的完整性</string>
+    <string name="perform_system_check_title">执行系统检查</string>
+    <string name="perform_system_check_desc">每次备份前通过Su shell对本应用执行一次基本的 APK 复制和应用数据复制，以检查其他应用程序的备份是否能成功。</string>
+    <string name="separate_extras_title">单独存放额外数据备份</string>
+    <string name="force_separate_extras">强制单独附加</string>
+    <string name="force_separate_extras_desc">即使是小型备份，也将单独备份其他内容</string>
+    <string name="separate_extras_desc">将额外内容（通讯录，短信等）存储为独立的 zip 文件，并将应用程序存储在单独的 zip 文件中。仅适用于具有1个以上分卷的备份。</string>
+    <string name="delete_error_backup_title">删除有错误的备份</string>
+    <string name="delete_error_backup_desc">如果备份zip文件出现错误或在备份时损坏，请删除它。</string>
+    <string name="zip_verification_title">Zip 完整性检查</string>
+    <string name="zip_verification_desc">验证备份 zip 是否已损坏并且可用空间足够刷入。\n强烈推荐</string>
+    <string name="advanced">高级</string>
+    <string name="max_zip_size">Zip最大大小</string>
+    <string name="max_zip_size_desc">这是可以通过TWRP安全地刷新的备份zip的最大允许大小。 这并不意味着zip实际具有此大小，而是这个数值确定整个备份中要创建的zip的最大大小。
+    zip可能比这个大小要小得多，以保持均匀性。</string>
+    <string name="use_su_for_keyboard_title">使用 Su shell读取输入法</string>
+    <string name="use_su_for_keyboard_desc">Root shell将用于读取额外数据之中的活动键盘应用一项</string>
+    <string name="ignore_cache_desc">备份时忽略应用程序的缓存目录，因此备份变得很小。尽管通常很安全，但是您可能会丢失该应用程序的一些数据。</string>
+    <string name="manual_cache">指定 migration_cache 路径</string>
+    <string name="manual_system">指定system目录的路径</string>
+    <string name="manual_buildprop">指定 ROM build.prop 路径</string>
+    <string name="detect_while_flashing_hint">（刷入时检测）</string>
+
+    <string name="use_file_list_in_zip_verification">在 zip 验证中使用fileList.txt</string>
+    <string name="use_file_list_in_zip_verification_desc">Migrate在备份zip内的“fileList.txt”文件中维护着已备份文件的列表。此选项将使zip验证引擎将zip中存在的文件与该文件中的条目进行比较。</string>
+
+    <!--app_search_layout.xml-->
+    <string name="showing_apps_from">显示此类别的应用:</string>
+    <string name="enter_app_name">应用/软件包名</string>
+
+    <!--ProgressShowActivity.kt-->
+    <string name="force_stop">强行停止</string>
+    <string name="force_stop_alert_title">强行停止应用程序？</string>
+    <string name="force_stop_alert_desc">强行停止将尝试终止应用运行。如果您已经点按过一次“取消”，请等待一段时间。\n\n强行停止后，您将必须手动删除所有已经产生的备份文件。</string>
+    <string name="kill_app">行，结束它的运行！</string>
+    <string name="wait_to_cancel">等待...</string>
+    <string name="killing_programmatically">正在使用 kill 命令结束</string>
+
+    <!--MainBackupEngine.kt-->
+    <string name="test_apk_not_found">未找到或未正确创建测试APK</string>
+    <string name="test_data_not_found">未找到或未正确创建测试APK</string>
+
+    <!--privacy_policy.xml-->
+    <string name="privacy_policy_header">隐私政策</string>
+    <string name="privacy_policy_desc">这是关于数据隐私和 Migrate（用户应注意的一些事情）的非正式形式的讨论。
+    随着更多功能的添加，这些内容可能会在将来的更新中更改。</string>
+    <string name="google_firebase">Google Firebase</string>
+    <string name="google_firebase_desc">从Google Play版v3.0起，Migrate使用Firebase进行崩溃分析。 Migrate-NG（在XDA上发布）的版本不再具有崩溃分析。不会传输用户的个人数据。</string>
+    <string name="google_admob">Google Admob</string>
+    <string name="google_admob_desc">Migrate 一直在使用 Google 的 Admob 服务来展示广告。这保持不变。</string>
+    <string name="data_that_is_read">Migrate 读取的数据</string>
+    <string name="data_that_is_read_desc">应用程序备份将读取以下数据：\n
+        1.已安装软件包的列表\n
+        2.源apk的路径\n
+        3.数据目录路径\n
+        4.使用的权限\n
+        5.应用程序的安装包\n
+        使用ROOT权限访问以下内容：\n
+        1.应用程序的安装包（直接存储）\n
+        2.应用程序的私人数据（压缩后存储）\n
+        不会分析应用的 APK 内容及其私有数据。\n\n
+
+        对于额外数据的备份，只有在得到用户许可后，才会读取以下内容：\n
+        1.通讯录数据（存储为 vcf 文件）\n
+        2. 短信数据（存储为 db 文件）\n 
+        3.通话记录（存储为 db 文件）\n
+        4.屏幕DPI，默认输入法，ADB 状态，字体缩放比例\n
+        5. Wi-Fi 存储配置文件（Android 8.0以上）\n\n
+
+     读取的所有数据均存储在设备本地
+</string>
+    <string name="what_is_shared">What is shared</string>
+    <string name="what_is_shared_desc">
+        在这种情况下，反馈是指自愿发送应用程序日志\n\n
+        发送日志则意味着您将会发送（如果发送到 Telegram 上则是公开的）:\n\n
+        - 应用的内部文件结构，通常不包含可辨认的敏感个人信息\n
+        - 备份的名称\n
+        - 一些备份的详细信息，例如备份分卷的数量\n
+        - 设备信息，例如 Android 版本\n\n
+        Migrate 高度尊重用户的隐私。因此，在备份通讯录、短信和通话记录时的生成的日志不会被记录且不可共享
+        本应用不会故意识别或不当地使用用户的个人数据\n\n
+        您同意在任何情况下都不追究开发人员或应用在无意之中侵犯您的隐私权的责任
+        如果您认为您的日志包含了敏感信息，请不要发送出来
+        如果您已经将其分享, 请尽快请求将其删除。
+    </string>
+    <string name="what_is_intentional">什么叫“不会故意”？</string>
+    <string name="what_is_intentional_desc">
+    作为开发人员，我希望用户理解以下信息。
+    这些信息只在您准备分享日志时需要注意。\n\n
+    Migrate 使用 Linux 的 tar 命令来压缩数据文件。如此，tar 会向日志写入已处理的文件名（不会写入文件内容），以便确定备份过程中是否存在错误。\n\n通常，tar 的输出中是找不到能够确认个人身份的信息的。
+    但是在少数情况下，应用开发者没有遵循正确的做法，而将信息放在文件名本身上。比如：聊天软件也许会存储与其他人的会话的设置，而存储设置的文件名称是那些人的电话号码。
+    在这种情况下，tar 会输出文件名，从而泄露电话号码。这只是可能发生的情况之一。\n\n 
+    Migrate 无法为了防止意外的隐私泄露而给数百万个应用逐个添加定制的筛选器，从日志中删去敏感信息。\n\n
+    重申，这是非常罕见的情况，而且通常总是不为人所知，但在以前版本的 Migrate 中确实发生过。我得到了一些用户的建议，因而将此信息告知各位。\n 
+    阅读完毕之后，您可以继续使用 Migrate。
+     </string>
+    <string name="avoid_unintentional_leak">我还是不相信</string>
+    <string name="avoid_unintentional_leak_desc">
+        如前所述，如果您认为备份中确实包含敏感数据，请不要分享日志。如果您不自愿分享日志，则什么也不会离开你的设备。但是，还请注意，没有日志几乎不可能提供任何支持。\n\n
+        或者，您可以选择不分享“进度日志”。
+        通常，“错误日志”和其他选项最为重要。
+    </string>
+    <string name="privacy_policy_footer">就这样。享受使用应用程序的乐趣。请随时通过Telegram与我联系。\n-SayantanRC</string>
+
+    <!--translation_layout.xml-->
+    <string name="want_to_translate">你想帮忙翻译吗?</string>
+    <string name="translation_available_at">strings.xml 文件位于:\n<a href="https://github.com/SayantanRC/translations">https://github.com/SayantanRC/translations</a>\n
+    按照README文件说明来提交翻译
+    </string>
+    <string name="translators">翻译提供人员</string>
+    <string name="translators_list">
+        <b>@Trexfat</b>: Turkish
+        <b>@atfmxyl,@dwughjsd</b>: Simplified Chinese
+    </string>
+
+    <!--contributors.xml-->
+    <string name="contr_3.0">
+        Patrick Perfectly III mtl：提供log，编写详细 的故障排除指南……基本上保证了该应用程序直到现在仍处于活动状态。\n
+        梦想妤乐（Isaac Baihua）：如果不备份app仅选择其他额外数据备份选项，从而出现未制作可刷入zip的情况。\n
+        @ anoop142（Anoop）：制作了该应用程序的第一个SAR修改版本。 在v3.0中起到了很大作用\n
+        @cruzer_blaze（Gokul）：在脚本中提供了帮助\n
+        @indianets（Vijay）：使脚本有效地还原了拆分的apk\n
+        BillGoss（XDA）：如果恢复中没有awk，请使用busybox awk。\n
+        AndDiSa（XDA）：修复无换行校正。\n\n
+        我非常感谢所有测试了处于alpha状态的这个应用程序的用户，而不是处于Alpha状态的用户，
+    你对我来说也很重要。 谢谢:-)
+    </string>
+    <string name="prev_contri">以前的贡献人员</string>
+    <string name="thanks_to_stericson">非常感谢 Stephen（stericdroid）允许我自由地使用他的 busybox 构建</string>
+    <string name="thanks_to_magisk">没有topjohnwu的Magisk，此应用将无法使用。我从Magisk安装程序脚本中学到了很多东西。\n\n</string>
+    <string name="thanks_1">对小米Mi A1的不懈帮助：\n@ishubhamsingh\n@su_bin</string>
+    <string name="thanks_2">Bug 挖掘人员：\n
+        我的同学 Shivam 测试这个应用的次数比我还多！\n
+        @akshayrohida\n 
+        @ raj3303\n 
+        \n
+        XDA 用户 djseltus，提供了新的 update-binary\n
+        Vinyas N S，解决了 “android.os.TransactionTooLargeException” 问题\n
+        C Tab，帮忙发现了恢复助手的一个问题\n
+        XDA 用户 SevenSlevin 发现了 updater_script 的问题\n
+        XDA 用户 kdrag0n 提供了一些有用的建议
+    </string>
+    <string name="thanks_3">没有整个测试人员团队，该应用将无法实现：\n\n
+        @TusharG03\n
+        @arghyac35\n
+        @pavanjadhaw\n
+        @Johnkator\n
+        @samirkushwaha\n
+        Pranay\n
+        @Sachith_Hedge\n
+        @Akianonymus\n
+        @SubhrajyotiSen\n
+        @rm_rfasterisk\n
+        @facumo\n
+    </string>
+
+    <!--ZipItemAdapter.java-->
+    <string name="empty">空的</string>
+
+    <string name="file_list_not_in_zip_batch">批量zip文件中不存在文件列表</string>
+    <string name="zip_batch_null_updater">更新程序脚本之前，Zip Batch为空</string>
+    <string name="zip_batch_null_zipping_engine">开始压缩之前，Zip batch为空</string>
+    <string name="zip_batch_null_zip_verification">zip压缩包验证之前，Zip Batch为空</string>
+    <string name="improper_result_received">收到不正确的结果</string>
+
+    <!--some branch specific strings-->
+    <!--Needs to be translated-->
+    <string name="label_for_gpe">Google Play版</string>
+    <string name="label_for_ng">非Google /Beta版Edithion</string>
+    <string name="check_for_updates_ng">检查更新</string>
+    <string name="switch_to_ng_in_gpe">切换到 Migrate-NG</string>
+    <string name="ng_desc">Migrate-NG 是该应用程序的测试版。 Google Play上的版本是稳定版。 Beta版可以作为单独的应用程序下载到XDA帖子上。</string>
+    <string name="updates_ng">更新</string>
+    <string name="auto_check_updates_ng">自动检查更新</string>
+    <string name="auto_check_updates_desc_ng">启动时检查更新</string>
+    <string name="update_host_ng">选择主机进行更新</string>
+    <string name="update_host_desc_ng">更新存储为发布在GitHub /GitLab中</string>
+    <string name="select_update_channel_ng">选择更新频道</string>
+    <string name="select_update_channel_desc_ng">稳定的频道或 测试 +稳定</string>
+
+</resources>
