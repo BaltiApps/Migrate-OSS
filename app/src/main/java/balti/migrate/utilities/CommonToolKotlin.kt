@@ -569,11 +569,20 @@ class CommonToolKotlin(val context: Context) {
         return possibleSDCards.toTypedArray()
     }
 
-    fun showSdCardSupportDialog(): AlertDialog =
-        AlertDialog.Builder(context)
-                .setView(View.inflate(context, R.layout.learn_about_sd_card, null))
-                .setPositiveButton(android.R.string.ok, null)
-                .show()
+    fun showSdCardSupportDialog() {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            AlertDialog.Builder(context)
+                    .setView(View.inflate(context, R.layout.learn_about_sd_card, null))
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+        } else {
+            AlertDialog.Builder(context)
+                    .setTitle(R.string.sd_card_android_10)
+                    .setMessage(R.string.sd_card_android_10_desc)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+        }
+    }
 
     fun openWebLink(url: String) {
         if (url != "") {
