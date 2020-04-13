@@ -9,8 +9,8 @@ android {
         applicationId "balti.migrate"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 20
-        versionName "mercury (v3.0.1) [release]"
+        versionCode 21
+        versionName "mercury (v3.0.2) [release]"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -32,7 +32,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
-    implementation 'com.google.firebase:firebase-analytics:17.2.3'  //for fcm
+    implementation 'com.google.firebase:firebase-analytics:17.3.0'  //for fcm
 }
 repositories {
     mavenCentral()

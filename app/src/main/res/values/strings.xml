@@ -23,7 +23,7 @@
 
     <string name="app_name">Migrate</string>
     <string name="gpe_label"></string>
-    <string name="current_version_name">3.0.1</string>
+    <string name="current_version_name">3.0.2</string>
     <string name="current_version_codename">Mercury</string>
     <string name="release_state">release</string>
     <string name="last_tested_label">Last tested on: Android 10</string>
@@ -148,6 +148,10 @@
         \u2022 Add russian translation (@vladrevers)\n
         \u2022 Add indonesian translation (@rzlamrr)\n
         \u2022 Add Simplified Chinese translation (@atfmxyl,@dwughjsd)\n
+    </string>
+    <string name="version_3.0.2">Version 3.0.2</string>
+    <string name="version_3.0.2_content">
+        \u2022 Changes to make the app compliant with Google Play policies.
     </string>
 
     <!--activity_main.xml-->
