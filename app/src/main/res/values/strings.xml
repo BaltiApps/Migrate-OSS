@@ -238,6 +238,7 @@
 
     <!--ExtraBackups.java-->
     <string name="not_recommended">Not recommended!</string>
+    <string name="new_method_not_available_below_oreo">New method not for size calculation available below Android Oreo. Using terminal method.</string>
     <string name="contacts_not_recommended">Contacts backup and restore is not recommended <b>if you intend to sign in with Google</b> on your next ROM. Restoring contacts will make unnecessary duplicates of same contact entries.</string>
     <string name="dont_backup">Don\'t backup</string>
     <string name="backup_contacts_anyway">Backup contacts anyway</string>
