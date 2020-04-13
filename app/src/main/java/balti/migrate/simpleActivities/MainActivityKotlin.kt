@@ -193,7 +193,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         .show()
 
                 /*Version related changes*/
-                if (lastVer < 21) {  // v3.0.2, immediate version after strike
+                if (lastVer < 21 && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {  // v3.0.2, immediate version after strike
                     editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
                 }
 
@@ -467,10 +467,14 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
                 if (isRootPermissionGranted()) {
 
-                    val isAboveOreo = Build.VERSION.SDK_INT > Build.VERSION_CODES.O
-                    val isAlternateMethod = main.getInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD) == PREF_ALTERNATE_METHOD
+                    fun startBackupActivity(){
+                        startActivity(Intent(this, BackupActivityKotlin::class.java))
+                    }
 
-                    if (isAboveOreo && isAlternateMethod && !isUsageAccessGranted()) {
+                    val isOreoAndAbove = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                    val isAlternateMethod = main.getInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
+
+                    if (isOreoAndAbove && isAlternateMethod && !isUsageAccessGranted()) {
 
                         val accessPermissionDialog = AlertDialog.Builder(this)
                                 .setTitle(R.string.use_usage_access_permission)
@@ -483,7 +487,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                                 .setNegativeButton(R.string.old_method_will_be_used) { _, _ ->
                                     editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
                                     editor.commit()
-                                    startActivity(Intent(this, BackupActivityKotlin::class.java))
+                                    startBackupActivity()
                                 }
                                 .setNeutralButton(android.R.string.cancel) { _, _ ->
                                     editor.commit()
@@ -493,11 +497,15 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         accessPermissionDialog.show()
 
                     } else {
-                        if (isAlternateMethod) {
-                            editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
-                            editor.apply()
+
+                        if (!isOreoAndAbove){
+                            if (isAlternateMethod) {
+                                editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
+                                editor.apply()
+                            }
                         }
-                        startActivity(Intent(this, BackupActivityKotlin::class.java))
+
+                        startBackupActivity()
                     }
 
                 } else {
