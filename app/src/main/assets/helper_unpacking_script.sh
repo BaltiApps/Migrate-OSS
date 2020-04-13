@@ -43,7 +43,7 @@ if [[ -e ${helper_apk_dir}/MigrateHelper.apk ]]; then
     if [[ ${last_helper_version} -lt ${VERSION} ]]; then
         echoIt "Upgrading helper."
         rm -rf ${helper_apk_dir}
-        rm -rf /data/data/balti.migratehelper/
+        rm -rf /data/data/balti.migrate.helper/
         cp -a ${TEMP_UNPACK_DIR}/app ${HELPER_EXTRACT_DIR}/
         echo "$VERSION" > ${helper_apk_dir}/v
         mkdir -p ${ext_helper_apk_dir}
@@ -56,7 +56,7 @@ if [[ -e ${helper_apk_dir}/MigrateHelper.apk ]]; then
 else
     echoIt "Injecting helper."
     rm -r ${helper_apk_dir}
-    rm -r /data/data/balti.migratehelper/
+    rm -r /data/data/balti.migrate.helper/
     cp -a ${TEMP_UNPACK_DIR}/app ${HELPER_EXTRACT_DIR}/
     touch ${helper_apk_dir}/v
     echo "$VERSION" > ${helper_apk_dir}/v
