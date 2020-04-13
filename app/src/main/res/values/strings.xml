@@ -442,8 +442,6 @@
     <string name="adding">Adding</string>
     <string name="packet">Packet</string>
     <string name="moving_files">Moving files</string>
-    <string name="use_reflection">Use reflection?</string>
-    <string name="use_reflection_exp">Reflection is an experimental way of calculating size in Nougat and below. This might provide a better way of calculating size. Recommended: Yes</string>
     <string name="use_usage_access_permission">Grant usage access permission?</string>
     <string name="usage_access_permission_needed_desc">A new, faster and more reliable method has been added to calculate size of apps before backup.\n\nPlease click Proceed, scroll and select \"Migrate\" then enable \"Permit usage access\"</string>
     <string name="storage_access_required">Please grant storage access to write backups.</string>
