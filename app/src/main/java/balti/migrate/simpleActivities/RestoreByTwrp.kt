@@ -15,6 +15,10 @@ class RestoreByTwrp: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.how_to_restore)
 
+        how_to_restore_close_button.setOnClickListener {
+            finish()
+        }
+
         val arrLayouts = intArrayOf(
                 R.layout.restore_0,
                 R.layout.restore_1,
