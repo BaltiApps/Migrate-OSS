@@ -617,7 +617,6 @@
     <string name="other_apps">Other apps</string>
     <string name="contact">Contact via Telegram</string>
     <string name="contact_over_telegram">Telegram group</string>
-    <string name="older_builds">Older builds on AFH</string>
 
     <!--help_page.xml-->
     <string name="q1">What is the Perm label in app backup?</string>

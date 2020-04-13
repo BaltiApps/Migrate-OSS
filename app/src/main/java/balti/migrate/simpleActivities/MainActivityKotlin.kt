@@ -255,8 +255,6 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             R.id.lastLog -> showLog()
 
-            R.id.older_builds -> commonTools.openWebLink("https://www.androidfilehost.com/?w=files&flid=285270")
-
             R.id.appIntro ->
                 startActivity(Intent(this, InitialGuideKotlin::class.java))
 

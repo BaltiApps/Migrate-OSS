@@ -46,10 +46,6 @@
                     android:title="@string/rateTheApp"
                     android:icon="@drawable/ic_rate"/>
 
-                <item android:id="@+id/older_builds"
-                    android:title="@string/older_builds"
-                    android:icon="@drawable/ic_archive"/>
-
             </group>
         </menu>
     </item>
