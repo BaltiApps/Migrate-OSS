@@ -152,7 +152,8 @@
     </string>
     <string name="version_3.0.2">Version 3.0.2</string>
     <string name="version_3.0.2_content">
-        \u2022 Changes to make the app compliant with Google Play policies.
+        \u2022 Changes to make the app compliant with Google Play policies.\n
+        \u2022 Remove alternate method for app size calculation below android Nougat.\n
     </string>
 
     <!--activity_main.xml-->
@@ -239,6 +240,7 @@
 
     <!--ExtraBackups.java-->
     <string name="not_recommended">Not recommended!</string>
+    <string name="new_method_not_available_below_oreo">New method not for size calculation available below Android Oreo. Using terminal method.</string>
     <string name="contacts_not_recommended">Contacts backup and restore is not recommended <b>if you intend to sign in with Google</b> on your next ROM. Restoring contacts will make unnecessary duplicates of same contact entries.</string>
     <string name="dont_backup">Don\'t backup</string>
     <string name="backup_contacts_anyway">Backup contacts anyway</string>
@@ -442,8 +444,6 @@
     <string name="adding">Adding</string>
     <string name="packet">Packet</string>
     <string name="moving_files">Moving files</string>
-    <string name="use_reflection">Use reflection?</string>
-    <string name="use_reflection_exp">Reflection is an experimental way of calculating size in Nougat and below. This might provide a better way of calculating size. Recommended: Yes</string>
     <string name="use_usage_access_permission">Grant usage access permission?</string>
     <string name="usage_access_permission_needed_desc">A new, faster and more reliable method has been added to calculate size of apps before backup.\n\nPlease click Proceed, scroll and select \"Migrate\" then enable \"Permit usage access\"</string>
     <string name="storage_access_required">Please grant storage access to write backups.</string>
@@ -694,8 +694,8 @@
 
     <string name="disable_battery_optimisation">Disable battery optimisation</string>
     <string name="use_new_sizing_method">Use new method to calculate size</string>
-    <string name="use_new_sizing_method_desc">Enabling this uses StorageStats in Android 8+ and by reflection in lower versions.
-        Disabling this uses terminal shell commands to calculate size.</string>
+    <string name="use_new_sizing_method_desc">Enabling this uses StorageStats in Android 8.0+ Disabling this uses terminal shell commands to calculate size.</string>
+    <string name="only_for_oreo_and_above">Only for oreo and above</string>
     <string name="clear_to_reset">Clear and press OK to reset to default value</string>
     <string name="autoselect_extras_title">Auto-select extras</string>
     <string name="autoselect_extras_desc">This will automatically select extras like contacts and sms if you had previously backed them up</string>
