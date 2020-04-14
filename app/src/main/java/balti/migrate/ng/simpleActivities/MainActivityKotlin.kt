@@ -506,9 +506,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                                     editor.commit()
                                     startBackupActivity()
                                 }
-                                .setNeutralButton(android.R.string.cancel) { _, _ ->
-                                    editor.commit()
-                                }
+                                .setNeutralButton(android.R.string.cancel, null)
                                 .setCancelable(false)
 
                         accessPermissionDialog.show()
