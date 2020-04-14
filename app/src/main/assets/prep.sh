@@ -8,7 +8,7 @@ PACKAGE_DATA_NAME=$3
 TEMP_UNPACK_DIR=$4
 MANUAL_CONFIG_DIR=$5
 
-OUTFD=""
+OUTFD="NULL"
 SYSTEM=""
 MIGRATE_CACHE=""
 
@@ -19,7 +19,7 @@ AWK1="awk"
 # Also a manual location for migrate cache can be placed in the file /tmp/${MANUAL_CONFIG_DIR}/MIGRATE_CACHE_MANUAL
 
 echoIt() {
-    if [[ -n "${OUTFD}" ]]; then
+    if [[ "${OUTFD}" != "NULL" ]]; then
         echo "ui_print $1" >> /proc/self/fd/${OUTFD};
     else
         echo "FD $OUTFD:: $1"
