@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".preferences.MainPreferenceActivity"
+    tools:context=".ng.preferences.MainPreferenceActivity"
     >
 
     <Preference
@@ -118,16 +118,16 @@
             android:key="useFileListInZipVerification"
             />
 
-        <balti.migrate.preferences.subPreferences.ZipMaxSizePref
+        <balti.migrate.ng.preferences.subPreferences.ZipMaxSizePref
             android:layout="@layout/preference_seekbar"/>
 
-        <balti.migrate.preferences.subPreferences.ManualCachePref
+        <balti.migrate.ng.preferences.subPreferences.ManualCachePref
             android:layout="@layout/preferences_edittext"/>
 
-        <balti.migrate.preferences.subPreferences.ManualSystemPref
+        <balti.migrate.ng.preferences.subPreferences.ManualSystemPref
             android:layout="@layout/preferences_edittext"/>
 
-        <balti.migrate.preferences.subPreferences.ManualBuildpropPref
+        <balti.migrate.ng.preferences.subPreferences.ManualBuildpropPref
             android:layout="@layout/preferences_edittext"/>
 
     </PreferenceCategory>

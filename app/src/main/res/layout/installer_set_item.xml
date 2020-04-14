@@ -36,14 +36,14 @@
                 android:id="@+id/installer_item_appName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Migrate"
+                tools:text="Migrate-NG"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:id="@+id/installer_item_package"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="balti.migrate"
+                tools:text="balti.migrate.ng"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
         </LinearLayout>
