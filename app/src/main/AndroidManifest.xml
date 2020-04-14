@@ -30,7 +30,7 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-6582325651261661~4343120914"/>
+            android:value="ca-app-pub-6582325651261661~9091893677"/>
 
 
         <activity android:name="balti.migrate.ng.simpleActivities.MainActivityKotlin"
