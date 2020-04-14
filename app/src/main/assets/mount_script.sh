@@ -70,6 +70,8 @@ mountIt()
             touch ${testF} 2>/dev/null
             if [[ ! -e ${testF} ]]; then
                 echo "Debug:: Mount failed data..."
+            else
+                rm ${testF}
             fi
         else
             rm ${testF}
