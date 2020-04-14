@@ -12,8 +12,6 @@
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
-    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"
-        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
     <uses-permission android:name="android.permission.GET_PACKAGE_SIZE" />
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -33,7 +31,7 @@
             android:value="ca-app-pub-6582325651261661~9091893677"/>
 
 
-        <activity android:name="balti.migrate.ng.simpleActivities.MainActivityKotlin"
+        <activity android:name=".simpleActivities.MainActivityKotlin"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme.Launcher">
@@ -44,44 +42,44 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="balti.migrate.ng.simpleActivities.InitialGuideKotlin"
+        <activity android:name=".simpleActivities.InitialGuideKotlin"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance"/>
 
-        <activity android:name="balti.migrate.ng.backupActivity.BackupActivityKotlin"
+        <activity android:name=".backupActivity.BackupActivityKotlin"
             android:screenOrientation="portrait"
             />
 
-        <activity android:name="balti.migrate.ng.extraBackupsActivity.ExtraBackupsKotlin"
+        <activity android:name=".extraBackupsActivity.ExtraBackupsKotlin"
             android:screenOrientation="portrait"
             />
 
-        <activity android:name="balti.migrate.ng.simpleActivities.ProgressShowActivity"
+        <activity android:name=".simpleActivities.ProgressShowActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance"
             />
 
-        <activity android:name="balti.migrate.ng.simpleActivities.SimpleLogViewer"
+        <activity android:name=".simpleActivities.SimpleLogViewer"
             android:screenOrientation="portrait"
             />
 
-        <activity android:name="balti.migrate.ng.simpleActivities.RestoreByTwrp"
+        <activity android:name=".simpleActivities.RestoreByTwrp"
             android:screenOrientation="portrait"
             />
 
-        <activity android:name="balti.migrate.ng.simpleActivities.HelpPageKotlin"
+        <activity android:name=".simpleActivities.HelpPageKotlin"
             android:screenOrientation="portrait"
             />
 
-        <activity android:name="balti.migrate.ng.preferences.MainPreferenceActivity"
+        <activity android:name=".preferences.MainPreferenceActivity"
             android:screenOrientation="portrait"
             />
 
-        <activity android:name="balti.migrate.ng.simpleActivities.PrivacyPolicy"
+        <activity android:name=".simpleActivities.PrivacyPolicy"
             android:screenOrientation="portrait"
             />
 
-        <service android:name="balti.migrate.ng.backupEngines.BackupServiceKotlin"/>
+        <service android:name=".backupEngines.BackupServiceKotlin"/>
 
         <provider
             android:authorities="migrate.provider"
