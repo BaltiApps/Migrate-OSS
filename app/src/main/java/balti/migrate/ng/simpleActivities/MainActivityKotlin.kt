@@ -199,16 +199,21 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     }
 
     private fun showChangeLog(onlyLatest: Boolean) {
-        val currVer = main.getInt(PREF_VERSION_CURRENT, 1)
+        val lastVer = main.getInt(PREF_VERSION_CURRENT, 1)
         val changelog = AlertDialog.Builder(this)
 
         if (onlyLatest) {
-            if (currVer < THIS_VERSION) {
+            if (lastVer < THIS_VERSION) {
                 /*Put only the latest version here*/
                 changelog.setTitle(R.string.version_3_0_2)
                         .setMessage(R.string.version_3_0_2_content)
                         .setPositiveButton(R.string.close, null)
                         .show()
+
+                /*Version related changes*/
+                if (lastVer < 21 && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {  // v3.0.2, immediate version after strike
+                    editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
+                }
 
                 editor.putInt(PREF_VERSION_CURRENT, THIS_VERSION)
                 editor.commit()
@@ -480,62 +485,45 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
                 if (isRootPermissionGranted()) {
 
-                    val isAboveOreo = Build.VERSION.SDK_INT > Build.VERSION_CODES.O
-                    val isAlternatePermission = main.getInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
+                    fun startBackupActivity(){
+                        startActivity(Intent(this, BackupActivityKotlin::class.java))
+                    }
 
-                    if (!main.getBoolean(PREF_ALTERNATE_ACCESS_ASKED, false) || (isAboveOreo && isAlternatePermission && !isUsageAccessGranted())) {
+                    val isOreoAndAbove = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                    val isAlternateMethod = main.getInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
+
+                    if (isOreoAndAbove && isAlternateMethod && !isUsageAccessGranted()) {
 
                         val accessPermissionDialog = AlertDialog.Builder(this)
+                                .setTitle(R.string.use_usage_access_permission)
+                                .setMessage(R.string.usage_access_permission_needed_desc)
+                                .setPositiveButton(R.string.proceed) { _, _ ->
+                                    val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                                    startActivity(intent)
+                                    Toast.makeText(this, R.string.usage_permission_toast, Toast.LENGTH_SHORT).show()
+                                }
                                 .setNegativeButton(R.string.old_method_will_be_used) { _, _ ->
-                                    editor.putBoolean(PREF_ALTERNATE_ACCESS_ASKED, true)
                                     editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
                                     editor.commit()
-                                    startActivity(Intent(this, BackupActivityKotlin::class.java))
+                                    startBackupActivity()
                                 }
                                 .setNeutralButton(android.R.string.cancel) { _, _ ->
-                                    editor.putBoolean(PREF_ALTERNATE_ACCESS_ASKED, false)
                                     editor.commit()
                                 }
                                 .setCancelable(false)
 
-                        if (!isAboveOreo) {
-                            accessPermissionDialog.setTitle(R.string.use_reflection)
-                                    .setMessage(R.string.use_reflection_exp)
-                                    .setPositiveButton(R.string.yes) { _, _ ->
-                                        editor.putBoolean(PREF_ALTERNATE_ACCESS_ASKED, true)
-                                        editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD)
-                                        editor.commit()
-                                        startActivity(Intent(this, BackupActivityKotlin::class.java))
-                                    }
+                        accessPermissionDialog.show()
 
-                            accessPermissionDialog.show()
+                    } else {
 
-                        }
-                        else
-                        {
-                            if (!isUsageAccessGranted()) {
-                                accessPermissionDialog.setTitle(R.string.use_usage_access_permission)
-                                        .setMessage(R.string.usage_access_permission_needed_desc)
-                                        .setPositiveButton(R.string.proceed) { _, _ ->
-                                            editor.putBoolean(PREF_ALTERNATE_ACCESS_ASKED, false)
-                                            editor.commit()
-                                            val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-                                            startActivity(intent)
-                                            Toast.makeText(this, R.string.usage_permission_toast, Toast.LENGTH_SHORT).show()
-                                        }
-
-                                accessPermissionDialog.show()
-
-                            } else {
-                                editor.putBoolean(PREF_ALTERNATE_ACCESS_ASKED, true)
-                                editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD)
-                                editor.commit()
-                                startActivity(Intent(this, BackupActivityKotlin::class.java))
+                        if (!isOreoAndAbove){
+                            if (isAlternateMethod) {
+                                editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
+                                editor.apply()
                             }
                         }
 
-                    } else {
-                        startActivity(Intent(this, BackupActivityKotlin::class.java))
+                        startBackupActivity()
                     }
 
                 } else {
@@ -545,6 +533,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                             .setPositiveButton(android.R.string.ok, null)
                             .show()
                 }
+
             } else {
                 AlertDialog.Builder(this)
                         .setMessage(R.string.storage_access_required)

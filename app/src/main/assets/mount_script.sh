@@ -56,6 +56,27 @@ mountIt()
         mount "$res" "$1"
     fi
 
+    if [[ "$1" == "/data" ]]; then
+
+        echo "Debug:: Creating Test file"
+
+        testF="/data/data/aFile"
+        rm ${testF} 2>/dev/null
+        touch ${testF} 2>/dev/null
+
+        if [[ ! -e ${testF} ]]; then
+            echo "Debug:: Last attempt to mount data..."
+            /tmp/busybox mount -o rw,remount "$1"
+            touch ${testF} 2>/dev/null
+            if [[ ! -e ${testF} ]]; then
+                echo "Debug:: Mount failed data..."
+            fi
+        else
+            rm ${testF}
+        fi
+
+    fi
+
 }
 umountIt()
 {

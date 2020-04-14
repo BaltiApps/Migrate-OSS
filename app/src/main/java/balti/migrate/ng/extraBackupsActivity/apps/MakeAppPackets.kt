@@ -4,12 +4,7 @@ import android.app.NotificationManager
 import android.app.usage.StorageStatsManager
 import android.content.Context
 import android.content.Context.*
-import android.content.pm.IPackageStatsObserver
-import android.content.pm.PackageStats
-import android.os.AsyncTask
-import android.os.Build
-import android.os.Environment
-import android.os.StatFs
+import android.os.*
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -218,58 +213,15 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
 
-                    val getPackageSizeInfo = pm.javaClass.getMethod(
-                            "getPackageSizeInfo", String::class.java, IPackageStatsObserver::class.java)
-
-                    for (i in 0 until appList.size){
-
-                        if (cancelThis) break
-
-                        val dp = appList[i]
-                        val appName = commonTools.applyNamingCorrectionForDisplay(pm.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).toString())
-
-                        getPackageSizeInfo.invoke(pm, dp.PACKAGE_INFO, object : IPackageStatsObserver.Stub(){
-                            override fun onGetStatsCompleted(pStats: PackageStats?, succeeded: Boolean) {
-
-                                var dataSize = 0L
-                                var systemSize = 0L
-
-                                val apkPath: String? = if (dp.APP)
-                                    dp.PACKAGE_INFO.applicationInfo.sourceDir
-                                else null
-
-                                val dataPath: String? = if (dp.DATA)
-                                    dp.PACKAGE_INFO.applicationInfo.dataDir
-                                else null
-
-                                apkPath?.let {apk ->
-                                    if (apk.startsWith("/system"))
-                                        systemSize += File(apk).length()
-                                    else dataSize += File(apk).length()
-                                }
-
-                                dataPath?.let { _ ->
-                                    pStats?.let {
-                                        dataSize += it.dataSize
-                                        if (!ignoreCache) dataSize += it.cacheSize
-                                    }
-                                }
-
-                                appsScanned++
-                                appPackets.add(AppPacket(dp, appName, dataSize, systemSize))
-                                totalSize += dataSize + systemSize
-
-                                publishProgress(vOp.getStringFromRes(R.string.calculating_size_reflection),
-                                        (i + 1).toString() + " of " + appList.size,
-                                        "$appName\n" + vOp.getStringFromRes(R.string.estimated_app_size) + " " + commonTools.getHumanReadableStorageSpace(systemSize+dataSize) + "\n")
-
-                            }
-                        })
-
+                    commonTools.tryIt {
+                        Handler(context.mainLooper).post {
+                            Toast.makeText(context, R.string.new_method_not_available_below_oreo, Toast.LENGTH_SHORT).show()
+                        }
                     }
 
-                    while (appsScanned < appList.size)
-                        if(!cancelThis) Thread.sleep(100)
+                    calculateSizesByTerminalMethod().trim().let {
+                        if (it != "") throw Exception(it)
+                    }
 
                 } else {
 
