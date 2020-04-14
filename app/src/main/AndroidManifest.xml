@@ -28,7 +28,7 @@
         tools:ignore="GoogleAppIndexingWarning,LockedOrientationActivity"
         >
 
-        <activity android:name="balti.migrate.ng.simpleActivities.MainActivityKotlin"
+        <activity android:name=".simpleActivities.MainActivityKotlin"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme.Launcher">
@@ -39,44 +39,44 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="balti.migrate.ng.simpleActivities.InitialGuideKotlin"
+        <activity android:name=".simpleActivities.InitialGuideKotlin"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance"/>
 
-        <activity android:name="balti.migrate.ng.backupActivity.BackupActivityKotlin"
+        <activity android:name=".backupActivity.BackupActivityKotlin"
             android:screenOrientation="portrait"
             />
 
-        <activity android:name="balti.migrate.ng.extraBackupsActivity.ExtraBackupsKotlin"
+        <activity android:name=".extraBackupsActivity.ExtraBackupsKotlin"
             android:screenOrientation="portrait"
             />
 
-        <activity android:name="balti.migrate.ng.simpleActivities.ProgressShowActivity"
+        <activity android:name=".simpleActivities.ProgressShowActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance"
             />
 
-        <activity android:name="balti.migrate.ng.simpleActivities.SimpleLogViewer"
+        <activity android:name=".simpleActivities.SimpleLogViewer"
             android:screenOrientation="portrait"
             />
 
-        <activity android:name="balti.migrate.ng.simpleActivities.RestoreByTwrp"
+        <activity android:name=".simpleActivities.RestoreByTwrp"
             android:screenOrientation="portrait"
             />
 
-        <activity android:name="balti.migrate.ng.simpleActivities.HelpPageKotlin"
+        <activity android:name=".simpleActivities.HelpPageKotlin"
             android:screenOrientation="portrait"
             />
 
-        <activity android:name="balti.migrate.ng.preferences.MainPreferenceActivity"
+        <activity android:name=".preferences.MainPreferenceActivity"
             android:screenOrientation="portrait"
             />
 
-        <activity android:name="balti.migrate.ng.simpleActivities.PrivacyPolicy"
+        <activity android:name=".simpleActivities.PrivacyPolicy"
             android:screenOrientation="portrait"
             />
 
-        <service android:name="balti.migrate.ng.backupEngines.BackupServiceKotlin"/>
+        <service android:name=".backupEngines.BackupServiceKotlin"/>
 
         <provider
             android:authorities="migrate.provider"
