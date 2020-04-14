@@ -28,20 +28,6 @@ import balti.migrate.ng.utilities.CommonToolKotlin.Companion.PREF_FILE_APPS
 import balti.migrate.ng.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_APPS_WARNING
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
-import balti.migrate.R
-import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
-import balti.migrate.backupActivity.utils.AppListAdapterKotlin
-import balti.migrate.backupActivity.utils.SearchAppAdapter
-import balti.migrate.extraBackupsActivity.ExtraBackupsKotlin
-import balti.migrate.simpleActivities.ProgressShowActivity
-import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_APPS
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_APPS_WARNING
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.app_search_layout.view.*
 import kotlinx.android.synthetic.main.backup_layout.*
 
