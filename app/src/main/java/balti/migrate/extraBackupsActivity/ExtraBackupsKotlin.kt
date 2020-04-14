@@ -622,69 +622,59 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     setDestination(DEFAULT_INTERNAL_STORAGE_DIR, mainView.sd_card_name)
 
                 R.id.sd_card_radio_button -> {
+                    val sdCardProbableDirs = commonTools.getSdCardPaths()
+                    // the new function is supposed to automatically remove "" (empty files)
 
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-
-                        // not supported above Pie
-                        commonTools.showSdCardSupportDialog()
-                        mainView.internal_storage_radio_button.isChecked = true
-
-                    } else {
-
-                        val sdCardProbableDirs = commonTools.getSdCardPaths()
-                        // the new function is supposed to automatically remove "" (empty files)
-
-                        when (sdCardProbableDirs.size) {
-                            0 -> {
-                                AlertDialog.Builder(this)
-                                        .setTitle(R.string.no_sd_card_detected)
-                                        .setMessage(R.string.no_sd_card_detected_exp)
-                                        .setPositiveButton(R.string.close, null)
-                                        .setNegativeButton(R.string.learn_about_sd_card_support) { _, _ ->
-                                            commonTools.showSdCardSupportDialog()
-                                        }
-                                        .setView(exSdCardImage)
-                                        .show()
-                                mainView.internal_storage_radio_button.isChecked = true
-                            }
-
-                            1 -> setDestination(sdCardProbableDirs[0] + "/Migrate", mainView.sd_card_name)
-
-                            else -> {
-
-                                val sdGroup = RadioGroup(this).apply {
-                                    this.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-                                    this.setPadding(20, 20, 20, 20)
-                                }
-
-                                for (i in sdCardProbableDirs.indices) {
-
-                                    val sdFile = File(sdCardProbableDirs[0])
-                                    val button = RadioButton(this).apply {
-                                        this.text = sdFile.name
-                                        this.id = i
+                    when (sdCardProbableDirs.size){
+                        0 -> {
+                            AlertDialog.Builder(this)
+                                    .setTitle(R.string.no_sd_card_detected)
+                                    .setMessage(R.string.no_sd_card_detected_exp)
+                                    .setPositiveButton(R.string.close, null)
+                                    .setNegativeButton(R.string.learn_about_sd_card_support) { _, _ ->
+                                        commonTools.showSdCardSupportDialog()
                                     }
+                                    .setView(exSdCardImage)
+                                    .show()
+                            mainView.internal_storage_radio_button.isChecked = true
+                        }
 
-                                    sdGroup.addView(button)
+                        1 -> setDestination(sdCardProbableDirs[0] + "/Migrate", mainView.sd_card_name)
+
+                        else -> {
+
+                            val sdGroup = RadioGroup(this).apply {
+                                this.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                                this.setPadding(20, 20, 20 ,20)
+                            }
+
+                            for (i in sdCardProbableDirs.indices){
+
+                                val sdFile = File(sdCardProbableDirs[0])
+                                val button = RadioButton(this).apply {
+                                    this.text = sdFile.name
+                                    this.id = i
                                 }
 
-                                sdGroup.check(0)
-
-                                AlertDialog.Builder(this)
-                                        .setTitle(R.string.please_select_sd_card)
-                                        .setView(sdGroup)
-                                        .setCancelable(false)
-                                        .setNegativeButton(android.R.string.cancel) { _, _ ->
-                                            mainView.internal_storage_radio_button.isChecked = true
-                                            setDestination(DEFAULT_INTERNAL_STORAGE_DIR, mainView.sd_card_name)
-                                        }
-                                        .setPositiveButton(android.R.string.cancel) { _, _ ->
-                                            setDestination(sdCardProbableDirs[sdGroup.checkedRadioButtonId] + "/Migrate",
-                                                    mainView.sd_card_name)
-                                        }
-                                        .show()
-
+                                sdGroup.addView(button)
                             }
+
+                            sdGroup.check(0)
+
+                            AlertDialog.Builder(this)
+                                    .setTitle(R.string.please_select_sd_card)
+                                    .setView(sdGroup)
+                                    .setCancelable(false)
+                                    .setNegativeButton(android.R.string.cancel) {_, _ ->
+                                        mainView.internal_storage_radio_button.isChecked = true
+                                        setDestination(DEFAULT_INTERNAL_STORAGE_DIR, mainView.sd_card_name)
+                                    }
+                                    .setPositiveButton(android.R.string.cancel) { _, _ ->
+                                        setDestination(sdCardProbableDirs[sdGroup.checkedRadioButtonId] + "/Migrate",
+                                                mainView.sd_card_name)
+                                    }
+                                    .show()
+
                         }
                     }
                 }

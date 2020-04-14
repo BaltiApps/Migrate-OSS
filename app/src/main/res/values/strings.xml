@@ -748,10 +748,6 @@
     <!--MainBackupEngine.kt-->
     <string name="test_apk_not_found">Test apk not found or not properly created</string>
     <string name="test_data_not_found">Test data (tar.gz) not found or not properly created</string>
-    
-    <!--CommonToolsKotlin.kt-->
-    <string name="sd_card_android_10">Not supported in Android 10 and above</string>
-    <string name="sd_card_android_10_desc">Previously, a Magisk module used to provide support for SD card. The module is not supported in Android 10.</string>
 
     <!--privacy_policy.xml-->
     <string name="privacy_policy_header">Privacy policy</string>
