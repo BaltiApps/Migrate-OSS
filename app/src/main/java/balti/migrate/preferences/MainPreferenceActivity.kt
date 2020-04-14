@@ -68,7 +68,6 @@ class MainPreferenceActivity: PreferenceActivity() {
                 }
             }
 
-            setValue(useNewSizingMethod, PREF_AUTOSELECT_EXTRAS)
             setValue(autoselectExtras, PREF_AUTOSELECT_EXTRAS)
             setValue(newIconMethod, PREF_NEW_ICON_METHOD)
             setValue(tarGzIntegrityCheck, PREF_TAR_GZ_INTEGRITY)
@@ -84,11 +83,19 @@ class MainPreferenceActivity: PreferenceActivity() {
             setValue(suForKeyboard, PREF_USE_SU_FOR_KEYBOARD)
             setValue(useFileListInZipVerification, PREF_FILELIST_IN_ZIP_VERIFICATION)
 
-            useNewSizingMethod.isChecked = getInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
-            useNewSizingMethod.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                editor.putInt(PREF_CALCULATING_SIZE_METHOD, if (newValue as Boolean) PREF_ALTERNATE_METHOD else PREF_TERMINAL_METHOD)
-                editor.apply()
-                true
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                useNewSizingMethod.isEnabled = true
+                useNewSizingMethod.isChecked = getInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
+                useNewSizingMethod.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    editor.putInt(PREF_CALCULATING_SIZE_METHOD, if (newValue as Boolean) PREF_ALTERNATE_METHOD else PREF_TERMINAL_METHOD)
+                    editor.apply()
+                    true
+                }
+            }
+            else {
+                useNewSizingMethod.isChecked = false
+                useNewSizingMethod.isEnabled = false
+                useNewSizingMethod.summary = getString(R.string.only_for_oreo_and_above)
             }
         }
 

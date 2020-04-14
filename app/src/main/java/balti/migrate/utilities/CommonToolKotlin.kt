@@ -27,7 +27,7 @@ class CommonToolKotlin(val context: Context) {
 
     companion object {
 
-        val THIS_VERSION = 20
+        val THIS_VERSION = 21
         val LAST_SUPPORTED_ANDROID_API = 29
 
         val DEBUG_TAG = "migrate_tag"
@@ -171,7 +171,6 @@ class CommonToolKotlin(val context: Context) {
         val PREF_DEFAULT_BACKUP_PATH = "defaultBackupPath"
         val PREF_ASK_FOR_RATING = "askForRating"
         val PREF_SYSTEM_APPS_WARNING = "system_apps_warning"
-        val PREF_ALTERNATE_ACCESS_ASKED = "alternate_access_asked"
         val PREF_CALCULATING_SIZE_METHOD = "calculating_size_method"
         val PREF_TERMINAL_METHOD = 1
         val PREF_ALTERNATE_METHOD = 2
