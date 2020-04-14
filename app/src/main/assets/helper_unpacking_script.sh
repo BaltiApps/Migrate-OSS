@@ -10,7 +10,7 @@ OUTFD="$(cat /tmp/${MANUAL_CONFIG_DIR}/OUTFD)"
 SYSTEM="$(cat /tmp/${MANUAL_CONFIG_DIR}/SYSTEM)"
 
 echoIt() {
-    if [[ ${OUTFD} != "/dev/null" || -n "${OUTFD}" ]]; then
+    if [[ -n "${OUTFD}" ]]; then
         echo "ui_print $1" >> /proc/self/fd/${OUTFD};
     else
         echo "FD $OUTFD:: $1"

@@ -21,7 +21,7 @@ OUTFD="$(cat /tmp/${MANUAL_CONFIG_DIR}/OUTFD)"
 HELPER_EXTRACT_DIR="$(cat /tmp/${MANUAL_CONFIG_DIR}/HELPER_EXTRACT_DIR)"
 
 echoIt() {
-    if [[ ${OUTFD} != "/dev/null" || -n "${OUTFD}" ]]; then
+    if [[ -n "${OUTFD}" ]]; then
         echo "ui_print $1" >> /proc/self/fd/${OUTFD};
     else
         echo "FD $OUTFD:: $1"
@@ -101,3 +101,7 @@ fi
 echoIt "Verification complete"
 
 rm /tmp/verify.sh
+
+echo "DEBUG:: --- /proc/mounts ---"
+echo "$(cat /proc/mounts)"
+echo "DEBUG:: --- end of /proc/mounts ---"

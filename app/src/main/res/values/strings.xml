@@ -151,7 +151,8 @@
     </string>
     <string name="version_3.0.2">Version 3.0.2</string>
     <string name="version_3.0.2_content">
-        \u2022 Changes to make the app compliant with Google Play policies.
+        \u2022 Changes to make the app compliant with Google Play policies.\n
+        \u2022 Remove alternate method for app size calculation below android Nougat.\n
     </string>
 
     <!--activity_main.xml-->
