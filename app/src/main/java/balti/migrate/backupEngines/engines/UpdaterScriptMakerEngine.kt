@@ -6,7 +6,7 @@ import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.containers.ZipAppBatch
-import balti.migrate.utilities.CommonToolKotlin.Companion.DATA_TEMP
+//import balti.migrate.utilities.CommonToolKotlin.Companion.DATA_TEMP
 import balti.migrate.utilities.CommonToolKotlin.Companion.DIR_MANUAL_CONFIGS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_CONFIG_FILE
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_EXTRACT
@@ -115,7 +115,8 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                     "ui_print(\"Mount failed system! Migrate helper will not be automatically installed!\"));\n")
 
             // run prep.sh
-            updater_writer.write("run_program(\"/tmp/prep.sh\", \"$MIGRATE_CACHE_DEFAULT\", \"$timeStamp\", \"$FILE_PACKAGE_DATA\", \"$DATA_TEMP\", \"$DIR_MANUAL_CONFIGS\");\n")
+            //updater_writer.write("run_program(\"/tmp/prep.sh\", \"$MIGRATE_CACHE_DEFAULT\", \"$timeStamp\", \"$FILE_PACKAGE_DATA\", \"$DATA_TEMP\", \"$DIR_MANUAL_CONFIGS\");\n")
+            updater_writer.write("run_program(\"/tmp/prep.sh\", \"$MIGRATE_CACHE_DEFAULT\", \"$timeStamp\", \"$FILE_PACKAGE_DATA\", \"$DIR_MANUAL_CONFIGS\");\n")
 
             // data will be unmounted if prep.sh aborted unsuccessfully
             updater_writer.write("ifelse(is_mounted(\"/data\"), ui_print(\"Parameters checked!\") && sleep(2s), abort(\"Exiting...\"));\n")
@@ -127,7 +128,8 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
             // extract to temp
             fun extractItToTemp(fileName: String, isFile: Boolean = true){
-                updater_writer.write("package_extract_${if (isFile) "file" else "dir"}(\"$fileName\", \"$DATA_TEMP/$fileName\");\n")
+                //updater_writer.write("package_extract_${if (isFile) "file" else "dir"}(\"$fileName\", \"$DATA_TEMP/$fileName\");\n")
+                updater_writer.write("package_extract_${if (isFile) "file" else "dir"}(\"$fileName\", \"$MIGRATE_CACHE_DEFAULT/$fileName\");\n")
             }
 
             // extract app files
@@ -188,7 +190,8 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             }
 
             // move everything
-            updater_writer.write("run_program(\"/tmp/mover.sh\", \"$DATA_TEMP\", \"$MIGRATE_CACHE_DEFAULT\", \"$DIR_MANUAL_CONFIGS\");\n")
+            //updater_writer.write("run_program(\"/tmp/mover.sh\", \"$DATA_TEMP\", \"$MIGRATE_CACHE_DEFAULT\", \"$DIR_MANUAL_CONFIGS\");\n")
+            updater_writer.write("run_program(\"/tmp/mover.sh\", \"$MIGRATE_CACHE_DEFAULT\", \"$DIR_MANUAL_CONFIGS\");\n")
             updater_writer.write("ui_print(\" \");\n")
 
             // unpack helper
@@ -199,7 +202,8 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             updater_writer.write("set_progress(1.0000);\n")
 
             // verification
-            updater_writer.write("run_program(\"/tmp/verify.sh\", \"$FILE_FILE_LIST\", \"$timeStamp\", \"$MIGRATE_CACHE_DEFAULT\", \"$DATA_TEMP\", \"$DIR_MANUAL_CONFIGS\");\n")
+            //updater_writer.write("run_program(\"/tmp/verify.sh\", \"$FILE_FILE_LIST\", \"$timeStamp\", \"$MIGRATE_CACHE_DEFAULT\", \"$DATA_TEMP\", \"$DIR_MANUAL_CONFIGS\");\n")
+            updater_writer.write("run_program(\"/tmp/verify.sh\", \"$FILE_FILE_LIST\", \"$timeStamp\", \"$MIGRATE_CACHE_DEFAULT\", \"$DIR_MANUAL_CONFIGS\");\n")
 
             // un-mount partitions
             updater_writer.write("ui_print(\" \");\n")

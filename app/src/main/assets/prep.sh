@@ -5,8 +5,8 @@
 MIGRATE_CACHE_DEFAULT=$1
 TIMESTAMP=$2
 PACKAGE_DATA_NAME=$3
-TEMP_UNPACK_DIR=$4
-MANUAL_CONFIG_DIR=$5
+#TEMP_UNPACK_DIR=$4
+MANUAL_CONFIG_DIR=$4
 
 OUTFD="NULL"
 SYSTEM=""
@@ -43,9 +43,9 @@ exitNow() {
     umount /data
 
     # delete temp dir
-    if [[ -n "${TEMP_UNPACK_DIR}" && ${TEMP_UNPACK_DIR} != "/" && ${TEMP_UNPACK_DIR} != "/sdcard" ]]; then
-        rm -rf ${TEMP_UNPACK_DIR}
-    fi
+    #if [[ -n "${TEMP_UNPACK_DIR}" && ${TEMP_UNPACK_DIR} != "/" && ${TEMP_UNPACK_DIR} != "/sdcard" ]]; then
+    #    rm -rf ${TEMP_UNPACK_DIR}
+    #fi
 
     sleep 2s
     exit 1
@@ -70,7 +70,7 @@ else
     echoIt "migrate_cache: $MIGRATE_CACHE"
 fi
 
-mkdir -p ${TEMP_UNPACK_DIR}
+#mkdir -p ${TEMP_UNPACK_DIR}
 
 echoIt " "
 echoIt "Checking parameters..."
@@ -325,6 +325,7 @@ mkdir -p ${SYSTEM}/priv-app/
 mkdir -p /data/app/
 mkdir -p /data/data/
 mkdir -p ${MIGRATE_CACHE}
+mkdir -p ${MIGRATE_CACHE_DEFAULT}
 cp /tmp/${PACKAGE_DATA_NAME} ${MIGRATE_CACHE}/"$PACKAGE_DATA_NAME"${TIMESTAMP}.txt && echoIt "Copied package data"
 
 # export variables
