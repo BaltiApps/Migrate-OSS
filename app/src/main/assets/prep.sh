@@ -7,16 +7,53 @@ TIMESTAMP=$2
 PACKAGE_DATA_NAME=$3
 #TEMP_UNPACK_DIR=$4
 MANUAL_CONFIG_DIR=$4
+ZIP_NAME="$5"
 
 OUTFD="NULL"
 SYSTEM=""
 MIGRATE_CACHE=""
 
 AWK1="awk"
+READLINK1="readlink"
 
 # In case of errors, system app path and build.prop path can be manually mentioned under:
 # /tmp/${MANUAL_CONFIG_DIR}/SYSTEM_MANUAL and /tmp/${MANUAL_CONFIG_DIR}/BUILDPROP_MANUAL files respectively.
 # Also a manual location for migrate cache can be placed in the file /tmp/${MANUAL_CONFIG_DIR}/MIGRATE_CACHE_MANUAL
+
+SAR="$(cat /tmp/${MANUAL_CONFIG_DIR}/SAR)"
+
+if [[ ! -x "$(command -v ${READLINK1})" ]]; then
+    READLINK1="/tmp/busybox readlink"
+    echo "DEBUG:: Using busybox readlink....."
+    sleep 1s
+fi
+
+if [[ ! -x "$(command -v ${AWK1})" ]]; then
+    AWK1="/tmp/busybox awk"
+    echo "DEBUG:: Using busybox awk....."
+    sleep 1s
+fi
+
+for FD in `ls /proc/$$/fd`; do
+    if ${READLINK1} /proc/$$/fd/$FD | grep -q pipe; then
+        if ps | grep -v grep | grep -q " 3 $FD "; then
+            OUTFD=${FD}
+            break
+        fi
+    fi
+done
+
+if [[ "$OUTFD" == "NULL" ]]; then
+    echo "DEBUG:: Manually trying to find FD....."
+    ps_line="$(ps | grep -v grep | grep ${ZIP_NAME} | head -n 1)"
+    out="$(echo ${ps_line} | $AWK1 '{print $(NF-1)}')"
+    echo "DEBUG:: FD detected: $out....."
+    if [[ "$out" -eq "$out" 2>/dev/null ]]; then 
+        OUTFD=${out}
+    else
+        echo "DEBUG:: FD not a number"
+    fi
+fi
 
 echoIt() {
     if [[ "${OUTFD}" != "NULL" ]]; then
@@ -25,17 +62,6 @@ echoIt() {
         echo "FD $OUTFD:: $1"
     fi
 }
-
-SAR="$(cat /tmp/${MANUAL_CONFIG_DIR}/SAR)"
-
-for FD in `ls /proc/$$/fd`; do
-    if readlink /proc/$$/fd/$FD | grep -q pipe; then
-        if ps | grep -v grep | grep -q " 3 $FD "; then
-            OUTFD=${FD}
-            break
-        fi
-    fi
-done
 
 exitNow() {
 
@@ -50,12 +76,6 @@ exitNow() {
     sleep 2s
     exit 1
 }
-
-if [[ ! -x "$(command -v ${AWK1})" ]]; then
-    AWK1="/tmp/busybox awk"
-    echoIt "Using busybox awk....."
-    sleep 1s
-fi
 
 echoIt " "
 
