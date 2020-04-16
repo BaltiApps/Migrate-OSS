@@ -6,14 +6,14 @@
 
     app_name (Migrate-GPE or Migrate-NG)
     gpe_label
-    current_version_name (must not have blank spaces)
+    current_version_name (must not have blank spaces)           !!!
     current_version_codename
     last_tested_label
     release_state (must not have blank spaces)
     changelog
-    build.gradle [versionCode, versionName]
+    build.gradle [versionCode, versionName]                     !!!
     MainActivity.java [showChangeLog()]
-    CommonToolsKotlin [THIS_VERSION]
+    CommonToolsKotlin [THIS_VERSION]                            !!!
     CommonToolsKotlin [LAST_SUPPORTED_ANDROID_API]
     build.gradle version in Migrate helper
 
@@ -23,7 +23,7 @@
 
     <string name="app_name">Migrate</string>
     <string name="gpe_label"></string>
-    <string name="current_version_name">3.0.2</string>
+    <string name="current_version_name">3.0.3</string>
     <string name="current_version_codename">Mercury</string>
     <string name="release_state">release</string>
     <string name="last_tested_label">Last tested on: Android 10</string>
@@ -149,10 +149,11 @@
         \u2022 Add indonesian translation (@rzlamrr)\n
         \u2022 Add Simplified Chinese translation (@atfmxyl,@dwughjsd)\n
     </string>
-    <string name="version_3.0.2">Version 3.0.2</string>
-    <string name="version_3.0.2_content">
+    <string name="version_3.0.3">Version 3.0.3</string>
+    <string name="version_3.0.3_content">
         \u2022 Changes to make the app compliant with Google Play policies.\n
         \u2022 Remove alternate method for app size calculation below android Nougat.\n
+        \u2022 Probable fix to No metadata found after restore.\n
     </string>
 
     <!--activity_main.xml-->
