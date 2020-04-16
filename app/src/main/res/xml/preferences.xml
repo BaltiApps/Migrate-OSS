@@ -118,7 +118,7 @@
             android:key="useFileListInZipVerification"
             />
 
-        <balti.migrate.ng.preferences.subPreferences.ZipMaxSizePref
+        <balti.migrate.preferences.subPreferences.ZipMaxSizePref
             android:layout="@layout/preference_seekbar"/>
 
         <EditTextPreference
