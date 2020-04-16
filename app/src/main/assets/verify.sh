@@ -5,8 +5,9 @@
 FILE_LIST=$1
 TIMESTAMP=$2
 DEFAULT_MIGRATE_CACHE=$3
-TEMP_UNPACK_DIR=$4
-MANUAL_CONFIG_DIR=$5
+#TEMP_UNPACK_DIR=$4
+MANUAL_CONFIG_DIR=$4
+
 MIGRATE_CACHE=""
 
 read_migrate_cache="$(cat /tmp/${MANUAL_CONFIG_DIR}/MIGRATE_CACHE)"
@@ -94,8 +95,14 @@ chmod -R 777 ${MIGRATE_CACHE}
 cp /tmp/${FILE_LIST} ${MIGRATE_CACHE}/"$FILE_LIST"${TIMESTAMP}.txt && echoIt "Copied file list"
 
 # delete temp dir
-if [[ -n "${TEMP_UNPACK_DIR}" && "${TEMP_UNPACK_DIR}" != "${MIGRATE_CACHE}" && "${TEMP_UNPACK_DIR}" != "/" ]]; then
-    rm -rf ${TEMP_UNPACK_DIR}
+#if [[ -n "${TEMP_UNPACK_DIR}" && "${TEMP_UNPACK_DIR}" != "${MIGRATE_CACHE}" && "${TEMP_UNPACK_DIR}" != "/" ]]; then
+#    rm -rf ${TEMP_UNPACK_DIR}
+#fi
+
+# remove DEFAULT_MIGRATE_CACHE if empty
+if [[ "$MIGRATE_CACHE" != "$DEFAULT_MIGRATE_CACHE" && "$(ls ${DEFAULT_MIGRATE_CACHE}/ | wc -l)" == 0 ]]; then
+    echoIt "Deleting Default cache ------"
+    rm -r ${DEFAULT_MIGRATE_CACHE}
 fi
 
 echoIt "Verification complete"

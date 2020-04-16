@@ -42,7 +42,7 @@ class CommonToolKotlin(val context: Context) {
 
         val DEFAULT_INTERNAL_STORAGE_DIR = "/sdcard/Migrate"
         val MIGRATE_CACHE_DEFAULT = "/data/local/tmp/migrate_cache"
-        val DATA_TEMP = "/data/migrateTemp"
+        //val DATA_TEMP = "/data/migrateTemp"
 
         val DIR_MANUAL_CONFIGS = "manualConfigs"
         val FILE_MIGRATE_CACHE_MANUAL = "MIGRATE_CACHE_MANUAL"

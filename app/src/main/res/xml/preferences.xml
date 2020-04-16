@@ -99,14 +99,17 @@
         <balti.migrate.preferences.subPreferences.ZipMaxSizePref
             android:layout="@layout/preference_seekbar"/>
 
-        <balti.migrate.preferences.subPreferences.ManualCachePref
-            android:layout="@layout/preferences_edittext"/>
+        <EditTextPreference
+            android:key="manualCachePref"
+            android:title="@string/manual_cache"/>
 
-        <balti.migrate.preferences.subPreferences.ManualSystemPref
-            android:layout="@layout/preferences_edittext"/>
+        <EditTextPreference
+            android:key="manualSystemPref"
+            android:title="@string/manual_system"/>
 
-        <balti.migrate.preferences.subPreferences.ManualBuildpropPref
-            android:layout="@layout/preferences_edittext"/>
+        <EditTextPreference
+            android:key="manualBuildpropPref"
+            android:title="@string/manual_buildprop"/>
 
     </PreferenceCategory>
 
