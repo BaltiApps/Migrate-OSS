@@ -187,13 +187,13 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         if (onlyLatest) {
             if (lastVer < THIS_VERSION) {
                 /*Put only the latest version here*/
-                changelog.setTitle(R.string.version_3_0_2)
-                        .setMessage(R.string.version_3_0_2_content)
+                changelog.setTitle(R.string.version_3_0_3)
+                        .setMessage(R.string.version_3_0_3_content)
                         .setPositiveButton(R.string.close, null)
                         .show()
 
                 /*Version related changes*/
-                if (lastVer < 21 && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {  // v3.0.2, immediate version after strike
+                if (lastVer < 23 && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {  // v3.0.3, immediate version after strike
                     editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
                 }
 
@@ -216,7 +216,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             /*Add increasing versions here*/
 
-            allVersions.append("\n" + getString(R.string.version_3_0_2) + "\n" + getString(R.string.version_3_0_2_content) + "\n")
+            allVersions.append("\n" + getString(R.string.version_3_0_3) + "\n" + getString(R.string.version_3_0_3_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_3_0_1) + "\n" + getString(R.string.version_3_0_1_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_3_0) + "\n" + getString(R.string.version_3_0_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_2_1) + "\n" + getString(R.string.version_2_1_content) + "\n")
