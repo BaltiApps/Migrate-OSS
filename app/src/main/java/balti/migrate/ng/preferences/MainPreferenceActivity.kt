@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.preference.CheckBoxPreference
+import android.preference.EditTextPreference
 import android.preference.ListPreference
 import android.preference.Preference
 import android.preference.PreferenceActivity
@@ -51,6 +52,10 @@ class MainPreferenceActivity: PreferenceActivity() {
     private val suForKeyboard by lazy { findPreference("suForKeyboard") as CheckBoxPreference }
     private val useFileListInZipVerification by lazy { findPreference("useFileListInZipVerification") as CheckBoxPreference }
 
+    private val manualCachePref by lazy { findPreference("manualCachePref") as EditTextPreference }
+    private val manualSystemPref by lazy { findPreference("manualSystemPref") as EditTextPreference }
+    private val manualBuildpropPref by lazy { findPreference("manualBuildpropPref") as EditTextPreference }
+
     private val disableBatteryOptimisation by lazy { findPreference("disableBatteryOptimisation") as Preference }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,6 +80,35 @@ class MainPreferenceActivity: PreferenceActivity() {
                 }
             }
 
+            fun setValue(editTextPreference: EditTextPreference, field: String, defaultValue: String){
+
+                fun convertIfBlank(value: String?, defaultValue: String): String {
+                    return value.let { if (it == null || it == "") defaultValue else it }
+                }
+
+                fun refreshSummary(v: String){
+                    editTextPreference.summary = if (v == "") {
+                        if (editTextPreference in arrayOf(manualBuildpropPref, manualSystemPref))
+                            getString(R.string.detect_while_flashing_hint)
+                        else v
+                    }
+                    else v
+                }
+
+                convertIfBlank(getString(field, defaultValue), defaultValue).let {
+                    refreshSummary(it)
+                    editTextPreference.text = it
+                }
+                editTextPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                    val toStore = convertIfBlank(newValue.toString(), defaultValue)
+                    editor.putString(field, toStore)
+                    editor.apply()
+                    refreshSummary(toStore)
+                    editTextPreference.text = toStore
+                    false
+                }
+            }
+
             setValue(autoselectExtras, PREF_AUTOSELECT_EXTRAS)
             setValue(newIconMethod, PREF_NEW_ICON_METHOD)
             setValue(tarGzIntegrityCheck, PREF_TAR_GZ_INTEGRITY)
@@ -91,6 +125,10 @@ class MainPreferenceActivity: PreferenceActivity() {
 
             setValue(suForKeyboard, PREF_USE_SU_FOR_KEYBOARD)
             setValue(useFileListInZipVerification, PREF_FILELIST_IN_ZIP_VERIFICATION)
+
+            setValue(manualCachePref, PREF_MANUAL_MIGRATE_CACHE, MIGRATE_CACHE_DEFAULT)
+            setValue(manualSystemPref, PREF_MANUAL_SYSTEM, "")
+            setValue(manualBuildpropPref, PREF_MANUAL_BUILDPROP, "")
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
                 useNewSizingMethod.isEnabled = true
