@@ -3,14 +3,11 @@ package balti.migrate.ng.preferences
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.preference.CheckBoxPreference
-import android.preference.EditTextPreference
-import android.preference.ListPreference
-import android.preference.Preference
-import android.preference.PreferenceActivity
+import android.preference.*
 import android.provider.Settings
 import balti.migrate.ng.AppInstance
 import balti.migrate.ng.R
+import balti.migrate.ng.utilities.CommonToolKotlin.Companion.MIGRATE_CACHE_DEFAULT
 import balti.migrate.ng.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.ng.utilities.CommonToolKotlin.Companion.PREF_AUTOSELECT_EXTRAS
 import balti.migrate.ng.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
@@ -19,6 +16,9 @@ import balti.migrate.ng.utilities.CommonToolKotlin.Companion.PREF_DELETE_ERROR_B
 import balti.migrate.ng.utilities.CommonToolKotlin.Companion.PREF_FILELIST_IN_ZIP_VERIFICATION
 import balti.migrate.ng.utilities.CommonToolKotlin.Companion.PREF_FORCE_SEPARATE_EXTRAS_BACKUP
 import balti.migrate.ng.utilities.CommonToolKotlin.Companion.PREF_IGNORE_APP_CACHE
+import balti.migrate.ng.utilities.CommonToolKotlin.Companion.PREF_MANUAL_BUILDPROP
+import balti.migrate.ng.utilities.CommonToolKotlin.Companion.PREF_MANUAL_MIGRATE_CACHE
+import balti.migrate.ng.utilities.CommonToolKotlin.Companion.PREF_MANUAL_SYSTEM
 import balti.migrate.ng.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.ng.utilities.CommonToolKotlin.Companion.PREF_SEPARATE_EXTRAS_BACKUP
 import balti.migrate.ng.utilities.CommonToolKotlin.Companion.PREF_SMS_VERIFY
