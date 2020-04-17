@@ -47,11 +47,11 @@ internal class Constants {
 
         fun UPDATE_URL() : String =
                 if (Updater.sharedPreferences.getString(PREF_HOST, PREF_HOST_GITLAB) == PREF_HOST_GITLAB) {
-                    if (Updater.sharedPreferences.getString(PREF_CHANNEL, PREF_CHANNEL_BETA_STABLE) == PREF_CHANNEL_BETA_STABLE)
+                    if (Updater.sharedPreferences.getString(PREF_CHANNEL, PREF_CHANNEL_STABLE) == PREF_CHANNEL_BETA_STABLE)
                         "https://gitlab.com/SayantanRC/update-files/-/raw/master/migrate/migrate_ng_update_info_beta+stable.txt"
                     else "https://gitlab.com/SayantanRC/update-files/-/raw/master/migrate/migrate_ng_update_info_stable.txt"
                 } else {
-                    if (Updater.sharedPreferences.getString(PREF_CHANNEL, PREF_CHANNEL_BETA_STABLE) == PREF_CHANNEL_BETA_STABLE)
+                    if (Updater.sharedPreferences.getString(PREF_CHANNEL, PREF_CHANNEL_STABLE) == PREF_CHANNEL_BETA_STABLE)
                         "https://raw.githubusercontent.com/SayantanRC/Migrate-files/master/update_info_ng_beta+stable.txt"
                     else "https://raw.githubusercontent.com/SayantanRC/Migrate-files/master/update_info_ng_stable.txt"
                 }
