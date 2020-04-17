@@ -1,7 +1,9 @@
 package balti.updater
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.SpannableString
@@ -21,6 +23,7 @@ import balti.updater.Constants.Companion.EXTRA_DOWNLOAD_URL
 import balti.updater.Constants.Companion.EXTRA_ENTIRE_JSON_DATA
 import balti.updater.Constants.Companion.EXTRA_FILE_SIZE
 import balti.updater.Constants.Companion.EXTRA_HOST
+import balti.updater.Constants.Companion.EXTRA_UPDATE_PACKAGE_NAME
 import balti.updater.Constants.Companion.FILE_UPDATE_APK
 import balti.updater.Constants.Companion.OK
 import balti.updater.Constants.Companion.PREF_INSTALL_METHOD
@@ -31,6 +34,7 @@ import balti.updater.Constants.Companion.UPDATE_ERROR
 import balti.updater.Constants.Companion.UPDATE_LAST_TESTED_ANDROID
 import balti.updater.Constants.Companion.UPDATE_MESSAGE
 import balti.updater.Constants.Companion.UPDATE_NAME
+import balti.updater.Constants.Companion.UPDATE_PACKAGE
 import balti.updater.Constants.Companion.UPDATE_STATUS
 import balti.updater.Constants.Companion.UPDATE_URL
 import balti.updater.Constants.Companion.UPDATE_VERSION
@@ -53,6 +57,8 @@ internal class UpdaterMain: AppCompatActivity() {
     private val tools by lazy { Tools(this) }
     private var updateUrl = ""
     private var updateSize = 0
+
+    private var updatePackageName = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,6 +98,21 @@ internal class UpdaterMain: AppCompatActivity() {
                 if (error != "") showErrorDialog(error)
                 else Toast.makeText(this@UpdaterMain, R.string.update_complete, Toast.LENGTH_SHORT).show()
 
+                if (updatePackageName.trim() != "" && packageName != updatePackageName){
+
+                    if (isPackageInstalled(updatePackageName)) {
+                        AlertDialog.Builder(this@UpdaterMain).apply {
+                            setTitle(R.string.uninstall_this_version)
+                            setMessage(R.string.uninstall_this_version_desc)
+                            setPositiveButton(R.string.uninstall) {_, _ ->
+                                startActivity(Intent(Intent.ACTION_UNINSTALL_PACKAGE).setData(Uri.parse("package:$packageName")))
+                            }
+                            setNegativeButton(android.R.string.cancel, null)
+                        }
+                                .show()
+                    }
+                }
+
                 install_wait_progressBar.visibility = View.GONE
             }
         }
@@ -116,6 +137,10 @@ internal class UpdaterMain: AppCompatActivity() {
                         intent.getStringExtra(EXTRA_DOWNLOAD_MESSAGE).let {m ->
                             if (!m.isBlank()) showErrorDialog(m, "", false)
                         }
+                    }
+
+                    EXTRA_UPDATE_PACKAGE_NAME.let { e ->
+                        if (intent.hasExtra(e)) updatePackageName = it.getString(e)
                     }
                 }
             }
@@ -185,6 +210,7 @@ internal class UpdaterMain: AppCompatActivity() {
             if (it == OK) toggleLayout(3)
             else if (!it.isBlank()) showErrorDialog(it, getString(R.string.download_error))
             setDownloadButton()
+            updatePackageName = DownloaderService.updatePackageName
         })
     }
 
@@ -257,7 +283,10 @@ internal class UpdaterMain: AppCompatActivity() {
                 Intent(this@UpdaterMain, DownloaderService::class.java).apply {
 
                     if (!doCancel) {
-                        if (jsonObject != null) putExtra(EXTRA_ENTIRE_JSON_DATA, jsonObject.toString())
+                        if (jsonObject != null) {
+                            putExtra(EXTRA_ENTIRE_JSON_DATA, jsonObject.toString())
+                            putExtra(EXTRA_UPDATE_PACKAGE_NAME, if (jsonObject.has(UPDATE_PACKAGE)) jsonObject.getString(UPDATE_PACKAGE) else "")
+                        }
                         putExtra(EXTRA_DOWNLOAD_URL, updateUrl)
                     }
                     putExtra(EXTRA_CANCEL_DOWNLOAD, doCancel)
@@ -316,6 +345,16 @@ internal class UpdaterMain: AppCompatActivity() {
             try {
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
             } catch (_: Exception){}
+        }
+    }
+
+    private fun isPackageInstalled(packageName: String): Boolean{
+        return try {
+            packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
+            true
+        }
+        catch (_: Exception){
+            false
         }
     }
 }

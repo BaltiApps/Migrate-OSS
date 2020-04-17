@@ -18,6 +18,7 @@ import balti.updater.Constants.Companion.EXTRA_DOWNLOAD_URL
 import balti.updater.Constants.Companion.EXTRA_ENTIRE_JSON_DATA
 import balti.updater.Constants.Companion.EXTRA_FILE_SIZE
 import balti.updater.Constants.Companion.EXTRA_HOST
+import balti.updater.Constants.Companion.EXTRA_UPDATE_PACKAGE_NAME
 import balti.updater.Constants.Companion.NOTIFICATION_CHANNEL_DOWNLOAD
 import balti.updater.Constants.Companion.NOTIFICATION_ID
 import balti.updater.Constants.Companion.OK
@@ -53,7 +54,8 @@ internal class DownloaderService: LifecycleService() {
         val size = MutableLiveData<Int>()
         val progress = MutableLiveData<Int>()
         val messageOnComplete = MutableLiveData<String>()
-        val downladJobFinishedOrCancelled = MutableLiveData<Boolean>(false)
+        val downladJobFinishedOrCancelled = MutableLiveData(false)
+        var updatePackageName = ""
         var isJobActive = false
     }
 
@@ -94,11 +96,18 @@ internal class DownloaderService: LifecycleService() {
         intent?.run {
 
             Tools().tryIt {
-                if (hasExtra(EXTRA_ENTIRE_JSON_DATA))
-                    jsonData = getStringExtra(EXTRA_ENTIRE_JSON_DATA)
 
-                if (hasExtra(EXTRA_HOST))
-                    host = getStringExtra(EXTRA_HOST)
+                EXTRA_ENTIRE_JSON_DATA.let {
+                    if (hasExtra(it)) jsonData = getStringExtra(it)
+                }
+
+                EXTRA_UPDATE_PACKAGE_NAME.let {
+                    if (hasExtra(it)) updatePackageName = getStringExtra(it)
+                }
+
+                EXTRA_HOST.let {
+                    if (hasExtra(it)) host = getStringExtra(it)
+                }
 
                 setContentIntentExtras()
             }
@@ -153,7 +162,7 @@ internal class DownloaderService: LifecycleService() {
                             })
                         }
                         downloadNotif.apply {
-                            mActions.clear()
+                            try { mActions.clear() } catch (_: Exception) {}
                             setProgress(0, 0, false)
                             setAutoCancel(true)
                         }
