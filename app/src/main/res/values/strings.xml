@@ -152,10 +152,9 @@
     </string>
     <string name="version_3.0.3">Version 3.0.3</string>
     <string name="version_3.0.3_content">
-        \u2022 Migrate-NG comes as a new app. Hence you will find two apps named Migrate-NG.\n
-        The new app has a new logo. Kindly uninstall the old Migrate-NG app.
         \u2022 Remove alternate method for app size calculation below android Nougat.\n
         \u2022 Probable fix to No metadata found after restore.\n
+        \u2022 Use Stable channel for updates by default.\n
     </string>
 
     <!--activity_main.xml-->
