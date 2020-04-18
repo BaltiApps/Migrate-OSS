@@ -6,6 +6,7 @@ import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
 import android.text.util.Linkify
@@ -60,6 +61,10 @@ internal class UpdaterMain: AppCompatActivity() {
 
     private var updatePackageName = ""
 
+    private val handler by lazy { Handler() }
+    private lateinit var runnable: Runnable
+    private var doPromptForUninstall = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.updater_activity)
@@ -96,20 +101,21 @@ internal class UpdaterMain: AppCompatActivity() {
                 }
 
                 if (error != "") showErrorDialog(error)
-                else Toast.makeText(this@UpdaterMain, R.string.update_complete, Toast.LENGTH_SHORT).show()
-
-                if (updatePackageName.trim() != "" && packageName != updatePackageName){
-
-                    if (isPackageInstalled(updatePackageName)) {
-                        AlertDialog.Builder(this@UpdaterMain).apply {
-                            setTitle(R.string.uninstall_this_version)
-                            setMessage(R.string.uninstall_this_version_desc)
-                            setPositiveButton(R.string.uninstall) {_, _ ->
-                                startActivity(Intent(Intent.ACTION_UNINSTALL_PACKAGE).setData(Uri.parse("package:$packageName")))
+                else {
+                    doPromptForUninstall = true
+                    if (update_radio_install_by_root.isChecked) {
+                        Toast.makeText(this@UpdaterMain, R.string.update_complete, Toast.LENGTH_SHORT).show()
+                        checkUpdateAndPromptToUninstall()
+                    }
+                    else {
+                        tools.tryIt { handler.removeCallbacks(runnable) }
+                        tools.tryIt {
+                            runnable = Runnable {
+                                tools.tryIt { checkUpdateAndPromptToUninstall() }
+                                handler.postDelayed(runnable, 500)
                             }
-                            setNegativeButton(android.R.string.cancel, null)
+                            handler.postDelayed(runnable, 500)
                         }
-                                .show()
                     }
                 }
 
@@ -212,6 +218,31 @@ internal class UpdaterMain: AppCompatActivity() {
             setDownloadButton()
             updatePackageName = DownloaderService.updatePackageName
         })
+    }
+
+    private fun checkUpdateAndPromptToUninstall() {
+
+        if (doPromptForUninstall) {
+
+            if (updatePackageName.trim() != "" && packageName != updatePackageName) {
+                if (isPackageInstalled(updatePackageName)) {
+
+                    tools.tryIt {
+                        AlertDialog.Builder(this@UpdaterMain).apply {
+                            setTitle(R.string.uninstall_this_version)
+                            setMessage(R.string.uninstall_this_version_desc)
+                            setPositiveButton(R.string.uninstall) { _, _ ->
+                                startActivity(Intent(Intent.ACTION_UNINSTALL_PACKAGE).setData(Uri.parse("package:$packageName")))
+                            }
+                            setNegativeButton(android.R.string.cancel, null)
+                        }
+                                .show()
+                    }
+
+                    doPromptForUninstall = false
+                }
+            }
+        }
     }
 
     private fun resetProgress(){
@@ -346,6 +377,11 @@ internal class UpdaterMain: AppCompatActivity() {
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
             } catch (_: Exception){}
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        tools.tryIt { handler.removeCallbacks(runnable) }
     }
 
     private fun isPackageInstalled(packageName: String): Boolean{
