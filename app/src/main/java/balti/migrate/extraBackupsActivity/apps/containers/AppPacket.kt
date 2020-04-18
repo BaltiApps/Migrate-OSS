@@ -1,5 +1,6 @@
 package balti.migrate.extraBackupsActivity.apps.containers
 
+import android.content.pm.ApplicationInfo
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.utilities.ToolsNoContext
 
@@ -32,5 +33,6 @@ class AppPacket(backupDataPacket: BackupDataPacketKotlin, val appName: String, v
             it.substring(it.lastIndexOf('/') + 1)
         }
     }
-    val isSystem = !appInfo.sourceDir.startsWith("/data")
+    //val isSystem = !appInfo.sourceDir.startsWith("/data")
+    val isSystem = !(appInfo.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 0 || appInfo.sourceDir.startsWith("/data"))
 }
