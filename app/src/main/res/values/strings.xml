@@ -155,6 +155,7 @@
         \u2022 Changes to make the app compliant with Google Play policies.\n
         \u2022 Remove alternate method for app size calculation below android Nougat.\n
         \u2022 Probable fix to No metadata found after restore.\n
+        \u2022 Some other fixes.\n
     </string>
 
     <!--activity_main.xml-->
@@ -826,6 +827,8 @@
 
     <!--contributors.xml-->
     <string name="contr_3.0">
+        <b>@wojnar0, Jeroen, @bolumstar</b>: Test changes added to flashing in v3.0.3\n
+        <b>@YourFavNigga</b>: Wrong detection of user apps as system apps.\n
         <b>Patrick Perfectly III mtl</b>: Providing logs, writing exhaustive troubleshooting guides… Basically keeping the app alive till now.\n
         <b>Isaac Baihua</b>: Detecting a case where zip isn\'t being made if only extras are selected.\n
         <b>@anoop142 (Anoop)</b>: Made the first SAR modified version of the app. That helped a lot in v3.0\n
