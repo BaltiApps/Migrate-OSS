@@ -154,6 +154,7 @@
         \u2022 Changes to make the app compliant with Google Play policies.\n
         \u2022 Remove alternate method for app size calculation below android Nougat.\n
         \u2022 Probable fix to No metadata found after restore.\n
+        \u2022 Some other fixes.\n
     </string>
 
     <!--activity_main.xml-->
