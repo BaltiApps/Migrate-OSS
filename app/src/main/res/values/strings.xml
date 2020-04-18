@@ -827,7 +827,8 @@
 
     <!--contributors.xml-->
     <string name="contr_3.0">
-        <b>@wojnar0, Jeroen, @bolumstar</b>: Test changes added to flashing in v3.0.3
+        <b>@wojnar0, Jeroen, @bolumstar</b>: Test changes added to flashing in v3.0.3\n
+        <b>@YourFavNigga</b>: Wrong detection of user apps as system apps.\n
         <b>Patrick Perfectly III mtl</b>: Providing logs, writing exhaustive troubleshooting guides… Basically keeping the app alive till now.\n
         <b>Isaac Baihua</b>: Detecting a case where zip isn\'t being made if only extras are selected.\n
         <b>@anoop142 (Anoop)</b>: Made the first SAR modified version of the app. That helped a lot in v3.0\n
