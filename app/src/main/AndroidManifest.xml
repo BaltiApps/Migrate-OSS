@@ -77,7 +77,7 @@
         <service android:name=".backupEngines.BackupServiceKotlin"/>
 
         <provider
-            android:authorities="migrate.provider.ng"
+            android:authorities="migrate.provider"
             android:name="androidx.core.content.FileProvider"
             android:exported="false"
             android:grantUriPermissions="true">

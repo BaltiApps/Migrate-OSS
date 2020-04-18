@@ -6,7 +6,7 @@ apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "balti.migrate.ng"
+        applicationId "balti.migrate"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 23

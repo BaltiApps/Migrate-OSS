@@ -435,7 +435,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     override fun onResume() {
         super.onResume()
 
-        if (packageName != "balti.migrate.ng") {
+        if (packageName != "balti.migrate") {
             val ad = AlertDialog.Builder(this)
             ad.setTitle(R.string.copied_app)
             ad.setMessage(R.string.copied_app_exp)
