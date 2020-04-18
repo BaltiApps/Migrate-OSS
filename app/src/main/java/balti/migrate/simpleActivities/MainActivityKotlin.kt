@@ -35,7 +35,6 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.LAST_SUPPORTED_ANDROID_API
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ANDROID_VERSION_WARNING
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ASK_FOR_RATING
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FIRST_RUN
@@ -293,7 +292,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         .setPositiveButton(android.R.string.ok, null)
                         .show()
 
-            R.id.rate -> askForRating(true)
+            //R.id.rate -> askForRating(true)
 
             R.id.contact ->
                 AlertDialog.Builder(this)
@@ -356,30 +355,6 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         }
 
         ad.show()
-    }
-
-    private fun askForRating(manual: Boolean) {
-        val rateDialog = AlertDialog.Builder(this)
-                .setTitle(R.string.rate_dialog_title)
-                .setMessage(R.string.rate_dialog_message)
-                .setPositiveButton(R.string.sure) { _, _ ->
-                    commonTools.playStoreLink(packageName)
-                    editor.putBoolean(PREF_ASK_FOR_RATING, false)
-                    editor.commit()
-                }
-        if (!manual) {
-            rateDialog.setNeutralButton(R.string.never_show) { _, _ ->
-                editor.putBoolean(PREF_ASK_FOR_RATING, false)
-                editor.commit()
-                finish()
-            }
-                    .setNegativeButton(R.string.later) { _, _ ->
-                        finish()
-                    }
-        }
-        else rateDialog.setNegativeButton("Cancel", null)
-
-        rateDialog.show()
     }
 
     private fun otherAppsClickManager() {
@@ -574,10 +549,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START))
             drawer_layout.closeDrawer(GravityCompat.START)
-        else if (!main.getBoolean(PREF_FIRST_RUN, true) && main.getBoolean(PREF_ASK_FOR_RATING, true))
-            askForRating(false)
-        else
-            super.onBackPressed()
+        else super.onBackPressed()
     }
 
     override fun onDestroy() {

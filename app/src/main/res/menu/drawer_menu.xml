@@ -42,9 +42,9 @@
                     android:title="@string/contributors"
                     android:icon="@drawable/ic_thanks"/>
 
-                <item android:id="@+id/rate"
+                <!--<item android:id="@+id/rate"
                     android:title="@string/rateTheApp"
-                    android:icon="@drawable/ic_rate"/>
+                    android:icon="@drawable/ic_rate"/>-->
 
                 <item android:id="@+id/older_builds"
                     android:title="@string/older_builds"

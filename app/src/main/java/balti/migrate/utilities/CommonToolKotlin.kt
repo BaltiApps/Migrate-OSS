@@ -169,7 +169,7 @@ class CommonToolKotlin(val context: Context) {
         val PREF_VERSION_CURRENT = "version"
         val PREF_ANDROID_VERSION_WARNING = "android_version_warning"
         val PREF_DEFAULT_BACKUP_PATH = "defaultBackupPath"
-        val PREF_ASK_FOR_RATING = "askForRating"
+        //val PREF_ASK_FOR_RATING = "askForRating"
         val PREF_SYSTEM_APPS_WARNING = "system_apps_warning"
         val PREF_CALCULATING_SIZE_METHOD = "calculating_size_method"
         val PREF_TERMINAL_METHOD = 1
