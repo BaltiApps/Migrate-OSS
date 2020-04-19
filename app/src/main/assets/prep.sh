@@ -45,10 +45,14 @@ done
 
 if [[ "$OUTFD" == "NULL" ]]; then
     echo "DEBUG:: Manually trying to find FD....."
+    echo "DEBUG:: --- start of ps ---"
+    ps
+    echo "DEBUG:: --- end of ps ---"
     ps_line="$(ps | grep -v grep | grep ${ZIP_NAME} | head -n 1)"
+    echo "DEBUG:: ps_line: $ps_line"
     out="$(echo ${ps_line} | $AWK1 '{print $(NF-1)}')"
     echo "DEBUG:: FD detected: $out....."
-    if [[ "$out" -eq "$out" 2>/dev/null ]]; then 
+    if [[ "$out" -eq "$out" ]]; then 
         OUTFD=${out}
     else
         echo "DEBUG:: FD not a number"
@@ -56,7 +60,7 @@ if [[ "$OUTFD" == "NULL" ]]; then
 fi
 
 echoIt() {
-    if [[ "${OUTFD}" != "NULL" ]]; then
+    if [[ -n "${OUTFD}" && "${OUTFD}" != "NULL" ]]; then
         echo "ui_print $1" >> /proc/self/fd/${OUTFD};
     else
         echo "FD $OUTFD:: $1"
