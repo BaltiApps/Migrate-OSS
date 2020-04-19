@@ -10,7 +10,7 @@
     current_version_codename
     last_tested_label
     release_state (must not have blank spaces)
-    changelog
+    changelog                                                   !!!
     build.gradle [versionCode, versionName]                     !!!
     MainActivity.java [showChangeLog()]
     CommonToolsKotlin [THIS_VERSION]                            !!!
@@ -22,8 +22,9 @@
     <!--please also update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt-->
 
     <string name="app_name">Migrate-NG</string>
+    <string name="display_name">Migrate-NG (new)</string>
     <string name="gpe_label">@string/label_for_ng</string>
-    <string name="current_version_name">3.0.3</string>
+    <string name="current_version_name">3.0.4</string>
     <string name="current_version_codename">Mercury</string>
     <string name="release_state">release</string>
     <string name="last_tested_label">Last tested on: Android 10</string>
@@ -152,10 +153,14 @@
     </string>
     <string name="version_3.0.3">Version 3.0.3</string>
     <string name="version_3.0.3_content">
-        \u2022 Migrate-NG comes as a new app. Hence you will find two apps named Migrate-NG.\n
-        The new app has a new logo. Kindly uninstall the old Migrate-NG app.
         \u2022 Remove alternate method for app size calculation below android Nougat.\n
         \u2022 Probable fix to No metadata found after restore.\n
+        \u2022 Use Stable channel for updates by default.\n
+    </string>
+    <string name="version_3.0.4">Version 3.0.4</string>
+    <string name="version_3.0.4_content">
+        \u2022 Minor bug fixes.\n
+        \u2022 Updated helper.\n
     </string>
 
     <!--activity_main.xml-->
@@ -165,6 +170,9 @@
     <string name="internal_storage">Internal storage</string>
     <string name="learn_about_sd_card_support">Learn about SD card support</string>
     <string name="check_for_updates">@string/check_for_updates_ng</string>
+    <string name="remove_old">Remove old version?</string>
+    <string name="remove_old_desc">You upgraded from an older version of Migrate-NG. Would you like to uninstall the older version?</string>
+    <string name="dont_ask_again">Don\'t ask again</string>
 
     <!--backup_layout.xml-->
     <string name="select_apps">Select apps</string>
@@ -837,6 +845,8 @@
 
     <!--contributors.xml-->
     <string name="contr_3.0">
+        <b>@wojnar0, Jeroen, @bolumstar</b>: Test changes added to flashing in v3.0.3\n
+        <b>@YourFavNigga</b>: Wrong detection of user apps as system apps.\n
         <b>Patrick Perfectly III mtl</b>: Providing logs, writing exhaustive troubleshooting guides… Basically keeping the app alive till now.\n
         <b>Isaac Baihua</b>: Detecting a case where zip isn\'t being made if only extras are selected.\n
         <b>@anoop142 (Anoop)</b>: Made the first SAR modified version of the app. That helped a lot in v3.0\n

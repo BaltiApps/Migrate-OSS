@@ -51,7 +51,7 @@ class Updater {
         }
 
         fun getChannels(): Array<String> = arrayOf(PREF_CHANNEL_BETA_STABLE, PREF_CHANNEL_STABLE)
-        fun getActiveChannel(): String = sharedPreferences.getString(PREF_CHANNEL, PREF_CHANNEL_BETA_STABLE).let { it?:"" }
+        fun getActiveChannel(): String = sharedPreferences.getString(PREF_CHANNEL, PREF_CHANNEL_STABLE).let { it?:"" }
         fun setActiveChannel(channel : String) {
             if (channel in getChannels()) editor.putString(PREF_CHANNEL, channel).apply()
         }

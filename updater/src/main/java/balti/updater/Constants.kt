@@ -27,6 +27,7 @@ internal class Constants {
         val UPDATE_VERSION = "version"
         val UPDATE_LAST_TESTED_ANDROID = "last_tested_android"
         val UPDATE_STATUS = "status"
+        val UPDATE_PACKAGE = "package"
         val UPDATE_MESSAGE = "message"
         val UPDATE_URL = "url"
         val UPDATE_ERROR = "error"
@@ -42,15 +43,17 @@ internal class Constants {
         val EXTRA_FILE_SIZE = "download_file_size"
         val EXTRA_HOST = "download_host"
 
+        val EXTRA_UPDATE_PACKAGE_NAME = "update_package_name"
+
         fun UPDATE_URL() : String =
                 if (Updater.sharedPreferences.getString(PREF_HOST, PREF_HOST_GITLAB) == PREF_HOST_GITLAB) {
-                    if (Updater.sharedPreferences.getString(PREF_CHANNEL, PREF_CHANNEL_BETA_STABLE) == PREF_CHANNEL_BETA_STABLE)
-                        "https://gitlab.com/SayantanRC/update-files/-/raw/master/migrate/migrate_update_info_beta+stable.txt"
-                    else "https://gitlab.com/SayantanRC/update-files/-/raw/master/migrate/migrate_update_info_stable.txt"
+                    if (Updater.sharedPreferences.getString(PREF_CHANNEL, PREF_CHANNEL_STABLE) == PREF_CHANNEL_BETA_STABLE)
+                        "https://gitlab.com/SayantanRC/update-files/-/raw/master/migrate/migrate_ng_update_info_beta+stable.txt"
+                    else "https://gitlab.com/SayantanRC/update-files/-/raw/master/migrate/migrate_ng_update_info_stable.txt"
                 } else {
-                    if (Updater.sharedPreferences.getString(PREF_CHANNEL, PREF_CHANNEL_BETA_STABLE) == PREF_CHANNEL_BETA_STABLE)
-                        "https://raw.githubusercontent.com/SayantanRC/Migrate-files/master/update_info_beta+stable.txt"
-                    else "https://raw.githubusercontent.com/SayantanRC/Migrate-files/master/update_info_stable.txt"
+                    if (Updater.sharedPreferences.getString(PREF_CHANNEL, PREF_CHANNEL_STABLE) == PREF_CHANNEL_BETA_STABLE)
+                        "https://raw.githubusercontent.com/SayantanRC/Migrate-files/master/update_info_ng_beta+stable.txt"
+                    else "https://raw.githubusercontent.com/SayantanRC/Migrate-files/master/update_info_ng_stable.txt"
                 }
     }
 }

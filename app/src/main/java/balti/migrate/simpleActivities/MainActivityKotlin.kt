@@ -35,7 +35,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.LAST_SUPPORTED_ANDROID_API
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ANDROID_VERSION_WARNING
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ASK_FOR_RATING
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ASK_TO_REMOVE_OLD_VERSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FIRST_RUN
@@ -209,6 +209,28 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 }
             }
         }
+
+        "balti.migrate".let {
+            if (packageName != it &&
+                    commonTools.getAppName(it) == "Migrate-NG" &&
+                    commonTools.isPackageInstalled(it) &&
+                    main.getBoolean(PREF_ASK_TO_REMOVE_OLD_VERSION, true)){
+
+                AlertDialog.Builder(this).apply {
+                    setTitle(R.string.remove_old)
+                    setMessage(R.string.remove_old_desc)
+                    setPositiveButton(R.string.uninstall) {_, _ ->
+                        startActivity(Intent(Intent.ACTION_UNINSTALL_PACKAGE).setData(Uri.parse("package:$it")))
+                    }
+                    setNegativeButton(android.R.string.cancel, null)
+                    setNeutralButton(R.string.dont_ask_again) {_, _ ->
+                        editor.putBoolean(PREF_ASK_TO_REMOVE_OLD_VERSION, false)
+                        editor.apply()
+                    }
+                }
+                        .show()
+            }
+        }
     }
 
     private fun showChangeLog(onlyLatest: Boolean) {
@@ -218,8 +240,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         if (onlyLatest) {
             if (lastVer < THIS_VERSION) {
                 /*Put only the latest version here*/
-                changelog.setTitle(R.string.version_3_0_3)
-                        .setMessage(R.string.version_3_0_3_content)
+                changelog.setTitle(R.string.version_3_0_4)
+                        .setMessage(R.string.version_3_0_4_content)
                         .setPositiveButton(R.string.close, null)
                         .show()
 
@@ -247,6 +269,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             /*Add increasing versions here*/
 
+            allVersions.append("\n" + getString(R.string.version_3_0_4) + "\n" + getString(R.string.version_3_0_4_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_3_0_3) + "\n" + getString(R.string.version_3_0_3_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_3_0_1) + "\n" + getString(R.string.version_3_0_1_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_3_0) + "\n" + getString(R.string.version_3_0_content) + "\n")
@@ -307,7 +330,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         .setPositiveButton(android.R.string.ok, null)
                         .show()
 
-            R.id.rate -> askForRating(true)
+            //R.id.rate -> askForRating(true)
 
             R.id.contact ->
                 AlertDialog.Builder(this)
@@ -370,30 +393,6 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         }
 
         ad.show()
-    }
-
-    private fun askForRating(manual: Boolean) {
-        val rateDialog = AlertDialog.Builder(this)
-                .setTitle(R.string.rate_dialog_title)
-                .setMessage(R.string.rate_dialog_message)
-                .setPositiveButton(R.string.sure) { _, _ ->
-                    commonTools.playStoreLink(packageName)
-                    editor.putBoolean(PREF_ASK_FOR_RATING, false)
-                    editor.commit()
-                }
-        if (!manual) {
-            rateDialog.setNeutralButton(R.string.never_show) { _, _ ->
-                editor.putBoolean(PREF_ASK_FOR_RATING, false)
-                editor.commit()
-                finish()
-            }
-                    .setNegativeButton(R.string.later) { _, _ ->
-                        finish()
-                    }
-        }
-        else rateDialog.setNegativeButton("Cancel", null)
-
-        rateDialog.show()
     }
 
     private fun otherAppsClickManager() {
@@ -588,10 +587,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START))
             drawer_layout.closeDrawer(GravityCompat.START)
-        else if (!main.getBoolean(PREF_FIRST_RUN, true) && main.getBoolean(PREF_ASK_FOR_RATING, true))
-            askForRating(false)
-        else
-            super.onBackPressed()
+        else super.onBackPressed()
     }
 
     override fun onDestroy() {

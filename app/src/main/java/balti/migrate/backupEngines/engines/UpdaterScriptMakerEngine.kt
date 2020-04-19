@@ -150,9 +150,10 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 }
 
                 if (packet.APP) {
-                    val apkPath = packet.apkPath
+                    //val apkPath = packet.apkPath
 
-                    if (!apkPath.startsWith("/data")) {
+                    //if (!apkPath.startsWith("/data")) {
+                    if (packet.isSystem) {
                         updater_writer.write("package_extract_dir(\"$packageName.app\", \"/tmp/$packageName.app\");\n")
                         updater_writer.write("package_extract_file(\"$packageName.sh\", \"/tmp/$packageName.sh\");\n")
                         updater_writer.write("set_perm_recursive(0, 0, 0777, 0777,  \"/tmp/$packageName.sh\");\n")

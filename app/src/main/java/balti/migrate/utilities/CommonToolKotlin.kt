@@ -27,7 +27,7 @@ class CommonToolKotlin(val context: Context) {
 
     companion object {
 
-        val THIS_VERSION = 23
+        val THIS_VERSION = 34
         val LAST_SUPPORTED_ANDROID_API = 29
 
         val DEBUG_TAG = "migrate_tag"
@@ -169,7 +169,7 @@ class CommonToolKotlin(val context: Context) {
         val PREF_VERSION_CURRENT = "version"
         val PREF_ANDROID_VERSION_WARNING = "android_version_warning"
         val PREF_DEFAULT_BACKUP_PATH = "defaultBackupPath"
-        val PREF_ASK_FOR_RATING = "askForRating"
+        //val PREF_ASK_FOR_RATING = "askForRating"
         val PREF_SYSTEM_APPS_WARNING = "system_apps_warning"
         val PREF_CALCULATING_SIZE_METHOD = "calculating_size_method"
         val PREF_TERMINAL_METHOD = 1
@@ -199,6 +199,7 @@ class CommonToolKotlin(val context: Context) {
         val PREF_MANUAL_BUILDPROP = "manual_buildProp"
 
         val PREF_UPDATE_AUTO_CHECK = "update_auto_check"
+        val PREF_ASK_TO_REMOVE_OLD_VERSION = "ask_to_remove_old"
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
         val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter
@@ -466,7 +467,7 @@ class CommonToolKotlin(val context: Context) {
         }
     }
 
-    private fun isPackageInstalled(packageName: String): Boolean{
+    fun isPackageInstalled(packageName: String): Boolean{
         return try {
             context.packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
             true
@@ -476,6 +477,17 @@ class CommonToolKotlin(val context: Context) {
         }
     }
 
+    fun getAppName(packageName: String): String {
+        return if (isPackageInstalled(packageName)){
+            context.packageManager.getApplicationLabel(
+                    context.packageManager.getPackageInfo(
+                            packageName,
+                            PackageManager.GET_META_DATA
+                    ).applicationInfo
+            ).toString()
+        }
+        else ""
+    }
 
     fun suEcho(): Array<Any> {
         val suRequest = Runtime.getRuntime().exec("su")
