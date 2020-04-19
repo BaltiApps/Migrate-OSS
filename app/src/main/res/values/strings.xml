@@ -10,7 +10,7 @@
     current_version_codename
     last_tested_label
     release_state (must not have blank spaces)
-    changelog
+    changelog                                                   !!!
     build.gradle [versionCode, versionName]                     !!!
     MainActivity.java [showChangeLog()]
     CommonToolsKotlin [THIS_VERSION]                            !!!
@@ -23,7 +23,7 @@
 
     <string name="app_name">Migrate</string>
     <string name="gpe_label"></string>
-    <string name="current_version_name">3.0.3</string>
+    <string name="current_version_name">3.0.4</string>
     <string name="current_version_codename">Mercury</string>
     <string name="release_state">release</string>
     <string name="last_tested_label">Last tested on: Android 10</string>
@@ -155,6 +155,11 @@
         \u2022 Remove alternate method for app size calculation below android Nougat.\n
         \u2022 Probable fix to No metadata found after restore.\n
         \u2022 Some other fixes.\n
+    </string>
+    <string name="version_3.0.4">Version 3.0.4</string>
+    <string name="version_3.0.4_content">
+        \u2022 Minor bug fixes.\n
+        \u2022 Updated helper.\n
     </string>
 
     <!--activity_main.xml-->

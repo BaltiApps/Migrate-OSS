@@ -187,8 +187,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         if (onlyLatest) {
             if (lastVer < THIS_VERSION) {
                 /*Put only the latest version here*/
-                changelog.setTitle(R.string.version_3_0_3)
-                        .setMessage(R.string.version_3_0_3_content)
+                changelog.setTitle(R.string.version_3_0_4)
+                        .setMessage(R.string.version_3_0_4_content)
                         .setPositiveButton(R.string.close, null)
                         .show()
 
@@ -216,6 +216,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             /*Add increasing versions here*/
 
+            allVersions.append("\n" + getString(R.string.version_3_0_4) + "\n" + getString(R.string.version_3_0_4_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_3_0_3) + "\n" + getString(R.string.version_3_0_3_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_3_0_1) + "\n" + getString(R.string.version_3_0_1_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_3_0) + "\n" + getString(R.string.version_3_0_content) + "\n")
