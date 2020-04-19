@@ -464,7 +464,7 @@ class CommonToolKotlin(val context: Context) {
         }
     }
 
-    private fun isPackageInstalled(packageName: String): Boolean{
+    fun isPackageInstalled(packageName: String): Boolean{
         return try {
             context.packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
             true
@@ -474,6 +474,17 @@ class CommonToolKotlin(val context: Context) {
         }
     }
 
+    fun getAppName(packageName: String): String {
+        return if (isPackageInstalled(packageName)){
+            context.packageManager.getApplicationLabel(
+                    context.packageManager.getPackageInfo(
+                            packageName,
+                            PackageManager.GET_META_DATA
+                    ).applicationInfo
+            ).toString()
+        }
+        else ""
+    }
 
     fun suEcho(): Array<Any> {
         val suRequest = Runtime.getRuntime().exec("su")
