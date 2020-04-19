@@ -35,6 +35,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.LAST_SUPPORTED_ANDROID_API
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ANDROID_VERSION_WARNING
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ASK_TO_REMOVE_OLD_VERSION
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FIRST_RUN
@@ -192,6 +193,28 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                     Updater.launchUpdaterScreen()
                 }.show()
 
+            }
+        }
+
+        "balti.migrate".let {
+            if (packageName != it &&
+                    commonTools.getAppName(it) == "Migrate-NG" &&
+                    commonTools.isPackageInstalled(it) &&
+                    main.getBoolean(PREF_ASK_TO_REMOVE_OLD_VERSION, true)){
+
+                AlertDialog.Builder(this).apply {
+                    setTitle(R.string.remove_old)
+                    setMessage(R.string.remove_old_desc)
+                    setPositiveButton(R.string.uninstall) {_, _ ->
+                        startActivity(Intent(Intent.ACTION_UNINSTALL_PACKAGE).setData(Uri.parse("package:$it")))
+                    }
+                    setNegativeButton(android.R.string.cancel, null)
+                    setNeutralButton(R.string.dont_ask_again) {_, _ ->
+                        editor.putBoolean(PREF_ASK_TO_REMOVE_OLD_VERSION, false)
+                        editor.apply()
+                    }
+                }
+                        .show()
             }
         }
     }

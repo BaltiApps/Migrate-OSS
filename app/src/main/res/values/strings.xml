@@ -169,6 +169,9 @@
     <string name="internal_storage">Internal storage</string>
     <string name="learn_about_sd_card_support">Learn about SD card support</string>
     <string name="check_for_updates">@string/check_for_updates_ng</string>
+    <string name="remove_old">Remove old version?</string>
+    <string name="remove_old_desc">You upgraded from an older version of Migrate-NG. Would you like to uninstall the older version?</string>
+    <string name="dont_ask_again">Don\'t ask again</string>
 
     <!--backup_layout.xml-->
     <string name="select_apps">Select apps</string>

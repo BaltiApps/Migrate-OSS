@@ -199,6 +199,7 @@ class CommonToolKotlin(val context: Context) {
         val PREF_MANUAL_BUILDPROP = "manual_buildProp"
 
         val PREF_UPDATE_AUTO_CHECK = "update_auto_check"
+        val PREF_ASK_TO_REMOVE_OLD_VERSION = "ask_to_remove_old"
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
         val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter
