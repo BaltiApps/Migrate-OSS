@@ -11,11 +11,13 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.DIR_MANUAL_CONFIGS
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_CONFIG_FILE
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_EXTRACT
 import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_UPDATER_TRY_CATCH
+import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_WRITING_RAW_LIST
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_BUILDPROP_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_FILE_LIST
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MIGRATE_CACHE_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PACKAGE_DATA
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_RAW_LIST
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_SYSTEM_MANUAL
 import balti.migrate.utilities.CommonToolKotlin.Companion.KB_DIVISION_SIZE
 import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_CACHE_DEFAULT
@@ -87,6 +89,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             extractFile("helper_unpacking_script.sh")
             extractFile("verify.sh")
             extractFile(FILE_FILE_LIST)
+            extractFile(FILE_RAW_LIST)
             extractFile("mover.sh")
             updater_writer.write("package_extract_dir(\"$DIR_MANUAL_CONFIGS\", \"/tmp/$DIR_MANUAL_CONFIGS\");\n")
 
@@ -101,6 +104,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             set777Permission("helper_unpacking_script.sh")
             set777Permission("verify.sh")
             set777Permission(FILE_FILE_LIST)
+            set777Permission(FILE_RAW_LIST)
             set777Permission("mover.sh")
             set777Permission(DIR_MANUAL_CONFIGS)
 
@@ -116,7 +120,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
             // run prep.sh
             //updater_writer.write("run_program(\"/tmp/prep.sh\", \"$MIGRATE_CACHE_DEFAULT\", \"$timeStamp\", \"$FILE_PACKAGE_DATA\", \"$DATA_TEMP\", \"$DIR_MANUAL_CONFIGS\");\n")
-            updater_writer.write("run_program(\"/tmp/prep.sh\", \"$MIGRATE_CACHE_DEFAULT\", \"$timeStamp\", \"$FILE_PACKAGE_DATA\", \"$DIR_MANUAL_CONFIGS\", \"${bd.backupName}\");\n")
+            updater_writer.write("run_program(\"/tmp/prep.sh\", \"$MIGRATE_CACHE_DEFAULT\", \"$timeStamp\", \"$FILE_PACKAGE_DATA\", \"$DIR_MANUAL_CONFIGS\", \"${bd.backupName}\", \"$FILE_RAW_LIST\");\n")
 
             // data will be unmounted if prep.sh aborted unsuccessfully
             updater_writer.write("ifelse(is_mounted(\"/data\"), ui_print(\"Parameters checked!\") && sleep(2s), abort(\"Exiting...\"));\n")
@@ -299,6 +303,34 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             writeManualConfig(FILE_MIGRATE_CACHE_MANUAL, PREF_MANUAL_MIGRATE_CACHE)
             writeManualConfig(FILE_SYSTEM_MANUAL, PREF_MANUAL_SYSTEM)
             writeManualConfig(FILE_BUILDPROP_MANUAL, PREF_MANUAL_BUILDPROP)
+
+            try {
+                BufferedWriter(FileWriter(File(actualDestination, FILE_RAW_LIST))).run {
+
+                    this.write("${actualDestination}\n")
+                    this.write("=================\n")
+                    this.write("\n")
+
+                    fun getRelativePath(file: File): String =
+                            file.absolutePath.let {
+                                it.substring(actualDestination.length)
+                            }
+
+                    fun scanAllFiles(directory: File) {
+                        if (directory.isFile) this.write("${getRelativePath(directory)}\n")
+                        else for (f in directory.listFiles()) {
+                            scanAllFiles(f)
+                        }
+                    }
+
+                    scanAllFiles(File(actualDestination))
+                    close()
+                }
+            }
+            catch (e: Exception){
+                e.printStackTrace()
+                warnings.add("$ERR_WRITING_RAW_LIST${bd.batchErrorTag}: ${e.message}")
+            }
 
             makeUpdaterScript()
         }

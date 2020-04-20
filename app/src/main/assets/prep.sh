@@ -8,6 +8,7 @@ PACKAGE_DATA_NAME=$3
 #TEMP_UNPACK_DIR=$4
 MANUAL_CONFIG_DIR=$4
 ZIP_NAME="$5"
+RAW_LIST="$6"
 
 OUTFD="NULL"
 SYSTEM=""
@@ -350,7 +351,8 @@ mkdir -p /data/app/
 mkdir -p /data/data/
 mkdir -p ${MIGRATE_CACHE}
 mkdir -p ${MIGRATE_CACHE_DEFAULT}
-cp /tmp/${PACKAGE_DATA_NAME} ${MIGRATE_CACHE}/"$PACKAGE_DATA_NAME"${TIMESTAMP}.txt && echoIt "Copied package data"
+cp /tmp/${PACKAGE_DATA_NAME} ${MIGRATE_CACHE}/"$PACKAGE_DATA_NAME"${TIMESTAMP}.txt && echoIt "Copied package data..."
+cp /tmp/${RAW_LIST} ${MIGRATE_CACHE}/"$RAW_LIST"${TIMESTAMP}.txt && echoIt "Copied raw list..."
 
 # export variables
 echo "${OUTFD}" > /tmp/${MANUAL_CONFIG_DIR}/OUTFD
