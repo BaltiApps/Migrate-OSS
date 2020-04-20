@@ -304,9 +304,12 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             writeManualConfig(FILE_SYSTEM_MANUAL, PREF_MANUAL_SYSTEM)
             writeManualConfig(FILE_BUILDPROP_MANUAL, PREF_MANUAL_BUILDPROP)
 
+            val rawList = File(actualDestination, FILE_RAW_LIST)
             try {
-                BufferedWriter(FileWriter(File(actualDestination, FILE_RAW_LIST))).run {
+                BufferedWriter(FileWriter(rawList)).run {
 
+                    this.write("\n")
+                    this.write("=================\n")
                     this.write("${actualDestination}\n")
                     this.write("=================\n")
                     this.write("\n")
@@ -330,6 +333,18 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             catch (e: Exception){
                 e.printStackTrace()
                 warnings.add("$ERR_WRITING_RAW_LIST${bd.batchErrorTag}: ${e.message}")
+            }
+
+            commonTools.tryIt {
+                val extRawList = File(engineContext.externalCacheDir, FILE_RAW_LIST)
+
+                BufferedWriter(FileWriter(extRawList, true)).run {
+                    if (rawList.exists())
+                        rawList.readLines().forEach {
+                            this.write("$it\n")
+                        }
+                    close()
+                }
             }
 
             makeUpdaterScript()

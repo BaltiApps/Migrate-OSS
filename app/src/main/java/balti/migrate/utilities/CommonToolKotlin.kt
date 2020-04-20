@@ -329,6 +329,8 @@ class CommonToolKotlin(val context: Context) {
             else emptyArray<File>()
         }
 
+        val rawList = File(context.externalCacheDir, FILE_RAW_LIST)
+
         if (isErrorLogMandatory && !errorLog.exists()) {
             AlertDialog.Builder(context)
                     .setTitle(R.string.log_files_do_not_exist)
@@ -349,6 +351,9 @@ class CommonToolKotlin(val context: Context) {
             eView.share_errors_checkbox.isChecked = errorLog.exists()
             eView.share_errors_checkbox.isEnabled = errorLog.exists() && !isErrorLogMandatory
 
+            eView.share_rawList_checkbox.isChecked = rawList.exists()
+            eView.share_rawList_checkbox.isEnabled = rawList.exists()
+
             eView.report_button_privacy_policy.setOnClickListener {
                 context.startActivity(Intent(context, PrivacyPolicy::class.java))
             }
@@ -365,6 +370,7 @@ class CommonToolKotlin(val context: Context) {
                     if (eView.share_errors_checkbox.isChecked) uris.add(getUri(errorLog))
                     if (eView.share_progress_checkbox.isChecked) uris.add(getUri(progressLog))
                     if (eView.share_script_checkbox.isChecked) for (f in backupScripts) uris.add(getUri(f))
+                    if (eView.share_rawList_checkbox.isChecked) uris.add(getUri(rawList))
 
                 } catch (e: Exception) {
                     e.printStackTrace()

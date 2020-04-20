@@ -496,6 +496,7 @@
     <string name="share_progress_logs">Share progress logs</string>
     <string name="share_error_logs">Share error logs</string>
     <string name="share_script">Share script</string>
+    <string name="share_rawList">Share raw file list</string>
     <string name="send_to_tg">Send to Telegram</string>
     <string name="agree_and_send">Agree and send</string>
     <string name="error_report_disclaimer">Thanks for your interest in helping to improve this app. From now on, all error reports are to be sent in our Telegram group - https://t.me/migrateApp.

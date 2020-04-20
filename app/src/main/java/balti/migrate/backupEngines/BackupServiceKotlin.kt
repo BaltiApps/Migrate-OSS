@@ -67,6 +67,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_WARNINGS
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ERRORLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
+import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_RAW_LIST
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_CALLS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_CONTACTS
 import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_SETTINGS
@@ -279,6 +280,8 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
         cancelAll = false
         AppInstance.notificationManager.cancelAll()
+
+        File(externalCacheDir, FILE_RAW_LIST).run { if (exists()) delete() }
 
         doFallThroughJob(JOBCODE_PEFORM_SYSTEM_TEST)
     }
