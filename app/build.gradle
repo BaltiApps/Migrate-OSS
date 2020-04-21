@@ -9,8 +9,8 @@ android {
         applicationId "balti.migrate"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 34
-        versionName "mercury (v3.0.4) [release]"
+        versionCode 30
+        versionName "mercury (v3.1) [release]"
     }
     buildTypes {
         release {
