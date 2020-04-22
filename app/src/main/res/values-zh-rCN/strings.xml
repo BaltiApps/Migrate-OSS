@@ -3,7 +3,7 @@
 
     <string name="app_name">Migrate</string>
     <string name="gpe_label"></string>
-    <string name="current_version_name">3.0.1</string>
+    <string name="current_version_name">3.1</string>
     <string name="current_version_codename">Mercury</string>
     <string name="release_state">release</string>
     <string name="last_tested_label">最后测试:Android 10</string>

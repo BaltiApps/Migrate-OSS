@@ -24,7 +24,7 @@
     <string name="app_name">Migrate</string>
     <string name="display_name">@string/app_name</string>
     <string name="gpe_label"></string>
-    <string name="current_version_name">3.0.4</string>
+    <string name="current_version_name">3.1</string>
     <string name="current_version_codename">Mercury</string>
     <string name="release_state">release</string>
     <string name="last_tested_label">Last tested on: Android 10</string>
@@ -157,10 +157,12 @@
         \u2022 Probable fix to No metadata found after restore.\n
         \u2022 Some other fixes.\n
     </string>
-    <string name="version_3.0.4">Version 3.0.4</string>
-    <string name="version_3.0.4_content">
-        \u2022 Minor bug fixes.\n
+    <string name="version_3.1">Version 3.1</string>
+    <string name="version_3.1_content">
+        \u2022 Updated helper to fix no data restore.\n
         \u2022 Updated helper.\n
+        \u2022 Show warning for first time use.\n
+        \u2022 Record raw list of files in backup.\n
     </string>
 
     <!--activity_main.xml-->
