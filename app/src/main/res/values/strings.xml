@@ -842,6 +842,7 @@
 
     <!--contributors.xml-->
     <string name="contr_3.0">
+        <b>@ivanliao0601, @joeri9enzz, @iamansingh</b>: Test changes added to flashing in v3.1\n
         <b>@wojnar0, Jeroen, @bolumstar</b>: Test changes added to flashing in v3.0.3\n
         <b>@YourFavNigga</b>: Wrong detection of user apps as system apps.\n
         <b>Patrick Perfectly III mtl</b>: Providing logs, writing exhaustive troubleshooting guides… Basically keeping the app alive till now.\n
