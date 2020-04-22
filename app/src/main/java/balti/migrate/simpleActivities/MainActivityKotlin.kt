@@ -29,6 +29,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELL
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SHOW_FIRST_WARNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ERRORLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
@@ -178,6 +179,19 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         refreshStorageSizes()
         storageHandler.post(storageRunnable)
 
+        if (intent.getBooleanExtra(EXTRA_SHOW_FIRST_WARNING, false))
+            showFirstRunWarning()
+
+    }
+
+    private fun showFirstRunWarning(){
+        AlertDialog.Builder(this).apply {
+            setIcon(R.drawable.ic_warning)
+            setTitle(R.string.test_the_app)
+            setMessage(R.string.test_the_app_desc)
+            setPositiveButton(android.R.string.ok, null)
+        }
+                .show()
     }
 
     private fun showChangeLog(onlyLatest: Boolean) {

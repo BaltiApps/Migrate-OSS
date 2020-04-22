@@ -72,6 +72,8 @@ class CommonToolKotlin(val context: Context) {
         val ACTION_BACKUP_CANCEL = "Migrate backup cancel broadcast"
         val ACTION_REQUEST_BACKUP_DATA = "get data"
 
+        val EXTRA_SHOW_FIRST_WARNING = "show_first_warning"
+
         val EXTRA_PROGRESS_TYPE = "type"
         val EXTRA_TITLE = "title"
         val EXTRA_SUBTASK = "subtask"
