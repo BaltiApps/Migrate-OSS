@@ -8,6 +8,8 @@ PACKAGE_DATA_NAME=$3
 #TEMP_UNPACK_DIR=$4
 MANUAL_CONFIG_DIR=$4
 ZIP_NAME="$5"
+RAW_LIST="$6"
+FILE_LIST="$7"
 
 OUTFD="NULL"
 SYSTEM=""
@@ -45,10 +47,14 @@ done
 
 if [[ "$OUTFD" == "NULL" ]]; then
     echo "DEBUG:: Manually trying to find FD....."
+    echo "DEBUG:: --- start of ps ---"
+    ps
+    echo "DEBUG:: --- end of ps ---"
     ps_line="$(ps | grep -v grep | grep ${ZIP_NAME} | head -n 1)"
+    echo "DEBUG:: ps_line: $ps_line"
     out="$(echo ${ps_line} | $AWK1 '{print $(NF-1)}')"
     echo "DEBUG:: FD detected: $out....."
-    if [[ "$out" -eq "$out" 2>/dev/null ]]; then 
+    if [[ "$out" -eq "$out" ]]; then 
         OUTFD=${out}
     else
         echo "DEBUG:: FD not a number"
@@ -56,7 +62,7 @@ if [[ "$OUTFD" == "NULL" ]]; then
 fi
 
 echoIt() {
-    if [[ "${OUTFD}" != "NULL" ]]; then
+    if [[ -n "${OUTFD}" && "${OUTFD}" != "NULL" ]]; then
         echo "ui_print $1" >> /proc/self/fd/${OUTFD};
     else
         echo "FD $OUTFD:: $1"
@@ -346,7 +352,9 @@ mkdir -p /data/app/
 mkdir -p /data/data/
 mkdir -p ${MIGRATE_CACHE}
 mkdir -p ${MIGRATE_CACHE_DEFAULT}
-cp /tmp/${PACKAGE_DATA_NAME} ${MIGRATE_CACHE}/"$PACKAGE_DATA_NAME"${TIMESTAMP}.txt && echoIt "Copied package data"
+cp /tmp/${PACKAGE_DATA_NAME} ${MIGRATE_CACHE}/"$PACKAGE_DATA_NAME"${TIMESTAMP}.txt && echoIt "Copied package data..."
+cp /tmp/${RAW_LIST} ${MIGRATE_CACHE}/"$RAW_LIST"${TIMESTAMP}.txt && echoIt "Copied raw list..."
+cp /tmp/${FILE_LIST} ${MIGRATE_CACHE}/"${FILE_LIST}"${TIMESTAMP}.txt && echoIt "Copied file list..."
 
 # export variables
 echo "${OUTFD}" > /tmp/${MANUAL_CONFIG_DIR}/OUTFD

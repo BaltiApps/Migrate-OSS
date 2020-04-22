@@ -10,7 +10,7 @@
     current_version_codename
     last_tested_label
     release_state (must not have blank spaces)
-    changelog
+    changelog                                                   !!!
     build.gradle [versionCode, versionName]                     !!!
     MainActivity.java [showChangeLog()]
     CommonToolsKotlin [THIS_VERSION]                            !!!
@@ -22,8 +22,9 @@
     <!--please also update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt-->
 
     <string name="app_name">Migrate-GPE</string>
+    <string name="display_name">@string/app_name</string>
     <string name="gpe_label">@string/label_for_gpe</string>
-    <string name="current_version_name">3.0.3</string>
+    <string name="current_version_name">3.1</string>
     <string name="current_version_codename">Mercury</string>
     <string name="release_state">release</string>
     <string name="last_tested_label">Last tested on: Android 10</string>
@@ -156,6 +157,13 @@
         \u2022 Remove alternate method for app size calculation below android Nougat.\n
         \u2022 Probable fix to No metadata found after restore.\n
         \u2022 Some other fixes.\n
+    </string>
+    <string name="version_3.1">Version 3.1</string>
+    <string name="version_3.1_content">
+        \u2022 Updated helper to fix no data restore.\n
+        \u2022 Updated helper.\n
+        \u2022 Show warning for first time use.\n
+        \u2022 Record raw list of files in backup.\n
     </string>
 
     <!--activity_main.xml-->
@@ -423,7 +431,7 @@
     <!--BackupService.java-->
     <string name="error_loading_engine">Error loading engine</string>
 
-    <!--MainActivity.java-->
+    <!--MainActivityKotlin.kt-->
     <string name="too_fast">Whoa, too fast!!</string>
     <string name="too_fast_desc">The app has not been explicitly tested on Android version above Pie (9.0).\n\nPlease submit your feedback on whether the app works or not.</string>
     <string name="dont_show_again">Don\'t show again</string>
@@ -462,6 +470,11 @@
     <string name="usage_permission_toast">Scroll and select \"Migrate\" and click \"Permit usage access\"!</string>
     <string name="old_method_will_be_used">Use old terminal method</string>
     <string name="download">Download</string>
+    <string name="test_the_app">Please test the app once.</string>
+    <string name="test_the_app_desc">This app heavily relies on your device and recovery, and as such some or all of the functionality may not work for your device.
+        \n\nFor the safety of your data, please take backup of a small app (example Facebook Lite), uninstall it and try restoring the app. Check if it is working fine. If you are satisfied, you may then use this app to Migrate to another ROM.
+        \n\nAnd as always, keeping a nandroid backup is always a good idea.
+    </string>
 
     <!--AppListAdapter.java-->
     <string name="packageName">Package :</string>
@@ -490,6 +503,7 @@
     <string name="share_progress_logs">Share progress logs</string>
     <string name="share_error_logs">Share error logs</string>
     <string name="share_script">Share script</string>
+    <string name="share_rawList">Share raw file list</string>
     <string name="send_to_tg">Send to Telegram</string>
     <string name="agree_and_send">Agree and send</string>
     <string name="error_report_disclaimer">Thanks for your interest in helping to improve this app. From now on, all error reports are to be sent in our Telegram group - https://t.me/migrateApp.
