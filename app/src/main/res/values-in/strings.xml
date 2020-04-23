@@ -1,8 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingTranslation,ExtraTranslation">
 
-    <string name="app_name">Migrate</string>
-    <string name="gpe_label"></string>
+    <string name="app_name">Migrate-GPE</string>
+    <string name="display_name">@string/app_name</string>
+    <string name="gpe_label">@string/label_for_gpe</string>
     <string name="current_version_name">3.1</string>
     <string name="current_version_codename">Mercury</string>
     <string name="release_state">rilis</string>
