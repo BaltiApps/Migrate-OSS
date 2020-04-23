@@ -29,6 +29,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELL
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SHOW_FIRST_WARNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ERRORLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
@@ -191,6 +192,23 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 }
             }
         }
+
+        showFirstRunWarningIfApplicable()
+
+    }
+
+    private fun showFirstRunWarningIfApplicable(){
+        commonTools.tryIt {
+            if (intent.getBooleanExtra(EXTRA_SHOW_FIRST_WARNING, false)) {
+                AlertDialog.Builder(this).apply {
+                    setIcon(R.drawable.ic_warning)
+                    setTitle(R.string.test_the_app)
+                    setMessage(R.string.test_the_app_desc)
+                    setPositiveButton(android.R.string.ok, null)
+                }
+                        .show()
+            }
+        }
     }
 
     private fun showChangeLog(onlyLatest: Boolean) {
@@ -200,8 +218,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         if (onlyLatest) {
             if (lastVer < THIS_VERSION) {
                 /*Put only the latest version here*/
-                changelog.setTitle(R.string.version_3_0_3)
-                        .setMessage(R.string.version_3_0_3_content)
+                changelog.setTitle(R.string.version_3_1)
+                        .setMessage(R.string.version_3_1_content)
                         .setPositiveButton(R.string.close, null)
                         .show()
 
@@ -229,6 +247,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             /*Add increasing versions here*/
 
+            allVersions.append("\n" + getString(R.string.version_3_1) + "\n" + getString(R.string.version_3_1_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_3_0_3) + "\n" + getString(R.string.version_3_0_3_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_3_0_1) + "\n" + getString(R.string.version_3_0_1_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_3_0) + "\n" + getString(R.string.version_3_0_content) + "\n")
