@@ -29,6 +29,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELL
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SHOW_FIRST_WARNING
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ERRORLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
@@ -65,6 +66,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     private val commonTools by lazy { CommonToolKotlin(this) }
 
     private val REQUEST_CODE_BACKUP = 43
+    private val oldPackage = "balti.migrate"
 
     private var rootErrorMessage = ""
     private var loadingDialog: AlertDialog? = null
@@ -210,23 +212,59 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             }
         }
 
-        "balti.migrate".let {
-            if (packageName != it &&
-                    commonTools.getAppName(it) == "Migrate-NG" &&
-                    commonTools.isPackageInstalled(it) &&
-                    main.getBoolean(PREF_ASK_TO_REMOVE_OLD_VERSION, true)){
+        /*if (doPromptOldRemove()) showUninstallDialog()
+        else showFirstRunWarningIfApplicable()*/
 
+        if (intent.getBooleanExtra(EXTRA_SHOW_FIRST_WARNING, false)){
+            if (doPromptOldRemove())
+                showUninstallDialogThenFirstRun()
+            else showFirstRunWarningIfApplicable()
+        }
+        else if (doPromptOldRemove()) showUninstallDialogThenFirstRun()
+
+    }
+
+    private fun doPromptOldRemove(): Boolean{
+        return oldPackage.let {
+            packageName != it  && commonTools.isPackageInstalled(it) &&
+                    commonTools.getAppName(it) == "Migrate-NG" &&
+                    main.getBoolean(PREF_ASK_TO_REMOVE_OLD_VERSION, true) &&
+                    !main.getBoolean(PREF_FIRST_RUN, true)
+        }
+    }
+
+    private fun showUninstallDialogThenFirstRun() {
+        commonTools.tryIt {
+            val ad = AlertDialog.Builder(this).apply {
+                setTitle(R.string.remove_old)
+                setMessage(R.string.remove_old_desc)
+                setPositiveButton(R.string.uninstall) { _, _ ->
+                    startActivity(Intent(Intent.ACTION_UNINSTALL_PACKAGE).setData(Uri.parse("package:$oldPackage")))
+                }
+                setNegativeButton(android.R.string.cancel, null)
+                setNeutralButton(R.string.dont_ask_again) { _, _ ->
+                    editor.putBoolean(PREF_ASK_TO_REMOVE_OLD_VERSION, false)
+                    editor.apply()
+                }
+            }
+                    .create()
+
+            ad.setOnDismissListener {
+                showFirstRunWarningIfApplicable()
+            }
+
+            ad.show()
+        }
+    }
+
+    private fun showFirstRunWarningIfApplicable(){
+        commonTools.tryIt {
+            if (intent.getBooleanExtra(EXTRA_SHOW_FIRST_WARNING, false)) {
                 AlertDialog.Builder(this).apply {
-                    setTitle(R.string.remove_old)
-                    setMessage(R.string.remove_old_desc)
-                    setPositiveButton(R.string.uninstall) {_, _ ->
-                        startActivity(Intent(Intent.ACTION_UNINSTALL_PACKAGE).setData(Uri.parse("package:$it")))
-                    }
-                    setNegativeButton(android.R.string.cancel, null)
-                    setNeutralButton(R.string.dont_ask_again) {_, _ ->
-                        editor.putBoolean(PREF_ASK_TO_REMOVE_OLD_VERSION, false)
-                        editor.apply()
-                    }
+                    setIcon(R.drawable.ic_warning)
+                    setTitle(R.string.test_the_app)
+                    setMessage(R.string.test_the_app_desc)
+                    setPositiveButton(android.R.string.ok, null)
                 }
                         .show()
             }
@@ -240,8 +278,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         if (onlyLatest) {
             if (lastVer < THIS_VERSION) {
                 /*Put only the latest version here*/
-                changelog.setTitle(R.string.version_3_0_4)
-                        .setMessage(R.string.version_3_0_4_content)
+                changelog.setTitle(R.string.version_3_1)
+                        .setMessage(R.string.version_3_1_content)
                         .setPositiveButton(R.string.close, null)
                         .show()
 
@@ -269,7 +307,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             /*Add increasing versions here*/
 
-            allVersions.append("\n" + getString(R.string.version_3_0_4) + "\n" + getString(R.string.version_3_0_4_content) + "\n")
+            allVersions.append("\n" + getString(R.string.version_3_1) + "\n" + getString(R.string.version_3_1_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_3_0_3) + "\n" + getString(R.string.version_3_0_3_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_3_0_1) + "\n" + getString(R.string.version_3_0_1_content) + "\n")
             allVersions.append("\n" + getString(R.string.version_3_0) + "\n" + getString(R.string.version_3_0_content) + "\n")

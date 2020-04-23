@@ -1,9 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingTranslation,ExtraTranslation">
 
-    <string name="app_name">Migrate</string>
-    <string name="gpe_label"></string>
-    <string name="current_version_name">3.0.1</string>
+    <string name="app_name">Migrate-NG</string>
+    <string name="display_name">Migrate-NG (new)</string>
+    <string name="gpe_label">@string/label_for_ng</string>
+    <string name="current_version_name">3.1</string>
     <string name="current_version_codename">Mercury</string>
     <string name="release_state">release</string>
     <string name="last_tested_label">最后测试:Android 10</string>
@@ -433,6 +434,11 @@
     <string name="old_method_will_be_used">使用旧的终端方法</string>
     <string name="update_available">更新可用!</string>
     <string name="download">下载</string>
+    <string name="test_the_app">请测试一次该应用程序。</string>
+    <string name="test_the_app_desc">此应用严重依赖您的设备和恢复，因此某些或全部功能可能不适用于您的设备。
+        \n\n为防止数据丢失，请备份一个带有数据的小应用程序，然后将其卸载并尝试还原该应用程序。检查它是否工作正常。如果您满意，则可以使用此应用程序迁移到另一个ROM。
+        \n\n与往常一样，维护nandroid备份始终是一个好主意。
+    </string>
 
     <!--AppListAdapter.java-->
     <string name="packageName">包名 :</string>

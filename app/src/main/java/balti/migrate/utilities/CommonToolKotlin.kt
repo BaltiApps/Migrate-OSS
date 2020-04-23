@@ -27,7 +27,7 @@ class CommonToolKotlin(val context: Context) {
 
     companion object {
 
-        val THIS_VERSION = 34
+        val THIS_VERSION = 30
         val LAST_SUPPORTED_ANDROID_API = 29
 
         val DEBUG_TAG = "migrate_tag"
@@ -61,6 +61,7 @@ class CommonToolKotlin(val context: Context) {
         val FILE_ZIP_NAME_EXTRAS = "Extras"
 
         val FILE_FILE_LIST = "fileList.txt"
+        val FILE_RAW_LIST = "rawList.txt"
         val FILE_PACKAGE_DATA = "package-data.txt"
 
         val CHANNEL_BACKUP_END = "Backup finished notification"
@@ -70,6 +71,8 @@ class CommonToolKotlin(val context: Context) {
         val ACTION_BACKUP_PROGRESS = "Migrate progress broadcast"
         val ACTION_BACKUP_CANCEL = "Migrate backup cancel broadcast"
         val ACTION_REQUEST_BACKUP_DATA = "get data"
+
+        val EXTRA_SHOW_FIRST_WARNING = "show_first_warning"
 
         val EXTRA_PROGRESS_TYPE = "type"
         val EXTRA_TITLE = "title"
@@ -135,6 +138,7 @@ class CommonToolKotlin(val context: Context) {
         val ERR_UPDATER_TRY_CATCH = "UPDATER_TRY_CATCH"
         val ERR_UPDATER_EXTRACT = "UPDATER_EXTRACT"
         val ERR_UPDATER_CONFIG_FILE = "UPDATER_CONFIG_FILE"
+        val ERR_WRITING_RAW_LIST = "ERR_WRITING_RAW_LIST"
         val ERR_ZIP_PACKET_MAKING = "ZIP_PACKET_MAKING"
         val ERR_ZIP_BATCHING = "ZIP_BATCHING"
         val ERR_ZIP_ADDING_EXTRAS = "ZIP_ADDING_EXTRAS"
@@ -330,6 +334,8 @@ class CommonToolKotlin(val context: Context) {
             else emptyArray<File>()
         }
 
+        val rawList = File(context.externalCacheDir, FILE_RAW_LIST)
+
         if (isErrorLogMandatory && !errorLog.exists()) {
             AlertDialog.Builder(context)
                     .setTitle(R.string.log_files_do_not_exist)
@@ -350,6 +356,9 @@ class CommonToolKotlin(val context: Context) {
             eView.share_errors_checkbox.isChecked = errorLog.exists()
             eView.share_errors_checkbox.isEnabled = errorLog.exists() && !isErrorLogMandatory
 
+            eView.share_rawList_checkbox.isChecked = rawList.exists()
+            eView.share_rawList_checkbox.isEnabled = rawList.exists()
+
             eView.report_button_privacy_policy.setOnClickListener {
                 context.startActivity(Intent(context, PrivacyPolicy::class.java))
             }
@@ -366,6 +375,7 @@ class CommonToolKotlin(val context: Context) {
                     if (eView.share_errors_checkbox.isChecked) uris.add(getUri(errorLog))
                     if (eView.share_progress_checkbox.isChecked) uris.add(getUri(progressLog))
                     if (eView.share_script_checkbox.isChecked) for (f in backupScripts) uris.add(getUri(f))
+                    if (eView.share_rawList_checkbox.isChecked) uris.add(getUri(rawList))
 
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -431,7 +441,7 @@ class CommonToolKotlin(val context: Context) {
 
     private fun getUri(file: File) =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                FileProvider.getUriForFile(context, "migrate.provider", file)
+                FileProvider.getUriForFile(context, "migrate.provider.ng", file)
             else Uri.fromFile(file)
 
     private fun sendIntent(uris: ArrayList<Uri>, isEmail: Boolean = false){
@@ -532,17 +542,6 @@ class CommonToolKotlin(val context: Context) {
                 sum
             }
         } else 0
-    }
-
-    fun dirDelete(path: String) {
-        val file = File(path)
-        if (file.exists() && file.absolutePath != Environment.getExternalStorageDirectory().absolutePath) {
-            if (file.isDirectory) {
-                val files = file.listFiles()
-                for (f in files)
-                    dirDelete(f.absolutePath)
-            }
-        }
     }
 
     fun getHumanReadableStorageSpace(spaceInBytes: Long): String {
