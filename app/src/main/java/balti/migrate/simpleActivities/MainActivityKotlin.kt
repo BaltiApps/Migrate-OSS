@@ -63,6 +63,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     private val commonTools by lazy { CommonToolKotlin(this) }
 
     private val REQUEST_CODE_BACKUP = 43
+    private val oldPackage = "balti.migrate"
 
     private var rootErrorMessage = ""
     private var loadingDialog: AlertDialog? = null
@@ -197,44 +198,63 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             }
         }
 
-        if (intent.getBooleanExtra(EXTRA_SHOW_FIRST_WARNING, false))
-            showFirstRunWarning()
-        else showUninstallDialogIfApplicable()
+        /*if (doPromptOldRemove()) showUninstallDialog()
+        else showFirstRunWarningIfApplicable()*/
+
+        if (intent.getBooleanExtra(EXTRA_SHOW_FIRST_WARNING, false)){
+            if (doPromptOldRemove())
+                showUninstallDialogThenFirstRun()
+            else showFirstRunWarningIfApplicable()
+        }
+        else if (doPromptOldRemove()) showUninstallDialogThenFirstRun()
 
     }
 
-    private fun showUninstallDialogIfApplicable() {
-        "balti.migrate".let {
-            if (packageName != it &&
+    private fun doPromptOldRemove(): Boolean{
+        return oldPackage.let {
+            packageName != it  && commonTools.isPackageInstalled(it) &&
                     commonTools.getAppName(it) == "Migrate-NG" &&
-                    commonTools.isPackageInstalled(it) &&
-                    main.getBoolean(PREF_ASK_TO_REMOVE_OLD_VERSION, true)){
+                    main.getBoolean(PREF_ASK_TO_REMOVE_OLD_VERSION, true) &&
+                    !main.getBoolean(PREF_FIRST_RUN, true)
+        }
+    }
 
+    private fun showUninstallDialogThenFirstRun() {
+        commonTools.tryIt {
+            val ad = AlertDialog.Builder(this).apply {
+                setTitle(R.string.remove_old)
+                setMessage(R.string.remove_old_desc)
+                setPositiveButton(R.string.uninstall) { _, _ ->
+                    startActivity(Intent(Intent.ACTION_UNINSTALL_PACKAGE).setData(Uri.parse("package:$oldPackage")))
+                }
+                setNegativeButton(android.R.string.cancel, null)
+                setNeutralButton(R.string.dont_ask_again) { _, _ ->
+                    editor.putBoolean(PREF_ASK_TO_REMOVE_OLD_VERSION, false)
+                    editor.apply()
+                }
+            }
+                    .create()
+
+            ad.setOnDismissListener {
+                showFirstRunWarningIfApplicable()
+            }
+
+            ad.show()
+        }
+    }
+
+    private fun showFirstRunWarningIfApplicable(){
+        commonTools.tryIt {
+            if (intent.getBooleanExtra(EXTRA_SHOW_FIRST_WARNING, false)) {
                 AlertDialog.Builder(this).apply {
-                    setTitle(R.string.remove_old)
-                    setMessage(R.string.remove_old_desc)
-                    setPositiveButton(R.string.uninstall) {_, _ ->
-                        startActivity(Intent(Intent.ACTION_UNINSTALL_PACKAGE).setData(Uri.parse("package:$it")))
-                    }
-                    setNegativeButton(android.R.string.cancel, null)
-                    setNeutralButton(R.string.dont_ask_again) {_, _ ->
-                        editor.putBoolean(PREF_ASK_TO_REMOVE_OLD_VERSION, false)
-                        editor.apply()
-                    }
+                    setIcon(R.drawable.ic_warning)
+                    setTitle(R.string.test_the_app)
+                    setMessage(R.string.test_the_app_desc)
+                    setPositiveButton(android.R.string.ok, null)
                 }
                         .show()
             }
         }
-    }
-
-    private fun showFirstRunWarning(){
-        AlertDialog.Builder(this).apply {
-            setIcon(R.drawable.ic_warning)
-            setTitle(R.string.test_the_app)
-            setMessage(R.string.test_the_app_desc)
-            setPositiveButton(android.R.string.ok, null)
-        }
-                .show()
     }
 
     private fun showChangeLog(onlyLatest: Boolean) {
