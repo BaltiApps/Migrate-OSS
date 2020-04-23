@@ -5,116 +5,136 @@
     android:orientation="vertical"
     android:padding="15dp">
 
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/large_padding_width"/>
-
-    <TextView
-        android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/report_header"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_gravity="start"
-        android:textStyle="bold"
-        />
-
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/large_padding_width"/>
-
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/large_padding_width"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/error_report_disclaimer" />
-
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/large_padding_width"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/privacy_policy_header"
-        android:id="@+id/report_button_privacy_policy"
-        />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="10dp">
-
-        <CheckBox
-            android:id="@+id/share_script_checkbox"
-            android:layout_width="wrap_content"
+        android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/share_script" />
-
-        <CheckBox
-            android:id="@+id/share_progress_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/share_progress_logs" />
-
-        <CheckBox
-            android:id="@+id/share_errors_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/share_error_logs" />
+            android:orientation="vertical">
 
 
-    </LinearLayout>
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/large_padding_width"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/not_joined_yet"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/report_header"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_gravity="start"
+                android:textStyle="bold"
+                />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/join_group"
-        android:id="@+id/report_button_join_group"
-        />
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/large_padding_width"/>
 
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/large_padding_width"/>
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/large_padding_width"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/send_logs_using"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/error_report_disclaimer" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        >
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/large_padding_width"/>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/use_email_instead"
-            android:id="@+id/report_button_old_email"
-            />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/privacy_policy_header"
+                android:id="@+id/report_button_privacy_policy"
+                />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/send_to_tg"
-            android:backgroundTint="@color/colorButtons"
-            android:id="@+id/report_button_telegram"
-            />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
 
-    </LinearLayout>
+                <CheckBox
+                    android:id="@+id/share_script_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/share_script" />
+
+                <CheckBox
+                    android:id="@+id/share_progress_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/share_progress_logs" />
+
+                <CheckBox
+                    android:id="@+id/share_errors_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/share_error_logs" />
+
+                <CheckBox
+                    android:id="@+id/share_rawList_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/share_rawList" />
+
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/not_joined_yet"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/join_group"
+                android:id="@+id/report_button_join_group"
+                />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/large_padding_width"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/send_logs_using"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                >
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/use_email_instead"
+                    android:id="@+id/report_button_old_email"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/send_to_tg"
+                    android:backgroundTint="@color/colorButtons"
+                    android:id="@+id/report_button_telegram"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
