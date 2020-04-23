@@ -226,6 +226,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             updater_writer.write("ui_print(\"---------------------------------\");\n")
             updater_writer.write("ui_print(\"If Migrate helper is not found...\");\n")
             updater_writer.write("ui_print(\"Please install it from Google Play\");\n")
+            updater_writer.write("ui_print(\"Or: Internal Storage/Migrate/helper.apk\");\n")
             updater_writer.write("ui_print(\"=================================\");\n")
             updater_writer.write("ui_print(\"Telegram: https://t.me/migrateApp\");\n")
             updater_writer.write("ui_print(\"=================================\");\n")
