@@ -38,7 +38,7 @@ class Tools(val context: Context? = null) {
 
     internal fun getUri(file: File) =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                FileProvider.getUriForFile(Updater.context, "migrate.provider", file)
+                FileProvider.getUriForFile(Updater.context, "migrate.provider.ng", file)
             else Uri.fromFile(file)
 
     internal fun isInternetAvailable(): Boolean {

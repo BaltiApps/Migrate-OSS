@@ -441,7 +441,7 @@ class CommonToolKotlin(val context: Context) {
 
     private fun getUri(file: File) =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                FileProvider.getUriForFile(context, "migrate.provider", file)
+                FileProvider.getUriForFile(context, "migrate.provider.ng", file)
             else Uri.fromFile(file)
 
     private fun sendIntent(uris: ArrayList<Uri>, isEmail: Boolean = false){
