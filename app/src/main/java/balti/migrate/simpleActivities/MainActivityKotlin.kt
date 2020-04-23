@@ -179,19 +179,22 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         refreshStorageSizes()
         storageHandler.post(storageRunnable)
 
-        if (intent.getBooleanExtra(EXTRA_SHOW_FIRST_WARNING, false))
-            showFirstRunWarning()
+        showFirstRunWarningIfApplicable()
 
     }
 
-    private fun showFirstRunWarning(){
-        AlertDialog.Builder(this).apply {
-            setIcon(R.drawable.ic_warning)
-            setTitle(R.string.test_the_app)
-            setMessage(R.string.test_the_app_desc)
-            setPositiveButton(android.R.string.ok, null)
+    private fun showFirstRunWarningIfApplicable(){
+        commonTools.tryIt {
+            if (intent.getBooleanExtra(EXTRA_SHOW_FIRST_WARNING, false)) {
+                AlertDialog.Builder(this).apply {
+                    setIcon(R.drawable.ic_warning)
+                    setTitle(R.string.test_the_app)
+                    setMessage(R.string.test_the_app_desc)
+                    setPositiveButton(android.R.string.ok, null)
+                }
+                        .show()
+            }
         }
-                .show()
     }
 
     private fun showChangeLog(onlyLatest: Boolean) {
