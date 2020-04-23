@@ -472,7 +472,7 @@
     <string name="download">Download</string>
     <string name="test_the_app">Please test the app once.</string>
     <string name="test_the_app_desc">This app heavily relies on your device and recovery, and as such some or all of the functionality may not work for your device.
-        \n\nFor the safety of your data, please take backup of a small app (example Facebook Lite), uninstall it and try restoring the app. Check if it is working fine. If you are satisfied, you may then use this app to Migrate to another ROM.
+        \n\nTo prevent data loss, please take backup of one small app (with data), then uninstall it and try restoring the app. Check if it is working fine. If you are satisfied, you may then use this app to Migrate to another ROM.
         \n\nAnd as always, keeping a nandroid backup is always a good idea.
     </string>
 

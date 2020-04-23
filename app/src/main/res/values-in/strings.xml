@@ -437,7 +437,7 @@
     <string name="download">Unduh</string>
     <string name="test_the_app">Silakan uji aplikasi satu kali.</string>
     <string name="test_the_app_desc">Aplikasi ini sangat bergantung pada perangkat Anda dan pemulihan, dan karena itu beberapa atau semua fungsi mungkin tidak berfungsi untuk perangkat Anda.
-        \n\nUntuk keamanan data Anda, harap cadangkan aplikasi kecil (mis. Facebook Lite), hapus instalannya dan coba pulihkan aplikasi. Periksa apakah itu berfungsi dengan baik. Jika Anda puas, Anda dapat menggunakan aplikasi ini untuk melakukan migrasi ke ROM lain.
+        \n\nUntuk mencegah kehilangan data, harap cadangkan satu aplikasi kecil (dengan data), lalu hapus instalannya dan coba pulihkan aplikasi. Periksa apakah itu berfungsi dengan baik. Jika Anda puas, Anda dapat menggunakan aplikasi ini untuk melakukan migrasi ke ROM lain.
         \n\nDan seperti biasa, menyimpan cadangan nandroid selalu merupakan ide yang baik.
     </string>
 
