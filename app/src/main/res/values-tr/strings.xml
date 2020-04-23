@@ -426,7 +426,7 @@
     <string name="download">İndir</string>
     <string name="test_the_app">Lütfen uygulamayı bir kez test edin.</string>
     <string name="test_the_app_desc">Bu uygulama, cihazınıza ve kurtarmanıza büyük ölçüde bağlıdır ve bu nedenle, işlevlerin bir kısmı veya tamamı cihazınız için çalışmayabilir.
-        \n\nVerilerinizin güvenliği için lütfen küçük bir uygulamanın yedeğini alın (örneğin Facebook Lite), kaldırın ve uygulamayı geri yüklemeyi deneyin. Düzgün çalışıp çalışmadığını kontrol edin. Memnun kalırsanız, başka bir ROM\'a geçmek için bu uygulamayı kullanabilirsiniz.
+        \n\nVeri kaybını önlemek için, lütfen bir küçük uygulamanın (verilerle) yedeğini alın, ardından kaldırın ve uygulamayı geri yüklemeyi deneyin. Düzgün çalışıp çalışmadığını kontrol edin. Memnun kalırsanız, başka bir ROM\'a geçmek için bu uygulamayı kullanabilirsiniz.
         \n\nVe her zaman olduğu gibi, bir nandroid yedeği tutmak her zaman iyi bir fikirdir.
     </string>
 
