@@ -27,7 +27,7 @@ class CommonToolKotlin(val context: Context) {
 
     companion object {
 
-        val THIS_VERSION = 30
+        val THIS_VERSION = 31
         val LAST_SUPPORTED_ANDROID_API = 29
 
         val DEBUG_TAG = "migrate_tag"
@@ -79,6 +79,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_SUBTASK = "subtask"
         val EXTRA_TASKLOG = "tasklog"
         val EXTRA_PROGRESS_PERCENTAGE = "progress"
+        val EXTRA_ZIP_NAMES = "zip_names"
 
         val EXTRA_PROGRESS_TYPE_TESTING = "TESTING_SYSTEM"
         val EXTRA_PROGRESS_TYPE_CONTACTS = "contacts_progress"
@@ -195,6 +196,7 @@ class CommonToolKotlin(val context: Context) {
         val PREF_USE_SU_FOR_KEYBOARD = "use_su_for_keyboard"
         val PREF_ZIP_VERIFICATION = "do_zip_verification"
         val PREF_FILELIST_IN_ZIP_VERIFICATION = "fileList_in__zip_verification"
+        val PREF_SHOW_BACKUP_SUMMARY = "showBackupSummary"
 
         val PREF_IGNORE_APP_CACHE = "ignore_app_cache"
 
@@ -602,10 +604,21 @@ class CommonToolKotlin(val context: Context) {
 
     fun applyNamingCorrectionForShell(name: String) =
             name
+                    .replace("`", "\\`")
+                    .replace("!", "\\!")
+                    .replace("#", "\\#")
+                    .replace("$", "\\$")
+                    .replace("&", "\\&")
+                    .replace("*", "\\*")
                     .replace("(", "\\(")
                     .replace(")", "\\)")
-                    .replace("`", "\\`")
+                    .replace("[", "\\[")
+                    .replace("]", "\\]")
+                    .replace(">", "\\>")
+                    .replace("<", "\\<")
                     .replace(" ", "\\ ")
+                    .replace(":", "\\:")
+                    .replace(";", "\\;")
                     .replace("\"", "\\\"")
                     .replace("\'", "\\\'")
 
@@ -613,6 +626,7 @@ class CommonToolKotlin(val context: Context) {
             name
                     .replace("\"", "'")
                     .replace("`", "'")
+                    .replace("$", "")
                     .replace("\\s+".toRegex(), "_")
                     .replace("[^\\x20-\\x7E]".toRegex(), "")
 
