@@ -65,6 +65,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TASKLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_WARNINGS
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ZIP_NAMES
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ERRORLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_RAW_LIST
@@ -665,6 +666,13 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     putExtra(EXTRA_IS_CANCELLED, cancelAll)
                     putExtra(EXTRA_TOTAL_TIME, endTime - startTime)
                     putExtra(EXTRA_PROGRESS_PERCENTAGE, if (criticalErrors.size == 0 && !cancelAll) 100 else lastDeterminateProgress)
+                    putExtra(EXTRA_BACKUP_NAME, backupName)
+                    commonTools.tryIt {
+                        putStringArrayListExtra(EXTRA_ZIP_NAMES, zipBatches.let { b ->
+                            if (b.size == 1) arrayListOf(backupName)
+                            else ArrayList(b.map { it.partName })
+                        })
+                    }
                 }
 
         commonTools.LBM?.sendBroadcast(returnIntent)

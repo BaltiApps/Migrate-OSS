@@ -79,6 +79,7 @@ class CommonToolKotlin(val context: Context) {
         val EXTRA_SUBTASK = "subtask"
         val EXTRA_TASKLOG = "tasklog"
         val EXTRA_PROGRESS_PERCENTAGE = "progress"
+        val EXTRA_ZIP_NAMES = "zip_names"
 
         val EXTRA_PROGRESS_TYPE_TESTING = "TESTING_SYSTEM"
         val EXTRA_PROGRESS_TYPE_CONTACTS = "contacts_progress"
