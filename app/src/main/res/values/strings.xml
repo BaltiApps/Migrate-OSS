@@ -722,6 +722,8 @@
 
     <string name="disable_battery_optimisation">Disable battery optimisation</string>
     <string name="use_new_sizing_method">Use new method to calculate size</string>
+    <string name="show_backup_summary">Show backup summary</string>
+    <string name="show_backup_summary_desc">Display a dialog box with zip names to flash</string>
     <string name="use_new_sizing_method_desc">Enabling this uses StorageStats in Android 8.0+ Disabling this uses terminal shell commands to calculate size.</string>
     <string name="only_for_oreo_and_above">Only for oreo and above</string>
     <string name="clear_to_reset">Clear and press OK to reset to default value</string>

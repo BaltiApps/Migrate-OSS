@@ -51,6 +51,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_WARNINGS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ZIP_NAMES
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DELETE_ERROR_BACKUP
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SHOW_BACKUP_SUMMARY
 import balti.migrate.utilities.IconTools
 import kotlinx.android.synthetic.main.backup_progress_layout.*
 import kotlinx.android.synthetic.main.zip_name_show.view.*
@@ -62,6 +63,8 @@ class ProgressShowActivity: AppCompatActivity() {
     private val iconTools by lazy { IconTools() }
     private val errors by lazy { ArrayList<String>(0) }
     private val warnings by lazy { ArrayList<String>(0) }
+
+    private val main by lazy { AppInstance.sharedPrefs }
 
     private var lastLog = ""
     private var lastIcon = ""
@@ -103,27 +106,35 @@ class ProgressShowActivity: AppCompatActivity() {
             )
 
             fun showPartNames(){
-                val view = View.inflate(this, R.layout.zip_name_show, null)
-                val name = view.zns_backup_name
-                val zipList = view.zns_zip_holder
-                if (intent.hasExtra(EXTRA_BACKUP_NAME)) {
+                if (main.getBoolean(PREF_SHOW_BACKUP_SUMMARY, true)) {
                     commonTools.tryIt {
-                        name.text = intent.getStringExtra(EXTRA_BACKUP_NAME)
-                    }
-                }
-                if (intent.hasExtra(EXTRA_ZIP_NAMES)) {
-                    commonTools.tryIt {
-                        intent.getStringArrayListExtra(EXTRA_ZIP_NAMES).forEach {
-                            zipList.append("$it/n")
+                        val view = View.inflate(this, R.layout.zip_name_show, null)
+                        val name = view.zns_backup_name
+                        val zipList = view.zns_zip_holder
+                        if (intent.hasExtra(EXTRA_BACKUP_NAME)) {
+                            commonTools.tryIt {
+                                name.text = intent.getStringExtra(EXTRA_BACKUP_NAME)
+                            }
                         }
+                        if (intent.hasExtra(EXTRA_ZIP_NAMES)) {
+                            commonTools.tryIt {
+                                val parts = intent.getStringArrayListExtra(EXTRA_ZIP_NAMES)
+                                parts.sortWith(Comparator { p1, p2 ->
+                                    String.CASE_INSENSITIVE_ORDER.compare(p1, p2)
+                                })
+                                parts.forEach {
+                                    zipList.append("$it.zip\n")
+                                }
+                            }
+                        }
+
+                        AlertDialog.Builder(this).apply {
+                            setView(view)
+                            setPositiveButton(android.R.string.ok, null)
+                        }
+                                .show()
                     }
                 }
-
-                AlertDialog.Builder(this).apply {
-                    setView(view)
-                    setPositiveButton(android.R.string.ok, null)
-                }
-                        .show()
             }
 
             if (errors.size != 0 || isCancelled) {
@@ -131,7 +142,7 @@ class ProgressShowActivity: AppCompatActivity() {
                         ContextCompat.getColor(this@ProgressShowActivity, R.color.error_color),
                         android.graphics.PorterDuff.Mode.SRC_IN
                 )
-                if (!AppInstance.sharedPrefs.getBoolean(PREF_DELETE_ERROR_BACKUP, true)){
+                if (!main.getBoolean(PREF_DELETE_ERROR_BACKUP, true)){
                     showPartNames()
                 }
             }

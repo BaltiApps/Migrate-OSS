@@ -196,6 +196,7 @@ class CommonToolKotlin(val context: Context) {
         val PREF_USE_SU_FOR_KEYBOARD = "use_su_for_keyboard"
         val PREF_ZIP_VERIFICATION = "do_zip_verification"
         val PREF_FILELIST_IN_ZIP_VERIFICATION = "fileList_in__zip_verification"
+        val PREF_SHOW_BACKUP_SUMMARY = "showBackupSummary"
 
         val PREF_IGNORE_APP_CACHE = "ignore_app_cache"
 

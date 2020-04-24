@@ -9,6 +9,11 @@
         android:key="disableBatteryOptimisation"/>
 
     <CheckBoxPreference
+        android:title="@string/show_backup_summary"
+        android:summary="@string/show_backup_summary_desc"
+        android:key="showBackupSummary" />
+
+    <CheckBoxPreference
         android:title="@string/use_new_sizing_method"
         android:summary="@string/use_new_sizing_method_desc"
         android:key="useNewSizingMethod" />
