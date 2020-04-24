@@ -603,6 +603,7 @@ class CommonToolKotlin(val context: Context) {
                     .replace(")", "\\)")
                     .replace("`", "\\`")
                     .replace(" ", "\\ ")
+                    .replace("$", "\\$")
                     .replace("\"", "\\\"")
                     .replace("\'", "\\\'")
 
@@ -610,6 +611,7 @@ class CommonToolKotlin(val context: Context) {
             name
                     .replace("\"", "'")
                     .replace("`", "'")
+                    .replace("$", "")
                     .replace("\\s+".toRegex(), "_")
                     .replace("[^\\x20-\\x7E]".toRegex(), "")
 
