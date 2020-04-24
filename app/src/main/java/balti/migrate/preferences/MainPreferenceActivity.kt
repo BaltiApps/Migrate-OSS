@@ -21,6 +21,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_MIGRATE_CA
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_SYSTEM
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SEPARATE_EXTRAS_BACKUP
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SHOW_BACKUP_SUMMARY
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SMS_VERIFY
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_CHECK
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TAR_GZ_INTEGRITY
@@ -32,6 +33,7 @@ import balti.updater.Updater
 
 class MainPreferenceActivity: PreferenceActivity() {
 
+    private val showBackupSummary by lazy { findPreference("showBackupSummary") as CheckBoxPreference }
     private val useNewSizingMethod by lazy { findPreference("useNewSizingMethod") as CheckBoxPreference }
     private val autoselectExtras by lazy { findPreference("autoselectExtras") as CheckBoxPreference }
     private val newIconMethod by lazy { findPreference("newIconMethod") as CheckBoxPreference }
@@ -109,6 +111,7 @@ class MainPreferenceActivity: PreferenceActivity() {
                 }
             }
 
+            setValue(showBackupSummary, PREF_SHOW_BACKUP_SUMMARY)
             setValue(autoselectExtras, PREF_AUTOSELECT_EXTRAS)
             setValue(newIconMethod, PREF_NEW_ICON_METHOD)
             setValue(tarGzIntegrityCheck, PREF_TAR_GZ_INTEGRITY)
