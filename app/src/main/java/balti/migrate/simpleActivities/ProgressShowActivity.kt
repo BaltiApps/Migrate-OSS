@@ -103,11 +103,13 @@ class ProgressShowActivity: AppCompatActivity() {
             )
 
             fun showPartNames(){
-                val view = layoutInflater.inflate(R.layout.zip_name_show, null)
+                val view = View.inflate(this, R.layout.zip_name_show, null)
                 val name = view.zns_backup_name
                 val zipList = view.zns_zip_holder
                 if (intent.hasExtra(EXTRA_BACKUP_NAME)) {
-                    name.text = intent.getStringExtra(EXTRA_BACKUP_NAME)
+                    commonTools.tryIt {
+                        name.text = intent.getStringExtra(EXTRA_BACKUP_NAME)
+                    }
                 }
                 if (intent.hasExtra(EXTRA_ZIP_NAMES)) {
                     commonTools.tryIt {
