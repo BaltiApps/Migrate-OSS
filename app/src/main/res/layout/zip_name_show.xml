@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/backup_made"
+        android:text="@string/please_flash_all"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:drawableStart="@drawable/ic_zipping_icon"
         android:drawablePadding="@dimen/xlarge_padding_width"
@@ -34,6 +34,28 @@
         android:id="@+id/zns_backup_name"
         android:textAppearance="?android:attr/textAppearanceSmall"
         tools:text="Backup_2020.04.24"
+        />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/large_padding_width"/>
+
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/zips_created"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/zns_zip_holder"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        tools:text="Part_1_of_3\nPart_2_of_3\nPart_3_of_3"
         />
 
 </LinearLayout>

@@ -16,12 +16,14 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.backupEngines.engines.AppBackupEngine
 import balti.migrate.utilities.CommonToolKotlin
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ACTUAL_DESTINATION
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ERRORS
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_IS_CANCELLED
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
@@ -47,8 +49,11 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TASKLOG
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_WARNINGS
+import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ZIP_NAMES
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DELETE_ERROR_BACKUP
 import balti.migrate.utilities.IconTools
 import kotlinx.android.synthetic.main.backup_progress_layout.*
+import kotlinx.android.synthetic.main.zip_name_show.view.*
 import java.io.File
 
 class ProgressShowActivity: AppCompatActivity() {
@@ -98,15 +103,38 @@ class ProgressShowActivity: AppCompatActivity() {
             )
 
             fun showPartNames(){
+                val view = layoutInflater.inflate(R.layout.zip_name_show, null)
+                val name = view.zns_backup_name
+                val zipList = view.zns_zip_holder
+                if (intent.hasExtra(EXTRA_BACKUP_NAME)) {
+                    name.text = intent.getStringExtra(EXTRA_BACKUP_NAME)
+                }
+                if (intent.hasExtra(EXTRA_ZIP_NAMES)) {
+                    commonTools.tryIt {
+                        intent.getStringArrayListExtra(EXTRA_ZIP_NAMES).forEach {
+                            zipList.append("$it/n")
+                        }
+                    }
+                }
 
+                AlertDialog.Builder(this).apply {
+                    setView(view)
+                    setPositiveButton(android.R.string.ok, null)
+                }
+                        .show()
             }
 
-            if (errors.size != 0 || isCancelled) app_icon.setColorFilter(
-                    ContextCompat.getColor(this@ProgressShowActivity, R.color.error_color),
-                    android.graphics.PorterDuff.Mode.SRC_IN
-            )
+            if (errors.size != 0 || isCancelled) {
+                app_icon.setColorFilter (
+                        ContextCompat.getColor(this@ProgressShowActivity, R.color.error_color),
+                        android.graphics.PorterDuff.Mode.SRC_IN
+                )
+                if (!AppInstance.sharedPrefs.getBoolean(PREF_DELETE_ERROR_BACKUP, true)){
+                    showPartNames()
+                }
+            }
             else {
-
+                showPartNames()
             }
         }
         else app_icon.setImageResource(

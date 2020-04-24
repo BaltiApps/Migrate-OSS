@@ -773,8 +773,9 @@
     <string name="killing_programmatically">Killing programmatically</string>
 
     <!--zip_name_show.xml-->
-    <string name="backup_made">Backup created!</string>
+    <string name="please_flash_all">Please flash all the zips!</string>
     <string name="backup_name">Backup name</string>
+    <string name="zips_created">Zips created</string>
 
     <!--MainBackupEngine.kt-->
     <string name="test_apk_not_found">Test apk not found or not properly created</string>
