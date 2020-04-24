@@ -96,10 +96,18 @@ class ProgressShowActivity: AppCompatActivity() {
                         else -> R.drawable.ic_finished_icon
                     }
             )
+
+            fun showPartNames(){
+
+            }
+
             if (errors.size != 0 || isCancelled) app_icon.setColorFilter(
                     ContextCompat.getColor(this@ProgressShowActivity, R.color.error_color),
                     android.graphics.PorterDuff.Mode.SRC_IN
             )
+            else {
+
+            }
         }
         else app_icon.setImageResource(
                 when (type){
