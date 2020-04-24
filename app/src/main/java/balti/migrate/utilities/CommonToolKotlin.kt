@@ -600,11 +600,21 @@ class CommonToolKotlin(val context: Context) {
 
     fun applyNamingCorrectionForShell(name: String) =
             name
+                    .replace("`", "\\`")
+                    .replace("!", "\\!")
+                    .replace("#", "\\#")
+                    .replace("$", "\\$")
+                    .replace("&", "\\&")
+                    .replace("*", "\\*")
                     .replace("(", "\\(")
                     .replace(")", "\\)")
-                    .replace("`", "\\`")
+                    .replace("[", "\\[")
+                    .replace("]", "\\]")
+                    .replace(">", "\\>")
+                    .replace("<", "\\<")
                     .replace(" ", "\\ ")
-                    .replace("$", "\\$")
+                    .replace(":", "\\:")
+                    .replace(";", "\\;")
                     .replace("\"", "\\\"")
                     .replace("\'", "\\\'")
 
