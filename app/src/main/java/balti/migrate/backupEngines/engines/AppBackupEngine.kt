@@ -134,13 +134,16 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     versionName = if (versionName == null || versionName == "") "_"
                     else formatName(versionName)
 
-                    val appIcon: String = iconTools.getIconString(packet.PACKAGE_INFO, pm)
                     var appIconFileName: String? = null
                     if (sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true)) {
-                        appIconFileName = backupUtils.makeIconFile(packageName, appIcon, actualDestination)
+                        appIconFileName = backupUtils.makeNewIconFile(packageName, iconTools.getBitmap(packet.PACKAGE_INFO, pm), actualDestination)
+                    }
+                    else {
+                        val appIcon: String = iconTools.getIconString(packet.PACKAGE_INFO, pm)
+                        appIconFileName = backupUtils.makeStringIconFile(packageName, appIcon, actualDestination)
                     }
 
-                    val echoCopyCommand = "echo \"$MIGRATE_STATUS: $modifiedAppName icon: ${if (appIconFileName == null) appIcon else "$packageName.icon"}\"\n"
+                    val echoCopyCommand = "echo \"$MIGRATE_STATUS: $modifiedAppName icon: $appIconFileName\"\n"
                     val scriptCommand = "sh $appAndDataBackupScript " +
                             "$packageName $actualDestination " +
                             "${packet.apkPath} ${packet.apkName} " +
@@ -152,7 +155,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
                     commonTools.tryIt { if (packet.isSystem) systemAppInstallScript(packageName, packet.apkPath) }
 
-                    backupUtils.makeMetadataFile(versionName, appIconFileName, appIcon, packet, bd, doBackupInstallers)
+                    backupUtils.makeMetadataFile(versionName, appIconFileName, null, packet, bd, doBackupInstallers)
                 }
 
             }

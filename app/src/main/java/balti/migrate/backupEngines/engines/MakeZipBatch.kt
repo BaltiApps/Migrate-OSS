@@ -18,6 +18,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_PACKET_MAKING
 import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH
 import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ZIP_NAME_EXTRAS
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FORCE_SEPARATE_EXTRAS_BACKUP
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SEPARATE_EXTRAS_BACKUP
 import balti.migrate.utilities.CommonToolKotlin.Companion.WARNING_ZIP_BATCH
 import java.io.File
@@ -60,7 +61,10 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 val expectedDataFile = File(actualDestination, "${it.packageName}.tar.gz")
                 val expectedPermFile = File(actualDestination, "${it.packageName}.perm")
                 val expectedJsonFile = File(actualDestination, "${it.packageName}.json")
-                val expectedIconFile = File(actualDestination, "${it.packageName}.icon")
+                val expectedIconFile = File(actualDestination,
+                        if (sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true)) "${it.packageName}.png"
+                        else "${it.packageName}.icon"
+                )
 
                 if (it.APP && expectedAppDir.exists()) associatedFiles.add(expectedAppDir)
                 if (it.DATA && expectedDataFile.exists()) associatedFiles.add(expectedDataFile)

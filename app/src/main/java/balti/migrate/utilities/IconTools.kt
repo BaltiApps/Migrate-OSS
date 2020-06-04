@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable
 import android.os.AsyncTask
 import android.os.AsyncTask.THREAD_POOL_EXECUTOR
 import android.widget.ImageView
+import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import java.io.BufferedReader
@@ -18,18 +19,22 @@ import java.io.FileReader
 
 class IconTools {
 
+    private val commonTools by lazy { CommonToolKotlin(AppInstance.appContext) }
+
+    fun getBitmap(packageInfo: PackageInfo, pm: PackageManager): Bitmap {
+        val drawable = pm.getApplicationIcon(packageInfo.applicationInfo)
+        val icon = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(icon)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+        return icon
+    }
+
     fun getIconString(packageInfo: PackageInfo, pm: PackageManager): String {
 
         val stream = ByteArrayOutputStream()
 
-        val drawable = pm.getApplicationIcon(packageInfo.applicationInfo)
-        val icon = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(icon)
-
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-
-        icon.compress(Bitmap.CompressFormat.PNG, 80, stream)
+        getBitmap(packageInfo, pm).compress(Bitmap.CompressFormat.PNG, 80, stream)
 
         val bytes = stream.toByteArray()
         var res = StringBuilder()
@@ -100,26 +105,35 @@ class IconTools {
         Setter().executeOnExecutor(THREAD_POOL_EXECUTOR)
     }
 
-    fun setIconFromFile(iconView: ImageView, file: File){
+    fun setIconFromFile(iconView: ImageView, file: File) {
 
-        class Setter : AsyncTask<Any, Any, String>() {
+        if (file.name.endsWith(".png")) {
+            var bitmap: Bitmap? = null
+            commonTools.doBackgroundTask({
+                commonTools.tryIt { bitmap = BitmapFactory.decodeFile(file.absolutePath) }
+            }, {
+                commonTools.tryIt { iconView.setImageBitmap(bitmap) }
+            })
+        } else {
+            class Setter : AsyncTask<Any, Any, String>() {
 
-            override fun doInBackground(vararg params: Any?): String {
+                override fun doInBackground(vararg params: Any?): String {
 
-                val icon = StringBuffer("")
-                if (file.exists() && file.canRead()) {
-                    BufferedReader(FileReader(file)).readLines().forEach {
-                        icon.append(it)
+                    val icon = StringBuffer("")
+                    if (file.exists() && file.canRead()) {
+                        BufferedReader(FileReader(file)).readLines().forEach {
+                            icon.append(it)
+                        }
                     }
+                    return icon.toString()
                 }
-                return icon.toString()
-            }
 
-            override fun onPostExecute(result: String) {
-                super.onPostExecute(result)
-                setIconFromIconString(iconView, result)
+                override fun onPostExecute(result: String) {
+                    super.onPostExecute(result)
+                    setIconFromIconString(iconView, result)
+                }
             }
+            Setter().executeOnExecutor(THREAD_POOL_EXECUTOR)
         }
-        Setter().executeOnExecutor(THREAD_POOL_EXECUTOR)
     }
 }

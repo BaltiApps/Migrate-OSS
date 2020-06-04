@@ -2,16 +2,14 @@ package balti.migrate.backupEngines.utils
 
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolKotlin.Companion.KB_DIVISION_SIZE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAMES_KNOWN
 import balti.migrate.utilities.constants.MtdConstants
 import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileWriter
+import java.io.*
 
 class BackupUtils {
 
@@ -129,7 +127,7 @@ class BackupUtils {
         }
     }*/
 
-    fun makeIconFile(packageName: String, iconString: String, actualDestination: String): String{
+    fun makeStringIconFile(packageName: String, iconString: String, actualDestination: String): String{
 
         val iconFileName = "$packageName.icon"
         val iconFile = File("$actualDestination/$iconFileName")
@@ -140,6 +138,25 @@ class BackupUtils {
             val writer = BufferedWriter(FileWriter(iconFile))
             writer.write(iconString)
             writer.close()
+        }
+        catch (e: Exception){
+            e.printStackTrace()
+        }
+
+        return iconFileName
+    }
+
+    fun makeNewIconFile(packageName: String, icon: Bitmap, actualDestination: String): String{
+
+        val iconFileName = "$packageName.png"
+        val iconFile = File("$actualDestination/$iconFileName")
+
+        File(actualDestination).mkdirs()
+
+        try {
+            val fos = FileOutputStream(iconFile)
+            icon.compress(Bitmap.CompressFormat.PNG, 80, fos)
+            fos.close()
         }
         catch (e: Exception){
             e.printStackTrace()

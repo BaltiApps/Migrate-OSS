@@ -24,6 +24,7 @@ import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_CACHE_DEFAULT
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_BUILDPROP
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_MIGRATE_CACHE
 import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MANUAL_SYSTEM
+import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
 import balti.migrate.utilities.ToolsNoContext
 import java.io.BufferedWriter
@@ -173,7 +174,8 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                     extractItToTemp("$packageName.perm")
 
                 extractItToTemp("$packageName.json")
-                extractItToTemp("$packageName.icon")
+                if (sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true)) extractItToTemp("$packageName.png")
+                else extractItToTemp("$packageName.icon")
 
                 var pString = String.format(Locale.ENGLISH, "%.4f", (c + 1) * 1.0 / size)
                 pString = pString.replace(",", ".")

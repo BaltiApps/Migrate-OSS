@@ -730,7 +730,7 @@
     <string name="autoselect_extras_title">Auto-select extras</string>
     <string name="autoselect_extras_desc">This will automatically select extras like contacts and sms if you had previously backed them up</string>
     <string name="new_icon_method_title">New icon method</string>
-    <string name="new_icon_method_desc">This will use a separate .icon file to store icons of each app being backed up. If unchecked, app icons will be stored in the .json file.</string>
+    <string name="new_icon_method_desc">Use png format to save icons. Else the old .icon format will be used.</string>
     <string name="tar_gz_integrity_title">tar.gz integerity check</string>
     <string name="tar_gz_integrity_desc">Check integrity of data backup of each app stored as a tar.gz file</string>
     <string name="sms_verify_title">SMS verification</string>

@@ -93,14 +93,16 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
                 broadcastProgress(appName, "verifying: $appName", false)
 
-                val expectedIconFile = File(actualDestination, "$packageName.icon")
                 val expectedAppDir = File(actualDestination, "$packageName.app")
                 val expectedApkFile = File("$actualDestination/$packageName.app", "$packageName.apk")
                 val expectedDataFile = File("$actualDestination/$packageName.tar.gz")
                 val expectedPermFile = File(actualDestination, "$packageName.perm")
 
-                if (sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true) && !expectedIconFile.exists()) {
-                    allRecovery.add("$MIGRATE_STATUS:icon:$packageName")
+                if (sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true) ) {
+                    if (!File(actualDestination, "$packageName.png").exists()) allRecovery.add("$MIGRATE_STATUS:icon_new:$packageName")
+                }
+                else {
+                    if (!File(actualDestination, "$packageName.icon").exists()) allRecovery.add("$MIGRATE_STATUS:icon_old:$packageName")
                 }
 
                 if (packet.APP) {
@@ -323,9 +325,13 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     val parts = defect.split(":")
                     if (parts.size == 3){
                         when (parts[1]){
-                            "icon" -> {
+                            "icon_new" -> {
                                 val pi = pm.getPackageInfo(parts[2], 0)
-                                backupUtils.makeIconFile(parts[2], iconTools.getIconString(pi, pm), actualDestination)
+                                backupUtils.makeNewIconFile(parts[2], iconTools.getBitmap(pi, pm), actualDestination)
+                            }
+                            "icon_old" -> {
+                                val pi = pm.getPackageInfo(parts[2], 0)
+                                backupUtils.makeStringIconFile(parts[2], iconTools.getIconString(pi, pm), actualDestination)
                             }
                             "perm" -> {
                                 backupUtils.makePermissionFile(parts[2], actualDestination, pm)
