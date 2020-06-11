@@ -55,6 +55,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
         if (!targetFile.exists())
             errors.add("$ERR_UPDATER_EXTRACT${bd.batchErrorTag}: $fileName could not be moved: $err")
+
     }
 
     private fun makeUpdaterScript() {
