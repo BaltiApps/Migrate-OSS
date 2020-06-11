@@ -4,14 +4,14 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import balti.migrate.R
-import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.TG_DEV_LINK
-import balti.migrate.utilities.CommonToolKotlin.Companion.TG_LINK
+import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.TG_DEV_LINK
+import balti.migrate.utilities.CommonToolsKotlin.Companion.TG_LINK
 import kotlinx.android.synthetic.main.help_page.*
 
 class HelpPageKotlin: AppCompatActivity() {
 
-    private val commonTools by lazy { CommonToolKotlin(this) }
+    private val commonTools by lazy { CommonToolsKotlin(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

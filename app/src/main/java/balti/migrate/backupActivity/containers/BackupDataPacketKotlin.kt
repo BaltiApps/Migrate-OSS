@@ -2,9 +2,9 @@ package balti.migrate.backupActivity.containers
 
 import android.content.SharedPreferences
 import android.content.pm.PackageInfo
-import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_APP_SELECTION
-import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_DATA_SELECTION
-import balti.migrate.utilities.CommonToolKotlin.Companion.PROPERTY_PERMISSION_SELECTION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PROPERTY_APP_SELECTION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PROPERTY_DATA_SELECTION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PROPERTY_PERMISSION_SELECTION
 import balti.migrate.utilities.ExclusionsKotlin
 
 data class BackupDataPacketKotlin(val PACKAGE_INFO: PackageInfo, val prefs: SharedPreferences, var installerName: String = "") {

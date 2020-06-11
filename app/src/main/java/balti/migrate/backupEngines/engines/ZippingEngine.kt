@@ -5,10 +5,10 @@ import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.containers.ZipAppBatch
-import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ZIP_TRY_CATCH
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.WARNING_FILE_LIST_COPY
+import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_TRY_CATCH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_FILE_LIST_COPY
 import balti.migrate.utilities.ToolsNoContext
 import java.io.BufferedInputStream
 import java.io.File
@@ -131,7 +131,7 @@ class ZippingEngine(private val jobcode: Int,
             }
 
             zipOutputStream.close()
-            directory.let { if (CommonToolKotlin.isDeletable(it)) it.deleteRecursively() }
+            directory.let { if (CommonToolsKotlin.isDeletable(it)) it.deleteRecursively() }
         }
         catch (e: Exception){
             e.printStackTrace()

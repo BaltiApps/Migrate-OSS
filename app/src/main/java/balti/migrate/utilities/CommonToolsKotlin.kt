@@ -23,7 +23,7 @@ import balti.migrate.simpleActivities.PrivacyPolicy
 import kotlinx.android.synthetic.main.error_report_layout.view.*
 import java.io.*
 
-class CommonToolKotlin(val context: Context) {
+class CommonToolsKotlin(val context: Context) {
 
     companion object {
 

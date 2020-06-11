@@ -49,37 +49,37 @@ import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.wifi.ReadWifiKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.simpleActivities.ProgressShowActivity
-import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
-import balti.migrate.utilities.CommonToolKotlin.Companion.CALLS_PERMISSION
-import balti.migrate.utilities.CommonToolKotlin.Companion.CONTACT_PERMISSION
-import balti.migrate.utilities.CommonToolKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_DESTINATION
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_CALLS
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_CONTACTS
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_INSTALLERS
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_KEYBOARDS
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_LOAD_SMS
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_MAKE_APP_PACKETS
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_ADB
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_CALLS
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_CONTACTS
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_DPI
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_FONTSCALE
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_SMS
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_SMS_THEN_CALLS
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_READ_WIFI
-import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_FDROID
-import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_PLAY_STORE
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_AUTOSELECT_EXTRAS
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_IGNORE_APP_CACHE
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SHOW_STOCK_WARNING
-import balti.migrate.utilities.CommonToolKotlin.Companion.SMS_AND_CALLS_PERMISSION
-import balti.migrate.utilities.CommonToolKotlin.Companion.SMS_PERMISSION
+import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRESS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
+import balti.migrate.utilities.CommonToolsKotlin.Companion.CALLS_PERMISSION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.CONTACT_PERMISSION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MAIN_PREF
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_CALLS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_CONTACTS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_INSTALLERS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_KEYBOARDS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_SMS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_MAKE_APP_PACKETS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_ADB
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_CALLS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_CONTACTS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_DPI
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_FONTSCALE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_SMS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_SMS_THEN_CALLS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_WIFI
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_PLAY_STORE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_AUTOSELECT_EXTRAS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_STOCK_WARNING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.SMS_AND_CALLS_PERMISSION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.SMS_PERMISSION
 import kotlinx.android.synthetic.main.ask_for_backup_name.view.*
 import kotlinx.android.synthetic.main.extra_backups.*
 import kotlinx.android.synthetic.main.please_wait.*
@@ -93,7 +93,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     // to add extras search for "extras_markers" and change those lines/functions
 
-    private val commonTools by lazy { CommonToolKotlin(this) }
+    private val commonTools by lazy { CommonToolsKotlin(this) }
     private val appListCopied by lazy { ArrayList<BackupDataPacketKotlin>(0) }
 
     private lateinit var destination: String
@@ -719,7 +719,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                                         .setTitle(R.string.overwrite)
                                         .setMessage(R.string.overwriteMessage)
                                         .setPositiveButton(R.string.yes) { _, _ ->
-                                            if (dir.exists() && CommonToolKotlin.isDeletable(dir)) dir.deleteRecursively()
+                                            if (dir.exists() && CommonToolsKotlin.isDeletable(dir)) dir.deleteRecursively()
                                             if (zip.exists()) zip.delete()
                                             nameDialog.dismiss()
                                             startBackup()

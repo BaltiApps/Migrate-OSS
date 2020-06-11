@@ -11,8 +11,8 @@ import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotli
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MAX_BACKUP_SIZE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MAIN_PREF
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_MAX_BACKUP_SIZE
 import java.io.File
 
 

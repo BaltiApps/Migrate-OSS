@@ -16,13 +16,13 @@ import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
-import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.DEBUG_TAG
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_METHOD
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_IGNORE_APP_CACHE
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
+import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MAIN_PREF
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ALTERNATE_METHOD
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TERMINAL_METHOD
 import kotlinx.android.synthetic.main.please_wait.view.*
 import java.io.*
 
@@ -34,7 +34,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
     private val vOp by lazy { ViewOperations(context) }
     private val notificationManager by lazy { context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
     private val main by lazy { context.getSharedPreferences(FILE_MAIN_PREF, MODE_PRIVATE) }
-    private val commonTools by lazy { CommonToolKotlin(context) }
+    private val commonTools by lazy { CommonToolsKotlin(context) }
     private val pm by lazy { context.packageManager }
     private val appPackets by lazy { ArrayList<AppPacket>(0) }
 

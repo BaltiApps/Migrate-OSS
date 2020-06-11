@@ -12,19 +12,19 @@ import balti.migrate.backupEngines.BackupServiceKotlin.Companion.serviceContext
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.OnEngineTaskComplete
 import balti.migrate.simpleActivities.ProgressShowActivity
-import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_CANCEL
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ACTUAL_DESTINATION
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SUBTASK
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TASKLOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
-import balti.migrate.utilities.CommonToolKotlin.Companion.NOTIFICATION_ID_ONGOING
-import balti.migrate.utilities.CommonToolKotlin.Companion.PENDING_INTENT_BACKUP_CANCEL_ID
-import balti.migrate.utilities.CommonToolKotlin.Companion.PENDING_INTENT_REQUEST_ID
+import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_CANCEL
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRESS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ACTUAL_DESTINATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_SUBTASK
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TASKLOG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TITLE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.NOTIFICATION_ID_ONGOING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PENDING_INTENT_BACKUP_CANCEL_ID
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PENDING_INTENT_REQUEST_ID
 import java.io.BufferedWriter
 import java.io.File
 import java.io.OutputStreamWriter
@@ -37,7 +37,7 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     val onEngineTaskComplete by lazy { engineContext as OnEngineTaskComplete }
 
-    val commonTools by lazy { CommonToolKotlin(engineContext) }
+    val commonTools by lazy { CommonToolsKotlin(engineContext) }
     val actualDestination by lazy { formatName("${bd.destination}/${bd.backupName}") }
 
     private var lastProgress = 0
@@ -52,7 +52,7 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
     }
 
     private val onGoingNotification by lazy {
-        NotificationCompat.Builder(engineContext, CommonToolKotlin.CHANNEL_BACKUP_RUNNING)
+        NotificationCompat.Builder(engineContext, CommonToolsKotlin.CHANNEL_BACKUP_RUNNING)
                 .setContentTitle(engineContext.getString(R.string.loading))
                 .setSmallIcon(R.drawable.ic_notification_icon)
                 .addAction(

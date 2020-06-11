@@ -11,7 +11,7 @@ import balti.migrate.AppInstance
 import balti.migrate.AppInstance.Companion.MAX_EFFECTIVE_ZIP_SIZE
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.R
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_MAX_BACKUP_SIZE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_MAX_BACKUP_SIZE
 
 class ZipMaxSizePref(context: Context?, attrs: AttributeSet?) : Preference(context, attrs) {
 

@@ -19,39 +19,39 @@ import androidx.core.content.ContextCompat
 import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.backupEngines.engines.AppBackupEngine
-import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_CANCEL
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ACTUAL_DESTINATION
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ERRORS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_IS_CANCELLED
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_APP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CALLS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CONTACTS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_FINISHED
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_SETTINGS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_SMS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_TESTING
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_VERIFYING
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_WIFI
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SUBTASK
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TASKLOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_WARNINGS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ZIP_NAMES
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DELETE_ERROR_BACKUP
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SHOW_BACKUP_SUMMARY
+import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_CANCEL
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRESS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ACTUAL_DESTINATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ERRORS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_CANCELLED
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_APP_PROGRESS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_CALLS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_CONTACTS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_FINISHED
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_SETTINGS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_SMS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_TESTING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_VERIFYING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_WIFI
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_SUBTASK
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TASKLOG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TITLE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TOTAL_TIME
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_WARNINGS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ZIP_NAMES
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DELETE_ERROR_BACKUP
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_BACKUP_SUMMARY
 import balti.migrate.utilities.IconTools
 import kotlinx.android.synthetic.main.backup_progress_layout.*
 import kotlinx.android.synthetic.main.zip_name_show.view.*
@@ -59,7 +59,7 @@ import java.io.File
 
 class ProgressShowActivity: AppCompatActivity() {
 
-    private val commonTools by lazy { CommonToolKotlin(this) }
+    private val commonTools by lazy { CommonToolsKotlin(this) }
     private val iconTools by lazy { IconTools() }
     private val errors by lazy { ArrayList<String>(0) }
     private val warnings by lazy { ArrayList<String>(0) }

@@ -5,8 +5,8 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
-import balti.migrate.utilities.CommonToolKotlin.Companion.KB_DIVISION_SIZE
-import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAMES_KNOWN
+import balti.migrate.utilities.CommonToolsKotlin.Companion.KB_DIVISION_SIZE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAMES_KNOWN
 import balti.migrate.utilities.constants.MtdConstants
 import org.json.JSONObject
 import java.io.*

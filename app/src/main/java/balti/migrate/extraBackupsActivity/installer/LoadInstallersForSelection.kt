@@ -11,11 +11,11 @@ import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
-import balti.migrate.utilities.CommonToolKotlin.Companion.FDROID_POSITION
-import balti.migrate.utilities.CommonToolKotlin.Companion.NOT_SET_POSITION
-import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_FDROID
-import balti.migrate.utilities.CommonToolKotlin.Companion.PACKAGE_NAME_PLAY_STORE
-import balti.migrate.utilities.CommonToolKotlin.Companion.PLAY_STORE_POSITION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FDROID_POSITION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.NOT_SET_POSITION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_PLAY_STORE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PLAY_STORE_POSITION
 import kotlinx.android.synthetic.main.extra_item_selector.view.*
 
 class LoadInstallersForSelection(private val jobCode: Int,

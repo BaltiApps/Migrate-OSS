@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import balti.migrate.R
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SHOW_FIRST_WARNING
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FIRST_RUN
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_SHOW_FIRST_WARNING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MAIN_PREF
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FIRST_RUN
 import kotlinx.android.synthetic.main.initial_guide.*
 
 class InitialGuideKotlin: AppCompatActivity() {

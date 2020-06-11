@@ -5,8 +5,8 @@ import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CONTACTS_TRY_CATCH
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CONTACTS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CONTACTS_TRY_CATCH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_CONTACTS
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter

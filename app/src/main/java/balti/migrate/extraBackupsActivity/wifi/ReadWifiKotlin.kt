@@ -10,9 +10,9 @@ import balti.migrate.R
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
-import balti.migrate.utilities.CommonToolKotlin.Companion.WIFI_FILE_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.WIFI_FILE_NOT_FOUND
-import balti.migrate.utilities.CommonToolKotlin.Companion.WIFI_FILE_PATH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.WIFI_FILE_NAME
+import balti.migrate.utilities.CommonToolsKotlin.Companion.WIFI_FILE_NOT_FOUND
+import balti.migrate.utilities.CommonToolsKotlin.Companion.WIFI_FILE_PATH
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader

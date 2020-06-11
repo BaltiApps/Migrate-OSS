@@ -19,7 +19,7 @@ import java.io.FileReader
 
 class IconTools {
 
-    private val commonTools by lazy { CommonToolKotlin(AppInstance.appContext) }
+    private val commonTools by lazy { CommonToolsKotlin(AppInstance.appContext) }
 
     fun getBitmap(packageInfo: PackageInfo, pm: PackageManager): Bitmap {
         val drawable = pm.getApplicationIcon(packageInfo.applicationInfo)

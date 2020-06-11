@@ -6,9 +6,9 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import balti.migrate.R
-import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
-import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
+import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
 import kotlinx.android.synthetic.main.simple_log_display.*
 import java.io.BufferedReader
 import java.io.File
@@ -16,7 +16,7 @@ import java.io.FileReader
 
 class SimpleLogViewer: AppCompatActivity() {
 
-    private val commonTools by lazy { CommonToolKotlin(this) }
+    private val commonTools by lazy { CommonToolsKotlin(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

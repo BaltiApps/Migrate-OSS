@@ -20,12 +20,12 @@ import balti.migrate.backupActivity.utils.AppListAdapterKotlin
 import balti.migrate.backupActivity.utils.SearchAppAdapter
 import balti.migrate.extraBackupsActivity.ExtraBackupsKotlin
 import balti.migrate.simpleActivities.ProgressShowActivity
-import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FILE_APPS
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_APPS_WARNING
+import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRESS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MAIN_PREF
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FILE_APPS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_APPS_WARNING
 import kotlinx.android.synthetic.main.app_search_layout.view.*
 import kotlinx.android.synthetic.main.backup_layout.*
 
@@ -42,7 +42,7 @@ class BackupActivityKotlin : AppCompatActivity() {
     private val USER_SYSTEM_UPDATED_PACKAGES = 4
     private val ALL_PACKAGES = 5
 
-    private val commonTools by lazy { CommonToolKotlin(this) }
+    private val commonTools by lazy { CommonToolsKotlin(this) }
 
     private val appPrefs by lazy { getSharedPreferences(PREF_FILE_APPS, Context.MODE_PRIVATE) }
 

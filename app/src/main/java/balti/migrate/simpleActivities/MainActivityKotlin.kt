@@ -24,29 +24,29 @@ import androidx.core.view.GravityCompat
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.preferences.MainPreferenceActivity
-import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELLING
-import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
-import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
-import balti.migrate.utilities.CommonToolKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_SHOW_FIRST_WARNING
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ERRORLOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_MAIN_PREF
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.LAST_SUPPORTED_ANDROID_API
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ALTERNATE_METHOD
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ANDROID_VERSION_WARNING
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_ASK_FOR_RATING
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_FIRST_RUN
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TERMINAL_METHOD
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_VERSION_CURRENT
-import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
-import balti.migrate.utilities.CommonToolKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
-import balti.migrate.utilities.CommonToolKotlin.Companion.TG_DEV_LINK
-import balti.migrate.utilities.CommonToolKotlin.Companion.TG_LINK
-import balti.migrate.utilities.CommonToolKotlin.Companion.THIS_VERSION
+import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCELLING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_END
+import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_RUNNING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_SHOW_FIRST_WARNING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_ERRORLOG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MAIN_PREF
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PROGRESSLOG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.LAST_SUPPORTED_ANDROID_API
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ALTERNATE_METHOD
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ANDROID_VERSION_WARNING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ASK_FOR_RATING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FIRST_RUN
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TERMINAL_METHOD
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_VERSION_CURRENT
+import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
+import balti.migrate.utilities.CommonToolsKotlin.Companion.TG_DEV_LINK
+import balti.migrate.utilities.CommonToolsKotlin.Companion.TG_LINK
+import balti.migrate.utilities.CommonToolsKotlin.Companion.THIS_VERSION
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
@@ -57,7 +57,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     private val main : SharedPreferences by lazy { getSharedPreferences(FILE_MAIN_PREF, Context.MODE_PRIVATE) }
     private val editor : SharedPreferences.Editor by lazy { main.edit() }
-    private val commonTools by lazy { CommonToolKotlin(this) }
+    private val commonTools by lazy { CommonToolsKotlin(this) }
 
     private val REQUEST_CODE_BACKUP = 43
 

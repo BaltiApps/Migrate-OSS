@@ -37,58 +37,58 @@ import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacket
 import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.simpleActivities.ProgressShowActivity
-import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_CANCEL
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_BACKUP_PROGRESS
-import balti.migrate.utilities.CommonToolKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
-import balti.migrate.utilities.CommonToolKotlin.Companion.ALL_SUPPRESSED_ERRORS
-import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_CANCELLING
-import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_END
-import balti.migrate.utilities.CommonToolKotlin.Companion.CHANNEL_BACKUP_RUNNING
-import balti.migrate.utilities.CommonToolKotlin.Companion.DEBUG_TAG
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_BACKUP_SERVICE_ERROR
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_BACKUP_SERVICE_INIT
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CONDITIONAL_TASK
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_ON_COMPLETE_TASK
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_BACKUP_NAME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_DESTINATION
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ERRORS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_IS_CANCELLED
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CALLS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CONTACTS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_FINISHED
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_SMS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TASKLOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TITLE
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_TOTAL_TIME
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_WARNINGS
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_ZIP_NAMES
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_ERRORLOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PROGRESSLOG
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_RAW_LIST
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_CALLS
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_CONTACTS
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_SETTINGS
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_SMS
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_BACKUP_WIFI
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PEFORM_SYSTEM_TEST
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PERFORM_APP_BACKUP
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PERFORM_APP_BACKUP_VERIFICATION
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PERFORM_UPDATER_SCRIPT
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PERFORM_ZIP_BACKUP
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PERFORM_ZIP_BATCHING
-import balti.migrate.utilities.CommonToolKotlin.Companion.JOBCODE_PERFORM_ZIP_VERIFICATION
-import balti.migrate.utilities.CommonToolKotlin.Companion.NOTIFICATION_ID_CANCELLING
-import balti.migrate.utilities.CommonToolKotlin.Companion.NOTIFICATION_ID_FINISHED
-import balti.migrate.utilities.CommonToolKotlin.Companion.NOTIFICATION_ID_ONGOING
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_COMPRESSION_LEVEL
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DEFAULT_COMPRESSION_LEVEL
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_DELETE_ERROR_BACKUP
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_SYSTEM_CHECK
-import balti.migrate.utilities.CommonToolKotlin.Companion.TIMEOUT_WAITING_TO_CANCEL_TASK
+import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_CANCEL
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRESS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ALL_SUPPRESSED_ERRORS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCELLING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_END
+import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_RUNNING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_BACKUP_SERVICE_ERROR
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_BACKUP_SERVICE_INIT
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CONDITIONAL_TASK
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ON_COMPLETE_TASK
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ERRORS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_CANCELLED
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_CALLS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_CONTACTS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_FINISHED
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_SMS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TASKLOG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TITLE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TOTAL_TIME
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_WARNINGS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ZIP_NAMES
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_ERRORLOG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PROGRESSLOG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_RAW_LIST
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PEFORM_BACKUP_CALLS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PEFORM_BACKUP_CONTACTS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PEFORM_BACKUP_SETTINGS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PEFORM_BACKUP_SMS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PEFORM_BACKUP_WIFI
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PEFORM_SYSTEM_TEST
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_APP_BACKUP
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_APP_BACKUP_VERIFICATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_UPDATER_SCRIPT
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_ZIP_BACKUP
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_ZIP_BATCHING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_ZIP_VERIFICATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.NOTIFICATION_ID_CANCELLING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.NOTIFICATION_ID_FINISHED
+import balti.migrate.utilities.CommonToolsKotlin.Companion.NOTIFICATION_ID_ONGOING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_COMPRESSION_LEVEL
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_COMPRESSION_LEVEL
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DELETE_ERROR_BACKUP
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_CHECK
+import balti.migrate.utilities.CommonToolsKotlin.Companion.TIMEOUT_WAITING_TO_CANCEL_TASK
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -114,7 +114,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
     private var backupName = ""
     private var isBackupInitiated = false
 
-    private val commonTools by lazy { CommonToolKotlin(this) }
+    private val commonTools by lazy { CommonToolsKotlin(this) }
 
     private var progressWriter: BufferedWriter? = null
     private var errorWriter: BufferedWriter? = null
@@ -684,7 +684,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                         .setContentTitle(title)
                         .setSmallIcon(R.drawable.ic_notification_icon)
                         .setContentIntent(
-                                PendingIntent.getActivity(serviceContext, CommonToolKotlin.PENDING_INTENT_REQUEST_ID,
+                                PendingIntent.getActivity(serviceContext, CommonToolsKotlin.PENDING_INTENT_REQUEST_ID,
                                         Intent(this, ProgressShowActivity::class.java).putExtras(returnIntent),
                                         PendingIntent.FLAG_UPDATE_CURRENT))
                         .build())
@@ -693,7 +693,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
         if ((cancelAll || errorCondition) && sharedPrefs.getBoolean(PREF_DELETE_ERROR_BACKUP, true)) {
             File("$destination/$backupName").run {
-                if (CommonToolKotlin.isDeletable(this)) {
+                if (CommonToolsKotlin.isDeletable(this)) {
                     Log.d(DEBUG_TAG, "Cleaning up on error or cancel: ${this.absolutePath}")
                     deleteRecursively()
                 }
@@ -705,7 +705,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
             zipParentPaths.forEach {
 
                 File(it).run {
-                    if (CommonToolKotlin.isDeletable(this)) {
+                    if (CommonToolsKotlin.isDeletable(this)) {
                         Log.d(DEBUG_TAG, "Cleaning up : ${this.absolutePath}")
                         deleteRecursively()
                     }

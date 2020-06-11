@@ -8,22 +8,22 @@ import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
-import balti.migrate.utilities.CommonToolKotlin
-import balti.migrate.utilities.CommonToolKotlin.Companion.DEBUG_TAG
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_SHELL
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_SUPPRESSED
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_CORRECTION_TRY_CATCH
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_TAR_CHECK_TRY_CATCH
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_TAR_SHELL
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_TAR_SUPPRESSED
-import balti.migrate.utilities.CommonToolKotlin.Companion.ERR_VERIFICATION_TRY_CATCH
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
-import balti.migrate.utilities.CommonToolKotlin.Companion.EXTRA_PROGRESS_TYPE_VERIFYING
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
-import balti.migrate.utilities.CommonToolKotlin.Companion.FILE_PREFIX_TAR_CHECK
-import balti.migrate.utilities.CommonToolKotlin.Companion.MIGRATE_STATUS
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_NEW_ICON_METHOD
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_TAR_GZ_INTEGRITY
+import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_SHELL
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_SUPPRESSED
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_TRY_CATCH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TAR_CHECK_TRY_CATCH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TAR_SHELL
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TAR_SUPPRESSED
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_VERIFICATION_TRY_CATCH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_VERIFYING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_TAR_CHECK
+import balti.migrate.utilities.CommonToolsKotlin.Companion.MIGRATE_STATUS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TAR_GZ_INTEGRITY
 import balti.migrate.utilities.IconTools
 import java.io.*
 
@@ -121,7 +121,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         apkName = commonTools.applyNamingCorrectionForShell(apkName)
 
                         expectedAppDir.absolutePath.let {
-                            if (CommonToolKotlin.isDeletable(expectedAppDir)) {
+                            if (CommonToolsKotlin.isDeletable(expectedAppDir)) {
                                 allRecovery.add(
                                         "echo \"Copy apk(s): $packageName\"\n" +
                                                 "rm -rf $it 2> /dev/null\n" +

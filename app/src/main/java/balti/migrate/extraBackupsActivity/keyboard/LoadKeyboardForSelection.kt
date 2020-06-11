@@ -12,7 +12,7 @@ import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
-import balti.migrate.utilities.CommonToolKotlin.Companion.PREF_USE_SU_FOR_KEYBOARD
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_SU_FOR_KEYBOARD
 import kotlinx.android.synthetic.main.keyboard_item.view.*
 import kotlinx.android.synthetic.main.keyboard_selector.view.*
 import java.io.BufferedReader
