@@ -1,0 +1,105 @@
+package balti.module.baltitoolbox.functions
+
+import android.os.Environment
+import balti.module.baltitoolbox.R
+import balti.module.baltitoolbox.ToolboxHQ
+import java.io.*
+
+object FileHandlers {
+
+    private val context = ToolboxHQ.context
+
+    private fun copyStream(inputStream: InputStream, outputStream: OutputStream): String{
+
+        var read: Int
+        val buffer = ByteArray(4096)
+
+        return try {
+            while (true) {
+                read = inputStream.read(buffer)
+                if (read > 0) outputStream.write(buffer, 0, read)
+                else break
+            }
+            outputStream.close()
+            return ""
+        } catch (e: IOException){
+            e.printStackTrace()
+            e.message.toString()
+        }
+    }
+
+    fun unpackAsset(assetFileName: String, destination: File): String {
+
+        val assetManager = context.assets
+        val unpackFile = destination.let {
+            if (it.isDirectory) File(it, assetFileName)
+            else it
+        }
+
+        unpackFile.run {
+            mkdirs()
+            if (!canWrite()) return "${context.getString(R.string.cannot_write_on_destination)} ${unpackFile.absolutePath}"
+            else if (unpackFile.exists()) unpackFile.delete()
+        }
+
+        val inputStream = assetManager.open(assetFileName)
+        val outputStream = FileOutputStream(unpackFile)
+
+        return copyStream(inputStream, outputStream)
+
+    }
+
+    fun copyFileStream(sourceFile: File, destination: String): String {
+
+        if (!(sourceFile.exists() && sourceFile.canRead())) return "${context.getString(R.string.source_does_not_exist)} ${sourceFile.absolutePath}"
+
+        val destinationFile = File(destination).let {
+            if (it.isDirectory) File(it, sourceFile.name)
+            else it
+        }
+
+        destinationFile.run {
+            mkdirs()
+            if (!canWrite()) return "${context.getString(R.string.cannot_write_on_destination)} ${destinationFile.absolutePath}"
+            else if (destinationFile.exists()) destinationFile.delete()
+        }
+
+        val inputStream = sourceFile.inputStream()
+        val outputStream = FileOutputStream(destinationFile)
+
+        return copyStream(inputStream, outputStream)
+
+    }
+
+    fun copyFileStream(sourceFile: File, destinationFile: File): String = copyFileStream(sourceFile, destinationFile.absolutePath)
+
+    fun moveFileStream(sourceFile: File, destination: String): String {
+        val r = copyFileStream(sourceFile, destination)
+        sourceFile.delete()
+        return r
+    }
+
+    fun moveFileStream(sourceFile: File, destinationFile: File): String = moveFileStream(sourceFile, destinationFile.absolutePath)
+
+    fun getDirLength(directoryPath: String): Long {
+        val file = File(directoryPath)
+        return if (file.exists()) {
+            if (!file.isDirectory) file.length()
+            else {
+                var sum = 0L
+                file.listFiles()?.let {
+                    for (f in it) sum += getDirLength(f.absolutePath)
+                }
+                sum
+            }
+        } else 0
+    }
+
+    fun dirDelete(path: String) {
+        val file = File(path)
+        if (file.exists() && file.absolutePath != Environment.getExternalStorageDirectory().absolutePath) {
+            file.deleteRecursively()
+        }
+    }
+
+}
