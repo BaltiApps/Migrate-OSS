@@ -13,6 +13,7 @@ import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_MAX_BACKUP_SIZE
+import balti.module.baltitoolbox.ToolboxHQ
 import java.io.File
 
 
@@ -54,6 +55,7 @@ class AppInstance: Application() {
     override fun onCreate() {
         super.onCreate()
         appContext = this
+        ToolboxHQ.init(this)
         sharedPrefs = getSharedPreferences(FILE_MAIN_PREF, Context.MODE_PRIVATE)
         notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
