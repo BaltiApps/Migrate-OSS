@@ -89,6 +89,9 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_COMPRESS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DELETE_ERROR_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_CHECK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.TIMEOUT_WAITING_TO_CANCEL_TASK
+import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
+import balti.module.baltitoolbox.functions.Misc.makeNotificationChannel
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -190,14 +193,14 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
     private val busyboxBinaryPath by lazy {
         val cpuAbi = Build.SUPPORTED_ABIS[0]
         if (cpuAbi == "x86" || cpuAbi == "x86_64")
-            commonTools.unpackAssetToInternal("busybox-x86", "busybox", true)
-        else commonTools.unpackAssetToInternal("busybox", "busybox", true)
+            unpackAssetToInternal("busybox-86", "busybox")
+        else unpackAssetToInternal("busybox")
     }
 
     private val cancelReceiver by lazy {
         object : BroadcastReceiver(){
             override fun onReceive(context: Context?, intent: Intent?) {
-                commonTools.tryIt {
+                tryIt {
 
                     cancelAll = true
 
@@ -213,9 +216,9 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
                         cTask?.let {
                             while (it.status != AsyncTask.Status.FINISHED) {
-                                commonTools.tryIt { Thread.sleep(100) }
+                                tryIt { Thread.sleep(100) }
                             }
-                            commonTools.tryIt { Thread.sleep(TIMEOUT_WAITING_TO_CANCEL_TASK) }
+                            tryIt { Thread.sleep(TIMEOUT_WAITING_TO_CANCEL_TASK) }
                         }
 
                     }, {
@@ -320,19 +323,19 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                 .setSmallIcon(R.drawable.ic_notification_icon)
                 .build()
 
-        commonTools.tryIt {
+        tryIt {
             compressionLevel = sharedPrefs.getInt(PREF_COMPRESSION_LEVEL, PREF_DEFAULT_COMPRESSION_LEVEL)
         }
 
-        commonTools.tryIt {
+        tryIt {
             progressWriter = BufferedWriter(FileWriter(File(externalCacheDir, FILE_PROGRESSLOG)))
             errorWriter = BufferedWriter(FileWriter(File(externalCacheDir, FILE_ERRORLOG)))
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            commonTools.makeNotificationChannel(CHANNEL_BACKUP_RUNNING, CHANNEL_BACKUP_RUNNING, NotificationManager.IMPORTANCE_LOW)
-            commonTools.makeNotificationChannel(CHANNEL_BACKUP_END, CHANNEL_BACKUP_END, NotificationManager.IMPORTANCE_HIGH)
-            commonTools.makeNotificationChannel(CHANNEL_BACKUP_CANCELLING, CHANNEL_BACKUP_CANCELLING, NotificationManager.IMPORTANCE_MIN)
+            makeNotificationChannel(CHANNEL_BACKUP_RUNNING, CHANNEL_BACKUP_RUNNING, NotificationManager.IMPORTANCE_LOW)
+            makeNotificationChannel(CHANNEL_BACKUP_END, CHANNEL_BACKUP_END, NotificationManager.IMPORTANCE_HIGH)
+            makeNotificationChannel(CHANNEL_BACKUP_CANCELLING, CHANNEL_BACKUP_CANCELLING, NotificationManager.IMPORTANCE_MIN)
         }
 
         commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
@@ -493,7 +496,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                 }
 
                 JOBCODE_PERFORM_ZIP_BATCHING -> {
-                    commonTools.tryIt {
+                    tryIt {
                     }
                     if (jobSuccess) {
                         zipBatches.clear()
@@ -667,7 +670,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     putExtra(EXTRA_TOTAL_TIME, endTime - startTime)
                     putExtra(EXTRA_PROGRESS_PERCENTAGE, if (criticalErrors.size == 0 && !cancelAll) 100 else lastDeterminateProgress)
                     putExtra(EXTRA_BACKUP_NAME, backupName)
-                    commonTools.tryIt {
+                    tryIt {
                         putStringArrayListExtra(EXTRA_ZIP_NAMES, zipBatches.let { b ->
                             if (b.size == 1) arrayListOf(backupName)
                             else ArrayList(b.map { it.partName })
@@ -732,14 +735,14 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
     override fun onDestroy() {
         super.onDestroy()
-        commonTools.tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
-        commonTools.tryIt { commonTools.LBM?.unregisterReceiver(cancelReceiver) }
-        commonTools.tryIt { commonTools.LBM?.unregisterReceiver(requestProgressReceiver) }
-        commonTools.tryIt { unregisterReceiver(cancelReceiver) }
+        tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
+        tryIt { commonTools.LBM?.unregisterReceiver(cancelReceiver) }
+        tryIt { commonTools.LBM?.unregisterReceiver(requestProgressReceiver) }
+        tryIt { unregisterReceiver(cancelReceiver) }
 
-        commonTools.tryIt { cTask?.cancel(true) }
+        tryIt { cTask?.cancel(true) }
 
-        commonTools.tryIt { progressWriter?.close() }
-        commonTools.tryIt { errorWriter?.close() }
+        tryIt { progressWriter?.close() }
+        tryIt { errorWriter?.close() }
     }
 }

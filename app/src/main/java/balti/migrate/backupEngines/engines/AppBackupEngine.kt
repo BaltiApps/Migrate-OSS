@@ -18,6 +18,9 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.IconTools
+import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
+import balti.module.baltitoolbox.functions.Misc.getPercentage
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import java.io.*
 
 class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData,
@@ -84,7 +87,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
         File(actualDestination).mkdirs()
 
-        commonTools.tryIt {
+        tryIt {
             val writer = BufferedWriter(FileWriter(script))
             writer.write(scriptText)
             writer.close()
@@ -106,7 +109,8 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
             val scriptFile = File(engineContext.filesDir, "$FILE_PREFIX_BACKUP_SCRIPT.sh")
             scriptFile.parentFile?.mkdirs()
             val scriptWriter = BufferedWriter(FileWriter(scriptFile))
-            val appAndDataBackupScript = commonTools.unpackAssetToInternal("backup_app_and_data.sh", "backup_app_and_data.sh", false)
+            //val appAndDataBackupScript = commonTools.unpackAssetToInternal("backup_app_and_data.sh", "backup_app_and_data.sh", false)
+            val appAndDataBackupScript = unpackAssetToInternal("backup_app_and_data.sh")
 
             scriptWriter.write("#!sbin/sh\n\n")
             scriptWriter.write("echo \" \"\n")
@@ -124,7 +128,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     val modifiedAppName = "${packet.appName}(${i+1}/${packets.size})"
                     val packageName = packet.PACKAGE_INFO.packageName
 
-                    broadcastProgress(modifiedAppName, modifiedAppName, true, commonTools.getPercentage(i + 1, packets.size))
+                    broadcastProgress(modifiedAppName, modifiedAppName, true, getPercentage(i + 1, packets.size))
 
                     if (packet.PERMISSION) {
                         backupUtils.makePermissionFile(packageName, actualDestination, pm)
@@ -153,7 +157,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     scriptWriter.write(echoCopyCommand, 0, echoCopyCommand.length)
                     scriptWriter.write(scriptCommand, 0, scriptCommand.length)
 
-                    commonTools.tryIt { if (packet.isSystem) systemAppInstallScript(packageName, packet.apkPath) }
+                    tryIt { if (packet.isSystem) systemAppInstallScript(packageName, packet.apkPath) }
 
                     backupUtils.makeMetadataFile(versionName, appIconFileName, null, packet, bd, doBackupInstallers)
                 }
@@ -207,7 +211,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     }
 
                     if (output.startsWith("--- PID:")) {
-                        commonTools.tryIt {
+                        tryIt {
                             BACKUP_PID = output.substring(output.lastIndexOf(" ") + 1).toInt()
                         }
                     }
@@ -224,7 +228,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                         }
 
                         appName = line
-                        progress = commonTools.getPercentage(++c, appList.size)
+                        progress = getPercentage(++c, appList.size)
                         broadcastProgress(appName, "\n${appName}", true, progress)
                     }
                     else broadcastProgress(appName, line, false)
@@ -232,7 +236,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     return@iterateBufferedReader line == "--- App files copied ---"
                 })
 
-                commonTools.tryIt { it.waitFor() }
+                tryIt { it.waitFor() }
 
                 backupUtils.iterateBufferedReader(errorStream, { errorLine ->
 

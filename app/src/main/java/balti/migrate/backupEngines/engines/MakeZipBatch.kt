@@ -21,6 +21,8 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FORCE_SEPARATE_E
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SEPARATE_EXTRAS_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_BATCH
+import balti.module.baltitoolbox.functions.Misc
+import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
 import java.io.File
 
 class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
@@ -40,7 +42,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
     }
 
     private fun getPercentage(allPacketsSize: Int): Int =
-            commonTools.getPercentage((numberOfAppZipPackets - allPacketsSize), numberOfAppZipPackets)
+            Misc.getPercentage((numberOfAppZipPackets - allPacketsSize), numberOfAppZipPackets)
 
     private fun makeBatches(){
 
@@ -99,7 +101,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
             Log.d(DEBUG_TAG, "total extras size: $totalExtrasSize")
 
             shareProgress("${engineContext.getString(R.string.total_extra_size)}: " +
-                    "${commonTools.getHumanReadableStorageSpace(totalExtrasSize)} ($totalExtrasSize B)", 0)
+                    "${getHumanReadableStorageSpace(totalExtrasSize)} ($totalExtrasSize B)", 0)
 
             doSeparateExtras = totalExtrasSize > 0
                     && (sharedPreferences.getBoolean(PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false)
@@ -143,7 +145,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                 val capSize = totalSizeConditionalExtras / parts
                 shareProgress("${engineContext.getString(R.string.capping_size)}: " +
-                        "${commonTools.getHumanReadableStorageSpace(capSize)} ($capSize B)", 0)
+                        "${getHumanReadableStorageSpace(capSize)} ($capSize B)", 0)
 
                 // remove all apps which are too big
                 var c = 0

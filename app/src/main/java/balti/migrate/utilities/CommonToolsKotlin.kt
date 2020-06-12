@@ -1,12 +1,9 @@
 package balti.migrate.utilities
 
 import android.app.Activity
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
@@ -15,11 +12,14 @@ import android.os.Handler
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.simpleActivities.PrivacyPolicy
+import balti.module.baltitoolbox.functions.Misc.isPackageInstalled
+import balti.module.baltitoolbox.functions.Misc.openWebLink
+import balti.module.baltitoolbox.functions.Misc.playStoreLink
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import kotlinx.android.synthetic.main.error_report_layout.view.*
 import java.io.*
 
@@ -294,32 +294,6 @@ class CommonToolsKotlin(val context: Context) {
             LBM = androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(context)
     }
 
-    fun unpackAssetToInternal(assetFileName: String, targetFileName: String, toInternal: Boolean): String {
-
-        val assetManager = context.assets
-        val unpackFile = if (toInternal) File(context.filesDir, targetFileName)
-        else File(context.externalCacheDir, targetFileName)
-
-        var read: Int
-        val buffer = ByteArray(4096)
-
-        return try {
-            val inputStream = assetManager.open(assetFileName)
-            val writer = FileOutputStream(unpackFile)
-            while (true) {
-                read = inputStream.read(buffer)
-                if (read > 0) writer.write(buffer, 0, read)
-                else break
-            }
-            writer.close()
-            unpackFile.setExecutable(true)
-            return unpackFile.absolutePath
-        } catch (e: IOException){
-            e.printStackTrace()
-            ""
-        }
-    }
-
     fun reportLogs(isErrorLogMandatory: Boolean) {
 
         val progressLog = File(context.externalCacheDir, FILE_PROGRESSLOG)
@@ -476,28 +450,6 @@ class CommonToolsKotlin(val context: Context) {
         }
     }
 
-    fun isPackageInstalled(packageName: String): Boolean{
-        return try {
-            context.packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
-            true
-        }
-        catch (_: Exception){
-            false
-        }
-    }
-
-    fun getAppName(packageName: String): String {
-        return if (isPackageInstalled(packageName)){
-            context.packageManager.getApplicationLabel(
-                    context.packageManager.getPackageInfo(
-                            packageName,
-                            PackageManager.GET_META_DATA
-                    ).applicationInfo
-            ).toString()
-        }
-        else ""
-    }
-
     fun suEcho(): Array<Any> {
         val suRequest = Runtime.getRuntime().exec("su")
 
@@ -530,40 +482,6 @@ class CommonToolsKotlin(val context: Context) {
         return arrayOf(suRequest.exitValue() == 0, errorMessage)
     }
 
-    fun getDirLength(directoryPath: String): Long {
-        val file = File(directoryPath)
-        return if (file.exists()) {
-            if (!file.isDirectory) file.length()
-            else {
-                val files = file.listFiles()
-                var sum = 0L
-                for (f in files) sum += getDirLength(f.absolutePath)
-                sum
-            }
-        } else 0
-    }
-
-    fun getHumanReadableStorageSpace(spaceInBytes: Long): String {
-        var res = "B"
-
-        var s = spaceInBytes.toDouble()
-
-        if (s > 1024) {
-            s /= 1024.0
-            res = "KB"
-        }
-        if (s > 1024) {
-            s /= 1024.0
-            res = "MB"
-        }
-        if (s > 1024) {
-            s /= 1024.0
-            res = "GB"
-        }
-
-        return String.format("%.2f", s) + " " + res
-    }
-
     fun getSdCardPaths(): Array<String> {
         val possibleSDCards = arrayListOf<String>()
         val storage = File("/storage/")
@@ -586,18 +504,6 @@ class CommonToolsKotlin(val context: Context) {
                 .setView(View.inflate(context, R.layout.learn_about_sd_card, null))
                 .setPositiveButton(android.R.string.ok, null)
                 .show()
-
-    fun openWebLink(url: String) {
-        if (url != "") {
-            context.startActivity(Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse(url)
-            })
-        }
-    }
-
-    fun playStoreLink(packageName: String){
-        openWebLink("market://details?id=$packageName")
-    }
 
     fun applyNamingCorrectionForShell(name: String) =
             name
@@ -626,74 +532,6 @@ class CommonToolsKotlin(val context: Context) {
                     .replace("$", "")
                     .replace("\\s+".toRegex(), "_")
                     .replace("[^\\x20-\\x7E]".toRegex(), "")
-
-
-    fun makeNotificationChannel(channelId: String, channelDesc: CharSequence, importance: Int){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val channel = NotificationChannel(channelId, channelDesc, importance)
-            channel.setSound(null, null)
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
-    fun tryIt(f: () -> Unit, showError: Boolean = false, isCancelable: Boolean = true, title: String = ""){
-        try {
-            f()
-        }
-        catch (e: Exception){
-            if (showError)
-            {
-                showErrorDialog(e.message.toString(), title, isCancelable)
-                e.printStackTrace()
-            }
-            else e.printStackTrace()
-        }
-    }
-
-    fun tryIt(f: () -> Unit, title: String = ""){
-        tryIt(f, false, true, title)
-    }
-
-    fun tryIt(f: () -> Unit){
-        tryIt(f, "")
-    }
-
-    fun showErrorDialog(message: String, title: String = "", isCancelable: Boolean = true){
-        try {
-            AlertDialog.Builder(context)
-                    .setIcon(R.drawable.ic_error)
-                    .setMessage(message).apply {
-
-                        if (isCancelable)
-                            setNegativeButton(R.string.close, null)
-                        else {
-                            setCancelable(false)
-                            setNegativeButton(R.string.close) { _, _ ->
-                                if (context is AppCompatActivity) {
-                                    (context as AppCompatActivity).finish()
-                                }
-                            }
-                        }
-
-                        if (title == "")
-                            setTitle(R.string.error_occurred)
-                        else setTitle(title)
-
-                    }
-                    .show()
-        } catch (e: Exception){
-            e.printStackTrace()
-            try {
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            } catch (_: Exception){}
-        }
-    }
-
-    fun getPercentage(count: Int, total: Int): Int {
-        return if (total != 0) (count*100)/total
-        else 0
-    }
 
     fun doBackgroundTask(job: () -> Unit, postJob: () -> Unit){
         class Class : AsyncTask<Any, Any, Any>(){

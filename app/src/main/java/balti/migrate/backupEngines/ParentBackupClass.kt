@@ -25,6 +25,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.NOTIFICATION_ID_ONGOING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PENDING_INTENT_BACKUP_CANCEL_ID
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PENDING_INTENT_REQUEST_ID
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import java.io.BufferedWriter
 import java.io.File
 import java.io.OutputStreamWriter
@@ -140,7 +141,7 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     fun cancelTask(suProcess: Process?, vararg pids: Int) {
 
-            commonTools.tryIt {
+            tryIt {
                 val killProcess = Runtime.getRuntime().exec("su")
 
                 val writer = BufferedWriter(OutputStreamWriter(killProcess.outputStream))
@@ -155,8 +156,8 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
                 writer.write("exit\n")
                 writer.flush()
 
-                commonTools.tryIt { killProcess.waitFor() }
-                commonTools.tryIt { suProcess?.waitFor() }
+                tryIt { killProcess.waitFor() }
+                tryIt { suProcess?.waitFor() }
             }
 
     }

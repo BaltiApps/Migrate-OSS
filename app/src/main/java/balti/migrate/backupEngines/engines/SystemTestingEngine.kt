@@ -8,6 +8,9 @@ import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TESTING_ERROR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TESTING_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_TESTING
+import balti.module.baltitoolbox.functions.FileHandlers
+import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import java.io.*
 
 class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntentData,
@@ -29,7 +32,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
 
             resetBroadcast(true, title)
 
-            val testScriptPath = commonTools.unpackAssetToInternal("systemTestScript.sh", "test.sh", false)
+            val testScriptPath = unpackAssetToInternal("systemTestScript.sh", "test.sh", FileHandlers.INTERNAL_TYPE.EXTERNAL_CACHE)
             val thisPackageInfo = pm.getApplicationInfo(engineContext.packageName, 0)
 
             val dataPathDirPath = thisPackageInfo.dataDir.let {
@@ -56,7 +59,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                     }
 
                     if (line.startsWith("--- PID:")) {
-                        commonTools.tryIt { TESTING_PID = line.substring(line.lastIndexOf(" ") + 1).toInt() }
+                        tryIt { TESTING_PID = line.substring(line.lastIndexOf(" ") + 1).toInt() }
                     }
 
                     broadcastProgress("", line, false)

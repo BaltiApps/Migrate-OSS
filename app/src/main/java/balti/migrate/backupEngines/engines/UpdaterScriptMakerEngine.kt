@@ -26,6 +26,9 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_MANUAL_SYSTEM
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.THIS_VERSION
 import balti.migrate.utilities.ToolsNoContext
+import balti.module.baltitoolbox.functions.FileHandlers
+import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -43,7 +46,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
     private val warnings by lazy { ArrayList<String>(0) }
 
     private fun extractToBackup(fileName: String, targetPath: String){
-        val assetFile = File(commonTools.unpackAssetToInternal(fileName, fileName, false))
+        val assetFile = File(unpackAssetToInternal(fileName, fileName, FileHandlers.INTERNAL_TYPE.EXTERNAL_CACHE))
         val targetFile = File(targetPath, fileName)
         var err = ""
 
@@ -342,7 +345,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 warnings.add("$ERR_WRITING_RAW_LIST${bd.batchErrorTag}: ${e.message}")
             }
 
-            commonTools.tryIt {
+            tryIt {
                 val extRawList = File(engineContext.externalCacheDir, FILE_RAW_LIST)
 
                 BufferedWriter(FileWriter(extRawList, true)).run {

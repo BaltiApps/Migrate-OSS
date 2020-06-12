@@ -7,6 +7,7 @@ import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CONTACTS_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_CONTACTS
+import balti.module.baltitoolbox.functions.Misc.getPercentage
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -42,8 +43,7 @@ class ContactsBackupEngine(private val jobcode: Int,
                     if (!packet.selected) continue
 
                     this.write("${packet.vcfData}\n")
-                    broadcastProgress("", packet.fullName, true, commonTools.getPercentage((i+1), contactPackets.size))
-                }
+                    broadcastProgress("", packet.fullName, true, getPercentage((i+1), contactPackets.size)) }
 
                 this.close()
             }

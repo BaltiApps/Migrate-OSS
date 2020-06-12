@@ -26,6 +26,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_REQUEST_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FILE_APPS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_APPS_WARNING
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import kotlinx.android.synthetic.main.app_search_layout.view.*
 import kotlinx.android.synthetic.main.backup_layout.*
 
@@ -59,7 +60,7 @@ class BackupActivityKotlin : AppCompatActivity() {
                             }
                         }
                 )
-                commonTools.tryIt { commonTools.LBM?.unregisterReceiver(this) }
+                tryIt { commonTools.LBM?.unregisterReceiver(this) }
                 finish()
             }
         }

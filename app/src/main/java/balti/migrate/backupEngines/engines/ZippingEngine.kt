@@ -10,6 +10,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_FILE_LIST_COPY
 import balti.migrate.utilities.ToolsNoContext
+import balti.module.baltitoolbox.functions.Misc.getPercentage
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -125,7 +126,7 @@ class ZippingEngine(private val jobcode: Int,
                     file.delete()
 
                     broadcastProgress("", "zipped: ${file.name}", true,
-                            commonTools.getPercentage((i+1), files.size))
+                            getPercentage((i+1), files.size))
                 }
                 zippedFiles.add(relativeFilePath)
             }

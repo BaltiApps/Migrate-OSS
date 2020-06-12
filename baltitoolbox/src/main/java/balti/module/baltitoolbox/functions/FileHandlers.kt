@@ -28,6 +28,23 @@ object FileHandlers {
         }
     }
 
+    enum class INTERNAL_TYPE {
+        INTERNAL_CACHE,
+        INTERNAL_FILES,
+        EXTERNAL_CACHE,
+        EXTERNAL_FILES
+    }
+
+    fun getInternalFile(fileName: String, internalType: INTERNAL_TYPE = INTERNAL_TYPE.INTERNAL_FILES): File =
+            File(
+                    when(internalType){
+                        INTERNAL_TYPE.INTERNAL_FILES -> context.filesDir
+                        INTERNAL_TYPE.INTERNAL_CACHE -> context.cacheDir
+                        INTERNAL_TYPE.EXTERNAL_CACHE -> context.externalCacheDir
+                        INTERNAL_TYPE.EXTERNAL_FILES -> context.getExternalFilesDir(null)
+                    }, fileName
+            )
+
     fun unpackAsset(assetFileName: String, destination: File): String {
 
         val assetManager = context.assets
@@ -46,7 +63,14 @@ object FileHandlers {
         val outputStream = FileOutputStream(unpackFile)
 
         return copyStream(inputStream, outputStream)
+    }
 
+    fun unpackAssetToInternal(assetFileName: String, destinationName: String = assetFileName, internalType: INTERNAL_TYPE = INTERNAL_TYPE.INTERNAL_FILES): String {
+        val d = getInternalFile(destinationName, internalType)
+        return unpackAsset(assetFileName, d).let {
+            if (it == "") d.absolutePath
+            else ""
+        }
     }
 
     fun copyFileStream(sourceFile: File, destination: String): String {

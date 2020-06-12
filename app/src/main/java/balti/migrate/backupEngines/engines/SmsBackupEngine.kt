@@ -29,6 +29,8 @@ import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_STATUS
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_SUBJECT
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_TABLE_NAME
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_TYPE
+import balti.module.baltitoolbox.functions.Misc.getPercentage
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import java.io.File
 import java.io.FileFilter
 
@@ -85,7 +87,7 @@ class SmsBackupEngine(private val jobcode: Int,
                     try {
 
                         if (BackupServiceKotlin.cancelAll) {
-                            commonTools.tryIt { db.close() }
+                            tryIt { db.close() }
                             break
                         }
 
@@ -116,7 +118,7 @@ class SmsBackupEngine(private val jobcode: Int,
 
                         db.insert(SMS_TABLE_NAME, null, contentValues)
 
-                        broadcastProgress("", dataPacket.smsAddress.toString(), true, commonTools.getPercentage(i+1, smsPackets.size))
+                        broadcastProgress("", dataPacket.smsAddress.toString(), true, getPercentage(i+1, smsPackets.size))
 
                     }
                     catch (e: Exception){
@@ -154,12 +156,12 @@ class SmsBackupEngine(private val jobcode: Int,
             do {
 
                 c++
-                broadcastProgress("", "", true, commonTools.getPercentage(c, smsPackets.size))
+                broadcastProgress("", "", true, getPercentage(c, smsPackets.size))
 
             } while (cursor.moveToNext() && !BackupServiceKotlin.cancelAll)
 
-            commonTools.tryIt { cursor.close() }
-            commonTools.tryIt { dataBase.close() }
+            tryIt { cursor.close() }
+            tryIt { dataBase.close() }
 
             if (c != totalSelected)
                 warnings.add("$WARNING_SMS: ${engineContext.getString(R.string.sms_records_incomplete)} - $c/${totalSelected}}")

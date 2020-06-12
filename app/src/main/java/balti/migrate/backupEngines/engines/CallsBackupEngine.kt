@@ -36,6 +36,8 @@ import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_TABLE_
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_TRANSCRIPTION
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_TYPE
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_VOICEMAIL_URI
+import balti.module.baltitoolbox.functions.Misc.getPercentage
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import java.io.File
 import java.io.FileFilter
 
@@ -103,7 +105,7 @@ class CallsBackupEngine(private val jobcode: Int,
                     try {
 
                         if (BackupServiceKotlin.cancelAll) {
-                            commonTools.tryIt { db.close() }
+                            tryIt { db.close() }
                             break
                         }
                         val dataPacket = callsPackets[i]
@@ -146,7 +148,7 @@ class CallsBackupEngine(private val jobcode: Int,
 
                         db.insert(CALLS_TABLE_NAME, null, contentValues)
 
-                        broadcastProgress("", display, true, commonTools.getPercentage(i+1, callsPackets.size))
+                        broadcastProgress("", display, true, getPercentage(i+1, callsPackets.size))
                     }
                     catch (e: Exception){
                         e.printStackTrace()
@@ -183,12 +185,12 @@ class CallsBackupEngine(private val jobcode: Int,
             do {
 
                 c++
-                broadcastProgress("", "", true, commonTools.getPercentage(c, callsPackets.size))
+                broadcastProgress("", "", true, getPercentage(c, callsPackets.size))
 
             } while (cursor.moveToNext() && !BackupServiceKotlin.cancelAll)
 
-            commonTools.tryIt { cursor.close() }
-            commonTools.tryIt { dataBase.close() }
+            tryIt { cursor.close() }
+            tryIt { dataBase.close() }
 
             if (c != totalSelected)
                 warnings.add("$WARNING_CALLS: ${engineContext.getString(R.string.call_logs_incomplete)} - $c/${totalSelected}}")

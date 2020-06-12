@@ -12,6 +12,7 @@ import android.widget.ImageView
 import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -110,9 +111,9 @@ class IconTools {
         if (file.name.endsWith(".png")) {
             var bitmap: Bitmap? = null
             commonTools.doBackgroundTask({
-                commonTools.tryIt { bitmap = BitmapFactory.decodeFile(file.absolutePath) }
+                tryIt { bitmap = BitmapFactory.decodeFile(file.absolutePath) }
             }, {
-                commonTools.tryIt { iconView.setImageBitmap(bitmap) }
+                tryIt { iconView.setImageBitmap(bitmap) }
             })
         } else {
             class Setter : AsyncTask<Any, Any, String>() {

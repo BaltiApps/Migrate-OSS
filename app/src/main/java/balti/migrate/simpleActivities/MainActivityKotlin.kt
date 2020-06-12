@@ -47,6 +47,11 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_HEA
 import balti.migrate.utilities.CommonToolsKotlin.Companion.TG_DEV_LINK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.TG_LINK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.THIS_VERSION
+import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
+import balti.module.baltitoolbox.functions.Misc.makeNotificationChannel
+import balti.module.baltitoolbox.functions.Misc.openWebLink
+import balti.module.baltitoolbox.functions.Misc.playStoreLink
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
@@ -83,9 +88,9 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             editor.commit()
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                commonTools.makeNotificationChannel(CHANNEL_BACKUP_RUNNING, CHANNEL_BACKUP_RUNNING, NotificationManager.IMPORTANCE_LOW)
-                commonTools.makeNotificationChannel(CHANNEL_BACKUP_END, CHANNEL_BACKUP_END, NotificationManager.IMPORTANCE_HIGH)
-                commonTools.makeNotificationChannel(CHANNEL_BACKUP_CANCELLING, CHANNEL_BACKUP_CANCELLING, NotificationManager.IMPORTANCE_MIN)
+                makeNotificationChannel(CHANNEL_BACKUP_RUNNING, CHANNEL_BACKUP_RUNNING, NotificationManager.IMPORTANCE_LOW)
+                makeNotificationChannel(CHANNEL_BACKUP_END, CHANNEL_BACKUP_END, NotificationManager.IMPORTANCE_HIGH)
+                makeNotificationChannel(CHANNEL_BACKUP_CANCELLING, CHANNEL_BACKUP_CANCELLING, NotificationManager.IMPORTANCE_MIN)
             }
 
             startActivity(Intent(this, InitialGuideKotlin::class.java))
@@ -100,7 +105,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             v.waiting_progress.setText(R.string.checking_permissions)
 
-            commonTools.tryIt { loadingDialog?.dismiss() }
+            tryIt { loadingDialog?.dismiss() }
 
             loadingDialog = AlertDialog.Builder(this)
                     .setView(v)
@@ -157,7 +162,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         finish()
                     }
                     .setPositiveButton(R.string.contact) { _, _ ->
-                        commonTools.openWebLink(TG_LINK)
+                        openWebLink(TG_LINK)
                     }
                     .setNeutralButton(R.string.use_email_instead) {_, _ ->
                         val email = Intent(Intent.ACTION_SENDTO).apply {
@@ -184,7 +189,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     }
 
     private fun showFirstRunWarningIfApplicable(){
-        commonTools.tryIt {
+        tryIt {
             if (intent.getBooleanExtra(EXTRA_SHOW_FIRST_WARNING, false)) {
                 AlertDialog.Builder(this).apply {
                     setIcon(R.drawable.ic_warning)
@@ -278,7 +283,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             R.id.lastLog -> showLog()
 
-            R.id.older_builds -> commonTools.openWebLink("https://www.androidfilehost.com/?w=files&flid=285270")
+            R.id.older_builds -> openWebLink("https://www.androidfilehost.com/?w=files&flid=285270")
 
             R.id.appIntro ->
                 startActivity(Intent(this, InitialGuideKotlin::class.java))
@@ -302,16 +307,16 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         .setTitle(R.string.contact_via_telegram)
                         .setMessage(R.string.contact_via_telegram_desc)
                         .setPositiveButton(R.string.post_in_group) { _, _ ->
-                            commonTools.openWebLink(TG_LINK)
+                            openWebLink(TG_LINK)
                         }
                         .setNeutralButton(android.R.string.cancel, null)
                         .setNegativeButton(R.string.contact_dev) {_, _ ->
-                            commonTools.openWebLink(TG_DEV_LINK)
+                            openWebLink(TG_DEV_LINK)
                         }
                         .show()
 
             R.id.xda_thread ->
-                commonTools.openWebLink("https://forum.xda-developers.com/android/apps-games/app-migrate-custom-rom-migration-tool-t3862763")
+                openWebLink("https://forum.xda-developers.com/android/apps-games/app-migrate-custom-rom-migration-tool-t3862763")
 
             R.id.otherApps -> otherAppsClickManager()
         }
@@ -365,7 +370,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 .setTitle(R.string.rate_dialog_title)
                 .setMessage(R.string.rate_dialog_message)
                 .setPositiveButton(R.string.sure) { _, _ ->
-                    commonTools.playStoreLink(packageName)
+                    playStoreLink(packageName)
                     editor.putBoolean(PREF_ASK_FOR_RATING, false)
                     editor.commit()
                 }
@@ -388,7 +393,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         val view = layoutInflater.inflate(R.layout.other_apps, null)
         view.setOnClickListener{
-            commonTools.openWebLink(
+            openWebLink(
                     when (it.id) {
                         R.id.motodisplay_handwave -> "market://details?id=sayantanrc.motodisplayhandwave"
                         R.id.opcode_8085 -> "market://details?id=balti.opcode8085"
@@ -425,8 +430,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             calculateStorage(Environment.getExternalStorageDirectory().absolutePath)
 
             internal_storage_bar.progress = ((consumedBytes * 100) / fullBytes).toInt()
-            internal_storage_text.text = commonTools.getHumanReadableStorageSpace(consumedBytes) + "/" +
-                    commonTools.getHumanReadableStorageSpace(fullBytes)
+            internal_storage_text.text = getHumanReadableStorageSpace(consumedBytes) + "/" +
+                    getHumanReadableStorageSpace(fullBytes)
 
             var sdCardRoot: File? = null
             val defaultPath = main.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
@@ -447,8 +452,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
                 sd_card_name.text = sdCardRoot.name
                 sd_card_storage_bar.progress = ((consumedBytes * 100) / fullBytes).toInt()
-                sd_card_storage_text.text = commonTools.getHumanReadableStorageSpace(consumedBytes) + "/" +
-                        commonTools.getHumanReadableStorageSpace(fullBytes)
+                sd_card_storage_text.text = getHumanReadableStorageSpace(consumedBytes) + "/" +
+                        getHumanReadableStorageSpace(fullBytes)
             } else {
                 sd_card_storage_use_view.visibility = View.GONE
             }
@@ -471,7 +476,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 finish()
             }
             ad.setPositiveButton(R.string.install_original_migrate) { _, _ ->
-                commonTools.playStoreLink("balti.migrate")
+                playStoreLink("balti.migrate")
             }
             ad.show()
         }
@@ -540,7 +545,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         .show()
             }
 
-            commonTools.tryIt { loadingDialog?.dismiss() }
+            tryIt { loadingDialog?.dismiss() }
         }
     }
 
@@ -584,7 +589,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     override fun onDestroy() {
         super.onDestroy()
-        commonTools.tryIt { loadingDialog?.dismiss() }
-        commonTools.tryIt { storageHandler.removeCallbacks(storageRunnable) }
+        tryIt { loadingDialog?.dismiss() }
+        tryIt { storageHandler.removeCallbacks(storageRunnable) }
     }
 }

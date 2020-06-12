@@ -23,6 +23,10 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TERMINAL_METHOD
+import balti.module.baltitoolbox.functions.FileHandlers.getDirLength
+import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
+import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import kotlinx.android.synthetic.main.please_wait.view.*
 import java.io.*
 
@@ -89,11 +93,9 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
         Log.d(DEBUG_TAG, "Method terminal")
 
         val busyboxPath: String = Build.SUPPORTED_ABIS[0].run {
-            if (this == "armeabi-v7a" || this == "arm64-v8a")
-                commonTools.unpackAssetToInternal("busybox", "busybox", true)
-            else if (this == "x86" || this == "x86_64")
-                commonTools.unpackAssetToInternal("busybox-x86", "busybox", true)
-            else ""
+            if (this == "x86" || this == "x86_64")
+                unpackAssetToInternal("busybox-86", "busybox")
+            else unpackAssetToInternal("busybox")
         }
 
         Log.d(DEBUG_TAG, "du: $busyboxPath")
@@ -112,7 +114,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 try {
                     "${vOp.getStringFromRes(R.string.last_app)} " +
                             "${commonTools.applyNamingCorrectionForDisplay(pm.getApplicationLabel(appList[i - 1].PACKAGE_INFO.applicationInfo).toString())} -> " +
-                            commonTools.getHumanReadableStorageSpace(lastSize)
+                            getHumanReadableStorageSpace(lastSize)
                 }
                 catch (e: Exception) {"Error: ${e.message}"}
             }
@@ -127,7 +129,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                     (i + 1).toString() + " of " + appList.size,
                     "${vOp.getStringFromRes(R.string.current_app)} $appName\n" +
                             "$lastAppInfo\n" +
-                            "${vOp.getStringFromRes(R.string.calculated_total)} ${commonTools.getHumanReadableStorageSpace(totalSize)}")
+                            "${vOp.getStringFromRes(R.string.calculated_total)} ${getHumanReadableStorageSpace(totalSize)}")
 
             val apkPath: String? = if (dp.APP)
                 dp.PACKAGE_INFO.applicationInfo.sourceDir
@@ -213,7 +215,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
 
-                    commonTools.tryIt {
+                    tryIt {
                         Handler(context.mainLooper).post {
                             Toast.makeText(context, R.string.new_method_not_available_below_oreo, Toast.LENGTH_SHORT).show()
                         }
@@ -235,7 +237,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                             try {
                                 "${vOp.getStringFromRes(R.string.last_app)} " +
                                         "${commonTools.applyNamingCorrectionForDisplay(pm.getApplicationLabel(appList[i - 1].PACKAGE_INFO.applicationInfo).toString())} -> " +
-                                        commonTools.getHumanReadableStorageSpace(lastSize)
+                                        getHumanReadableStorageSpace(lastSize)
                             }
                             catch (e: Exception) {"Error: ${e.message}"}
                         }
@@ -250,7 +252,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                                 (i + 1).toString() + " of " + appList.size,
                                 "${vOp.getStringFromRes(R.string.current_app)} $appName\n" +
                                         "$lastAppInfo\n" +
-                                        "${vOp.getStringFromRes(R.string.calculated_total)} ${commonTools.getHumanReadableStorageSpace(totalSize)}")
+                                        "${vOp.getStringFromRes(R.string.calculated_total)} ${getHumanReadableStorageSpace(totalSize)}")
 
                         val storageStats = storageStatsManager.queryStatsForUid(
                                 dp.PACKAGE_INFO.applicationInfo.storageUuid,
@@ -276,8 +278,8 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
                         dataPath?.let {
                             val ignoreSize =
-                                    (if (externalData.canRead()) commonTools.getDirLength(externalData.absolutePath) else 0) +
-                                            (if (externalMedia.canRead()) commonTools.getDirLength(externalMedia.absolutePath) else 0)
+                                    (if (externalData.canRead()) getDirLength(externalData.absolutePath) else 0) +
+                                            (if (externalMedia.canRead()) getDirLength(externalMedia.absolutePath) else 0)
 
                             dataSize += storageStats.dataBytes - ignoreSize
                             if (ignoreCache) dataSize -= storageStats.cacheBytes
@@ -354,16 +356,16 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
         return if (totalSize > availableBytes){
             arrayOf(false, vOp.getStringFromRes(R.string.insufficient_storage),
-                    "${vOp.getStringFromRes(R.string.estimated_files_size)} ${commonTools.getHumanReadableStorageSpace(totalSize)}\n" +
-                            "${vOp.getStringFromRes(R.string.available_space)} ${commonTools.getHumanReadableStorageSpace(availableBytes)}\n\n" +
-                            "${vOp.getStringFromRes(R.string.required_storage)} ${commonTools.getHumanReadableStorageSpace(totalSize - availableBytes)}\n\n" +
+                    "${vOp.getStringFromRes(R.string.estimated_files_size)} ${getHumanReadableStorageSpace(totalSize)}\n" +
+                            "${vOp.getStringFromRes(R.string.available_space)} ${getHumanReadableStorageSpace(availableBytes)}\n\n" +
+                            "${vOp.getStringFromRes(R.string.required_storage)} ${getHumanReadableStorageSpace(totalSize - availableBytes)}\n\n" +
                             vOp.getStringFromRes(R.string.will_be_compressed))
         }
         else {
             publishProgress(vOp.getStringFromRes(R.string.total_size_ok),
-                    "${vOp.getStringFromRes(R.string.total_size)} ${commonTools.getHumanReadableStorageSpace(totalSize)}\n" +
-                            "${vOp.getStringFromRes(R.string.available_space)} ${commonTools.getHumanReadableStorageSpace(availableBytes)}", "")
-            commonTools.tryIt { Thread.sleep(1000) }
+                    "${vOp.getStringFromRes(R.string.total_size)} ${getHumanReadableStorageSpace(totalSize)}\n" +
+                            "${vOp.getStringFromRes(R.string.available_space)} ${getHumanReadableStorageSpace(availableBytes)}", "")
+            tryIt { Thread.sleep(1000) }
             arrayOf(true)
         }
     }

@@ -25,6 +25,9 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TAR_GZ_INTEGRITY
 import balti.migrate.utilities.IconTools
+import balti.module.baltitoolbox.functions.FileHandlers.getDirLength
+import balti.module.baltitoolbox.functions.Misc.getPercentage
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import java.io.*
 
 class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentData,
@@ -108,7 +111,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 if (packet.APP) {
 
                     val existsAppDir = expectedAppDir.exists()
-                    val sizeAppDir = commonTools.getDirLength(expectedAppDir.absolutePath)
+                    val sizeAppDir = getDirLength(expectedAppDir.absolutePath)
                     val existsApk = expectedApkFile.exists()
                     val sizeApk = expectedApkFile.length()
 
@@ -244,13 +247,13 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     }
 
                     when {
-                        line.startsWith("--- TAR CHECK PID:") -> commonTools.tryIt {
+                        line.startsWith("--- TAR CHECK PID:") -> tryIt {
                             log = line
                             TAR_CHECK_CORRECTION_PID = line.substring(line.lastIndexOf(" ") + 1).trim().toInt()
                         }
                         line.startsWith("--- TAR_GZ") -> {
                             c++
-                            progress = commonTools.getPercentage(c, appList.size)
+                            progress = getPercentage(c, appList.size)
                             log = ""
                         }
                         line.startsWith("--- ERROR") -> {
@@ -371,13 +374,13 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     }
 
                     if (line.startsWith("--- RECOVERY PID:")){
-                        commonTools.tryIt {
+                        tryIt {
                             CORRECTION_PID = line.substring(line.lastIndexOf(" ") + 1).trim().toInt()
                         }
                     }
                     else if (line.startsWith("--- DEFECT:")){
                         defectNumber = line.substring(line.lastIndexOf(" ") + 1).trim().toInt()
-                        progress = commonTools.getPercentage(defectNumber, defects.size)
+                        progress = getPercentage(defectNumber, defects.size)
                     }
 
 
@@ -389,7 +392,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     return@iterateBufferedReader line == "--- Retry complete ---"
                 })
 
-                commonTools.tryIt { it.waitFor() }
+                tryIt { it.waitFor() }
 
                 backupUtils.iterateBufferedReader(errorStream, {errorLine ->
 

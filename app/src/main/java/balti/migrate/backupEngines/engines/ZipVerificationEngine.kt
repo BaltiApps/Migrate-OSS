@@ -12,6 +12,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FILELIST_IN_ZIP_
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_FILELIST_ITEM_UNAVAILABLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_FILELIST_UNAVAILABLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_FILELIST_VERIFICATION
+import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -43,8 +44,8 @@ class ZipVerificationEngine(private val jobcode: Int,
 
             val fileSize = zipFile.length()
 
-            val fileSizeString = "${engineContext.getString(R.string.zip_size)}: ${commonTools.getHumanReadableStorageSpace(fileSize)} (${fileSize} B) " +
-            "${engineContext.getString(R.string.allowed)}: ${commonTools.getHumanReadableStorageSpace(MAX_WORKING_SIZE)} (${MAX_WORKING_SIZE} B)"
+            val fileSizeString = "${engineContext.getString(R.string.zip_size)}: ${getHumanReadableStorageSpace(fileSize)} (${fileSize} B) " +
+            "${engineContext.getString(R.string.allowed)}: ${getHumanReadableStorageSpace(MAX_WORKING_SIZE)} (${MAX_WORKING_SIZE} B)"
 
             if (fileSize > MAX_WORKING_SIZE){
                 verificationErrors.add("$ERR_ZIP_TOO_BIG: $fileSizeString")

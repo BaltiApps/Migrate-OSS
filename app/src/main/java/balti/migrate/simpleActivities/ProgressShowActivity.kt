@@ -53,6 +53,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ZIP_NAMES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DELETE_ERROR_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_BACKUP_SUMMARY
 import balti.migrate.utilities.IconTools
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import kotlinx.android.synthetic.main.backup_progress_layout.*
 import kotlinx.android.synthetic.main.zip_name_show.view.*
 import java.io.File
@@ -107,17 +108,17 @@ class ProgressShowActivity: AppCompatActivity() {
 
             fun showPartNames(){
                 if (main.getBoolean(PREF_SHOW_BACKUP_SUMMARY, true)) {
-                    commonTools.tryIt {
+                    tryIt {
                         val view = View.inflate(this, R.layout.zip_name_show, null)
                         val name = view.zns_backup_name
                         val zipList = view.zns_zip_holder
                         if (intent.hasExtra(EXTRA_BACKUP_NAME)) {
-                            commonTools.tryIt {
+                            tryIt {
                                 name.text = intent.getStringExtra(EXTRA_BACKUP_NAME)
                             }
                         }
                         if (intent.hasExtra(EXTRA_ZIP_NAMES)) {
-                            commonTools.tryIt {
+                            tryIt {
                                 val parts = intent.getStringArrayListExtra(EXTRA_ZIP_NAMES)
                                 parts.sortWith(Comparator { p1, p2 ->
                                     String.CASE_INSENSITIVE_ORDER.compare(p1, p2)
@@ -222,7 +223,7 @@ class ProgressShowActivity: AppCompatActivity() {
 
                 if (type == EXTRA_PROGRESS_TYPE_FINISHED) {
 
-                    commonTools.tryIt { forceStopDialog?.dismiss() }
+                    tryIt { forceStopDialog?.dismiss() }
 
                     window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                     closeWarning.visibility = View.GONE
@@ -373,7 +374,7 @@ class ProgressShowActivity: AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        commonTools.tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
-        commonTools.tryIt { forceStopDialog?.dismiss() }
+        tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
+        tryIt { forceStopDialog?.dismiss() }
     }
 }

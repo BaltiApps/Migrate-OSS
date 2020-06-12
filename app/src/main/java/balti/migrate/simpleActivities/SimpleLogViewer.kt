@@ -9,6 +9,7 @@ import balti.migrate.R
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import kotlinx.android.synthetic.main.simple_log_display.*
 import java.io.BufferedReader
 import java.io.File
@@ -63,7 +64,7 @@ class SimpleLogViewer: AppCompatActivity() {
 
                         BufferedReader(FileReader(File(filePath))).readLines().forEach { it1 ->
                             publishProgress(it1)
-                            commonTools.tryIt { Thread.sleep(1) }
+                            tryIt { Thread.sleep(1) }
                         }
 
                         return 0
