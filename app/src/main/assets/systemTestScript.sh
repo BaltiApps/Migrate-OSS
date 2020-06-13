@@ -13,7 +13,7 @@ echo
 echo "--- PID: $$"
 
 # remount
-mount -o rw,remount /data
+#mount -o rw,remount /data
 
 # copy apk and data
 cp -v ${APK_FULL_PATH} "${COPY_PATH}/$PACKAGE_NAME.apk"
