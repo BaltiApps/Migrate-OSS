@@ -193,9 +193,11 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
     private val busyboxBinaryPath by lazy {
         val cpuAbi = Build.SUPPORTED_ABIS[0]
-        if (cpuAbi == "x86" || cpuAbi == "x86_64")
+        (if (cpuAbi == "x86" || cpuAbi == "x86_64")
             unpackAssetToInternal("busybox-86", "busybox")
-        else unpackAssetToInternal("busybox")
+        else unpackAssetToInternal("busybox")).apply {
+            File(this).setExecutable(true)
+        }
     }
 
     private val cancelReceiver by lazy {

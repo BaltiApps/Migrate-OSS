@@ -103,7 +103,7 @@ object FileHandlers {
      *
      * @return  A string file path to the extracted asset, if extraction is successful, else a blank string
      */
-    fun unpackAssetToInternal(assetFileName: String, destinationName: String = assetFileName, internalType: INTERNAL_TYPE = INTERNAL_TYPE.INTERNAL_FILES): String {
+    fun unpackAssetToInternal(assetFileName: String, destinationName: String = assetFileName, internalType: INTERNAL_TYPE = INTERNAL_FILES): String {
         val d = getInternalFile(destinationName, internalType)
         return unpackAsset(assetFileName, d).let {
             if (it == "") d.absolutePath

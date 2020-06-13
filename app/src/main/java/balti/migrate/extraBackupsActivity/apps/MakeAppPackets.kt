@@ -94,9 +94,11 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
         Log.d(DEBUG_TAG, "Method terminal")
 
         val busyboxPath: String = Build.SUPPORTED_ABIS[0].run {
-            if (this == "x86" || this == "x86_64")
+            (if (this == "x86" || this == "x86_64")
                 unpackAssetToInternal("busybox-86", "busybox")
-            else unpackAssetToInternal("busybox")
+            else unpackAssetToInternal("busybox")).apply {
+                File(this).setExecutable(true)
+            }
         }
 
         Log.d(DEBUG_TAG, "du: $busyboxPath")
