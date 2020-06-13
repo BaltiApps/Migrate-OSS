@@ -5,7 +5,6 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Environment
 import android.os.Handler
@@ -16,6 +15,7 @@ import androidx.core.content.FileProvider
 import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.simpleActivities.PrivacyPolicy
+import balti.module.baltitoolbox.functions.Misc.doBackgroundTask
 import balti.module.baltitoolbox.functions.Misc.isPackageInstalled
 import balti.module.baltitoolbox.functions.Misc.openWebLink
 import balti.module.baltitoolbox.functions.Misc.playStoreLink
@@ -530,21 +530,6 @@ class CommonToolsKotlin(val context: Context? = null) {
                     .replace("$", "")
                     .replace("\\s+".toRegex(), "_")
                     .replace("[^\\x20-\\x7E]".toRegex(), "")
-
-    fun doBackgroundTask(job: () -> Unit, postJob: () -> Unit){
-        class Class : AsyncTask<Any, Any, Any>(){
-            override fun doInBackground(vararg params: Any?): Any {
-                job()
-                return 0
-            }
-
-            override fun onPostExecute(result: Any?) {
-                super.onPostExecute(result)
-                postJob()
-            }
-        }
-        Class().execute()
-    }
 
     fun forceCloseThis(){
         Runtime.getRuntime().exec("su").apply {

@@ -89,6 +89,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DELETE_ERROR_BAC
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_CHECK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.TIMEOUT_WAITING_TO_CANCEL_TASK
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
+import balti.module.baltitoolbox.functions.Misc.doBackgroundTask
 import balti.module.baltitoolbox.functions.Misc.makeNotificationChannel
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
@@ -215,7 +216,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     )
                     AppInstance.notificationManager.notify(NOTIFICATION_ID_CANCELLING, cancellingNotification)
 
-                    commonTools.doBackgroundTask({
+                    doBackgroundTask({
 
                         cTask?.let {
                             while (it.status != AsyncTask.Status.FINISHED) {
