@@ -7,8 +7,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.AsyncTask
-import android.os.AsyncTask.THREAD_POOL_EXECUTOR
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -94,6 +92,7 @@ import balti.module.baltitoolbox.functions.Misc.makeNotificationChannel
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefInt
+import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -219,7 +218,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     doBackgroundTask({
 
                         cTask?.let {
-                            while (it.status != AsyncTask.Status.FINISHED) {
+                            while (it.status !in arrayOf(AsyncCoroutineTask.FINISHED, AsyncCoroutineTask.CANCELLED)) {
                                 tryIt { Thread.sleep(100) }
                             }
                             tryIt { Thread.sleep(TIMEOUT_WAITING_TO_CANCEL_TASK) }
@@ -412,7 +411,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     fallThrough = cTask == null
                     cTask?.run {
                         File(cDestination, cBackupName).mkdirs()
-                        executeOnExecutor(THREAD_POOL_EXECUTOR)
+                        execute()
                     }
                 }
             }
@@ -606,7 +605,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
             }
 
             task?.run {
-                executeOnExecutor(THREAD_POOL_EXECUTOR)
+                execute()
                 cTask = this
             }
 

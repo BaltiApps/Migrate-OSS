@@ -24,7 +24,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
 
     private val errors by lazy { ArrayList<String>(0) }
 
-    override fun doInBackground(vararg params: Any?): Any {
+    override suspend fun doInBackground(arg: Any?): Any? {
 
         try {
 

@@ -25,7 +25,7 @@ class SettingsBackupEngine(private val jobcode: Int,
     private val settingsFile by lazy { File(actualDestination, BACKUP_NAME_SETTINGS) }
     private val errors by lazy { ArrayList<String>(0) }
 
-    override fun doInBackground(vararg params: Any?): Any {
+    override suspend fun doInBackground(arg: Any?): Any? {
 
         try {
 
@@ -42,9 +42,11 @@ class SettingsBackupEngine(private val jobcode: Int,
             fontScale?.let { jsonObject.put(JSON_FIELD_FONT_SCALE, it) }
             keyboardText?.let { jsonObject.put(JSON_FIELD_KEYBOARD_TEXT, it.trim()) }
 
-            BufferedWriter(FileWriter(settingsFile, true)).run {
-                this.write(jsonObject.toString(4))
-                this.close()
+            heavyTask {
+                BufferedWriter(FileWriter(settingsFile, true)).run {
+                    this.write(jsonObject.toString(4))
+                    this.close()
+                }
             }
         }
         catch (e: Exception){

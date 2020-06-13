@@ -173,7 +173,7 @@ class SmsBackupEngine(private val jobcode: Int,
         }
     }
 
-    override fun doInBackground(vararg params: Any?): Any {
+    override suspend fun doInBackground(arg: Any?): Any? {
 
         writeSms()
 

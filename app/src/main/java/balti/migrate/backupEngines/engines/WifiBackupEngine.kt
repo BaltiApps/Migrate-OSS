@@ -18,7 +18,7 @@ class WifiBackupEngine(private val jobcode: Int,
     private val wifiFile by lazy { File(actualDestination, wifiDataPacket.fileName) }
     private val errors by lazy { ArrayList<String>(0) }
 
-    override fun doInBackground(vararg params: Any?): Any {
+    override suspend fun doInBackground(arg: Any?): Any? {
 
         try {
 
@@ -29,18 +29,20 @@ class WifiBackupEngine(private val jobcode: Int,
 
             resetBroadcast(true, title)
 
-            BufferedWriter(FileWriter(wifiFile, true)).run {
+            heavyTask {
+                BufferedWriter(FileWriter(wifiFile, true)).run {
 
-                wifiDataPacket.contents.let {contents ->
-                    for (i in 0 until contents.size) {
+                    wifiDataPacket.contents.let { contents ->
+                        for (i in 0 until contents.size) {
 
-                        if (BackupServiceKotlin.cancelAll) break
+                            if (BackupServiceKotlin.cancelAll) break
 
-                        this.write(contents[i])
+                            this.write(contents[i])
+                        }
                     }
-                }
 
-                this.close()
+                    this.close()
+                }
             }
         }
         catch (e: Exception){

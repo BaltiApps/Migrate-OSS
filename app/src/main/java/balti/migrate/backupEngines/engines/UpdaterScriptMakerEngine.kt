@@ -292,7 +292,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
         }
     }
 
-    override fun doInBackground(vararg params: Any?): Any {
+    override suspend fun doInBackground(arg: Any?): Any? {
 
         try {
 
@@ -318,28 +318,30 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
             val rawList = File(actualDestination, FILE_RAW_LIST)
             try {
-                BufferedWriter(FileWriter(rawList)).run {
+                heavyTask {
+                    BufferedWriter(FileWriter(rawList)).run {
 
-                    this.write("\n")
-                    this.write("=================\n")
-                    this.write("${actualDestination}\n")
-                    this.write("=================\n")
-                    this.write("\n")
+                        this.write("\n")
+                        this.write("=================\n")
+                        this.write("${actualDestination}\n")
+                        this.write("=================\n")
+                        this.write("\n")
 
-                    fun getRelativePath(file: File): String =
-                            file.absolutePath.let {
-                                it.substring(actualDestination.length)
+                        fun getRelativePath(file: File): String =
+                                file.absolutePath.let {
+                                    it.substring(actualDestination.length)
+                                }
+
+                        fun scanAllFiles(directory: File) {
+                            if (directory.isFile) this.write("${getRelativePath(directory)}\n")
+                            else for (f in directory.listFiles()) {
+                                scanAllFiles(f)
                             }
-
-                    fun scanAllFiles(directory: File) {
-                        if (directory.isFile) this.write("${getRelativePath(directory)}\n")
-                        else for (f in directory.listFiles()) {
-                            scanAllFiles(f)
                         }
-                    }
 
-                    scanAllFiles(File(actualDestination))
-                    close()
+                        scanAllFiles(File(actualDestination))
+                        close()
+                    }
                 }
             }
             catch (e: Exception){

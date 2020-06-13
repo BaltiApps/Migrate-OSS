@@ -3,7 +3,6 @@ package balti.migrate.backupEngines
 import android.app.PendingIntent
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
-import android.os.AsyncTask
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import balti.migrate.AppInstance
@@ -26,12 +25,13 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.NOTIFICATION_ID_ONGOI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PENDING_INTENT_BACKUP_CANCEL_ID
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PENDING_INTENT_REQUEST_ID
 import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import java.io.BufferedWriter
 import java.io.File
 import java.io.OutputStreamWriter
 
 abstract class ParentBackupClass(private val bd: BackupIntentData,
-                                 private val intentType: String): AsyncTask<Any, Any, Any>() {
+                                 private val intentType: String): AsyncCoroutineTask(DISP_IO) {
 
     val engineContext by lazy { serviceContext }
     val onEngineTaskComplete by lazy { engineContext as OnEngineTaskComplete }
@@ -164,14 +164,15 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     abstract fun postExecuteFunction()
 
-    override fun onPreExecute() {
+    override suspend fun onPreExecute() {
         super.onPreExecute()
         File(actualDestination).mkdirs()
         customPreExecuteFunction?.invoke()
     }
 
-    override fun onPostExecute(result: Any?) {
+    override suspend fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
         postExecuteFunction()
     }
+
 }

@@ -28,8 +28,7 @@ class ZipVerificationEngine(private val jobcode: Int,
     private val verificationErrors by lazy { ArrayList<String>(0) }
     private val warnings by lazy { ArrayList<String>(0) }
 
-    override fun doInBackground(vararg params: Any?): Any {
-
+    override suspend fun doInBackground(arg: Any?): Any? {
         try {
             val contents = ArrayList<String>(0)
             val appDirectories = ArrayList<String>(0)
@@ -40,7 +39,7 @@ class ZipVerificationEngine(private val jobcode: Int,
 
             resetBroadcast(true, title)
 
-            val zip = ZipFile(zipFile)
+            @Suppress("BlockingMethodInNonBlockingContext") val zip = ZipFile(zipFile)
             val enumeration = zip.entries()
 
             val fileSize = zipFile.length()
@@ -54,7 +53,7 @@ class ZipVerificationEngine(private val jobcode: Int,
             }
 
             var subTask = engineContext.getString(R.string.listing_zip_file)
-            Thread.sleep(50)
+            sleepTask(50)
             broadcastProgress(subTask, "${subTask}\n${fileSizeString}", false)
 
             while (enumeration.hasMoreElements()) {
@@ -88,7 +87,7 @@ class ZipVerificationEngine(private val jobcode: Int,
             }
 
             subTask = "${engineContext.getString(R.string.compared_zip_contents)}(${zipList.size}/${contents.size})"
-            Thread.sleep(50)
+            sleepTask(50)
             broadcastProgress(subTask, subTask, false)
 
             if (checkFileListContents) {
@@ -122,7 +121,7 @@ class ZipVerificationEngine(private val jobcode: Int,
                     }
 
                     subTask = "${engineContext.getString(R.string.compared_fileList_contents)}($filesPresent/$filesCompared)"
-                    Thread.sleep(50)
+                    sleepTask(50)
                     broadcastProgress(subTask, subTask, false)
                 }
             }

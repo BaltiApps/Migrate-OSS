@@ -39,7 +39,7 @@ class ZippingEngine(private val jobcode: Int,
         return allFiles
     }
 
-    override fun doInBackground(vararg params: Any?): Any {
+    override suspend fun doInBackground(arg: Any?): Any? {
 
         try {
 
@@ -62,77 +62,78 @@ class ZippingEngine(private val jobcode: Int,
                 else warnings.add("$WARNING_FILE_LIST_COPY${bd.batchErrorTag}: ${engineContext.getString(R.string.file_list_not_in_zip_batch)}")
             }
 
-            if (zipFile.exists()) zipFile.delete()
-            val files = getAllFiles(directory)
-            val zipOutputStream = ZipOutputStream(FileOutputStream(zipFile))
+            heavyTask {
+                if (zipFile.exists()) zipFile.delete()
+                val files = getAllFiles(directory)
+                val zipOutputStream = ZipOutputStream(FileOutputStream(zipFile))
 
-            for (i in 0 until files.size){
+                for (i in 0 until files.size) {
 
-                val file = files[i]
+                    val file = files[i]
 
-                if (BackupServiceKotlin.cancelAll) break
+                    if (BackupServiceKotlin.cancelAll) break
 
-                val relativeFilePath = file.absolutePath.substring(directory.absolutePath.length + 1).let {
-                    if (it.endsWith("/") && file.isFile) it.substring(0, it.length - 1)
-                    else if (file.isDirectory && !it.endsWith("/")) "$it/"
-                    else it
-                }
-
-                val zipEntry: ZipEntry
-
-                if (file.isDirectory){
-                    zipEntry = ZipEntry(relativeFilePath)
-
-                    zipOutputStream.putNextEntry(zipEntry)
-                    zipOutputStream.closeEntry()
-                }
-                else {
-                    zipEntry = ZipEntry(relativeFilePath)
-
-                    val bufferedInputStream = BufferedInputStream(FileInputStream(file))
-                    var buffer = ByteArray(4096)
-                    var read: Int
-
-                    val crc32 = CRC32()
-
-                    while (true){
-                        read = bufferedInputStream.read(buffer)
-                        if (read > 0)
-                            crc32.update(buffer, 0, read)
-                        else break
+                    val relativeFilePath = file.absolutePath.substring(directory.absolutePath.length + 1).let {
+                        if (it.endsWith("/") && file.isFile) it.substring(0, it.length - 1)
+                        else if (file.isDirectory && !it.endsWith("/")) "$it/"
+                        else it
                     }
 
-                    bufferedInputStream.close()
+                    val zipEntry: ZipEntry
 
-                    zipEntry.size = file.length()
-                    zipEntry.compressedSize = file.length()
-                    zipEntry.crc = crc32.value
-                    zipEntry.method = ZipEntry.STORED
+                    if (file.isDirectory) {
+                        zipEntry = ZipEntry(relativeFilePath)
 
-                    zipOutputStream.putNextEntry(zipEntry)
+                        zipOutputStream.putNextEntry(zipEntry)
+                        zipOutputStream.closeEntry()
+                    } else {
+                        zipEntry = ZipEntry(relativeFilePath)
 
-                    val fileInputStream = FileInputStream(file)
-                    buffer = ByteArray(4096)
+                        val bufferedInputStream = BufferedInputStream(FileInputStream(file))
+                        var buffer = ByteArray(4096)
+                        var read: Int
 
-                    while (true){
-                        read = fileInputStream.read(buffer)
-                        if (read > 0)
-                            zipOutputStream.write(buffer, 0, read)
-                        else break
+                        val crc32 = CRC32()
+
+                        while (true) {
+                            read = bufferedInputStream.read(buffer)
+                            if (read > 0)
+                                crc32.update(buffer, 0, read)
+                            else break
+                        }
+
+                        bufferedInputStream.close()
+
+                        zipEntry.size = file.length()
+                        zipEntry.compressedSize = file.length()
+                        zipEntry.crc = crc32.value
+                        zipEntry.method = ZipEntry.STORED
+
+                        zipOutputStream.putNextEntry(zipEntry)
+
+                        val fileInputStream = FileInputStream(file)
+                        buffer = ByteArray(4096)
+
+                        while (true) {
+                            read = fileInputStream.read(buffer)
+                            if (read > 0)
+                                zipOutputStream.write(buffer, 0, read)
+                            else break
+                        }
+
+                        zipOutputStream.closeEntry()
+                        fileInputStream.close()
+                        file.delete()
+
+                        broadcastProgress("", "zipped: ${file.name}", true,
+                                getPercentage((i + 1), files.size))
                     }
-
-                    zipOutputStream.closeEntry()
-                    fileInputStream.close()
-                    file.delete()
-
-                    broadcastProgress("", "zipped: ${file.name}", true,
-                            getPercentage((i+1), files.size))
+                    zippedFiles.add(relativeFilePath)
                 }
-                zippedFiles.add(relativeFilePath)
+
+                zipOutputStream.close()
+                directory.let { if (CommonToolsKotlin.isDeletable(it)) it.deleteRecursively() }
             }
-
-            zipOutputStream.close()
-            directory.let { if (CommonToolsKotlin.isDeletable(it)) it.deleteRecursively() }
         }
         catch (e: Exception){
             e.printStackTrace()

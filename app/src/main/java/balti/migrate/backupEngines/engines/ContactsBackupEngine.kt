@@ -21,7 +21,7 @@ class ContactsBackupEngine(private val jobcode: Int,
     private val vcfFile by lazy { File(actualDestination, vcfFileName) }
     private val errors by lazy { ArrayList<String>(0) }
 
-    override fun doInBackground(vararg params: Any?): Any {
+    override suspend fun doInBackground(arg: Any?): Any? {
 
         try {
 
@@ -32,20 +32,23 @@ class ContactsBackupEngine(private val jobcode: Int,
 
             resetBroadcast(false, title)
 
-            BufferedWriter(FileWriter(vcfFile, true)).run {
+            heavyTask {
+                BufferedWriter(FileWriter(vcfFile, true)).run {
 
-                for (i in 0 until contactPackets.size){
+                    for (i in 0 until contactPackets.size) {
 
-                    if (BackupServiceKotlin.cancelAll) break
+                        if (BackupServiceKotlin.cancelAll) break
 
-                    val packet = contactPackets[i]
+                        val packet = contactPackets[i]
 
-                    if (!packet.selected) continue
+                        if (!packet.selected) continue
 
-                    this.write("${packet.vcfData}\n")
-                    broadcastProgress("", packet.fullName, true, getPercentage((i+1), contactPackets.size)) }
+                        this.write("${packet.vcfData}\n")
+                        broadcastProgress("", packet.fullName, true, getPercentage((i + 1), contactPackets.size))
+                    }
 
-                this.close()
+                    this.close()
+                }
             }
         }
         catch (e: Exception){

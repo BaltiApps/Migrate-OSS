@@ -322,7 +322,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
         }
     }
 
-    override fun doInBackground(vararg params: Any?): Any {
+    override suspend fun doInBackground(arg: Any?): Any? {
 
         makeBatches()
         if (errors.isEmpty()) movetoContainers()

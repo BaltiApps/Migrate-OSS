@@ -12,6 +12,10 @@ abstract class AsyncCoroutineTask(private val backgroundDispatcher: CoroutineDis
         val RUNNING = "running"
         val FINISHED = "finished"
         val CANCELLED = "cancelled"
+
+        val DISP_IO = Dispatchers.IO
+        val DISP_MAIN = Main
+        val DISP_DEF = Dispatchers.Default
     }
 
     var status: String = INIT
@@ -30,8 +34,8 @@ abstract class AsyncCoroutineTask(private val backgroundDispatcher: CoroutineDis
     open suspend fun onCancelled(){}
 
     fun publishProgress(vararg values: Any){
-        CoroutineScope(Main).launch {
-            onProgressUpdate(values)
+        MainScope().launch {
+            onProgressUpdate(*values)
         }
     }
 
@@ -40,14 +44,14 @@ abstract class AsyncCoroutineTask(private val backgroundDispatcher: CoroutineDis
         status = CANCELLED
         if (::bgrJob.isInitialized) bgrJob.cancel()
         if (!doPostJob && ::postJob.isInitialized) postJob.cancel()
-        CoroutineScope(Main).launch {
+        CoroutineScope(DISP_MAIN).launch {
             onCancelled()
         }
     }
 
     private suspend fun executeBody(arg: Any? = null){
         status = RUNNING
-        withContext(Main) {
+        withContext(DISP_MAIN) {
             onPreExecute()
         }
         bgrJob = CoroutineScope(backgroundDispatcher).launch {
@@ -55,7 +59,7 @@ abstract class AsyncCoroutineTask(private val backgroundDispatcher: CoroutineDis
         }
         bgrJob.join()
         if (doPostJob) {
-            postJob = CoroutineScope(Main).launch {
+            postJob = CoroutineScope(DISP_MAIN).launch {
                 onPostExecute(jobResult)
             }
             postJob.join()
@@ -64,7 +68,7 @@ abstract class AsyncCoroutineTask(private val backgroundDispatcher: CoroutineDis
     }
 
     fun execute(arg: Any? = null) {
-        CoroutineScope(Default).launch {
+        CoroutineScope(DISP_DEF).launch {
             executeBody(arg)
         }
     }
@@ -76,6 +80,12 @@ abstract class AsyncCoroutineTask(private val backgroundDispatcher: CoroutineDis
 
     suspend fun sleepTask(millis: Long){
         delay(millis)
+    }
+
+    suspend fun heavyTask(f: () -> Unit){
+        withContext(DISP_IO){
+            f()
+        }
     }
 
     fun doOnMainThreadParallel(f: () -> Unit){

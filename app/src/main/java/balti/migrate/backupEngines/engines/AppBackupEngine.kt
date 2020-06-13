@@ -263,7 +263,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
         }
     }
 
-    override fun doInBackground(vararg params: Any?): Any {
+    override suspend fun doInBackground(arg: Any?): Any? {
         val scriptLocation = makeBackupScript()
         if (!BackupServiceKotlin.cancelAll) scriptLocation?.let { runBackupScript(it) }
         return 0
