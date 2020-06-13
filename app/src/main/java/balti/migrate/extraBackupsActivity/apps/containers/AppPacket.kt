@@ -2,7 +2,7 @@ package balti.migrate.extraBackupsActivity.apps.containers
 
 import android.content.pm.ApplicationInfo
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
-import balti.migrate.utilities.ToolsNoContext
+import balti.migrate.utilities.CommonToolsKotlin
 
 class AppPacket(backupDataPacket: BackupDataPacketKotlin, val appName: String, val dataSizeBytes : Long, val systemSizeBytes : Long) {
     val PACKAGE_INFO = backupDataPacket.PACKAGE_INFO
@@ -18,7 +18,7 @@ class AppPacket(backupDataPacket: BackupDataPacketKotlin, val appName: String, v
             it.substring(0, it.lastIndexOf('/'))
         }
     }
-    val apkName = if (!APP) "NULL" else ToolsNoContext.applyNamingCorrectionForShell(    // this is base apk name, not packageName.apk
+    val apkName = if (!APP) "NULL" else CommonToolsKotlin().applyNamingCorrectionForShell(    // this is base apk name, not packageName.apk
         appInfo.sourceDir.let {
             it.substring(it.lastIndexOf('/') + 1)
         }

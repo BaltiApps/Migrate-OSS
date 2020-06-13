@@ -24,7 +24,7 @@ import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 import kotlinx.android.synthetic.main.error_report_layout.view.*
 import java.io.*
 
-class CommonToolsKotlin(val context: Context) {
+class CommonToolsKotlin(val context: Context? = null) {
 
     companion object {
 
@@ -285,18 +285,19 @@ class CommonToolsKotlin(val context: Context) {
     }
 
     var LBM : androidx.localbroadcastmanager.content.LocalBroadcastManager? = null
+    val workingContext by lazy { context?: AppInstance.appContext }
 
     init {
-        if (context is Activity || context is Service)
-            LBM = androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(context)
+        if (context != null && workingContext is Activity || workingContext is Service)
+            LBM = androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(workingContext)
     }
 
     fun reportLogs(isErrorLogMandatory: Boolean) {
 
-        val progressLog = File(context.externalCacheDir, FILE_PROGRESSLOG)
-        val errorLog = File(context.externalCacheDir, FILE_ERRORLOG)
+        val progressLog = File(workingContext.externalCacheDir, FILE_PROGRESSLOG)
+        val errorLog = File(workingContext.externalCacheDir, FILE_ERRORLOG)
 
-        val backupScripts = context.externalCacheDir.let {
+        val backupScripts = workingContext.externalCacheDir.let {
             if (it != null) it.listFiles { f: File ->
                 (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT) || f.name.startsWith(FILE_PREFIX_TAR_CHECK))
                         && f.name.endsWith(".sh")
@@ -304,18 +305,18 @@ class CommonToolsKotlin(val context: Context) {
             else emptyArray<File>()
         }
 
-        val rawList = File(context.externalCacheDir, FILE_RAW_LIST)
+        val rawList = File(workingContext.externalCacheDir, FILE_RAW_LIST)
 
         if (isErrorLogMandatory && !errorLog.exists()) {
-            AlertDialog.Builder(context)
+            AlertDialog.Builder(workingContext)
                     .setTitle(R.string.log_files_do_not_exist)
-                    .setMessage(context.getString(R.string.error_log_does_not_exist))
+                    .setMessage(workingContext.getString(R.string.error_log_does_not_exist))
                     .setNegativeButton(android.R.string.cancel, null)
                     .show()
         }
         else if (errorLog.exists() || progressLog.exists() || backupScripts.isNotEmpty()){
 
-            val eView = View.inflate(context, R.layout.error_report_layout, null)
+            val eView = View.inflate(workingContext, R.layout.error_report_layout, null)
 
             eView.share_progress_checkbox.isChecked = progressLog.exists()
             eView.share_progress_checkbox.isEnabled = progressLog.exists()
@@ -330,7 +331,7 @@ class CommonToolsKotlin(val context: Context) {
             eView.share_rawList_checkbox.isEnabled = rawList.exists()
 
             eView.report_button_privacy_policy.setOnClickListener {
-                context.startActivity(Intent(context, PrivacyPolicy::class.java))
+                workingContext.startActivity(Intent(workingContext, PrivacyPolicy::class.java))
             }
 
             eView.report_button_join_group.setOnClickListener {
@@ -349,7 +350,7 @@ class CommonToolsKotlin(val context: Context) {
 
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(workingContext, e.message.toString(), Toast.LENGTH_SHORT).show()
                 }
 
                 return uris
@@ -380,16 +381,16 @@ class CommonToolsKotlin(val context: Context) {
                 }
             }
 
-            AlertDialog.Builder(context).setView(eView).show()
+            AlertDialog.Builder(workingContext).setView(eView).show()
 
         }
         else {
 
-            val msg = context.getString(R.string.progress_log_does_not_exist) + "\n" +
-                    context.getString(R.string.error_log_does_not_exist) + "\n" +
-                    context.getString(R.string.backup_script_does_not_exist) + "\n"
+            val msg = workingContext.getString(R.string.progress_log_does_not_exist) + "\n" +
+                    workingContext.getString(R.string.error_log_does_not_exist) + "\n" +
+                    workingContext.getString(R.string.backup_script_does_not_exist) + "\n"
 
-            AlertDialog.Builder(context)
+            AlertDialog.Builder(workingContext)
                     .setTitle(R.string.log_files_do_not_exist)
                     .setMessage(msg)
                     .setNegativeButton(android.R.string.cancel, null)
@@ -411,7 +412,7 @@ class CommonToolsKotlin(val context: Context) {
 
     private fun getUri(file: File) =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                FileProvider.getUriForFile(context, "migrate.provider", file)
+                FileProvider.getUriForFile(workingContext, "migrate.provider", file)
             else Uri.fromFile(file)
 
     private fun sendIntent(uris: ArrayList<Uri>, isEmail: Boolean = false){
@@ -427,12 +428,12 @@ class CommonToolsKotlin(val context: Context) {
                 putExtra(Intent.EXTRA_TEXT, deviceSpecifications)
 
                 putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
-                context.startActivity(Intent.createChooser(this, context.getString(R.string.select_mail)))
+                workingContext.startActivity(Intent.createChooser(this, workingContext.getString(R.string.select_mail)))
             }
             else doBackgroundTask({
 
                 tryIt {
-                    val infoFile = File(context.externalCacheDir, FILE_DEVICE_INFO)
+                    val infoFile = File(workingContext.externalCacheDir, FILE_DEVICE_INFO)
                     BufferedWriter(FileWriter(infoFile)).run {
                         write(deviceSpecifications)
                         close()
@@ -442,7 +443,7 @@ class CommonToolsKotlin(val context: Context) {
 
             }, {
                 this.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
-                context.startActivity(Intent.createChooser(this, context.getString(R.string.select_telegram)))
+                workingContext.startActivity(Intent.createChooser(this, workingContext.getString(R.string.select_telegram)))
             })
         }
     }
@@ -497,8 +498,8 @@ class CommonToolsKotlin(val context: Context) {
     }
 
     fun showSdCardSupportDialog(): AlertDialog =
-        AlertDialog.Builder(context)
-                .setView(View.inflate(context, R.layout.learn_about_sd_card, null))
+        AlertDialog.Builder(workingContext)
+                .setView(View.inflate(workingContext, R.layout.learn_about_sd_card, null))
                 .setPositiveButton(android.R.string.ok, null)
                 .show()
 

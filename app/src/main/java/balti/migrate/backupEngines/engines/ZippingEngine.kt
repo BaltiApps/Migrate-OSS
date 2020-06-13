@@ -9,7 +9,7 @@ import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_FILE_LIST_COPY
-import balti.migrate.utilities.ToolsNoContext
+import balti.module.baltitoolbox.functions.FileHandlers.copyFileStream
 import balti.module.baltitoolbox.functions.Misc.getPercentage
 import java.io.BufferedInputStream
 import java.io.File
@@ -54,7 +54,7 @@ class ZippingEngine(private val jobcode: Int,
 
             zipBatch.fileList?.let {
                 if (it.exists()) {
-                    val copyRes = ToolsNoContext.copyFile(it, engineContext.cacheDir.absolutePath, "${it.name}_${zipBatch.partName}")
+                    val copyRes = copyFileStream(it, File(engineContext.cacheDir.absolutePath, "${it.name}_${zipBatch.partName}"))
                     if (copyRes != "")
                         warnings.add("$WARNING_FILE_LIST_COPY${bd.batchErrorTag}: $copyRes")
                     else fileListCopied = File(engineContext.cacheDir.absolutePath, "${it.name}_${zipBatch.partName}")

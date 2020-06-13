@@ -25,8 +25,8 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_MANUAL_MIGRATE_C
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_MANUAL_SYSTEM
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.THIS_VERSION
-import balti.migrate.utilities.ToolsNoContext
 import balti.module.baltitoolbox.functions.FileHandlers
+import balti.module.baltitoolbox.functions.FileHandlers.moveFileStream
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
@@ -55,7 +55,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
         File(targetPath).mkdirs()
 
         if (assetFile.exists())
-            err = ToolsNoContext.moveFile(assetFile, targetPath)
+            err = moveFileStream(assetFile, targetPath)
         else errors.add("$ERR_UPDATER_EXTRACT${bd.batchErrorTag}: $fileName could not be unpacked")
 
         if (!targetFile.exists())

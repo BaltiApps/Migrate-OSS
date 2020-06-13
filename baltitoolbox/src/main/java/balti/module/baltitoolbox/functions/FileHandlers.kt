@@ -157,6 +157,8 @@ object FileHandlers {
         } else 0
     }
 
+    fun getDirLength(directory: File): Long = getDirLength(directory.absolutePath)
+
     fun dirDelete(path: String) {
         val file = File(path)
         if (file.exists() && file.absolutePath != Environment.getExternalStorageDirectory().absolutePath) {
