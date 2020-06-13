@@ -196,7 +196,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         (if (cpuAbi == "x86" || cpuAbi == "x86_64")
             unpackAssetToInternal("busybox-86", "busybox")
         else unpackAssetToInternal("busybox")).apply {
-            File(this).setExecutable(true)
+            tryIt { File(this).setExecutable(true) }
         }
     }
 

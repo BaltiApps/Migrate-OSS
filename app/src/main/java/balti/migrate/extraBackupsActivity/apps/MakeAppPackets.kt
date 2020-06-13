@@ -97,7 +97,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             (if (this == "x86" || this == "x86_64")
                 unpackAssetToInternal("busybox-86", "busybox")
             else unpackAssetToInternal("busybox")).apply {
-                File(this).setExecutable(true)
+                tryIt { File(this).setExecutable(true) }
             }
         }
 
