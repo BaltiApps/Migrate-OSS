@@ -1,7 +1,6 @@
 package balti.migrate.extraBackupsActivity.sms
 
 import android.content.Context
-import android.os.AsyncTask
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import balti.migrate.R
@@ -9,11 +8,12 @@ import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.sms.utils.SmsListAdapterKotlin
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
+import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import kotlinx.android.synthetic.main.extra_item_selector.view.*
 
 class LoadSmsForSelectionKotlin(private val jobCode: Int, val context: Context,
                                 private val itemList: ArrayList<SmsDataPacketKotlin> = ArrayList(0)):
-        AsyncTask<Any, Any, Any>() {
+        AsyncCoroutineTask() {
 
     private val selectorView by lazy { View.inflate(context, R.layout.extra_item_selector, null) }
     private var dataPackets: ArrayList<SmsDataPacketKotlin> = ArrayList(0)
@@ -40,8 +40,7 @@ class LoadSmsForSelectionKotlin(private val jobCode: Int, val context: Context,
         vOp.textSet(selectorView.eis_title, R.string.sms_selector_label)
     }
 
-    override fun onPreExecute() {
-        super.onPreExecute()
+    override suspend fun onPreExecute() {
         super.onPreExecute()
         vOp.doSomething { smsSelectorDialog.show() }
         vOp.visibilitySet(selectorView.eis_top_bar, View.GONE)
@@ -51,7 +50,7 @@ class LoadSmsForSelectionKotlin(private val jobCode: Int, val context: Context,
         vOp.visibilitySet(selectorView.eis_no_data, View.GONE)
     }
 
-    override fun doInBackground(vararg params: Any?): Any? {
+    override suspend fun doInBackground(arg: Any?): Any? {
         for (cdp in itemList){
             dataPackets.add(cdp.copy())
         }
@@ -62,7 +61,7 @@ class LoadSmsForSelectionKotlin(private val jobCode: Int, val context: Context,
         return null
     }
 
-    override fun onPostExecute(result: Any?) {
+    override suspend fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
         if (dataPackets.size > 0){
             vOp.doSomething { selectorView.eis_listView.adapter = adapter }

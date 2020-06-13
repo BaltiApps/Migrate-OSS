@@ -1,7 +1,6 @@
 package balti.migrate.extraBackupsActivity.adb
 
 import android.content.Context
-import android.os.AsyncTask
 import android.view.View
 import android.widget.CheckBox
 import android.widget.LinearLayout
@@ -11,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
+import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
@@ -22,7 +22,7 @@ class ReadAdbKotlin(private val jobCode: Int,
                     private val menuSelectedStatus: TextView,
                     private val menuReadProgressBar: ProgressBar,
                     private val doBackupCheckbox: CheckBox
-) : AsyncTask<Any, Any, Any>() {
+) : AsyncCoroutineTask() {
 
 
     private val vOp by lazy { ViewOperations(context) }
@@ -32,7 +32,7 @@ class ReadAdbKotlin(private val jobCode: Int,
     private var adbText = ""
     private var adbState = 0
 
-    override fun onPreExecute() {
+    override suspend fun onPreExecute() {
         super.onPreExecute()
 
         vOp.clickableSet(menuMainItem, false)
@@ -41,32 +41,32 @@ class ReadAdbKotlin(private val jobCode: Int,
         vOp.visibilitySet(menuReadProgressBar, View.VISIBLE)
     }
 
-    override fun doInBackground(vararg params: Any?): Any? {
+    override suspend fun doInBackground(arg: Any?): Any? {
 
         try {
-            val dpiReader = Runtime.getRuntime().exec("su")
-            BufferedWriter(OutputStreamWriter(dpiReader.outputStream)).let {
-                it.write("settings get global adb_enabled\n")
-                it.write("exit\n")
-                it.flush()
-            }
-
-            BufferedReader(InputStreamReader(dpiReader.inputStream)).let {
-                it.readLines().forEach { line ->
-                    adbText += line + "\n"
+            heavyTask {
+                val dpiReader = Runtime.getRuntime().exec("su")
+                BufferedWriter(OutputStreamWriter(dpiReader.outputStream)).let {
+                    it.write("settings get global adb_enabled\n")
+                    it.write("exit\n")
+                    it.flush()
                 }
-            }
 
-            adbText = adbText.trim()
-
-            BufferedReader(InputStreamReader(dpiReader.errorStream)).let {
-                it.readLines().forEach { line ->
-                    error += line + "\n"
+                BufferedReader(InputStreamReader(dpiReader.inputStream)).let {
+                    it.readLines().forEach { line ->
+                        adbText += line + "\n"
+                    }
                 }
+
+                adbText = adbText.trim()
+
+                BufferedReader(InputStreamReader(dpiReader.errorStream)).let {
+                    it.readLines().forEach { line ->
+                        error += line + "\n"
+                    }
+                }
+                adbState = adbText.trim().toInt()
             }
-
-            adbState = adbText.trim().toInt()
-
         } catch (e: Exception) {
             error += adbText + "\n\n"
             error += e.message
@@ -76,7 +76,7 @@ class ReadAdbKotlin(private val jobCode: Int,
         return null
     }
 
-    override fun onPostExecute(result: Any?) {
+    override suspend fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
 
         vOp.doSomething {

@@ -2,7 +2,6 @@ package balti.migrate.extraBackupsActivity.calls
 
 import android.content.Context
 import android.database.Cursor
-import android.os.AsyncTask
 import android.view.View
 import android.widget.CheckBox
 import android.widget.LinearLayout
@@ -13,6 +12,7 @@ import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotli
 import balti.migrate.extraBackupsActivity.calls.utils.CallsToolsKotlin
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
+import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 
 class ReadCallsKotlin(private val jobCode: Int,
                       private val context: Context,
@@ -20,7 +20,7 @@ class ReadCallsKotlin(private val jobCode: Int,
                       private val menuSelectedStatus: TextView,
                       private val menuReadProgressBar: ProgressBar,
                       private val doBackupCheckbox: CheckBox
-                      ) : AsyncTask<Any, Any, ArrayList<CallsDataPacketsKotlin>>() {
+                      ) : AsyncCoroutineTask() {
 
     private var callsCount = 0
     private val callsTools by lazy { CallsToolsKotlin(context) }
@@ -32,7 +32,7 @@ class ReadCallsKotlin(private val jobCode: Int,
     private var error = ""
     private var isCallsChecked = false
 
-    override fun onPreExecute() {
+    override suspend fun onPreExecute() {
         super.onPreExecute()
         vOp.visibilitySet(menuSelectedStatus, View.VISIBLE)
         vOp.visibilitySet(menuReadProgressBar, View.VISIBLE)
@@ -53,7 +53,7 @@ class ReadCallsKotlin(private val jobCode: Int,
     }
 
 
-    override fun doInBackground(vararg params: Any?): ArrayList<CallsDataPacketsKotlin> {
+    override suspend fun doInBackground(arg: Any?): Any? {
         val tmpList = ArrayList<CallsDataPacketsKotlin>(0)
         try {
             cursor?.let {cursorItem ->
@@ -77,13 +77,13 @@ class ReadCallsKotlin(private val jobCode: Int,
         return tmpList
     }
 
-    override fun onProgressUpdate(vararg values: Any?) {
+    override suspend fun onProgressUpdate(vararg values: Any) {
         super.onProgressUpdate(*values)
         vOp.progressSet(menuReadProgressBar, values[0] as Int)
         vOp.textSet(menuSelectedStatus, values[1] as String)
     }
 
-    override fun onPostExecute(result: ArrayList<CallsDataPacketsKotlin>?) {
+    override suspend fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
 
         vOp.doSomething {

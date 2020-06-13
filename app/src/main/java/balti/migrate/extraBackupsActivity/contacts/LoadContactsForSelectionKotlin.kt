@@ -1,7 +1,6 @@
 package balti.migrate.extraBackupsActivity.contacts
 
 import android.content.Context
-import android.os.AsyncTask
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import balti.migrate.R
@@ -9,11 +8,12 @@ import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacket
 import balti.migrate.extraBackupsActivity.contacts.utils.ContactListAdapterKotlin
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
+import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import kotlinx.android.synthetic.main.extra_item_selector.view.*
 
 class LoadContactsForSelectionKotlin(private val jobCode: Int, val context: Context,
                                      private val itemList: ArrayList<ContactsDataPacketKotlin> = ArrayList(0)):     //unique
-        AsyncTask<Any, Any, Any>() {
+        AsyncCoroutineTask() {
 
     private val selectorView by lazy { View.inflate(context, R.layout.extra_item_selector, null) }
     private var dataPackets: ArrayList<ContactsDataPacketKotlin> = ArrayList(0)
@@ -38,7 +38,7 @@ class LoadContactsForSelectionKotlin(private val jobCode: Int, val context: Cont
         vOp.textSet(selectorView.eis_title, R.string.contacts_selector_label)
     }
 
-    override fun onPreExecute() {
+    override suspend fun onPreExecute() {
         super.onPreExecute()
         vOp.doSomething { contactsSelectorDialog.show() }
         vOp.visibilitySet(selectorView.eis_top_bar, View.GONE)
@@ -48,7 +48,7 @@ class LoadContactsForSelectionKotlin(private val jobCode: Int, val context: Cont
         vOp.visibilitySet(selectorView.eis_no_data, View.GONE)
     }
 
-    override fun doInBackground(vararg params: Any?): Any? {
+    override suspend fun doInBackground(arg: Any?): Any? {
         for (cdp in itemList){
             dataPackets.add(cdp.copy())
         }
@@ -59,7 +59,7 @@ class LoadContactsForSelectionKotlin(private val jobCode: Int, val context: Cont
         return null
     }
 
-    override fun onPostExecute(result: Any?) {
+    override suspend fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
 
         if (dataPackets.size > 0){

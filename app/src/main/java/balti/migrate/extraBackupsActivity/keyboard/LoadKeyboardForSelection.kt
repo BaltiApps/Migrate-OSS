@@ -1,7 +1,6 @@
 package balti.migrate.extraBackupsActivity.keyboard
 
 import android.content.Context
-import android.os.AsyncTask
 import android.view.View
 import android.widget.CheckBox
 import android.widget.LinearLayout
@@ -13,6 +12,7 @@ import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_SU_FOR_KEYBOARD
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
+import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import kotlinx.android.synthetic.main.keyboard_item.view.*
 import kotlinx.android.synthetic.main.keyboard_selector.view.*
 import java.io.BufferedReader
@@ -25,7 +25,7 @@ class LoadKeyboardForSelection (private val jobCode: Int, val context: Context,
                                 private val menuSelectedStatus: TextView,
                                 private val doBackupCheckbox: CheckBox,
                                 private val itemList: ArrayList<BackupDataPacketKotlin> = ArrayList(0)):     //unique
-        AsyncTask<Any, Any, Any>() {
+        AsyncCoroutineTask() {
 
     private val onJobCompletion by lazy { context as OnJobCompletion }
     private val vOp by lazy { ViewOperations(context) }
@@ -34,43 +34,43 @@ class LoadKeyboardForSelection (private val jobCode: Int, val context: Context,
     private val enabledKeyboards by lazy { ArrayList<String>(0) }
     private var error = ""
 
-    override fun onPreExecute() {
+    override suspend fun onPreExecute() {
         super.onPreExecute()
         vOp.clickableSet(menuMainItem, false)
         vOp.enableSet(doBackupCheckbox, false)
         vOp.visibilitySet(menuSelectedStatus, View.GONE)
     }
 
-    override fun doInBackground(vararg params: Any?): Any? {
+    override suspend fun doInBackground(arg: Any?): Any? {
 
         try {
+            heavyTask {
+                val useSu = getPrefBoolean(PREF_USE_SU_FOR_KEYBOARD, true)
 
-            val useSu = getPrefBoolean(PREF_USE_SU_FOR_KEYBOARD, true)
+                val keyboardReader = if (useSu)
+                    Runtime.getRuntime().exec("su")
+                else Runtime.getRuntime().exec("ime list -s")
 
-            val keyboardReader = if (useSu)
-                Runtime.getRuntime().exec("su")
-            else Runtime.getRuntime().exec("ime list -s")
+                if (useSu) {
+                    BufferedWriter(OutputStreamWriter(keyboardReader.outputStream)).let {
+                        it.write("ime list -s\n")
+                        it.write("exit\n")
+                        it.flush()
+                    }
+                }
 
-            if (useSu) {
-                BufferedWriter(OutputStreamWriter(keyboardReader.outputStream)).let {
-                    it.write("ime list -s\n")
-                    it.write("exit\n")
-                    it.flush()
+                BufferedReader(InputStreamReader(keyboardReader.inputStream)).let {
+                    it.readLines().forEach { line ->
+                        enabledKeyboards.add(line)
+                    }
+                }
+
+                BufferedReader(InputStreamReader(keyboardReader.errorStream)).let {
+                    it.readLines().forEach { line ->
+                        error += line + "\n"
+                    }
                 }
             }
-
-            BufferedReader(InputStreamReader(keyboardReader.inputStream)).let {
-                it.readLines().forEach {line ->
-                    enabledKeyboards.add(line)
-                }
-            }
-
-            BufferedReader(InputStreamReader(keyboardReader.errorStream)).let {
-                it.readLines().forEach {line ->
-                    error += line + "\n"
-                }
-            }
-
         } catch (e: Exception){
             e.printStackTrace()
             error += e.message
@@ -80,7 +80,7 @@ class LoadKeyboardForSelection (private val jobCode: Int, val context: Context,
 
     }
 
-    override fun onPostExecute(result: Any?) {
+    override suspend fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
 
         vOp.enableSet(doBackupCheckbox, true)

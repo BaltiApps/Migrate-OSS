@@ -2,7 +2,6 @@ package balti.migrate.extraBackupsActivity.contacts
 
 import android.content.Context
 import android.database.Cursor
-import android.os.AsyncTask
 import android.view.View
 import android.widget.CheckBox
 import android.widget.LinearLayout
@@ -13,6 +12,7 @@ import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacket
 import balti.migrate.extraBackupsActivity.contacts.utils.VcfToolsKotlin
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
+import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 
 class ReadContactsKotlin(private val jobCode: Int,
                          private val context: Context,
@@ -20,7 +20,7 @@ class ReadContactsKotlin(private val jobCode: Int,
                          private val menuSelectedStatus: TextView,
                          private val menuReadProgressBar: ProgressBar,
                          private val doBackupCheckbox: CheckBox
-                         ) : AsyncTask<Any, Any, ArrayList<ContactsDataPacketKotlin>>() {
+                         ) : AsyncCoroutineTask() {
 
     private var contactsCount = 0
     private val vcfTools: VcfToolsKotlin by lazy { VcfToolsKotlin(context) }
@@ -32,7 +32,7 @@ class ReadContactsKotlin(private val jobCode: Int,
     private var error = ""
     private var isContactsChecked = false
 
-    override fun onPreExecute() {
+    override suspend fun onPreExecute() {
         super.onPreExecute()
         vOp.visibilitySet(menuSelectedStatus, View.VISIBLE)
         vOp.visibilitySet(menuReadProgressBar, View.VISIBLE)
@@ -52,7 +52,7 @@ class ReadContactsKotlin(private val jobCode: Int,
         vOp.doSomething { isContactsChecked = doBackupCheckbox.isChecked }
     }
 
-    override fun doInBackground(vararg params: Any?): ArrayList<ContactsDataPacketKotlin> {
+    override suspend fun doInBackground(arg: Any?): Any? {
         val tmpList : ArrayList<ContactsDataPacketKotlin> = ArrayList(0)
         try {
             cursor?.let {cursorItem ->
@@ -86,13 +86,13 @@ class ReadContactsKotlin(private val jobCode: Int,
         return false
     }
 
-    override fun onProgressUpdate(vararg values: Any?) {
+    override suspend fun onProgressUpdate(vararg values: Any) {
         super.onProgressUpdate(*values)
         vOp.progressSet(menuReadProgressBar, values[0] as Int)
         vOp.textSet(menuSelectedStatus, values[1] as String)
     }
 
-    override fun onPostExecute(result: ArrayList<ContactsDataPacketKotlin>?) {
+    override suspend fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
 
         vOp.doSomething {

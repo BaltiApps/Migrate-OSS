@@ -5,7 +5,10 @@ import android.app.usage.StorageStatsManager
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Context.STORAGE_STATS_SERVICE
-import android.os.*
+import android.os.Build
+import android.os.Environment
+import android.os.Handler
+import android.os.StatFs
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -29,12 +32,13 @@ import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefInt
+import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import kotlinx.android.synthetic.main.please_wait.view.*
 import java.io.*
 
 class MakeAppPackets(private val jobCode: Int, private val context: Context, private val destination: String,
                      private val appList: ArrayList<BackupDataPacketKotlin> = ArrayList(0), val dialogView: View):
-        AsyncTask<Any, String, Array<Any>>() {
+        AsyncCoroutineTask() {
 
     private val onJobCompletion by lazy { context as OnJobCompletion }
     private val vOp by lazy { ViewOperations(context) }
@@ -54,11 +58,11 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
     private var cancelThis = false
 
-    override fun onPreExecute() {
+    override suspend fun onPreExecute() {
         super.onPreExecute()
         vOp.doSomething {
             notificationManager.cancelAll()
-            (context.filesDir.listFiles() + context.externalCacheDir.listFiles()).forEach {
+            (context.filesDir.listFiles() + context.externalCacheDir.let { if(it != null) it.listFiles() else arrayOf() }).forEach {
                 it.delete()
             }
         }
@@ -194,7 +198,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
         return ""
     }
 
-    override fun doInBackground(vararg params: Any?): Array<Any> {
+    override suspend fun doInBackground(arg: Any?): Any? {
 
         var method = PREF_ALTERNATE_METHOD
         vOp.doSomething {
@@ -368,24 +372,28 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             publishProgress(vOp.getStringFromRes(R.string.total_size_ok),
                     "${vOp.getStringFromRes(R.string.total_size)} ${getHumanReadableStorageSpace(totalSize)}\n" +
                             "${vOp.getStringFromRes(R.string.available_space)} ${getHumanReadableStorageSpace(availableBytes)}", "")
-            tryIt { Thread.sleep(1000) }
+            sleepTask(1000)
             arrayOf(true)
         }
     }
 
-    override fun onProgressUpdate(vararg values: String?) {
+    override suspend fun onProgressUpdate(vararg values: Any) {
         super.onProgressUpdate(*values)
         if (!cancelThis) {
             vOp.visibilitySet(dialogView.waiting_progress, View.VISIBLE)
             vOp.visibilitySet(dialogView.waiting_details, View.VISIBLE)
-            values[0]?.let { vOp.textSet(dialogView.waiting_head, it.trim()) }
-            values[1]?.let { vOp.textSet(dialogView.waiting_progress, it.trim()) }
-            values[2]?.let { vOp.textSet(dialogView.waiting_details, it.trim()) }
+            values.run {
+                0.let {if (size > it) vOp.textSet(dialogView.waiting_head, this[it].toString().trim()) }
+                1.let {if (size > it) vOp.textSet(dialogView.waiting_progress, this[it].toString().trim()) }
+                2.let {if (size > it) vOp.textSet(dialogView.waiting_details, this[it].toString().trim()) }
+            }
         }
     }
 
-    override fun onPostExecute(result: Array<Any>) {
+    override suspend fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
+
+        if (result !is Array<*>) return
 
         if (cancelThis) onJobCompletion.onComplete(jobCode, false, "")
         else {

@@ -1,7 +1,6 @@
 package balti.migrate.extraBackupsActivity.dpi
 
 import android.content.Context
-import android.os.AsyncTask
 import android.view.View
 import android.widget.CheckBox
 import android.widget.LinearLayout
@@ -11,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
+import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
@@ -22,7 +22,7 @@ class ReadDpiKotlin(private val jobCode: Int,
                     private val menuSelectedStatus: TextView,
                     private val menuReadProgressBar: ProgressBar,
                     private val doBackupCheckbox: CheckBox
-                    ) : AsyncTask<Any, Any, Any>() {
+                    ) : AsyncCoroutineTask() {
 
 
     private val vOp by lazy { ViewOperations(context) }
@@ -31,7 +31,7 @@ class ReadDpiKotlin(private val jobCode: Int,
 
     private var dpiText = ""
 
-    override fun onPreExecute() {
+    override suspend fun onPreExecute() {
         super.onPreExecute()
 
         vOp.clickableSet(menuMainItem, false)
@@ -40,14 +40,16 @@ class ReadDpiKotlin(private val jobCode: Int,
         vOp.visibilitySet(menuReadProgressBar, View.VISIBLE)
     }
 
-    override fun doInBackground(vararg params: Any?): Any? {
+    override suspend fun doInBackground(arg: Any?): Any? {
 
         try {
             val dpiReader = Runtime.getRuntime().exec("su")
             BufferedWriter(OutputStreamWriter(dpiReader.outputStream)).let {
-                it.write("wm density\n")
-                it.write("exit\n")
-                it.flush()
+                heavyTask {
+                    it.write("wm density\n")
+                    it.write("exit\n")
+                    it.flush()
+                }
             }
 
             BufferedReader(InputStreamReader(dpiReader.inputStream)).let {
@@ -69,7 +71,7 @@ class ReadDpiKotlin(private val jobCode: Int,
         return null
     }
 
-    override fun onPostExecute(result: Any?) {
+    override suspend fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
 
         vOp.doSomething {

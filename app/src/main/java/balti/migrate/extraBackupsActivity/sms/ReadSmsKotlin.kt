@@ -2,7 +2,6 @@ package balti.migrate.extraBackupsActivity.sms
 
 import android.content.Context
 import android.database.Cursor
-import android.os.AsyncTask
 import android.view.View
 import android.widget.CheckBox
 import android.widget.LinearLayout
@@ -13,6 +12,7 @@ import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.sms.utils.SmsToolsKotlin
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
+import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 
 class ReadSmsKotlin(private val jobCode: Int,
                     private val context: Context,
@@ -20,7 +20,7 @@ class ReadSmsKotlin(private val jobCode: Int,
                     private val menuSelectedStatus: TextView,
                     private val menuReadProgressBar: ProgressBar,
                     private val doBackupCheckbox: CheckBox
-                    ) : AsyncTask<Any, Any, ArrayList<SmsDataPacketKotlin>>() {
+                    ) : AsyncCoroutineTask() {
 
     private var smsCount = 0
     private val smsTools by lazy { SmsToolsKotlin(context) }
@@ -35,7 +35,7 @@ class ReadSmsKotlin(private val jobCode: Int,
     private var error = ""
     private var isSmsChecked = false
 
-    override fun onPreExecute() {
+    override suspend fun onPreExecute() {
         super.onPreExecute()
         vOp.visibilitySet(menuSelectedStatus, View.VISIBLE)
         vOp.visibilitySet(menuReadProgressBar, View.VISIBLE)
@@ -70,7 +70,7 @@ class ReadSmsKotlin(private val jobCode: Int,
         vOp.doSomething { isSmsChecked = doBackupCheckbox.isChecked }
     }
 
-    override fun doInBackground(vararg params: Any?): ArrayList<SmsDataPacketKotlin> {
+    override suspend fun doInBackground(arg: Any?): Any? {
 
         val tmpList = ArrayList<SmsDataPacketKotlin>(0)
         var c = 0
@@ -108,13 +108,13 @@ class ReadSmsKotlin(private val jobCode: Int,
         return tmpList
     }
 
-    override fun onProgressUpdate(vararg values: Any?) {
+    override suspend fun onProgressUpdate(vararg values: Any) {
         super.onProgressUpdate(*values)
         vOp.progressSet(menuReadProgressBar, values[0] as Int)
         vOp.textSet(menuSelectedStatus, values[1] as String)
     }
 
-    override fun onPostExecute(result: ArrayList<SmsDataPacketKotlin>?) {
+    override suspend fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
 
         vOp.doSomething {

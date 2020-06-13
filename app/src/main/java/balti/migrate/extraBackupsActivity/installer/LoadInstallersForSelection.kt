@@ -1,7 +1,6 @@
 package balti.migrate.extraBackupsActivity.installer
 
 import android.content.Context
-import android.os.AsyncTask
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
@@ -16,11 +15,12 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.NOT_SET_POSITION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PLAY_STORE_POSITION
+import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import kotlinx.android.synthetic.main.extra_item_selector.view.*
 
 class LoadInstallersForSelection(private val jobCode: Int,
                                  private val context: Context,
-                                 private val itemList: ArrayList<BackupDataPacketKotlin> = ArrayList(0)) : AsyncTask<Any, Any, Any>(){
+                                 private val itemList: ArrayList<BackupDataPacketKotlin> = ArrayList(0)) : AsyncCoroutineTask(){
 
 
 
@@ -52,7 +52,7 @@ class LoadInstallersForSelection(private val jobCode: Int,
         vOp.visibilitySet(selectorView.eis_store_for_all, View.VISIBLE)
     }
 
-    override fun onPreExecute() {
+    override suspend fun onPreExecute() {
         super.onPreExecute()
 
         vOp.doSomething { installerSelectorDialog.show() }
@@ -74,7 +74,7 @@ class LoadInstallersForSelection(private val jobCode: Int,
         }
     }
 
-    override fun doInBackground(vararg params: Any?): Any? {
+    override suspend fun doInBackground(arg: Any?): Any? {
 
         for (i in itemList)
             copiedItemList.add(i.copy())
@@ -83,7 +83,7 @@ class LoadInstallersForSelection(private val jobCode: Int,
         return null
     }
 
-    override fun onPostExecute(result: Any?) {
+    override suspend fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
 
         if (copiedItemList.size > 0){
