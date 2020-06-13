@@ -13,6 +13,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_FILELIST_
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_FILELIST_UNAVAILABLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_FILELIST_VERIFICATION
 import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -33,7 +34,7 @@ class ZipVerificationEngine(private val jobcode: Int,
             val contents = ArrayList<String>(0)
             val appDirectories = ArrayList<String>(0)
 
-            val checkFileListContents = sharedPreferences.getBoolean(PREF_FILELIST_IN_ZIP_VERIFICATION, true)
+            val checkFileListContents = getPrefBoolean(PREF_FILELIST_IN_ZIP_VERIFICATION, true)
 
             val title = getTitle(R.string.verifying_zip)
 

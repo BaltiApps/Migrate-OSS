@@ -16,7 +16,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.backupEngines.engines.AppBackupEngine
 import balti.migrate.utilities.CommonToolsKotlin
@@ -54,6 +53,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DELETE_ERROR_BAC
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_BACKUP_SUMMARY
 import balti.migrate.utilities.IconTools
 import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import kotlinx.android.synthetic.main.backup_progress_layout.*
 import kotlinx.android.synthetic.main.zip_name_show.view.*
 import java.io.File
@@ -64,8 +64,6 @@ class ProgressShowActivity: AppCompatActivity() {
     private val iconTools by lazy { IconTools() }
     private val errors by lazy { ArrayList<String>(0) }
     private val warnings by lazy { ArrayList<String>(0) }
-
-    private val main by lazy { AppInstance.sharedPrefs }
 
     private var lastLog = ""
     private var lastIcon = ""
@@ -107,7 +105,7 @@ class ProgressShowActivity: AppCompatActivity() {
             )
 
             fun showPartNames(){
-                if (main.getBoolean(PREF_SHOW_BACKUP_SUMMARY, true)) {
+                if (getPrefBoolean(PREF_SHOW_BACKUP_SUMMARY, true)) {
                     tryIt {
                         val view = View.inflate(this, R.layout.zip_name_show, null)
                         val name = view.zns_backup_name
@@ -143,7 +141,7 @@ class ProgressShowActivity: AppCompatActivity() {
                         ContextCompat.getColor(this@ProgressShowActivity, R.color.error_color),
                         android.graphics.PorterDuff.Mode.SRC_IN
                 )
-                if (!main.getBoolean(PREF_DELETE_ERROR_BACKUP, true)){
+                if (!getPrefBoolean(PREF_DELETE_ERROR_BACKUP, true)){
                     showPartNames()
                 }
             }

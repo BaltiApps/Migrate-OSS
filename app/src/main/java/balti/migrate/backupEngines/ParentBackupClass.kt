@@ -34,8 +34,6 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
                                  private val intentType: String): AsyncTask<Any, Any, Any>() {
 
     val engineContext by lazy { serviceContext }
-    val sharedPreferences by lazy { AppInstance.sharedPrefs }
-
     val onEngineTaskComplete by lazy { engineContext as OnEngineTaskComplete }
 
     val commonTools by lazy { CommonToolsKotlin(engineContext) }

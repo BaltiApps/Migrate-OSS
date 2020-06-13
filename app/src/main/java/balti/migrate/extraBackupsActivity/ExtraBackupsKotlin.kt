@@ -2,7 +2,10 @@ package balti.migrate.extraBackupsActivity
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.AsyncTask
 import android.os.Build
@@ -57,7 +60,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.CONTACT_PERMISSION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
-import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_CALLS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_CONTACTS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_INSTALLERS
@@ -82,6 +84,10 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.SMS_AND_CALLS_PERMISS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SMS_PERMISSION
 import balti.module.baltitoolbox.functions.Misc.showErrorDialog
 import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
+import balti.module.baltitoolbox.functions.SharedPrefs.putPrefBoolean
+import balti.module.baltitoolbox.functions.SharedPrefs.putPrefString
 import kotlinx.android.synthetic.main.ask_for_backup_name.view.*
 import kotlinx.android.synthetic.main.extra_backups.*
 import kotlinx.android.synthetic.main.please_wait.*
@@ -100,8 +106,6 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     private lateinit var destination: String
     private var backupName = ""
-    private lateinit var main: SharedPreferences
-    private lateinit var editor: SharedPreferences.Editor
     private var isAllAppsSelected = true
 
     private var readContacts: ReadContactsKotlin? = null                    //extras_markers
@@ -161,10 +165,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.extra_backups)
-        main = getSharedPreferences(FILE_MAIN_PREF, Context.MODE_PRIVATE)
-        editor = main.edit()
 
-        destination = main.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
+        destination = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
 
         fun doEverything() {
             startBackupButton.setOnClickListener {
@@ -234,7 +236,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             //    wifi_main_item.visibility = View.GONE
 
 
-            if (main.getBoolean(PREF_AUTOSELECT_EXTRAS, true)) {        //extras_markers
+            if (getPrefBoolean(PREF_AUTOSELECT_EXTRAS, true)) {        //extras_markers
                 val isSmsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
                 val isCallsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
                 val isSmsAndCallsGranted = isSmsGranted && isCallsGranted
@@ -300,7 +302,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {        //extras_markers
 
         fun showStockWarning(fPositive:() -> Unit, fNegative:() -> Unit){
-            if (main.getBoolean(PREF_SHOW_STOCK_WARNING, true)){
+            if (getPrefBoolean(PREF_SHOW_STOCK_WARNING, true)){
                 AlertDialog.Builder(this)
                         .setTitle(R.string.stock_android_title)
                         .setMessage(R.string.stock_android_desc)
@@ -311,8 +313,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                             fNegative()
                         }
                         .setNeutralButton(R.string.dont_show_stock_warning){_, _ ->
-                            editor.putBoolean(PREF_SHOW_STOCK_WARNING, false)
-                            editor.commit()
+                            putPrefBoolean(PREF_SHOW_STOCK_WARNING, false, immediate = true)
                             fPositive()
                         }
                         .setCancelable(false)
@@ -596,14 +597,13 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         mainView.sd_card_name.text = destination
 
         mainView.ignore_cache_checkbox.apply {
-            isChecked = main.getBoolean(PREF_IGNORE_APP_CACHE, false)
+            isChecked = getPrefBoolean(PREF_IGNORE_APP_CACHE, false)
             setOnCheckedChangeListener { _, isChecked ->
-                editor.putBoolean(PREF_IGNORE_APP_CACHE, isChecked)
-                editor.commit()
+                putPrefBoolean(PREF_IGNORE_APP_CACHE, isChecked, true)
             }
         }
 
-        main.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR).run {
+        getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR).run {
             if (this == DEFAULT_INTERNAL_STORAGE_DIR || !(File(this).canWrite())){
                 mainView.storage_select_radio_group.check(mainView.internal_storage_radio_button.id)
                 setDestination(DEFAULT_INTERNAL_STORAGE_DIR, mainView.sd_card_name)
@@ -768,8 +768,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
         destination = path
         label.text = destination
-        editor.putString(PREF_DEFAULT_BACKUP_PATH, destination)
-        editor.commit()
+        putPrefString(PREF_DEFAULT_BACKUP_PATH, destination, true)
     }
 
     override fun onComplete(jobCode: Int, jobSuccess: Boolean, jobResult: Any?) {           //extras_markers

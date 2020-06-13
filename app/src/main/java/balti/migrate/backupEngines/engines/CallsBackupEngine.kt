@@ -38,6 +38,7 @@ import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_TYPE
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_VOICEMAIL_URI
 import balti.module.baltitoolbox.functions.Misc.getPercentage
 import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import java.io.File
 import java.io.FileFilter
 
@@ -205,7 +206,7 @@ class CallsBackupEngine(private val jobcode: Int,
 
         writeCalls()
 
-        if (sharedPreferences.getBoolean(PREF_CALLS_VERIFY, true) && errors.size == 0){
+        if (getPrefBoolean(PREF_CALLS_VERIFY, true) && errors.size == 0){
             verifyCalls()
         }
 

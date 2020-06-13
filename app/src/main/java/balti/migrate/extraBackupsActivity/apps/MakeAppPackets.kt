@@ -3,7 +3,8 @@ package balti.migrate.extraBackupsActivity.apps
 import android.app.NotificationManager
 import android.app.usage.StorageStatsManager
 import android.content.Context
-import android.content.Context.*
+import android.content.Context.NOTIFICATION_SERVICE
+import android.content.Context.STORAGE_STATS_SERVICE
 import android.os.*
 import android.util.Log
 import android.view.View
@@ -18,7 +19,6 @@ import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
-import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
@@ -27,6 +27,8 @@ import balti.module.baltitoolbox.functions.FileHandlers.getDirLength
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
 import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefInt
 import kotlinx.android.synthetic.main.please_wait.view.*
 import java.io.*
 
@@ -37,14 +39,13 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
     private val onJobCompletion by lazy { context as OnJobCompletion }
     private val vOp by lazy { ViewOperations(context) }
     private val notificationManager by lazy { context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager }
-    private val main by lazy { context.getSharedPreferences(FILE_MAIN_PREF, MODE_PRIVATE) }
     private val commonTools by lazy { CommonToolsKotlin(context) }
     private val pm by lazy { context.packageManager }
     private val appPackets by lazy { ArrayList<AppPacket>(0) }
 
     private var appsScanned = 0
 
-    private val ignoreCache by lazy { main.getBoolean(PREF_IGNORE_APP_CACHE, false) }
+    private val ignoreCache by lazy { getPrefBoolean(PREF_IGNORE_APP_CACHE, false) }
 
     private var availableBytes = 0L
     private var totalSize = 0L
@@ -195,7 +196,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
         var method = PREF_ALTERNATE_METHOD
         vOp.doSomething {
-            method = main.getInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD)
+            method = getPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD)
         }
 
         publishProgress(vOp.getStringFromRes(R.string.calculating_size), "", "")

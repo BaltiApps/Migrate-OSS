@@ -8,7 +8,6 @@ import android.preference.EditTextPreference
 import android.preference.Preference
 import android.preference.PreferenceActivity
 import android.provider.Settings
-import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MIGRATE_CACHE_DEFAULT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ALTERNATE_METHOD
@@ -31,6 +30,12 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TAR_GZ_INTEGRITY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TERMINAL_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_SU_FOR_KEYBOARD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ZIP_VERIFICATION
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefInt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
+import balti.module.baltitoolbox.functions.SharedPrefs.putPrefBoolean
+import balti.module.baltitoolbox.functions.SharedPrefs.putPrefInt
+import balti.module.baltitoolbox.functions.SharedPrefs.putPrefString
 
 class MainPreferenceActivity: PreferenceActivity() {
 
@@ -61,87 +66,79 @@ class MainPreferenceActivity: PreferenceActivity() {
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.preferences)
 
-        AppInstance.sharedPrefs.run {
+        fun setValue(checkbox: CheckBoxPreference, field: String, defaultValue: Boolean = true){
 
-            val editor = edit()
-
-            fun setValue(checkbox: CheckBoxPreference, field: String, defaultValue: Boolean = true){
-
-                checkbox.isChecked = getBoolean(field, defaultValue)
-                checkbox.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                    editor.putBoolean(field, newValue as Boolean)
-                    if (field == PREF_SEPARATE_EXTRAS_BACKUP && newValue == false) {
-                        forceSeparateExtras.isChecked = false
-                        editor.putBoolean(PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false)
-                    }
-                    editor.apply()
-                    true
+            checkbox.isChecked = getPrefBoolean(field, defaultValue)
+            checkbox.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                putPrefBoolean(field, newValue as Boolean)
+                if (field == PREF_SEPARATE_EXTRAS_BACKUP && newValue == false) {
+                    forceSeparateExtras.isChecked = false
+                    putPrefBoolean(PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false)
                 }
+                true
+            }
+        }
+
+        fun setValue(editTextPreference: EditTextPreference, field: String, defaultValue: String){
+
+            fun convertIfBlank(value: String?, defaultValue: String): String {
+                return value.let { if (it == null || it == "") defaultValue else it }
             }
 
-            fun setValue(editTextPreference: EditTextPreference, field: String, defaultValue: String){
-
-                fun convertIfBlank(value: String?, defaultValue: String): String {
-                    return value.let { if (it == null || it == "") defaultValue else it }
-                }
-
-                fun refreshSummary(v: String){
-                    editTextPreference.summary = if (v == "") {
-                        if (editTextPreference in arrayOf(manualBuildpropPref, manualSystemPref))
-                            getString(R.string.detect_while_flashing_hint)
-                        else v
-                    }
+            fun refreshSummary(v: String){
+                editTextPreference.summary = if (v == "") {
+                    if (editTextPreference in arrayOf(manualBuildpropPref, manualSystemPref))
+                        getString(R.string.detect_while_flashing_hint)
                     else v
                 }
-
-                convertIfBlank(getString(field, defaultValue), defaultValue).let {
-                    refreshSummary(it)
-                    editTextPreference.text = it
-                }
-                editTextPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                    val toStore = convertIfBlank(newValue.toString(), defaultValue)
-                    editor.putString(field, toStore)
-                    editor.apply()
-                    refreshSummary(toStore)
-                    editTextPreference.text = toStore
-                    false
-                }
+                else v
             }
 
-            setValue(showBackupSummary, PREF_SHOW_BACKUP_SUMMARY)
-            setValue(autoselectExtras, PREF_AUTOSELECT_EXTRAS)
-            setValue(newIconMethod, PREF_NEW_ICON_METHOD)
-            setValue(tarGzIntegrityCheck, PREF_TAR_GZ_INTEGRITY)
-            setValue(smsVerification, PREF_SMS_VERIFY)
-            setValue(callsVerification, PREF_CALLS_VERIFY)
-            setValue(performSystemCheck, PREF_SYSTEM_CHECK)
-            setValue(separateExtras, PREF_SEPARATE_EXTRAS_BACKUP)
-            setValue(forceSeparateExtras, PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false)
-            setValue(deleteErrorBackup, PREF_DELETE_ERROR_BACKUP)
-            setValue(zipVerification, PREF_ZIP_VERIFICATION)
-            setValue(ignoreCache, PREF_IGNORE_APP_CACHE, false)
-
-            setValue(suForKeyboard, PREF_USE_SU_FOR_KEYBOARD)
-            setValue(useFileListInZipVerification, PREF_FILELIST_IN_ZIP_VERIFICATION)
-
-            setValue(manualCachePref, PREF_MANUAL_MIGRATE_CACHE, MIGRATE_CACHE_DEFAULT)
-            setValue(manualSystemPref, PREF_MANUAL_SYSTEM, "")
-            setValue(manualBuildpropPref, PREF_MANUAL_BUILDPROP, "")
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                useNewSizingMethod.isEnabled = true
-                useNewSizingMethod.isChecked = getInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
-                useNewSizingMethod.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                    editor.putInt(PREF_CALCULATING_SIZE_METHOD, if (newValue as Boolean) PREF_ALTERNATE_METHOD else PREF_TERMINAL_METHOD)
-                    editor.apply()
-                    true
-                }
+            convertIfBlank(getPrefString(field, defaultValue), defaultValue).let {
+                refreshSummary(it)
+                editTextPreference.text = it
             }
-            else {
-                useNewSizingMethod.isChecked = false
-                useNewSizingMethod.isEnabled = false
-                useNewSizingMethod.summary = getString(R.string.only_for_oreo_and_above)
+            editTextPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                val toStore = convertIfBlank(newValue.toString(), defaultValue)
+                putPrefString(field, toStore)
+                refreshSummary(toStore)
+                editTextPreference.text = toStore
+                false
             }
+        }
+
+        setValue(showBackupSummary, PREF_SHOW_BACKUP_SUMMARY)
+        setValue(autoselectExtras, PREF_AUTOSELECT_EXTRAS)
+        setValue(newIconMethod, PREF_NEW_ICON_METHOD)
+        setValue(tarGzIntegrityCheck, PREF_TAR_GZ_INTEGRITY)
+        setValue(smsVerification, PREF_SMS_VERIFY)
+        setValue(callsVerification, PREF_CALLS_VERIFY)
+        setValue(performSystemCheck, PREF_SYSTEM_CHECK)
+        setValue(separateExtras, PREF_SEPARATE_EXTRAS_BACKUP)
+        setValue(forceSeparateExtras, PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false)
+        setValue(deleteErrorBackup, PREF_DELETE_ERROR_BACKUP)
+        setValue(zipVerification, PREF_ZIP_VERIFICATION)
+        setValue(ignoreCache, PREF_IGNORE_APP_CACHE, false)
+
+        setValue(suForKeyboard, PREF_USE_SU_FOR_KEYBOARD)
+        setValue(useFileListInZipVerification, PREF_FILELIST_IN_ZIP_VERIFICATION)
+
+        setValue(manualCachePref, PREF_MANUAL_MIGRATE_CACHE, MIGRATE_CACHE_DEFAULT)
+        setValue(manualSystemPref, PREF_MANUAL_SYSTEM, "")
+        setValue(manualBuildpropPref, PREF_MANUAL_BUILDPROP, "")
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            useNewSizingMethod.isEnabled = true
+            useNewSizingMethod.isChecked = getPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
+            useNewSizingMethod.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                putPrefInt(PREF_CALCULATING_SIZE_METHOD, if (newValue as Boolean) PREF_ALTERNATE_METHOD else PREF_TERMINAL_METHOD)
+                true
+            }
+        }
+        else {
+            useNewSizingMethod.isChecked = false
+            useNewSizingMethod.isEnabled = false
+            useNewSizingMethod.summary = getString(R.string.only_for_oreo_and_above)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

@@ -23,6 +23,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SEPARATE_EXTRAS_
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_BATCH
 import balti.module.baltitoolbox.functions.Misc
 import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import java.io.File
 
 class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
@@ -64,7 +65,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 val expectedPermFile = File(actualDestination, "${it.packageName}.perm")
                 val expectedJsonFile = File(actualDestination, "${it.packageName}.json")
                 val expectedIconFile = File(actualDestination,
-                        if (sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true)) "${it.packageName}.png"
+                        if (getPrefBoolean(PREF_NEW_ICON_METHOD, true)) "${it.packageName}.png"
                         else "${it.packageName}.icon"
                 )
 
@@ -104,9 +105,9 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                     "${getHumanReadableStorageSpace(totalExtrasSize)} ($totalExtrasSize B)", 0)
 
             doSeparateExtras = totalExtrasSize > 0
-                    && (sharedPreferences.getBoolean(PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false)
+                    && (getPrefBoolean(PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false)
                         || ((totalAppSize + totalExtrasSize) > (MAX_WORKING_SIZE - RESERVED_SPACE)
-                        && sharedPreferences.getBoolean(PREF_SEPARATE_EXTRAS_BACKUP, true)
+                        && getPrefBoolean(PREF_SEPARATE_EXTRAS_BACKUP, true)
                         )
                     )
 

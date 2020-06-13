@@ -22,7 +22,6 @@ import balti.migrate.AppInstance.Companion.doBackupInstallers
 import balti.migrate.AppInstance.Companion.dpiText
 import balti.migrate.AppInstance.Companion.fontScale
 import balti.migrate.AppInstance.Companion.keyboardText
-import balti.migrate.AppInstance.Companion.sharedPrefs
 import balti.migrate.AppInstance.Companion.smsList
 import balti.migrate.AppInstance.Companion.wifiData
 import balti.migrate.AppInstance.Companion.zipBatches
@@ -92,6 +91,8 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.TIMEOUT_WAITING_TO_CA
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.Misc.makeNotificationChannel
 import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefInt
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -324,7 +325,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                 .build()
 
         tryIt {
-            compressionLevel = sharedPrefs.getInt(PREF_COMPRESSION_LEVEL, PREF_DEFAULT_COMPRESSION_LEVEL)
+            compressionLevel = getPrefInt(PREF_COMPRESSION_LEVEL, PREF_DEFAULT_COMPRESSION_LEVEL)
         }
 
         tryIt {
@@ -381,7 +382,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
                     cTask = try {
                         when (jCode) {
-                            JOBCODE_PEFORM_SYSTEM_TEST -> if (sharedPrefs.getBoolean(PREF_SYSTEM_CHECK, true)) {
+                            JOBCODE_PEFORM_SYSTEM_TEST -> if (getPrefBoolean(PREF_SYSTEM_CHECK, true)) {
                                 SystemTestingEngine(jCode, bd, busyboxBinaryPath)
                             } else null
                             JOBCODE_PEFORM_BACKUP_CONTACTS -> ContactsBackupEngine(jCode, bd, workingObject as ArrayList<ContactsDataPacketKotlin>, contactsBackupName)
@@ -694,7 +695,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
         val errorCondition = errorTitle != "" || criticalErrors.size != 0
 
-        if ((cancelAll || errorCondition) && sharedPrefs.getBoolean(PREF_DELETE_ERROR_BACKUP, true)) {
+        if ((cancelAll || errorCondition) && getPrefBoolean(PREF_DELETE_ERROR_BACKUP, true)) {
             File("$destination/$backupName").run {
                 if (CommonToolsKotlin.isDeletable(this)) {
                     Log.d(DEBUG_TAG, "Cleaning up on error or cancel: ${this.absolutePath}")

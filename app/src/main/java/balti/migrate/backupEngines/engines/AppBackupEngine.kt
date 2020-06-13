@@ -21,6 +21,7 @@ import balti.migrate.utilities.IconTools
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.Misc.getPercentage
 import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import java.io.*
 
 class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData,
@@ -104,7 +105,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
             resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS)
 
-            val ignoreCache = sharedPreferences.getBoolean(PREF_IGNORE_APP_CACHE, false)
+            val ignoreCache = getPrefBoolean(PREF_IGNORE_APP_CACHE, false)
 
             val scriptFile = File(engineContext.filesDir, "$FILE_PREFIX_BACKUP_SCRIPT.sh")
             scriptFile.parentFile?.mkdirs()
@@ -139,7 +140,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     else formatName(versionName)
 
                     var appIconFileName: String? = null
-                    if (sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true)) {
+                    if (getPrefBoolean(PREF_NEW_ICON_METHOD, true)) {
                         appIconFileName = backupUtils.makeNewIconFile(packageName, iconTools.getBitmap(packet.PACKAGE_INFO, pm), actualDestination)
                     }
                     else {

@@ -20,6 +20,7 @@ import balti.module.baltitoolbox.functions.Misc.isPackageInstalled
 import balti.module.baltitoolbox.functions.Misc.openWebLink
 import balti.module.baltitoolbox.functions.Misc.playStoreLink
 import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 import kotlinx.android.synthetic.main.error_report_layout.view.*
 import java.io.*
 
@@ -36,20 +37,16 @@ class CommonToolsKotlin(val context: Context) {
         val NOTIFICATION_ID_FINISHED = 130
         val NOTIFICATION_ID_CANCELLING = 131
 
-
         val PENDING_INTENT_REQUEST_ID = 913
         val PENDING_INTENT_BACKUP_CANCEL_ID = 912
 
         val DEFAULT_INTERNAL_STORAGE_DIR = "/sdcard/Migrate"
         val MIGRATE_CACHE_DEFAULT = "/data/local/tmp/migrate_cache"
-        //val DATA_TEMP = "/data/migrateTemp"
 
         val DIR_MANUAL_CONFIGS = "manualConfigs"
         val FILE_MIGRATE_CACHE_MANUAL = "MIGRATE_CACHE_MANUAL"
         val FILE_SYSTEM_MANUAL = "SYSTEM_MANUAL"
         val FILE_BUILDPROP_MANUAL = "BUILDPROP_MANUAL"
-
-        val FILE_MAIN_PREF = "main"
 
         val FILE_PROGRESSLOG = "progressLog.txt"
         val FILE_ERRORLOG = "errorLog.txt"
@@ -281,7 +278,7 @@ class CommonToolsKotlin(val context: Context) {
         )
 
         fun isDeletable(f: File): Boolean{
-            val d = AppInstance.sharedPrefs.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
+            val d = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
             val parentPath = File(d).absolutePath
             return f.absolutePath.startsWith(parentPath)
         }

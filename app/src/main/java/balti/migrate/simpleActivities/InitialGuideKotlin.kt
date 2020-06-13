@@ -1,6 +1,5 @@
 package balti.migrate.simpleActivities
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -8,14 +7,12 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import balti.migrate.R
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_SHOW_FIRST_WARNING
-import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FIRST_RUN
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
+import balti.module.baltitoolbox.functions.SharedPrefs.putPrefBoolean
 import kotlinx.android.synthetic.main.initial_guide.*
 
 class InitialGuideKotlin: AppCompatActivity() {
-
-    private val main by lazy { getSharedPreferences(FILE_MAIN_PREF, Context.MODE_PRIVATE) }
-    private val editor by lazy { main.edit() }
 
     var TOTAL_LAYOUTS = 0
 
@@ -78,9 +75,8 @@ class InitialGuideKotlin: AppCompatActivity() {
     private fun finishGuide(){
         val intent =
                 Intent(this, MainActivityKotlin::class.java)
-                        .putExtra(EXTRA_SHOW_FIRST_WARNING, main.getBoolean(PREF_FIRST_RUN, true))
-        editor.putBoolean(PREF_FIRST_RUN, false)
-        editor.commit()
+                        .putExtra(EXTRA_SHOW_FIRST_WARNING, getPrefBoolean(PREF_FIRST_RUN, true))
+        putPrefBoolean(PREF_FIRST_RUN, false, immediate = true)
         startActivity(intent)
         finish()
     }

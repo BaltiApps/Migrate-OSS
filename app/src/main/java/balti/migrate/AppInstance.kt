@@ -4,16 +4,16 @@ import android.app.ActivityManager
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
-import android.content.SharedPreferences
 import balti.migrate.backupEngines.containers.ZipAppBatch
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
-import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_MAX_BACKUP_SIZE
 import balti.module.baltitoolbox.ToolboxHQ
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefLong
+import balti.module.baltitoolbox.functions.SharedPrefs.putPrefLong
 import java.io.File
 
 
@@ -21,7 +21,6 @@ class AppInstance: Application() {
 
     companion object{
         lateinit var appContext: Context
-        lateinit var sharedPrefs: SharedPreferences
         lateinit var notificationManager: NotificationManager
         var MAX_EFFECTIVE_ZIP_SIZE = 0L
         var MAX_WORKING_SIZE = 0L
@@ -56,14 +55,13 @@ class AppInstance: Application() {
         super.onCreate()
         appContext = this
         ToolboxHQ.init(this)
-        sharedPrefs = getSharedPreferences(FILE_MAIN_PREF, Context.MODE_PRIVATE)
         notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
         MAX_EFFECTIVE_ZIP_SIZE = if (DEVICE_RAM_SIZE < MAX_TWRP_SIZE) DEVICE_RAM_SIZE else MAX_TWRP_SIZE
 
-        MAX_WORKING_SIZE = sharedPrefs.getLong(PREF_MAX_BACKUP_SIZE, MAX_EFFECTIVE_ZIP_SIZE).let {
+        MAX_WORKING_SIZE = getPrefLong(PREF_MAX_BACKUP_SIZE, MAX_EFFECTIVE_ZIP_SIZE).let {
             if (it > MAX_EFFECTIVE_ZIP_SIZE){
-                sharedPrefs.edit().putLong(PREF_MAX_BACKUP_SIZE, MAX_EFFECTIVE_ZIP_SIZE).apply()
+                putPrefLong(PREF_MAX_BACKUP_SIZE, MAX_EFFECTIVE_ZIP_SIZE)
                 MAX_EFFECTIVE_ZIP_SIZE
             }
             else it

@@ -5,7 +5,6 @@ import android.app.AppOpsManager
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Paint
 import android.net.Uri
@@ -31,7 +30,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_RUNNIN
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_SHOW_FIRST_WARNING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_ERRORLOG
-import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PROGRESSLOG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.LAST_SUPPORTED_ANDROID_API
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ALTERNATE_METHOD
@@ -52,6 +50,11 @@ import balti.module.baltitoolbox.functions.Misc.makeNotificationChannel
 import balti.module.baltitoolbox.functions.Misc.openWebLink
 import balti.module.baltitoolbox.functions.Misc.playStoreLink
 import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefInt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
+import balti.module.baltitoolbox.functions.SharedPrefs.putPrefBoolean
+import balti.module.baltitoolbox.functions.SharedPrefs.putPrefInt
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
@@ -60,8 +63,6 @@ import java.io.File
 
 class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private val main : SharedPreferences by lazy { getSharedPreferences(FILE_MAIN_PREF, Context.MODE_PRIVATE) }
-    private val editor : SharedPreferences.Editor by lazy { main.edit() }
     private val commonTools by lazy { CommonToolsKotlin(this) }
 
     private val REQUEST_CODE_BACKUP = 43
@@ -81,11 +82,10 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (main.getBoolean(PREF_FIRST_RUN, true)){
+        if (getPrefBoolean(PREF_FIRST_RUN, true)){
             externalCacheDir
 
-            editor.putInt(PREF_VERSION_CURRENT, THIS_VERSION)
-            editor.commit()
+            putPrefInt(PREF_VERSION_CURRENT, THIS_VERSION, true)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
                 makeNotificationChannel(CHANNEL_BACKUP_RUNNING, CHANNEL_BACKUP_RUNNING, NotificationManager.IMPORTANCE_LOW)
@@ -141,14 +141,13 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         val cpuAbi = Build.SUPPORTED_ABIS[0]
 
         if (cpuAbi == "armeabi-v7a" || cpuAbi == "arm64-v8a" || cpuAbi == "x86" || cpuAbi == "x86_64"){
-            if (Build.VERSION.SDK_INT > LAST_SUPPORTED_ANDROID_API && !main.getBoolean(PREF_ANDROID_VERSION_WARNING, false)){
+            if (Build.VERSION.SDK_INT > LAST_SUPPORTED_ANDROID_API && !getPrefBoolean(PREF_ANDROID_VERSION_WARNING, false)){
                 AlertDialog.Builder(this)
                         .setTitle(R.string.too_fast)
                         .setMessage(R.string.too_fast_desc)
                         .setPositiveButton(android.R.string.ok, null)
                         .setNegativeButton(R.string.dont_show_again) { _, _ ->
-                                editor.putBoolean(PREF_ANDROID_VERSION_WARNING, true)
-                                editor.commit()
+                                putPrefBoolean(PREF_ANDROID_VERSION_WARNING, value = true, immediate = true)
                         }
                         .show()
             }
@@ -203,7 +202,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     }
 
     private fun showChangeLog(onlyLatest: Boolean) {
-        val lastVer = main.getInt(PREF_VERSION_CURRENT, 1)
+        val lastVer = getPrefInt(PREF_VERSION_CURRENT, 1)
         val changelog = AlertDialog.Builder(this)
 
         if (onlyLatest) {
@@ -216,11 +215,10 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
                 /*Version related changes*/
                 if (lastVer < 23 && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {  // v3.0.3, immediate version after strike
-                    editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
+                    putPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
                 }
 
-                editor.putInt(PREF_VERSION_CURRENT, THIS_VERSION)
-                editor.commit()
+                putPrefInt(PREF_VERSION_CURRENT, THIS_VERSION, true)
             }
         }
         else {
@@ -371,13 +369,11 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 .setMessage(R.string.rate_dialog_message)
                 .setPositiveButton(R.string.sure) { _, _ ->
                     playStoreLink(packageName)
-                    editor.putBoolean(PREF_ASK_FOR_RATING, false)
-                    editor.commit()
+                    putPrefBoolean(PREF_ASK_FOR_RATING, false)
                 }
         if (!manual) {
             rateDialog.setNeutralButton(R.string.never_show) { _, _ ->
-                editor.putBoolean(PREF_ASK_FOR_RATING, false)
-                editor.commit()
+                putPrefBoolean(PREF_ASK_FOR_RATING, false, immediate = true)
                 finish()
             }
                     .setNegativeButton(R.string.later) { _, _ ->
@@ -434,7 +430,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                     getHumanReadableStorageSpace(fullBytes)
 
             var sdCardRoot: File? = null
-            val defaultPath = main.getString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
+            val defaultPath = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
 
             if (defaultPath != DEFAULT_INTERNAL_STORAGE_DIR && File(defaultPath).canWrite()) {
                 sdCardRoot = File(defaultPath).parentFile
@@ -496,7 +492,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                     }
 
                     val isOreoAndAbove = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                    val isAlternateMethod = main.getInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
+                    val isAlternateMethod = getPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
 
                     if (isOreoAndAbove && isAlternateMethod && !isUsageAccessGranted()) {
 
@@ -509,8 +505,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                                     Toast.makeText(this, R.string.usage_permission_toast, Toast.LENGTH_SHORT).show()
                                 }
                                 .setNegativeButton(R.string.old_method_will_be_used) { _, _ ->
-                                    editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
-                                    editor.commit()
+                                    putPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD, true)
                                     startBackupActivity()
                                 }
                                 .setNeutralButton(android.R.string.cancel, null)
@@ -522,8 +517,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
                         if (!isOreoAndAbove){
                             if (isAlternateMethod) {
-                                editor.putInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
-                                editor.apply()
+                                putPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
                             }
                         }
 
@@ -581,7 +575,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START))
             drawer_layout.closeDrawer(GravityCompat.START)
-        else if (!main.getBoolean(PREF_FIRST_RUN, true) && main.getBoolean(PREF_ASK_FOR_RATING, true))
+        else if (getPrefBoolean(PREF_FIRST_RUN, true) && getPrefBoolean(PREF_ASK_FOR_RATING, true))
             askForRating(false)
         else
             super.onBackPressed()

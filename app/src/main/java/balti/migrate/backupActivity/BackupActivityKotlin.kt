@@ -23,10 +23,11 @@ import balti.migrate.simpleActivities.ProgressShowActivity
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
-import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MAIN_PREF
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FILE_APPS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_APPS_WARNING
 import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
+import balti.module.baltitoolbox.functions.SharedPrefs.putPrefBoolean
 import kotlinx.android.synthetic.main.app_search_layout.view.*
 import kotlinx.android.synthetic.main.backup_layout.*
 
@@ -170,22 +171,18 @@ class BackupActivityKotlin : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.backup_layout)
 
-        val main = getSharedPreferences(FILE_MAIN_PREF, Context.MODE_PRIVATE)
-        val editor = main.edit()
-
         appType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(parent: AdapterView<*>?) {}
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if ((position == USER_SYSTEM_UPDATED_PACKAGES || position == SYSTEM_NOT_UPDATED_PACKAGES || position == ALL_SYSTEM_PACKAGES || position == SYSTEM_UPDATE_ONLY_PACKAGES)
-                        && main.getBoolean(PREF_SYSTEM_APPS_WARNING, true)){
+                        && getPrefBoolean(PREF_SYSTEM_APPS_WARNING, true)){
                     AlertDialog.Builder(this@BackupActivityKotlin)
                             .setTitle(R.string.bootloop_warning)
                             .setMessage(R.string.bootloop_warning_desc)
                             .setPositiveButton(android.R.string.ok, null)
                             .setNegativeButton(R.string.dont_show_again) { _, _ ->
-                                editor.putBoolean(PREF_SYSTEM_APPS_WARNING, false)
-                                editor.commit()
+                                putPrefBoolean(PREF_SYSTEM_APPS_WARNING, value = false, immediate = true)
                             }
                             .show()
                 }

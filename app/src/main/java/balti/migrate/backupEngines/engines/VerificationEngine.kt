@@ -28,6 +28,7 @@ import balti.migrate.utilities.IconTools
 import balti.module.baltitoolbox.functions.FileHandlers.getDirLength
 import balti.module.baltitoolbox.functions.Misc.getPercentage
 import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import java.io.*
 
 class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentData,
@@ -101,7 +102,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 val expectedDataFile = File("$actualDestination/$packageName.tar.gz")
                 val expectedPermFile = File(actualDestination, "$packageName.perm")
 
-                if (sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true) ) {
+                if (getPrefBoolean(PREF_NEW_ICON_METHOD, true) ) {
                     if (!File(actualDestination, "$packageName.png").exists()) allRecovery.add("$MIGRATE_STATUS:icon_new:$packageName")
                 }
                 else {
@@ -163,7 +164,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 }
             }
 
-            if (sharedPreferences.getBoolean(PREF_TAR_GZ_INTEGRITY, true)) {
+            if (getPrefBoolean(PREF_TAR_GZ_INTEGRITY, true)) {
                 checkTars()?.let {
                     allRecovery.addAll(it)
                 }

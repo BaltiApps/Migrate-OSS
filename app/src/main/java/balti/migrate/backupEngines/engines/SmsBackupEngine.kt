@@ -31,6 +31,7 @@ import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_TABLE_NAME
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_TYPE
 import balti.module.baltitoolbox.functions.Misc.getPercentage
 import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import java.io.File
 import java.io.FileFilter
 
@@ -176,7 +177,7 @@ class SmsBackupEngine(private val jobcode: Int,
 
         writeSms()
 
-        if (!BackupServiceKotlin.cancelAll && sharedPreferences.getBoolean(PREF_SMS_VERIFY, true) && errors.size == 0){
+        if (!BackupServiceKotlin.cancelAll && getPrefBoolean(PREF_SMS_VERIFY, true) && errors.size == 0){
             verifySms()
         }
 

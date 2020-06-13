@@ -29,6 +29,8 @@ import balti.migrate.utilities.ToolsNoContext
 import balti.module.baltitoolbox.functions.FileHandlers
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -177,7 +179,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                     extractItToTemp("$packageName.perm")
 
                 extractItToTemp("$packageName.json")
-                if (sharedPreferences.getBoolean(PREF_NEW_ICON_METHOD, true)) extractItToTemp("$packageName.png")
+                if (getPrefBoolean(PREF_NEW_ICON_METHOD, true)) extractItToTemp("$packageName.png")
                 else extractItToTemp("$packageName.icon")
 
                 var pString = String.format(Locale.ENGLISH, "%.4f", (c + 1) * 1.0 / size)
@@ -279,7 +281,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             File(actualDestination, DIR_MANUAL_CONFIGS).run {
                 mkdirs()
                 BufferedWriter(FileWriter(File(this, fileName))).run {
-                    sharedPreferences.getString(value, "")?.let { write(it) }
+                    write(getPrefString(value, ""))
                     close()
                 }
             }

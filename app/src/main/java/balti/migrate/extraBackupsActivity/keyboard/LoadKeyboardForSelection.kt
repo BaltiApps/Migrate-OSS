@@ -7,12 +7,12 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_SU_FOR_KEYBOARD
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import kotlinx.android.synthetic.main.keyboard_item.view.*
 import kotlinx.android.synthetic.main.keyboard_selector.view.*
 import java.io.BufferedReader
@@ -45,7 +45,7 @@ class LoadKeyboardForSelection (private val jobCode: Int, val context: Context,
 
         try {
 
-            val useSu = AppInstance.sharedPrefs.getBoolean(PREF_USE_SU_FOR_KEYBOARD, true)
+            val useSu = getPrefBoolean(PREF_USE_SU_FOR_KEYBOARD, true)
 
             val keyboardReader = if (useSu)
                 Runtime.getRuntime().exec("su")
