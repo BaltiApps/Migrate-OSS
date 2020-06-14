@@ -15,7 +15,7 @@ abstract class AsyncCoroutineTask(private val backgroundDispatcher: CoroutineDis
 
         val DISP_IO = Dispatchers.IO
         val DISP_MAIN = Main
-        val DISP_DEF = Dispatchers.Default
+        val DISP_DEF = Default
     }
 
     var status: String = INIT

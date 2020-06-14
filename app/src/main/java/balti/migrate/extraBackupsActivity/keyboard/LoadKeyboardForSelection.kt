@@ -6,8 +6,8 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import balti.migrate.AppInstance
 import balti.migrate.R
-import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_SU_FOR_KEYBOARD
@@ -23,8 +23,7 @@ import java.io.OutputStreamWriter
 class LoadKeyboardForSelection (private val jobCode: Int, val context: Context,
                                 private val menuMainItem: LinearLayout,
                                 private val menuSelectedStatus: TextView,
-                                private val doBackupCheckbox: CheckBox,
-                                private val itemList: ArrayList<BackupDataPacketKotlin> = ArrayList(0)):     //unique
+                                private val doBackupCheckbox: CheckBox):
         AsyncCoroutineTask() {
 
     private val onJobCompletion by lazy { context as OnJobCompletion }
@@ -195,7 +194,7 @@ class LoadKeyboardForSelection (private val jobCode: Int, val context: Context,
     }
 
     private fun isKeyboardInAppList(packageName: String): Boolean{
-        itemList.forEach{
+        AppInstance.appBackupDataPackets.forEach{
             if (it.PACKAGE_INFO.packageName == packageName) return true
         }
         return false

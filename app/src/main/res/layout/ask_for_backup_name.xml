@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:padding="@dimen/large_padding_width">
 
@@ -31,11 +32,11 @@
             android:text="@string/sd_card" />
 
         <TextView
-            android:id="@+id/sd_card_name"
+            android:id="@+id/destination_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="30dp"
-            android:text="SD card name"
+            tools:text="Destination name"
             android:textColor="@color/colorAccent" />
 
     </RadioGroup>

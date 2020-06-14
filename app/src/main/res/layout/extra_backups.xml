@@ -332,14 +332,13 @@
                         android:visibility="gone" />
 
                     <TextView
+                        android:id="@+id/sal_dpi"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/stock_android_rom"
-                        android:textSize="@dimen/stock_android_label_size"
-                        android:textStyle="italic"
                         android:textColor="@color/stock_android_label_color"
-                        android:id="@+id/sal_dpi"
-                        />
+                        android:textSize="@dimen/stock_android_label_size"
+                        android:textStyle="italic" />
 
                 </LinearLayout>
 
@@ -421,8 +420,7 @@
                 android:orientation="horizontal"
                 android:padding="@dimen/small_padding_width"
                 android:paddingTop="@dimen/extra_items_padding"
-                android:paddingBottom="@dimen/extra_items_padding"
-                >
+                android:paddingBottom="@dimen/extra_items_padding">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -477,8 +475,7 @@
                 android:orientation="horizontal"
                 android:padding="@dimen/small_padding_width"
                 android:paddingTop="@dimen/extra_items_padding"
-                android:paddingBottom="@dimen/extra_items_padding"
-                >
+                android:paddingBottom="@dimen/extra_items_padding">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -519,14 +516,13 @@
                         android:visibility="gone" />
 
                     <TextView
+                        android:id="@+id/sal_adb"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/stock_android_rom"
-                        android:textSize="@dimen/stock_android_label_size"
-                        android:textStyle="italic"
                         android:textColor="@color/stock_android_label_color"
-                        android:id="@+id/sal_adb"
-                        />
+                        android:textSize="@dimen/stock_android_label_size"
+                        android:textStyle="italic" />
 
                 </LinearLayout>
 
@@ -553,8 +549,7 @@
                 android:orientation="horizontal"
                 android:padding="@dimen/small_padding_width"
                 android:paddingTop="@dimen/extra_items_padding"
-                android:paddingBottom="@dimen/extra_items_padding"
-                >
+                android:paddingBottom="@dimen/extra_items_padding">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -595,14 +590,13 @@
                         android:visibility="gone" />
 
                     <TextView
+                        android:id="@+id/sal_wifi"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/stock_android_rom"
-                        android:textSize="@dimen/stock_android_label_size"
-                        android:textStyle="italic"
                         android:textColor="@color/stock_android_label_color"
-                        android:id="@+id/sal_wifi"
-                        />
+                        android:textSize="@dimen/stock_android_label_size"
+                        android:textStyle="italic" />
 
                 </LinearLayout>
 
@@ -629,8 +623,7 @@
                 android:orientation="horizontal"
                 android:padding="@dimen/small_padding_width"
                 android:paddingTop="@dimen/extra_items_padding"
-                android:paddingBottom="@dimen/extra_items_padding"
-                >
+                android:paddingBottom="@dimen/extra_items_padding">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -671,14 +664,13 @@
                         android:visibility="gone" />
 
                     <TextView
+                        android:id="@+id/sal_fontScale"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/stock_android_rom"
-                        android:textSize="@dimen/stock_android_label_size"
-                        android:textStyle="italic"
                         android:textColor="@color/stock_android_label_color"
-                        android:id="@+id/sal_fontScale"
-                        />
+                        android:textSize="@dimen/stock_android_label_size"
+                        android:textStyle="italic" />
 
                 </LinearLayout>
 
@@ -711,16 +703,14 @@
             android:layout_alignParentEnd="true"
             android:background="@drawable/next"
             android:gravity="center"
-            android:padding="@dimen/large_padding_width"
             android:orientation="horizontal"
-            android:visibility="gone"
-            >
+            android:padding="@dimen/large_padding_width"
+            android:visibility="gone">
 
             <ProgressBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:indeterminateTint="@android:color/white"
-                />
+                android:indeterminateTint="@android:color/white" />
 
         </LinearLayout>
 

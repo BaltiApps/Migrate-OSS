@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
+import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.backupEngines.containers.ZipAppBatch
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
@@ -31,6 +32,7 @@ class AppInstance: Application() {
         val contactsList = ArrayList<ContactsDataPacketKotlin>(0)
         val callsList = ArrayList<CallsDataPacketsKotlin>(0)
         val smsList = ArrayList<SmsDataPacketKotlin>(0)
+        val appBackupDataPackets by lazy { ArrayList<BackupDataPacketKotlin>(0) }
         var dpiText : String? = null
         var keyboardText : String? = null
         var adbState : Int? = null

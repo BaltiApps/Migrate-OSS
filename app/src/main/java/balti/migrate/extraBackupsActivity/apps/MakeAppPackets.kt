@@ -7,16 +7,15 @@ import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Context.STORAGE_STATS_SERVICE
 import android.os.Build
 import android.os.Environment
-import android.os.Handler
 import android.os.StatFs
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import balti.migrate.AppInstance
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.AppInstance.Companion.RESERVED_SPACE
 import balti.migrate.R
-import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
@@ -36,8 +35,7 @@ import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import kotlinx.android.synthetic.main.please_wait.view.*
 import java.io.*
 
-class MakeAppPackets(private val jobCode: Int, private val context: Context, private val destination: String,
-                     private val appList: ArrayList<BackupDataPacketKotlin> = ArrayList(0), val dialogView: View):
+class MakeAppPackets(private val jobCode: Int, private val context: Context, private val destination: String, private val dialogView: View):
         AsyncCoroutineTask() {
 
     private val onJobCompletion by lazy { context as OnJobCompletion }
@@ -46,6 +44,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
     private val commonTools by lazy { CommonToolsKotlin(context) }
     private val pm by lazy { context.packageManager }
     private val appPackets by lazy { ArrayList<AppPacket>(0) }
+    private val appList by lazy { AppInstance.appBackupDataPackets }
 
     private var appsScanned = 0
 
@@ -223,7 +222,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
 
                     tryIt {
-                        Handler(context.mainLooper).post {
+                        doOnMainThreadParallel {
                             Toast.makeText(context, R.string.new_method_not_available_below_oreo, Toast.LENGTH_SHORT).show()
                         }
                     }

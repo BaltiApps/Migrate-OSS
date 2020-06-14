@@ -17,6 +17,8 @@ import balti.module.baltitoolbox.R
 import balti.module.baltitoolbox.ToolboxHQ
 import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.util.*
 
@@ -156,6 +158,12 @@ object Misc {
             }
         }
         Class().execute()
+    }
+
+    fun runSuspendFunction(f: () -> Unit){
+        CoroutineScope(AsyncCoroutineTask.DISP_DEF).launch {
+            f()
+        }
     }
 
     fun timeInMillis() = Calendar.getInstance().timeInMillis

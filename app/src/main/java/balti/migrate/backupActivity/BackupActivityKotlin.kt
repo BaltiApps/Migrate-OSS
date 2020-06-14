@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
-import android.os.AsyncTask
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,6 +13,7 @@ import android.view.WindowManager
 import android.widget.AdapterView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import balti.migrate.AppInstance.Companion.appBackupDataPackets
 import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.backupActivity.utils.AppListAdapterKotlin
@@ -28,14 +28,13 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_APPS_WARN
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.putPrefBoolean
+import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import kotlinx.android.synthetic.main.app_search_layout.view.*
 import kotlinx.android.synthetic.main.backup_layout.*
 
 class BackupActivityKotlin : AppCompatActivity() {
 
-    companion object {
-        val appList by lazy { ArrayList<BackupDataPacketKotlin>(0) }
-    }
+    //val appList by lazy { ArrayList<BackupDataPacketKotlin>(0) }
 
     private val USER_PACKAGES = 0
     private val SYSTEM_NOT_UPDATED_PACKAGES = 1
@@ -67,9 +66,9 @@ class BackupActivityKotlin : AppCompatActivity() {
         }
     }
 
-    private inner class AppUpdate: AsyncTask<Int, Any, Any>() {
+    private inner class AppUpdate: AsyncCoroutineTask() {
 
-        override fun onPreExecute() {
+        override suspend fun onPreExecute() {
             super.onPreExecute()
 
             appBackupList.adapter = null
@@ -95,17 +94,19 @@ class BackupActivityKotlin : AppCompatActivity() {
 
             permissionsAllSelect.setOnCheckedChangeListener(null)
             permissionsAllSelect.isChecked = false
+
+            appBackupDataPackets.clear()
         }
 
-        override fun doInBackground(vararg params: Int?): Any? {
-            params[0]?.let { updateAllApps(it) }
+        override suspend fun doInBackground(arg: Any?): Any? {
+            if (arg is Int) updateAllApps(arg)
             return null
         }
 
-        override fun onPostExecute(result: Any?) {
+        override suspend fun onPostExecute(result: Any?) {
             super.onPostExecute(result)
 
-            if (appList.size > 0) appBackupList.adapter = adapter
+            if (appBackupDataPackets.size > 0) appBackupList.adapter = adapter
             else {
                 appBackupList.invalidate()
                 noAppsInCategoryLabel.visibility = View.VISIBLE
@@ -127,43 +128,44 @@ class BackupActivityKotlin : AppCompatActivity() {
         private fun updateAllApps(type: Int){
 
             val tempAppList = packageManager.getInstalledPackages(0)
-            appList.clear()
+            appBackupDataPackets.clear()
             tempAppList.forEach {
                 val installer = packageManager.getInstallerPackageName(it.packageName).let {installer ->
                     installer ?: ""
                 }
-                when (type){
+                val p: BackupDataPacketKotlin? = when (type){
                     USER_PACKAGES -> {
                         if (it.applicationInfo.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 0){
-                            appList.add(BackupDataPacketKotlin(it, appPrefs, installer))
-                        }
+                            BackupDataPacketKotlin(it, appPrefs, installer)
+                        } else null
                     }
                     SYSTEM_NOT_UPDATED_PACKAGES -> {
                         if (it.applicationInfo.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) > 0 &&
                                 it.applicationInfo.sourceDir.startsWith("/system")){
-                            appList.add(BackupDataPacketKotlin(it, appPrefs, installer))
-                        }
+                            BackupDataPacketKotlin(it, appPrefs, installer)
+                        } else null
                     }
                     SYSTEM_UPDATE_ONLY_PACKAGES -> {
                         if (it.applicationInfo.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) > 0 &&
                                 it.applicationInfo.sourceDir.startsWith("/data")){
-                            appList.add(BackupDataPacketKotlin(it, appPrefs, installer))
-                        }
+                            BackupDataPacketKotlin(it, appPrefs, installer)
+                        } else null
                     }
                     ALL_SYSTEM_PACKAGES -> {
                         if (it.applicationInfo.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) > 0){
-                            appList.add(BackupDataPacketKotlin(it, appPrefs, installer))
-                        }
+                            BackupDataPacketKotlin(it, appPrefs, installer)
+                        } else null
                     }
                     USER_SYSTEM_UPDATED_PACKAGES -> {
                         if (it.applicationInfo.sourceDir.startsWith("/data")){
-                            appList.add(BackupDataPacketKotlin(it, appPrefs, installer))
-                        }
+                            BackupDataPacketKotlin(it, appPrefs, installer)
+                        } else null
                     }
-                    else -> appList.add(BackupDataPacketKotlin(it, appPrefs, installer))
+                    else -> BackupDataPacketKotlin(it, appPrefs, installer)
                 }
+                p?.let {appBackupDataPackets.add(p)}
             }
-            if (appList.size > 0) adapter = AppListAdapterKotlin(this@BackupActivityKotlin, appAllSelect, dataAllSelect, permissionsAllSelect)
+            if (appBackupDataPackets.size > 0) adapter = AppListAdapterKotlin(this@BackupActivityKotlin, appAllSelect, dataAllSelect, permissionsAllSelect)
         }
     }
 
@@ -192,9 +194,6 @@ class BackupActivityKotlin : AppCompatActivity() {
         }
 
         backupActivityNext.setOnClickListener {
-            /*for (dp in appList){
-                Log.d(DEBUG_TAG, "package: " + dp.PACKAGE_INFO.packageName + " " + dp.APP + " " + dp.DATA + " " + dp.PERMISSION)
-            }*/
             startActivity(Intent(this, ExtraBackupsKotlin::class.java))
         }
 
@@ -235,32 +234,31 @@ class BackupActivityKotlin : AppCompatActivity() {
                 var loadApps: LoadSearchApps? = null
 
                 override fun afterTextChanged(s: Editable?) {
-                    try {
+                    tryIt {
                         loadApps?.cancel(true)
-                    } catch (_: Exception){}
+                    }
 
                     loadApps = LoadSearchApps(s.toString())
-                    loadApps?.let { it.execute() }
+                    loadApps?.execute()
                 }
 
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
-
-                inner class LoadSearchApps(val term: String) : AsyncTask<Any, Any, Any>(){
+                inner class LoadSearchApps(val term: String) : AsyncCoroutineTask(){
 
                     lateinit var adapter: SearchAppAdapter
                     var tmpList = ArrayList<BackupDataPacketKotlin>(0)
 
-                    override fun onPreExecute() {
+                    override suspend fun onPreExecute() {
                         super.onPreExecute()
                         searchView.app_search_list.adapter = null
                         searchView.app_search_loading.visibility = View.VISIBLE
                         searchView.app_search_app_unavailable.visibility = View.GONE
                     }
 
-                    override fun doInBackground(vararg params: Any?): Any? {
+                    override suspend fun doInBackground(arg: Any?): Any? {
 
                         if (term.trim() != "") makeTmpList(term)
                         else tmpList.clear()
@@ -270,7 +268,7 @@ class BackupActivityKotlin : AppCompatActivity() {
                         return null
                     }
 
-                    override fun onPostExecute(result: Any?) {
+                    override suspend fun onPostExecute(result: Any?) {
                         super.onPostExecute(result)
                         searchView.app_search_loading.visibility = View.GONE
                         if (tmpList.size > 0) searchView.app_search_list.adapter = adapter
@@ -282,7 +280,7 @@ class BackupActivityKotlin : AppCompatActivity() {
 
                     fun makeTmpList(term: String){
                         tmpList.clear()
-                        for (dp in appList){
+                        for (dp in appBackupDataPackets){
                             if (dp.PACKAGE_INFO.packageName.contains(term, true)
                                     || packageManager.getApplicationLabel(dp.PACKAGE_INFO.applicationInfo).contains(term, true))
                                 tmpList.add(dp)
@@ -307,14 +305,11 @@ class BackupActivityKotlin : AppCompatActivity() {
         }
 
         commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
-
         commonTools.LBM?.sendBroadcast(Intent(ACTION_REQUEST_BACKUP_DATA))
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        try {
-            commonTools.LBM?.unregisterReceiver(progressReceiver)
-        } catch(_: Exception){}
+        tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
     }
 }

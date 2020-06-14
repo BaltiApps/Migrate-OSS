@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -19,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import balti.migrate.AppInstance.Companion.adbState
+import balti.migrate.AppInstance.Companion.appBackupDataPackets
 import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.AppInstance.Companion.callsList
 import balti.migrate.AppInstance.Companion.contactsList
@@ -92,18 +92,16 @@ import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import kotlinx.android.synthetic.main.ask_for_backup_name.view.*
 import kotlinx.android.synthetic.main.extra_backups.*
 import kotlinx.android.synthetic.main.please_wait.*
-import kotlinx.android.synthetic.main.please_wait.view.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.OnCheckedChangeListener {
 
     // to add extras search for "extras_markers" and change those lines/functions
 
     private val commonTools by lazy { CommonToolsKotlin(this) }
-    private val appListCopied by lazy { ArrayList<BackupDataPacketKotlin>(0) }
+    //private val appListCopied by lazy { ArrayList<BackupDataPacketKotlin>(0) }
 
     private lateinit var destination: String
     private var backupName = ""
@@ -169,135 +167,85 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
         destination = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
 
-        fun doEverything() {
-            startBackupButton.setOnClickListener {
+        commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
+        commonTools.LBM?.sendBroadcast(Intent(ACTION_REQUEST_BACKUP_DATA))
 
-                val allReadTasks = arrayOf(
-                        readContacts,
-                        readSms,
-                        readCalls,
-                        readDpi,
-                        readAdb,
-                        readWifi,
-                        readFontScale
-                )
+        // Disable wifi backup for now because it is unstable.
+        wifi_main_item.visibility = View.GONE
+        //if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+        //    wifi_main_item.visibility = View.GONE
 
-                var isAnyRunning = false
-                for (t in allReadTasks.indices){
-                    allReadTasks[t]?.let {
-                        if (it.status == AsyncCoroutineTask.RUNNING) isAnyRunning = true
-                    }
-                    if (isAnyRunning) break
+        startBackupButton.setOnClickListener {
+
+            val allReadTasks = arrayOf(
+                    readContacts,
+                    readSms,
+                    readCalls,
+                    readDpi,
+                    readAdb,
+                    readWifi,
+                    readFontScale
+            )
+
+            var isAnyRunning = false
+            for (t in allReadTasks.indices){
+                allReadTasks[t]?.let {
+                    if (it.status == AsyncCoroutineTask.RUNNING) isAnyRunning = true
                 }
-
-                if (!isAnyRunning) {
-                    if (appListCopied.size > 0 || do_backup_contacts.isChecked || do_backup_calls.isChecked
-                            || do_backup_sms.isChecked || do_backup_dpi.isChecked || do_backup_keyboard.isChecked
-                            || do_backup_installers.isChecked || do_backup_adb.isChecked || do_backup_wifi.isChecked || do_backup_fontScale.isChecked) {                  //extras_markers
-                        askForName()
-                    }
-                } else {
-                    AlertDialog.Builder(this)
-                            .setTitle(R.string.wait_while_reading_data)
-                            .setMessage(R.string.wait_while_reading_data_desc)
-                            .setPositiveButton(R.string.close, null)
-                            .show()
-                }
+                if (isAnyRunning) break
             }
 
-            extraBackupsBackButton.setOnClickListener {
-                startActivity(Intent(this, BackupActivityKotlin::class.java))
-                finish()
-            }
-
-            extra_backups_help.setOnClickListener {
+            if (!isAnyRunning) {
+                if (appBackupDataPackets.size > 0 || do_backup_contacts.isChecked || do_backup_calls.isChecked
+                        || do_backup_sms.isChecked || do_backup_dpi.isChecked || do_backup_keyboard.isChecked
+                        || do_backup_installers.isChecked || do_backup_adb.isChecked || do_backup_wifi.isChecked || do_backup_fontScale.isChecked) {                  //extras_markers
+                    askForName()
+                }
+            } else {
                 AlertDialog.Builder(this)
-                        .setMessage(R.string.extra_backups_help)
+                        .setTitle(R.string.wait_while_reading_data)
+                        .setMessage(R.string.wait_while_reading_data_desc)
                         .setPositiveButton(R.string.close, null)
                         .show()
             }
-
-            commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
-
-            commonTools.LBM?.sendBroadcast(Intent(ACTION_REQUEST_BACKUP_DATA))
-
-            do_backup_contacts.setOnCheckedChangeListener(this)         //extras_markers
-            do_backup_sms.setOnCheckedChangeListener(this)
-            do_backup_calls.setOnCheckedChangeListener(this)
-            do_backup_dpi.setOnCheckedChangeListener(this)
-            do_backup_keyboard.setOnCheckedChangeListener(this)
-            do_backup_installers.setOnCheckedChangeListener(this)
-            do_backup_adb.setOnCheckedChangeListener(this)
-            do_backup_wifi.setOnCheckedChangeListener(this)
-            do_backup_fontScale.setOnCheckedChangeListener(this)
-
-            // Disable wifi backup for now because it is unstable.
-            wifi_main_item.visibility = View.GONE
-            //if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-            //    wifi_main_item.visibility = View.GONE
-
-
-            if (getPrefBoolean(PREF_AUTOSELECT_EXTRAS, true)) {        //extras_markers
-                val isSmsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
-                val isCallsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
-                val isSmsAndCallsGranted = isSmsGranted && isCallsGranted
-
-                when {
-                    isSmsAndCallsGranted ->
-                        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_SMS,
-                                Manifest.permission.READ_CALL_LOG), SMS_AND_CALLS_PERMISSION)
-                    isCallsGranted -> do_backup_calls.isChecked = true
-                    isSmsGranted -> do_backup_sms.isChecked = true
-                }
-                do_backup_installers.isChecked = true
-            }
         }
 
-        class Copy : AsyncTask<Any, Any, Any>() {
+        do_backup_contacts.setOnCheckedChangeListener(this)         //extras_markers
+        do_backup_sms.setOnCheckedChangeListener(this)
+        do_backup_calls.setOnCheckedChangeListener(this)
+        do_backup_dpi.setOnCheckedChangeListener(this)
+        do_backup_keyboard.setOnCheckedChangeListener(this)
+        do_backup_installers.setOnCheckedChangeListener(this)
+        do_backup_adb.setOnCheckedChangeListener(this)
+        do_backup_wifi.setOnCheckedChangeListener(this)
+        do_backup_fontScale.setOnCheckedChangeListener(this)
 
-            private val dialogView by lazy { View.inflate(this@ExtraBackupsKotlin, R.layout.please_wait, null) }
-            private val waitingDialog by lazy {
-                AlertDialog.Builder(this@ExtraBackupsKotlin)
-                        .setView(dialogView)
-                        .setCancelable(false)
-                        .create()
-            }
-
-            override fun onPreExecute() {
-                super.onPreExecute()
-                dialogView.waiting_cancel.setOnClickListener {
-                    cancel(true)
-                    startActivity(Intent(this@ExtraBackupsKotlin, BackupActivityKotlin::class.java))
-                    finish()
-                }
-                waitingDialog.show()
-            }
-
-            override fun doInBackground(vararg params: Any?): Any? {
-                try{
-                    BackupActivityKotlin.appList.forEach {
-                        if (it.APP || it.PERMISSION || it.DATA) {
-                            appListCopied.add(it.copy())
-                            if (isAllAppsSelected && !(it.APP && it.DATA && it.PERMISSION)) isAllAppsSelected = false
-                        } else if (isAllAppsSelected) isAllAppsSelected = false
-                    }
-                }
-                catch (e: Exception){
-                    e.printStackTrace()
-                    showErrorDialog(e.message.toString(), onCloseClick = {finish()})
-                }
-
-                return null
-            }
-
-            override fun onPostExecute(result: Any?) {
-                super.onPostExecute(result)
-                waitingDialog.dismiss()
-                doEverything()
-            }
+        extraBackupsBackButton.setOnClickListener {
+            startActivity(Intent(this, BackupActivityKotlin::class.java))
+            finish()
         }
 
-        Copy().execute()
+        extra_backups_help.setOnClickListener {
+            AlertDialog.Builder(this)
+                    .setMessage(R.string.extra_backups_help)
+                    .setPositiveButton(R.string.close, null)
+                    .show()
+        }
+
+        if (getPrefBoolean(PREF_AUTOSELECT_EXTRAS, true)) {        //extras_markers
+            val isSmsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
+            val isCallsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
+            val isSmsAndCallsGranted = isSmsGranted && isCallsGranted
+
+            when {
+                isSmsAndCallsGranted ->
+                    ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_SMS,
+                            Manifest.permission.READ_CALL_LOG), SMS_AND_CALLS_PERMISSION)
+                isCallsGranted -> do_backup_calls.isChecked = true
+                isSmsGranted -> do_backup_sms.isChecked = true
+            }
+            do_backup_installers.isChecked = true
+        }
     }
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {        //extras_markers
@@ -325,6 +273,16 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             }
         }
 
+        fun deselectExtra(dataContainer: ArrayList<*>?, viewMainItem: View, selectedStatusView: View,
+                          readTask: AsyncCoroutineTask?, progressBar: ProgressBar? = null, sal: View? = null) {    //sal: Stock Android recommended label
+            dataContainer?.clear()
+            viewMainItem.isClickable = false
+            progressBar?.visibility = View.GONE
+            selectedStatusView.visibility = View.GONE
+            sal?.visibility = View.VISIBLE
+            tryIt { readTask?.cancel() }
+        }
+
         if (!isChecked) toggleBackupButton(1)
 
         if (buttonView == do_backup_contacts){
@@ -345,48 +303,24 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                         .setCancelable(false)
                         .show()
             }
-            else {
-                contactsList.clear()
-                contacts_main_item.isClickable = false
-                contacts_read_progress.visibility = View.GONE
-                contacts_selected_status.visibility = View.GONE
-                tryIt { readContacts?.cancel(true) }
-            }
+            else deselectExtra(contactsList, contacts_main_item, contacts_selected_status, readContacts, contacts_read_progress)
 
         } else if (buttonView == do_backup_sms) {
 
             if (isChecked) {
-
                 ActivityCompat.requestPermissions(this,
                         arrayOf(Manifest.permission.READ_SMS),
                         SMS_PERMISSION)
 
-            } else {
-                smsList.clear()
-                sms_main_item.isClickable = false
-                sms_read_progress.visibility = View.GONE
-                sms_selected_status.visibility = View.GONE
-                tryIt { readSms?.cancel(true) }
-
-            }
+            } else deselectExtra(smsList, sms_main_item, sms_selected_status, readSms, sms_read_progress)
 
         } else if (buttonView == do_backup_calls) {
 
             if (isChecked) {
-
                 ActivityCompat.requestPermissions(this,
                         arrayOf(Manifest.permission.READ_CALL_LOG),
                         CALLS_PERMISSION)
-
-
-            } else {
-                callsList.clear()
-                calls_main_item.isClickable = false
-                calls_read_progress.visibility = View.GONE
-                calls_selected_status.visibility = View.GONE
-                tryIt { readCalls?.cancel(true) }
-
-            }
+            } else deselectExtra(callsList, calls_main_item, calls_selected_status, readCalls, calls_read_progress)
 
         } else if (buttonView == do_backup_dpi) {
             if (isChecked) {
@@ -394,7 +328,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 showStockWarning({
                     doWaitingJob {
                         readDpi = ReadDpiKotlin(JOBCODE_READ_DPI, this, dpi_main_item, dpi_selected_status, dpi_read_progress, do_backup_dpi)
-                        readDpi?.let { it.execute()}
+                        readDpi?.execute()
                     }
                 }, {
                     do_backup_dpi.isChecked = false
@@ -403,12 +337,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
             } else {
                 dpiText = null
-                dpi_main_item.isClickable = false
-                dpi_selected_status.visibility = View.GONE
-                dpi_read_progress.visibility = View.GONE
-                sal_dpi.visibility = View.VISIBLE
-                tryIt { readDpi?.cancel(true) }
-
+                deselectExtra(null, dpi_main_item, dpi_selected_status, readDpi, dpi_read_progress, sal_dpi)
             }
 
         } else if (buttonView == do_backup_adb) {
@@ -417,7 +346,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 showStockWarning({
                     doWaitingJob{
                         readAdb = ReadAdbKotlin(JOBCODE_READ_ADB, this, adb_main_item, adb_selected_status, adb_read_progress, do_backup_adb)
-                        readAdb?.let { it.execute()}
+                        readAdb?.execute()
                     }
                 }, {
                     do_backup_adb.isChecked = false
@@ -426,41 +355,27 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
             } else {
                 adbState = null
-                adb_main_item.isClickable = false
-                adb_selected_status.visibility = View.GONE
-                adb_read_progress.visibility = View.GONE
-                sal_adb.visibility = View.VISIBLE
-
-                tryIt { readAdb?.cancel(true) }
-
+                deselectExtra(null, adb_main_item, adb_selected_status, readAdb, adb_read_progress, sal_adb)
             }
 
         } else if (buttonView == do_backup_keyboard) {
 
             if (isChecked) {
                 doWaitingJob {
-                    loadKeyboard = LoadKeyboardForSelection(JOBCODE_LOAD_KEYBOARDS, this, keyboard_main_item, keyboard_selected_status, do_backup_keyboard, appListCopied)
-                    loadKeyboard?.let { it.execute() }
+                    loadKeyboard = LoadKeyboardForSelection(JOBCODE_LOAD_KEYBOARDS, this, keyboard_main_item, keyboard_selected_status, do_backup_keyboard)
+                    loadKeyboard?.execute()
                 }
             }
             else {
                 keyboardText = null
-                keyboard_main_item.isClickable = false
-                keyboard_selected_status.visibility = View.GONE
-
-                tryIt { loadKeyboard?.cancel(true) }
+                deselectExtra(null, keyboard_main_item, keyboard_selected_status, loadKeyboard)
             }
 
         } else if (buttonView == do_backup_installers){
             if (isChecked){
-                updateInstallers(appListCopied, true)
+                updateInstallers(appBackupDataPackets, true)
             }
-            else {
-                installers_main_item.isClickable = false
-                installer_selected_status.visibility = View.GONE
-
-                tryIt { loadInstallers?.cancel(true) }
-            }
+            else deselectExtra(null, installers_main_item, installer_selected_status, loadInstallers)
             doBackupInstallers = isChecked
 
         } else if (buttonView == do_backup_wifi){
@@ -478,13 +393,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
             } else {
                 wifiData = null
-                wifi_main_item.isClickable = false
-                wifi_selected_status.visibility = View.GONE
-                wifi_read_progress.visibility = View.GONE
-                sal_wifi.visibility = View.VISIBLE
-
-                tryIt { readWifi?.cancel(true) }
-
+                deselectExtra(null, wifi_main_item, wifi_selected_status, readWifi, wifi_read_progress, sal_wifi)
             }
         } else if (buttonView == do_backup_fontScale) {
             if (isChecked){
@@ -501,13 +410,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
             } else {
                 fontScale = null
-                fontScale_main_item.isClickable = false
-                fontScale_selected_status.visibility = View.GONE
-                fontScale_read_progress.visibility = View.GONE
-                sal_fontScale.visibility = View.VISIBLE
-
-                tryIt { readFontScale?.cancel(true) }
-
+                deselectExtra(null, fontScale_main_item, fontScale_selected_status, readFontScale, fontScale_read_progress, sal_fontScale)
             }
         }
 
@@ -595,7 +498,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         val mainView = View.inflate(this, R.layout.ask_for_backup_name, null)
 
         mainView.backup_name_edit_text.setSingleLine(true)
-        mainView.sd_card_name.text = destination
+        mainView.destination_name.text = destination
 
         mainView.ignore_cache_checkbox.apply {
             isChecked = getPrefBoolean(PREF_IGNORE_APP_CACHE, false)
@@ -607,7 +510,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR).run {
             if (this == DEFAULT_INTERNAL_STORAGE_DIR || !(File(this).canWrite())){
                 mainView.storage_select_radio_group.check(mainView.internal_storage_radio_button.id)
-                setDestination(DEFAULT_INTERNAL_STORAGE_DIR, mainView.sd_card_name)
+                setDestination(DEFAULT_INTERNAL_STORAGE_DIR, mainView.destination_name)
             }
             else {
                 mainView.storage_select_radio_group.check(mainView.sd_card_radio_button.id)
@@ -624,7 +527,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             when(checkedId){
 
                 R.id.internal_storage_radio_button ->
-                    setDestination(DEFAULT_INTERNAL_STORAGE_DIR, mainView.sd_card_name)
+                    setDestination(DEFAULT_INTERNAL_STORAGE_DIR, mainView.destination_name)
 
                 R.id.sd_card_radio_button -> {
                     val sdCardProbableDirs = commonTools.getSdCardPaths()
@@ -644,7 +547,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                             mainView.internal_storage_radio_button.isChecked = true
                         }
 
-                        1 -> setDestination(sdCardProbableDirs[0] + "/Migrate", mainView.sd_card_name)
+                        1 -> setDestination(sdCardProbableDirs[0] + "/Migrate", mainView.destination_name)
 
                         else -> {
 
@@ -672,11 +575,11 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                                     .setCancelable(false)
                                     .setNegativeButton(android.R.string.cancel) {_, _ ->
                                         mainView.internal_storage_radio_button.isChecked = true
-                                        setDestination(DEFAULT_INTERNAL_STORAGE_DIR, mainView.sd_card_name)
+                                        setDestination(DEFAULT_INTERNAL_STORAGE_DIR, mainView.destination_name)
                                     }
                                     .setPositiveButton(android.R.string.cancel) { _, _ ->
                                         setDestination(sdCardProbableDirs[sdGroup.checkedRadioButtonId] + "/Migrate",
-                                                mainView.sd_card_name)
+                                                mainView.destination_name)
                                     }
                                     .show()
 
@@ -714,8 +617,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                                 backupName = this
                                 waitingDialog.show()
 
-                                makeAppPackets = MakeAppPackets(JOBCODE_MAKE_APP_PACKETS, this@ExtraBackupsKotlin, destination, appListCopied,
-                                        dialogView)
+                                makeAppPackets = MakeAppPackets(JOBCODE_MAKE_APP_PACKETS, this@ExtraBackupsKotlin, destination, dialogView)
                                 makeAppPackets?.execute()
                             }
 
@@ -1062,7 +964,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     private fun updateInstallers(newAppList: ArrayList<BackupDataPacketKotlin>, selfCall: Boolean = false){
 
-        if (appListCopied.size == 0)
+        if (appBackupDataPackets.size == 0)
         {
             installer_selected_status.visibility = View.VISIBLE
             installer_selected_status.text = getString(R.string.no_app_selected)
@@ -1070,18 +972,18 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             return
         }
         else {
-            if (!selfCall) appListCopied.clear()
+            if (!selfCall) appBackupDataPackets.clear()
             var n = 0
             newAppList.forEach {
-                if (!selfCall) appListCopied.add(it)
+                if (!selfCall) appBackupDataPackets.add(it)
                 if (it.installerName == PACKAGE_NAME_PLAY_STORE || it.installerName == PACKAGE_NAME_FDROID) n++
             }
             installer_selected_status.visibility = View.VISIBLE
-            installer_selected_status.text = "$n ${getString(R.string.of)} ${appListCopied.size}"
+            installer_selected_status.text = "$n ${getString(R.string.of)} ${appBackupDataPackets.size}"
             installers_main_item.isClickable = true
             installers_main_item.setOnClickListener {
                 doWaitingJob {
-                    loadInstallers = LoadInstallersForSelection(JOBCODE_LOAD_INSTALLERS, this, appListCopied)
+                    loadInstallers = LoadInstallersForSelection(JOBCODE_LOAD_INSTALLERS, this, appBackupDataPackets)
                     loadInstallers?.execute()
                 }
             }

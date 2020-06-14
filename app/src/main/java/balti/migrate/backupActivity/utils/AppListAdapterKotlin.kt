@@ -14,8 +14,8 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import balti.migrate.AppInstance
 import balti.migrate.R
-import balti.migrate.backupActivity.BackupActivityKotlin.Companion.appList
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAMES_PACKAGE_INSTALLER
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
@@ -44,6 +44,7 @@ class AppListAdapterKotlin(val context: Context,
     private var permissionAllChangeFromScanning = false
     private var externalDataSetChanged = true
     private val iconTools by lazy { IconTools() }
+    private val appList by lazy { AppInstance.appBackupDataPackets }
 
     init {
         appList.sortWith(Comparator { o1, o2 ->
