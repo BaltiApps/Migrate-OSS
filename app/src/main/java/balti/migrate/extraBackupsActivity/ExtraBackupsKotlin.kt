@@ -9,6 +9,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
@@ -19,6 +20,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import balti.migrate.AppInstance.Companion.adbState
 import balti.migrate.AppInstance.Companion.appBackupDataPackets
+//import balti.migrate.AppInstance.Companion.appBackupDataPackets
 import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.AppInstance.Companion.callsList
 import balti.migrate.AppInstance.Companion.contactsList
@@ -26,6 +28,7 @@ import balti.migrate.AppInstance.Companion.doBackupInstallers
 import balti.migrate.AppInstance.Companion.dpiText
 import balti.migrate.AppInstance.Companion.fontScale
 import balti.migrate.AppInstance.Companion.keyboardText
+import balti.migrate.AppInstance.Companion.selectedBackupDataPackets
 import balti.migrate.AppInstance.Companion.smsList
 import balti.migrate.AppInstance.Companion.wifiData
 import balti.migrate.R
@@ -57,6 +60,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CALLS_PERMISSION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CONTACT_PERMISSION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
@@ -196,9 +200,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             }
 
             if (!isAnyRunning) {
-                if (appBackupDataPackets.size > 0 || do_backup_contacts.isChecked || do_backup_calls.isChecked
+                if (selectedBackupDataPackets.isNotEmpty() || do_backup_contacts.isChecked || do_backup_calls.isChecked
                         || do_backup_sms.isChecked || do_backup_dpi.isChecked || do_backup_keyboard.isChecked
-                        || do_backup_installers.isChecked || do_backup_adb.isChecked || do_backup_wifi.isChecked || do_backup_fontScale.isChecked) {                  //extras_markers
+                        || do_backup_adb.isChecked || do_backup_wifi.isChecked || do_backup_fontScale.isChecked) {                  //extras_markers
+                    Log.d(DEBUG_TAG, "askforname")
                     askForName()
                 }
             } else {
@@ -246,6 +251,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             }
             do_backup_installers.isChecked = true
         }
+
+        if (selectedBackupDataPackets.isEmpty())
+            no_app_selected_label.text = getString(R.string.no_app_selected)
+        else no_app_selected_label.text = getString(R.string.apps_selected) + " ${selectedBackupDataPackets.size}/${appBackupDataPackets.size}"
     }
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {        //extras_markers
@@ -373,7 +382,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
         } else if (buttonView == do_backup_installers){
             if (isChecked){
-                updateInstallers(appBackupDataPackets, true)
+                updateInstallers(selectedBackupDataPackets, true)
             }
             else deselectExtra(null, installers_main_item, installer_selected_status, loadInstallers)
             doBackupInstallers = isChecked
@@ -964,7 +973,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     private fun updateInstallers(newAppList: ArrayList<BackupDataPacketKotlin>, selfCall: Boolean = false){
 
-        if (appBackupDataPackets.size == 0)
+        if (selectedBackupDataPackets.isEmpty())
         {
             installer_selected_status.visibility = View.VISIBLE
             installer_selected_status.text = getString(R.string.no_app_selected)
@@ -972,18 +981,20 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             return
         }
         else {
-            if (!selfCall) appBackupDataPackets.clear()
+            if (!selfCall) selectedBackupDataPackets.clear()
             var n = 0
             newAppList.forEach {
-                if (!selfCall) appBackupDataPackets.add(it)
+                if (!selfCall) selectedBackupDataPackets.add(it)
                 if (it.installerName == PACKAGE_NAME_PLAY_STORE || it.installerName == PACKAGE_NAME_FDROID) n++
+                if (selectedBackupDataPackets.none { s -> s.PACKAGE_INFO.packageName != it.PACKAGE_INFO.packageName }) Log.d(DEBUG_TAG, "missing: ${it.PACKAGE_INFO.packageName}")
             }
+
             installer_selected_status.visibility = View.VISIBLE
-            installer_selected_status.text = "$n ${getString(R.string.of)} ${appBackupDataPackets.size}"
+            installer_selected_status.text = "$n ${getString(R.string.of)} ${selectedBackupDataPackets.size}"
             installers_main_item.isClickable = true
             installers_main_item.setOnClickListener {
                 doWaitingJob {
-                    loadInstallers = LoadInstallersForSelection(JOBCODE_LOAD_INSTALLERS, this, appBackupDataPackets)
+                    loadInstallers = LoadInstallersForSelection(JOBCODE_LOAD_INSTALLERS, this, selectedBackupDataPackets)
                     loadInstallers?.execute()
                 }
             }

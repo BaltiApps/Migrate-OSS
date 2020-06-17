@@ -33,6 +33,7 @@ class AppInstance: Application() {
         val callsList = ArrayList<CallsDataPacketsKotlin>(0)
         val smsList = ArrayList<SmsDataPacketKotlin>(0)
         val appBackupDataPackets by lazy { ArrayList<BackupDataPacketKotlin>(0) }
+        val selectedBackupDataPackets by lazy { ArrayList<BackupDataPacketKotlin>(0) }
         var dpiText : String? = null
         var keyboardText : String? = null
         var adbState : Int? = null

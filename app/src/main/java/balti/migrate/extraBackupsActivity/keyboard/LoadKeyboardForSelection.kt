@@ -194,7 +194,7 @@ class LoadKeyboardForSelection (private val jobCode: Int, val context: Context,
     }
 
     private fun isKeyboardInAppList(packageName: String): Boolean{
-        AppInstance.appBackupDataPackets.forEach{
+        AppInstance.selectedBackupDataPackets.forEach{
             if (it.PACKAGE_INFO.packageName == packageName) return true
         }
         return false

@@ -14,6 +14,7 @@ import android.widget.AdapterView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import balti.migrate.AppInstance.Companion.appBackupDataPackets
+import balti.migrate.AppInstance.Companion.selectedBackupDataPackets
 import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.backupActivity.utils.AppListAdapterKotlin
@@ -25,6 +26,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FILE_APPS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_APPS_WARNING
+import balti.module.baltitoolbox.functions.Misc.doBackgroundTask
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.putPrefBoolean
@@ -194,7 +196,14 @@ class BackupActivityKotlin : AppCompatActivity() {
         }
 
         backupActivityNext.setOnClickListener {
-            startActivity(Intent(this, ExtraBackupsKotlin::class.java))
+            doBackgroundTask({
+                selectedBackupDataPackets.run {
+                    clear()
+                    addAll(appBackupDataPackets.filter { it.APP || it.DATA || it.PERMISSION })
+                }
+            }, {
+                startActivity(Intent(this, ExtraBackupsKotlin::class.java))
+            })
         }
 
         selectAll.setOnClickListener {

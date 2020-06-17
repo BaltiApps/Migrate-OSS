@@ -2,8 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/app_list_bg"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".extraBackupsActivity.ExtraBackupsKotlin">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -45,6 +47,20 @@
             android:src="@drawable/ic_help" />
 
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/no_app_selected_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/no_app_selected"
+        android:textColor="@color/colorAccent"
+        android:textStyle="bold"
+        android:background="@color/extraItemBg"
+        android:padding="@dimen/large_padding_width"
+        android:drawableStart="@drawable/ic_info"
+        android:gravity="center_vertical"
+        android:drawablePadding="@dimen/large_padding_width"
+        />
 
     <ScrollView
         android:layout_width="match_parent"

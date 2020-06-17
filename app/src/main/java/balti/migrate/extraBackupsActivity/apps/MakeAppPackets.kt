@@ -12,9 +12,9 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import balti.migrate.AppInstance
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.AppInstance.Companion.RESERVED_SPACE
+import balti.migrate.AppInstance.Companion.selectedBackupDataPackets
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
@@ -44,7 +44,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
     private val commonTools by lazy { CommonToolsKotlin(context) }
     private val pm by lazy { context.packageManager }
     private val appPackets by lazy { ArrayList<AppPacket>(0) }
-    private val appList by lazy { AppInstance.appBackupDataPackets }
+    private val appList by lazy { selectedBackupDataPackets }
 
     private var appsScanned = 0
 

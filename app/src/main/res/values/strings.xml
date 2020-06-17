@@ -248,6 +248,7 @@
     <string name="reading">Reading</string>
     <string name="reading_error">Error reading</string>
     <string name="no_app_selected">No app selected!</string>
+    <string name="apps_selected">Apps selected:</string>
     <string name="filtering_apps">Filtering apps</string>
     <string name="tap_to_see_values">Tap to see values</string>
     <string name="adb_enabled">ADB debugging enabled</string>
