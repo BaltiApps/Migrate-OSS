@@ -201,6 +201,13 @@ class CommonToolsKotlin(val context: Context? = null) {
         val PREF_MANUAL_SYSTEM = "manual_system"
         val PREF_MANUAL_BUILDPROP = "manual_buildProp"
 
+        val PREF_BACKUP_SMS = "last_sms_backup_state"
+        val PREF_BACKUP_CALLS = "last_calls_backup_state"
+        val PREF_BACKUP_INSTALLERS = "last_installers_backup_state"
+        val PREF_BACKUP_ADB = "last_adb_state"
+        val PREF_BACKUP_FONTSCALE = "last_fontscale_state"
+        val PREF_BACKUP_DPI = "last_dpi_state"
+
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
         val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter
         val PROPERTY_PERMISSION_SELECTION = "permission"        // used to set property in AppListAdapter

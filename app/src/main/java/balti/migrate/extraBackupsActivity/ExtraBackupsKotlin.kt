@@ -81,6 +81,12 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_WIFI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_AUTOSELECT_EXTRAS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_ADB
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_CALLS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_DPI
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_FONTSCALE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_INSTALLERS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_STOCK_WARNING
@@ -238,8 +244,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
 
         if (getPrefBoolean(PREF_AUTOSELECT_EXTRAS, true)) {        //extras_markers
-            val isSmsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
-            val isCallsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
+            val isSmsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED && getPrefBoolean(PREF_BACKUP_SMS, false)
+            val isCallsGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED && getPrefBoolean(PREF_BACKUP_CALLS, false)
             val isSmsAndCallsGranted = isSmsGranted && isCallsGranted
 
             when {
@@ -249,7 +255,12 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 isCallsGranted -> do_backup_calls.isChecked = true
                 isSmsGranted -> do_backup_sms.isChecked = true
             }
-            do_backup_installers.isChecked = true
+            do_backup_installers.isChecked = getPrefBoolean(PREF_BACKUP_INSTALLERS, true)
+            if (!getPrefBoolean(PREF_SHOW_STOCK_WARNING, true)){
+                do_backup_adb.isChecked = getPrefBoolean(PREF_BACKUP_ADB, false)
+                do_backup_dpi.isChecked = getPrefBoolean(PREF_BACKUP_DPI, false)
+                do_backup_fontScale.isChecked = getPrefBoolean(PREF_BACKUP_FONTSCALE, false)
+            }
         }
 
         if (selectedBackupDataPackets.isEmpty())
@@ -323,6 +334,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
             } else deselectExtra(smsList, sms_main_item, sms_selected_status, readSms, sms_read_progress)
 
+            putPrefBoolean(PREF_BACKUP_SMS, isChecked)
+
         } else if (buttonView == do_backup_calls) {
 
             if (isChecked) {
@@ -330,6 +343,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                         arrayOf(Manifest.permission.READ_CALL_LOG),
                         CALLS_PERMISSION)
             } else deselectExtra(callsList, calls_main_item, calls_selected_status, readCalls, calls_read_progress)
+
+            putPrefBoolean(PREF_BACKUP_CALLS, isChecked)
 
         } else if (buttonView == do_backup_dpi) {
             if (isChecked) {
@@ -349,6 +364,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 deselectExtra(null, dpi_main_item, dpi_selected_status, readDpi, dpi_read_progress, sal_dpi)
             }
 
+            putPrefBoolean(PREF_BACKUP_DPI, isChecked)
+
         } else if (buttonView == do_backup_adb) {
             if (isChecked) {
 
@@ -366,6 +383,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 adbState = null
                 deselectExtra(null, adb_main_item, adb_selected_status, readAdb, adb_read_progress, sal_adb)
             }
+
+            putPrefBoolean(PREF_BACKUP_ADB, isChecked)
 
         } else if (buttonView == do_backup_keyboard) {
 
@@ -385,7 +404,9 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 updateInstallers(selectedBackupDataPackets, true)
             }
             else deselectExtra(null, installers_main_item, installer_selected_status, loadInstallers)
+
             doBackupInstallers = isChecked
+            putPrefBoolean(PREF_BACKUP_INSTALLERS, isChecked)
 
         } else if (buttonView == do_backup_wifi){
             if (isChecked) {
@@ -421,6 +442,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 fontScale = null
                 deselectExtra(null, fontScale_main_item, fontScale_selected_status, readFontScale, fontScale_read_progress, sal_fontScale)
             }
+
+            putPrefBoolean(PREF_BACKUP_FONTSCALE, isChecked)
         }
 
     }
