@@ -102,6 +102,7 @@ class CommonToolsKotlin(val context: Context? = null) {
         val EXTRA_WARNINGS = "warnings"
         val EXTRA_TOTAL_TIME = "total_time"
         val EXTRA_IS_CANCELLED = "isCancelled"
+        val EXTRA_FLASHER_ONLY = "flasherOnly"
 
         val ERR_ZIP_TRY_CATCH = "ZIP_TRY_CATCH"
         val ERR_VERIFICATION_TRY_CATCH = "VERIFICATION_TRY_CATCH"

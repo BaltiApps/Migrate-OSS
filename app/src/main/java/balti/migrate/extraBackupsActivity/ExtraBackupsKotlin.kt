@@ -64,6 +64,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_CALLS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_CONTACTS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_INSTALLERS
@@ -133,6 +134,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     private var loadKeyboard: LoadKeyboardForSelection? = null
     private var loadInstallers: LoadInstallersForSelection? = null
+
+    private var flasherOnlyBackup = false
 
     private val dialogView by lazy { View.inflate(this, R.layout.please_wait, null) }
     private val waitingDialog by lazy {
@@ -577,13 +580,14 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
 
         mainView.migrate_flasher_only.apply {
-            isChecked = !getPrefBoolean(PREF_SHOW_FLASHER_ONLY_WARNING, true)
-                    && getPrefBoolean(PREF_USE_FLASHER_ONLY, false)
             setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked && getPrefBoolean(PREF_SHOW_FLASHER_ONLY_WARNING, true))
                     showFlasherOnlyWarning(true)
                 putPrefBoolean(PREF_USE_FLASHER_ONLY, isChecked)
+                flasherOnlyBackup = isChecked
             }
+            isChecked = !getPrefBoolean(PREF_SHOW_FLASHER_ONLY_WARNING, true)
+                    && getPrefBoolean(PREF_USE_FLASHER_ONLY, false)
         }
 
         getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR).run {
@@ -696,7 +700,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                                 backupName = this
                                 waitingDialog.show()
 
-                                makeAppPackets = MakeAppPackets(JOBCODE_MAKE_APP_PACKETS, this@ExtraBackupsKotlin, destination, dialogView)
+                                makeAppPackets = MakeAppPackets(JOBCODE_MAKE_APP_PACKETS, this@ExtraBackupsKotlin, destination, dialogView, flasherOnlyBackup)
                                 makeAppPackets?.execute()
                             }
 
@@ -943,6 +947,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                             Intent(this, BackupServiceKotlin::class.java).apply {
                                 putExtra(EXTRA_DESTINATION, destination)
                                 putExtra(EXTRA_BACKUP_NAME, backupName)
+                                putExtra(EXTRA_FLASHER_ONLY, flasherOnlyBackup)
                             }.run {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                     startForegroundService(this)

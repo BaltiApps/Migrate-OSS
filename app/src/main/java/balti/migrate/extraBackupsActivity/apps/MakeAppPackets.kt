@@ -35,7 +35,8 @@ import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import kotlinx.android.synthetic.main.please_wait.view.*
 import java.io.*
 
-class MakeAppPackets(private val jobCode: Int, private val context: Context, private val destination: String, private val dialogView: View):
+class MakeAppPackets(private val jobCode: Int, private val context: Context, private val destination: String,
+                     private val dialogView: View, private val flasherOnly: Boolean):
         AsyncCoroutineTask() {
 
     private val onJobCompletion by lazy { context as OnJobCompletion }

@@ -50,6 +50,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ON_COMPLETE_TASK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ERRORS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_CANCELLED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_PERCENTAGE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE
@@ -109,6 +110,9 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         private set
 
         var cancelAll = false
+        private set
+
+        var flasherOnly = false
         private set
     }
 
@@ -357,6 +361,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                 if (!isBackupInitiated) {
                     destination = getStringExtra(EXTRA_DESTINATION)
                     backupName = getStringExtra(EXTRA_BACKUP_NAME)
+                    flasherOnly = getBooleanExtra(EXTRA_FLASHER_ONLY, false)
                     startBackup()
                 }
             }
