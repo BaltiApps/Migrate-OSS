@@ -1,5 +1,6 @@
 package balti.migrate.extraBackupsActivity
 
+//import balti.migrate.AppInstance.Companion.appBackupDataPackets
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
@@ -20,7 +21,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import balti.migrate.AppInstance.Companion.adbState
 import balti.migrate.AppInstance.Companion.appBackupDataPackets
-//import balti.migrate.AppInstance.Companion.appBackupDataPackets
 import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.AppInstance.Companion.callsList
 import balti.migrate.AppInstance.Companion.contactsList
@@ -89,9 +89,12 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_INSTALLER
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_FLASHER_ONLY_WARNING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_STOCK_WARNING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SMS_AND_CALLS_PERMISSION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SMS_PERMISSION
+import balti.module.baltitoolbox.functions.Misc.playStoreLink
 import balti.module.baltitoolbox.functions.Misc.showErrorDialog
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
@@ -101,6 +104,7 @@ import balti.module.baltitoolbox.functions.SharedPrefs.putPrefString
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import kotlinx.android.synthetic.main.ask_for_backup_name.view.*
 import kotlinx.android.synthetic.main.extra_backups.*
+import kotlinx.android.synthetic.main.flasher_only_warning.view.*
 import kotlinx.android.synthetic.main.please_wait.*
 import java.io.File
 import java.text.SimpleDateFormat
@@ -209,7 +213,6 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 if (selectedBackupDataPackets.isNotEmpty() || do_backup_contacts.isChecked || do_backup_calls.isChecked
                         || do_backup_sms.isChecked || do_backup_dpi.isChecked || do_backup_keyboard.isChecked
                         || do_backup_adb.isChecked || do_backup_wifi.isChecked || do_backup_fontScale.isChecked) {                  //extras_markers
-                    Log.d(DEBUG_TAG, "askforname")
                     askForName()
                 }
             } else {
@@ -532,10 +535,54 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         mainView.backup_name_edit_text.setSingleLine(true)
         mainView.destination_name.text = destination
 
+        fun showFlasherOnlyWarning(fromPreference: Boolean){
+
+            val flasherWarning = View.inflate(this, R.layout.flasher_only_warning, null)
+            flasherWarning.get_flasher_button.setOnClickListener {
+                playStoreLink("balti.migrate.flasher")
+            }
+
+            val ad = AlertDialog.Builder(this).apply {
+                setView(flasherWarning)
+                setIcon(R.drawable.ic_error)
+            }
+
+            if (fromPreference){
+                flasherWarning.flasher_warning_checkbox.visibility = View.VISIBLE
+                ad.apply {
+                    setPositiveButton(R.string.proceed) {_, _ ->
+                        putPrefBoolean(PREF_SHOW_FLASHER_ONLY_WARNING, !flasherWarning.flasher_warning_checkbox.isChecked)
+                    }
+                    setNegativeButton(R.string.disable_this) { _, _ ->
+                        mainView.migrate_flasher_only.isChecked = false
+                    }
+                    setCancelable(false)
+                }.show()
+            }
+            else {
+                flasherWarning.flasher_warning_checkbox.visibility = View.GONE
+                ad.setPositiveButton(R.string.close, null).show()
+            }
+        }
+
+        mainView.migrate_flasher_only_warning_button.setOnClickListener {
+            showFlasherOnlyWarning(false)
+        }
+
         mainView.ignore_cache_checkbox.apply {
             isChecked = getPrefBoolean(PREF_IGNORE_APP_CACHE, false)
             setOnCheckedChangeListener { _, isChecked ->
                 putPrefBoolean(PREF_IGNORE_APP_CACHE, isChecked, true)
+            }
+        }
+
+        mainView.migrate_flasher_only.apply {
+            isChecked = !getPrefBoolean(PREF_SHOW_FLASHER_ONLY_WARNING, true)
+                    && getPrefBoolean(PREF_USE_FLASHER_ONLY, false)
+            setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked && getPrefBoolean(PREF_SHOW_FLASHER_ONLY_WARNING, true))
+                    showFlasherOnlyWarning(true)
+                putPrefBoolean(PREF_USE_FLASHER_ONLY, isChecked)
             }
         }
 

@@ -63,11 +63,36 @@
             android:layout_height="@dimen/small_padding_width"/>
 
         <CheckBox
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/ignore_cache"
             android:id="@+id/ignore_cache_checkbox"
             />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
+
+            <CheckBox
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/migrate_flasher_only_backup"
+                android:id="@+id/migrate_flasher_only"
+                />
+
+            <ImageButton
+                android:id="@+id/migrate_flasher_only_warning_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_warning"
+                android:backgroundTint="@android:color/transparent"
+                />
+
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -213,6 +213,7 @@
     <string name="sd_card">SD card</string>
     <string name="advanced_options">Advanced options</string>
     <string name="ignore_cache">Ignore app cache</string>
+    <string name="migrate_flasher_only_backup">Migrate-flasher-only backup</string>
 
     <!--learn_about_sd_card.xml-->
     <string name="p1">1. SD card support is experimental, and requires a magisk module.</string>
@@ -350,6 +351,13 @@
     <string name="error_occurred">Error occurred!!</string>
     <string name="wait_while_reading_data">Data is being read</string>
     <string name="wait_while_reading_data_desc">Please wait till the data is completely read. Try again later.</string>
+    <string name="flasher_only_head">Only for Migrate Flasher users!</string>
+
+    <!--flasher_only_warning.xml-->
+    <string name="flasher_only_desc1">You will be restore the backup <b>ONLY</b> using the <b>Migrate Flasher</b> app.</string>
+    <string name="flasher_only_desc2"><b>You will not be able to flash the backup using TWRP!!</b></string>
+    <string name="disable_this">Disable this!</string>
+    <string name="get_on_google_play">Get on Google Play</string>
 
     <!--extra_item_selector.xml-->
     <string name="sms_selector_label">Select SMS</string>

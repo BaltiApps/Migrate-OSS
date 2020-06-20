@@ -207,6 +207,8 @@ class CommonToolsKotlin(val context: Context? = null) {
         val PREF_BACKUP_ADB = "last_adb_state"
         val PREF_BACKUP_FONTSCALE = "last_fontscale_state"
         val PREF_BACKUP_DPI = "last_dpi_state"
+        val PREF_SHOW_FLASHER_ONLY_WARNING = "flasher_only_warning"
+        val PREF_USE_FLASHER_ONLY = "use_flasher_only"
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
         val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter
