@@ -5,36 +5,37 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.ProgressBar
 import android.widget.TextView
+import balti.module.baltitoolbox.functions.Misc.tryIt
 
 class ViewOperations(val context: Context) {
 
     fun visibilitySet(view: View, mode: Int){
-        try {view.visibility = mode} catch (e: Exception){}
+        tryIt {view.visibility = mode}
     }
 
     fun enableSet(view: View, mode: Boolean){
-        try {view.isEnabled = mode} catch (e: Exception){}
+        tryIt {view.isEnabled = mode}
     }
 
     fun clickableSet(view: View, mode: Boolean){
-        try {view.isClickable = mode} catch (e: Exception){}
+        tryIt {view.isClickable = mode}
     }
 
     fun checkSet(view: CheckBox, mode: Boolean){
-        try {view.isChecked = mode} catch (e: Exception){}
+        tryIt {view.isChecked = mode}
     }
 
     fun progressSet(view: ProgressBar, p: Int, max: Int = -1){
-        try {if (max > 0) view.max = max} catch (e: Exception){}
-        try {view.progress = p} catch (e: Exception){}
+        tryIt {if (max > 0) view.max = max}
+        tryIt {view.progress = p}
     }
 
     fun textSet(view: TextView, text: String){
-        try {view.text = text} catch (e: Exception){}
+        tryIt {view.text = text}
     }
 
     fun textSet(view: TextView, resId: Int){
-        try {view.text = getStringFromRes(resId)} catch (e: Exception){}
+        tryIt {view.text = getStringFromRes(resId)}
     }
 
     fun getStringFromRes(resId: Int): String{
@@ -46,7 +47,7 @@ class ViewOperations(val context: Context) {
     }
 
     fun doSomething(f:() -> Unit){
-        try { f() } catch (e: Exception){}
+        tryIt { f() }
     }
 
 }
