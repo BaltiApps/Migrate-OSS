@@ -3,6 +3,7 @@ package balti.migrate.backupEngines.engines
 import android.os.Build
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
+import balti.migrate.backupEngines.BackupServiceKotlin.Companion.flasherOnly
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.containers.ZipAppBatch
@@ -143,7 +144,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             }
 
             // extract app files
-            val packets = zipAppBatch.zipPackets
+            val packets = zipAppBatch.zipAppPackets
             val size = packets.size
             for (c in packets.indices) {
 
@@ -296,25 +297,30 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
         try {
 
-            val title = getTitle(R.string.making_updater_script)
+            val title =
+                    if (flasherOnly) getTitle(R.string.making_updater_script)
+            else getTitle(R.string.recording_raw_list)
 
             resetBroadcast(true, title)
 
             makePackageData()
-            extractToBackup("busybox", actualDestination)
-            extractToBackup("update-binary", "$actualDestination/META-INF/com/google/android/")
-            extractToBackup("mount_script.sh", actualDestination)
-            extractToBackup("prep.sh", actualDestination)
-            extractToBackup("mover.sh", actualDestination)
-            extractToBackup("helper_unpacking_script.sh", actualDestination)
-            extractToBackup("verify.sh", actualDestination)
-            extractToBackup("MigrateHelper.apk", "$actualDestination/system/app/MigrateHelper/")
 
-            extractToBackup(getBusyboxAssetName(), actualDestination)
+            if (!flasherOnly) {
+                extractToBackup("busybox", actualDestination)
+                extractToBackup("update-binary", "$actualDestination/META-INF/com/google/android/")
+                extractToBackup("mount_script.sh", actualDestination)
+                extractToBackup("prep.sh", actualDestination)
+                extractToBackup("mover.sh", actualDestination)
+                extractToBackup("helper_unpacking_script.sh", actualDestination)
+                extractToBackup("verify.sh", actualDestination)
+                extractToBackup("MigrateHelper.apk", "$actualDestination/system/app/MigrateHelper/")
+                extractToBackup(getBusyboxAssetName(), actualDestination)
 
-            writeManualConfig(FILE_MIGRATE_CACHE_MANUAL, PREF_MANUAL_MIGRATE_CACHE)
-            writeManualConfig(FILE_SYSTEM_MANUAL, PREF_MANUAL_SYSTEM)
-            writeManualConfig(FILE_BUILDPROP_MANUAL, PREF_MANUAL_BUILDPROP)
+                writeManualConfig(FILE_MIGRATE_CACHE_MANUAL, PREF_MANUAL_MIGRATE_CACHE)
+                writeManualConfig(FILE_SYSTEM_MANUAL, PREF_MANUAL_SYSTEM)
+                writeManualConfig(FILE_BUILDPROP_MANUAL, PREF_MANUAL_BUILDPROP)
+            }
+
 
             val rawList = File(actualDestination, FILE_RAW_LIST)
             try {
@@ -361,7 +367,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 }
             }
 
-            makeUpdaterScript()
+            if (!flasherOnly) makeUpdaterScript()
         }
         catch (e: Exception){
             e.printStackTrace()

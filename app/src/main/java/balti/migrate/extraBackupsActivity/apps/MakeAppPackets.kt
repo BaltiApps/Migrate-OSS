@@ -327,12 +327,14 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
         }
 
         // check if any app is there which is too large before comparing with device storage
-        val bigAppsNameConcat = StringBuilder("")
-        appPackets.forEach {
-            if ((it.dataSizeBytes + it.systemSizeBytes) > (MAX_WORKING_SIZE - RESERVED_SPACE)) bigAppsNameConcat.append("${it.appName}\n")
-        }
-        if (bigAppsNameConcat.toString().trim() != ""){
-            return arrayOf(false, vOp.getStringFromRes(R.string.cannot_split), bigAppsNameConcat.toString())
+        if (!flasherOnly) {
+            val bigAppsNameConcat = StringBuilder("")
+            appPackets.forEach {
+                if ((it.dataSizeBytes + it.systemSizeBytes) > (MAX_WORKING_SIZE - RESERVED_SPACE)) bigAppsNameConcat.append("${it.appName}\n")
+            }
+            if (bigAppsNameConcat.toString().trim() != "") {
+                return arrayOf(false, vOp.getStringFromRes(R.string.cannot_split), bigAppsNameConcat.toString())
+            }
         }
 
         try {

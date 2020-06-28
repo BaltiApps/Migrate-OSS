@@ -5,6 +5,7 @@ import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.AppInstance.Companion.RESERVED_SPACE
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
+import balti.migrate.backupEngines.BackupServiceKotlin.Companion.flasherOnly
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.containers.ZipAppBatch
@@ -104,12 +105,16 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
             shareProgress("${engineContext.getString(R.string.total_extra_size)}: " +
                     "${getHumanReadableStorageSpace(totalExtrasSize)} ($totalExtrasSize B)", 0)
 
-            doSeparateExtras = totalExtrasSize > 0
-                    && (getPrefBoolean(PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false)
-                        || ((totalAppSize + totalExtrasSize) > (MAX_WORKING_SIZE - RESERVED_SPACE)
-                        && getPrefBoolean(PREF_SEPARATE_EXTRAS_BACKUP, true)
-                        )
-                    )
+            doSeparateExtras =
+                    if (flasherOnly){
+                        totalExtrasSize > 0 && (getPrefBoolean(PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false))
+                    } else {
+                        totalExtrasSize > 0
+                                && (getPrefBoolean(PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false)
+                                || ((totalAppSize + totalExtrasSize) > (MAX_WORKING_SIZE - RESERVED_SPACE)
+                                && getPrefBoolean(PREF_SEPARATE_EXTRAS_BACKUP, true)
+                                ))
+                    }
 
             var firstAdjust = // this is the adjustment size due to extras to be subtracted from first zip in the following cases:
                     when {
@@ -119,7 +124,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
             Log.d(DEBUG_TAG, "first adjust size: $firstAdjust")
 
-            (MAX_WORKING_SIZE - RESERVED_SPACE).run {
+            if (!flasherOnly) (MAX_WORKING_SIZE - RESERVED_SPACE).run {
 
                 val localMax = (this * 0.8).toLong()
                 // Initially set a cap of 80% of max.
@@ -228,6 +233,12 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 }
 
             }
+
+            else {
+                val zb = ArrayList<ZipAppPacket>(0)
+                for (p in allAppZipPackets) zb.add(p)
+                zipBatches.add(ZipAppBatch(zb))
+            }
         }
         catch (e: Exception){
             e.printStackTrace()
@@ -296,7 +307,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                     it.extrasFiles.addAll(newFiles)
 
                     // app files of each zipPacket of each zipBatch
-                    it.zipPackets.forEach {zp ->
+                    it.zipAppPackets.forEach { zp ->
                         newFiles.clear()
                         zp.appFiles.forEach {af ->
 

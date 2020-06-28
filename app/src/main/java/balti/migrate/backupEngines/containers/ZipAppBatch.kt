@@ -5,7 +5,7 @@ import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 
-data class ZipAppBatch(val zipPackets: ArrayList<ZipAppPacket> = ArrayList(0)) {
+data class ZipAppBatch(val zipAppPackets: ArrayList<ZipAppPacket> = ArrayList(0)) {
     var batchSystemSize : Long = 0
     var batchDataSize : Long = 0
     var zipFullSize : Long = 0
@@ -13,7 +13,7 @@ data class ZipAppBatch(val zipPackets: ArrayList<ZipAppPacket> = ArrayList(0)) {
     var partName = ""
     var fileList: File? = null
     init {
-        zipPackets.forEach {
+        zipAppPackets.forEach {
             batchDataSize += it.appPacket_z.dataSizeBytes
             batchSystemSize += it.appPacket_z.systemSizeBytes
             zipFullSize += it.zipPacketSize
@@ -32,7 +32,7 @@ data class ZipAppBatch(val zipPackets: ArrayList<ZipAppPacket> = ArrayList(0)) {
 
         fl.delete()
         BufferedWriter(FileWriter(fl)).run {
-            zipPackets.forEach { zp ->
+            zipAppPackets.forEach { zp ->
                 zp.appFiles.forEach { af ->
                     if (af.name.endsWith(".app") && af.isDirectory && zp.appPacket_z.isSystem) {
                         write("${af.name}_sys\n")

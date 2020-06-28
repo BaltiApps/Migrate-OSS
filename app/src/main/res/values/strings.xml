@@ -299,7 +299,7 @@
     <string name="make_sure_destination_exists">Make sure the destination is mounted and writable.</string>
     <string name="error_detecting_memory">Error detecting device memory</string>
     <string name="error_checking_destination">Error checking destination</string>
-    <string name="cannot_split">Backup is not possible because these apps are too big!</string>
+    <string name="cannot_split">Some apps are too big for backup. You may use flasher-Only backup.</string>
     <string name="part">Part</string>
     <string name="parts">parts</string>
     <string name="of">of</string>
@@ -395,6 +395,7 @@
     <string name="writing_settings">Writing settings</string>
     <string name="making_package_flash_ready">Making package flash ready</string>
     <string name="making_updater_script">Making updater-script</string>
+    <string name="recording_raw_list">Recording file list</string>
     <string name="backing_app_permissions">Backing app permissions</string>
     <string name="verifying_backups">Verifying backup</string>
     <string name="verifying_tar">Verifying_tar</string>
