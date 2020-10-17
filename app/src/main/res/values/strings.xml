@@ -181,6 +181,8 @@
         \u2022 Migrate helper now allows to retry failed apk installs\n
         \u2022 Add a \"Migrate flasher only\" backup option\n
         \u2022 Save app icons as png files\n
+        \u2022 Show number of apps selected for backup in Extra backups screen\n
+        \u2022 Keep screen on when calculating backup size\n
         \u2022 Save last state of selection in extras\n
         \u2022 Don\'t remount /data partition in system test\n
         \u2022 Many under the hood changes\n
