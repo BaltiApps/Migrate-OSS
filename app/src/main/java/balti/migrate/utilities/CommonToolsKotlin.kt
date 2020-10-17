@@ -28,8 +28,8 @@ class CommonToolsKotlin(val context: Context? = null) {
 
     companion object {
 
-        val THIS_VERSION = 32
-        val LAST_SUPPORTED_ANDROID_API = 29
+        val THIS_VERSION = 40
+        val LAST_SUPPORTED_ANDROID_API = 30
 
         val DEBUG_TAG = "migrate_tag"
 

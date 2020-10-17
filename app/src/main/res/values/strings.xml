@@ -24,10 +24,10 @@
     <string name="app_name">Migrate</string>
     <string name="display_name">@string/app_name</string>
     <string name="gpe_label"></string>
-    <string name="current_version_name">3.2</string>
-    <string name="current_version_codename">Mercury</string>
-    <string name="release_state">release</string>
-    <string name="last_tested_label">Last tested on: Android 10</string>
+    <string name="current_version_name">4.0</string>
+    <string name="current_version_codename">Gemini</string>
+    <string name="release_state">alpha</string>
+    <string name="last_tested_label">Last tested on: Android 11</string>
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
@@ -175,12 +175,15 @@
         \u2022 Show warning for first time use.\n
         \u2022 Record raw list of files in backup.\n
     </string>
-    <string name="version_3.2">Version 3.2</string>
-    <string name="version_3.2_content">
-        \u2022 Add a \"Migrate flasher only\" backup option.
-        \u2022 Save app icons as png files.
-        \u2022 Save last state of selection in extras
-        \u2022 Don\'t remount /data partition in system test
+    <string name="version_4.0">Version 4.0</string>
+    <string name="version_4.0_content">
+        \u2022 Compatibility fixes for Android 11\n
+        \u2022 Migrate helper now allows to retry failed apk installs\n
+        \u2022 Add a \"Migrate flasher only\" backup option\n
+        \u2022 Save app icons as png files\n
+        \u2022 Save last state of selection in extras\n
+        \u2022 Don\'t remount /data partition in system test\n
+        \u2022 Many under the hood changes\n
     </string>
 
     <!--activity_main.xml-->
@@ -460,7 +463,7 @@
 
     <!--MainActivityKotlin.kt-->
     <string name="too_fast">Whoa, too fast!!</string>
-    <string name="too_fast_desc">The app has not been explicitly tested on Android version above Pie (9.0).\n\nPlease submit your feedback on whether the app works or not.</string>
+    <string name="too_fast_desc">The app has not been explicitly tested version above Android 11.0.\n\nPlease submit your feedback on whether the app works or not.</string>
     <string name="dont_show_again">Don\'t show again</string>
     <string name="dont_show_stock_warning">Don\'t show again</string>
     <string name="stock_android_rom">Stock android ROM recommended</string>
