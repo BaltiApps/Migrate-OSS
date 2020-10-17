@@ -355,6 +355,9 @@
     <string name="wait_while_reading_data">Data is being read</string>
     <string name="wait_while_reading_data_desc">Please wait till the data is completely read. Try again later.</string>
     <string name="flasher_only_head">Only for Migrate Flasher users!</string>
+    <string name="not_selected">Not selected apps</string>
+    <string name="all_selected">All apps selected</string>
+    <string name="some_apps_are_not_allowed">Some apps are not allowed to be backed up (like Migrate Helper)</string>
 
     <!--flasher_only_warning.xml-->
     <string name="flasher_only_desc1">You will be able to restore the backup <b>ONLY</b> using the <b>Migrate Flasher</b> app.</string>

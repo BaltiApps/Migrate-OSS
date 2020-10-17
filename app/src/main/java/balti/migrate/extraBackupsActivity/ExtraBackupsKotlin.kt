@@ -10,7 +10,6 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
@@ -60,7 +59,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CALLS_PERMISSION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CONTACT_PERMISSION
-import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
@@ -272,6 +270,25 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         if (selectedBackupDataPackets.isEmpty())
             no_app_selected_label.text = getString(R.string.no_app_selected)
         else no_app_selected_label.text = getString(R.string.apps_selected) + " ${selectedBackupDataPackets.size}/${appBackupDataPackets.size}"
+
+        no_app_selected_label.setOnClickListener {
+            if (selectedBackupDataPackets.size != appBackupDataPackets.size){
+                appBackupDataPackets.filter {
+                    selectedBackupDataPackets.none { sp -> sp.PACKAGE_INFO.packageName == it.PACKAGE_INFO.packageName }
+                }.let {
+                    var list = getString(R.string.some_apps_are_not_allowed) + "\n\n" + getString(R.string.not_selected) + ":" +"\n\n"
+                    it.forEach {
+                        list += packageManager.getApplicationLabel(it.PACKAGE_INFO.applicationInfo).toString() + "\n"
+                    }
+                    AlertDialog.Builder(this)
+                            .setTitle(R.string.not_selected)
+                            .setMessage(list)
+                            .setPositiveButton(R.string.close, null)
+                            .show()
+                }
+            }
+            else Toast.makeText(this, R.string.all_selected, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {        //extras_markers
@@ -1061,7 +1078,6 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             newAppList.forEach {
                 if (!selfCall) selectedBackupDataPackets.add(it)
                 if (it.installerName == PACKAGE_NAME_PLAY_STORE || it.installerName == PACKAGE_NAME_FDROID) n++
-                if (selectedBackupDataPackets.none { s -> s.PACKAGE_INFO.packageName != it.PACKAGE_INFO.packageName }) Log.d(DEBUG_TAG, "missing: ${it.PACKAGE_INFO.packageName}")
             }
 
             installer_selected_status.visibility = View.VISIBLE
