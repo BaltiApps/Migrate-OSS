@@ -112,6 +112,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                     .setCancelable(false)
                     .create()
 
+            tryIt { storageHandler.removeCallbacks(storageRunnable) }
+
             loadingDialog?.show()
 
             ActivityCompat.requestPermissions(this,

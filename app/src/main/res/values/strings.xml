@@ -357,7 +357,7 @@
     <string name="flasher_only_head">Only for Migrate Flasher users!</string>
 
     <!--flasher_only_warning.xml-->
-    <string name="flasher_only_desc1">You will be restore the backup <b>ONLY</b> using the <b>Migrate Flasher</b> app.</string>
+    <string name="flasher_only_desc1">You will be able to restore the backup <b>ONLY</b> using the <b>Migrate Flasher</b> app.</string>
     <string name="flasher_only_desc2"><b>You will not be able to flash the backup using TWRP!!</b></string>
     <string name="disable_this">Disable this!</string>
     <string name="get_on_google_play">Get on Google Play</string>
