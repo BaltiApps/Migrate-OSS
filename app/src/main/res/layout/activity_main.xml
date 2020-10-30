@@ -21,7 +21,7 @@
 
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
@@ -103,6 +103,17 @@
 
                 </LinearLayout>
 
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+                <ImageButton
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:backgroundTint="@android:color/transparent"
+                    android:src="@drawable/ic_messages"
+                    android:id="@+id/messages"/>
 
             </LinearLayout>
 
