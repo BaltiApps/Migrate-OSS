@@ -511,6 +511,8 @@
         \n\nTo prevent data loss, please take backup of one small app (with data), then uninstall it and try restoring the app. Check if it is working fine. If you are satisfied, you may then use this app to Migrate to another ROM.
         \n\nAnd as always, keeping a nandroid backup is always a good idea.
     </string>
+    <string name="new_message">New message received!</string>
+    <string name="view">View</string>
 
     <!--AppListAdapter.java-->
     <string name="packageName">Package :</string>

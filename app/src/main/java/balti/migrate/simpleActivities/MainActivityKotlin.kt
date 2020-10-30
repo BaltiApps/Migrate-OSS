@@ -28,16 +28,23 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_RUNNING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_MESSAGE_CONTENT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_SHOW_FIRST_WARNING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_ERRORLOG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MESSAGES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PROGRESSLOG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.LAST_SUPPORTED_ANDROID_API
+import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_ACTIVITY_CODE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_BOARD_URL
+import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_FIELD_LAST_UPDATE_NO
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ANDROID_VERSION_WARNING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ASK_FOR_RATING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FIRST_RUN
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_LAST_MESSAGE_LEVEL
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_LAST_MESSAGE_SNACK_LEVEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TERMINAL_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_VERSION_CURRENT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
@@ -45,6 +52,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_HEA
 import balti.migrate.utilities.CommonToolsKotlin.Companion.TG_DEV_LINK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.TG_LINK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.THIS_VERSION
+import balti.module.baltitoolbox.functions.Misc.doBackgroundTask
 import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
 import balti.module.baltitoolbox.functions.Misc.makeNotificationChannel
 import balti.module.baltitoolbox.functions.Misc.openWebLink
@@ -56,10 +64,14 @@ import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 import balti.module.baltitoolbox.functions.SharedPrefs.putPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.putPrefInt
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
 import kotlinx.android.synthetic.main.please_wait.view.*
+import org.json.JSONObject
 import java.io.File
+import java.io.FileOutputStream
+import java.net.URL
 
 class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -77,6 +89,14 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             storageHandler.postDelayed(this, 1000)
         }
     }}
+
+    private fun startMessageView(content: String) {
+        startActivityForResult(
+                Intent(this, MessagesView::class.java)
+                        .putExtra(EXTRA_MESSAGE_CONTENT, content)
+                , MESSAGE_ACTIVITY_CODE
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -187,6 +207,48 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         showFirstRunWarningIfApplicable()
 
+        val messageFile = File(filesDir, FILE_MESSAGES)
+        messages.setImageResource(R.drawable.ic_messages)
+        doBackgroundTask({
+            tryIt {
+                messageFile.delete()
+                URL(MESSAGE_BOARD_URL).openStream().use { input ->
+                    FileOutputStream(messageFile).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+            }
+        }, {
+            tryIt {
+                if (messageFile.canRead()){
+                    val strBuf = StringBuffer("")
+                    messageFile.readLines().forEach {
+                        strBuf.append("$it\n")
+                    }
+                    val content = strBuf.toString()
+                    val json = JSONObject(content)
+
+                    messages.setOnClickListener {
+                        startMessageView(content)
+                    }
+
+                    val updNo = json.getInt(MESSAGE_FIELD_LAST_UPDATE_NO) 
+                    if ( updNo > getPrefInt(PREF_LAST_MESSAGE_LEVEL, 0))
+                    {
+                        messages.setImageResource(R.drawable.ic_messages_active)
+
+                        if (updNo > getPrefInt(PREF_LAST_MESSAGE_SNACK_LEVEL, 0)){
+                            putPrefInt(PREF_LAST_MESSAGE_SNACK_LEVEL, updNo)
+                            Snackbar.make(messages, getString(R.string.new_message), Snackbar.LENGTH_SHORT).apply {
+                                setAction(R.string.view) {
+                                    startMessageView(content)
+                                }
+                            }.show()
+                        }
+                    }
+                }
+            }
+        })
     }
 
     private fun showFirstRunWarningIfApplicable(){

@@ -60,6 +60,7 @@ class CommonToolsKotlin(val context: Context? = null) {
         val FILE_FILE_LIST = "fileList.txt"
         val FILE_RAW_LIST = "rawList.txt"
         val FILE_PACKAGE_DATA = "package-data.txt"
+        val FILE_MESSAGES = "messages.txt"
 
         val CHANNEL_BACKUP_END = "Backup finished notification"
         val CHANNEL_BACKUP_RUNNING = "Backup running notification"
@@ -286,6 +287,21 @@ class CommonToolsKotlin(val context: Context? = null) {
                 "org.thunderdog.challegram",       // Telegram X
                 "org.telegram.plus"                // Plus messenger
         )
+
+        val MESSAGE_BOARD_URL = "https://raw.githubusercontent.com/SayantanRC/Migrate-files/master/message_board.txt"
+
+        val MESSAGE_FIELD_LAST_UPDATE_NO = "message_update_no"
+        val MESSAGE_FIELD_MESSAGE_ARRAY = "messages"
+        val MESSAGE_FIELD_MESSAGE_NO = "message_no"
+        val MESSAGE_FIELD_MESSAGE_BODY = "message_body"
+        val MESSAGE_FIELD_DATE = "date"
+
+        val PREF_LAST_MESSAGE_LEVEL = "last_message_level"
+        val PREF_LAST_MESSAGE_SNACK_LEVEL = "last_message_snack_level"
+
+        val EXTRA_MESSAGE_CONTENT = "message_content"
+
+        val MESSAGE_ACTIVITY_CODE = 6666
 
         fun isDeletable(f: File): Boolean{
             val d = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
