@@ -26,7 +26,7 @@
     <string name="gpe_label"></string>
     <string name="current_version_name">4.0</string>
     <string name="current_version_codename">Gemini</string>
-    <string name="release_state">alpha</string>
+    <string name="release_state">release</string>
     <string name="last_tested_label">Last tested on: Android 11</string>
 
     <!--about_app.xml-->
