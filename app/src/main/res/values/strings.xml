@@ -178,6 +178,7 @@
     <string name="version_4.0">Version 4.0</string>
     <string name="version_4.0_content">
         \u2022 Compatibility fixes for Android 11\n
+        \u2022 Add Message center to display important announcements.\n
         \u2022 Migrate helper now allows to retry failed apk installs\n
         \u2022 Add a \"Migrate flasher only\" backup option\n
         \u2022 Save app icons as png files\n
