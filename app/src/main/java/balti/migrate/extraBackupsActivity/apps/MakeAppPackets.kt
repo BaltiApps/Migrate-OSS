@@ -27,6 +27,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TERMINAL_METHOD
 import balti.module.baltitoolbox.functions.FileHandlers.getDirLength
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
+import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
@@ -333,7 +334,14 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 if ((it.dataSizeBytes + it.systemSizeBytes) > (MAX_WORKING_SIZE - RESERVED_SPACE)) bigAppsNameConcat.append("${it.appName}\n")
             }
             if (bigAppsNameConcat.toString().trim() != "") {
-                return arrayOf(false, vOp.getStringFromRes(R.string.cannot_split), bigAppsNameConcat.toString())
+
+                fun getGb(bytes: Long): Float = (bytes / 1024.0 / 1024.0 / 1024.0).toFloat()
+
+                return arrayOf(false, vOp.getStringFromRes(R.string.cannot_split),
+                        "\n" + getStringFromRes(R.string.cannot_split_hint) + "\n\n" +
+                                getStringFromRes(R.string.max_zip_size) + " : " + "${getHumanReadableStorageSpace(MAX_WORKING_SIZE)}" + "\n\n" +
+                                getStringFromRes(R.string.too_big_apps) + "\n\n" + bigAppsNameConcat.toString()
+                )
             }
         }
 

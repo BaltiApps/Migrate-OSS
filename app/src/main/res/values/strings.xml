@@ -306,7 +306,9 @@
     <string name="make_sure_destination_exists">Make sure the destination is mounted and writable.</string>
     <string name="error_detecting_memory">Error detecting device memory</string>
     <string name="error_checking_destination">Error checking destination</string>
-    <string name="cannot_split">Some apps are too big for backup. You may use flasher-Only backup.</string>
+    <string name="cannot_split">Some apps are too big for backup.</string>
+    <string name="cannot_split_hint">You may check \"Max zip size\" in Preferences. You may also use flasher-Only backup.</string>
+    <string name="too_big_apps">Too big apps:</string>
     <string name="part">Part</string>
     <string name="parts">parts</string>
     <string name="of">of</string>
