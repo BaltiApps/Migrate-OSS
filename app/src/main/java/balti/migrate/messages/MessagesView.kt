@@ -42,11 +42,15 @@ class MessagesView: AppCompatActivity() {
         else {
             var adapter: MessageAdapter? = null
             doBackgroundTask({
-                adapter = MessageAdapter(this, messages, updateNumber)
+                tryIt {
+                    adapter = MessageAdapter(this, messages, updateNumber)
+                }
                 return@doBackgroundTask 0
             }, {
-                if (adapter != null)
-                    messages_list.adapter = adapter
+                tryIt {
+                    if (adapter != null)
+                        messages_list.adapter = adapter
+                }
             })
         }
 
@@ -57,6 +61,6 @@ class MessagesView: AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        putPrefInt(PREF_LAST_MESSAGE_LEVEL, updateNumber)
+        tryIt { putPrefInt(PREF_LAST_MESSAGE_LEVEL, updateNumber) }
     }
 }

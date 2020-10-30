@@ -221,48 +221,49 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         showFirstRunWarningIfApplicable()
 
-        val messageFile = File(filesDir, FILE_MESSAGES)
-        messages.setImageResource(R.drawable.ic_messages)
-        doBackgroundTask({
-            tryIt {
-                messageFile.delete()
-                URL(MESSAGE_BOARD_URL).openStream().use { input ->
-                    FileOutputStream(messageFile).use { output ->
-                        input.copyTo(output)
-                    }
-                }
-            }
-        }, {
-            tryIt {
-                if (messageFile.canRead()){
-                    val strBuf = StringBuffer("")
-                    messageFile.readLines().forEach {
-                        strBuf.append("$it\n")
-                    }
-                    val content = strBuf.toString()
-                    val json = JSONObject(content)
-
-                    messages.setOnClickListener {
-                        startMessageView(content)
-                    }
-
-                    val updNo = json.getInt(MESSAGE_FIELD_LAST_UPDATE_NO) 
-                    if ( updNo > getPrefInt(PREF_LAST_MESSAGE_LEVEL, 0))
-                    {
-                        messages.setImageResource(R.drawable.ic_messages_active)
-
-                        if (updNo > getPrefInt(PREF_LAST_MESSAGE_SNACK_LEVEL, 0)){
-                            putPrefInt(PREF_LAST_MESSAGE_SNACK_LEVEL, updNo)
-                            Snackbar.make(messages, getString(R.string.new_message), Snackbar.LENGTH_SHORT).apply {
-                                setAction(R.string.view) {
-                                    startMessageView(content)
-                                }
-                            }.show()
+        tryIt {
+            val messageFile = File(filesDir, FILE_MESSAGES)
+            messages.setImageResource(R.drawable.ic_messages)
+            doBackgroundTask({
+                tryIt {
+                    messageFile.delete()
+                    URL(MESSAGE_BOARD_URL).openStream().use { input ->
+                        FileOutputStream(messageFile).use { output ->
+                            input.copyTo(output)
                         }
                     }
                 }
-            }
-        })
+            }, {
+                tryIt {
+                    if (messageFile.canRead()) {
+                        val strBuf = StringBuffer("")
+                        messageFile.readLines().forEach {
+                            strBuf.append("$it\n")
+                        }
+                        val content = strBuf.toString()
+                        val json = JSONObject(content)
+
+                        messages.setOnClickListener {
+                            startMessageView(content)
+                        }
+
+                        val updNo = json.getInt(MESSAGE_FIELD_LAST_UPDATE_NO)
+                        if (updNo > getPrefInt(PREF_LAST_MESSAGE_LEVEL, 0)) {
+                            messages.setImageResource(R.drawable.ic_messages_active)
+
+                            if (updNo > getPrefInt(PREF_LAST_MESSAGE_SNACK_LEVEL, 0)) {
+                                putPrefInt(PREF_LAST_MESSAGE_SNACK_LEVEL, updNo)
+                                Snackbar.make(messages, getString(R.string.new_message), Snackbar.LENGTH_SHORT).apply {
+                                    setAction(R.string.view) {
+                                        startMessageView(content)
+                                    }
+                                }.show()
+                            }
+                        }
+                    }
+                }
+            })
+        }
     }
 
     private fun showFirstRunWarningIfApplicable(){
