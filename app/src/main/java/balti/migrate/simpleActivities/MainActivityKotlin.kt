@@ -22,6 +22,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
+import balti.migrate.messages.MessagesView
 import balti.migrate.preferences.MainPreferenceActivity
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCELLING
@@ -635,6 +636,11 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             false
         }
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == MESSAGE_ACTIVITY_CODE) messages.setImageResource(R.drawable.ic_messages)
     }
 
     override fun onBackPressed() {

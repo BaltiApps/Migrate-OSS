@@ -933,6 +933,12 @@
     <!--ZipItemAdapter.java-->
     <string name="empty">Empty</string>
 
+    <!--messages_activity.xml-->
+    <string name="messages">Messages / Announcements</string>
+
+    <!--MessagesView.kt-->
+    <string name="no_messages">No messages!</string>
+
     <string name="file_list_not_in_zip_batch">File list not present in zipBatch</string>
     <string name="zip_batch_null_updater">Zip Batch is null before updater script</string>
     <string name="zip_batch_null_zipping_engine">Zip Batch is null before starting zipping</string>

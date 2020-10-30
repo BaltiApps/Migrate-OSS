@@ -288,13 +288,15 @@ class CommonToolsKotlin(val context: Context? = null) {
                 "org.telegram.plus"                // Plus messenger
         )
 
-        val MESSAGE_BOARD_URL = "https://raw.githubusercontent.com/SayantanRC/Migrate-files/master/message_board.txt"
+        val MESSAGE_BOARD_URL = "https://gitlab.com/SayantanRC/update-files/-/raw/master/migrate_message_board.txt"
 
         val MESSAGE_FIELD_LAST_UPDATE_NO = "message_update_no"
         val MESSAGE_FIELD_MESSAGE_ARRAY = "messages"
         val MESSAGE_FIELD_MESSAGE_NO = "message_no"
+        val MESSAGE_FIELD_MESSAGE_TITLE = "message_title"
         val MESSAGE_FIELD_MESSAGE_BODY = "message_body"
         val MESSAGE_FIELD_DATE = "date"
+        val MESSAGE_LINK = "message_link"
 
         val PREF_LAST_MESSAGE_LEVEL = "last_message_level"
         val PREF_LAST_MESSAGE_SNACK_LEVEL = "last_message_snack_level"

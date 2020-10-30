@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:id="@+id/message_item_view"
+    android:padding="@dimen/large_padding_width">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Title"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        android:id="@+id/message_item_title"
+        />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/small_padding_width"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Body\nBody"
+        android:id="@+id/message_item_body"/>
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/small_padding_width"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="30 Oct 2020"
+        android:id="@+id/message_item_date"
+        android:textColor="@color/colorAccent"
+        android:textStyle="italic"
+        android:layout_gravity="end"
+        />
+
+</LinearLayout>

@@ -75,6 +75,11 @@
             android:screenOrientation="portrait"
             />
 
+        <activity android:name=".messages.MessagesView"
+            android:screenOrientation="portrait"
+            android:theme="@style/MessagesView"
+            />
+
         <service android:name=".backupEngines.BackupServiceKotlin"/>
 
         <provider
