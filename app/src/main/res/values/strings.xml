@@ -191,6 +191,7 @@
     <!--activity_main.xml-->
     <string name="backupButton">Backup</string>
     <string name="restoreTwrp">Restore by TWRP</string>
+    <string name="restoreFlasher">Restore by Flasher</string>
     <string name="restoreApp">In app restore</string>
     <string name="internal_storage">Internal storage</string>
     <string name="learn_about_sd_card_support">Learn about SD card support</string>
@@ -654,6 +655,10 @@
     <!--restore_6.xml-->
     <string name="step_6">Step 6 -\nDone! Enjoy!</string>
     <string name="step_6_desc">Completed! Enjoy your new ROM!</string>
+
+    <!--restore_by_flasher.xml-->
+    <string name="flasher_desc">Migrate flasher is a new app which allows you to \"flash\" a migrate zip if TWRP fails or your device has no TWRP recovery yet. The actual data restore is then carried out by Migrate helper as usual.</string>
+    <string name="download_the_app">Download the app using below button.</string>
 
     <!--drawer_menu.xml-->
     <string name="aboutThisApp">About this app</string>

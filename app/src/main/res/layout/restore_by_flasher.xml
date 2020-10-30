@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/xlarge_padding_width"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/restoreFlasher"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/xlarge_padding_width"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/flasher_desc"/>
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/xlarge_padding_width"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/download_the_app"/>
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/large_padding_width"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/get_on_google_play"
+        android:backgroundTint="@color/colorButtons"
+        android:id="@+id/get_flasher_button"/>
+
+</LinearLayout>

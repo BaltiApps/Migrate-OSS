@@ -78,6 +78,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_FONTSCAL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_SMS_THEN_CALLS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_WIFI
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_MIGRATE_FLASHER
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_AUTOSELECT_EXTRAS
@@ -565,7 +566,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
             val flasherWarning = View.inflate(this, R.layout.flasher_only_warning, null)
             flasherWarning.get_flasher_button.setOnClickListener {
-                playStoreLink("balti.migrate.flasher")
+                playStoreLink(PACKAGE_MIGRATE_FLASHER)
             }
 
             val ad = AlertDialog.Builder(this).apply {

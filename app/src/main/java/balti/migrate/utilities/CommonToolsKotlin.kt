@@ -305,6 +305,8 @@ class CommonToolsKotlin(val context: Context? = null) {
 
         val MESSAGE_ACTIVITY_CODE = 6666
 
+        val PACKAGE_MIGRATE_FLASHER = "balti.migrate.flasher"
+
         fun isDeletable(f: File): Boolean{
             val d = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
             val parentPath = File(d).absolutePath

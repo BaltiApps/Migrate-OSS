@@ -38,6 +38,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.LAST_SUPPORTED_ANDROI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_ACTIVITY_CODE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_BOARD_URL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_FIELD_LAST_UPDATE_NO
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_MIGRATE_FLASHER
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ANDROID_VERSION_WARNING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ASK_FOR_RATING
@@ -69,6 +70,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.last_log_report.view.*
 import kotlinx.android.synthetic.main.please_wait.view.*
+import kotlinx.android.synthetic.main.restore_by_flasher.view.*
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
@@ -144,6 +146,17 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         restoreMain.setOnClickListener {
             startActivity(Intent(this, RestoreByTwrp::class.java))
+        }
+
+        restoreFlasher.setOnClickListener {
+            val v = View.inflate(this, R.layout.restore_by_flasher, null)
+            v.get_flasher_button.setOnClickListener {
+                playStoreLink(PACKAGE_MIGRATE_FLASHER)
+            }
+            AlertDialog.Builder(this)
+                    .setView(v)
+                    .setNegativeButton(R.string.close, null)
+                    .show()
         }
 
         openPreferences.setOnClickListener {
