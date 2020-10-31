@@ -24,8 +24,13 @@ import balti.migrate.simpleActivities.ProgressShowActivity
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_ALL_APP_SELECTED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FILE_APPS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_APPS_WARNING
+import balti.migrate.utilities.ExclusionsKotlin
+import balti.migrate.utilities.ExclusionsKotlin.Companion.EXCLUDE_APP
+import balti.migrate.utilities.ExclusionsKotlin.Companion.EXCLUDE_DATA
+import balti.migrate.utilities.ExclusionsKotlin.Companion.EXCLUDE_PERMISSION
 import balti.module.baltitoolbox.functions.Misc.doBackgroundTask
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
@@ -196,13 +201,36 @@ class BackupActivityKotlin : AppCompatActivity() {
         }
 
         backupActivityNext.setOnClickListener {
+            val exclusion = ExclusionsKotlin()
+            var isAllAppSelected: Boolean = true
             doBackgroundTask({
                 selectedBackupDataPackets.run {
                     clear()
-                    addAll(appBackupDataPackets.filter { it.APP || it.DATA || it.PERMISSION })
+                    try {
+                        appBackupDataPackets.forEach {
+                            val e = exclusion.returnExclusionState(it.PACKAGE_INFO.packageName)
+                            if (isAllAppSelected) {
+                                if (!e.contains(EXCLUDE_APP) && !it.APP) isAllAppSelected = false
+                                if (!e.contains(EXCLUDE_DATA) && !it.DATA) isAllAppSelected = false
+                                if (!e.contains(EXCLUDE_PERMISSION) && !it.PERMISSION) isAllAppSelected = false
+                            }
+                            if (it.APP || it.DATA || it.PERMISSION) add(it)
+                        }
+                    }
+                    catch (e: Exception){
+                        e.printStackTrace()
+                        isAllAppSelected = false
+                        selectedBackupDataPackets.run {
+                            clear()
+                            addAll(appBackupDataPackets.filter { it.APP || it.DATA || it.PERMISSION })
+                        }
+                    }
                 }
+                return@doBackgroundTask null
             }, {
-                startActivity(Intent(this, ExtraBackupsKotlin::class.java))
+                startActivity(Intent(this, ExtraBackupsKotlin::class.java)
+                        .putExtra(EXTRA_IS_ALL_APP_SELECTED, isAllAppSelected)
+                )
             })
         }
 

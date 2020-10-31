@@ -96,6 +96,7 @@ class CommonToolsKotlin(val context: Context? = null) {
         val EXTRA_PROGRESS_TYPE_WAITING_TO_CANCEL = "waiting_to_cancel"
         val EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH = "making_zip_batch"
 
+        val EXTRA_IS_ALL_APP_SELECTED = "isAllAppsSelected"
         val EXTRA_BACKUP_NAME = "backupName"
         val EXTRA_DESTINATION = "destination"
         val EXTRA_ACTUAL_DESTINATION = "actualDestination"

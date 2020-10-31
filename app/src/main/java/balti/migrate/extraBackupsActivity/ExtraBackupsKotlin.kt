@@ -64,6 +64,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STOR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_ALL_APP_SELECTED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_CALLS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_CONTACTS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_INSTALLERS
@@ -188,6 +189,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         setContentView(R.layout.extra_backups)
 
         destination = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
+        isAllAppsSelected = intent.getBooleanExtra(EXTRA_IS_ALL_APP_SELECTED, false)
 
         commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
         commonTools.LBM?.sendBroadcast(Intent(ACTION_REQUEST_BACKUP_DATA))
