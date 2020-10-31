@@ -3,6 +3,7 @@ package balti.migrate.backupEngines.engines
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
+import balti.migrate.backupEngines.BackupServiceKotlin.Companion.flasherOnly
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_TOO_BIG
@@ -45,9 +46,9 @@ class ZipVerificationEngine(private val jobcode: Int,
             val fileSize = zipFile.length()
 
             val fileSizeString = "${engineContext.getString(R.string.zip_size)}: ${getHumanReadableStorageSpace(fileSize)} (${fileSize} B) " +
-            "${engineContext.getString(R.string.allowed)}: ${getHumanReadableStorageSpace(MAX_WORKING_SIZE)} (${MAX_WORKING_SIZE} B)"
+                    if (flasherOnly) "" else "${engineContext.getString(R.string.allowed)}: ${getHumanReadableStorageSpace(MAX_WORKING_SIZE)} (${MAX_WORKING_SIZE} B)"
 
-            if (fileSize > MAX_WORKING_SIZE){
+            if (!flasherOnly && fileSize > MAX_WORKING_SIZE){
                 verificationErrors.add("$ERR_ZIP_TOO_BIG: $fileSizeString")
                 return 0
             }
