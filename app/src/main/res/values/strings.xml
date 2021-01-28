@@ -188,7 +188,7 @@
         \u2022 Don\'t remount /data partition in system test\n
         \u2022 Many under the hood changes\n
     </string>
-    <string name="version_4.0.1">Version 4.0.1</string>
+    <string name="version_4.0.1">Version 4.0.1 beta</string>
     <string name="version_4.0.1_content">
         \u2022 Landscape layout fix for Main activity\n
         \u2022 Update contributors list\n

@@ -11,7 +11,6 @@ import android.graphics.Paint
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -33,7 +32,6 @@ import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCELLING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_RUNNING
-import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_MESSAGE_CONTENT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_SHOW_FIRST_WARNING
@@ -573,14 +571,12 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                                         it.layoutParams = LinearLayout.LayoutParams(maxWidth, WRAP_CONTENT)
                                     }
                                 }
-                                Log.d(DEBUG_TAG, "width tree: ${backupMain.width}")
                                 tryIt { content_scrollView.viewTreeObserver.removeOnGlobalLayoutListener(this) }
                             }
                         })
             }
         }
 
-        Log.d(DEBUG_TAG, "width: ${backupMain.width}")
         resizeButtons()
 
         if (packageName != "balti.migrate") {
