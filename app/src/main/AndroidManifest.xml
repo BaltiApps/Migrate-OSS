@@ -27,7 +27,6 @@
         >
 
         <activity android:name=".simpleActivities.MainActivityKotlin"
-            android:screenOrientation="portrait"
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme.Launcher"
             >

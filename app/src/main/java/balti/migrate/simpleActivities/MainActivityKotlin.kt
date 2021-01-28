@@ -6,13 +6,18 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Paint
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.view.ViewTreeObserver
+import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
@@ -28,6 +33,7 @@ import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCELLING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_RUNNING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_MESSAGE_CONTENT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_SHOW_FIRST_WARNING
@@ -542,6 +548,39 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     override fun onResume() {
         super.onResume()
+
+        fun resizeButtons(){
+
+            if (resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) return
+
+            val MAX_WIDTH = 525
+            var SPACING: Int
+            content_scrollView.viewTreeObserver.run {
+                if (isAlive) addOnGlobalLayoutListener (
+                        object : ViewTreeObserver.OnGlobalLayoutListener {
+                            override fun onGlobalLayout() {
+                                SPACING = buttonGap.width
+                                val buttons = arrayOf(backupMain, restoreMain, restoreFlasher, openPreferences)
+                                if (content_scrollView.width > MAX_WIDTH*2 + SPACING){
+                                    buttons.forEach {
+                                        it.layoutParams = LinearLayout.LayoutParams(MAX_WIDTH, WRAP_CONTENT)
+                                    }
+                                }
+                                else {
+                                    val maxWidth = (content_scrollView.width - SPACING)/2
+                                    buttons.forEach {
+                                        it.layoutParams = LinearLayout.LayoutParams(maxWidth, WRAP_CONTENT)
+                                    }
+                                }
+                                Log.d(DEBUG_TAG, "width tree: ${backupMain.width}")
+                                tryIt { content_scrollView.viewTreeObserver.removeOnGlobalLayoutListener(this) }
+                            }
+                        })
+            }
+        }
+
+        Log.d(DEBUG_TAG, "width: ${backupMain.width}")
+        resizeButtons()
 
         if (packageName != "balti.migrate") {
             val ad = AlertDialog.Builder(this)
