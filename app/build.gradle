@@ -9,8 +9,8 @@ android {
         applicationId "balti.migrate"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 41
-        versionName "gemini (v4.0) [release]"
+        versionCode 42
+        versionName "gemini (v4.0.1) [release]"
     }
     buildTypes {
         release {

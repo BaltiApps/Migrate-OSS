@@ -24,7 +24,7 @@
     <string name="app_name">Migrate</string>
     <string name="display_name">@string/app_name</string>
     <string name="gpe_label"></string>
-    <string name="current_version_name">4.0</string>
+    <string name="current_version_name">4.0.1</string>
     <string name="current_version_codename">Gemini</string>
     <string name="release_state">release</string>
     <string name="last_tested_label">Last tested on: Android 11</string>
@@ -187,6 +187,11 @@
         \u2022 Save last state of selection in extras\n
         \u2022 Don\'t remount /data partition in system test\n
         \u2022 Many under the hood changes\n
+    </string>
+    <string name="version_4.0.1">Version 4.0.1</string>
+    <string name="version_4.0.1_content">
+        \u2022 Landscape layout fix for Main activity\n
+        \u2022 Update contributors list\n
     </string>
 
     <!--activity_main.xml-->
