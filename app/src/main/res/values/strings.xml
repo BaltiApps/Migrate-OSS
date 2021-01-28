@@ -899,6 +899,10 @@
     </string>
 
     <!--contributors.xml-->
+    <string name="contr_4.0">
+        Extremely sorry, but many people contributed to fixing Version 4.0. I just lost the names.\n
+        <b>m33ts4k0z (XDA member)</b>: Help fix landscape layout in Android auto.\n
+    </string>
     <string name="contr_3.0">
         <b>@ivanliao0601, @joeri9enzz, @iamansingh</b>: Test changes added to flashing in v3.1\n
         <b>@wojnar0, Jeroen, @bolumstar</b>: Test changes added to flashing in v3.0.3\n

@@ -17,6 +17,26 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/version_4.0"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/contr_4.0"/>
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/xlarge_padding_width"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/version_3.0"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 />
