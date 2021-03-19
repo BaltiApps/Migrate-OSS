@@ -34,7 +34,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:18.0.2'  //for fcm
     implementation project(path: ':baltitoolbox')
 
-    implementation 'com.github.SayantanRC:FileX:alpha-5'
+    implementation(name:'FileX-release', ext:'aar')
 }
 repositories {
     mavenCentral()
