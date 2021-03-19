@@ -169,6 +169,8 @@ class CommonToolsKotlin(val context: Context? = null) {
         val PACKAGE_NAMES_KNOWN = arrayOf(PACKAGE_NAME_PLAY_STORE, PACKAGE_NAME_FDROID)
         val PACKAGE_NAMES_PACKAGE_INSTALLER = arrayOf("com.google.android.packageinstaller")
 
+        val PREF_USE_FILEX = "use_filex"
+
         val PREF_FILE_APPS = "apps"
         val PREF_FIRST_RUN = "firstRun"
         val PREF_VERSION_CURRENT = "version"

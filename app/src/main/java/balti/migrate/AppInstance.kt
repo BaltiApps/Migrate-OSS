@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
+import balti.filex.FileXInit
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.backupEngines.containers.ZipAppBatch
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
@@ -12,7 +13,9 @@ import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacket
 import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_MAX_BACKUP_SIZE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_FILEX
 import balti.module.baltitoolbox.ToolboxHQ
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefLong
 import balti.module.baltitoolbox.functions.SharedPrefs.putPrefLong
 import java.io.File
@@ -57,7 +60,11 @@ class AppInstance: Application() {
     override fun onCreate() {
         super.onCreate()
         appContext = this
+
+        // Library initialization
         ToolboxHQ.init(this)
+        FileXInit(this, !getPrefBoolean(PREF_USE_FILEX, true))
+
         notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
         MAX_EFFECTIVE_ZIP_SIZE = if (DEVICE_RAM_SIZE < MAX_TWRP_SIZE) DEVICE_RAM_SIZE else MAX_TWRP_SIZE
