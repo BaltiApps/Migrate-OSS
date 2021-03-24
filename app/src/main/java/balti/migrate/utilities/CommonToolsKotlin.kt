@@ -29,6 +29,7 @@ class CommonToolsKotlin(val context: Context? = null) {
     companion object {
 
         val THIS_VERSION = 50
+        val ALLOW_CONVENTIONAL_STORAGE = false      // set to true in master-ng
         val LAST_SUPPORTED_ANDROID_API = 30
 
         val DEBUG_TAG = "migrate_tag"
@@ -169,7 +170,8 @@ class CommonToolsKotlin(val context: Context? = null) {
         val PACKAGE_NAMES_KNOWN = arrayOf(PACKAGE_NAME_PLAY_STORE, PACKAGE_NAME_FDROID)
         val PACKAGE_NAMES_PACKAGE_INSTALLER = arrayOf("com.google.android.packageinstaller")
 
-        val PREF_USE_FILEX = "use_filex"
+        val PREF_USE_FILEX11 = "use_filex"
+        val PREF_FIRST_STORAGE_REQUEST = "first_storage_request"
 
         val PREF_FILE_APPS = "apps"
         val PREF_FIRST_RUN = "firstRun"

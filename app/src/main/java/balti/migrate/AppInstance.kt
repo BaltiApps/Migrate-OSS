@@ -13,7 +13,7 @@ import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacket
 import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_MAX_BACKUP_SIZE
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_FILEX
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_FILEX11
 import balti.module.baltitoolbox.ToolboxHQ
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefLong
@@ -63,7 +63,7 @@ class AppInstance: Application() {
 
         // Library initialization
         ToolboxHQ.init(this)
-        FileXInit(this, !getPrefBoolean(PREF_USE_FILEX, true))
+        FileXInit(this, !getPrefBoolean(PREF_USE_FILEX11, false))
 
         notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
