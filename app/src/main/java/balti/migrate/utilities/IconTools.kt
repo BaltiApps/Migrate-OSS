@@ -7,15 +7,13 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
+import balti.filex.FileX
 import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.module.baltitoolbox.functions.Misc.doBackgroundTask
 import balti.module.baltitoolbox.functions.Misc.tryIt
-import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileReader
 
 class IconTools {
 
@@ -87,19 +85,19 @@ class IconTools {
 
     }
 
-    fun setIconFromFile(iconView: ImageView, file: File) {
+    fun setIconFromFile(iconView: ImageView, file: FileX) {
 
         var bitmap: Bitmap? = null
         val stringIcon = StringBuffer("")
 
         doBackgroundTask({
             if (file.name.endsWith(".png")) {
-                tryIt { bitmap = BitmapFactory.decodeFile(file.absolutePath) }
+                tryIt { bitmap = BitmapFactory.decodeStream(file.inputStream()) }
             }
             else {
                 tryIt {
                     if (file.exists() && file.canRead()) {
-                        BufferedReader(FileReader(file)).readLines().forEach {
+                        file.readLines().forEach {
                             stringIcon.append(it)
                         }
                     }
