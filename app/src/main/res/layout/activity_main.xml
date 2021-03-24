@@ -233,7 +233,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    >
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -244,7 +246,9 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/internal_storage" />
+                            android:text="@string/internal_storage"
+                            android:id="@+id/allowed_storage_label"
+                            />
 
                         <TextView
                             android:id="@+id/internal_storage_text"

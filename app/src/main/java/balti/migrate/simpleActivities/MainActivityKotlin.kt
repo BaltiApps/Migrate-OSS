@@ -1,6 +1,6 @@
 package balti.migrate.simpleActivities
 
-import android.Manifest
+import android.app.Activity
 import android.app.AppOpsManager
 import android.app.NotificationManager
 import android.content.Context
@@ -22,13 +22,15 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
+import balti.filex.FileX
+import balti.filex.FileXInit
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.messages.MessagesView
 import balti.migrate.preferences.MainPreferenceActivity
 import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ALLOW_CONVENTIONAL_STORAGE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCELLING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_RUNNING
@@ -49,9 +51,11 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ASK_FOR_RATING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_CALCULATING_SIZE_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FIRST_RUN
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FIRST_STORAGE_REQUEST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_LAST_MESSAGE_LEVEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_LAST_MESSAGE_SNACK_LEVEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TERMINAL_METHOD
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_FILEX11
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_VERSION_CURRENT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
@@ -76,15 +80,14 @@ import kotlinx.android.synthetic.main.last_log_report.view.*
 import kotlinx.android.synthetic.main.please_wait.view.*
 import kotlinx.android.synthetic.main.restore_by_flasher.view.*
 import org.json.JSONObject
-import java.io.File
-import java.io.FileOutputStream
 import java.net.URL
 
 class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private val commonTools by lazy { CommonToolsKotlin(this) }
 
-    private val REQUEST_CODE_BACKUP = 43
+    // old code
+    //private val REQUEST_CODE_BACKUP = 43
 
     private var rootErrorMessage = ""
     private var loadingDialog: AlertDialog? = null
@@ -93,9 +96,20 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     private val storageRunnable by lazy { object : Runnable {
         override fun run() {
             refreshStorageSizes()
-            storageHandler.postDelayed(this, 1000)
+            storageHandler.postDelayed(this, 5000)
+            // increasing time because FileX has greater overhead
         }
     }}
+
+    private fun startStorageSpaceMonitor(){
+        if (FileXInit.isUserPermissionGranted()) {
+            refreshStorageSizes()
+            storageHandler.post(storageRunnable)
+        }
+    }
+    private fun stopStorageSpaceMonitor(){
+        tryIt { storageHandler.removeCallbacks(storageRunnable) }
+    }
 
     private fun startMessageView(content: String) {
         startActivityForResult(
@@ -139,13 +153,12 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                     .setCancelable(false)
                     .create()
 
-            tryIt { storageHandler.removeCallbacks(storageRunnable) }
+            stopStorageSpaceMonitor()
 
             loadingDialog?.show()
 
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    REQUEST_CODE_BACKUP)
+            if (ALLOW_CONVENTIONAL_STORAGE) requestConventionalStorageAccess()
+            else requestScopedStorageAccess()
         }
 
         restoreMain.setOnClickListener {
@@ -175,6 +188,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         learn_sd_card_support.setOnClickListener {
             commonTools.showSdCardSupportDialog()
         }
+
+        startStorageSpaceMonitor()
 
         navigationDrawer.setNavigationItemSelectedListener(this)
 
@@ -220,19 +235,16 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                     .show()
         }
 
-        refreshStorageSizes()
-        storageHandler.post(storageRunnable)
-
         showFirstRunWarningIfApplicable()
 
         tryIt {
-            val messageFile = File(filesDir, FILE_MESSAGES)
+            val messageFile = FileX.new(filesDir.absolutePath, FILE_MESSAGES, true)
             messages.setImageResource(R.drawable.ic_messages)
             doBackgroundTask({
                 tryIt {
                     messageFile.delete()
                     URL(MESSAGE_BOARD_URL).openStream().use { input ->
-                        FileOutputStream(messageFile).use { output ->
+                        messageFile.outputStream()?.use { output ->
                             input.copyTo(output)
                         }
                     }
@@ -419,8 +431,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 .create()
 
         lView.view_progress_log.setOnClickListener {
-            val f = File(externalCacheDir, FILE_PROGRESSLOG)
-            if (f.exists())
+            val f = externalCacheDir?.absolutePath?.let { it1 -> FileX.new(it1, FILE_PROGRESSLOG, true) }
+            if (f?.exists() == true)
                 startActivity(
                         Intent(this, SimpleLogViewer::class.java)
                                 .putExtra(SIMPLE_LOG_VIEWER_HEAD, getString(R.string.progressLog))
@@ -430,8 +442,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         }
 
         lView.view_error_log.setOnClickListener {
-            val f = File(externalCacheDir, FILE_ERRORLOG)
-            if (f.exists())
+            val f = externalCacheDir?.absolutePath?.let { it1 -> FileX.new(it1, FILE_ERRORLOG, true) }
+            if (f?.exists() == true)
                 startActivity(
                         Intent(this, SimpleLogViewer::class.java)
                                 .putExtra(SIMPLE_LOG_VIEWER_HEAD, getString(R.string.errorLog))
@@ -500,49 +512,73 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             var fullBytes = 0L
             var consumedBytes = 0L
 
-            fun calculateStorage(path: String) {
-                val statFs = StatFs(path)
+            //if (FileXInit.isUserPermissionGranted()){ return }
 
-                availableBytes = (statFs.blockSizeLong * statFs.availableBlocksLong)
-                fullBytes = (statFs.blockSizeLong * statFs.blockCountLong)
-                consumedBytes = fullBytes - availableBytes
-            }
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P && FileXInit.isTraditional) {
 
-            calculateStorage(Environment.getExternalStorageDirectory().absolutePath)
+                fun calculateStorage(path: String) {
+                    val statFs = StatFs(path)
 
-            internal_storage_bar.progress = ((consumedBytes * 100) / fullBytes).toInt()
-            internal_storage_text.text = getHumanReadableStorageSpace(consumedBytes) + "/" +
-                    getHumanReadableStorageSpace(fullBytes)
-
-            var sdCardRoot: File? = null
-            val defaultPath = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
-
-            if (defaultPath != DEFAULT_INTERNAL_STORAGE_DIR && File(defaultPath).canWrite()) {
-                sdCardRoot = File(defaultPath).parentFile
-            } else {
-                val sdCardPaths = commonTools.getSdCardPaths()
-                if (sdCardPaths.size == 1 && File(sdCardPaths[0]).canWrite()) {
-                    sdCardRoot = File(sdCardPaths[0])
+                    availableBytes = (statFs.blockSizeLong * statFs.availableBlocksLong)
+                    fullBytes = (statFs.blockSizeLong * statFs.blockCountLong)
                 }
-            }
 
-            if (sdCardRoot != null) {
-                sd_card_storage_use_view.visibility = View.VISIBLE
+                calculateStorage(Environment.getExternalStorageDirectory().absolutePath)
 
-                calculateStorage(sdCardRoot.absolutePath)
-
-                sd_card_name.text = sdCardRoot.name
-                sd_card_storage_bar.progress = ((consumedBytes * 100) / fullBytes).toInt()
-                sd_card_storage_text.text = getHumanReadableStorageSpace(consumedBytes) + "/" +
+                internal_storage_use_view.visibility = View.VISIBLE
+                internal_storage_bar.progress = ((consumedBytes * 100) / fullBytes).toInt()
+                internal_storage_text.text = getHumanReadableStorageSpace(consumedBytes) + "/" +
                         getHumanReadableStorageSpace(fullBytes)
-            } else {
+
+                var sdCardRoot: FileX? = null
+                val defaultPath = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
+                val defaultFile = FileX.new(defaultPath)
+
+                if (defaultPath != DEFAULT_INTERNAL_STORAGE_DIR && defaultFile.canWrite()) {
+                    sdCardRoot = defaultFile.parentFile
+                } else {
+                    val sdCardPaths = commonTools.getSdCardPaths()
+                    if (sdCardPaths.size == 1) {
+                        FileX.new(sdCardPaths[0]).let { if (it.canWrite()) sdCardRoot = it }
+                    }
+                }
+
+                if (sdCardRoot != null) {
+                    sd_card_storage_use_view.visibility = View.VISIBLE
+
+                    calculateStorage(sdCardRoot!!.absolutePath)
+
+                    sd_card_name.text = sdCardRoot!!.name
+                    sd_card_storage_bar.progress = ((consumedBytes * 100) / fullBytes).toInt()
+                    sd_card_storage_text.text = getHumanReadableStorageSpace(consumedBytes) + "/" +
+                            getHumanReadableStorageSpace(fullBytes)
+                } else {
+                    sd_card_storage_use_view.visibility = View.GONE
+                }
+
+            }
+            else {
                 sd_card_storage_use_view.visibility = View.GONE
+                val f = FileX.new("/")
+                allowed_storage_label.text = getString(R.string.storage_space)
+                availableBytes = f.usableSpace
+                fullBytes = f.totalSpace
+                consumedBytes = fullBytes - availableBytes
+
+                internal_storage_use_view.visibility = View.VISIBLE
+                internal_storage_bar.progress = ((consumedBytes * 100) / fullBytes).toInt()
+                internal_storage_text.text = getHumanReadableStorageSpace(consumedBytes) + "/" +
+                        getHumanReadableStorageSpace(fullBytes)
             }
         }
         catch(_: Exception){
             internal_storage_use_view.visibility = View.GONE
             sd_card_storage_use_view.visibility = View.GONE
         }
+    }
+
+    private fun dismissLoading(){
+        tryIt { loadingDialog?.dismiss() }
     }
 
     override fun onResume() {
@@ -594,71 +630,138 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    // old code
+    /*override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (requestCode == REQUEST_CODE_BACKUP){
             if (grantResults.size == 2 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
 
-                if (isRootPermissionGranted()) {
-
-                    fun startBackupActivity(){
-                        startActivity(Intent(this, BackupActivityKotlin::class.java))
-                    }
-
-                    val isOreoAndAbove = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                    val isAlternateMethod = getPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
-
-                    if (isOreoAndAbove && isAlternateMethod && !isUsageAccessGranted()) {
-
-                        val accessPermissionDialog = AlertDialog.Builder(this)
-                                .setTitle(R.string.use_usage_access_permission)
-                                .setMessage(R.string.usage_access_permission_needed_desc)
-                                .setPositiveButton(R.string.proceed) { _, _ ->
-                                    val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-                                    startActivity(intent)
-                                    Toast.makeText(this, R.string.usage_permission_toast, Toast.LENGTH_SHORT).show()
-                                }
-                                .setNegativeButton(R.string.old_method_will_be_used) { _, _ ->
-                                    putPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD, true)
-                                    startBackupActivity()
-                                }
-                                .setNeutralButton(android.R.string.cancel, null)
-                                .setCancelable(false)
-
-                        accessPermissionDialog.show()
-
-                    } else {
-
-                        if (!isOreoAndAbove){
-                            if (isAlternateMethod) {
-                                putPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
-                            }
-                        }
-
-                        startBackupActivity()
-                    }
-
-                } else {
-                    AlertDialog.Builder(this)
-                            .setTitle(R.string.root_permission_denied)
-                            .setMessage(getString(R.string.root_permission_denied_desc) + "\n\n" + rootErrorMessage)
-                            .setPositiveButton(android.R.string.ok, null)
-                            .show()
-                }
+                requestRoot()
 
             } else {
-                AlertDialog.Builder(this)
-                        .setMessage(R.string.storage_access_required)
-                        .setPositiveButton(android.R.string.ok, null)
-                        .show()
+                showStorageDeniedMessage()
             }
 
             tryIt { loadingDialog?.dismiss() }
         }
+    }*/
+
+    private fun requestConventionalStorageAccess(){
+        if (getPrefBoolean(PREF_FIRST_STORAGE_REQUEST, true) || !FileXInit.isUserPermissionGranted()) {
+            AlertDialog.Builder(this).apply {
+                setTitle(R.string.select_storage_type)
+                setMessage(R.string.select_storage_type_desc)
+                setPositiveButton(R.string.old_way) { _, _ ->
+                    putPrefBoolean(PREF_USE_FILEX11, false)
+                    FileXInit.setTraditional(true)
+                    filexStorageRequest()
+                    // old code
+                    /*ActivityCompat.requestPermissions(this@MainActivityKotlin,
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        REQUEST_CODE_BACKUP)*/
+                }
+                setNegativeButton(R.string.new_way) { _, _ ->
+                    putPrefBoolean(PREF_USE_FILEX11, true)
+                    FileXInit.setTraditional(false)
+                    filexStorageRequest()
+                }
+                setNeutralButton(android.R.string.cancel){_, _ -> dismissLoading()}
+                setCancelable(false)
+            }
+                    .show()
+        }
+        else requestRoot()
+    }
+    private fun requestScopedStorageAccess(){
+        FileXInit.setTraditional(false)
+        if (!FileXInit.isUserPermissionGranted()) {
+            AlertDialog.Builder(this).apply {
+                setTitle(R.string.choose_storage_location)
+                setMessage(R.string.choose_storage_location_desc)
+                setPositiveButton(R.string.proceed) { _, _ -> filexStorageRequest() }
+                setNeutralButton(android.R.string.cancel){_, _ -> dismissLoading()}
+                setCancelable(false)
+            }
+                    .show()
+        }
+        else requestRoot()
+    }
+    private fun filexStorageRequest(){
+        putPrefBoolean(PREF_FIRST_STORAGE_REQUEST, false)
+        FileXInit.requestUserPermission { resultCode, data ->
+            if (resultCode == Activity.RESULT_OK) {
+                startStorageSpaceMonitor()
+                requestRoot()
+            }
+            else {
+                dismissLoading()
+                showStorageDeniedMessage()
+            }
+        }
+    }
+    private fun showStorageDeniedMessage(){
+        AlertDialog.Builder(this)
+                .setMessage(R.string.storage_access_required)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
     }
 
+    private fun requestRoot(){
+        doBackgroundTask({
+            return@doBackgroundTask isRootPermissionGranted()
+        }, {
+
+            dismissLoading()
+            if (it == true) {
+
+                fun startBackupActivity(){
+                    startActivity(Intent(this, BackupActivityKotlin::class.java))
+                }
+
+                val isOreoAndAbove = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                val isAlternateMethod = getPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
+
+                if (isOreoAndAbove && isAlternateMethod && !isUsageAccessGranted()) {
+
+                    val accessPermissionDialog = AlertDialog.Builder(this)
+                            .setTitle(R.string.use_usage_access_permission)
+                            .setMessage(R.string.usage_access_permission_needed_desc)
+                            .setPositiveButton(R.string.proceed) { _, _ ->
+                                val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                                startActivity(intent)
+                                Toast.makeText(this, R.string.usage_permission_toast, Toast.LENGTH_SHORT).show()
+                            }
+                            .setNegativeButton(R.string.old_method_will_be_used) { _, _ ->
+                                putPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD, true)
+                                startBackupActivity()
+                            }
+                            .setNeutralButton(android.R.string.cancel, null)
+                            .setCancelable(false)
+
+                    accessPermissionDialog.show()
+
+                } else {
+
+                    if (!isOreoAndAbove){
+                        if (isAlternateMethod) {
+                            putPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD)
+                        }
+                    }
+
+                    startBackupActivity()
+                }
+
+            } else {
+                AlertDialog.Builder(this)
+                        .setTitle(R.string.root_permission_denied)
+                        .setMessage(getString(R.string.root_permission_denied_desc) + "\n\n" + rootErrorMessage)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+            }
+        })
+    }
     private fun isRootPermissionGranted(): Boolean {
 
         return try {
@@ -705,6 +808,6 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     override fun onDestroy() {
         super.onDestroy()
         tryIt { loadingDialog?.dismiss() }
-        tryIt { storageHandler.removeCallbacks(storageRunnable) }
+        stopStorageSpaceMonitor()
     }
 }

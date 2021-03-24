@@ -522,6 +522,13 @@
     </string>
     <string name="new_message">New message received!</string>
     <string name="view">View</string>
+    <string name="choose_storage_location">Please choose storage location</string>
+    <string name="choose_storage_location_desc">In the next screen, please choose a folder where you would like to store the backups. <b>A location in internal storage is preferred.</b></string>
+    <string name="select_storage_type">Migrate has a new way to store backups!</string>
+    <string name="select_storage_type_desc">Old way - store in internal storage as usual.\nNew way - select a custom location</string>
+    <string name="old_way">Old way</string>
+    <string name="new_way">New way</string>
+    <string name="storage_space">Storage space</string>
 
     <!--AppListAdapter.java-->
     <string name="packageName">Package :</string>
