@@ -16,6 +16,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import balti.filex.FileX
 import balti.migrate.R
 import balti.migrate.backupEngines.engines.AppBackupEngine
 import balti.migrate.utilities.CommonToolsKotlin
@@ -56,7 +57,6 @@ import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import kotlinx.android.synthetic.main.backup_progress_layout.*
 import kotlinx.android.synthetic.main.zip_name_show.view.*
-import java.io.File
 
 class ProgressShowActivity: AppCompatActivity() {
 
@@ -79,8 +79,9 @@ class ProgressShowActivity: AppCompatActivity() {
                 if (lastIcon != AppBackupEngine.ICON_STRING) {
                     AppBackupEngine.ICON_STRING.run {
                         if (this.contains(".icon", true) || this.contains(".png", true)){
-                            val iconFile = File(intent.getStringExtra(EXTRA_ACTUAL_DESTINATION), this.trim())
-                            iconTools.setIconFromFile(app_icon, iconFile)
+                            intent.getStringExtra(EXTRA_ACTUAL_DESTINATION)?.let {
+                                iconTools.setIconFromFile(app_icon, FileX.new(it, this.trim()))
+                            }
                         }
                         else iconTools.setIconFromIconString(app_icon, this)
                         lastIcon = this
