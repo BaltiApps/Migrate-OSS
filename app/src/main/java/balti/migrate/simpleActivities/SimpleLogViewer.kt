@@ -1,19 +1,17 @@
 package balti.migrate.simpleActivities
 
-import android.os.AsyncTask
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import balti.filex.FileX
 import balti.migrate.R
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
-import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import kotlinx.android.synthetic.main.simple_log_display.*
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileReader
+
 
 class SimpleLogViewer: AppCompatActivity() {
 
@@ -31,12 +29,12 @@ class SimpleLogViewer: AppCompatActivity() {
             commonTools.reportLogs(false)
         }
 
-        class LoadLogText: AsyncTask<Any, Any, Any>(){
+        class LoadLogText: AsyncCoroutineTask(){
 
             lateinit var err : String
             lateinit var filePath : String
 
-            override fun onPreExecute() {
+            override suspend fun onPreExecute() {
                 super.onPreExecute()
                 log_view_progress_bar.visibility = View.VISIBLE
                 logBody.text = ""
@@ -58,16 +56,19 @@ class SimpleLogViewer: AppCompatActivity() {
                 err = err.trim()
             }
 
-            override fun doInBackground(vararg params: Any?): Any {
+            override suspend fun doInBackground(arg: Any?): Any? {
 
                 try {
                     intent?.let {
 
                         if (err != "") return 1
 
-                        BufferedReader(FileReader(File(filePath))).readLines().forEach { it1 ->
+                        // logs are stored in external private storage of the app.
+                        // Conventional Java file works pretty good there, hence setting conventional flag as true.
+                        FileX.new(filePath, true).readLines().forEach { it1 ->
                             publishProgress(it1)
-                            tryIt { Thread.sleep(1) }
+                            //tryIt { Thread.sleep(1) }
+                            sleepTask(1)
                         }
 
                         return 0
@@ -82,12 +83,12 @@ class SimpleLogViewer: AppCompatActivity() {
                 return 1
             }
 
-            override fun onProgressUpdate(vararg values: Any?) {
+            override suspend fun onProgressUpdate(vararg values: Any) {
                 super.onProgressUpdate(*values)
                 logBody.append("${values[0]}\n")
             }
 
-            override fun onPostExecute(result: Any?) {
+            override suspend fun onPostExecute(result: Any?) {
                 super.onPostExecute(result)
 
                 log_view_progress_bar.visibility = View.GONE
