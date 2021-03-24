@@ -45,7 +45,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
             suProcess = Runtime.getRuntime().exec("su")
             suProcess?.let {
                 val suWriter = BufferedWriter(OutputStreamWriter(it.outputStream))
-                suWriter.write("sh $testScriptPath ${thisPackageInfo.packageName} ${thisPackageInfo.sourceDir} $dataPath $dataName ${engineContext.externalCacheDir.absolutePath} $busyboxBinaryPath\n")
+                suWriter.write("sh $testScriptPath ${thisPackageInfo.packageName} ${thisPackageInfo.sourceDir} $dataPath $dataName ${engineContext.externalCacheDir?.absolutePath} $busyboxBinaryPath\n")
                 suWriter.write("exit\n")
                 suWriter.flush()
 

@@ -33,7 +33,7 @@ class VcfToolsKotlin(val context: Context) {
         val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey)
         val fd: AssetFileDescriptor
         try {
-            fd = context.contentResolver.openAssetFileDescriptor(uri, "r")
+            fd = context.contentResolver.openAssetFileDescriptor(uri, "r")!!
             val fis = fd.createInputStream()
             val buf = readBytes(fis)
             fis.read(buf)

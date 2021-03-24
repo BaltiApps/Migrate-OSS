@@ -118,10 +118,10 @@ class ProgressShowActivity: AppCompatActivity() {
                         if (intent.hasExtra(EXTRA_ZIP_NAMES)) {
                             tryIt {
                                 val parts = intent.getStringArrayListExtra(EXTRA_ZIP_NAMES)
-                                parts.sortWith(Comparator { p1, p2 ->
+                                parts?.sortWith(Comparator { p1, p2 ->
                                     String.CASE_INSENSITIVE_ORDER.compare(p1, p2)
                                 })
-                                parts.forEach {
+                                parts?.forEach {
                                     zipList.append("$it.zip\n")
                                 }
                             }
@@ -194,7 +194,7 @@ class ProgressShowActivity: AppCompatActivity() {
             }
 
             if (intent.hasExtra(EXTRA_TITLE)) {
-                intent.getStringExtra(EXTRA_TITLE).trim().run {
+                intent.getStringExtra(EXTRA_TITLE)?.trim()?.run {
                     if (this != lastTitle && this != ""){
                         progressTask.text = this
                         progressLogTextView.append("\n$this\n")
@@ -207,7 +207,7 @@ class ProgressShowActivity: AppCompatActivity() {
                 subTask.text = intent.getStringExtra(EXTRA_SUBTASK)
 
             if (intent.hasExtra(EXTRA_TASKLOG)){
-                intent.getStringExtra(EXTRA_TASKLOG).run {
+                intent.getStringExtra(EXTRA_TASKLOG)?.run {
                     if (this != lastLog && this != ""){
                         progressLogTextView.append("$this\n")
                         lastLog = this
@@ -227,10 +227,10 @@ class ProgressShowActivity: AppCompatActivity() {
                     closeWarning.visibility = View.GONE
 
                     if (intent.hasExtra(EXTRA_ERRORS))
-                        errors.addAll(intent.getStringArrayListExtra(EXTRA_ERRORS))
+                        intent.getStringArrayListExtra(EXTRA_ERRORS)?.let { errors.addAll(it) }
 
                     if (intent.hasExtra(EXTRA_WARNINGS))
-                        warnings.addAll(intent.getStringArrayListExtra(EXTRA_WARNINGS))
+                        intent.getStringArrayListExtra(EXTRA_WARNINGS)?.let { warnings.addAll(it) }
 
                     if (errors.isNotEmpty() || warnings.isNotEmpty()) {
                         reportLogButton.visibility = View.VISIBLE
@@ -273,7 +273,7 @@ class ProgressShowActivity: AppCompatActivity() {
                     }
                 }
 
-                setImageIcon(intent, type)
+                type?.let { setImageIcon(intent, it) }
             }
         }
     }

@@ -47,9 +47,12 @@ class SimpleLogViewer: AppCompatActivity() {
                         err += getString(R.string.no_header) + "\n"
                     else logViewHeader.text = it.getStringExtra(SIMPLE_LOG_VIEWER_HEAD)
 
-                    if (!it.hasExtra(SIMPLE_LOG_VIEWER_FILEPATH))
-                        err += getString(R.string.no_filepath) + "\n"
-                    else filePath = it.getStringExtra(SIMPLE_LOG_VIEWER_FILEPATH)
+                    //if (!it.hasExtra(SIMPLE_LOG_VIEWER_FILEPATH))
+                    it.getStringExtra(SIMPLE_LOG_VIEWER_FILEPATH).let {
+                        if (it == null)
+                            err += getString(R.string.no_filepath) + "\n"
+                        else filePath = it
+                    }
                 }
 
                 err = err.trim()

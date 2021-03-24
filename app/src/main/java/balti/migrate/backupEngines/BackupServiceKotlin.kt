@@ -252,7 +252,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                 if (type in arrayOf(EXTRA_PROGRESS_TYPE_CONTACTS, EXTRA_PROGRESS_TYPE_SMS, EXTRA_PROGRESS_TYPE_CALLS))
                     return
 
-                intent.getStringExtra(EXTRA_TITLE).trim().run {
+                intent.getStringExtra(EXTRA_TITLE)?.trim()?.run {
                     if (this != lastTitle) {
                         progressWriter?.write("\n$this\n")
                         lastTitle = this
@@ -260,7 +260,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                 }
 
                 if (intent.hasExtra(EXTRA_TASKLOG)){
-                    intent.getStringExtra(EXTRA_TASKLOG).run {
+                    intent.getStringExtra(EXTRA_TASKLOG)?.run {
                         if (this != lastLog) {
                             progressWriter?.write("$this\n")
                             lastLog = this
@@ -359,8 +359,8 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         intent?.run {
             try {
                 if (!isBackupInitiated) {
-                    destination = getStringExtra(EXTRA_DESTINATION)
-                    backupName = getStringExtra(EXTRA_BACKUP_NAME)
+                    destination = getStringExtra(EXTRA_DESTINATION).toString()
+                    backupName = getStringExtra(EXTRA_BACKUP_NAME).toString()
                     flasherOnly = getBooleanExtra(EXTRA_FLASHER_ONLY, false)
                     startBackup()
                 }
