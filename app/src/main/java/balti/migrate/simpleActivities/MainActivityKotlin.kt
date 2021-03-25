@@ -676,6 +676,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     }
     private fun requestScopedStorageAccess(){
         FileXInit.setTraditional(false)
+        putPrefBoolean(PREF_USE_FILEX11, true)
         if (!FileXInit.isUserPermissionGranted()) {
             AlertDialog.Builder(this).apply {
                 setTitle(R.string.choose_storage_location)
