@@ -9,9 +9,11 @@ import android.os.Build
 import android.os.Environment
 import android.os.Handler
 import android.view.View
+import android.widget.CheckBox
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
+import balti.filex.FileX
 import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.simpleActivities.PrivacyPolicy
@@ -22,7 +24,12 @@ import balti.module.baltitoolbox.functions.Misc.playStoreLink
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 import kotlinx.android.synthetic.main.error_report_layout.view.*
-import java.io.*
+import java.io.BufferedReader
+import java.io.BufferedWriter
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+
+//import java.io.*
 
 class CommonToolsKotlin(val context: Context? = null) {
 
@@ -312,15 +319,15 @@ class CommonToolsKotlin(val context: Context? = null) {
 
         val PACKAGE_MIGRATE_FLASHER = "balti.migrate.flasher"
 
-        fun isDeletable(f: File): Boolean{
+        fun isDeletable(f: FileX): Boolean {
             val d = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
-            val parentPath = File(d).absolutePath
+            val parentPath = FileX.new(d).absolutePath
             return f.absolutePath.startsWith(parentPath)
         }
     }
 
-    var LBM : androidx.localbroadcastmanager.content.LocalBroadcastManager? = null
-    val workingContext by lazy { context?: AppInstance.appContext }
+    var LBM: androidx.localbroadcastmanager.content.LocalBroadcastManager? = null
+    private val workingContext by lazy { context ?: AppInstance.appContext }
 
     init {
         if (context != null && workingContext is Activity || workingContext is Service)
@@ -329,101 +336,15 @@ class CommonToolsKotlin(val context: Context? = null) {
 
     fun reportLogs(isErrorLogMandatory: Boolean) {
 
-        val progressLog = File(workingContext.externalCacheDir, FILE_PROGRESSLOG)
-        val errorLog = File(workingContext.externalCacheDir, FILE_ERRORLOG)
+        fun noLogsExist(onlyError: Boolean = false) {
 
-        val backupScripts = workingContext.externalCacheDir.let {
-            if (it != null) it.listFiles { f: File ->
-                (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT) || f.name.startsWith(FILE_PREFIX_TAR_CHECK))
-                        && f.name.endsWith(".sh")
+            val msg = if (onlyError) {
+                workingContext.getString(R.string.error_log_does_not_exist)
+            } else {
+                workingContext.getString(R.string.progress_log_does_not_exist) + "\n" +
+                        workingContext.getString(R.string.error_log_does_not_exist) + "\n" +
+                        workingContext.getString(R.string.backup_script_does_not_exist) + "\n"
             }
-            else emptyArray<File>()
-        }
-
-        val rawList = File(workingContext.externalCacheDir, FILE_RAW_LIST)
-
-        if (isErrorLogMandatory && !errorLog.exists()) {
-            AlertDialog.Builder(workingContext)
-                    .setTitle(R.string.log_files_do_not_exist)
-                    .setMessage(workingContext.getString(R.string.error_log_does_not_exist))
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .show()
-        }
-        else if (errorLog.exists() || progressLog.exists() || backupScripts.isNotEmpty()){
-
-            val eView = View.inflate(workingContext, R.layout.error_report_layout, null)
-
-            eView.share_progress_checkbox.isChecked = progressLog.exists()
-            eView.share_progress_checkbox.isEnabled = progressLog.exists()
-
-            eView.share_script_checkbox.isChecked = backupScripts.isNotEmpty()
-            eView.share_script_checkbox.isEnabled = backupScripts.isNotEmpty()
-
-            eView.share_errors_checkbox.isChecked = errorLog.exists()
-            eView.share_errors_checkbox.isEnabled = errorLog.exists() && !isErrorLogMandatory
-
-            eView.share_rawList_checkbox.isChecked = rawList.exists()
-            eView.share_rawList_checkbox.isEnabled = rawList.exists()
-
-            eView.report_button_privacy_policy.setOnClickListener {
-                workingContext.startActivity(Intent(workingContext, PrivacyPolicy::class.java))
-            }
-
-            eView.report_button_join_group.setOnClickListener {
-                openWebLink(TG_LINK)
-            }
-
-            fun getUris(): ArrayList<Uri>{
-
-                val uris = ArrayList<Uri>(0)
-                try {
-
-                    if (eView.share_errors_checkbox.isChecked) uris.add(getUri(errorLog))
-                    if (eView.share_progress_checkbox.isChecked) uris.add(getUri(progressLog))
-                    if (eView.share_script_checkbox.isChecked) for (f in backupScripts) uris.add(getUri(f))
-                    if (eView.share_rawList_checkbox.isChecked) uris.add(getUri(rawList))
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Toast.makeText(workingContext, e.message.toString(), Toast.LENGTH_SHORT).show()
-                }
-
-                return uris
-            }
-
-            eView.report_button_old_email.setOnClickListener {
-                sendIntent(getUris(), true)
-            }
-
-            var isTgClientInstalled = false
-            for (i in TG_CLIENTS.indices){
-                if (isPackageInstalled(TG_CLIENTS[i])){
-                    isTgClientInstalled = true
-                    break
-                }
-            }
-
-            if (!isTgClientInstalled){
-                eView.report_button_telegram.apply {
-                    text = context.getString(R.string.install_tg)
-                    setOnClickListener { playStoreLink(TG_CLIENTS[0]) }
-                }
-            }
-            else {
-                eView.report_button_telegram.apply {
-                    text = context.getString(R.string.send_to_tg)
-                    setOnClickListener { sendIntent(getUris()) }
-                }
-            }
-
-            AlertDialog.Builder(workingContext).setView(eView).show()
-
-        }
-        else {
-
-            val msg = workingContext.getString(R.string.progress_log_does_not_exist) + "\n" +
-                    workingContext.getString(R.string.error_log_does_not_exist) + "\n" +
-                    workingContext.getString(R.string.backup_script_does_not_exist) + "\n"
 
             AlertDialog.Builder(workingContext)
                     .setTitle(R.string.log_files_do_not_exist)
@@ -432,6 +353,92 @@ class CommonToolsKotlin(val context: Context? = null) {
                     .show()
         }
 
+        workingContext.externalCacheDir?.canonicalPath?.let { extCache ->
+
+            val progressLog = FileX.new(extCache, FILE_PROGRESSLOG, isTraditional = true)
+            val errorLog = FileX.new(extCache, FILE_ERRORLOG, isTraditional = true)
+
+            val backupScripts = workingContext.externalCacheDir?.canonicalPath?.let {
+                FileX.new(it, true).listFiles { f: FileX ->
+                    (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT) || f.name.startsWith(FILE_PREFIX_TAR_CHECK))
+                            && f.name.endsWith(".sh")
+                }
+            } ?: emptyArray<FileX>()
+
+            val rawList = FileX.new(extCache, FILE_RAW_LIST, true)
+
+            if (isErrorLogMandatory && !errorLog.exists()) {
+                noLogsExist(true)
+            } else if (errorLog.exists() || progressLog.exists() || backupScripts.isNotEmpty()) {
+
+                val eView = View.inflate(workingContext, R.layout.error_report_layout, null)
+
+                fun CheckBox.setCheckedEnabled(value: Boolean) = this.apply {
+                     isChecked = value; isEnabled = value
+                }
+
+                eView.share_progress_checkbox.setCheckedEnabled(progressLog.exists())
+                eView.share_script_checkbox.setCheckedEnabled(backupScripts.isNotEmpty())
+                eView.share_errors_checkbox.setCheckedEnabled(errorLog.exists())
+                eView.share_rawList_checkbox.setCheckedEnabled(rawList.exists())
+
+                eView.report_button_privacy_policy.setOnClickListener {
+                    workingContext.startActivity(Intent(workingContext, PrivacyPolicy::class.java))
+                }
+
+                eView.report_button_join_group.setOnClickListener {
+                    openWebLink(TG_LINK)
+                }
+
+                fun getUris(): ArrayList<Uri> {
+
+                    val uris = ArrayList<Uri>(0)
+                    try {
+
+                        if (eView.share_errors_checkbox.isChecked) uris.add(getUri(errorLog))
+                        if (eView.share_progress_checkbox.isChecked) uris.add(getUri(progressLog))
+                        if (eView.share_script_checkbox.isChecked) for (f in backupScripts) uris.add(getUri(f))
+                        if (eView.share_rawList_checkbox.isChecked) uris.add(getUri(rawList))
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Toast.makeText(workingContext, e.message.toString(), Toast.LENGTH_SHORT).show()
+                    }
+
+                    return uris
+                }
+
+                eView.report_button_old_email.setOnClickListener {
+                    sendIntent(getUris(), true)
+                }
+
+                var isTgClientInstalled = false
+                for (i in TG_CLIENTS.indices) {
+                    if (isPackageInstalled(TG_CLIENTS[i])) {
+                        isTgClientInstalled = true
+                        break
+                    }
+                }
+
+                if (!isTgClientInstalled) {
+                    eView.report_button_telegram.apply {
+                        text = context.getString(R.string.install_tg)
+                        setOnClickListener { playStoreLink(TG_CLIENTS[0]) }
+                    }
+                } else {
+                    eView.report_button_telegram.apply {
+                        text = context.getString(R.string.send_to_tg)
+                        setOnClickListener { sendIntent(getUris()) }
+                    }
+                }
+
+                AlertDialog.Builder(workingContext).setView(eView).show()
+
+            } else {
+                noLogsExist()
+            }
+
+        }
     }
 
     var deviceSpecifications: String =
@@ -445,12 +452,12 @@ class CommonToolsKotlin(val context: Context? = null) {
                     "Hardware: " + Build.HARDWARE
         private set
 
-    private fun getUri(file: File) =
+    private fun getUri(file: FileX) =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                FileProvider.getUriForFile(workingContext, "migrate.provider", file)
-            else Uri.fromFile(file)
+                FileProvider.getUriForFile(workingContext, "migrate.provider", file.file)
+            else Uri.fromFile(file.file)
 
-    private fun sendIntent(uris: ArrayList<Uri>, isEmail: Boolean = false){
+    private fun sendIntent(uris: ArrayList<Uri>, isEmail: Boolean = false) {
         Intent().run {
 
             action = Intent.ACTION_SEND_MULTIPLE
@@ -464,16 +471,18 @@ class CommonToolsKotlin(val context: Context? = null) {
 
                 putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
                 workingContext.startActivity(Intent.createChooser(this, workingContext.getString(R.string.select_mail)))
-            }
-            else doBackgroundTask({
+            } else doBackgroundTask({
 
                 tryIt {
-                    val infoFile = File(workingContext.externalCacheDir, FILE_DEVICE_INFO)
-                    BufferedWriter(FileWriter(infoFile)).run {
-                        write(deviceSpecifications)
-                        close()
+                    workingContext.externalCacheDir?.canonicalPath?.let {
+                        val infoFile = FileX.new(it, FILE_DEVICE_INFO)
+                        infoFile.startWriting(object : FileX.Writer(){
+                            override fun writeLines() {
+                                writeLine(deviceSpecifications)
+                            }
+                        })
+                        uris.add(getUri(infoFile))
                     }
-                    uris.add(getUri(infoFile))
                 }
 
             }, {
@@ -515,28 +524,29 @@ class CommonToolsKotlin(val context: Context? = null) {
         return arrayOf(suRequest.exitValue() == 0, errorMessage)
     }
 
-    fun getSdCardPaths(): Array<String> {
+    fun getTraditionalSdCardPaths(): Array<String> {
         val possibleSDCards = arrayListOf<String>()
-        val storage = File("/storage/")
+        val storage = FileX.new("/storage/", true)
         if (storage.exists() && storage.canRead()) {
-            val files = storage.listFiles { pathname ->
+            storage.listFiles { pathname ->
                 (pathname.isDirectory && pathname.canRead()
                         && pathname.absolutePath != Environment.getExternalStorageDirectory().absolutePath)
-            }
-            for (f in files) {
-                val sdDir = File("/mnt/media_rw/" + f.name)
-                if (sdDir.exists() && sdDir.isDirectory && sdDir.canWrite())
-                    possibleSDCards.add(sdDir.absolutePath)
+            }?.let { files ->
+                for (f in files) {
+                    val sdDir = FileX.new("/mnt/media_rw/" + f.name, true)
+                    if (sdDir.exists() && sdDir.isDirectory && sdDir.canWrite())
+                        possibleSDCards.add(sdDir.absolutePath)
+                }
             }
         }
         return possibleSDCards.toTypedArray()
     }
 
     fun showSdCardSupportDialog(): AlertDialog =
-        AlertDialog.Builder(workingContext)
-                .setView(View.inflate(workingContext, R.layout.learn_about_sd_card, null))
-                .setPositiveButton(android.R.string.ok, null)
-                .show()
+            AlertDialog.Builder(workingContext)
+                    .setView(View.inflate(workingContext, R.layout.learn_about_sd_card, null))
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
 
     fun applyNamingCorrectionForShell(name: String) =
             name
@@ -566,7 +576,7 @@ class CommonToolsKotlin(val context: Context? = null) {
                     .replace("\\s+".toRegex(), "_")
                     .replace("[^\\x20-\\x7E]".toRegex(), "")
 
-    fun forceCloseThis(){
+    fun forceCloseThis() {
         Runtime.getRuntime().exec("su").apply {
             BufferedWriter(OutputStreamWriter(this.outputStream)).run {
                 this.write("am force-stop ${AppInstance.appContext.packageName}\n")
@@ -581,4 +591,5 @@ class CommonToolsKotlin(val context: Context? = null) {
             android.os.Process.killProcess(android.os.Process.myPid())
         }, TIMEOUT_WAITING_TO_KILL)
     }
+
 }
