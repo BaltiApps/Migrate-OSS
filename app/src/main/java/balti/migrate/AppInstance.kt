@@ -63,7 +63,7 @@ class AppInstance: Application() {
 
         // Library initialization
         ToolboxHQ.init(this)
-        FileXInit(this, !getPrefBoolean(PREF_USE_FILEX11, false))
+        FileXInit(this, !getPrefBoolean(PREF_USE_FILEX11, true))
 
         notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 

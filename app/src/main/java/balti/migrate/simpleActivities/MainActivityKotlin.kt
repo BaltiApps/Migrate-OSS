@@ -73,6 +73,7 @@ import balti.module.baltitoolbox.functions.SharedPrefs.getPrefInt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 import balti.module.baltitoolbox.functions.SharedPrefs.putPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.putPrefInt
+import balti.module.baltitoolbox.functions.SharedPrefs.putPrefString
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
@@ -537,7 +538,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 if (defaultPath != DEFAULT_INTERNAL_STORAGE_DIR && defaultFile.canWrite()) {
                     sdCardRoot = defaultFile.parentFile
                 } else {
-                    val sdCardPaths = commonTools.getSdCardPaths()
+                    val sdCardPaths = commonTools.getTraditionalSdCardPaths()
                     if (sdCardPaths.size == 1) {
                         FileX.new(sdCardPaths[0]).let { if (it.canWrite()) sdCardRoot = it }
                     }
@@ -653,7 +654,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             AlertDialog.Builder(this).apply {
                 setTitle(R.string.select_storage_type)
                 setMessage(R.string.select_storage_type_desc)
-                setPositiveButton(R.string.old_way) { _, _ ->
+                setNegativeButton(R.string.old_way) { _, _ ->
                     putPrefBoolean(PREF_USE_FILEX11, false)
                     FileXInit.setTraditional(true)
                     filexStorageRequest()
@@ -662,7 +663,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                         arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
                         REQUEST_CODE_BACKUP)*/
                 }
-                setNegativeButton(R.string.new_way) { _, _ ->
+                setPositiveButton(R.string.new_way) { _, _ ->
                     putPrefBoolean(PREF_USE_FILEX11, true)
                     FileXInit.setTraditional(false)
                     filexStorageRequest()
@@ -672,7 +673,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             }
                     .show()
         }
-        else requestRoot()
+        else nextStepAfterStorageAccess()
     }
     private fun requestScopedStorageAccess(){
         FileXInit.setTraditional(false)
@@ -687,14 +688,14 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             }
                     .show()
         }
-        else requestRoot()
+        else nextStepAfterStorageAccess()
     }
     private fun filexStorageRequest(){
         putPrefBoolean(PREF_FIRST_STORAGE_REQUEST, false)
         FileXInit.requestUserPermission { resultCode, data ->
             if (resultCode == Activity.RESULT_OK) {
                 startStorageSpaceMonitor()
-                requestRoot()
+                nextStepAfterStorageAccess()
             }
             else {
                 dismissLoading()
@@ -707,6 +708,11 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 .setMessage(R.string.storage_access_required)
                 .setPositiveButton(android.R.string.ok, null)
                 .show()
+    }
+
+    private fun nextStepAfterStorageAccess(){
+        putPrefString(PREF_DEFAULT_BACKUP_PATH, if(FileXInit.isTraditional) DEFAULT_INTERNAL_STORAGE_DIR else  FileX.new("/").canonicalPath)
+        requestRoot()
     }
 
     private fun requestRoot(){
