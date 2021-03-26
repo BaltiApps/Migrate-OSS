@@ -1,8 +1,10 @@
 package balti.migrate.extraBackupsActivity
 
 //import balti.migrate.AppInstance.Companion.appBackupDataPackets
+//import java.io.File
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -11,14 +13,14 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import balti.filex.FileX
+import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.adbState
 import balti.migrate.AppInstance.Companion.appBackupDataPackets
 import balti.migrate.AppInstance.Companion.appPackets
@@ -79,7 +81,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_FONTSCAL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_SMS_THEN_CALLS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_WIFI
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_MIGRATE_FLASHER
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_AUTOSELECT_EXTRAS
@@ -90,25 +91,19 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_FONTSCALE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_INSTALLERS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_FLASHER_ONLY_WARNING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_STOCK_WARNING
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SMS_AND_CALLS_PERMISSION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SMS_PERMISSION
-import balti.module.baltitoolbox.functions.Misc.playStoreLink
 import balti.module.baltitoolbox.functions.Misc.showErrorDialog
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 import balti.module.baltitoolbox.functions.SharedPrefs.putPrefBoolean
-import balti.module.baltitoolbox.functions.SharedPrefs.putPrefString
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import kotlinx.android.synthetic.main.ask_for_backup_name.view.*
 import kotlinx.android.synthetic.main.extra_backups.*
 import kotlinx.android.synthetic.main.flasher_only_warning.view.*
 import kotlinx.android.synthetic.main.please_wait.*
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -137,6 +132,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private var loadInstallers: LoadInstallersForSelection? = null
 
     private var flasherOnlyBackup = false
+
+    private val ASK_FOR_NAME_JOBCODE = 696969
 
     private val dialogView by lazy { View.inflate(this, R.layout.please_wait, null) }
     private val waitingDialog by lazy {
@@ -559,228 +556,67 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     private fun askForName() {
 
-        val mainView = View.inflate(this, R.layout.ask_for_backup_name, null)
+        val sdf = SimpleDateFormat("yyyy.MM.dd_HH.mm.ss")
+        val backupName =
+        if (isAllAppsSelected && do_backup_sms.isChecked && do_backup_calls.isChecked && do_backup_installers.isChecked)              //extras_markers
+            "${getString(R.string.fullBackupLabel)}_${sdf.format(Calendar.getInstance().time)}"
+        else "${getString(R.string.backupLabel)}_${sdf.format(Calendar.getInstance().time)}"
 
-        mainView.backup_name_edit_text.setSingleLine(true)
-        mainView.destination_name.text = destination
+        startActivityForResult(Intent(this, AskForName::class.java).apply {
+            putExtra(EXTRA_BACKUP_NAME, backupName)
+        }, ASK_FOR_NAME_JOBCODE)
+    }
 
-        fun showFlasherOnlyWarning(fromPreference: Boolean){
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == ASK_FOR_NAME_JOBCODE){
+            if (resultCode == Activity.RESULT_OK) {
 
-            val flasherWarning = View.inflate(this, R.layout.flasher_only_warning, null)
-            flasherWarning.get_flasher_button.setOnClickListener {
-                playStoreLink(PACKAGE_MIGRATE_FLASHER)
-            }
+                backupName = data?.getStringExtra(EXTRA_BACKUP_NAME) ?: ""
 
-            val ad = AlertDialog.Builder(this).apply {
-                setView(flasherWarning)
-                setIcon(R.drawable.ic_error)
-            }
+                fun validateName() {
+                    backupName.trim()
+                        .replace("[\\\\/:*?\"'<>|]".toRegex(), " ")
+                        .replace(' ', '_').run {
 
-            if (fromPreference){
-                flasherWarning.flasher_warning_checkbox.visibility = View.VISIBLE
-                ad.apply {
-                    setPositiveButton(R.string.proceed) {_, _ ->
-                        putPrefBoolean(PREF_SHOW_FLASHER_ONLY_WARNING, !flasherWarning.flasher_warning_checkbox.isChecked)
-                    }
-                    setNegativeButton(R.string.disable_this) { _, _ ->
-                        mainView.migrate_flasher_only.isChecked = false
-                    }
-                    setCancelable(false)
-                }.show()
-            }
-            else {
-                flasherWarning.flasher_warning_checkbox.visibility = View.GONE
-                ad.setPositiveButton(R.string.close, null).show()
-            }
-        }
+                            if (this != "") {
 
-        mainView.migrate_flasher_only_warning_button.setOnClickListener {
-            showFlasherOnlyWarning(false)
-        }
+                                val dir = if (FileXInit.isTraditional) FileX.new("$destination/$this") else FileX.new(this)
+                                val zip = if (FileXInit.isTraditional) FileX.new("$destination/$this.zip") else FileX.new("$this.zip")
 
-        mainView.ignore_cache_checkbox.apply {
-            isChecked = getPrefBoolean(PREF_IGNORE_APP_CACHE, false)
-            setOnCheckedChangeListener { _, isChecked ->
-                putPrefBoolean(PREF_IGNORE_APP_CACHE, isChecked, true)
-            }
-        }
+                                fun startBackup() {
+                                    backupName = this
+                                    waitingDialog.show()
 
-        mainView.migrate_flasher_only.apply {
-            setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked && getPrefBoolean(PREF_SHOW_FLASHER_ONLY_WARNING, true))
-                    showFlasherOnlyWarning(true)
-                putPrefBoolean(PREF_USE_FLASHER_ONLY, isChecked)
-                flasherOnlyBackup = isChecked
-            }
-            isChecked = !getPrefBoolean(PREF_SHOW_FLASHER_ONLY_WARNING, true)
-                    && getPrefBoolean(PREF_USE_FLASHER_ONLY, false)
-        }
-
-        getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR).run {
-            if (this == DEFAULT_INTERNAL_STORAGE_DIR || !(File(this).canWrite())){
-                mainView.storage_select_radio_group.check(mainView.internal_storage_radio_button.id)
-                setDestination(DEFAULT_INTERNAL_STORAGE_DIR, mainView.destination_name)
-            }
-            else {
-                mainView.storage_select_radio_group.check(mainView.sd_card_radio_button.id)
-            }
-        }
-
-        mainView.storage_select_radio_group.setOnCheckedChangeListener { _, checkedId ->
-
-            val exSdCardImage = ImageView(this).apply {
-                this.setImageResource(R.drawable.ex_sd_card_enabler)
-                this.setPadding(10, 10, 10, 10)
-            }
-
-            when(checkedId){
-
-                R.id.internal_storage_radio_button ->
-                    setDestination(DEFAULT_INTERNAL_STORAGE_DIR, mainView.destination_name)
-
-                R.id.sd_card_radio_button -> {
-                    val sdCardProbableDirs = commonTools.getSdCardPaths()
-                    // the new function is supposed to automatically remove "" (empty files)
-
-                    when (sdCardProbableDirs.size){
-                        0 -> {
-                            AlertDialog.Builder(this)
-                                    .setTitle(R.string.no_sd_card_detected)
-                                    .setMessage(R.string.no_sd_card_detected_exp)
-                                    .setPositiveButton(R.string.close, null)
-                                    .setNegativeButton(R.string.learn_about_sd_card_support) { _, _ ->
-                                        commonTools.showSdCardSupportDialog()
-                                    }
-                                    .setView(exSdCardImage)
-                                    .show()
-                            mainView.internal_storage_radio_button.isChecked = true
-                        }
-
-                        1 -> setDestination(sdCardProbableDirs[0] + "/Migrate", mainView.destination_name)
-
-                        else -> {
-
-                            val sdGroup = RadioGroup(this).apply {
-                                this.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-                                this.setPadding(20, 20, 20 ,20)
-                            }
-
-                            for (i in sdCardProbableDirs.indices){
-
-                                val sdFile = File(sdCardProbableDirs[0])
-                                val button = RadioButton(this).apply {
-                                    this.text = sdFile.name
-                                    this.id = i
+                                    makeAppPackets = MakeAppPackets(JOBCODE_MAKE_APP_PACKETS, this@ExtraBackupsKotlin, destination, dialogView, flasherOnlyBackup)
+                                    makeAppPackets?.execute()
                                 }
 
-                                sdGroup.addView(button)
-                            }
-
-                            sdGroup.check(0)
-
-                            AlertDialog.Builder(this)
-                                    .setTitle(R.string.please_select_sd_card)
-                                    .setView(sdGroup)
-                                    .setCancelable(false)
-                                    .setNegativeButton(android.R.string.cancel) {_, _ ->
-                                        mainView.internal_storage_radio_button.isChecked = true
-                                        setDestination(DEFAULT_INTERNAL_STORAGE_DIR, mainView.destination_name)
-                                    }
-                                    .setPositiveButton(android.R.string.cancel) { _, _ ->
-                                        setDestination(sdCardProbableDirs[sdGroup.checkedRadioButtonId] + "/Migrate",
-                                                mainView.destination_name)
-                                    }
-                                    .show()
-
-                        }
-                    }
-                }
-            }
-
-        }
-
-        val sdf = SimpleDateFormat("yyyy.MM.dd_HH.mm.ss")
-        if (isAllAppsSelected && do_backup_sms.isChecked && do_backup_calls.isChecked && do_backup_installers.isChecked)              //extras_markers
-            mainView.backup_name_edit_text.setText("${getString(R.string.fullBackupLabel)}_${sdf.format(Calendar.getInstance().time)}")
-        else mainView.backup_name_edit_text.setText("${getString(R.string.backupLabel)}_${sdf.format(Calendar.getInstance().time)}")
-
-        val nameDialog = AlertDialog.Builder(this)
-                .setTitle(getString(R.string.setBackupName))
-                .setView(mainView)
-                .setPositiveButton(getString(android.R.string.ok), null)
-                .setNegativeButton(getString(android.R.string.cancel), null)
-                .setCancelable(false)
-                .create()
-
-        fun validateName(){
-            mainView.backup_name_edit_text.text.toString().trim()
-                    .replace("[\\\\/:*?\"'<>|]".toRegex(), " ")
-                    .replace(' ', '_').run {
-
-                        if (this != "") {
-
-                            val dir = File("$destination/$this")
-                            val zip = File("$destination/$this.zip")
-
-                            fun startBackup(){
-                                backupName = this
-                                waitingDialog.show()
-
-                                makeAppPackets = MakeAppPackets(JOBCODE_MAKE_APP_PACKETS, this@ExtraBackupsKotlin, destination, dialogView, flasherOnlyBackup)
-                                makeAppPackets?.execute()
-                            }
-
-                            if (dir.exists() || zip.exists()){
-                                AlertDialog.Builder(this@ExtraBackupsKotlin)
-                                        .setTitle(R.string.overwrite)
-                                        .setMessage(R.string.overwriteMessage)
-                                        .setPositiveButton(R.string.yes) { _, _ ->
-                                            if (dir.exists() && CommonToolsKotlin.isDeletable(dir)) dir.deleteRecursively()
-                                            if (zip.exists()) zip.delete()
-                                            nameDialog.dismiss()
-                                            startBackup()
-                                        }
-                                        .setNegativeButton(getString(R.string.rename), null)
-                                        .show()
-                            }
-                            else {
-                                nameDialog.dismiss()
-                                startBackup()
+                                if (dir.exists() || zip.exists()) {
+                                    AlertDialog.Builder(this@ExtraBackupsKotlin)
+                                            .setTitle(R.string.overwrite)
+                                            .setMessage(R.string.overwriteMessage)
+                                            .setPositiveButton(R.string.yes) { _, _ ->
+                                                if (dir.exists() && CommonToolsKotlin.isDeletable(dir)) dir.deleteRecursively()
+                                                if (zip.exists()) zip.delete()
+                                                startBackup()
+                                            }
+                                            .setNegativeButton(getString(R.string.rename)) {_, _ ->
+                                                askForName()
+                                            }
+                                            .show()
+                                } else {
+                                    startBackup()
+                                }
+                            } else {
+                                Toast.makeText(this@ExtraBackupsKotlin, R.string.backupNameCannotBeEmpty, Toast.LENGTH_SHORT).show()
+                                askForName()
                             }
                         }
-                        else Toast.makeText(this@ExtraBackupsKotlin, getString(R.string.backupNameCannotBeEmpty), Toast.LENGTH_SHORT).show()
-                    }
-        }
-
-        mainView.backup_name_edit_text.apply {
-            imeOptions = EditorInfo.IME_ACTION_DONE
-            setOnEditorActionListener { _, actionId, _ ->
-                if (actionId == EditorInfo.IME_ACTION_DONE){
-                    validateName()
-                    return@setOnEditorActionListener true
                 }
-                return@setOnEditorActionListener false
-            }
-        }
-
-        nameDialog.setOnShowListener {
-            (it as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 validateName()
             }
         }
-
-        nameDialog.show()
-    }
-
-    private fun setDestination(path: String, label: TextView) {
-
-        File(destination).let {
-            if (!it.exists()) it.mkdirs()
-        }
-
-        destination = path
-        label.text = destination
-        putPrefString(PREF_DEFAULT_BACKUP_PATH, destination, true)
     }
 
     override fun onComplete(jobCode: Int, jobSuccess: Boolean, jobResult: Any?) {           //extras_markers
