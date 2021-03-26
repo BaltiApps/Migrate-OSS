@@ -26,6 +26,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_P
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_MANDATORY_FLASHER_WARNING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_STORAGE_TYPE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_FILEX11
 import balti.migrate.utilities.CommonToolsKotlin.Companion.STORAGE_TYPE_CUSTOM_LOCATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.STORAGE_TYPE_INTERNAL_STORAGE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.STORAGE_TYPE_SD_CARD_STORAGE
@@ -118,16 +119,16 @@ class AskForName: AppCompatActivity() {
 
                 when(checkedId){
 
-                    R.id.internal_storage_radio_button -> setTraditionalStorage({
+                    R.id.internal_storage_radio_button -> setTraditionalStorage {
                         putPrefString(PREF_STORAGE_TYPE, STORAGE_TYPE_INTERNAL_STORAGE)
                         setBackupDestination(DEFAULT_INTERNAL_STORAGE_DIR)
-                    }, internal_storage_radio_button)
+                    }
 
-                    R.id.sd_card_radio_button -> setTraditionalStorage({
+                    R.id.sd_card_radio_button -> setTraditionalStorage {
                         val sdCardProbableDirs = commonTools.getTraditionalSdCardPaths()
                         // the new function is supposed to automatically remove "" (empty files)
 
-                        when (sdCardProbableDirs.size){
+                        when (sdCardProbableDirs.size) {
                             0 -> {
                                 AlertDialog.Builder(this)
                                         .setTitle(R.string.no_sd_card_detected)
@@ -150,10 +151,10 @@ class AskForName: AppCompatActivity() {
 
                                 val sdGroup = RadioGroup(this).apply {
                                     this.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-                                    this.setPadding(20, 20, 20 ,20)
+                                    this.setPadding(20, 20, 20, 20)
                                 }
 
-                                for (i in sdCardProbableDirs.indices){
+                                for (i in sdCardProbableDirs.indices) {
 
                                     val sdFile = FileX.new(sdCardProbableDirs[0], true)
                                     val button = RadioButton(this).apply {
@@ -170,7 +171,7 @@ class AskForName: AppCompatActivity() {
                                         .setTitle(R.string.please_select_sd_card)
                                         .setView(sdGroup)
                                         .setCancelable(false)
-                                        .setNegativeButton(android.R.string.cancel) {_, _ ->
+                                        .setNegativeButton(android.R.string.cancel) { _, _ ->
                                             internal_storage_radio_button.isChecked = true
                                             setBackupDestination(DEFAULT_INTERNAL_STORAGE_DIR)
                                             putPrefString(PREF_STORAGE_TYPE, STORAGE_TYPE_SD_CARD_STORAGE)
@@ -183,17 +184,17 @@ class AskForName: AppCompatActivity() {
 
                             }
                         }
-                    }, sd_card_radio_button)
+                    }
 
-                    R.id.custom_location_radio_button -> setScopedStorage({
+                    R.id.custom_location_radio_button -> setScopedStorage {
                         putPrefString(PREF_STORAGE_TYPE, STORAGE_TYPE_CUSTOM_LOCATION)
                         setBackupDestination(FileX.new("/").absolutePath)
                         location_change_button_for_radio_layout.setOnClickListener {
                             requestScopedStorage({
                                 setBackupDestination(FileX.new("/").absolutePath)
-                            }, custom_location_radio_button, 2)
+                            }, 2)
                         }
-                    }, custom_location_radio_button)
+                    }
                 }
             }
 
@@ -214,7 +215,7 @@ class AskForName: AppCompatActivity() {
         filex_layout_change.setOnClickListener {
             requestScopedStorage({
                 setBackupDestination(FileX.new("/").absolutePath)
-            }, null, 2)
+            }, 2)
         }
 
         cancel_ask_for_name.setOnClickListener {
@@ -226,16 +227,15 @@ class AskForName: AppCompatActivity() {
         }
     }
 
-    private fun clearStorageRadio(radioButton: RadioButton?){
-        radioButton?.isChecked = false
+    private fun clearStorageRadio(){
+        storage_select_radio_group.clearCheck()
         destination = ""
         putPrefString(PREF_DEFAULT_BACKUP_PATH, "")
         putPrefString(PREF_STORAGE_TYPE, "")
-        if (radioButton == custom_location_radio_button)
-            location_change_button_for_radio_layout.visibility = View.GONE
+        location_change_button_for_radio_layout.visibility = View.GONE
     }
 
-    private fun setTraditionalStorage(functionToPerform: () -> Unit, radioButton: RadioButton){
+    private fun setTraditionalStorage(functionToPerform: () -> Unit){
         location_change_button_for_radio_layout.visibility = View.GONE
         FileXInit.setTraditional(true)
         if (FileXInit.isUserPermissionGranted()){
@@ -248,25 +248,25 @@ class AskForName: AppCompatActivity() {
                 setPositiveButton(R.string.grant) {_, _ ->
                     FileXInit.requestUserPermission { resultCode, data ->
                         if (resultCode == Activity.RESULT_OK) functionToPerform()
-                        else clearStorageRadio(radioButton)
+                        else clearStorageRadio()
                     }
                 }
                 setNegativeButton(android.R.string.cancel) {_, _ ->
-                    clearStorageRadio(radioButton)
+                    clearStorageRadio()
                 }
             }
                     .show()
         }
     }
 
-    private fun setScopedStorage(functionToPerform: () -> Unit, radioButton: RadioButton){
+    private fun setScopedStorage(functionToPerform: () -> Unit){
         location_change_button_for_radio_layout.visibility = View.VISIBLE
         FileXInit.setTraditional(false)
         if (FileXInit.isUserPermissionGranted() && !FileX.new("/").volumePath.isNullOrBlank()){
             functionToPerform()
         }
         else {
-            requestScopedStorage(functionToPerform, radioButton, 0)
+            requestScopedStorage(functionToPerform, 0)
         }
     }
 
@@ -276,14 +276,14 @@ class AskForName: AppCompatActivity() {
      * 1 -> show dialog about invalid location and choose storage again
      * 2 -> don't show any dialog and directly open Documents UI
      */
-    private fun requestScopedStorage(functionToPerform: () -> Unit, radioButton: RadioButton?, mode: Int) {
+    private fun requestScopedStorage(functionToPerform: () -> Unit, mode: Int) {
         fun ask(){
             FileXInit.requestUserPermission (reRequest = true) { resultCode, data ->
                 if (resultCode == Activity.RESULT_OK) {
                     if (FileX.new("/").volumePath.isNullOrBlank()) {
-                        requestScopedStorage(functionToPerform, radioButton, 1)
+                        requestScopedStorage(functionToPerform, 1)
                     } else functionToPerform()
-                } else clearStorageRadio(radioButton)
+                } else clearStorageRadio()
             }
         }
         if (mode == 2) ask()
@@ -301,7 +301,7 @@ class AskForName: AppCompatActivity() {
                 ask()
             }
             setNegativeButton(android.R.string.cancel) { _, _ ->
-                clearStorageRadio(radioButton)
+                clearStorageRadio()
             }
         }
                 .show()
