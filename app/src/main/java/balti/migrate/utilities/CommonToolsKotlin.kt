@@ -185,6 +185,7 @@ class CommonToolsKotlin(val context: Context? = null) {
         val PREF_VERSION_CURRENT = "version"
         val PREF_ANDROID_VERSION_WARNING = "android_version_warning"
         val PREF_DEFAULT_BACKUP_PATH = "defaultBackupPath"
+        val PREF_STORAGE_TYPE = "storageType"
         val PREF_ASK_FOR_RATING = "askForRating"
         val PREF_SYSTEM_APPS_WARNING = "system_apps_warning"
         val PREF_CALCULATING_SIZE_METHOD = "calculating_size_method"
@@ -221,12 +222,16 @@ class CommonToolsKotlin(val context: Context? = null) {
         val PREF_BACKUP_ADB = "last_adb_state"
         val PREF_BACKUP_FONTSCALE = "last_fontscale_state"
         val PREF_BACKUP_DPI = "last_dpi_state"
-        val PREF_SHOW_FLASHER_ONLY_WARNING = "flasher_only_warning"
+        val PREF_SHOW_MANDATORY_FLASHER_WARNING = "flasher_only_warning"
         val PREF_USE_FLASHER_ONLY = "use_flasher_only"
 
         val PROPERTY_APP_SELECTION = "app"        // used to set property in AppListAdapter
         val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter
         val PROPERTY_PERMISSION_SELECTION = "permission"        // used to set property in AppListAdapter
+
+        val STORAGE_TYPE_INTERNAL_STORAGE = "INTERNAL_STORAGE"
+        val STORAGE_TYPE_SD_CARD_STORAGE = "SD_CARD_STORAGE"
+        val STORAGE_TYPE_CUSTOM_LOCATION = "CUSTOM_LOCATION"
 
         //extra backups
 
@@ -321,8 +326,8 @@ class CommonToolsKotlin(val context: Context? = null) {
 
         fun isDeletable(f: FileX): Boolean {
             val d = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
-            val parentPath = FileX.new(d).absolutePath
-            return f.absolutePath.startsWith(parentPath)
+            val parentPath = FileX.new(d).canonicalPath
+            return f.canonicalPath.startsWith(parentPath)
         }
     }
 
