@@ -24,4 +24,10 @@
         <item name="android:background">@color/colorPrimary</item>
     </style>
 
+    <style name="AppTheme.Floating" parent="Theme.AppCompat.Dialog">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
 </resources>
