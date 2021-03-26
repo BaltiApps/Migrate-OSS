@@ -129,3 +129,8 @@ app/libs/
 app/release/
 app/src/main/res/drawable-v24/
 app/src/main/res/drawable-xxxhdpi/
+
+# Remove these once adjusted
+app/src/main/java/balti/migrate/backupEngines/BackupServiceKotlin.kt
+app/src/main/java/balti/migrate/backupEngines/engines/VerificationEngine.kt
+app/src/main/java/balti/migrate/backupEngines/engines/ZippingEngine.kt
