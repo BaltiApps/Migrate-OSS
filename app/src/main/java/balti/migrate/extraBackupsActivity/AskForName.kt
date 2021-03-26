@@ -106,6 +106,11 @@ class AskForName: AppCompatActivity() {
         if (ALLOW_CONVENTIONAL_STORAGE) {
             storage_select_radio_group.setOnCheckedChangeListener { _, checkedId ->
 
+                // Proceed if the event is for the radio button being checked, not unchecked.
+                try {
+                    if (!findViewById<RadioButton>(checkedId).isChecked) return@setOnCheckedChangeListener
+                } catch (_: Exception){}
+
                 val exSdCardImage = ImageView(this).apply {
                     this.setImageResource(R.drawable.ex_sd_card_enabler)
                     this.setPadding(10, 10, 10, 10)
@@ -377,23 +382,12 @@ class AskForName: AppCompatActivity() {
     }
 
     private fun checkStorageAndSendPositiveResult(){
-        if (ALLOW_CONVENTIONAL_STORAGE){
-            if (storage_select_radio_group.checkedRadioButtonId == -1) {
-                Toast.makeText(this, R.string.please_select_a_storage_option, Toast.LENGTH_SHORT).show()
-                highlightStorage()
-            }
-            else {
-                sendResult(true)
-            }
+        if (destination.isBlank()) {
+            Toast.makeText(this, R.string.please_select_a_storage_option, Toast.LENGTH_SHORT).show()
+            highlightStorage(ALLOW_CONVENTIONAL_STORAGE)
         }
         else {
-            if (destination.isBlank()) {
-                Toast.makeText(this, R.string.please_select_a_storage_option, Toast.LENGTH_SHORT).show()
-                highlightStorage(false)
-            }
-            else {
-                sendResult(true)
-            }
+            sendResult(true)
         }
     }
 }
