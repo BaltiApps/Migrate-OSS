@@ -222,10 +222,23 @@
 
     <!--ask_for_backup_name.xml-->
     <string name="enter_backup_name">Enter backup name</string>
+    <string name="custom_location">Custom location</string>
     <string name="sd_card">SD card</string>
+    <string name="change">Change</string>
+    <string name="start">Start</string>
     <string name="advanced_options">Advanced options</string>
     <string name="ignore_cache">Ignore app cache</string>
     <string name="migrate_flasher_only_backup">Migrate-flasher-only backup</string>
+    <string name="flasher_only_desc1">You will be able to restore the backup <b>ONLY</b> using the <b>Migrate Flasher</b> app.</string>
+    <string name="flasher_only_desc2"><b>You will not be able to flash the backup using TWRP!!</b></string>
+    <string name="disable_this">Disable this!</string>
+    <string name="get_on_google_play">Get on Google Play</string>
+
+    <!--AskForName.kt-->
+    <string name="grant_internal_storage_access">Please grant access to internal storage</string>
+    <string name="grant">Grant</string>
+    <string name="no_storage_selected">No storage selected!</string>
+    <string name="please_select_a_storage_option">Please select a storage option</string>
 
     <!--learn_about_sd_card.xml-->
     <string name="p1">1. SD card support is experimental, and requires a magisk module.</string>
@@ -369,12 +382,6 @@
     <string name="not_selected">Not selected apps</string>
     <string name="all_selected">All apps selected</string>
     <string name="some_apps_are_not_allowed">Some apps are not allowed to be backed up (like Migrate Helper)</string>
-
-    <!--flasher_only_warning.xml-->
-    <string name="flasher_only_desc1">You will be able to restore the backup <b>ONLY</b> using the <b>Migrate Flasher</b> app.</string>
-    <string name="flasher_only_desc2"><b>You will not be able to flash the backup using TWRP!!</b></string>
-    <string name="disable_this">Disable this!</string>
-    <string name="get_on_google_play">Get on Google Play</string>
 
     <!--extra_item_selector.xml-->
     <string name="sms_selector_label">Select SMS</string>
@@ -524,6 +531,8 @@
     <string name="view">View</string>
     <string name="choose_storage_location">Please choose storage location</string>
     <string name="choose_storage_location_desc">In the next screen, please choose a folder where you would like to store the backups. <b>A location in internal storage is preferred.</b></string>
+    <string name="this_location_cannot_be_selected">Cannot use this location!</string>
+    <string name="this_location_cannot_be_selected_desc">The chosen location cannot be used to store backups. Please try another location.</string>
     <string name="select_storage_type">Migrate has a new way to store backups!</string>
     <string name="select_storage_type_desc">Old way - store in internal storage as usual.\nNew way - select a custom location</string>
     <string name="old_way">Old way</string>
