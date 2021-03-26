@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import android.widget.RadioButton
@@ -48,6 +49,8 @@ class AskForName: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ask_for_backup_name)
+
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
 
         destination = getPrefString(PREF_DEFAULT_BACKUP_PATH, "")
         backupName = intent.getStringExtra(EXTRA_BACKUP_NAME) ?: ""
@@ -266,7 +269,7 @@ class AskForName: AppCompatActivity() {
      */
     private fun requestScopedStorage(functionToPerform: () -> Unit, radioButton: RadioButton?, mode: Int) {
         fun ask(){
-            FileXInit.requestUserPermission { resultCode, data ->
+            FileXInit.requestUserPermission (reRequest = true) { resultCode, data ->
                 if (resultCode == Activity.RESULT_OK) {
                     if (FileX.new("/").volumePath.isNullOrBlank()) {
                         requestScopedStorage(functionToPerform, radioButton, 1)
@@ -327,8 +330,10 @@ class AskForName: AppCompatActivity() {
 
     private fun setDestination(path: String) {
 
-        FileX.new(path).let {
-            if (!it.exists()) it.mkdirs()
+        if (FileXInit.isTraditional) {
+            FileX.new(path).let {
+                if (!it.exists()) it.mkdirs()
+            }
         }
 
         destination_name.text = path

@@ -131,7 +131,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     private var flasherOnlyBackup = false
 
-    private val ASK_FOR_NAME_JOBCODE = 696969
+    private val ASK_FOR_NAME_JOBCODE = 1666
 
     private val dialogView by lazy { View.inflate(this, R.layout.please_wait, null) }
     private val waitingDialog by lazy {
