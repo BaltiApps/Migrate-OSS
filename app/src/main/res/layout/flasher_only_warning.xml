@@ -49,6 +49,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/dont_show_again"
-        android:id="@+id/flasher_warning_checkbox"/>
+        android:id="@+id/flasher_warning_dont_show_again"/>
 
 </LinearLayout>
