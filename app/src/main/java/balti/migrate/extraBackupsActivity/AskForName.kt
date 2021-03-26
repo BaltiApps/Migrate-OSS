@@ -345,7 +345,7 @@ class AskForName: AppCompatActivity() {
         class Highlight: AsyncCoroutineTask(){
             override suspend fun doInBackground(arg: Any?): Any? {
                 repeat(2) {
-                    val millis : Long = 100
+                    val millis : Long = 200
                     tryIt { publishProgress(true) }
                     sleepTask(millis)
                     tryIt { publishProgress(false) }
@@ -386,7 +386,7 @@ class AskForName: AppCompatActivity() {
         else {
             if (destination.isBlank()) {
                 Toast.makeText(this, R.string.please_select_a_storage_option, Toast.LENGTH_SHORT).show()
-                highlightStorage()
+                highlightStorage(false)
             }
             else {
                 sendResult(true)
