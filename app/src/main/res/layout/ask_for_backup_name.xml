@@ -94,8 +94,9 @@
         android:id="@+id/destination_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/large_padding_width"
+        android:layout_marginStart="@dimen/large_padding_width"
         tools:text="Destination name"
+        android:textStyle="bold"
         android:textColor="@color/colorAccent" />
 
     <Space
