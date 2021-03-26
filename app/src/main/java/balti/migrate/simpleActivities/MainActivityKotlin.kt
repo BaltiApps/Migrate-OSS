@@ -54,11 +54,14 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FIRST_RUN
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FIRST_STORAGE_REQUEST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_LAST_MESSAGE_LEVEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_LAST_MESSAGE_SNACK_LEVEL
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_STORAGE_TYPE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TERMINAL_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_FILEX11
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_VERSION_CURRENT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
+import balti.migrate.utilities.CommonToolsKotlin.Companion.STORAGE_TYPE_CUSTOM_LOCATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.STORAGE_TYPE_INTERNAL_STORAGE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.TG_DEV_LINK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.TG_LINK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.THIS_VERSION
@@ -711,7 +714,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     }
 
     private fun nextStepAfterStorageAccess(){
-        putPrefString(PREF_DEFAULT_BACKUP_PATH, if(FileXInit.isTraditional) DEFAULT_INTERNAL_STORAGE_DIR else  FileX.new("/").canonicalPath)
+        putPrefString(PREF_DEFAULT_BACKUP_PATH, if(FileXInit.isTraditional) DEFAULT_INTERNAL_STORAGE_DIR else FileX.new("/").canonicalPath)
+        putPrefString(PREF_STORAGE_TYPE, if(FileXInit.isTraditional) STORAGE_TYPE_INTERNAL_STORAGE else STORAGE_TYPE_CUSTOM_LOCATION)
         requestRoot()
     }
 
