@@ -42,7 +42,12 @@ import kotlinx.android.synthetic.main.flasher_only_warning.view.*
 
 class AskForName: AppCompatActivity() {
 
-    private lateinit var destination: String
+    private var destination: String = ""
+    set(value) {
+        field = value
+        if (value.isBlank()) destination_name.setText(R.string.no_storage_selected)
+        else destination_name.text = value
+    }
     private val commonTools by lazy { CommonToolsKotlin(this) }
     private var backupName = ""
 
@@ -56,7 +61,6 @@ class AskForName: AppCompatActivity() {
         backupName = intent.getStringExtra(EXTRA_BACKUP_NAME) ?: ""
 
         backup_name_edit_text.isSingleLine = true
-        destination_name.text = destination
 
         if (ALLOW_CONVENTIONAL_STORAGE) {
             storage_select_radio_group.visibility = View.VISIBLE
@@ -111,7 +115,7 @@ class AskForName: AppCompatActivity() {
 
                     R.id.internal_storage_radio_button -> setTraditionalStorage({
                         putPrefString(PREF_STORAGE_TYPE, STORAGE_TYPE_INTERNAL_STORAGE)
-                        setDestination(DEFAULT_INTERNAL_STORAGE_DIR)
+                        setBackupDestination(DEFAULT_INTERNAL_STORAGE_DIR)
                     }, internal_storage_radio_button)
 
                     R.id.sd_card_radio_button -> setTraditionalStorage({
@@ -133,7 +137,7 @@ class AskForName: AppCompatActivity() {
                             }
 
                             1 -> {
-                                setDestination(sdCardProbableDirs[0] + "/Migrate")
+                                setBackupDestination(sdCardProbableDirs[0] + "/Migrate")
                                 putPrefString(PREF_STORAGE_TYPE, STORAGE_TYPE_SD_CARD_STORAGE)
                             }
 
@@ -163,11 +167,11 @@ class AskForName: AppCompatActivity() {
                                         .setCancelable(false)
                                         .setNegativeButton(android.R.string.cancel) {_, _ ->
                                             internal_storage_radio_button.isChecked = true
-                                            setDestination(DEFAULT_INTERNAL_STORAGE_DIR)
+                                            setBackupDestination(DEFAULT_INTERNAL_STORAGE_DIR)
                                             putPrefString(PREF_STORAGE_TYPE, STORAGE_TYPE_SD_CARD_STORAGE)
                                         }
                                         .setPositiveButton(android.R.string.cancel) { _, _ ->
-                                            setDestination(sdCardProbableDirs[sdGroup.checkedRadioButtonId] + "/Migrate")
+                                            setBackupDestination(sdCardProbableDirs[sdGroup.checkedRadioButtonId] + "/Migrate")
                                             putPrefString(PREF_STORAGE_TYPE, STORAGE_TYPE_SD_CARD_STORAGE)
                                         }
                                         .show()
@@ -178,10 +182,10 @@ class AskForName: AppCompatActivity() {
 
                     R.id.custom_location_radio_button -> setScopedStorage({
                         putPrefString(PREF_STORAGE_TYPE, STORAGE_TYPE_CUSTOM_LOCATION)
-                        setDestination(FileX.new("/").absolutePath)
+                        setBackupDestination(FileX.new("/").absolutePath)
                         location_change_button_for_radio_layout.setOnClickListener {
                             requestScopedStorage({
-                                setDestination(FileX.new("/").absolutePath)
+                                setBackupDestination(FileX.new("/").absolutePath)
                             }, custom_location_radio_button, 2)
                         }
                     }, custom_location_radio_button)
@@ -204,7 +208,7 @@ class AskForName: AppCompatActivity() {
 
         filex_layout_change.setOnClickListener {
             requestScopedStorage({
-                setDestination(FileX.new("/").absolutePath)
+                setBackupDestination(FileX.new("/").absolutePath)
             }, null, 2)
         }
 
@@ -219,7 +223,6 @@ class AskForName: AppCompatActivity() {
 
     private fun clearStorageRadio(radioButton: RadioButton?){
         radioButton?.isChecked = false
-        destination_name.text = getString(R.string.no_storage_selected)
         destination = ""
         putPrefString(PREF_DEFAULT_BACKUP_PATH, "")
         putPrefString(PREF_STORAGE_TYPE, "")
@@ -329,7 +332,7 @@ class AskForName: AppCompatActivity() {
         }
     }
 
-    private fun setDestination(path: String) {
+    private fun setBackupDestination(path: String) {
 
         if (FileXInit.isTraditional) {
             FileX.new(path).let {
@@ -337,7 +340,6 @@ class AskForName: AppCompatActivity() {
             }
         }
 
-        destination_name.text = path
         destination = path
         putPrefString(PREF_DEFAULT_BACKUP_PATH, destination, true)
     }
