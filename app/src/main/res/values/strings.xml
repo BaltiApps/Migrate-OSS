@@ -382,6 +382,7 @@
     <string name="not_selected">Not selected apps</string>
     <string name="all_selected">All apps selected</string>
     <string name="some_apps_are_not_allowed">Some apps are not allowed to be backed up (like Migrate Helper)</string>
+    <string name="nothing_to_backup">Nothing to backup</string>
 
     <!--extra_item_selector.xml-->
     <string name="sms_selector_label">Select SMS</string>

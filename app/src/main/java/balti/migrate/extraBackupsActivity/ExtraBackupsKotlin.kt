@@ -220,6 +220,9 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                         || do_backup_adb.isChecked || do_backup_wifi.isChecked || do_backup_fontScale.isChecked) {                  //extras_markers
                     askForName()
                 }
+                else {
+                    Toast.makeText(this, R.string.nothing_to_backup, Toast.LENGTH_SHORT).show()
+                }
             } else {
                 AlertDialog.Builder(this)
                         .setTitle(R.string.wait_while_reading_data)
