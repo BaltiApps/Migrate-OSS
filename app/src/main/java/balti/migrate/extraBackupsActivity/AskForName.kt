@@ -174,7 +174,7 @@ class AskForName: AppCompatActivity() {
                                         .setNegativeButton(android.R.string.cancel) { _, _ ->
                                             internal_storage_radio_button.isChecked = true
                                             setBackupDestination(DEFAULT_INTERNAL_STORAGE_DIR)
-                                            putPrefString(PREF_STORAGE_TYPE, STORAGE_TYPE_SD_CARD_STORAGE)
+                                            putPrefString(PREF_STORAGE_TYPE, STORAGE_TYPE_INTERNAL_STORAGE)
                                         }
                                         .setPositiveButton(android.R.string.cancel) { _, _ ->
                                             setBackupDestination(sdCardProbableDirs[sdGroup.checkedRadioButtonId] + "/Migrate")
