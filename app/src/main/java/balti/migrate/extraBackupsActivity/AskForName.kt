@@ -237,6 +237,7 @@ class AskForName: AppCompatActivity() {
 
     private fun setTraditionalStorage(functionToPerform: () -> Unit){
         location_change_button_for_radio_layout.visibility = View.GONE
+        putPrefBoolean(PREF_USE_FILEX11, false)
         FileXInit.setTraditional(true)
         if (FileXInit.isUserPermissionGranted()){
             functionToPerform()
@@ -261,6 +262,7 @@ class AskForName: AppCompatActivity() {
 
     private fun setScopedStorage(functionToPerform: () -> Unit){
         location_change_button_for_radio_layout.visibility = View.VISIBLE
+        putPrefBoolean(PREF_USE_FILEX11, true)
         FileXInit.setTraditional(false)
         if (FileXInit.isUserPermissionGranted() && !FileX.new("/").volumePath.isNullOrBlank()){
             functionToPerform()
