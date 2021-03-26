@@ -1,7 +1,5 @@
 package balti.migrate.extraBackupsActivity
 
-//import balti.migrate.AppInstance.Companion.appBackupDataPackets
-//import java.io.File
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -554,13 +552,15 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     }
 
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
-    private fun askForName() {
+    private fun askForName(previousName: String? = null) {
 
-        val sdf = SimpleDateFormat("yyyy.MM.dd_HH.mm.ss")
-        val backupName =
-        if (isAllAppsSelected && do_backup_sms.isChecked && do_backup_calls.isChecked && do_backup_installers.isChecked)              //extras_markers
-            "${getString(R.string.fullBackupLabel)}_${sdf.format(Calendar.getInstance().time)}"
-        else "${getString(R.string.backupLabel)}_${sdf.format(Calendar.getInstance().time)}"
+        val backupName = if (previousName == null) {
+            val sdf = SimpleDateFormat("yyyy.MM.dd_HH.mm.ss")
+            if (isAllAppsSelected && do_backup_sms.isChecked && do_backup_calls.isChecked && do_backup_installers.isChecked)              //extras_markers
+                "${getString(R.string.fullBackupLabel)}_${sdf.format(Calendar.getInstance().time)}"
+            else "${getString(R.string.backupLabel)}_${sdf.format(Calendar.getInstance().time)}"
+        }
+        else previousName
 
         startActivityForResult(Intent(this, AskForName::class.java).apply {
             putExtra(EXTRA_BACKUP_NAME, backupName)
@@ -602,7 +602,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                                                 startBackup()
                                             }
                                             .setNegativeButton(getString(R.string.rename)) {_, _ ->
-                                                askForName()
+                                                askForName(backupName)
                                             }
                                             .show()
                                 } else {
