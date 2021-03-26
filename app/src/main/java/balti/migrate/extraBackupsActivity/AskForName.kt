@@ -221,6 +221,7 @@ class AskForName: AppCompatActivity() {
         radioButton?.isChecked = false
         destination_name.text = getString(R.string.no_storage_selected)
         destination = ""
+        putPrefString(PREF_DEFAULT_BACKUP_PATH, "")
         putPrefString(PREF_STORAGE_TYPE, "")
         if (radioButton == custom_location_radio_button)
             location_change_button_for_radio_layout.visibility = View.GONE
