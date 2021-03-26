@@ -16,6 +16,10 @@
     <uses-permission android:name="android.permission.GET_PACKAGE_SIZE" />
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- New permission in Android 11+ -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+
     <application
         android:icon="@mipmap/ic_launcher"
         android:label="@string/display_name"
