@@ -15,6 +15,7 @@ import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_MAX_BACKUP_SIZE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_FILEX11
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PRIVATE_BACKUP_CACHE_NAME
 import balti.module.baltitoolbox.ToolboxHQ
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
@@ -29,6 +30,15 @@ class AppInstance: Application() {
         lateinit var notificationManager: NotificationManager
         var MAX_EFFECTIVE_ZIP_SIZE = 0L
         var MAX_WORKING_SIZE = 0L
+
+        val CACHE_DIR: String by lazy {
+            appContext.cacheDir.run {
+                FileX.new(canonicalPath, PRIVATE_BACKUP_CACHE_NAME, true).let {
+                    it.mkdirs()
+                    it.canonicalPath
+                }
+            }
+        }
 
         val appPackets = ArrayList<AppPacket>(0)
         val zipBatches = ArrayList<ZipAppBatch>(0)
