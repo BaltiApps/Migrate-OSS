@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
+import balti.filex.FileX
 import balti.filex.FileXInit
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.backupEngines.containers.ZipAppBatch
@@ -15,10 +16,10 @@ import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_MAX_BACKUP_SIZE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_FILEX11
 import balti.module.baltitoolbox.ToolboxHQ
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefLong
 import balti.module.baltitoolbox.functions.SharedPrefs.putPrefLong
-import java.io.File
 
 
 class AppInstance: Application() {
@@ -76,8 +77,9 @@ class AppInstance: Application() {
             }
             else it
         }
-
-        externalCacheDir?.run { File(this.absolutePath).mkdirs() }
+        tryIt {
+            externalCacheDir?.run { FileX.new(this.absolutePath, true).mkdirs() }
+        }
     }
 
     fun refreshMaxSize() {
