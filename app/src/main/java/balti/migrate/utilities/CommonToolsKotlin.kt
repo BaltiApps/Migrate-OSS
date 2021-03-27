@@ -29,8 +29,6 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-//import java.io.*
-
 class CommonToolsKotlin(val context: Context? = null) {
 
     companion object {

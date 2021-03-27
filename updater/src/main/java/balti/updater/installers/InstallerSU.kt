@@ -2,7 +2,11 @@ package balti.updater.installers
 
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
-import java.io.*
+import java.io.File
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
+import java.io.FileOutputStream
 
 internal class InstallerSU(private val downloadedApk: File) {
 

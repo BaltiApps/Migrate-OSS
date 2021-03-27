@@ -23,7 +23,7 @@ class BackupUtils {
     }
 
     fun iterateBufferedReader(reader: BufferedReader, loopFunction: (line: String) -> Boolean,
-                                      onCancelledFunction: (() -> Unit)? = null){
+                              onCancelledFunction: (() -> Unit)? = null){
         var doBreak = false
         while (true){
             val line : String? = reader.readLine()
