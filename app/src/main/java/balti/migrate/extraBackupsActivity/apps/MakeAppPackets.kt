@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import balti.filex.FileX
 import balti.filex.FileXInit
+import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.AppInstance.Companion.RESERVED_SPACE
 import balti.migrate.AppInstance.Companion.selectedBackupDataPackets
@@ -68,7 +69,12 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
         super.onPreExecute()
         vOp.doSomething {
             notificationManager.cancelAll()
-            (context.filesDir.listFiles() + context.externalCacheDir.let { if(it != null) it.listFiles() else arrayOf() }).forEach {
+            val allCacheFiles = ArrayList<FileX>(0)
+            context.filesDir.listFiles()?.map { FileX.new(it.canonicalPath, true) }?.let { allCacheFiles.addAll(it)}
+            context.externalCacheDir?.listFiles()?.map { FileX.new(it.canonicalPath, true) }?.let { allCacheFiles.addAll(it)}
+            FileX.new(CACHE_DIR, true).listFiles()?.let { allCacheFiles.addAll(it)}
+
+            allCacheFiles.forEach {
                 it.delete()
             }
         }
