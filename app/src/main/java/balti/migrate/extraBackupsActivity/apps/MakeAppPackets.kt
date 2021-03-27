@@ -12,6 +12,8 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import balti.filex.FileX
+import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.AppInstance.Companion.RESERVED_SPACE
 import balti.migrate.AppInstance.Companion.selectedBackupDataPackets
@@ -34,7 +36,10 @@ import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefInt
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import kotlinx.android.synthetic.main.please_wait.view.*
-import java.io.*
+import java.io.BufferedReader
+import java.io.BufferedWriter
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 
 class MakeAppPackets(private val jobCode: Int, private val context: Context, private val destination: String,
                      private val dialogView: View, private val flasherOnly: Boolean):
@@ -102,7 +107,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             (if (this == "x86" || this == "x86_64")
                 unpackAssetToInternal("busybox-x86", "busybox")
             else unpackAssetToInternal("busybox")).apply {
-                tryIt { File(this).setExecutable(true) }
+                tryIt { FileX.new(this, true).file.setExecutable(true) }
             }
         }
 
@@ -275,13 +280,21 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                         else null
 
                         val sdcard = Environment.getExternalStorageDirectory().path
-                        val externalData = File("$sdcard/Android/data/" + dp.PACKAGE_INFO.packageName)
-                        val externalMedia = File("$sdcard/Android/media/" + dp.PACKAGE_INFO.packageName)
+                        val externalData = FileX.new("$sdcard/Android/data/" + dp.PACKAGE_INFO.packageName, true)
+                        val externalMedia = FileX.new("$sdcard/Android/media/" + dp.PACKAGE_INFO.packageName, true)
+
+                        val apkSize =
+                                apkPath?.let {
+                                    FileX.new(it).let {
+                                        if (it.canRead()) it.length()
+                                        else null
+                                    } ?: storageStats.appBytes
+                                } ?: 0
 
                         apkPath?.let {apk ->
                             if (apk.startsWith("/system"))
-                                systemSize += File(apk).length()
-                            else dataSize += File(apk).length()
+                                systemSize += apkSize
+                            else dataSize += apkSize
                         }
 
                         dataPath?.let {
@@ -343,10 +356,12 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
         }
 
         try {
-            File(destination).let {
-                it.mkdirs()
-                if (!it.canWrite())
-                    return arrayOf(false, vOp.getStringFromRes(R.string.could_not_create_destination), destination + "\n\n" + vOp.getStringFromRes(R.string.make_sure_destination_exists))
+            if (FileXInit.isTraditional) {
+                FileX.new(destination).let {
+                    it.mkdirs()
+                    if (!it.canWrite())
+                        return arrayOf(false, vOp.getStringFromRes(R.string.could_not_create_destination), destination + "\n\n" + vOp.getStringFromRes(R.string.make_sure_destination_exists))
+                }
             }
         }
         catch (e: Exception){
@@ -358,6 +373,11 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
             StatFs(destination).let {
                 availableBytes = it.blockSizeLong * it.availableBlocksLong
+            }
+
+            if (availableBytes == 0L) {
+                availableBytes = if (FileXInit.isTraditional) FileX.new("").usableSpace
+                else FileX.new(destination).usableSpace
             }
 
         }
