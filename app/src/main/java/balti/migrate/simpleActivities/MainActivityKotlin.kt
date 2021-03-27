@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import balti.filex.FileX
 import balti.filex.FileXInit
+import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.messages.MessagesView
@@ -435,8 +436,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
                 .create()
 
         lView.view_progress_log.setOnClickListener {
-            val f = externalCacheDir?.absolutePath?.let { it1 -> FileX.new(it1, FILE_PROGRESSLOG, true) }
-            if (f?.exists() == true)
+            val f = FileX.new(CACHE_DIR, FILE_PROGRESSLOG, true)
+            if (f.exists())
                 startActivity(
                         Intent(this, SimpleLogViewer::class.java)
                                 .putExtra(SIMPLE_LOG_VIEWER_HEAD, getString(R.string.progressLog))
@@ -446,8 +447,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         }
 
         lView.view_error_log.setOnClickListener {
-            val f = externalCacheDir?.absolutePath?.let { it1 -> FileX.new(it1, FILE_ERRORLOG, true) }
-            if (f?.exists() == true)
+            val f = FileX.new(CACHE_DIR, FILE_ERRORLOG, true)
+            if (f.exists())
                 startActivity(
                         Intent(this, SimpleLogViewer::class.java)
                                 .putExtra(SIMPLE_LOG_VIEWER_HEAD, getString(R.string.errorLog))

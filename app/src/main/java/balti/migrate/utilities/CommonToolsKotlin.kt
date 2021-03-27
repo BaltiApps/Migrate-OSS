@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
 import balti.filex.FileX
 import balti.migrate.AppInstance
+import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.simpleActivities.PrivacyPolicy
 import balti.module.baltitoolbox.functions.Misc.doBackgroundTask
@@ -48,6 +49,7 @@ class CommonToolsKotlin(val context: Context? = null) {
 
         val DEFAULT_INTERNAL_STORAGE_DIR = "/sdcard/Migrate"
         val MIGRATE_CACHE_DEFAULT = "/data/local/tmp/migrate_cache"
+        val PRIVATE_BACKUP_CACHE_NAME = "backup_cache"
 
         val DIR_MANUAL_CONFIGS = "manualConfigs"
         val FILE_MIGRATE_CACHE_MANUAL = "MIGRATE_CACHE_MANUAL"
@@ -356,19 +358,19 @@ class CommonToolsKotlin(val context: Context? = null) {
                     .show()
         }
 
-        workingContext.externalCacheDir?.canonicalPath?.let { extCache ->
+        CACHE_DIR.let { cache ->
 
-            val progressLog = FileX.new(extCache, FILE_PROGRESSLOG, isTraditional = true)
-            val errorLog = FileX.new(extCache, FILE_ERRORLOG, isTraditional = true)
+            val progressLog = FileX.new(cache, FILE_PROGRESSLOG, isTraditional = true)
+            val errorLog = FileX.new(cache, FILE_ERRORLOG, isTraditional = true)
 
-            val backupScripts = workingContext.externalCacheDir?.canonicalPath?.let {
+            val backupScripts = cache.let {
                 FileX.new(it, true).listFiles { f: FileX ->
                     (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT) || f.name.startsWith(FILE_PREFIX_TAR_CHECK))
                             && f.name.endsWith(".sh")
                 }
             } ?: emptyArray<FileX>()
 
-            val rawList = FileX.new(extCache, FILE_RAW_LIST, true)
+            val rawList = FileX.new(cache, FILE_RAW_LIST, true)
 
             if (isErrorLogMandatory && !errorLog.exists()) {
                 noLogsExist(true)
@@ -477,15 +479,13 @@ class CommonToolsKotlin(val context: Context? = null) {
             } else doBackgroundTask({
 
                 tryIt {
-                    workingContext.externalCacheDir?.canonicalPath?.let {
-                        val infoFile = FileX.new(it, FILE_DEVICE_INFO)
-                        infoFile.startWriting(object : FileX.Writer(){
-                            override fun writeLines() {
-                                writeLine(deviceSpecifications)
-                            }
-                        })
-                        uris.add(getUri(infoFile))
-                    }
+                    val infoFile = FileX.new(CACHE_DIR, FILE_DEVICE_INFO, true)
+                    infoFile.startWriting(object : FileX.Writer(){
+                        override fun writeLines() {
+                            writeLine(deviceSpecifications)
+                        }
+                    })
+                    uris.add(getUri(infoFile))
                 }
 
             }, {
