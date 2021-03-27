@@ -100,7 +100,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
         val busyboxPath: String = Build.SUPPORTED_ABIS[0].run {
             (if (this == "x86" || this == "x86_64")
-                unpackAssetToInternal("busybox-86", "busybox")
+                unpackAssetToInternal("busybox-x86", "busybox")
             else unpackAssetToInternal("busybox")).apply {
                 tryIt { File(this).setExecutable(true) }
             }
