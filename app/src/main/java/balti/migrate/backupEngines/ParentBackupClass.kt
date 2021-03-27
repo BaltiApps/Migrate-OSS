@@ -5,6 +5,7 @@ import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import balti.filex.FileX
 import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin.Companion.serviceContext
@@ -27,7 +28,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PENDING_INTENT_REQUES
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import java.io.BufferedWriter
-import java.io.File
 import java.io.OutputStreamWriter
 
 abstract class ParentBackupClass(private val bd: BackupIntentData,
@@ -68,10 +68,10 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
         else "${engineContext.getString(stringRes)} : ${engineContext.getString(R.string.part)} - ${bd.batchErrorTag}"
     }
 
-    fun getDataBase(dataBaseFile: File): SQLiteDatabase{
-        var dataBase: SQLiteDatabase = SQLiteDatabase.openOrCreateDatabase(dataBaseFile.absolutePath, null)
+    fun getDataBase(dataBaseFile: FileX): SQLiteDatabase{
+        var dataBase: SQLiteDatabase = SQLiteDatabase.openOrCreateDatabase(dataBaseFile.canonicalPath, null)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1)
-            dataBase = SQLiteDatabase.openDatabase(dataBaseFile.absolutePath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS or SQLiteDatabase.OPEN_READWRITE)
+            dataBase = SQLiteDatabase.openDatabase(dataBaseFile.canonicalPath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS or SQLiteDatabase.OPEN_READWRITE)
         return dataBase
     }
 
@@ -166,7 +166,7 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     override suspend fun onPreExecute() {
         super.onPreExecute()
-        File(actualDestination).mkdirs()
+        FileX.new(actualDestination).mkdirs()
         customPreExecuteFunction?.invoke()
     }
 
