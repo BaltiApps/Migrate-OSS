@@ -138,6 +138,7 @@ class CommonToolsKotlin(val context: Context? = null) {
         val ERR_CALLS_VERIFY = "CALLS_VERIFY"
         val ERR_CALLS_VERIFY_TRY_CATCH = "CALLS_VERIFY_TRY_CATCH"
         val ERR_SMS_WRITE = "SMS_WRITE"
+        val ERR_SMS_WRITE_TO_ACTUAL = "SMS_WRITE_TO_ACTUAL"
         val ERR_SMS_TRY_CATCH = "SMS_TRY_CATCH"
         val ERR_SMS_VERIFY = "SMS_VERIFY"
         val ERR_SMS_VERIFY_TRY_CATCH = "SMS_VERIFY_TRY_CATCH"
