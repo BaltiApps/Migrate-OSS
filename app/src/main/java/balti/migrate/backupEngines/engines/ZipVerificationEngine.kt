@@ -1,5 +1,6 @@
 package balti.migrate.backupEngines.engines
 
+import balti.filex.FileX
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
@@ -15,16 +16,14 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_FILELIST_
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_FILELIST_VERIFICATION
 import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileReader
-import java.util.zip.ZipFile
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 
 class ZipVerificationEngine(private val jobcode: Int,
                             private val bd: BackupIntentData,
                             private val zipList: ArrayList<String>,
-                            private val zipFile: File,
-                            private val fileListForComparison: File? = null) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION) {
+                            private val zipFile: FileX,
+                            private val fileListForComparison: FileX? = null) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION) {
 
     private val verificationErrors by lazy { ArrayList<String>(0) }
     private val warnings by lazy { ArrayList<String>(0) }
@@ -40,8 +39,9 @@ class ZipVerificationEngine(private val jobcode: Int,
 
             resetBroadcast(true, title)
 
-            @Suppress("BlockingMethodInNonBlockingContext") val zip = ZipFile(zipFile)
-            val enumeration = zip.entries()
+            // old code
+            //@Suppress("BlockingMethodInNonBlockingContext") val zip = ZipFile(zipFile.canonicalPath)
+            //val enumeration = zip.entries()
 
             val fileSize = zipFile.length()
 
@@ -57,7 +57,8 @@ class ZipVerificationEngine(private val jobcode: Int,
             sleepTask(50)
             broadcastProgress(subTask, "${subTask}\n${fileSizeString}", false)
 
-            while (enumeration.hasMoreElements()) {
+            // old code
+            /*while (enumeration.hasMoreElements()) {
 
                 if (BackupServiceKotlin.cancelAll) break
 
@@ -73,6 +74,28 @@ class ZipVerificationEngine(private val jobcode: Int,
                         }
                     }
                 }
+            }*/
+
+            val zipInputStream = ZipInputStream(zipFile.inputStream())
+            var zEntryCheck: ZipEntry? = zipInputStream.nextEntry
+            while (zEntryCheck != null) {
+
+                if (BackupServiceKotlin.cancelAll) break
+
+                val entry = zEntryCheck
+                contents.add(entry.name)
+
+                if (checkFileListContents && entry.name.contains('/')) {
+                    entry.name.let { it ->
+                        it.substring(0, it.indexOf('/')).let {
+                            if (it.endsWith(".app") && !appDirectories.contains(it)) {
+                                appDirectories.add(it)
+                            }
+                        }
+                    }
+                }
+
+                zEntryCheck = zipInputStream.nextEntry
             }
 
             resetBroadcast(true, title)
@@ -100,7 +123,7 @@ class ZipVerificationEngine(private val jobcode: Int,
                     var filesCompared = 0
                     var filesPresent = 0
 
-                    BufferedReader(FileReader(fileListForComparison)).readLines().forEach {
+                    fileListForComparison.readLines().forEach {
                         (if (it.endsWith(".app_sys")) "${it.substring(0, it.lastIndexOf('.'))}.app" else it).run {
 
                             if (this.trim() != "" && !this.endsWith(".db-wal") && !this.endsWith(".db-shm")) {
