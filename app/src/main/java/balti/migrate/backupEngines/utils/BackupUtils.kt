@@ -73,11 +73,7 @@ class BackupUtils {
         actualDestination.mkdirs()
 
         return try {
-            val writer = metadataFile.startWriting(object : FileX.Writer(){
-                override fun writeLines() {
-                    writeString(jsonObject.toString(4))
-                }
-            })
+            metadataFile.writeOneLine(jsonObject.toString(4))
             ""
         }
         catch (e: Exception){
@@ -94,11 +90,7 @@ class BackupUtils {
         FileX.new(actualDestination).mkdirs()
 
         try {
-            val writer = iconFile.startWriting(object : FileX.Writer(){
-                override fun writeLines() {
-                    writeString(iconString)
-                }
-            })
+            iconFile.writeOneLine(iconString)
         }
         catch (e: Exception){
             e.printStackTrace()
