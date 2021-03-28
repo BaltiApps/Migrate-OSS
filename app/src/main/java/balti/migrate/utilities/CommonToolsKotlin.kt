@@ -204,6 +204,7 @@ class CommonToolsKotlin(val context: Context? = null) {
         val PREF_SMS_VERIFY = "sms_verify"
         val PREF_CALLS_VERIFY = "calls_verify"
         val PREF_SYSTEM_CHECK = "do_system_check"
+        val PREF_RETRY_SYSTEM_CHECK = "retry_system_check"
         val PREF_SEPARATE_EXTRAS_BACKUP = "separate_extras"
         val PREF_FORCE_SEPARATE_EXTRAS_BACKUP = "force_separate_extras"
         val PREF_DELETE_ERROR_BACKUP = "delete_backup_on_error"
