@@ -1,5 +1,6 @@
 package balti.migrate.backupEngines.engines
 
+import balti.filex.FileX
 import balti.migrate.R
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
@@ -11,9 +12,6 @@ import balti.migrate.utilities.constants.SettingsFields.Companion.JSON_FIELD_DPI
 import balti.migrate.utilities.constants.SettingsFields.Companion.JSON_FIELD_FONT_SCALE
 import balti.migrate.utilities.constants.SettingsFields.Companion.JSON_FIELD_KEYBOARD_TEXT
 import org.json.JSONObject
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileWriter
 
 class SettingsBackupEngine(private val jobcode: Int,
                            private val bd: BackupIntentData,
@@ -22,14 +20,14 @@ class SettingsBackupEngine(private val jobcode: Int,
                            private val fontScale: Double?,
                            private val keyboardText: String?) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_SETTINGS) {
 
-    private val settingsFile by lazy { File(actualDestination, BACKUP_NAME_SETTINGS) }
+    private val settingsFile by lazy { FileX.new(actualDestination, BACKUP_NAME_SETTINGS) }
     private val errors by lazy { ArrayList<String>(0) }
 
     override suspend fun doInBackground(arg: Any?): Any? {
 
         try {
 
-            File(actualDestination).mkdirs()
+            FileX.new(actualDestination).mkdirs()
             if (settingsFile.exists()) settingsFile.delete()
 
             val title = getTitle(R.string.writing_settings)
@@ -43,10 +41,7 @@ class SettingsBackupEngine(private val jobcode: Int,
             keyboardText?.let { jsonObject.put(JSON_FIELD_KEYBOARD_TEXT, it.trim()) }
 
             heavyTask {
-                BufferedWriter(FileWriter(settingsFile, true)).run {
-                    this.write(jsonObject.toString(4))
-                    this.close()
-                }
+                settingsFile.writeOneLine(jsonObject.toString(4))
             }
         }
         catch (e: Exception){
