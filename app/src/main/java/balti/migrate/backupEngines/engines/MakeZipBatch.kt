@@ -1,6 +1,7 @@
 package balti.migrate.backupEngines.engines
 
 import android.util.Log
+import balti.filex.FileX
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.AppInstance.Companion.RESERVED_SPACE
 import balti.migrate.R
@@ -25,10 +26,9 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_BATCH
 import balti.module.baltitoolbox.functions.Misc
 import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
-import java.io.File
 
 class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
-                   private val appList: ArrayList<AppPacket>, private val extras: ArrayList<File>) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH) {
+                   private val appList: ArrayList<AppPacket>, private val extras: ArrayList<FileX>) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH) {
 
     private val zipBatches by lazy { ArrayList<ZipAppBatch>(0) }
     private val errors by lazy { ArrayList<String>(0) }
@@ -46,7 +46,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
     private fun getPercentage(allPacketsSize: Int): Int =
             Misc.getPercentage((numberOfAppZipPackets - allPacketsSize), numberOfAppZipPackets)
 
-    private fun makeBatches(){
+    private suspend fun makeBatches(){
 
         var title = getTitle(R.string.making_packets)
         resetBroadcast(true, title)
@@ -59,13 +59,14 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                 if (BackupServiceKotlin.cancelAll) return@forEach
 
-                val associatedFiles = ArrayList<File>(0)
+                val associatedFiles = ArrayList<FileX>(0)
 
-                val expectedAppDir = File(actualDestination, "${it.packageName}.app")
-                val expectedDataFile = File(actualDestination, "${it.packageName}.tar.gz")
-                val expectedPermFile = File(actualDestination, "${it.packageName}.perm")
-                val expectedJsonFile = File(actualDestination, "${it.packageName}.json")
-                val expectedIconFile = File(actualDestination,
+                val expectedAppDir = FileX.new(actualDestination, "${it.packageName}.app")
+                val expectedDataFile = FileX.new(actualDestination, "${it.packageName}.tar.gz")
+                val expectedPermFile = FileX.new(actualDestination, "${it.packageName}.perm")
+                val expectedJsonFile = FileX.new(actualDestination, "${it.packageName}.json")
+                val expectedSystemShFile = FileX.new(actualDestination, "${it.packageName}.sh")
+                val expectedIconFile = FileX.new(actualDestination,
                         if (getPrefBoolean(PREF_NEW_ICON_METHOD, true)) "${it.packageName}.png"
                         else "${it.packageName}.icon"
                 )
@@ -75,6 +76,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 if (it.PERMISSION && expectedPermFile.exists()) associatedFiles.add(expectedPermFile)
                 if (expectedIconFile.exists()) associatedFiles.add(expectedIconFile)
                 if (expectedJsonFile.exists()) associatedFiles.add(expectedJsonFile)
+                if (expectedSystemShFile.exists()) associatedFiles.add(expectedSystemShFile)
 
                 val zipPacket = ZipAppPacket(it, associatedFiles)
                 allAppZipPackets.add(zipPacket)
@@ -86,7 +88,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
             }
         }
 
-        Thread.sleep(100)
+        sleepTask(100)
 
         title = getTitle(R.string.making_batches)
         resetBroadcast(false, title)
@@ -285,21 +287,21 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                 if (BackupServiceKotlin.cancelAll) return
 
-                val fullDirToMoveTo: File
+                val fullDirToMoveTo: FileX
 
                 if (it.partName != "") {
 
-                    fullDirToMoveTo = File(actualDestination, it.partName)
+                    fullDirToMoveTo = FileX.new(actualDestination, it.partName)
 
                     fullDirToMoveTo.mkdirs()
-                    val newFiles = ArrayList<File>(0)
+                    val newFiles = ArrayList<FileX>(0)
 
                     // extras of each zipBatch
                     it.extrasFiles.forEach { ef ->
 
                         if (BackupServiceKotlin.cancelAll) return
 
-                        val newFile = File(fullDirToMoveTo, ef.name)
+                        val newFile = FileX.new(fullDirToMoveTo.path, ef.name)
                         ef.renameTo(newFile)
                         newFiles.add(newFile)
                     }
@@ -313,7 +315,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                             if (BackupServiceKotlin.cancelAll) return
 
-                            val newFile = File(fullDirToMoveTo, af.name)
+                            val newFile = FileX.new(fullDirToMoveTo.path, af.name)
                             af.renameTo(newFile)
                             newFiles.add(newFile)
                         }
@@ -321,9 +323,9 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                         zp.appFiles.addAll(newFiles)
                     }
                 }
-                else fullDirToMoveTo = File(actualDestination)
+                else fullDirToMoveTo = FileX.new(actualDestination)
 
-                it.createFileList(File(actualDestination).absolutePath)
+                it.createFileList(actualDestination)
             }
 
         }
