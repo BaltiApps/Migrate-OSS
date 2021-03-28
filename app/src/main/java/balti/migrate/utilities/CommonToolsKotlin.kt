@@ -133,6 +133,7 @@ class CommonToolsKotlin(val context: Context? = null) {
         val ERR_ZIP_TOO_BIG = "ZIP_TOO_BIG"
         val ERR_CONTACTS_TRY_CATCH = "CONTACTS_TRY_CATCH"
         val ERR_CALLS_WRITE = "CALLS_WRITE"
+        val ERR_CALLS_WRITE_TO_ACTUAL = "CALLS_WRITE_TO_ACTUAL"
         val ERR_CALLS_TRY_CATCH = "CALLS_TRY_CATCH"
         val ERR_CALLS_VERIFY = "CALLS_VERIFY"
         val ERR_CALLS_VERIFY_TRY_CATCH = "CALLS_VERIFY_TRY_CATCH"
