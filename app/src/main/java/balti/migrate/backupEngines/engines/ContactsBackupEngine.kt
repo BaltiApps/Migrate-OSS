@@ -1,5 +1,6 @@
 package balti.migrate.backupEngines.engines
 
+import balti.filex.FileX
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
@@ -8,9 +9,6 @@ import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacket
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CONTACTS_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_CONTACTS
 import balti.module.baltitoolbox.functions.Misc.getPercentage
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileWriter
 
 class ContactsBackupEngine(private val jobcode: Int,
                            private val bd: BackupIntentData,
@@ -18,14 +16,14 @@ class ContactsBackupEngine(private val jobcode: Int,
                            private val vcfFileName: String):
         ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_CONTACTS) {
 
-    private val vcfFile by lazy { File(actualDestination, vcfFileName) }
+    private val vcfFile by lazy { FileX.new(actualDestination, vcfFileName) }
     private val errors by lazy { ArrayList<String>(0) }
 
     override suspend fun doInBackground(arg: Any?): Any? {
 
         try {
 
-            File(actualDestination).mkdirs()
+            FileX.new(actualDestination).mkdirs()
             if (vcfFile.exists()) vcfFile.delete()
 
             val title = getTitle(R.string.backing_contacts)
@@ -33,21 +31,17 @@ class ContactsBackupEngine(private val jobcode: Int,
             resetBroadcast(false, title)
 
             heavyTask {
-                BufferedWriter(FileWriter(vcfFile, true)).run {
 
-                    for (i in 0 until contactPackets.size) {
+                for (i in 0 until contactPackets.size) {
 
-                        if (BackupServiceKotlin.cancelAll) break
+                    if (BackupServiceKotlin.cancelAll) break
 
-                        val packet = contactPackets[i]
+                    val packet = contactPackets[i]
 
-                        if (!packet.selected) continue
+                    if (!packet.selected) continue
 
-                        this.write("${packet.vcfData}\n")
-                        broadcastProgress("", packet.fullName, true, getPercentage((i + 1), contactPackets.size))
-                    }
-
-                    this.close()
+                    vcfFile.writeOneLine("${packet.vcfData}\n")
+                    broadcastProgress("", packet.fullName, true, getPercentage((i + 1), contactPackets.size))
                 }
             }
         }
