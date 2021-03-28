@@ -1,6 +1,8 @@
 package balti.migrate.backupEngines.engines
 
 import android.os.Build
+import balti.filex.FileX
+import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.BackupServiceKotlin.Companion.flasherOnly
@@ -33,9 +35,10 @@ import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 import java.io.BufferedWriter
-import java.io.File
+//import java.io.File
 import java.io.FileWriter
 import java.io.IOException
+import java.io.OutputStreamWriter
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -49,14 +52,21 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
     private val warnings by lazy { ArrayList<String>(0) }
 
     private fun extractToBackup(fileName: String, targetPath: String){
-        val assetFile = File(unpackAssetToInternal(fileName, fileName, FileHandlers.INTERNAL_TYPE.EXTERNAL_CACHE))
-        val targetFile = File(targetPath, fileName)
+        val assetFile = FileX.new(unpackAssetToInternal(fileName, fileName, FileHandlers.INTERNAL_TYPE.INTERNAL_FILES), true)
+        val targetFile = FileX.new(targetPath, fileName)
         var err = ""
 
-        File(targetPath).mkdirs()
+        FileX.new(targetPath).mkdirs()
 
         if (assetFile.exists())
-            err = moveFileStream(assetFile, targetPath)
+            err = try {
+                assetFile.copyTo(targetFile)
+                assetFile.delete()
+                ""
+            }catch (e: Exception){
+                e.printStackTrace()
+                e.message.toString()
+            }
         else errors.add("$ERR_UPDATER_EXTRACT${bd.batchErrorTag}: $fileName could not be unpacked")
 
         if (!targetFile.exists())
@@ -66,10 +76,10 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
     private fun makeUpdaterScript() {
 
-        val updaterScriptPath = File("$actualDestination/META-INF/com/google/android/")
+        val updaterScriptPath = FileX.new("$actualDestination/META-INF/com/google/android/")
         updaterScriptPath.mkdirs()
 
-        BufferedWriter(FileWriter(File(updaterScriptPath, "updater-script"))).let { updater_writer ->
+        BufferedWriter(OutputStreamWriter(FileX.new(updaterScriptPath.path, "updater-script").outputStream())).let { updater_writer ->
 
             updater_writer.write("show_progress(0, 0);\n")
             updater_writer.write("ui_print(\" \");\n")
@@ -247,7 +257,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
     private fun makePackageData() {        // done
 
-        val packageData = File(actualDestination, FILE_PACKAGE_DATA)
+        val packageData = FileX.new(actualDestination, FILE_PACKAGE_DATA)
         var contents = ""
 
         contents += "backup_name ${bd.backupName}\n"
@@ -263,9 +273,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 engineContext.getString(R.string.release_state) + "\n"
 
         try {
-            val writer = BufferedWriter(FileWriter(packageData))
-            writer.write(contents)
-            writer.close()
+            packageData.writeOneLine(contents)
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -279,12 +287,9 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
     private fun writeManualConfig(fileName: String, value: String){
         try {
-            File(actualDestination, DIR_MANUAL_CONFIGS).run {
+            FileX.new(actualDestination, DIR_MANUAL_CONFIGS).run {
                 mkdirs()
-                BufferedWriter(FileWriter(File(this, fileName))).run {
-                    write(getPrefString(value, ""))
-                    close()
-                }
+                FileX.new(this.path, fileName).writeOneLine(getPrefString(value, ""))
             }
         }
         catch (e: Exception) {
@@ -322,32 +327,34 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             }
 
 
-            val rawList = File(actualDestination, FILE_RAW_LIST)
+            val rawList = FileX.new(actualDestination, FILE_RAW_LIST)
             try {
                 heavyTask {
-                    BufferedWriter(FileWriter(rawList)).run {
+                    rawList.startWriting(object : FileX.Writer() {
+                        override fun writeLines() {
+                            write("\n")
+                            write("=================\n")
+                            write("${actualDestination}\n")
+                            write("=================\n")
+                            write("\n")
 
-                        this.write("\n")
-                        this.write("=================\n")
-                        this.write("${actualDestination}\n")
-                        this.write("=================\n")
-                        this.write("\n")
+                            fun getRelativePath(file: FileX): String =
+                                    file.path.let {
+                                        it.substring(actualDestination.length)
+                                    }
 
-                        fun getRelativePath(file: File): String =
-                                file.absolutePath.let {
-                                    it.substring(actualDestination.length)
+                            fun scanAllFiles(directory: FileX) {
+                                if (directory.isFile) write("${getRelativePath(directory)}\n")
+                                else directory.listFiles()?.let {
+                                    for (f in it) {
+                                        scanAllFiles(f)
+                                    }
                                 }
-
-                        fun scanAllFiles(directory: File) {
-                            if (directory.isFile) this.write("${getRelativePath(directory)}\n")
-                            else for (f in directory.listFiles()) {
-                                scanAllFiles(f)
                             }
-                        }
 
-                        scanAllFiles(File(actualDestination))
-                        close()
-                    }
+                            scanAllFiles(FileX.new(actualDestination))
+                        }
+                    })
                 }
             }
             catch (e: Exception){
@@ -356,15 +363,16 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             }
 
             tryIt {
-                val extRawList = File(engineContext.externalCacheDir, FILE_RAW_LIST)
+                val extRawList = FileX.new(CACHE_DIR, FILE_RAW_LIST, true)
 
-                BufferedWriter(FileWriter(extRawList, true)).run {
-                    if (rawList.exists())
-                        rawList.readLines().forEach {
-                            this.write("$it\n")
-                        }
-                    close()
-                }
+                extRawList.startWriting(object : FileX.Writer(){
+                    override fun writeLines() {
+                        if (rawList.exists())
+                            rawList.readLines().forEach {
+                                write("$it\n")
+                            }
+                    }
+                }, true)
             }
 
             if (!flasherOnly) makeUpdaterScript()
