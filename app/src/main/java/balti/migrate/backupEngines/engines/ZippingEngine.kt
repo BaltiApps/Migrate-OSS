@@ -1,19 +1,20 @@
 package balti.migrate.backupEngines.engines
 
+import balti.filex.FileX
+import balti.filex.FileXInit
+import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.containers.ZipAppBatch
+import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_FILE_LIST_COPY
-import balti.module.baltitoolbox.functions.FileHandlers.copyFileStream
 import balti.module.baltitoolbox.functions.Misc.getPercentage
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import java.io.BufferedInputStream
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.util.zip.CRC32
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -25,14 +26,16 @@ class ZippingEngine(private val jobcode: Int,
     private val zippedFiles = ArrayList<String>(0)
     private val zipErrors = ArrayList<String>(0)
     private val warnings = ArrayList<String>(0)
-    private lateinit var fileListCopied: File
+    private lateinit var fileListCopied: FileX
 
-    private fun getAllFiles(directory: File, allFiles: ArrayList<File> = ArrayList(0)): ArrayList<File>{
+    private fun getAllFiles(directory: FileX, allFiles: ArrayList<FileX> = ArrayList(0)): ArrayList<FileX>{
         if (!directory.isDirectory) return arrayListOf(directory)
         else {
-            for (f in directory.listFiles()){
-                allFiles.add(f)
-                if (f.isDirectory) getAllFiles(f, allFiles)
+            tryIt {
+                for (f in directory.listFiles()!!) {
+                    allFiles.add(f)
+                    if (f.isDirectory) getAllFiles(f, allFiles)
+                }
             }
         }
         return allFiles
@@ -46,17 +49,24 @@ class ZippingEngine(private val jobcode: Int,
 
             resetBroadcast(false, title)
 
-            val directory = File(actualDestination)
-            val zipFile = File("$actualDestination.zip")
+            val directory = FileX.new(actualDestination)
+            val zipFile = FileX.new("$actualDestination.zip")
 
             // copy the fileList to internal storage for later comparison
 
             zipBatch.fileList?.let {
                 if (it.exists()) {
-                    val copyRes = copyFileStream(it, File(engineContext.cacheDir.absolutePath, "${it.name}_${zipBatch.partName}"))
+                    val copyRes = try {
+                        it.copyTo(FileX.new(CACHE_DIR, "${it.name}_${zipBatch.partName}", true))
+                        ""
+                    }
+                    catch (e: Exception){
+                        e.printStackTrace()
+                        e.message.toString()
+                    }
                     if (copyRes != "")
                         warnings.add("$WARNING_FILE_LIST_COPY${bd.batchErrorTag}: $copyRes")
-                    else fileListCopied = File(engineContext.cacheDir.absolutePath, "${it.name}_${zipBatch.partName}")
+                    else fileListCopied = FileX.new(CACHE_DIR, "${it.name}_${zipBatch.partName}", true)
                 }
                 else warnings.add("$WARNING_FILE_LIST_COPY${bd.batchErrorTag}: ${engineContext.getString(R.string.file_list_not_in_zip_batch)}")
             }
@@ -64,7 +74,7 @@ class ZippingEngine(private val jobcode: Int,
             heavyTask {
                 if (zipFile.exists()) zipFile.delete()
                 val files = getAllFiles(directory)
-                val zipOutputStream = ZipOutputStream(FileOutputStream(zipFile))
+                val zipOutputStream = ZipOutputStream(zipFile.outputStream())
 
                 for (i in 0 until files.size) {
 
@@ -72,7 +82,10 @@ class ZippingEngine(private val jobcode: Int,
 
                     if (BackupServiceKotlin.cancelAll) break
 
-                    val relativeFilePath = file.absolutePath.substring(directory.absolutePath.length + 1).let {
+                    val endPath = if (FileXInit.isTraditional) file.canonicalPath.substring(directory.canonicalPath.length + 1)
+                    else file.path.substring(directory.path.length + 1)
+
+                    val relativeFilePath = endPath.let {
                         if (it.endsWith("/") && file.isFile) it.substring(0, it.length - 1)
                         else if (file.isDirectory && !it.endsWith("/")) "$it/"
                         else it
@@ -88,7 +101,7 @@ class ZippingEngine(private val jobcode: Int,
                     } else {
                         zipEntry = ZipEntry(relativeFilePath)
 
-                        val bufferedInputStream = BufferedInputStream(FileInputStream(file))
+                        val bufferedInputStream = BufferedInputStream(file.inputStream())
                         var buffer = ByteArray(4096)
                         var read: Int
 
@@ -110,11 +123,11 @@ class ZippingEngine(private val jobcode: Int,
 
                         zipOutputStream.putNextEntry(zipEntry)
 
-                        val fileInputStream = FileInputStream(file)
+                        val fileInputStream = file.inputStream()
                         buffer = ByteArray(4096)
 
                         while (true) {
-                            read = fileInputStream.read(buffer)
+                            read = fileInputStream!!.read(buffer)
                             if (read > 0)
                                 zipOutputStream.write(buffer, 0, read)
                             else break
@@ -131,7 +144,7 @@ class ZippingEngine(private val jobcode: Int,
                 }
 
                 zipOutputStream.close()
-                directory.let { /*if (CommonToolsKotlin.isDeletable(it)) it.deleteRecursively()*/ }
+                directory.let { if (CommonToolsKotlin.isDeletable(it)) it.deleteRecursively() }
             }
         }
         catch (e: Exception){
