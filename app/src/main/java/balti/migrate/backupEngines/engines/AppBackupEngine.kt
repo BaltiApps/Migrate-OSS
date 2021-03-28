@@ -1,6 +1,7 @@
 package balti.migrate.backupEngines.engines
 
 import balti.filex.FileX
+import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
@@ -47,6 +48,8 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
     private val allErrors by lazy { ArrayList<String>(0) }
     private val actualErrors by lazy { ArrayList<String>(0) }
+
+    private val rootLocation by lazy { FileX.new(actualDestination) }
 
     init {
         customPreExecuteFunction = {
@@ -96,7 +99,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                 "rm /tmp/$scriptName\n"
 
 
-        FileX.new(actualDestination).mkdirs()
+        rootLocation.mkdirs()
 
         tryIt {
             script.writeOneLine(scriptText)
@@ -129,7 +132,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     write("sleep 1\n")
                     write("echo \"--- PID: $$\"\n")
                     //write("cp ${scriptFile.absolutePath} ${engineContext.externalCacheDir}/\n")
-                    write("cp ${scriptFile.absolutePath} ${CACHE_DIR}/\n")
+                    write("cp ${scriptFile.absolutePath} ${CACHE_DIR}\n")
 
                     appList.let {packets ->
                         for (i in 0 until packets.size) {
@@ -161,8 +164,9 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                             }
 
                             val echoCopyCommand = "echo \"$MIGRATE_STATUS: $modifiedAppName icon: $appIconFileName\"\n"
+
                             val scriptCommand = "sh $appAndDataBackupScript " +
-                                    "$packageName $actualDestination " +
+                                    "$packageName ${rootLocation.canonicalPath} " +
                                     "${packet.apkPath} ${packet.apkName} " +
                                     "${packet.dataPath} ${packet.dataName} " +
                                     "$busyboxBinaryPath $ignoreCache\n"

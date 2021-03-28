@@ -205,7 +205,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     write("echo \" \"\n")
                     write("sleep 1\n")
                     write("echo \"--- TAR CHECK PID: $$\"\n")
-                    write("cp ${tarCheckScript.absolutePath} ${CACHE_DIR}/\n")
+                    write("cp ${tarCheckScript.absolutePath} ${CACHE_DIR}\n")
 
                     writeLine(
                             "checkData(){\n" +
@@ -326,7 +326,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     write("echo \" \"\n")
                     write("sleep 1\n")
                     write("echo \"--- RECOVERY PID: $$\"\n")
-                    write("cp ${retryScript.absolutePath} ${CACHE_DIR}/\n")
+                    write("cp ${retryScript.absolutePath} ${CACHE_DIR}\n")
 
                     for (i in 0 until defects.size){
                         if (BackupServiceKotlin.cancelAll) break
