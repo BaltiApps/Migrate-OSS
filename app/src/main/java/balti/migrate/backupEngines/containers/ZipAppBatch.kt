@@ -26,7 +26,8 @@ data class ZipAppBatch(val zipAppPackets: ArrayList<ZipAppPacket> = ArrayList(0)
         }
     }
     fun createFileList(destination: String){
-        val fl = FileX.new("$destination/$partName", FILE_FILE_LIST)
+        val fl = if (partName.isNotBlank()) FileX.new("$destination/$partName", FILE_FILE_LIST)
+        else FileX.new(destination, FILE_FILE_LIST)
 
         fl.delete()
         fl.startWriting(object : FileX.Writer(){
