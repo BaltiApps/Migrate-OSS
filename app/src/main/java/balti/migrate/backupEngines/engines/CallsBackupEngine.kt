@@ -2,6 +2,9 @@ package balti.migrate.backupEngines.engines
 
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
+import balti.filex.FileX
+import balti.filex.FileXInit
+import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
@@ -9,6 +12,7 @@ import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CALLS_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CALLS_WRITE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CALLS_WRITE_TO_ACTUAL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_CALLS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_CALLS_VERIFY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_CALLS
@@ -36,11 +40,10 @@ import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_TABLE_
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_TRANSCRIPTION
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_TYPE
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_VOICEMAIL_URI
+import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.functions.Misc.getPercentage
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
-import java.io.File
-import java.io.FileFilter
 
 class CallsBackupEngine(private val jobcode: Int,
                         private val bd: BackupIntentData,
@@ -48,15 +51,17 @@ class CallsBackupEngine(private val jobcode: Int,
                         private val callsDBFileName: String) :
         ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_CALLS) {
 
-    private val callsDBFile by lazy { File(actualDestination, callsDBFileName) }
+    private val callsDBFileActual by lazy { FileX.new(actualDestination, callsDBFileName) }
+    private val internalDB by lazy { FileX.new(CACHE_DIR, callsDBFileName) }
     private val errors by lazy { ArrayList<String>(0) }
     private val warnings by lazy { ArrayList<String>(0) }
 
     private fun writeCalls(){
         try {
 
-            File(actualDestination).mkdirs()
-            if (callsDBFile.exists()) callsDBFile.delete()
+            FileX.new(actualDestination).mkdirs()
+            if (callsDBFileActual.exists()) callsDBFileActual.delete()
+            if (internalDB.exists()) internalDB.delete()
 
             val title = getTitle(R.string.backing_calls)
 
@@ -94,7 +99,7 @@ class CallsBackupEngine(private val jobcode: Int,
                     "$CALLS_DURATION INTEGER, " +
                     "$CALLS_NEW INTEGER )"
 
-            val dataBase: SQLiteDatabase = getDataBase(callsDBFile)
+            val dataBase: SQLiteDatabase = getDataBase(if (FileXInit.isTraditional) callsDBFileActual else internalDB)
 
             dataBase.let { db ->
                 db.execSQL(DROP_TABLE)
@@ -177,7 +182,7 @@ class CallsBackupEngine(private val jobcode: Int,
             var totalSelected = 0
             callsPackets.forEach { if (it.selected) totalSelected++ }
 
-            val dataBase: SQLiteDatabase = getDataBase(callsDBFile)
+            val dataBase: SQLiteDatabase = getDataBase(if (FileXInit.isTraditional) callsDBFileActual else internalDB)
 
             val cursor = dataBase.query(CALLS_TABLE_NAME, arrayOf("id"), null, null, null, null, null)
             cursor.moveToFirst()
@@ -210,13 +215,34 @@ class CallsBackupEngine(private val jobcode: Int,
             verifyCalls()
         }
 
+        if (!FileXInit.isTraditional) {
+
+            // copy the main file
+            try {
+                internalDB.copyTo(callsDBFileActual, true)
+                tryIt { internalDB.delete() }
+            } catch (e: Exception) {
+                errors.add("$ERR_CALLS_WRITE_TO_ACTUAL: ${getStringFromRes(R.string.call_log_write_to_actual_failed)} ${e.message}")
+            }
+
+            // copy other files like .journal .journal-wal
+            try {
+                FileX.new(CACHE_DIR).listFiles { file: FileX -> file.name.startsWith(callsDBFileName) }?.forEach {
+                    it.copyTo(FileX.new(actualDestination, it.name))
+                    tryIt { it.delete() }
+                }
+            } catch (e: Exception) {
+                warnings.add("$ERR_CALLS_WRITE_TO_ACTUAL: ${getStringFromRes(R.string.call_log_auxillary_write_to_actual_failed)} ${e.message}")
+            }
+        }
+
         return 0
     }
 
     override fun postExecuteFunction() {
-        val filesGenerated = File(actualDestination).listFiles(FileFilter {
-            return@FileFilter it.name.startsWith(callsDBFile.name)
-        })
+        val filesGenerated = FileX.new(actualDestination).listFiles { file: FileX ->
+            file.name.startsWith(callsDBFileName)
+        }
         onEngineTaskComplete.onComplete(jobcode, errors, warnings, filesGenerated)
     }
 }
