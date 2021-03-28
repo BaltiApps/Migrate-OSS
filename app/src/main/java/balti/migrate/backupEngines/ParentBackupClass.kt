@@ -37,6 +37,24 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
     val onEngineTaskComplete by lazy { engineContext as OnEngineTaskComplete }
 
     val commonTools by lazy { CommonToolsKotlin(engineContext) }
+
+    /**
+     * FOR FILEX TRADITIONAL:
+     * by default:
+     * "bd.destination" -> Full canonical path to root of the backup location, i.e [Internal Storage or SD CARD]/Migrate
+     * "bd.backupName" -> Name of the backup
+     * for batches:
+     * "bd.destination" -> Canonical path to [Internal Storage or SD CARD]/Migrate/<backup_name>
+     * "bd.backupName" -> Part name
+     *
+     * FOR NON-TRADITIONAL FILEX
+     * by default:
+     * "bd.destination" -> blank
+     * "bd.backupName" -> Name of backup
+     * for batches:
+     * "bd.destination" -> Name of backup
+     * "bd.backupName" -> Part name
+     */
     val actualDestination by lazy { formatName("${bd.destination}/${bd.backupName}") }
 
     private var lastProgress = 0

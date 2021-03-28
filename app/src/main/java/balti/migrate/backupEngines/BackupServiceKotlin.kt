@@ -154,6 +154,24 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
     private val isSettingsNull : Boolean
         get() = (dpiText == null && keyboardText == null && adbState == null && fontScale == null)
 
+    /**
+    * FOR FILEX TRADITIONAL:
+    * by default:
+    * [cDestination] -> Full canonical path to root of the backup location, i.e [Internal Storage or SD CARD]/Migrate
+    * [cBackupName] -> Name of the backup
+    * for batches:
+    * [cDestination] -> Canonical path to [Internal Storage or SD CARD]/Migrate/<backup_name>
+    * [cBackupName] -> Part name
+    *
+    * FOR NON-TRADITIONAL FILEX
+    * by default:
+    * [cDestination] -> blank
+    * [cBackupName] -> Name of backup
+    * for batches:
+    * [cDestination] -> Name of backup
+    * [cBackupName] -> Part name
+    */
+
     private var cBackupName = ""
     private var cDestination = ""
     private var cBatchNumber = 0
