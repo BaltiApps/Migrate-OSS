@@ -417,6 +417,8 @@
     <string name="zip_size_too_big">Zip size is greater than the maximum allowed size. Please go to Preferences -> Max. Zip size</string>
     <string name="storing_wifi_data">Storing wifi data</string>
     <string name="testing_system">Testing system</string>
+    <string name="retrying_system_test">Retrying system test</string>
+    <string name="retrying_after_5sec">Retrying after 5 seconds</string>
     <string name="writing_settings">Writing settings</string>
     <string name="making_package_flash_ready">Making package flash ready</string>
     <string name="making_updater_script">Making updater-script</string>
