@@ -291,7 +291,7 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
                         val apkSize =
                                 apkPath?.let {
-                                    FileX.new(it).let {
+                                    FileX.new(it, true).let {
                                         if (it.canRead()) it.length()
                                         else null
                                     } ?: storageStats.appBytes
@@ -405,7 +405,9 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
             publishProgress(vOp.getStringFromRes(R.string.total_size_ok),
                     "${vOp.getStringFromRes(R.string.total_size)} ${getHumanReadableStorageSpace(totalSize)}\n" +
                             "${vOp.getStringFromRes(R.string.available_space)} ${getHumanReadableStorageSpace(availableBytes)}", "")
-            sleepTask(1000)
+
+            Thread.sleep(1000)
+
             arrayOf(true)
         }
     }
