@@ -312,6 +312,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
         if (appList.size == 0 || defects.size == 0) return
 
+        Log.d(DEBUG_TAG, defects.toString())
+
         lastProgress = 0
 
         val title = getTitle(R.string.correcting_errors)
