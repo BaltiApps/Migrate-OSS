@@ -1,7 +1,6 @@
 package balti.migrate.backupEngines.engines
 
 import balti.filex.FileX
-import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
@@ -119,7 +118,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
             val ignoreCache = getPrefBoolean(PREF_IGNORE_APP_CACHE, false)
 
-            val scriptFile = FileX.new(CACHE_DIR, "$FILE_PREFIX_BACKUP_SCRIPT.sh", true)
+            val scriptFile = FileX.new(engineContext.filesDir.canonicalPath, "$FILE_PREFIX_BACKUP_SCRIPT.sh", true)
             scriptFile.parentFile?.mkdirs()
             //val scriptWriter = BufferedWriter(FileWriter(scriptFile))
             //val appAndDataBackupScript = commonTools.unpackAssetToInternal("backup_app_and_data.sh", "backup_app_and_data.sh", false)
@@ -132,7 +131,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     write("sleep 1\n")
                     write("echo \"--- PID: $$\"\n")
                     //write("cp ${scriptFile.absolutePath} ${engineContext.externalCacheDir}/\n")
-                    write("cp ${scriptFile.absolutePath} ${CACHE_DIR}\n")
+                    write("cp ${scriptFile.absolutePath} ${CACHE_DIR}/${scriptFile.name}\n")
 
                     appList.let {packets ->
                         for (i in 0 until packets.size) {

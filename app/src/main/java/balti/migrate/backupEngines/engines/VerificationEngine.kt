@@ -70,6 +70,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         return "if [ -e $fullDataPath ]; then\n" +
                 "   cd $dataPathParent\n" +
                 "   echo \"Copy data: ${expectedDataFile.name}\"\n" +
+                "   chmod +x $busyboxBinaryPath\n" +
                 "   $busyboxBinaryPath tar -vczpf ${expectedDataFile.canonicalPath} $actualDataName\n" +
                 "fi\n\n"
     }
@@ -195,7 +196,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
             resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_VERIFYING)
 
-            val tarCheckScript = FileX.new(CACHE_DIR, "$FILE_PREFIX_TAR_CHECK.sh", true)
+            val tarCheckScript = FileX.new(engineContext.filesDir.canonicalPath, "$FILE_PREFIX_TAR_CHECK.sh", true)
             //val scriptWriter = BufferedWriter(FileWriter(tarCheckScript))
 
             tarCheckScript.startWriting(object : FileX.Writer(){
@@ -321,7 +322,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_CORRECTING)
 
         try {
-            val retryScript = FileX.new(CACHE_DIR, "$FILE_PREFIX_RETRY_SCRIPT.sh", true)
+            val retryScript = FileX.new(engineContext.filesDir.canonicalPath, "$FILE_PREFIX_RETRY_SCRIPT.sh", true)
             retryScript.startWriting(object : FileX.Writer(){
                 override fun writeLines() {
                     write("#!sbin/sh\n\n")
@@ -356,7 +357,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         }
                         else {
                             write("echo \"--- DEFECT: ${i + 1}\"\n")
-                            write(defect)
+                            writeLine(defect)
                         }
                     }
 
