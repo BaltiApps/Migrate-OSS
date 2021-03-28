@@ -36,11 +36,11 @@ data class ZipAppBatch(val zipAppPackets: ArrayList<ZipAppPacket> = ArrayList(0)
                         if (af.name.endsWith(".app") && af.isDirectory && zp.appPacket_z.isSystem) {
                             writeLine("${af.name}_sys")
                         }
-                        else writeLine("${af.name}")
+                        else writeLine(af.name)
                     }
                 }
                 extrasFiles.forEach {ef ->
-                    writeLine("${ef.name}")
+                    writeLine(ef.name)
                 }
             }
         })
