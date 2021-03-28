@@ -86,6 +86,9 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
         else "${engineContext.getString(stringRes)} : ${engineContext.getString(R.string.part)} - ${bd.batchErrorTag}"
     }
 
+    /**
+     * [dataBaseFile] must be FileX traditional
+     */
     fun getDataBase(dataBaseFile: FileX): SQLiteDatabase{
         var dataBase: SQLiteDatabase = SQLiteDatabase.openOrCreateDatabase(dataBaseFile.canonicalPath, null)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1)
