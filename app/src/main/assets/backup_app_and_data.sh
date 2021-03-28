@@ -40,6 +40,7 @@ if [[ ${APK_PATH} != "NULL" && ${APK_NAME} != "NULL" ]]; then
 fi
 
 # backup data
+chmod +x ${BUSYBOX}
 if [[ ${DATA_PATH} != "NULL" && ${DATA_NAME} != "NULL" ]]; then
     if [[ -e "$DATA_PATH/$DATA_NAME" ]]; then
         cd "$DATA_PATH"
