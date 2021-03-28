@@ -32,17 +32,21 @@ class ContactsBackupEngine(private val jobcode: Int,
 
             heavyTask {
 
-                for (i in 0 until contactPackets.size) {
+                vcfFile.startWriting(object : FileX.Writer(){
+                    override fun writeLines() {
+                        for (i in 0 until contactPackets.size) {
 
-                    if (BackupServiceKotlin.cancelAll) break
+                            if (BackupServiceKotlin.cancelAll) break
 
-                    val packet = contactPackets[i]
+                            val packet = contactPackets[i]
 
-                    if (!packet.selected) continue
+                            if (!packet.selected) continue
 
-                    vcfFile.writeOneLine("${packet.vcfData}\n")
-                    broadcastProgress("", packet.fullName, true, getPercentage((i + 1), contactPackets.size))
-                }
+                            write("${packet.vcfData}\n")
+                            broadcastProgress("", packet.fullName, true, getPercentage((i + 1), contactPackets.size))
+                        }
+                    }
+                })
             }
         }
         catch (e: Exception){
