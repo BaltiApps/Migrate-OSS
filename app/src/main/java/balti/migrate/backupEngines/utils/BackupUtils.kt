@@ -107,6 +107,8 @@ class BackupUtils {
         FileX.new(actualDestination).mkdirs()
 
         try {
+            iconFile.createNewFile()
+            iconFile.refreshFile()
             val fos = iconFile.outputStream()
             icon.compress(Bitmap.CompressFormat.PNG, 80, fos)
             fos?.close()
