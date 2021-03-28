@@ -2,6 +2,9 @@ package balti.migrate.backupEngines.engines
 
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
+import balti.filex.FileX
+import balti.filex.FileXInit
+import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
@@ -9,6 +12,7 @@ import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_SMS_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_SMS_WRITE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_SMS_WRITE_TO_ACTUAL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SMS_VERIFY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_SMS
@@ -29,11 +33,10 @@ import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_STATUS
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_SUBJECT
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_TABLE_NAME
 import balti.migrate.utilities.constants.SmsDBConstant.Companion.SMS_TYPE
+import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.functions.Misc.getPercentage
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
-import java.io.File
-import java.io.FileFilter
 
 class SmsBackupEngine(private val jobcode: Int,
                       private val bd: BackupIntentData,
@@ -41,15 +44,25 @@ class SmsBackupEngine(private val jobcode: Int,
                       private val smsDBFileName: String) :
         ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_SMS) {
 
-    private val smsDBFile by lazy { File(actualDestination, smsDBFileName) }
+    private val smsNameWithoutExtension by lazy {
+        smsDBFileName.run {
+            val ext = ".sms.db"
+            if (endsWith(ext))
+                substring(0, length - ext.length)
+            else this
+        }
+    }
+    private val smsDBFileActual by lazy { FileX.new(actualDestination, smsDBFileName) }
+    private val internalDB by lazy { FileX.new(CACHE_DIR, smsDBFileName) }
     private val errors by lazy { ArrayList<String>(0) }
     private val warnings by lazy { ArrayList<String>(0) }
 
     private fun writeSms(){
         try {
 
-            File(actualDestination).mkdirs()
-            if (smsDBFile.exists()) smsDBFile.delete()
+            FileX.new(actualDestination).mkdirs()
+            if (smsDBFileActual.exists()) smsDBFileActual.delete()
+            if (internalDB.exists()) internalDB.delete()
 
             val title = getTitle(R.string.backing_sms)
 
@@ -78,7 +91,7 @@ class SmsBackupEngine(private val jobcode: Int,
                     "$SMS_LOCKED INTEGER, " +
                     "$SMS_REPLY_PATH_PRESENT INTEGER )"
 
-            val dataBase: SQLiteDatabase = getDataBase(smsDBFile)
+            val dataBase: SQLiteDatabase = getDataBase(if (FileXInit.isTraditional) smsDBFileActual else internalDB)
 
             dataBase.let { db ->
                 db.execSQL(DROP_TABLE)
@@ -148,7 +161,7 @@ class SmsBackupEngine(private val jobcode: Int,
             var totalSelected = 0
             smsPackets.forEach { if (it.selected) totalSelected++ }
 
-            val dataBase: SQLiteDatabase = getDataBase(smsDBFile)
+            val dataBase: SQLiteDatabase = getDataBase(if (FileXInit.isTraditional) smsDBFileActual else internalDB)
 
             val cursor = dataBase.query(SMS_TABLE_NAME, arrayOf("id"), null, null, null, null, null)
             cursor.moveToFirst()
@@ -181,13 +194,34 @@ class SmsBackupEngine(private val jobcode: Int,
             verifySms()
         }
 
+        if (!FileXInit.isTraditional) {
+
+            // copy the main file
+            try {
+                internalDB.copyTo(smsDBFileActual, true)
+                tryIt { internalDB.delete() }
+            } catch (e: Exception) {
+                errors.add("$ERR_SMS_WRITE_TO_ACTUAL: ${getStringFromRes(R.string.sms_records_write_to_actual_failed)} ${e.message}")
+            }
+
+            // copy other files like .journal .journal-wal
+            try {
+                FileX.new(CACHE_DIR).listFiles { file: FileX -> file.name.startsWith(smsNameWithoutExtension) }?.forEach {
+                    it.copyTo(FileX.new(actualDestination, it.name))
+                    tryIt { it.delete() }
+                }
+            } catch (e: Exception) {
+                warnings.add("$ERR_SMS_WRITE_TO_ACTUAL: ${getStringFromRes(R.string.sms_records_auxiliary_write_to_actual_failed)} ${e.message}")
+            }
+        }
+
         return 0
     }
 
     override fun postExecuteFunction() {
-        val filesGenerated = File(actualDestination).listFiles(FileFilter {
-            return@FileFilter it.name.startsWith(smsDBFile.name)
-        })
+        val filesGenerated = FileX.new(actualDestination).listFiles { file: FileX ->
+            file.name.startsWith(smsNameWithoutExtension)
+        }
         onEngineTaskComplete.onComplete(jobcode, errors, warnings, filesGenerated)
     }
 
