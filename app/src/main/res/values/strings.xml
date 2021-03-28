@@ -431,6 +431,8 @@
     <string name="verifying_calls">Verifying calls</string>
     <string name="verifying_sms">Verifying sms</string>
     <string name="call_logs_incomplete">Call logs incomplete</string>
+    <string name="call_log_write_to_actual_failed">Copying call logs to backup failed!</string>
+    <string name="call_log_auxillary_write_to_actual_failed">Some call log related files could not be copied. Call logs may or may not be restored.</string>
     <string name="sms_records_incomplete">Sms records incomplete</string>
     <string name="backing_dpi">Backing up DPI</string>
     <string name="backing_keyboard">Backing up keyboard</string>
