@@ -1,5 +1,7 @@
 package balti.migrate.backupEngines.engines
 
+import balti.filex.FileX
+import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
@@ -22,10 +24,8 @@ import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.Misc.getPercentage
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
-import java.io.File
 import java.io.BufferedReader
 import java.io.BufferedWriter
-import java.io.FileWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
@@ -51,19 +51,24 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
     init {
         customPreExecuteFunction = {
 
-            var previousBackupScripts = engineContext.filesDir.listFiles {
+            // delete all scripts
+
+            engineContext.filesDir.listFiles {
                 f -> (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
                     f.name.endsWith(".sh")
-            }
-            for (f in previousBackupScripts) f.delete()
+            }?.forEach { it.delete() }
 
             engineContext.externalCacheDir?.let {
-                previousBackupScripts = it.listFiles {
+                it.listFiles {
                     f -> (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
                         f.name.endsWith(".sh")
-                }
-                for (f in previousBackupScripts) f.delete()
+                }?.forEach { it.delete() }
             }
+
+            FileX.new(CACHE_DIR).listFiles { f: FileX ->
+                (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
+                f.name.endsWith(".sh")
+            }?.forEach { it.delete() }
         }
     }
 
@@ -76,7 +81,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
         val scriptName = "$packageName.sh"
         val scriptLocation = "$actualDestination/$scriptName"
-        val script = File(scriptLocation)
+        val script = FileX.new(scriptLocation)
 
         val pastingDir: String = if (apkPath.contains("priv-app"))
             apkPath.substring(apkPath.indexOf("/priv-app"))
@@ -91,15 +96,14 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                 "rm /tmp/$scriptName\n"
 
 
-        File(actualDestination).mkdirs()
+        FileX.new(actualDestination).mkdirs()
 
         tryIt {
-            val writer = BufferedWriter(FileWriter(script))
-            writer.write(scriptText)
-            writer.close()
+            script.writeOneLine(scriptText)
         }
 
-        script.setExecutable(true, false)
+        // this next line does not work anyway, hence commenting out
+        //script.setExecutable(true, false)
     }
 
     private fun makeBackupScript(): String?{
@@ -112,70 +116,76 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
             val ignoreCache = getPrefBoolean(PREF_IGNORE_APP_CACHE, false)
 
-            val scriptFile = File(engineContext.filesDir, "$FILE_PREFIX_BACKUP_SCRIPT.sh")
+            val scriptFile = FileX.new(CACHE_DIR, "$FILE_PREFIX_BACKUP_SCRIPT.sh", true)
             scriptFile.parentFile?.mkdirs()
-            val scriptWriter = BufferedWriter(FileWriter(scriptFile))
+            //val scriptWriter = BufferedWriter(FileWriter(scriptFile))
             //val appAndDataBackupScript = commonTools.unpackAssetToInternal("backup_app_and_data.sh", "backup_app_and_data.sh", false)
             val appAndDataBackupScript = unpackAssetToInternal("backup_app_and_data.sh")
 
-            scriptWriter.write("#!sbin/sh\n\n")
-            scriptWriter.write("echo \" \"\n")
-            scriptWriter.write("sleep 1\n")
-            scriptWriter.write("echo \"--- PID: $$\"\n")
-            scriptWriter.write("cp ${scriptFile.absolutePath} ${engineContext.externalCacheDir}/\n")
+            scriptFile.startWriting(object : FileX.Writer(){
+                override fun writeLines() {
+                    write("#!sbin/sh\n\n")
+                    write("echo \" \"\n")
+                    write("sleep 1\n")
+                    write("echo \"--- PID: $$\"\n")
+                    //write("cp ${scriptFile.absolutePath} ${engineContext.externalCacheDir}/\n")
+                    write("cp ${scriptFile.absolutePath} ${CACHE_DIR}/\n")
 
-            appList.let {packets ->
-                for (i in 0 until packets.size) {
+                    appList.let {packets ->
+                        for (i in 0 until packets.size) {
 
-                    if (BackupServiceKotlin.cancelAll) break
+                            if (BackupServiceKotlin.cancelAll) break
 
-                    val packet = packets[i]
+                            val packet = packets[i]
 
-                    val modifiedAppName = "${packet.appName}(${i+1}/${packets.size})"
-                    val packageName = packet.PACKAGE_INFO.packageName
+                            val modifiedAppName = "${packet.appName}(${i+1}/${packets.size})"
+                            val packageName = packet.PACKAGE_INFO.packageName
 
-                    broadcastProgress(modifiedAppName, modifiedAppName, true, getPercentage(i + 1, packets.size))
+                            broadcastProgress(modifiedAppName, modifiedAppName, true, getPercentage(i + 1, packets.size))
 
-                    if (packet.PERMISSION) {
-                        backupUtils.makePermissionFile(packageName, actualDestination, pm)
+                            if (packet.PERMISSION) {
+                                backupUtils.makePermissionFile(packageName, actualDestination, pm)
+                            }
+
+                            var versionName: String? = packet.PACKAGE_INFO.versionName
+                            versionName = if (versionName == null || versionName == "") "_"
+                            else formatName(versionName)
+
+                            var appIconFileName: String? = null
+                            if (getPrefBoolean(PREF_NEW_ICON_METHOD, true)) {
+                                appIconFileName = backupUtils.makeNewIconFile(packageName, iconTools.getBitmap(packet.PACKAGE_INFO, pm), actualDestination)
+                            }
+                            else {
+                                val appIcon: String = iconTools.getIconString(packet.PACKAGE_INFO, pm)
+                                appIconFileName = backupUtils.makeStringIconFile(packageName, appIcon, actualDestination)
+                            }
+
+                            val echoCopyCommand = "echo \"$MIGRATE_STATUS: $modifiedAppName icon: $appIconFileName\"\n"
+                            val scriptCommand = "sh $appAndDataBackupScript " +
+                                    "$packageName $actualDestination " +
+                                    "${packet.apkPath} ${packet.apkName} " +
+                                    "${packet.dataPath} ${packet.dataName} " +
+                                    "$busyboxBinaryPath $ignoreCache\n"
+
+                            //write(echoCopyCommand, 0, echoCopyCommand.length)
+                            //write(scriptCommand, 0, scriptCommand.length)
+                            writeLine(echoCopyCommand)
+                            writeLine(scriptCommand)
+
+                            tryIt { if (packet.isSystem) systemAppInstallScript(packageName, packet.apkPath) }
+
+                            backupUtils.makeMetadataFile(versionName, appIconFileName, null, packet, bd, doBackupInstallers)
+                        }
+
                     }
 
-                    var versionName: String? = packet.PACKAGE_INFO.versionName
-                    versionName = if (versionName == null || versionName == "") "_"
-                    else formatName(versionName)
-
-                    var appIconFileName: String? = null
-                    if (getPrefBoolean(PREF_NEW_ICON_METHOD, true)) {
-                        appIconFileName = backupUtils.makeNewIconFile(packageName, iconTools.getBitmap(packet.PACKAGE_INFO, pm), actualDestination)
-                    }
-                    else {
-                        val appIcon: String = iconTools.getIconString(packet.PACKAGE_INFO, pm)
-                        appIconFileName = backupUtils.makeStringIconFile(packageName, appIcon, actualDestination)
-                    }
-
-                    val echoCopyCommand = "echo \"$MIGRATE_STATUS: $modifiedAppName icon: $appIconFileName\"\n"
-                    val scriptCommand = "sh $appAndDataBackupScript " +
-                            "$packageName $actualDestination " +
-                            "${packet.apkPath} ${packet.apkName} " +
-                            "${packet.dataPath} ${packet.dataName} " +
-                            "$busyboxBinaryPath $ignoreCache\n"
-
-                    scriptWriter.write(echoCopyCommand, 0, echoCopyCommand.length)
-                    scriptWriter.write(scriptCommand, 0, scriptCommand.length)
-
-                    tryIt { if (packet.isSystem) systemAppInstallScript(packageName, packet.apkPath) }
-
-                    backupUtils.makeMetadataFile(versionName, appIconFileName, null, packet, bd, doBackupInstallers)
+                    write("echo \"--- App files copied ---\"\n")
                 }
+            })
 
-            }
+            scriptFile.file.setExecutable(true)
 
-            scriptWriter.write("echo \"--- App files copied ---\"\n")
-            scriptWriter.close()
-
-            scriptFile.setExecutable(true)
-
-            return scriptFile.absolutePath
+            return scriptFile.canonicalPath
         }
         catch (e: Exception){
             e.printStackTrace()
@@ -188,7 +198,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
         try {
 
-            if (!File(scriptFileLocation).exists())
+            if (!FileX.new(scriptFileLocation, true).exists())
                 throw Exception(engineContext.getString(R.string.script_file_does_not_exist))
 
             val title = getTitle(R.string.backingUp)
