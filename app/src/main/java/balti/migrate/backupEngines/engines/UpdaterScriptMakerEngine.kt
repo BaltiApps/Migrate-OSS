@@ -29,14 +29,11 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_MANUAL_SYSTEM
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.THIS_VERSION
 import balti.module.baltitoolbox.functions.FileHandlers
-import balti.module.baltitoolbox.functions.FileHandlers.moveFileStream
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 import java.io.BufferedWriter
-//import java.io.File
-import java.io.FileWriter
 import java.io.IOException
 import java.io.OutputStreamWriter
 import java.util.*
