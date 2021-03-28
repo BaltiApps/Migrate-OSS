@@ -51,6 +51,14 @@ class CallsBackupEngine(private val jobcode: Int,
                         private val callsDBFileName: String) :
         ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_CALLS) {
 
+    private val callsNameWithoutExtension by lazy {
+        callsDBFileName.run {
+            val ext = ".calls.db"
+            if (endsWith(ext))
+                substring(0, length - ext.length)
+            else this
+        }
+    }
     private val callsDBFileActual by lazy { FileX.new(actualDestination, callsDBFileName) }
     private val internalDB by lazy { FileX.new(CACHE_DIR, callsDBFileName) }
     private val errors by lazy { ArrayList<String>(0) }
@@ -227,7 +235,7 @@ class CallsBackupEngine(private val jobcode: Int,
 
             // copy other files like .journal .journal-wal
             try {
-                FileX.new(CACHE_DIR).listFiles { file: FileX -> file.name.startsWith(callsDBFileName) }?.forEach {
+                FileX.new(CACHE_DIR).listFiles { file: FileX -> file.name.startsWith(callsNameWithoutExtension) }?.forEach {
                     it.copyTo(FileX.new(actualDestination, it.name))
                     tryIt { it.delete() }
                 }
@@ -241,7 +249,7 @@ class CallsBackupEngine(private val jobcode: Int,
 
     override fun postExecuteFunction() {
         val filesGenerated = FileX.new(actualDestination).listFiles { file: FileX ->
-            file.name.startsWith(callsDBFileName)
+            file.name.startsWith(callsNameWithoutExtension)
         }
         onEngineTaskComplete.onComplete(jobcode, errors, warnings, filesGenerated)
     }
