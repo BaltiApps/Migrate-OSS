@@ -1,7 +1,6 @@
 package balti.migrate.backupEngines.engines
 
 import balti.filex.FileX
-import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
@@ -11,12 +10,10 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TESTING_ERROR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TESTING_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_TESTING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_RETRY_SYSTEM_CHECK
-import balti.module.baltitoolbox.functions.FileHandlers
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
-//import java.io.File
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
@@ -45,8 +42,9 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                 val testScriptPath = unpackAssetToInternal("systemTestScript.sh", "test.sh")
                 val thisPackageInfo = pm.getApplicationInfo(engineContext.packageName, 0)
 
-                val expectedApkFile = FileX.new(CACHE_DIR, "${thisPackageInfo.packageName}.apk", true)
-                val expectedDataFile = FileX.new(CACHE_DIR, "${thisPackageInfo.packageName}.tar.gz", true)
+                val rootLocation = FileX.new(actualDestination).apply { mkdirs() }.canonicalPath
+                val expectedApkFile = FileX.new(rootLocation, "${thisPackageInfo.packageName}.apk", true)
+                val expectedDataFile = FileX.new(rootLocation, "${thisPackageInfo.packageName}.tar.gz", true)
                 expectedApkFile.run { if (exists()) delete() }
                 expectedDataFile.run { if (exists()) delete() }
 
@@ -60,7 +58,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                 suProcess = Runtime.getRuntime().exec("su")
                 suProcess?.let {
                     val suWriter = BufferedWriter(OutputStreamWriter(it.outputStream))
-                    suWriter.write("sh $testScriptPath ${thisPackageInfo.packageName} ${thisPackageInfo.sourceDir} $dataPath $dataName $CACHE_DIR $busyboxBinaryPath\n")
+                    suWriter.write("sh $testScriptPath ${thisPackageInfo.packageName} ${thisPackageInfo.sourceDir} $dataPath $dataName $rootLocation $busyboxBinaryPath\n")
                     suWriter.write("exit\n")
                     suWriter.flush()
 
