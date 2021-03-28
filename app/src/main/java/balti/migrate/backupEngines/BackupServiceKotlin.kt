@@ -11,7 +11,10 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import balti.filex.FileX
+import balti.filex.FileXInit
 import balti.migrate.AppInstance
+import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.adbState
 import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.AppInstance.Companion.callsList
@@ -95,8 +98,7 @@ import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefInt
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import java.io.BufferedWriter
-import java.io.File
-import java.io.FileWriter
+import java.io.OutputStreamWriter
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -147,7 +149,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
     private var cZippingJobCode = 0
     private var cZipVerificationJobCode = 0
 
-    private val extrasFiles by lazy { ArrayList<File>(0) }
+    private val extrasFiles by lazy { ArrayList<FileX>(0) }
 
     private val isSettingsNull : Boolean
         get() = (dpiText == null && keyboardText == null && adbState == null && fontScale == null)
@@ -200,7 +202,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         (if (cpuAbi == "x86" || cpuAbi == "x86_64")
             unpackAssetToInternal("busybox-x86", "busybox")
         else unpackAssetToInternal("busybox")).apply {
-            tryIt { File(this).setExecutable(true) }
+            tryIt { FileX.new(this, true).file.setExecutable(true) }
         }
     }
 
@@ -292,21 +294,33 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         cancelAll = false
         AppInstance.notificationManager.cancelAll()
 
-        File(externalCacheDir, FILE_RAW_LIST).run { if (exists()) delete() }
+        FileX.new(CACHE_DIR, FILE_RAW_LIST, true).run { if (exists()) delete() }
 
         doFallThroughJob(JOBCODE_PEFORM_SYSTEM_TEST)
     }
 
     private fun getBackupIntentData(): BackupIntentData {
 
-        fun resetDest() { cDestination = destination; cBackupName = backupName }
+        fun resetDest() {
+            if (FileXInit.isTraditional) {
+                cDestination = destination; cBackupName = backupName
+            } else {
+                cDestination = ""; cBackupName = backupName
+            }
+        }
 
         if (cZipBatch == null) resetDest()
         else {
             cZipBatch?.run {
                 if (partName != ""){
-                    cDestination = "$destination/$backupName"
-                    cBackupName = partName
+                    if (FileXInit.isTraditional) {
+                        cDestination = "$destination/$backupName"
+                        cBackupName = partName
+                    }
+                    else {
+                        cDestination = backupName
+                        cBackupName = partName
+                    }
                 }
                 else resetDest()
             }
@@ -335,8 +349,8 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         }
 
         tryIt {
-            progressWriter = BufferedWriter(FileWriter(File(externalCacheDir, FILE_PROGRESSLOG)))
-            errorWriter = BufferedWriter(FileWriter(File(externalCacheDir, FILE_ERRORLOG)))
+            progressWriter = BufferedWriter(OutputStreamWriter(FileX.new(CACHE_DIR, FILE_PROGRESSLOG, true).outputStream()))
+            errorWriter = BufferedWriter(OutputStreamWriter(FileX.new(CACHE_DIR, FILE_ERRORLOG, true).outputStream()))
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
@@ -400,9 +414,9 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                             JOBCODE_PERFORM_APP_BACKUP -> AppBackupEngine(jCode, bd, workingObject as ArrayList<AppPacket>, doBackupInstallers, busyboxBinaryPath)
                             JOBCODE_PERFORM_ZIP_BATCHING -> {
                                 (workingObject as Array<*>).let {
-                                    val ap = it[0] as ArrayList<AppPacket>
-                                    val ef = it[1] as ArrayList<File>
-                                    MakeZipBatch(jCode, bd, ap, ef)
+                                    val appPackets = it[0] as ArrayList<AppPacket>
+                                    val extraFiles = it[1] as ArrayList<FileX>
+                                    MakeZipBatch(jCode, bd, appPackets, extraFiles)
                                 }
                             }
                             else -> null
@@ -415,7 +429,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
                     fallThrough = cTask == null
                     cTask?.run {
-                        File(cDestination, cBackupName).mkdirs()
+                        FileX.new("$cDestination/$cBackupName").mkdirs()
                         execute()
                     }
                 }
@@ -458,7 +472,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     val label = if (cZipBatch != null) "[${cZipBatch!!.partName}]" else ""
                     addError("${getString(R.string.improper_result_received)}$label: $jobCode: ${jobResults.toString()}")
                 }
-                else jobResults.let { extrasFiles.addAll(it as Array<File>) }
+                else jobResults.let { extrasFiles.addAll(it as Array<FileX>) }
             }
 
             if (jobCode in arrayOf(JOBCODE_PERFORM_APP_BACKUP, JOBCODE_PERFORM_APP_BACKUP_VERIFICATION))
@@ -504,8 +518,6 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                 }
 
                 JOBCODE_PERFORM_ZIP_BATCHING -> {
-                    tryIt {
-                    }
                     if (jobSuccess) {
                         zipBatches.clear()
                         zipBatches.addAll(jobResults as ArrayList<ZipAppBatch>)
@@ -524,7 +536,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     if (jobSuccess) {
                         val result = jobResults as Array<*>
                         val zippedFiles = result[0] as ArrayList<String>
-                        val fileList = result[1] as File?
+                        val fileList = result[1] as FileX?
                         val dest = result[2] as String
 
                         zipParentPaths.add(dest)
@@ -565,7 +577,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         else backupFinished("")
     }
 
-    private fun runConditionalTask(jobCode: Int, zipListIfAny: ArrayList<String>? = null, fileListIfAny: File? = null){
+    private fun runConditionalTask(jobCode: Int, zipListIfAny: ArrayList<String>? = null, fileListIfAny: FileX? = null){
 
         val bd = getBackupIntentData()
         var task : ParentBackupClass? = null
@@ -602,7 +614,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     cZipBatch?.let {
                         cZipVerificationJobCode = jobCode + cBatchNumber
                         task = ZipVerificationEngine(cZipVerificationJobCode, bd,
-                                zipListIfAny!!, File(cDestination, "$cBackupName.zip"), fileListIfAny)
+                                zipListIfAny!!, FileX.new(cDestination, "$cBackupName.zip"), fileListIfAny)
                     }
                     if (cZipBatch == null)
                         throw Exception("${getString(R.string.zip_batch_null_zip_verification)}: [$cBatchNumber]")
@@ -703,7 +715,9 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         val errorCondition = errorTitle != "" || criticalErrors.size != 0
 
         if ((cancelAll || errorCondition) && getPrefBoolean(PREF_DELETE_ERROR_BACKUP, true)) {
-            File("$destination/$backupName").run {
+            FileX.new(
+                    if(FileXInit.isTraditional) "$destination/$backupName" else backupName
+            ).run {
                 if (CommonToolsKotlin.isDeletable(this)) {
                     Log.d(DEBUG_TAG, "Cleaning up on error or cancel: ${this.absolutePath}")
                     deleteRecursively()
@@ -715,7 +729,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
             // clean empty folders and other files if remaining if no errors
             zipParentPaths.forEach {
 
-                File(it).run {
+                FileX.new(it).run {
                     if (CommonToolsKotlin.isDeletable(this)) {
                         Log.d(DEBUG_TAG, "Cleaning up : ${this.absolutePath}")
                         deleteRecursively()
