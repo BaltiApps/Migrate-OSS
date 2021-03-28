@@ -232,7 +232,7 @@ class CallsBackupEngine(private val jobcode: Int,
                     tryIt { it.delete() }
                 }
             } catch (e: Exception) {
-                warnings.add("$ERR_CALLS_WRITE_TO_ACTUAL: ${getStringFromRes(R.string.call_log_auxillary_write_to_actual_failed)} ${e.message}")
+                warnings.add("$ERR_CALLS_WRITE_TO_ACTUAL: ${getStringFromRes(R.string.call_log_auxiliary_write_to_actual_failed)} ${e.message}")
             }
         }
 
