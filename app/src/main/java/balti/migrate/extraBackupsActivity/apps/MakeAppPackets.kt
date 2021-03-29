@@ -125,6 +125,9 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
         val processReader = BufferedReader(InputStreamReader(processMemoryFinder.inputStream))
         val processWriter = BufferedWriter(OutputStreamWriter(processMemoryFinder.outputStream))
 
+        processWriter.write("chmod +x $busyboxPath\n")
+        processWriter.flush()
+
         for (i in 0 until appList.size) {
 
             if (cancelThis) break
