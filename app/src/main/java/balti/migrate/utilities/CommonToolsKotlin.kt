@@ -35,7 +35,9 @@ class CommonToolsKotlin(val context: Context? = null) {
     companion object {
 
         val THIS_VERSION = 50
-        val ALLOW_CONVENTIONAL_STORAGE = false      // set to true in master-ng
+        val ALLOW_CONVENTIONAL_STORAGE : Boolean by lazy {
+            AppInstance.appContext.applicationInfo.targetSdkVersion <= Build.VERSION_CODES.P || Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
+        }
         val LAST_SUPPORTED_ANDROID_API = 30
 
         val DEBUG_TAG = "migrate_tag"
