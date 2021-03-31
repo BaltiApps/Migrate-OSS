@@ -32,6 +32,7 @@ import balti.migrate.backupEngines.containers.ZipAppBatch
 import balti.migrate.backupEngines.engines.*
 import balti.migrate.backupEngines.utils.OnEngineTaskComplete
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
+import balti.migrate.extraBackupsActivity.apps.containers.MDP_Packet
 import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
@@ -68,6 +69,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_WARNINGS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ZIP_NAMES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_ERRORLOG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MDP_PACKAGES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PROGRESSLOG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_RAW_LIST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PEFORM_BACKUP_CALLS
@@ -78,6 +80,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PEFORM_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PEFORM_SYSTEM_TEST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_APP_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_APP_BACKUP_VERIFICATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_MDP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_UPDATER_SCRIPT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_ZIP_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_ZIP_BATCHING
@@ -88,6 +91,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.NOTIFICATION_ID_ONGOI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_COMPRESSION_LEVEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_COMPRESSION_LEVEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DELETE_ERROR_BACKUP
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_CHECK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.TIMEOUT_WAITING_TO_CANCEL_TASK
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
@@ -528,8 +532,13 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                 }
 
                 JOBCODE_PERFORM_APP_BACKUP -> {
-                    runConditionalTask(JOBCODE_PERFORM_APP_BACKUP_VERIFICATION)
+                    if (CommonToolsKotlin.IS_OTHER_APP_DATA_VISIBLE)
+                        runConditionalTask(JOBCODE_PERFORM_APP_BACKUP_VERIFICATION)
+                    else runConditionalTask(JOBCODE_PERFORM_MDP)
                 }
+
+                JOBCODE_PERFORM_MDP ->
+                    runConditionalTask(JOBCODE_PERFORM_APP_BACKUP_VERIFICATION)
 
                 JOBCODE_PERFORM_APP_BACKUP_VERIFICATION -> {
                     doFallThroughJob(JOBCODE_PERFORM_ZIP_BATCHING)
@@ -605,6 +614,11 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         try {
 
             when (jobCode) {
+
+                JOBCODE_PERFORM_MDP -> {
+                    val mdpPacket = MDP_Packet(FILE_MDP_PACKAGES, appPackets.filter { it.DATA }.map { it.packageName })
+                    task = MDPEngine(jobCode, bd, busyboxBinaryPath, getPrefBoolean(PREF_IGNORE_APP_CACHE, false), mdpPacket)
+                }
 
                 JOBCODE_PERFORM_APP_BACKUP_VERIFICATION ->
                     task = VerificationEngine(jobCode, bd, appPackets, busyboxBinaryPath)
