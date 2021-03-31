@@ -457,6 +457,14 @@
     <string name="errors_in_batch">Errors found in batch</string>
     <string name="zip_size">Zip size</string>
 
+    <!--MDPEngine.kt-->
+    <string name="running_mdp_plugin">Data backup via MDP plugin</string>
+    <string name="mdp_function_error">Failed in function block.</string>
+    <string name="mdp_cancelled">Data backup cancelled</string>
+    <string name="mdp_finished">Data backup finished</string>
+    <string name="mdp_finished_with_errors">Data backup done with errors</string>
+    <string name="mdp_progress_copy_failed">Data backup progress copy failed</string>
+
     <!--BackupActivity.java-->
     <string name="setBackupName">Set backup name</string>
     <string name="overwrite">Overwrite?</string>
