@@ -100,6 +100,12 @@
                 android:resource="@xml/provider_paths"/>
         </provider>
 
+        <receiver android:name=".utilities.AddonReceiver">
+            <intent-filter>
+                <action android:name="balti.migrate.RECEIVER"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
