@@ -4,7 +4,9 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/log_bg_portrait"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".simpleActivities.ProgressShowActivity"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
