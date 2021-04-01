@@ -300,6 +300,7 @@
     <string name="set_up_mdp">Set up MDP</string>
     <string name="install_mdp">Install Migrate data plugin (MDP)</string>
     <string name="grant_root_access_to_mdp">Grant root access</string>
+    <string name="mdp_su_please_wait">Please wait for sometime (about a minute)</string>
     <string name="one">1</string>
     <string name="two">2</string>
 
