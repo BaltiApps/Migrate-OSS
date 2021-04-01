@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".extraBackupsActivity.MDP_Setup"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/colorPrimaryDark"
+        >
+
+        <Space
+            android:layout_width="@dimen/large_padding_width"
+            android:layout_height="@dimen/xlarge_padding_width"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/set_up_mdp"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close"
+            android:backgroundTint="@android:color/transparent"
+            android:id="@+id/mdp_setup_close"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/large_padding_width"
+        android:background="@color/grey_bg"
+        >
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
+
+            <RelativeLayout
+                android:layout_width="@dimen/small_icon_wh"
+                android:layout_height="@dimen/small_icon_wh"
+                android:gravity="center"
+                >
+
+                <ProgressBar
+                    android:layout_width="@dimen/small_icon_wh"
+                    android:layout_height="@dimen/small_icon_wh"
+                    android:id="@+id/progress_bar_mdp_install"
+                    android:visibility="gone"
+                    />
+
+                <ImageView
+                    android:layout_width="@dimen/small_icon_wh"
+                    android:layout_height="@dimen/small_icon_wh"
+                    android:id="@+id/mdp_install_done"
+                    android:src="@drawable/ic_item_done"
+                    android:visibility="gone"
+                    />
+
+                <ImageView
+                    android:layout_width="@dimen/small_icon_wh"
+                    android:layout_height="@dimen/small_icon_wh"
+                    android:id="@+id/mdp_install_cancel"
+                    android:src="@drawable/ic_item_cancel"
+                    android:visibility="gone"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/one"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorAccent"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            </RelativeLayout>
+
+            <Space
+                android:layout_width="@dimen/large_padding_width"
+                android:layout_height="@dimen/large_padding_width"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/install_mdp"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="@dimen/large_padding_width"
+            android:layout_height="@dimen/large_padding_width"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/normal_button_height"
+            android:text="@string/install"
+            android:layout_gravity="end"
+            android:id="@+id/mdp_install"
+            android:backgroundTint="@color/colorButtons"
+            />
+
+        <Space
+            android:layout_width="@dimen/large_padding_width"
+            android:layout_height="@dimen/large_padding_width"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
+
+            <RelativeLayout
+                android:layout_width="@dimen/small_icon_wh"
+                android:layout_height="@dimen/small_icon_wh"
+                android:gravity="center"
+                >
+
+                <ProgressBar
+                    android:layout_width="@dimen/small_icon_wh"
+                    android:layout_height="@dimen/small_icon_wh"
+                    android:id="@+id/progress_bar_mdp_su"
+                    android:visibility="gone"
+                    />
+
+                <ImageView
+                    android:layout_width="@dimen/small_icon_wh"
+                    android:layout_height="@dimen/small_icon_wh"
+                    android:id="@+id/mdp_su_done"
+                    android:src="@drawable/ic_item_done"
+                    android:visibility="gone"
+                    />
+
+                <ImageView
+                    android:layout_width="@dimen/small_icon_wh"
+                    android:layout_height="@dimen/small_icon_wh"
+                    android:id="@+id/mdp_su_cancel"
+                    android:src="@drawable/ic_item_cancel"
+                    android:visibility="gone"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/two"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorAccent"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            </RelativeLayout>
+
+            <Space
+                android:layout_width="@dimen/large_padding_width"
+                android:layout_height="@dimen/large_padding_width"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/grant_root_access_to_mdp"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
