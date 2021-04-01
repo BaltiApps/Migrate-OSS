@@ -464,6 +464,7 @@
     <string name="mdp_finished">Data backup finished</string>
     <string name="mdp_finished_with_errors">Data backup done with errors</string>
     <string name="mdp_progress_copy_failed">Data backup progress copy failed</string>
+    <string name="busybox_copy_failed">Failed to copy busybox</string>
 
     <!--BackupActivity.java-->
     <string name="setBackupName">Set backup name</string>
