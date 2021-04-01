@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Paint
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -65,6 +66,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_ALL_APP_SELECTED
+import balti.migrate.utilities.CommonToolsKotlin.Companion.IS_OTHER_APP_DATA_VISIBLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_CALLS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_CONTACTS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_INSTALLERS
@@ -92,6 +94,8 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_P
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_STOCK_WARNING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SMS_AND_CALLS_PERMISSION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SMS_PERMISSION
+import balti.migrate.utilities.constants.MDP_Constants
+import balti.module.baltitoolbox.functions.Misc
 import balti.module.baltitoolbox.functions.Misc.showErrorDialog
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
@@ -132,6 +136,9 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private var flasherOnlyBackup = false
 
     private val ASK_FOR_NAME_JOBCODE = 1666
+    private val SETUP_MDP_JOBCODE = 1667
+
+    private var mdpSetFromActivity = false
 
     private val dialogView by lazy { View.inflate(this, R.layout.please_wait, null) }
     private val waitingDialog by lazy {
@@ -179,6 +186,32 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         job()
     }
 
+    fun checkMdpLayout(show: Boolean? = null){
+
+        fun show(){
+            mdp_setup_layout.visibility = View.VISIBLE
+            mdp_why.apply {
+                paintFlags = Paint.UNDERLINE_TEXT_FLAG
+                setOnClickListener {
+                    TODO("add link to help")
+                }
+            }
+            mdp_setup.setOnClickListener {
+                startActivityForResult(Intent(this, MDP_Setup::class.java), SETUP_MDP_JOBCODE)
+            }
+        }
+
+        fun hide() { mdp_setup_layout.visibility = View.GONE }
+
+        if (show == true) show()
+        else if (show == false) hide()
+        else {
+            if (IS_OTHER_APP_DATA_VISIBLE) { hide(); return }
+            if (Misc.isPackageInstalled(MDP_Constants.MDP_PACKAGE_NAME)) hide()
+            else show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.extra_backups)
@@ -188,6 +221,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
         commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
         commonTools.LBM?.sendBroadcast(Intent(ACTION_REQUEST_BACKUP_DATA))
+
+        checkMdpLayout()
 
         // Disable wifi backup for now because it is unstable.
         wifi_main_item.visibility = View.GONE
@@ -296,6 +331,12 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             }
             else Toast.makeText(this, R.string.all_selected, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (mdpSetFromActivity) mdpSetFromActivity = false
+        else checkMdpLayout()
     }
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {        //extras_markers
@@ -572,6 +613,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == ASK_FOR_NAME_JOBCODE){
             if (resultCode == Activity.RESULT_OK) {
 
@@ -619,6 +661,10 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 }
                 validateName()
             }
+        }
+        else if (requestCode == SETUP_MDP_JOBCODE){
+            mdpSetFromActivity = true
+            checkMdpLayout(resultCode == Activity.RESULT_OK)
         }
     }
 
