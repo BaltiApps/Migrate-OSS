@@ -166,6 +166,9 @@ class CommonToolsKotlin(val context: Context? = null) {
         val ERR_ZIP_ENGINE_INIT = "ZIP_ENGINE_INIT"
         val ERR_MOVING = "MOVING_FILES"
 
+        val ERR_MDP_INSTALL = "MDP_INSTALL_ERROR"
+        val ERR_MDP_SU = "MDP_SU_ERROR"
+
         val ERR_BACKUP_SERVICE_ERROR = "BACKUP_SERVICE"
         val ERR_CONDITIONAL_TASK = "RUN_CONDITIONAL_TASK"
         val ERR_ON_COMPLETE_TASK = "ON_COMPLETE_TASK"
