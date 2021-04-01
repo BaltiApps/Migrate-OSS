@@ -73,6 +73,7 @@ class MDP_Constants {
         // internal actions
 
         val ACTION_TO_MDP_ENGINE = "action_to_mdp_engine"
+        val ACTION_TO_MDP_SETUP = "action_to_mdp_setup"
         val MDP_DELAY = 500L
 
         val MDP_PACKAGE_NAME = "balti.migrate.dataplugin"
