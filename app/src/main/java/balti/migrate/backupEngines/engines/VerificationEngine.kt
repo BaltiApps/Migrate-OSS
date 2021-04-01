@@ -212,7 +212,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                             "checkData(){\n" +
                                     "\n" +
                                     "    echo \"--- TAR_GZ \$1 ---\"\n" +
-                                    "    err=\"\$(${busyboxBinaryPath} gzip -t \"${actualDestination}/\$1\" 2>&1)\"\n" +
+                                    "    err=\"\$(${busyboxBinaryPath} gzip -t \"${FileX.new(actualDestination).canonicalPath}/\$1\" 2>&1)\"\n" +
                                     "    if [[ ! -z \"\$err\" ]]; then\n" +
                                     "        echo \"--- ERROR:\$1:\$err ---\"\n" +
                                     "    else\n" +
@@ -221,6 +221,10 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                                     "\n" +
                                     "}\n"
                     )
+
+                    writeLine("")
+                    writeLine("chmod +x $busyboxBinaryPath")
+                    writeLine("")
 
                     for (i in appList.indices) {
 
