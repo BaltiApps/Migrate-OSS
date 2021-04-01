@@ -258,7 +258,7 @@
     <string name="zip_picker">Zip picker</string>
     <string name="up_one_dir">Up one level</string>
 
-    <!--extra_backups-->
+    <!--extra_backups.xml-->
     <string name="extras">Extras</string>
     <string name="contacts_label">Contacts</string>
     <string name="sms_label">SMS messages</string>
