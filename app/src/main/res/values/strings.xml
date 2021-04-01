@@ -260,6 +260,10 @@
 
     <!--extra_backups.xml-->
     <string name="extras">Extras</string>
+    <string name="setup_migrate_data_plugin">Setup Migrate data plugin (MDP)</string>
+    <string name="setup_migrate_data_plugin_desc">MDP is required to backup app data in Android 11+\nThis is because of system restrictions.</string>
+    <string name="why">Why?</string>
+    <string name="install">Install</string>
     <string name="contacts_label">Contacts</string>
     <string name="sms_label">SMS messages</string>
     <string name="call_log_label">Call logs</string>
