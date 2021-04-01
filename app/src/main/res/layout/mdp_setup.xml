@@ -61,7 +61,7 @@
                 <ProgressBar
                     android:layout_width="@dimen/small_icon_wh"
                     android:layout_height="@dimen/small_icon_wh"
-                    android:id="@+id/progress_bar_mdp_install"
+                    android:id="@+id/mdp_install_progress_bar"
                     android:visibility="gone"
                     />
 
@@ -87,6 +87,7 @@
                     android:text="@string/one"
                     android:textStyle="bold"
                     android:textColor="@color/colorAccent"
+                    android:id="@+id/mdp_install_bullet"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             </RelativeLayout>
@@ -112,7 +113,7 @@
             android:layout_height="@dimen/normal_button_height"
             android:text="@string/install"
             android:layout_gravity="end"
-            android:id="@+id/mdp_install"
+            android:id="@+id/mdp_install_button"
             android:backgroundTint="@color/colorButtons"
             />
 
@@ -136,7 +137,7 @@
                 <ProgressBar
                     android:layout_width="@dimen/small_icon_wh"
                     android:layout_height="@dimen/small_icon_wh"
-                    android:id="@+id/progress_bar_mdp_su"
+                    android:id="@+id/mdp_su_progress_bar"
                     android:visibility="gone"
                     />
 
@@ -162,6 +163,7 @@
                     android:text="@string/two"
                     android:textStyle="bold"
                     android:textColor="@color/colorAccent"
+                    android:id="@+id/mdp_su_bullet"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             </RelativeLayout>
@@ -175,6 +177,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/grant_root_access_to_mdp"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
+
 
         </LinearLayout>
 
