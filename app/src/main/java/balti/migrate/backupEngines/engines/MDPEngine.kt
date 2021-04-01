@@ -46,7 +46,9 @@ class MDPEngine(private val jobcode: Int,
 
     private val newBusybox: FileX by lazy {
         val newBusyboxFile = FileX.new(actualDestination, "busybox")
-        FileX.new(busyboxPath, true).copyTo(newBusyboxFile)
+        newBusyboxFile.createNewFile()
+        FileX.new(busyboxPath, true).copyTo(newBusyboxFile, overwrite = true)
+        newBusyboxFile.refreshFile()
         newBusyboxFile
     }
 
@@ -108,7 +110,7 @@ class MDPEngine(private val jobcode: Int,
         engineContext.startActivity(
                 MDP_Constants.getMdpIntent(Bundle().apply {
                     putString(MDP_Constants.EXTRA_BACKUP_PACKAGES_LIST_FILE_LOCATION, mdpPackageListFile.canonicalPath)
-                    putString(MDP_Constants.EXTRA_BACKUP_LOCATION, FileX.new("/").canonicalPath)
+                    putString(MDP_Constants.EXTRA_BACKUP_LOCATION, FileX.new(actualDestination).canonicalPath)
                     putString(MDP_Constants.EXTRA_BUSYBOX_LOCATION, newBusybox.canonicalPath)
                     putBoolean(MDP_Constants.EXTRA_IGNORE_CACHE, ignoreCache)
                     putInt(MDP_Constants.EXTRA_NUMBER_OF_APPS, mdpPacket.dataPackageNames.size)
