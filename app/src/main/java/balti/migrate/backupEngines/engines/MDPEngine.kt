@@ -19,7 +19,7 @@ import balti.migrate.extraBackupsActivity.apps.containers.MDP_Packet
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_MDP_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_MDP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MDP_LOG
-import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_MDP_PROGRESS_COPY
+import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_MDP_ENGINE
 import balti.migrate.utilities.constants.MDP_Constants
 import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.functions.Misc
@@ -44,12 +44,18 @@ class MDPEngine(private val jobcode: Int,
     private var CANCELLED_MAX_COUNT = 10
     private var alreadyCancelled = false
 
-    private val newBusybox: FileX by lazy {
-        val newBusyboxFile = FileX.new(actualDestination, "busybox")
-        newBusyboxFile.createNewFile()
-        FileX.new(busyboxPath, true).copyTo(newBusyboxFile, overwrite = true)
-        newBusyboxFile.refreshFile()
-        newBusyboxFile
+    private val newBusybox: FileX? by lazy {
+        try {
+            val newBusyboxFile = FileX.new(actualDestination, "busybox")
+            newBusyboxFile.createNewFile()
+            FileX.new(busyboxPath, true).copyTo(newBusyboxFile, overwrite = true)
+            newBusyboxFile.refreshFile()
+            newBusyboxFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+            warnings.add("$WARNING_MDP_ENGINE: ${getStringFromRes(R.string.busybox_copy_failed)} - ${e.message}")
+            null
+        }
     }
 
     private val mdpResultsReceiver by lazy {
@@ -88,7 +94,7 @@ class MDPEngine(private val jobcode: Int,
                         }
                         catch (e: Exception){
                             e.printStackTrace()
-                            warnings.add("$WARNING_MDP_PROGRESS_COPY: ${getStringFromRes(R.string.mdp_progress_copy_failed)} - ${e.message}")
+                            warnings.add("$WARNING_MDP_ENGINE: ${getStringFromRes(R.string.mdp_progress_copy_failed)} - ${e.message}")
                         }
                         exitWait = true
                     }
@@ -111,7 +117,7 @@ class MDPEngine(private val jobcode: Int,
                 MDP_Constants.getMdpIntent(Bundle().apply {
                     putString(MDP_Constants.EXTRA_BACKUP_PACKAGES_LIST_FILE_LOCATION, mdpPackageListFile.canonicalPath)
                     putString(MDP_Constants.EXTRA_BACKUP_LOCATION, FileX.new(actualDestination).canonicalPath)
-                    putString(MDP_Constants.EXTRA_BUSYBOX_LOCATION, newBusybox.canonicalPath)
+                    putString(MDP_Constants.EXTRA_BUSYBOX_LOCATION, newBusybox?.canonicalPath ?: "NULL")
                     putBoolean(MDP_Constants.EXTRA_IGNORE_CACHE, ignoreCache)
                     putInt(MDP_Constants.EXTRA_NUMBER_OF_APPS, mdpPacket.dataPackageNames.size)
                 }, MDP_Constants.EXTRA_OPERATION_BACKUP_START)
@@ -151,7 +157,7 @@ class MDPEngine(private val jobcode: Int,
             alreadyFinished = true
             Misc.tryIt { LBM.unregisterReceiver(mdpResultsReceiver) }
 
-            newBusybox.delete()
+            newBusybox?.delete()
 
             onEngineTaskComplete.onComplete(jobcode, errors, warnings)
         }
