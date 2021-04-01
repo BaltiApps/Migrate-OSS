@@ -296,6 +296,13 @@
     <string name="empty_sms">No SMS messages found on the device. Nothing to backup</string>
     <string name="empty_contacts">No contacts on the device. Nothing to backup</string>
 
+    <!--mdp_layout.xml-->
+    <string name="set_up_mdp">Set up MDP</string>
+    <string name="install_mdp">Install Migrate data plugin (MDP)</string>
+    <string name="grant_root_access_to_mdp">Grant root access</string>
+    <string name="one">1</string>
+    <string name="two">2</string>
+
     <!--ExtraBackups.java-->
     <string name="not_recommended">Not recommended!</string>
     <string name="new_method_not_available_below_oreo">New method not for size calculation available below Android Oreo. Using terminal method.</string>
