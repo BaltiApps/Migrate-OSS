@@ -181,6 +181,16 @@
 
         </LinearLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mdp_su_please_wait"
+            android:layout_marginStart="40dp"
+            android:textColor="@color/colorAccent"
+            android:id="@+id/mdp_su_please_wait"
+            android:visibility="gone"
+            />
+
     </LinearLayout>
 
 </LinearLayout>
