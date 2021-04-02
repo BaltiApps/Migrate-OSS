@@ -95,6 +95,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_STOCK_WARNI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SMS_AND_CALLS_PERMISSION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SMS_PERMISSION
 import balti.migrate.utilities.constants.MDP_Constants
+import balti.module.baltitoolbox.functions.GetResources.getColorFromRes
 import balti.module.baltitoolbox.functions.Misc
 import balti.module.baltitoolbox.functions.Misc.showErrorDialog
 import balti.module.baltitoolbox.functions.Misc.tryIt
@@ -186,7 +187,11 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         job()
     }
 
-    fun checkMdpLayout(show: Boolean? = null){
+    private fun launchMdpSetup(){
+        startActivityForResult(Intent(this, MDP_Setup::class.java), SETUP_MDP_JOBCODE)
+    }
+
+    private fun checkMdpLayout(show: Boolean? = null){
 
         fun show(){
             mdp_setup_layout.visibility = View.VISIBLE
@@ -197,7 +202,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 }
             }
             mdp_setup.setOnClickListener {
-                startActivityForResult(Intent(this, MDP_Setup::class.java), SETUP_MDP_JOBCODE)
+                launchMdpSetup()
             }
         }
 
@@ -206,7 +211,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         if (show == true) show()
         else if (show == false) hide()
         else {
-            if (IS_OTHER_APP_DATA_VISIBLE) { hide(); return }
+            if (selectedBackupDataPackets.filter { it.DATA }.isEmpty() || IS_OTHER_APP_DATA_VISIBLE) { hide(); return }
             if (Misc.isPackageInstalled(MDP_Constants.MDP_PACKAGE_NAME)) hide()
             else show()
         }
@@ -253,7 +258,30 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 if (selectedBackupDataPackets.isNotEmpty() || do_backup_contacts.isChecked || do_backup_calls.isChecked
                         || do_backup_sms.isChecked || do_backup_dpi.isChecked || do_backup_keyboard.isChecked
                         || do_backup_adb.isChecked || do_backup_wifi.isChecked || do_backup_fontScale.isChecked) {                  //extras_markers
-                    askForName()
+
+                    if (IS_OTHER_APP_DATA_VISIBLE || selectedBackupDataPackets.filter { it.DATA }.isEmpty())
+                        askForName()
+                    else if (Misc.isPackageInstalled(MDP_Constants.MDP_PACKAGE_NAME))
+                        askForName()
+                    else {
+                        val ad = AlertDialog.Builder(this).apply {
+                            setTitle(R.string.mdp_not_set_up)
+                            setMessage(R.string.mdp_not_set_up_desc)
+                            setNegativeButton(R.string.proceed_without_mdp) {_, _ -> askForName()}
+                            setPositiveButton(R.string.set_up_mdp) {_, _ -> launchMdpSetup()}
+                            setNeutralButton(android.R.string.cancel, null)
+                        }.create()
+                        tryIt {
+                            ad.setOnShowListener {
+                                ad.getButton(AlertDialog.BUTTON_NEGATIVE).apply {
+                                    tryIt { setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_no_mdp, 0, 0, 0) }
+                                    tryIt { compoundDrawablePadding = 15 }
+                                    tryIt { setTextColor(getColorFromRes(R.color.error_color)) }
+                                }
+                            }
+                        }
+                        ad.show()
+                    }
                 }
                 else {
                     Toast.makeText(this, R.string.nothing_to_backup, Toast.LENGTH_SHORT).show()
