@@ -664,7 +664,18 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
         else if (requestCode == SETUP_MDP_JOBCODE){
             mdpSetFromActivity = true
-            checkMdpLayout(resultCode == Activity.RESULT_OK)
+            if (resultCode == Activity.RESULT_OK) checkMdpLayout(false)
+            else {
+                checkMdpLayout(true)
+                val error: String? = data?.getStringExtra(MDP_Constants.EXTRA_ERRORS)
+                if (error != null) {
+                    AlertDialog.Builder(this).apply {
+                        setTitle(R.string.error_occurred)
+                        setMessage(error)
+                        setPositiveButton(R.string.close, null)
+                    }.show()
+                }
+            }
         }
     }
 
