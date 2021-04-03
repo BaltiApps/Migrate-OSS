@@ -597,6 +597,7 @@
     <!--error_report_layout.xml-->
     <string name="report_header">Report via Telegram</string>
     <string name="share_progress_logs">Share progress logs</string>
+    <string name="share_mdp_logs">Share Migrate data plugin (MDP) logs</string>
     <string name="share_error_logs">Share error logs</string>
     <string name="share_script">Share script</string>
     <string name="share_rawList">Share raw file list</string>
