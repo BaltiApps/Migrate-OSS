@@ -132,6 +132,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     write("echo \"--- PID: $$\"\n")
                     //write("cp ${scriptFile.absolutePath} ${engineContext.externalCacheDir}/\n")
                     write("cp ${scriptFile.absolutePath} ${CACHE_DIR}/${scriptFile.name}\n")
+                    write("chown ${myUid}:${myUid} ${CACHE_DIR}/${scriptFile.name}\n")
 
                     appList.let {packets ->
                         for (i in 0 until packets.size) {
