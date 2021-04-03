@@ -389,6 +389,7 @@ class CommonToolsKotlin(val context: Context? = null) {
             } ?: emptyArray<FileX>()
 
             val rawList = FileX.new(cache, FILE_RAW_LIST, true)
+            val mdpLog = FileX.new(cache, FILE_MDP_LOG, true)
 
             if (isErrorLogMandatory && !errorLog.exists()) {
                 noLogsExist(true)
@@ -401,6 +402,7 @@ class CommonToolsKotlin(val context: Context? = null) {
                 }
 
                 eView.share_progress_checkbox.setCheckedEnabled(progressLog.exists())
+                eView.share_mdp_checkbox.setCheckedEnabled(mdpLog.exists())
                 eView.share_script_checkbox.setCheckedEnabled(backupScripts.isNotEmpty())
                 eView.share_errors_checkbox.setCheckedEnabled(errorLog.exists())
                 eView.share_rawList_checkbox.setCheckedEnabled(rawList.exists())
@@ -420,6 +422,7 @@ class CommonToolsKotlin(val context: Context? = null) {
 
                         if (eView.share_errors_checkbox.isChecked) uris.add(getUri(errorLog))
                         if (eView.share_progress_checkbox.isChecked) uris.add(getUri(progressLog))
+                        if (eView.share_mdp_checkbox.isChecked) uris.add(getUri(mdpLog))
                         if (eView.share_script_checkbox.isChecked) for (f in backupScripts) uris.add(getUri(f))
                         if (eView.share_rawList_checkbox.isChecked) uris.add(getUri(rawList))
 
