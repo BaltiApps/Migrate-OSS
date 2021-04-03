@@ -38,6 +38,8 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
 
     val commonTools by lazy { CommonToolsKotlin(engineContext) }
 
+    val myUid by lazy { engineContext.applicationInfo.uid }
+
     /**
      * FOR FILEX TRADITIONAL:
      * by default:
