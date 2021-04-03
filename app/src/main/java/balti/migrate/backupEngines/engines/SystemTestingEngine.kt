@@ -43,8 +43,8 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                 val thisPackageInfo = pm.getApplicationInfo(engineContext.packageName, 0)
 
                 val rootLocation = FileX.new(actualDestination).apply { mkdirs() }.canonicalPath
-                val expectedApkFile = FileX.new(rootLocation, "${thisPackageInfo.packageName}.apk", true)
-                val expectedDataFile = FileX.new(rootLocation, "${thisPackageInfo.packageName}.tar.gz", true)
+                val expectedApkFile = FileX.new(actualDestination, "${thisPackageInfo.packageName}.apk")
+                val expectedDataFile = FileX.new(actualDestination, "${thisPackageInfo.packageName}.tar.gz")
                 expectedApkFile.run { if (exists()) delete() }
                 expectedDataFile.run { if (exists()) delete() }
 
