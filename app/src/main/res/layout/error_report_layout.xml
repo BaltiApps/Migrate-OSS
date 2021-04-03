@@ -73,6 +73,13 @@
                     android:text="@string/share_progress_logs" />
 
                 <CheckBox
+                    android:id="@+id/share_mdp_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/share_mdp_logs" />
+
+                <CheckBox
                     android:id="@+id/share_errors_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
