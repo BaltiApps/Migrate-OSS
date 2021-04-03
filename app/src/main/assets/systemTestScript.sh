@@ -18,6 +18,7 @@ echo "--- PID: $$"
 # copy apk and data
 cp -v ${APK_FULL_PATH} "${COPY_PATH}/$PACKAGE_NAME.apk"
 cd ${DATA_PATH}
+chmod +x "$BUSYBOX_PATH"
 ${BUSYBOX_PATH} tar -vczpf "$COPY_PATH/$PACKAGE_NAME.tar.gz" ${DATA_NAME}
 
 echo "--- Test done ---"
