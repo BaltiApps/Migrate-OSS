@@ -72,7 +72,9 @@ class ZippingEngine(private val jobcode: Int,
             }
 
             heavyTask {
-                if (zipFile.exists()) zipFile.delete()
+                zipFile.createNewFile(overwriteIfExists = true)
+                zipFile.refreshFile()
+
                 val files = getAllFiles(directory)
                 val zipOutputStream = ZipOutputStream(zipFile.outputStream())
 
