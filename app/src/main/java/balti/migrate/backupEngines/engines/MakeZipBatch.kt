@@ -88,7 +88,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
             }
         }
 
-        sleepTask(100)
+        Thread.sleep(100)
 
         title = getTitle(R.string.making_batches)
         resetBroadcast(false, title)

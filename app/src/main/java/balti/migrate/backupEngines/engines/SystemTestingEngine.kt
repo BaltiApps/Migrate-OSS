@@ -118,7 +118,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                 errors.clear()
                 resetBroadcast(true, getTitle(R.string.retrying_system_test))
                 getStringFromRes(R.string.retrying_after_5sec).let {broadcastProgress(it, it, true)}
-                sleepTask(5000)
+                Thread.sleep(5000)
                 test()
             }
         }
