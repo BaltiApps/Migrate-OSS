@@ -53,11 +53,12 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
         val targetFile = FileX.new(targetPath, fileName)
         var err = ""
 
-        FileX.new(targetPath).mkdirs()
+        targetFile.createNewFile(makeDirectories = true, overwriteIfExists = true)
+        targetFile.refreshFile()
 
         if (assetFile.exists())
             err = try {
-                assetFile.copyTo(targetFile)
+                assetFile.copyTo(targetFile, overwrite = true)
                 assetFile.delete()
                 ""
             }catch (e: Exception){
@@ -76,7 +77,11 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
         val updaterScriptPath = FileX.new("$actualDestination/META-INF/com/google/android/")
         updaterScriptPath.mkdirs()
 
-        BufferedWriter(OutputStreamWriter(FileX.new(updaterScriptPath.path, "updater-script").outputStream())).let { updater_writer ->
+        val updaterScriptFile = FileX.new(updaterScriptPath.path, "updater-script")
+        updaterScriptFile.createNewFile(overwriteIfExists = true)
+        updaterScriptFile.refreshFile()
+
+        BufferedWriter(OutputStreamWriter(updaterScriptFile.outputStream())).let { updater_writer ->
 
             updater_writer.write("show_progress(0, 0);\n")
             updater_writer.write("ui_print(\" \");\n")
