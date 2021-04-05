@@ -16,6 +16,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_A
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_BACKUP_SCRIPT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
+import balti.migrate.utilities.CommonToolsKotlin.Companion.IS_OTHER_APP_DATA_VISIBLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
@@ -169,7 +170,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                                     "$packageName ${rootLocation.canonicalPath} " +
                                     "${packet.apkPath} ${packet.apkName} " +
                                     "${packet.dataPath} ${packet.dataName} " +
-                                    "$busyboxBinaryPath $ignoreCache\n"
+                                    "$busyboxBinaryPath $ignoreCache $IS_OTHER_APP_DATA_VISIBLE\n"
 
                             //write(echoCopyCommand, 0, echoCopyCommand.length)
                             //write(scriptCommand, 0, scriptCommand.length)
