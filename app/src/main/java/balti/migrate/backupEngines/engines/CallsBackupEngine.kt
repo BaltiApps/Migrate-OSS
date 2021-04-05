@@ -60,7 +60,7 @@ class CallsBackupEngine(private val jobcode: Int,
         }
     }
     private val callsDBFileActual by lazy { FileX.new(actualDestination, callsDBFileName) }
-    private val internalDB by lazy { FileX.new(CACHE_DIR, callsDBFileName) }
+    private val internalDB by lazy { FileX.new(CACHE_DIR, callsDBFileName, true) }
     private val errors by lazy { ArrayList<String>(0) }
     private val warnings by lazy { ArrayList<String>(0) }
 

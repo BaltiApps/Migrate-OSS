@@ -53,7 +53,7 @@ class SmsBackupEngine(private val jobcode: Int,
         }
     }
     private val smsDBFileActual by lazy { FileX.new(actualDestination, smsDBFileName) }
-    private val internalDB by lazy { FileX.new(CACHE_DIR, smsDBFileName) }
+    private val internalDB by lazy { FileX.new(CACHE_DIR, smsDBFileName, true) }
     private val errors by lazy { ArrayList<String>(0) }
     private val warnings by lazy { ArrayList<String>(0) }
 
