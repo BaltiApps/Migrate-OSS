@@ -68,10 +68,10 @@ class CallsBackupEngine(private val jobcode: Int,
         try {
 
             FileX.new(actualDestination).mkdirs()
-            if (callsDBFileActual.exists()) callsDBFileActual.delete()
-            if (internalDB.exists()) internalDB.delete()
 
             val title = getTitle(R.string.backing_calls)
+            if (callsDBFileActual.exists()) callsDBFileActual.delete()
+            if (internalDB.exists()) internalDB.delete()
 
             resetBroadcast(false, title)
 
@@ -227,6 +227,8 @@ class CallsBackupEngine(private val jobcode: Int,
 
             // copy the main file
             try {
+                callsDBFileActual.createNewFile(overwriteIfExists = true)
+                callsDBFileActual.refreshFile()
                 internalDB.copyTo(callsDBFileActual, true)
                 tryIt { internalDB.delete() }
             } catch (e: Exception) {

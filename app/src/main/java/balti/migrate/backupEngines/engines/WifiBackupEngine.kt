@@ -21,9 +21,10 @@ class WifiBackupEngine(private val jobcode: Int,
         try {
 
             FileX.new(actualDestination).mkdirs()
-            if (wifiFile.exists()) wifiFile.delete()
 
             val title = getTitle(R.string.storing_wifi_data)
+            wifiFile.createNewFile(overwriteIfExists = true)
+            wifiFile.refreshFile()
 
             resetBroadcast(true, title)
 

@@ -61,10 +61,10 @@ class SmsBackupEngine(private val jobcode: Int,
         try {
 
             FileX.new(actualDestination).mkdirs()
-            if (smsDBFileActual.exists()) smsDBFileActual.delete()
-            if (internalDB.exists()) internalDB.delete()
 
             val title = getTitle(R.string.backing_sms)
+            if (smsDBFileActual.exists()) smsDBFileActual.delete()
+            if (internalDB.exists()) internalDB.delete()
 
             resetBroadcast(false, title)
 
@@ -198,6 +198,8 @@ class SmsBackupEngine(private val jobcode: Int,
 
             // copy the main file
             try {
+                smsDBFileActual.createNewFile(overwriteIfExists = true)
+                smsDBFileActual.refreshFile()
                 internalDB.copyTo(smsDBFileActual, true)
                 tryIt { internalDB.delete() }
             } catch (e: Exception) {

@@ -28,11 +28,12 @@ class SettingsBackupEngine(private val jobcode: Int,
         try {
 
             FileX.new(actualDestination).mkdirs()
-            if (settingsFile.exists()) settingsFile.delete()
 
             val title = getTitle(R.string.writing_settings)
 
             resetBroadcast(true, title)
+            settingsFile.createNewFile(overwriteIfExists = true)
+            settingsFile.refreshFile()
 
             val jsonObject = JSONObject()
             dpiText?.let { jsonObject.put(JSON_FIELD_DPI_TEXT, it.trim()) }

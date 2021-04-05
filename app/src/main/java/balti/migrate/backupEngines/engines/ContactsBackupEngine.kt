@@ -24,13 +24,15 @@ class ContactsBackupEngine(private val jobcode: Int,
         try {
 
             FileX.new(actualDestination).mkdirs()
-            if (vcfFile.exists()) vcfFile.delete()
 
             val title = getTitle(R.string.backing_contacts)
 
             resetBroadcast(false, title)
 
             heavyTask {
+
+                vcfFile.createNewFile(overwriteIfExists = true)
+                vcfFile.refreshFile()
 
                 vcfFile.startWriting(object : FileX.Writer(){
                     override fun writeLines() {
