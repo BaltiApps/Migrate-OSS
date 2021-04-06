@@ -380,12 +380,14 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
 
         try {
 
-            StatFs(destination).let {
-                availableBytes = it.blockSizeLong * it.availableBlocksLong
+            tryIt {
+                StatFs(destination).let {
+                    availableBytes = it.blockSizeLong * it.availableBlocksLong
+                }
             }
 
             if (availableBytes == 0L) {
-                availableBytes = if (FileXInit.isTraditional) FileX.new("").usableSpace
+                availableBytes = if (!FileXInit.isTraditional) FileX.new("").usableSpace
                 else FileX.new(destination).usableSpace
             }
 
