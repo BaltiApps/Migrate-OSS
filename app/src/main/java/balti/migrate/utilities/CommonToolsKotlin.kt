@@ -57,6 +57,7 @@ class CommonToolsKotlin(val context: Context? = null) {
         val PRIVATE_BACKUP_CACHE_NAME = "backup_cache"
 
         val DIR_MANUAL_CONFIGS = "manualConfigs"
+        val DIR_APP_AUX_FILES = "app_aux_files"
         val FILE_MIGRATE_CACHE_MANUAL = "MIGRATE_CACHE_MANUAL"
         val FILE_SYSTEM_MANUAL = "SYSTEM_MANUAL"
         val FILE_BUILDPROP_MANUAL = "BUILDPROP_MANUAL"
@@ -133,6 +134,11 @@ class CommonToolsKotlin(val context: Context? = null) {
         val ERR_TAR_SUPPRESSED = "TAR_SUPPRESSED"
         val ERR_TAR_CHECK_TRY_CATCH = "TAR_TRY_CATCH"
         val ERR_SCRIPT_MAKING_TRY_CATCH = "SCRIPT_MAKING_TRY_CATCH"
+        val ERR_AUX_MOVING_TRY_CATCH = "AUX_MOVING_TRY_CATCH"
+        val ERR_CORRECTION_AUX_MOVING_TRY_CATCH = "CORRECTION_AUX_MOVING_TRY_CATCH"
+        val ERR_AUX_MOVING_SU = "ERR_AUX_MOVING_SU"
+        val ERR_CORRECTION_AUX_MOVING_SU = "CORRECTION_AUX_MOVING_SU"
+        val ERR_CREATING_MTD = "ERR_CREATING_MTD"
         val ERR_APP_BACKUP_SHELL = "RUN"
         val ERR_APP_BACKUP_SUPPRESSED = "RUN_SUPPRESSED"
         val ERR_APP_BACKUP_TRY_CATCH = "RUN_TRY_CATCH"
@@ -188,6 +194,8 @@ class CommonToolsKotlin(val context: Context? = null) {
 
         val ALL_WARNINGS = arrayOf(WARNING_ZIP_BATCH, WARNING_CALLS, WARNING_SMS, WARNING_ZIP_FILELIST_VERIFICATION,
                 WARNING_ZIP_FILELIST_UNAVAILABLE, WARNING_ZIP_FILELIST_ITEM_UNAVAILABLE, WARNING_FILE_LIST_COPY, WARNING_MDP_ENGINE)
+
+        val LOG_CORRECTION_NEEDED = "CORRECTION_NEEDED"
 
         val PACKAGE_NAME_PLAY_STORE = "com.android.vending"
         val PACKAGE_NAME_FDROID = "org.fdroid.fdroid.privileged"
