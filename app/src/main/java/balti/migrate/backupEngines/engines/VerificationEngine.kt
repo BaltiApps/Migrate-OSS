@@ -3,6 +3,7 @@ package balti.migrate.backupEngines.engines
 import android.content.pm.PackageInfo
 import android.util.Log
 import balti.filex.FileX
+import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
@@ -12,6 +13,11 @@ import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.DIR_APP_AUX_FILES
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_AUX_MOVING_SU
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_AUX_MOVING_TRY_CATCH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_AUX_MOVING_SU
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_AUX_MOVING_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_DATA_INVISIBLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_SHELL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_SUPPRESSED
@@ -21,15 +27,18 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TAR_SHELL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TAR_SUPPRESSED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_VERIFICATION_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_VERIFYING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_TAR_CHECK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.IS_OTHER_APP_DATA_VISIBLE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.LOG_CORRECTION_NEEDED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TAR_GZ_INTEGRITY
 import balti.migrate.utilities.IconTools
 import balti.module.baltitoolbox.functions.FileHandlers.getDirLength
+import balti.module.baltitoolbox.functions.Misc
 import balti.module.baltitoolbox.functions.Misc.getPercentage
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
@@ -53,10 +62,15 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     private val allErrors by lazy { ArrayList<String>(0) }
     private val actualErrors by lazy { ArrayList<String>(0) }
 
+    private val rootDir by lazy { FileX.new(actualDestination) }
 
     private var suProcess : Process? = null
 
     private var lastProgress = 0
+    private val appAuxFilesDir by lazy { FileX.new(engineContext.filesDir.canonicalPath, DIR_APP_AUX_FILES, true) }
+    private val pathForAuxFiles by lazy { if (FileXInit.isTraditional) actualDestination else appAuxFilesDir.canonicalPath }
+
+    private val allFiles by lazy { rootDir.listEverything() }
 
     private fun addToActualErrors(err: String){
         actualErrors.add(err)
@@ -94,14 +108,54 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
     private fun verifyBackups(): ArrayList<String>? {
 
+        if (BackupServiceKotlin.cancelAll) return null
+
         val allRecovery = ArrayList<String>(0)
 
         try {
 
             val title = getTitle(R.string.verifying_backups)
 
-            resetBroadcast(true, title, EXTRA_PROGRESS_TYPE_VERIFYING)
+            // do not show progress if traditional filex, as it will be very fast
+            val showNotification = !FileXInit.isTraditional
+            resetBroadcast(showNotification, title, EXTRA_PROGRESS_TYPE_VERIFYING)
 
+            appAuxFilesDir.deleteRecursively()
+
+            val allAppDirs = ArrayList<String>(0)
+
+            val dataFileNames = ArrayList<String>(0)
+            val dataFileSizes = ArrayList<Long>(0)
+
+            val permFileNames = ArrayList<String>(0)
+            val permFileSizes = ArrayList<Long>(0)
+
+            val iconFiles = ArrayList<String>(0)
+
+            allFiles?.run {
+                for (i in first.indices) {
+                    val name = first[i]
+                    val isDir = second[i]
+                    val size = third[i]
+                    if (name.endsWith(".app") && isDir){
+                        allAppDirs.add(name)
+                    }
+                    if (name.endsWith(".tar.gz") && !isDir){
+                        dataFileNames.add(name)
+                        dataFileSizes.add(size)
+                    }
+                    if (name.endsWith(".perm") && !isDir){
+                        permFileNames.add(name)
+                        permFileSizes.add(size)
+                    }
+                    if ((name.endsWith(".icon") || name.endsWith(".png")) && !isDir){
+                        iconFiles.add(name)
+                    }
+
+                }
+            }
+
+            val size = appList.size
             for (i in appList.indices) {
 
                 if (BackupServiceKotlin.cancelAll) break
@@ -110,35 +164,44 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 val pi = packet.PACKAGE_INFO
                 val packageName = pi.packageName
                 val appName = pm.getApplicationLabel(pi.applicationInfo).toString()
+                val displayTitle = "$appName(${i+1}/${size})"
 
-                broadcastProgress(appName, "verifying: $appName", false)
+                // do not show progress if traditional filex, as it will be very fast
+                // find progress if filex is non-traditional
+                val progress = if (FileXInit.isTraditional) -1 else Misc.getPercentage((i+1), size)
+                broadcastProgress(displayTitle, "verifying: $displayTitle", showNotification, progress)
 
-                val expectedAppDir = FileX.new(actualDestination, "$packageName.app")
+                /*val expectedAppDir = FileX.new(actualDestination, "$packageName.app")
                 val expectedApkFile = FileX.new("$actualDestination/$packageName.app", "$packageName.apk")
                 val expectedDataFile = FileX.new("$actualDestination/$packageName.tar.gz")
-                val expectedPermFile = FileX.new(actualDestination, "$packageName.perm")
+                val expectedPermFile = FileX.new(actualDestination, "$packageName.perm")*/
 
                 if (getPrefBoolean(PREF_NEW_ICON_METHOD, true) ) {
-                    if (!FileX.new(actualDestination, "$packageName.png").exists()) allRecovery.add("$MIGRATE_STATUS:icon_new:$packageName")
+                    if (!iconFiles.contains("$packageName.png")) allRecovery.add("$MIGRATE_STATUS:icon_new:$packageName")
                 }
                 else {
-                    if (!FileX.new(actualDestination, "$packageName.icon").exists()) allRecovery.add("$MIGRATE_STATUS:icon_old:$packageName")
+                    if (!iconFiles.contains("$packageName.icon")) allRecovery.add("$MIGRATE_STATUS:icon_old:$packageName")
                 }
 
                 if (packet.APP) {
 
-                    val existsAppDir = expectedAppDir.exists()
-                    val sizeAppDir = expectedAppDir.getDirLength()
-                    val existsApk = expectedApkFile.exists()
-                    val sizeApk = expectedApkFile.length()
+                    val existsAppDir = allAppDirs.contains("$packageName.app")
+                    val baseApkFileSize: Long =
+                            FileX.new("$actualDestination/$packageName.app", "$packageName.apk").run {
+                                if (exists()) length()
+                                else 0
+                            }
+                            //100L
 
-                    if (!existsAppDir || sizeAppDir == 0L || !existsApk || sizeApk == 0L) {
+                    if (!existsAppDir || baseApkFileSize == 0L) {
 
                         var apkPath = pi.applicationInfo.sourceDir
                         var apkName = apkPath.substring(apkPath.lastIndexOf('/') + 1)
                         apkPath = apkPath.substring(0, apkPath.lastIndexOf('/'))
 
                         apkName = commonTools.applyNamingCorrectionForShell(apkName)
+
+                        val expectedAppDir = FileX.new(actualDestination, "$packageName.app")
 
                         expectedAppDir.canonicalPath.let {
                             if (CommonToolsKotlin.isDeletable(expectedAppDir)) {
@@ -152,30 +215,33 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                                 )
                             }
                         }
-
-                        broadcastProgress(appName, "$packageName : appDir $existsAppDir, $sizeAppDir : apk $existsApk, $sizeApk", false)
+                        broadcastProgress(displayTitle, "${LOG_CORRECTION_NEEDED}: $packageName : \"app\" App directory - $existsAppDir, Base apk size - $baseApkFileSize", showNotification)
                     }
                 }
 
                 if (packet.DATA) {
 
-                    val existsData = expectedDataFile.exists()
-                    val sizeData = expectedDataFile.length()
+                    val dataName = "$packageName.tar.gz"
+                    val index = dataFileNames.indexOf(dataName)
+                    val existsData = index != -1
+                    val sizeData = if (existsData) dataFileSizes[index] else 0L
 
                     if (!existsData || sizeData == 0L) {
-                        allRecovery.add(getDataCorrectionCommand(pi, expectedDataFile))
-                        broadcastProgress(appName, "$packageName : data $existsData, $sizeData", false)
+                        allRecovery.add(getDataCorrectionCommand(pi, FileX.new(actualDestination, dataName)))
+                        broadcastProgress(displayTitle, "${LOG_CORRECTION_NEEDED}: $packageName : \"data\" Exists - $existsData, Size - $sizeData", showNotification)
                     }
                 }
 
                 if (packet.PERMISSION) {
 
-                    val existsPerm = expectedPermFile.exists()
-                    val sizePerm = expectedPermFile.length()
+                    val permName = "$packageName.perm"
+                    val index = permFileNames.indexOf(permName)
+                    val existsPerm = index != -1
+                    val sizePerm = if (existsPerm) permFileSizes[index] else 0L
 
                     if (!existsPerm || sizePerm == 0L) {
                         allRecovery.add("$MIGRATE_STATUS:perm:$packageName")
-                        broadcastProgress(appName, "$packageName : perm $existsPerm, $sizePerm", false)
+                        broadcastProgress(displayTitle, "${LOG_CORRECTION_NEEDED}: $packageName : \"perm\" Exists - $existsPerm, Size - $sizePerm", showNotification)
                     }
                 }
             }
@@ -199,10 +265,14 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
         try {
 
+            if (BackupServiceKotlin.cancelAll) return null
+
             val tarRecovery = ArrayList<String>(0)
             lastProgress = 0
 
             val title = getTitle(R.string.verifying_tar)
+
+            val dataFileNames = allFiles?.first?.filter { it.endsWith(".tar.gz") } ?: listOf()
 
             resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_VERIFYING)
 
@@ -223,7 +293,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                             "checkData(){\n" +
                                     "\n" +
                                     "    echo \"--- TAR_GZ \$1 ---\"\n" +
-                                    "    err=\"\$(${busyboxBinaryPath} gzip -t \"${FileX.new(actualDestination).canonicalPath}/\$1\" 2>&1)\"\n" +
+                                    "    err=\"\$(${busyboxBinaryPath} gzip -t \"${rootDir.canonicalPath}/\$1\" 2>&1)\"\n" +
                                     "    if [[ ! -z \"\$err\" ]]; then\n" +
                                     "        echo \"--- ERROR:\$1:\$err ---\"\n" +
                                     "    else\n" +
@@ -240,10 +310,11 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     for (i in appList.indices) {
 
                         val packet = appList[i]
-                        val expectedDataFile = FileX.new("$actualDestination/${packet.PACKAGE_INFO.packageName}.tar.gz")
 
-                        if (packet.DATA && expectedDataFile.exists() && expectedDataFile.length() != 0L) {
-                            write("checkData ${expectedDataFile.name}\n")
+                        val expectedName = "${packet.packageName}.tar.gz"
+
+                        if (packet.DATA && dataFileNames.contains(expectedName)) {
+                            write("checkData ${expectedName}\n")
                         }
                     }
 
@@ -361,10 +432,11 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                                     }
                                     "icon_old" -> {
                                         val pi = pm.getPackageInfo(parts[2], 0)
-                                        backupUtils.makeStringIconFile(parts[2], iconTools.getIconString(pi, pm), actualDestination)
+                                        backupUtils.makeStringIconFile(parts[2], iconTools.getIconString(pi, pm), pathForAuxFiles)
                                     }
                                     "perm" -> {
-                                        backupUtils.makePermissionFile(parts[2], actualDestination, pm)
+                                        backupUtils.makePermissionFile(
+                                                parts[2], pathForAuxFiles, pm)
                                     }
                                 }
                                 write("echo \"--- DEFECT: ${i + 1}\"\n")
@@ -446,11 +518,28 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
     }
 
+    private fun moveAuxFiles(){
+        try {
+            val title = getTitle(R.string.moving_aux_script)
+            resetBroadcast(true, title, EXTRA_PROGRESS_TYPE_CORRECTING)
+            backupUtils.moveAuxFilesToBackupLocation(pathForAuxFiles, rootDir.canonicalPath).let {
+                it.forEach {
+                    addToActualErrors("$ERR_CORRECTION_AUX_MOVING_SU: $it")
+                }
+            }
+        }
+        catch (e: Exception){
+            e.printStackTrace()
+            addToActualErrors("$ERR_CORRECTION_AUX_MOVING_TRY_CATCH: ${e.message}")
+        }
+    }
+
     override suspend fun doInBackground(arg: Any?): Any {
 
         val defects = verifyBackups()
         if (!BackupServiceKotlin.cancelAll && defects != null && defects.size != 0)
             correctBackups(defects)
+        if (!FileXInit.isTraditional && defects?.any { it.startsWith(MIGRATE_STATUS) } == true) moveAuxFiles()
 
         return 0
     }

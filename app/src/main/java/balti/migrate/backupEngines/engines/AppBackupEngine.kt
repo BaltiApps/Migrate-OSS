@@ -1,6 +1,7 @@
 package balti.migrate.backupEngines.engines
 
 import balti.filex.FileX
+import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
@@ -8,9 +9,13 @@ import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
+import balti.migrate.utilities.CommonToolsKotlin.Companion.DIR_APP_AUX_FILES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APP_BACKUP_SHELL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APP_BACKUP_SUPPRESSED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APP_BACKUP_TRY_CATCH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_AUX_MOVING_SU
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_AUX_MOVING_TRY_CATCH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CREATING_MTD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_SCRIPT_MAKING_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_APP_PROGRESS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
@@ -50,6 +55,8 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
     private val actualErrors by lazy { ArrayList<String>(0) }
 
     private val rootLocation by lazy { FileX.new(actualDestination) }
+    private val appAuxFilesDir by lazy { FileX.new(engineContext.filesDir.canonicalPath, DIR_APP_AUX_FILES, true) }
+    private val pathForAuxFiles by lazy { if (FileXInit.isTraditional) actualDestination else appAuxFilesDir.canonicalPath }
 
     init {
         customPreExecuteFunction = {
@@ -117,6 +124,8 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
             resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS)
 
+            appAuxFilesDir.deleteRecursively()
+
             val ignoreCache = getPrefBoolean(PREF_IGNORE_APP_CACHE, false)
 
             val scriptFile = FileX.new(engineContext.filesDir.canonicalPath, "$FILE_PREFIX_BACKUP_SCRIPT.sh", true)
@@ -148,7 +157,11 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                             broadcastProgress(modifiedAppName, modifiedAppName, true, getPercentage(i + 1, packets.size))
 
                             if (packet.PERMISSION) {
-                                backupUtils.makePermissionFile(packageName, actualDestination, pm)
+                                backupUtils.makePermissionFile(
+                                        packageName,
+                                        if (FileXInit.isTraditional) actualDestination else appAuxFilesDir.canonicalPath,
+                                        pm
+                                )
                             }
 
                             var versionName: String? = packet.PACKAGE_INFO.versionName
@@ -157,11 +170,11 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
                             var appIconFileName: String? = null
                             if (getPrefBoolean(PREF_NEW_ICON_METHOD, true)) {
-                                appIconFileName = backupUtils.makeNewIconFile(packageName, iconTools.getBitmap(packet.PACKAGE_INFO, pm), actualDestination)
+                                appIconFileName = backupUtils.makeNewIconFile(packageName, iconTools.getBitmap(packet.PACKAGE_INFO, pm), pathForAuxFiles)
                             }
                             else {
                                 val appIcon: String = iconTools.getIconString(packet.PACKAGE_INFO, pm)
-                                appIconFileName = backupUtils.makeStringIconFile(packageName, appIcon, actualDestination)
+                                appIconFileName = backupUtils.makeStringIconFile(packageName, appIcon, pathForAuxFiles)
                             }
 
                             val echoCopyCommand = "echo \"$MIGRATE_STATUS: $modifiedAppName icon: $appIconFileName\"\n"
@@ -179,7 +192,9 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
                             tryIt { if (packet.isSystem) systemAppInstallScript(packageName, packet.apkPath) }
 
-                            backupUtils.makeMetadataFile(versionName, appIconFileName, null, packet, bd, doBackupInstallers)
+                            backupUtils.makeMetadataFile(pathForAuxFiles, versionName, appIconFileName, null, packet, doBackupInstallers).let {
+                                if (it.isNotBlank()) addToActualErrors("$ERR_CREATING_MTD: ${packet.appName} - $it")
+                            }
                         }
 
                     }
@@ -283,8 +298,25 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
         }
     }
 
+    private fun moveAuxFiles(){
+        try {
+            val title = getTitle(R.string.moving_aux_script)
+            resetBroadcast(true, title, EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS)
+            backupUtils.moveAuxFilesToBackupLocation(pathForAuxFiles, rootLocation.canonicalPath).let {
+                it.forEach {
+                    addToActualErrors("$ERR_AUX_MOVING_SU: $it")
+                }
+            }
+        }
+        catch (e: Exception){
+            e.printStackTrace()
+            addToActualErrors("$ERR_AUX_MOVING_TRY_CATCH: ${e.message}")
+        }
+    }
+
     override suspend fun doInBackground(arg: Any?): Any? {
         val scriptLocation = makeBackupScript()
+        if (!FileXInit.isTraditional) moveAuxFiles()
         if (!BackupServiceKotlin.cancelAll) scriptLocation?.let { runBackupScript(it) }
         return 0
     }
