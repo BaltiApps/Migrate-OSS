@@ -153,4 +153,25 @@ class BackupUtils {
 
     }
 
+    fun moveAuxFilesToBackupLocation(auxDirectory: String, backupLocation: String): ArrayList<String> {
+        val errors = ArrayList<String>(0)
+
+        val suProcess = Runtime.getRuntime().exec("su")
+        suProcess?.let {
+            val suInputStream = BufferedWriter(OutputStreamWriter(it.outputStream))
+            val errorStream = BufferedReader(InputStreamReader(it.errorStream))
+
+            suInputStream.write("cp $auxDirectory/* $backupLocation/ && rm -rf $auxDirectory/*\n")
+            suInputStream.write("exit\n")
+            suInputStream.flush()
+
+            iterateBufferedReader(errorStream, { errorLine ->
+                errors.add(errorLine)
+                return@iterateBufferedReader false
+            })
+        }
+
+        return errors
+    }
+
 }
