@@ -6,11 +6,15 @@ import android.graphics.Bitmap
 import balti.filex.FileX
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
+import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.KB_DIVISION_SIZE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAMES_KNOWN
 import balti.migrate.utilities.constants.MtdConstants
 import org.json.JSONObject
 import java.io.BufferedReader
+import java.io.BufferedWriter
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 
 class BackupUtils {
 
@@ -37,14 +41,14 @@ class BackupUtils {
         if (doBreak) onCancelledFunction?.invoke()
     }
 
-    fun makeMetadataFile(version: String,
+    fun makeMetadataFile(traditionalLocation: String, version: String,
                          iconFileName: String?, iconString: String?,
-                         appPacket: AppPacket, bd: BackupIntentData, doBackupInstallerName: Boolean): String{
+                         appPacket: AppPacket, doBackupInstallerName: Boolean): String{
 
         val packageName = appPacket.PACKAGE_INFO.packageName
         val metadataFileName = "$packageName.json"
-        val actualDestination = FileX.new("${bd.destination}/${bd.backupName}")
-        val metadataFile = FileX.new("${bd.destination}/${bd.backupName}", metadataFileName)
+        val metadataFile = FileX.new("${traditionalLocation}/${metadataFileName}", true)
+        metadataFile.createNewFile(makeDirectories = true, overwriteIfExists = true)
 
         val jsonObject = JSONObject()
         jsonObject.apply {
@@ -70,8 +74,6 @@ class BackupUtils {
             )
         }
 
-        actualDestination.mkdirs()
-
         return try {
             metadataFile.writeOneLine(jsonObject.toString(4))
             ""
@@ -82,12 +84,11 @@ class BackupUtils {
         }
     }
 
-    fun makeStringIconFile(packageName: String, iconString: String, actualDestination: String): String{
+    fun makeStringIconFile(packageName: String, iconString: String, traditionalLocation: String): String{
 
         val iconFileName = "$packageName.icon"
-        val iconFile = FileX.new("$actualDestination/$iconFileName")
-
-        FileX.new(actualDestination).mkdirs()
+        val iconFile = FileX.new("$traditionalLocation/$iconFileName", true)
+        iconFile.createNewFile(makeDirectories = true, overwriteIfExists = true)
 
         try {
             iconFile.writeOneLine(iconString)
@@ -99,16 +100,13 @@ class BackupUtils {
         return iconFileName
     }
 
-    fun makeNewIconFile(packageName: String, icon: Bitmap, actualDestination: String): String{
+    fun makeNewIconFile(packageName: String, icon: Bitmap, traditionalLocation: String): String{
 
         val iconFileName = "$packageName.png"
-        val iconFile = FileX.new("$actualDestination/$iconFileName")
-
-        FileX.new(actualDestination).mkdirs()
+        val iconFile = FileX.new("$traditionalLocation/$iconFileName", true)
+        iconFile.createNewFile(makeDirectories = true, overwriteIfExists = true)
 
         try {
-            iconFile.createNewFile()
-            iconFile.refreshFile()
             val fos = iconFile.outputStream()
             icon.compress(Bitmap.CompressFormat.PNG, 80, fos)
             fos?.close()
@@ -120,8 +118,9 @@ class BackupUtils {
         return iconFileName
     }
 
-    fun makePermissionFile(packageName: String, actualDestination: String, pm: PackageManager): String{
-        val permFile = FileX.new("$actualDestination/$packageName.perm")
+    fun makePermissionFile(packageName: String, traditionalLocation: String, pm: PackageManager): String{
+        val permFile = FileX.new("$traditionalLocation/$packageName.perm", true)
+        permFile.createNewFile(overwriteIfExists = true, makeDirectories = true)
         try {
 
             val pi = pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
