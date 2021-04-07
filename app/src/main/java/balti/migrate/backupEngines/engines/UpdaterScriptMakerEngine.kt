@@ -2,6 +2,8 @@ package balti.migrate.backupEngines.engines
 
 import android.os.Build
 import balti.filex.FileX
+import balti.filex.FileXInit
+import balti.filex.Quad
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
@@ -30,6 +32,8 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.THIS_VERSION
 import balti.module.baltitoolbox.functions.FileHandlers
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
+import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
+import balti.module.baltitoolbox.functions.Misc
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
@@ -47,6 +51,8 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
     private val errors by lazy { ArrayList<String>(0) }
     private val warnings by lazy { ArrayList<String>(0) }
+
+    private val showNotification by lazy { !FileXInit.isTraditional }
 
     private fun extractToBackup(fileName: String, targetPath: String){
         val assetFile = FileX.new(unpackAssetToInternal(fileName, fileName, FileHandlers.INTERNAL_TYPE.INTERNAL_FILES), true)
@@ -73,6 +79,10 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
     }
 
     private fun makeUpdaterScript() {
+
+        val title = getTitle(R.string.making_updater_script)
+
+        resetBroadcast(true, title)
 
         val updaterScriptPath = FileX.new("$actualDestination/META-INF/com/google/android/")
         updaterScriptPath.mkdirs()
@@ -158,6 +168,12 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             // extract app files
             val packets = zipAppBatch.zipAppPackets
             val size = packets.size
+
+            val subtask = getStringFromRes(R.string.writing_app_info)
+            if (showNotification) {
+                resetBroadcast(false, title)
+            }
+
             for (c in packets.indices) {
 
                 if (BackupServiceKotlin.cancelAll) {
@@ -167,6 +183,11 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
                 val packet = packets[c].appPacket_z
                 val packageName = packet.packageName
+
+                if (showNotification) {
+                    val progress = Misc.getPercentage((c+1), size)
+                    broadcastProgress(subtask, "$subtask: ${packet.appName}", true, progress)
+                }
 
                 if (packet.APP || packet.DATA || packet.PERMISSION) {
                     updater_writer.write("ui_print(\"${packet.appName} (${c + 1}/$size)\");\n")
@@ -199,6 +220,8 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 pString = pString.replace(",", ".")
                 updater_writer.write("set_progress($pString);\n")
             }
+
+            resetBroadcast(true, title)
 
             zipAppBatch.extrasFiles.run {
                 if (isNotEmpty()) {
@@ -304,15 +327,14 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
         try {
 
-            val title =
-                    if (flasherOnly) getTitle(R.string.making_updater_script)
-            else getTitle(R.string.recording_raw_list)
+            val title = getTitle(R.string.recording_raw_list)
 
             resetBroadcast(true, title)
 
             makePackageData()
 
             if (!flasherOnly) {
+                getStringFromRes(R.string.unpacking_to_make_flashable).let { broadcastProgress(it, it, false) }
                 extractToBackup("busybox", actualDestination)
                 extractToBackup("update-binary", "$actualDestination/META-INF/com/google/android/")
                 extractToBackup("mount_script.sh", actualDestination)
@@ -330,7 +352,13 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
 
             val rawList = FileX.new(actualDestination, FILE_RAW_LIST)
+            val subTask = getStringFromRes(R.string.recording_raw_list)
             try {
+                if (showNotification) {
+                    resetBroadcast(false, title)
+                    subTask.let { broadcastProgress(it, it, true) }
+                }
+                else subTask.let { broadcastProgress(it, it, false) }
                 heavyTask {
                     rawList.startWriting(object : FileX.Writer() {
                         override fun writeLines() {
@@ -340,7 +368,8 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                             write("=================\n")
                             write("\n")
 
-                            fun getRelativePath(file: FileX): String =
+                            // old code
+                            /*fun getRelativePath(file: FileX): String =
                                     file.path.let {
                                         it.substring(actualDestination.length)
                                     }
@@ -354,7 +383,26 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                                 }
                             }
 
-                            scanAllFiles(FileX.new(actualDestination))
+                            scanAllFiles(FileX.new(actualDestination))*/
+                            if (showNotification) {
+                                resetBroadcast(false, title)
+                            }
+
+                            val rootDir = FileX.new(actualDestination)
+                            val all = rootDir.listEverythingInQuad() ?: listOf()
+                            for (i in all.indices) {
+                                if (showNotification) {
+                                    val progress = Misc.getPercentage(i+1, all.size)
+                                    broadcastProgress(subTask, "", true, progress)
+                                }
+                                val q = all[i]
+                                if (q.second) {
+                                    FileX.new(rootDir.path, q.first).list()?.forEach {
+                                        writeLine("${q.first}/$it")
+                                    }
+                                }
+                                else writeLine(q.first)
+                            }
                         }
                     })
                 }
