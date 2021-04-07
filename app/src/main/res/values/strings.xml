@@ -437,7 +437,9 @@
     <string name="writing_settings">Writing settings</string>
     <string name="making_package_flash_ready">Making package flash ready</string>
     <string name="making_updater_script">Making updater-script</string>
+    <string name="writing_app_info">Writing app info</string>
     <string name="recording_raw_list">Recording file list</string>
+    <string name="unpacking_to_make_flashable">Unpacking files for TWRP</string>
     <string name="backing_app_permissions">Backing app permissions</string>
     <string name="verifying_backups">Verifying backup</string>
     <string name="verifying_tar">Verifying_tar</string>
@@ -531,12 +533,17 @@
     </string>
     <string name="making_packets">Making zip packets</string>
     <string name="making_batches">Making zip batches</string>
+    <string name="reading_files_for_zip">Reading files for zip</string>
+    <string name="reading_extras">Reading extras</string>
+    <string name="sorting">Sorting</string>
     <string name="total_extra_size">Extras size</string>
     <string name="capping_size">Capping size</string>
     <string name="adding_bigger_apps">Adding bigger apps</string>
     <string name="adding">Adding</string>
     <string name="packet">Packet</string>
     <string name="moving_files">Moving files</string>
+    <string name="moving_extras">Moving extras</string>
+    <string name="moving_app_files">Moving app files</string>
     <string name="use_usage_access_permission">Grant usage access permission?</string>
     <string name="usage_access_permission_needed_desc">This permission is needed to check app data size.</string>
     <string name="terminal_method_not_available_android_11">Older terminal / command-line based method for calculating size is no longer available on Android 11+</string>
