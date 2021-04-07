@@ -2,6 +2,7 @@ package balti.migrate.backupEngines.engines
 
 import android.util.Log
 import balti.filex.FileX
+import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.AppInstance.Companion.RESERVED_SPACE
 import balti.migrate.R
@@ -23,6 +24,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FORCE_SEPARATE_E
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SEPARATE_EXTRAS_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_BATCH
+import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.functions.Misc
 import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
@@ -38,6 +40,9 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
     private var numberOfAppZipPackets = 0
     private var doSeparateExtras = false
 
+    private val rootDir by lazy { FileX.new(actualDestination) }
+    private val allFiles by lazy { rootDir.listEverything() }
+
     private fun shareProgress(string: String, progress : Int){
         Thread.sleep(50)
         broadcastProgress("", string, false, progress)
@@ -49,19 +54,27 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
     private suspend fun makeBatches(){
 
         var title = getTitle(R.string.making_packets)
-        resetBroadcast(true, title)
+
+        val showNotification = !FileXInit.isTraditional
+        resetBroadcast(!showNotification, title)
 
         val allAppZipPackets = ArrayList<ZipAppPacket>(0)
 
+        val subTask: String = if (showNotification) getStringFromRes(R.string.reading_files_for_zip) else ""
+
+        var c = 0
         appList.forEach {
 
             try {
 
                 if (BackupServiceKotlin.cancelAll) return@forEach
 
-                val associatedFiles = ArrayList<FileX>(0)
+                //val associatedFiles = ArrayList<FileX>(0)
+                val associatedFileNames = ArrayList<String>(0)
+                val associatedFileSizes = ArrayList<Long>(0)
 
-                val expectedAppDir = FileX.new(actualDestination, "${it.packageName}.app")
+                // old code
+                /*val expectedAppDir = FileX.new(actualDestination, "${it.packageName}.app")
                 val expectedDataFile = FileX.new(actualDestination, "${it.packageName}.tar.gz")
                 val expectedPermFile = FileX.new(actualDestination, "${it.packageName}.perm")
                 val expectedJsonFile = FileX.new(actualDestination, "${it.packageName}.json")
@@ -69,16 +82,54 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 val expectedIconFile = FileX.new(actualDestination,
                         if (getPrefBoolean(PREF_NEW_ICON_METHOD, true)) "${it.packageName}.png"
                         else "${it.packageName}.icon"
-                )
+                )*/
 
-                if (it.APP && expectedAppDir.exists()) associatedFiles.add(expectedAppDir)
+                if (showNotification){
+                    val progress = Misc.getPercentage(++c, appList.size)
+                    broadcastProgress(subTask, "${it.appName}(${c+1}/${appList.size})", true, progress)
+                }
+
+                val appDirName = "${it.packageName}.app"
+                val dataName = "${it.packageName}.tar.gz"
+                val permName = "${it.packageName}.perm"
+                val jsonName = "${it.packageName}.json"
+                val systemShName = "${it.packageName}.sh"
+                val iconName = if (getPrefBoolean(PREF_NEW_ICON_METHOD, true)) "${it.packageName}.png"
+                else "${it.packageName}.icon"
+
+                // old code
+                /*if (it.APP && expectedAppDir.exists()) associatedFiles.add(expectedAppDir)
                 if (it.DATA && expectedDataFile.exists()) associatedFiles.add(expectedDataFile)
                 if (it.PERMISSION && expectedPermFile.exists()) associatedFiles.add(expectedPermFile)
                 if (expectedIconFile.exists()) associatedFiles.add(expectedIconFile)
                 if (expectedJsonFile.exists()) associatedFiles.add(expectedJsonFile)
-                if (expectedSystemShFile.exists()) associatedFiles.add(expectedSystemShFile)
+                if (expectedSystemShFile.exists()) associatedFiles.add(expectedSystemShFile)*/
 
-                val zipPacket = ZipAppPacket(it, associatedFiles)
+                if (it.APP) {
+                    FileX.new(actualDestination, appDirName).run {
+                        refreshFile()
+                        if (exists()) {
+                            associatedFileNames.add(appDirName)
+                            associatedFileSizes.add(getDirLength())
+                        }
+                    }
+                }
+
+                fun addToAssociatedFiles(name: String){
+                    val index = allFiles?.first?.indexOf(name) ?: -1
+                    if (index != -1) {
+                        associatedFileNames.add(name)
+                        associatedFileSizes.add(allFiles?.third?.get(index) ?: 0)
+                    }
+                }
+
+                if (it.DATA) addToAssociatedFiles(dataName)
+                if (it.PERMISSION) addToAssociatedFiles(permName)
+                addToAssociatedFiles(jsonName)
+                addToAssociatedFiles(systemShName)
+                addToAssociatedFiles(iconName)
+
+                val zipPacket = ZipAppPacket(it, associatedFileNames, associatedFileSizes)
                 allAppZipPackets.add(zipPacket)
                 totalAppSize += zipPacket.zipPacketSize
             }
@@ -95,12 +146,16 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
         try {
 
+            if (showNotification) getStringFromRes(R.string.reading_extras).let { broadcastProgress(it, it, true) }
+
             var totalExtrasSize = 0L
             if (extras.isNotEmpty()) {
                 extras.forEach {
                     totalExtrasSize += it.length()
                 }
             }
+
+            if (showNotification) getStringFromRes(R.string.sorting).let { broadcastProgress(it, it, true) }
 
             Log.d(DEBUG_TAG, "total extras size: $totalExtrasSize")
 
@@ -279,7 +334,8 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
     private fun movetoContainers() {
 
         val title = getTitle(R.string.moving_files)
-        resetBroadcast(true, title)
+        val showNotification = !FileXInit.isTraditional
+        resetBroadcast(!showNotification, title)
 
         try {
 
@@ -287,11 +343,11 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                 if (BackupServiceKotlin.cancelAll) return
 
-                val fullDirToMoveTo: FileX
-
                 if (it.partName != "") {
 
-                    fullDirToMoveTo = FileX.new(actualDestination, it.partName)
+                    val fullDirToMoveTo = FileX.new(actualDestination, it.partName)
+
+                    if (showNotification) getStringFromRes(R.string.moving_extras).let { broadcastProgress(it, it, true, -1) }
 
                     fullDirToMoveTo.mkdirs()
                     val newFiles = ArrayList<FileX>(0)
@@ -309,21 +365,24 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                     it.extrasFiles.addAll(newFiles)
 
                     // app files of each zipPacket of each zipBatch
+                    var c = 0
                     it.zipAppPackets.forEach { zp ->
-                        newFiles.clear()
-                        zp.appFiles.forEach {af ->
+
+                        if (showNotification) {
+                            val progress = Misc.getPercentage(++c, it.zipAppPackets.size)
+                            getStringFromRes(R.string.moving_app_files).let { broadcastProgress(it, it, true, progress) }
+                        }
+
+                        zp.appFileNames.forEach {name ->
 
                             if (BackupServiceKotlin.cancelAll) return
 
-                            val newFile = FileX.new(fullDirToMoveTo.path, af.name)
-                            af.renameTo(newFile)
-                            newFiles.add(newFile)
+                            val newFile = FileX.new(fullDirToMoveTo.path, name)
+                            val oldFile = FileX.new(actualDestination, name)
+                            oldFile.renameTo(newFile)
                         }
-                        zp.appFiles.clear()
-                        zp.appFiles.addAll(newFiles)
                     }
                 }
-                else fullDirToMoveTo = FileX.new(actualDestination)
 
                 it.createFileList(actualDestination)
             }
