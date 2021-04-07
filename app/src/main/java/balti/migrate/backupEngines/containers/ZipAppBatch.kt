@@ -33,11 +33,13 @@ data class ZipAppBatch(val zipAppPackets: ArrayList<ZipAppPacket> = ArrayList(0)
         fl.startWriting(object : FileX.Writer(){
             override fun writeLines() {
                 zipAppPackets.forEach { zp ->
-                    zp.appFiles.forEach { af ->
-                        if (af.name.endsWith(".app") && af.isDirectory && zp.appPacket_z.isSystem) {
-                            writeLine("${af.name}_sys")
+                    zp.appFileNames.forEach { name ->
+                        if (name.endsWith(".app")) {
+                            if (zp.appPacket_z.isSystem) {
+                                writeLine("${name}_sys")
+                            }
+                            else writeLine(name)
                         }
-                        else writeLine(af.name)
                     }
                 }
                 extrasFiles.forEach {ef ->
