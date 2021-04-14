@@ -12,9 +12,13 @@ import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.containers.ZipAppBatch
 import balti.migrate.backupEngines.containers.ZipAppPacket
+import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APK_SIZE_INDEX_NOT_FOUND
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CASTING_APK_SIZE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_MOVING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_READING_APK_SIZE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_ADDING_EXTRAS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_BATCHING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_PACKET_MAKING
@@ -23,11 +27,16 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_ZIP_NAME_EXTRAS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FORCE_SEPARATE_EXTRAS_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SEPARATE_EXTRAS_BACKUP
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_SHELL_TO_SPEED_UP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_BATCH
 import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.functions.Misc
 import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
+import java.io.BufferedReader
+import java.io.BufferedWriter
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 
 class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                    private val appList: ArrayList<AppPacket>, private val extras: ArrayList<FileX>) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH) {
@@ -43,6 +52,11 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
     private val rootDir by lazy { FileX.new(actualDestination) }
     private val allFiles by lazy { rootDir.listEverything() }
 
+    private val showNotification by lazy { !FileXInit.isTraditional }
+    private val useShellToCheckApkSize by lazy { !FileXInit.isTraditional && getPrefBoolean(PREF_USE_SHELL_TO_SPEED_UP, true) }
+
+    private val allAppZipPackets by lazy { ArrayList<ZipAppPacket>(0) }
+
     private fun shareProgress(string: String, progress : Int){
         Thread.sleep(50)
         broadcastProgress("", string, false, progress)
@@ -51,14 +65,9 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
     private fun getPercentage(allPacketsSize: Int): Int =
             Misc.getPercentage((numberOfAppZipPackets - allPacketsSize), numberOfAppZipPackets)
 
-    private suspend fun makeBatches(){
-
-        var title = getTitle(R.string.making_packets)
-
-        val showNotification = !FileXInit.isTraditional
+    private suspend fun makeZipPackets(){
+        val title = getTitle(R.string.making_packets)
         resetBroadcast(!showNotification, title)
-
-        val allAppZipPackets = ArrayList<ZipAppPacket>(0)
 
         val subTask: String = if (showNotification) getStringFromRes(R.string.reading_files_for_zip) else ""
 
@@ -84,7 +93,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                         else "${it.packageName}.icon"
                 )*/
 
-                if (showNotification){
+                if (showNotification && !useShellToCheckApkSize){
                     val progress = Misc.getPercentage(++c, appList.size)
                     broadcastProgress(subTask, "${it.appName}(${c+1}/${appList.size})", true, progress)
                 }
@@ -106,12 +115,18 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 if (expectedSystemShFile.exists()) associatedFiles.add(expectedSystemShFile)*/
 
                 if (it.APP) {
-                    FileX.new(actualDestination, appDirName).run {
-                        refreshFile()
-                        if (exists()) {
-                            associatedFileNames.add(appDirName)
-                            associatedFileSizes.add(getDirLength())
+                    if (!useShellToCheckApkSize) {
+                        FileX.new(actualDestination, appDirName).run {
+                            refreshFile()
+                            if (exists()) {
+                                associatedFileNames.add(appDirName)
+                                associatedFileSizes.add(getDirLength())
+                            }
                         }
+                    }
+                    else {
+                        associatedFileNames.add(appDirName)
+                        associatedFileSizes.add(0L)
                     }
                 }
 
@@ -138,10 +153,84 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 errors.add("$ERR_ZIP_PACKET_MAKING: ${e.message}")
             }
         }
+    }
+
+    private fun recordAppDirSizeByRoot(){
+
+        val title = getTitle(R.string.making_packets)
+        resetBroadcast(!showNotification, title)
+
+        val backupUtils = BackupUtils()
+        val suProcess = Runtime.getRuntime().exec("su")
+        suProcess?.let { su ->
+            val suInputStream = BufferedWriter(OutputStreamWriter(su.outputStream))
+            val outputStream = BufferedReader(InputStreamReader(su.inputStream))
+            val errorStream = BufferedReader(InputStreamReader(su.errorStream))
+            val DONE = "---DONE---"
+            val subTask = getStringFromRes(R.string.reading_apk_size_for_zip)
+
+            var c = 0
+
+            allAppZipPackets.forEach { p ->
+
+                val percent = Misc.getPercentage(++c, allAppZipPackets.size)
+                broadcastProgress(subTask, "", true, -1)
+
+                val packageName = p.appPacket_z.packageName
+                val appName = p.appPacket_z.appName
+
+                if (p.appPacket_z.APP && !BackupServiceKotlin.cancelAll) {
+                    suInputStream.write("ls -la \"${rootDir.canonicalPath}/${packageName}.app\" | awk '{print $5}' && echo \"$DONE\"\n")
+                    suInputStream.flush()
+
+
+                    var sum = 0L
+
+                    backupUtils.iterateBufferedReader(outputStream, { output ->
+                        if (BackupServiceKotlin.cancelAll) {
+                            return@iterateBufferedReader true
+                        }
+
+                        val output = output.trim()
+                        if (output.isNotBlank() && output != DONE) {
+                            try {
+                                sum += output.toLong()
+                            } catch (e: Exception) {
+                                errors.add("$ERR_CASTING_APK_SIZE: $packageName - shell output: \"$output\"")
+                            }
+                        }
+
+                        return@iterateBufferedReader output == DONE
+                    })
+
+                    val index = p.appFileNames.indexOf("${packageName}.app")
+                    if (index != -1) {
+                        p.fileSizes[index] = sum
+                        p.refreshTotal()
+                        broadcastProgress(subTask, "$appName: ${p.appFileNames[index]} - ${p.fileSizes[index]}", true, percent)
+                    } else {
+                        val errorMsg = "$ERR_APK_SIZE_INDEX_NOT_FOUND: $packageName. Files: ${p.appFileNames}. Searched: \"${packageName}.app\""
+                        errors.add(errorMsg)
+                        broadcastProgress(subTask, "$appName: $errorMsg", true, percent)
+                    }
+                }
+            }
+
+            suInputStream.write("exit\n")
+            suInputStream.flush()
+
+            backupUtils.iterateBufferedReader(errorStream, { errorLine ->
+                errors.add("$ERR_READING_APK_SIZE: $errorLine")
+                return@iterateBufferedReader false
+            })
+        }
+    }
+
+    private suspend fun makeBatches(){
 
         Thread.sleep(100)
 
-        title = getTitle(R.string.making_batches)
+        val title = getTitle(R.string.making_batches)
         resetBroadcast(false, title)
 
         try {
@@ -334,7 +423,6 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
     private fun movetoContainers() {
 
         val title = getTitle(R.string.moving_files)
-        val showNotification = !FileXInit.isTraditional
         resetBroadcast(!showNotification, title)
 
         try {
@@ -358,6 +446,8 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                         if (BackupServiceKotlin.cancelAll) return
 
                         val newFile = FileX.new(fullDirToMoveTo.path, ef.name)
+                        newFile.createNewFile()
+                        newFile.refreshFile()
                         ef.renameTo(newFile)
                         newFiles.add(newFile)
                     }
@@ -379,6 +469,8 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                             val newFile = FileX.new(fullDirToMoveTo.path, name)
                             val oldFile = FileX.new(actualDestination, name)
+                            oldFile.refreshFile()
+                            newFile.refreshFile()
                             oldFile.renameTo(newFile)
                         }
                     }
@@ -396,7 +488,9 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
     override suspend fun doInBackground(arg: Any?): Any? {
 
-        makeBatches()
+        if (!BackupServiceKotlin.cancelAll) makeZipPackets()
+        if (!BackupServiceKotlin.cancelAll && useShellToCheckApkSize) recordAppDirSizeByRoot()
+        if (!BackupServiceKotlin.cancelAll) makeBatches()
         if (errors.isEmpty()) movetoContainers()
 
         return 0
