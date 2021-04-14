@@ -12,6 +12,10 @@ data class ZipAppPacket(
     private set
 
     init {
+        refreshTotal()
+    }
+
+    fun refreshTotal(){
         fileSizes.forEach {
             zipPacketSize += it
         }
