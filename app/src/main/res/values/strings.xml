@@ -534,7 +534,6 @@
     <string name="making_packets">Making zip packets</string>
     <string name="making_batches">Making zip batches</string>
     <string name="reading_files_for_zip">Reading files for zip</string>
-    <string name="reading_apk_size_for_zip">Reading apk size for zip</string>
     <string name="reading_extras">Reading extras</string>
     <string name="sorting">Sorting</string>
     <string name="total_extra_size">Extras size</string>
