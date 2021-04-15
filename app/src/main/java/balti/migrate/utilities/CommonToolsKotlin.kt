@@ -411,7 +411,7 @@ class CommonToolsKotlin(val context: Context? = null) {
                 val eView = View.inflate(workingContext, R.layout.error_report_layout, null)
 
                 fun CheckBox.setCheckedEnabled(value: Boolean) = this.apply {
-                     isChecked = value; isEnabled = value
+                    isChecked = value; isEnabled = value
                 }
 
                 eView.share_progress_checkbox.setCheckedEnabled(progressLog.exists())
