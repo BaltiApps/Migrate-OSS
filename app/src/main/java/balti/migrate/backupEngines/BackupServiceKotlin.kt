@@ -27,6 +27,7 @@ import balti.migrate.AppInstance.Companion.smsList
 import balti.migrate.AppInstance.Companion.wifiData
 import balti.migrate.AppInstance.Companion.zipBatches
 import balti.migrate.R
+import balti.migrate.backupEngines.containers.AppApkFiles
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.containers.ZipAppBatch
 import balti.migrate.backupEngines.engines.*
@@ -598,13 +599,14 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
         if (cBatchNumber < zipBatches.size) {
             cZipBatch = zipBatches[cBatchNumber]
+            val appApkList: List<AppApkFiles> = cZipBatch?.zipAppPackets?.map { it.appApkFiles }?: listOf()
             ++cBatchNumber
-            runConditionalTask(JOBCODE_PERFORM_UPDATER_SCRIPT)
+            runConditionalTask(JOBCODE_PERFORM_UPDATER_SCRIPT, appApkList = appApkList)
         }
         else backupFinished("")
     }
 
-    private fun runConditionalTask(jobCode: Int, zipListIfAny: ArrayList<String>? = null, fileListIfAny: FileX? = null){
+    private fun runConditionalTask(jobCode: Int, zipListIfAny: ArrayList<String>? = null, fileListIfAny: FileX? = null, appApkList: List<AppApkFiles> = listOf()){
 
         val bd = getBackupIntentData()
         var task : ParentBackupClass? = null
