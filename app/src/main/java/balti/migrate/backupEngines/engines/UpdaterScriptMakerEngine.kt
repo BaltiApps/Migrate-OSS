@@ -323,6 +323,85 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
         }
     }
 
+    /**
+     * This function creates a list of all the files in a batch to be zipped together.
+     * This includes updater-script, MigrateHelper APK, and all other files to make the zip flashable.
+     * Also for verification in [ZipVerificationEngine]
+     */
+    private suspend fun createRawList(){
+
+        val title = getTitle(R.string.recording_raw_list)
+        resetBroadcast(true, title)
+
+        val rawList = FileX.new(actualDestination, FILE_RAW_LIST)
+        /**
+         *  This file will be shipped inside the zip.
+         *  This file will also be included while reporting logs via [balti.migrate.utilities.CommonToolsKotlin.reportLogs]
+         *  A copy of this file is also created below for verification purposes.
+         */
+        val subTask = getStringFromRes(R.string.recording_raw_list)
+        try {
+            if (showNotification) {
+                resetBroadcast(false, title)
+                subTask.let { broadcastProgress(it, it, true) }
+            }
+            else subTask.let { broadcastProgress(it, it, false) }
+            heavyTask {
+                rawList.startWriting(object : FileX.Writer() {
+                    override fun writeLines() {
+                        write("\n")
+                        write("=================\n")
+                        write("${actualDestination}\n")
+                        write("=================\n")
+                        write("\n")
+
+                        if (showNotification) {
+                            resetBroadcast(false, title)
+                        }
+
+                        val rootDir = FileX.new(actualDestination)
+                        val all = rootDir.listEverythingInQuad() ?: listOf()
+                        for (i in all.indices) {
+                            if (showNotification) {
+                                val progress = Misc.getPercentage(i+1, all.size)
+                                broadcastProgress(subTask, "", true, progress)
+                            }
+                            val q = all[i]
+                            if (q.second) {
+                                FileX.new(rootDir.path, q.first).list()?.forEach {
+                                    writeLine("${q.first}/$it")
+                                }
+                            }
+                            else writeLine(q.first)
+                        }
+                    }
+                })
+            }
+        }
+        catch (e: Exception){
+            e.printStackTrace()
+            warnings.add("$ERR_WRITING_RAW_LIST${bd.batchErrorTag}: ${e.message}")
+        }
+
+        tryIt {
+
+            val extRawList = FileX.new(CACHE_DIR, FILE_RAW_LIST, true)
+            /**
+             * This file is a copy of the original raw file list created above.
+             * This file is used to compare contents of the zip in [ZipVerificationEngine]
+             */
+
+            extRawList.startWriting(object : FileX.Writer(){
+                override fun writeLines() {
+                    if (rawList.exists())
+                        rawList.readLines().forEach {
+                            write("$it\n")
+                        }
+                }
+            }, true)
+        }
+    }
+
     override suspend fun doInBackground(arg: Any?): Any? {
 
         try {
@@ -350,80 +429,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 writeManualConfig(FILE_BUILDPROP_MANUAL, PREF_MANUAL_BUILDPROP)
             }
 
-
-            val rawList = FileX.new(actualDestination, FILE_RAW_LIST)
-            val subTask = getStringFromRes(R.string.recording_raw_list)
-            try {
-                if (showNotification) {
-                    resetBroadcast(false, title)
-                    subTask.let { broadcastProgress(it, it, true) }
-                }
-                else subTask.let { broadcastProgress(it, it, false) }
-                heavyTask {
-                    rawList.startWriting(object : FileX.Writer() {
-                        override fun writeLines() {
-                            write("\n")
-                            write("=================\n")
-                            write("${actualDestination}\n")
-                            write("=================\n")
-                            write("\n")
-
-                            // old code
-                            /*fun getRelativePath(file: FileX): String =
-                                    file.path.let {
-                                        it.substring(actualDestination.length)
-                                    }
-
-                            fun scanAllFiles(directory: FileX) {
-                                if (directory.isFile) write("${getRelativePath(directory)}\n")
-                                else directory.listFiles()?.let {
-                                    for (f in it) {
-                                        scanAllFiles(f)
-                                    }
-                                }
-                            }
-
-                            scanAllFiles(FileX.new(actualDestination))*/
-                            if (showNotification) {
-                                resetBroadcast(false, title)
-                            }
-
-                            val rootDir = FileX.new(actualDestination)
-                            val all = rootDir.listEverythingInQuad() ?: listOf()
-                            for (i in all.indices) {
-                                if (showNotification) {
-                                    val progress = Misc.getPercentage(i+1, all.size)
-                                    broadcastProgress(subTask, "", true, progress)
-                                }
-                                val q = all[i]
-                                if (q.second) {
-                                    FileX.new(rootDir.path, q.first).list()?.forEach {
-                                        writeLine("${q.first}/$it")
-                                    }
-                                }
-                                else writeLine(q.first)
-                            }
-                        }
-                    })
-                }
-            }
-            catch (e: Exception){
-                e.printStackTrace()
-                warnings.add("$ERR_WRITING_RAW_LIST${bd.batchErrorTag}: ${e.message}")
-            }
-
-            tryIt {
-                val extRawList = FileX.new(CACHE_DIR, FILE_RAW_LIST, true)
-
-                extRawList.startWriting(object : FileX.Writer(){
-                    override fun writeLines() {
-                        if (rawList.exists())
-                            rawList.readLines().forEach {
-                                write("$it\n")
-                            }
-                    }
-                }, true)
-            }
+            createRawList()
 
             if (!flasherOnly) makeUpdaterScript()
         }
