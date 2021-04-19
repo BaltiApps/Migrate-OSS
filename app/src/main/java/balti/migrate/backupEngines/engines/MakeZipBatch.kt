@@ -180,10 +180,10 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 val appName = p.appPacket_z.appName
 
                 if (p.appPacket_z.APP && !BackupServiceKotlin.cancelAll) {
-                    suInputStream.write("ls -la \"${rootDir.canonicalPath}/${packageName}.app\" | awk '{print $5}' && echo \"$DONE\"\n")
+                    suInputStream.write("ls -la \"${rootDir.canonicalPath}/${packageName}.app\" | awk '{print $5,$8}' && echo \"$DONE\"\n")
                     suInputStream.flush()
 
-
+                    val apkFiles = ArrayList<String>(0)
                     var sum = 0L
 
                     backupUtils.iterateBufferedReader(outputStream, { output ->
@@ -194,7 +194,10 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                         val output = output.trim()
                         if (output.isNotBlank() && output != DONE) {
                             try {
-                                sum += output.toLong()
+                                val size = output.split(" ")[0]
+                                val name = output.split(" ")[1]
+                                sum += size.toLong()
+                                apkFiles.add(name)
                             } catch (e: Exception) {
                                 errors.add("$ERR_CASTING_APK_SIZE: $packageName - shell output: \"$output\"")
                             }
@@ -202,6 +205,8 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                         return@iterateBufferedReader output == DONE
                     })
+
+                    p.addAppApkList(apkFiles)
 
                     val index = p.appFileNames.indexOf("${packageName}.app")
                     if (index != -1) {
