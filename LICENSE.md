@@ -1,6 +1,6 @@
 Copyright (C) 2021-2022 SayantanRC
 
-This file is part of the Migrate project owned by SayantanRC.
+This file is part of the <b>Migrate</b> project owned by <b>SayantanRC</b>.
 
 - Reproduction, modification, redistribution of code:  
   1. No part of this project can be copied and/or distributed without the express
@@ -12,6 +12,6 @@ The code of this project can be adopted for alternative uses / redistribution in
   1. Death of the owner.  
   2. The project being abandoned - EITHER announced by the owner OR no new commit in the last 1.5 years AND no new updates to NG or GPE version of the app in the last 1.5 years.  
 
-In case of more information, please reach out to:
-Email - sayantan.kgp@gmail.com
-Telegram - https://t.me/SayantanRC
+In case of more information, please reach out to:  
+Email - sayantan.kgp@gmail.com  
+Telegram - https://t.me/SayantanRC  
