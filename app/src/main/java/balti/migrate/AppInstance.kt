@@ -45,6 +45,8 @@ class AppInstance: Application() {
          * This variable is initialised in [onCreate], such that it is equal to [MAX_TWRP_SIZE] (roughly 4GB)
          * or the value from [DEVICE_RAM_SIZE], whichever is lower.
          *
+         * The value is set in [refreshMaxZipSize].
+         *
          * Note: This is not the final maximum zip size. The final maximum is considered from [MAX_WORKING_SIZE].
          */
         var MAX_EFFECTIVE_ZIP_SIZE = 0L
@@ -52,6 +54,8 @@ class AppInstance: Application() {
         /**
          * This is the maximum zip size value selected by the user. It can be adjusted from the preferences.
          * The maximum value is [MAX_EFFECTIVE_ZIP_SIZE].
+         *
+         * The value is set in [refreshMaxZipSize].
          *
          * This is the FINAL maximum zip size. Even if [MAX_EFFECTIVE_ZIP_SIZE] is (say) 3GB,
          * if user selects (say) 1GB in preference, then this value will correspond to 1GB which will finally be considered while creating zips.
@@ -197,6 +201,21 @@ class AppInstance: Application() {
         ToolboxHQ.init(this)
         FileXInit(this, !getPrefBoolean(PREF_USE_FILEX11, true))
 
+        // set the value of MAX_WORKING_SIZE
+        refreshMaxZipSize()
+
+        // create externalCacheDir. This is probably legacy code and not used in version 5.0+ of the app.
+        tryIt {
+            externalCacheDir?.run { FileX.new(this.absolutePath, true).mkdirs() }
+        }
+    }
+
+    /**
+     * This method calculates the maximum zip size for TWRP flashable backups.
+     * @see MAX_EFFECTIVE_ZIP_SIZE
+     * @see MAX_WORKING_SIZE
+     */
+    fun refreshMaxZipSize() {
         // calculate maximum allowed zip size for this device
         MAX_EFFECTIVE_ZIP_SIZE = if (DEVICE_RAM_SIZE < MAX_TWRP_SIZE) DEVICE_RAM_SIZE else MAX_TWRP_SIZE
 
@@ -208,14 +227,6 @@ class AppInstance: Application() {
             }
             else it
         }
-
-        // create externalCacheDir. This is probably legacy code and not used in version 5.0+ of the app.
-        tryIt {
-            externalCacheDir?.run { FileX.new(this.absolutePath, true).mkdirs() }
-        }
-    }
-
-    fun refreshMaxSize() {
     }
 
 }
