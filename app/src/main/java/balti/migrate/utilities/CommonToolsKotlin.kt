@@ -172,6 +172,9 @@ class CommonToolsKotlin(val context: Context? = null) {
         val ERR_ZIP_ADDING_EXTRAS = "ZIP_ADDING_EXTRAS"
         val ERR_ZIP_ENGINE_INIT = "ZIP_ENGINE_INIT"
         val ERR_MOVING = "MOVING_FILES"
+        val ERR_READING_APK_SIZE = "ERR_READING_APK_SIZE"
+        val ERR_CASTING_APK_SIZE = "ERR_CASTING_APK_SIZE"
+        val ERR_APK_SIZE_INDEX_NOT_FOUND = "ERR_APK_SIZE_INDEX_NOT_FOUND"
 
         val ERR_MDP_INSTALL = "MDP_INSTALL_ERROR"
         val ERR_MDP_SU = "MDP_SU_ERROR"
@@ -235,6 +238,7 @@ class CommonToolsKotlin(val context: Context? = null) {
         val PREF_ZIP_VERIFICATION = "do_zip_verification"
         val PREF_FILELIST_IN_ZIP_VERIFICATION = "fileList_in__zip_verification"
         val PREF_SHOW_BACKUP_SUMMARY = "showBackupSummary"
+        val PREF_USE_SHELL_TO_SPEED_UP = "useShellToSpeedUp"
 
         val PREF_IGNORE_APP_CACHE = "ignore_app_cache"
 
