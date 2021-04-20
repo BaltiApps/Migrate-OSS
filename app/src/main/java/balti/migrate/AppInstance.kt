@@ -180,7 +180,7 @@ class AppInstance: Application() {
     private val MAX_TWRP_SIZE = 4194300000L
 
     /**
-     * The current device RAM size. This is factored in while calculation [MAX_WORKING_SIZE].
+     * The current device RAM size. This is factored in while calculation [MAX_WORKING_SIZE] in [refreshMaxZipSize].
      */
     private val DEVICE_RAM_SIZE : Long by lazy {
         val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
