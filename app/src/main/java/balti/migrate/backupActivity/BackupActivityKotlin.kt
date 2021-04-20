@@ -201,31 +201,9 @@ class BackupActivityKotlin : AppCompatActivity() {
         }
 
         backupActivityNext.setOnClickListener {
-            val exclusion = ExclusionsKotlin()
-            var isAllAppSelected: Boolean = true
+            var isAllAppSelected = true
             doBackgroundTask({
-                selectedBackupDataPackets.run {
-                    clear()
-                    try {
-                        appBackupDataPackets.forEach {
-                            val e = exclusion.returnExclusionState(it.PACKAGE_INFO.packageName)
-                            if (isAllAppSelected) {
-                                if (!e.contains(EXCLUDE_APP) && !it.APP) isAllAppSelected = false
-                                if (!e.contains(EXCLUDE_DATA) && !it.DATA) isAllAppSelected = false
-                                if (!e.contains(EXCLUDE_PERMISSION) && !it.PERMISSION) isAllAppSelected = false
-                            }
-                            if (it.APP || it.DATA || it.PERMISSION) add(it)
-                        }
-                    }
-                    catch (e: Exception){
-                        e.printStackTrace()
-                        isAllAppSelected = false
-                        selectedBackupDataPackets.run {
-                            clear()
-                            addAll(appBackupDataPackets.filter { it.APP || it.DATA || it.PERMISSION })
-                        }
-                    }
-                }
+                isAllAppSelected = filterApps()
                 return@doBackgroundTask null
             }, {
                 startActivity(Intent(this, ExtraBackupsKotlin::class.java)
@@ -348,5 +326,35 @@ class BackupActivityKotlin : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
+    }
+
+    private fun filterApps(): Boolean {
+        var isAllAppSelected = true
+        val exclusion = ExclusionsKotlin()
+
+        selectedBackupDataPackets.run {
+            clear()
+            try {
+                appBackupDataPackets.forEach {
+                    val e = exclusion.returnExclusionState(it.PACKAGE_INFO.packageName)
+                    if (isAllAppSelected) {
+                        if (!e.contains(EXCLUDE_APP) && !it.APP) isAllAppSelected = false
+                        if (!e.contains(EXCLUDE_DATA) && !it.DATA) isAllAppSelected = false
+                        if (!e.contains(EXCLUDE_PERMISSION) && !it.PERMISSION) isAllAppSelected = false
+                    }
+                    if (it.APP || it.DATA || it.PERMISSION) add(it)
+                }
+            }
+            catch (e: Exception){
+                e.printStackTrace()
+                isAllAppSelected = false
+                selectedBackupDataPackets.run {
+                    clear()
+                    addAll(appBackupDataPackets.filter { it.APP || it.DATA || it.PERMISSION })
+                }
+            }
+        }
+
+        return isAllAppSelected
     }
 }
