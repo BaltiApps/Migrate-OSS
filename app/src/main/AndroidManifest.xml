@@ -41,6 +41,11 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".storageSelector.StorageSelectorActivity"
+            android:theme="@style/AppTheme.Floating"
+            android:screenOrientation="portrait"
+            />
+
         <activity android:name=".simpleActivities.InitialGuideKotlin"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance"/>
