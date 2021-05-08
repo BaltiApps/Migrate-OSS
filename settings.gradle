@@ -1,1 +1,3 @@
 include ':app'
+include ':baltitoolbox'
+project(':baltitoolbox').projectDir=new File('../baltitoolbox')
