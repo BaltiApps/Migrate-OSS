@@ -1,2 +1,1 @@
-include ':baltitoolbox'
 include ':app'
