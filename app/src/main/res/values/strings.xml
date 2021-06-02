@@ -826,6 +826,7 @@
     <string name="this_location_cannot_be_selected_desc">The chosen location cannot be used to store backups. Please try another location.</string>
     <string name="write_not_allowed">Write not allowed!</string>
     <string name="please_select_any_other_location">Please select any other storage option</string>
+    <string name="intenal_storage_location_for_display">[Internal storage]/Migrate</string>
 
     <!--other_apps.xml-->
     <string name="instamean">Systemwide online dictionary</string>
