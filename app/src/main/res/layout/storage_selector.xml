@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:padding="@dimen/xlarge_padding_width"
     android:background="@color/colorPrimary"
+    android:id="@+id/storage_select_root_view"
     tools:context=".storageSelector.StorageSelectorActivity"
     >
 
