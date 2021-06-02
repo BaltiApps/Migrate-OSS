@@ -297,7 +297,7 @@ class AskForName: AppCompatActivity() {
             }
             else {
                 setTitle(R.string.choose_storage_location)
-                setMessage(R.string.choose_storage_location_desc)
+                //setMessage(R.string.choose_storage_location_desc)
             }
             setPositiveButton(R.string.proceed) { _, _ ->
                 ask()
