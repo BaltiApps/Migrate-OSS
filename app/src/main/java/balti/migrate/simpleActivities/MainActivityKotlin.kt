@@ -688,7 +688,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         if (getPrefString(PREF_DEFAULT_BACKUP_PATH, "").isBlank() || !FileXInit.isUserPermissionGranted()) {
             AlertDialog.Builder(this).apply {
                 setTitle(R.string.choose_storage_location)
-                setMessage(R.string.choose_storage_location_desc)
+                //setMessage(R.string.choose_storage_location_desc)
                 setPositiveButton(R.string.proceed) { _, _ -> filexStorageRequest() }
                 setNeutralButton(android.R.string.cancel){_, _ -> dismissLoading()}
                 setCancelable(false)
