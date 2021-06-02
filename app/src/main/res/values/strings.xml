@@ -601,10 +601,6 @@
     </string>
     <string name="new_message">New message received!</string>
     <string name="view">View</string>
-    <string name="choose_storage_location">Please choose storage location</string>
-    <string name="choose_storage_location_desc">In the next screen, please choose a folder where you would like to store the backups. <b>A location in internal storage is preferred.</b></string>
-    <string name="this_location_cannot_be_selected">Cannot use this location!</string>
-    <string name="this_location_cannot_be_selected_desc">The chosen location cannot be used to store backups. Please try another location.</string>
     <string name="select_storage_type">Migrate has a new way to store backups!</string>
     <string name="select_storage_type_desc">Old way - store in internal storage as usual.\nNew way - select a custom location</string>
     <string name="old_way">Old way</string>
@@ -822,6 +818,14 @@
     <string name="no_header">No header</string>
     <string name="no_filepath">No filepath</string>
     <string name="log_reading_error">Log reading error</string>
+
+    <!--StorageSelectorActivity.kt-->
+    <string name="choose_storage_location">Please choose storage location</string>
+    <string name="choose_storage_location_desc_saf">In the next screen, please choose a folder where you would like to store the backups. <b>A location in internal storage is preferred.</b></string>
+    <string name="this_location_cannot_be_selected">Cannot use this location!</string>
+    <string name="this_location_cannot_be_selected_desc">The chosen location cannot be used to store backups. Please try another location.</string>
+    <string name="write_not_allowed">Write not allowed!</string>
+    <string name="please_select_any_other_location">Please select any other storage option</string>
 
     <!--other_apps.xml-->
     <string name="instamean">Systemwide online dictionary</string>
