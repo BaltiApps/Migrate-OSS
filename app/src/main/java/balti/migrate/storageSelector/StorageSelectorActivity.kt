@@ -59,6 +59,10 @@ class StorageSelectorActivity: AppCompatActivity() {
         storage_select_saf.setOnClickListener {
             safStorageRequest()
         }
+
+        storage_select_conventional.setOnClickListener {
+            conventionalStorageRequest()
+        }
     }
 
     override fun onBackPressed() {
@@ -66,6 +70,26 @@ class StorageSelectorActivity: AppCompatActivity() {
     }
 
     private val onCancelDialogListener = DialogInterface.OnClickListener { _, _ -> if (isOnlySafAvailable) sendResult(false) }
+
+    private fun conventionalStorageRequest(){
+        FileXInit.setTraditional(true)
+        FileXInit.requestUserPermission(reRequest = true) { resultCode, data ->
+            if (resultCode == Activity.RESULT_OK){
+                val root = FileX.new(defaultInternalStorage)
+                if (root.canWrite()){
+                    sendResult(true, StorageType.CONVENTIONAL)
+                }
+                else {
+                    AlertDialog.Builder(this).apply {
+                        setCancelable(false)
+                        setTitle(R.string.write_not_allowed)
+                        setMessage(root.canonicalPath + "\n\n" + getString(R.string.please_select_any_other_location))
+                        setNegativeButton(R.string.close, null)
+                    }.show()
+                }
+            }
+        }
+    }
 
     private fun safStorageRequest(){
 
