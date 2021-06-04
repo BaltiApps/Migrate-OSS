@@ -834,7 +834,7 @@
 
     <!--HandleSdSelector.kt-->
     <string name="error_in_sd_selection">Error in SD card selection. Using Internal storage.</string>
-    <string name="final_path_selected">Path selected:</string>
+    <string name="final_path_selected">Path selected</string>
 
     <!--other_apps.xml-->
     <string name="instamean">Systemwide online dictionary</string>
