@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/storage_select_root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/xlarge_padding_width"
+    android:orientation="vertical"
+    tools:context=".storageSelector.HandleSdSelector">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/path_selected_for_backups"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        />
+
+    <Space
+        android:layout_width="@dimen/large_padding_width"
+        android:layout_height="@dimen/large_padding_width"/>
+
+    <RadioButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/intenal_storage_location_for_display"
+        android:id="@+id/radio_internal_storage"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/show_sd_cards"
+        android:textColor="@color/colorAccent"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginTop="@dimen/large_padding_width"
+        android:id="@+id/storage_show_sd_cards"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/large_padding_width"
+        android:id="@+id/no_sd_cards"
+        android:visibility="gone"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sd_card_not_rw"
+            android:textStyle="bold"
+            />
+
+        <Space
+            android:layout_width="@dimen/small_padding_width"
+            android:layout_height="@dimen/small_padding_width"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sd_card_not_rw_exp"
+            />
+
+        <Space
+            android:layout_width="@dimen/small_padding_width"
+            android:layout_height="@dimen/small_padding_width"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/learn_about_sd_card_support"
+            android:textColor="@color/colorAccent"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:id="@+id/learn_sd_card_support"
+            />
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="@dimen/large_padding_width"
+        android:layout_height="@dimen/large_padding_width"/>
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/radio_group_sd_cards"
+        >
+
+    </RadioGroup>
+
+</LinearLayout>
