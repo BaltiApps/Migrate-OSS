@@ -36,7 +36,7 @@ class CommonToolsKotlin(val context: Context? = null) {
 
         val THIS_VERSION = 50
         val ALLOW_CONVENTIONAL_STORAGE : Boolean by lazy {
-            AppInstance.appContext.applicationInfo.targetSdkVersion <= Build.VERSION_CODES.P || Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
+            Build.VERSION.SDK_INT <= Build.VERSION_CODES.R
         }
         val IS_OTHER_APP_DATA_VISIBLE: Boolean by lazy {
             AppInstance.appContext.applicationInfo.targetSdkVersion < Build.VERSION_CODES.R || Build.VERSION.SDK_INT < Build.VERSION_CODES.R
