@@ -414,10 +414,6 @@
     [module made by developer Romain.]
     </string>
     <string name="please_select_sd_card">Please select sd card</string>
-    <string name="sd_card_not_rw">SD Card may not be mounted in R/W</string>
-    <string name="sd_card_not_rw_exp">External SD card may not be accessible. Make sure that \"ExSDCard Access Enabler\" module is installed in Magisk.\n\n
-    [module made by developer Romain.]
-    </string>
     <string name="no_busybox_binary">\"busybox\" not available!</string>
     <string name="re_calculating_size">Re-calculating size using terminal method</string>
     <string name="error_occurred">Error occurred!!</string>
@@ -827,6 +823,14 @@
     <string name="write_not_allowed">Write not allowed!</string>
     <string name="please_select_any_other_location">Please select any other storage option</string>
     <string name="intenal_storage_location_for_display">[Internal storage]/Migrate</string>
+    <string name="show_sd_cards">Show SD cards. (Legacy, requires Magisk module)</string>
+
+    <!--storage_selector_sd_cards.xml-->
+    <string name="path_selected_for_backups">Path selected for backups.</string>
+    <string name="sd_card_not_rw">SD Card may not be mounted in R/W</string>
+    <string name="sd_card_not_rw_exp">External SD card may not be accessible. Make sure that \"ExSDCard Access Enabler\" module is installed in Magisk.\n\n
+    [module made by developer Romain.]
+    </string>
 
     <!--other_apps.xml-->
     <string name="instamean">Systemwide online dictionary</string>
