@@ -75,9 +75,19 @@ class StorageSelectorActivity: AppCompatActivity() {
         FileXInit.setTraditional(true)
         FileXInit.requestUserPermission(reRequest = true) { resultCode, data ->
             if (resultCode == Activity.RESULT_OK){
-                val root = FileX.new(defaultInternalStorage)
+                val root = FileX.new(defaultInternalStorage).apply {
+                    mkdirs()
+                }
                 if (root.canWrite()){
-                    sendResult(true, StorageType.CONVENTIONAL)
+                    val handleSdSelector = HandleSdSelector(this)
+                    val rootView = handleSdSelector.getView()
+                    AlertDialog.Builder(this).apply {
+                        setView(rootView)
+                        setPositiveButton(android.R.string.ok){_, _ ->
+                            sendResult(true, StorageType.CONVENTIONAL, handleSdSelector.getStoragePath())
+                        }
+                        setCancelable(false)
+                    }.show()
                 }
                 else {
                     AlertDialog.Builder(this).apply {
