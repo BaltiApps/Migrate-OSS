@@ -5,6 +5,7 @@ import android.os.Environment
 import android.view.View
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.Toast
 import balti.filex.FileX
 import balti.migrate.R
 import balti.migrate.utilities.CommonToolsKotlin
@@ -14,7 +15,7 @@ import kotlinx.android.synthetic.main.storage_selector_sd_cards.view.*
 /**
  * To be called from [StorageSelectorActivity]
  */
-class HandleSdSelector(context: Context) {
+class HandleSdSelector(val context: Context) {
 
     private val paths by lazy { arrayListOf(CommonToolsKotlin.DEFAULT_INTERNAL_STORAGE_DIR) }
     private val rootView by lazy { View.inflate(context, R.layout.storage_selector_sd_cards, null) }
@@ -32,7 +33,7 @@ class HandleSdSelector(context: Context) {
                 SDs.forEach {
                     val sdFile = FileX.new(it, true)
                     val radioButton = RadioButton(context).apply {
-                        this.text = sdFile.name
+                        this.text = "${sdFile.name}/Migrate"
                         this.id = ++storagePointer
                         paths.add(it)
                     }
@@ -115,7 +116,14 @@ class HandleSdSelector(context: Context) {
 
     fun getView(): View = rootView
 
-    fun getStoragePath(): String = paths[storagePointer]
+    fun getStoragePath(): String = try {
+        (paths[storagePointer] + "/Migrate").apply {
+            Toast.makeText(context, context.getString(R.string.final_path_selected) + " : $this", Toast.LENGTH_SHORT).show()
+        }
+    } catch (e: Exception){
+        Toast.makeText(context, context.getString(R.string.error_in_sd_selection) + " : ${e.message}", Toast.LENGTH_SHORT).show()
+        CommonToolsKotlin.DEFAULT_INTERNAL_STORAGE_DIR
+    }
 
     private fun getTraditionalSdCardPaths(): Array<String> {
         val possibleSDCards = arrayListOf<String>()
