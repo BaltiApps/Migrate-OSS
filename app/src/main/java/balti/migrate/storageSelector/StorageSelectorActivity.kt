@@ -176,90 +176,11 @@ class StorageSelectorActivity: AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     private fun allFilesAccess(){
 
-        var finalPath = defaultInternalStorage
-
-        val chooserDialog = AlertDialog.Builder(this).apply {
-            setTitle(R.string.all_files_access_custom_location)
-            setNeutralButton(R.string.use_default, null)
-            setNegativeButton(R.string.choose_custom, null)
-            setPositiveButton(android.R.string.ok, null)
-            setMessage("")
-            setCancelable(false)
-        }.create()
-
-        fun setChooserDialogMessage(newPath: String? = null) {
-
-            val pathToCheck = newPath ?: getPrefString(PREF_DEFAULT_BACKUP_PATH, defaultInternalStorage)
-
-            val isPathSameAsDefault = FileX.new(pathToCheck, true).let {
-                val defaultInternalStorageFile = FileX.new(defaultInternalStorage, true)
-                it.canonicalPath == defaultInternalStorageFile.canonicalPath
-            }
-
-            val displayLocation: String =
-                    if (isPathSameAsDefault) {
-                        finalPath = defaultInternalStorage
-                        getString(R.string.intenal_storage_location_for_display)
-                    } else {
-                        pathToCheck.apply {
-                            finalPath = this
-                        }
-                    }
-
-
-            val message = getString(R.string.all_files_access_custom_location_desc1) + "\n\n" +
-                   displayLocation + "\n\n" +
-                   getText(R.string.all_files_access_custom_location_desc2)
-            chooserDialog.setMessage(message)
-        }
-
-        fun showInvalidLocation(){
-            AlertDialog.Builder(this).apply {
-                setCancelable(false)
-                setTitle(R.string.this_location_cannot_be_selected)
-                setMessage(R.string.all_files_access_invalid_location)
-                setPositiveButton(R.string.close, null)
-            }.show()
-        }
-
-        fun startChooser(){
-            FileXInit.setTraditional(false)
-            FileXInit.requestUserPermission(reRequest = true){resultCode, _ ->
-                if (resultCode == Activity.RESULT_OK){
-                    val root = FileX.new("/")
-                    val rootCanonical = root.canonicalPath
-                    if (!root.volumePath.isNullOrBlank() &&
-                            FileX.new(rootCanonical, true).canWrite()){
-                        setChooserDialogMessage(rootCanonical)
-                    }
-                    else {
-                        showInvalidLocation()
-                    }
-                }
-            }
-        }
-
-        fun showCustomStorageDialog(){
-            chooserDialog.setOnShowListener {
-                chooserDialog.apply {
-                    setChooserDialogMessage()
-                    getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener {
-                        startChooser()
-                    }
-                    getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
-                        setChooserDialogMessage(defaultInternalStorage)
-                    }
-                    getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                        dismiss()
-                        sendResult(true, StorageType.ALL_FILES_STORAGE, finalPath)
-                    }
-                }
-            }
-            chooserDialog.show()
-        }
-
         if (isAllFilesAccessGranted()){
-            showCustomStorageDialog()
+            val allFilesAccessHandler = AllFilesAccessHandler(this, defaultInternalStorage)
+            allFilesAccessHandler.showCustomStorageDialog {
+                sendResult(true, StorageType.ALL_FILES_STORAGE, it)
+            }
         }
         else {
             startActivityForResult(Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
