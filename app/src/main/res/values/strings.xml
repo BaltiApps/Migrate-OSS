@@ -824,6 +824,14 @@
     <string name="please_select_any_other_location">Please select any other storage option</string>
     <string name="intenal_storage_location_for_display">[Internal storage]/Migrate</string>
     <string name="show_sd_cards">Show SD cards. (Legacy, requires Magisk module)</string>
+    <string name="all_files_access_custom_location">Choose a custom location (optional)</string>
+    <string name="all_files_access_custom_location_desc1">Chosen backup location is:</string>
+    <string name="all_files_access_custom_location_desc2">You can choose a custom location in <b>SD card (not USB-OTG)</b> if you wish.</string>
+    <string name="all_files_access_invalid_location">Cannot write to this location. Please use a location inside internal storage (recommended) or inside SD-Card.</string>
+    <string name="use_default">Use default</string>
+    <string name="choose_custom">Choose custom</string>
+    <string name="selected_storage_path">Selected storage path</string>
+
 
     <!--storage_selector_sd_cards.xml-->
     <string name="path_selected_for_backups">Path selected for backups.</string>
