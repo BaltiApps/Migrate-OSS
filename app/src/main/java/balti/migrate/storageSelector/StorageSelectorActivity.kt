@@ -2,10 +2,17 @@ package balti.migrate.storageSelector
 
 import android.app.Activity
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import balti.filex.FileX
@@ -15,6 +22,8 @@ import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_STORAGE_TYPE
+import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 import balti.module.baltitoolbox.functions.SharedPrefs.putPrefString
 import kotlinx.android.synthetic.main.storage_selector.*
 
@@ -24,6 +33,7 @@ class StorageSelectorActivity: AppCompatActivity() {
     private val ALL_FILES_ACCESS_PERMISSION = "android.permission.MANAGE_EXTERNAL_STORAGE"
     private var isOnlySafAvailable = false
     private val defaultInternalStorage = DEFAULT_INTERNAL_STORAGE_DIR
+    private val REQUEST_CODE_ALL_FILES_ACCESS = 1045
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +72,12 @@ class StorageSelectorActivity: AppCompatActivity() {
 
         storage_select_conventional.setOnClickListener {
             conventionalStorageRequest()
+        }
+
+        storage_select_all_files_access.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                allFilesAccess()
+            }
         }
     }
 
@@ -154,15 +170,126 @@ class StorageSelectorActivity: AppCompatActivity() {
         return manifestPermissions
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun isAllFilesAccessGranted() = Environment.isExternalStorageManager()
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun allFilesAccess(){
+
+        var finalPath = defaultInternalStorage
+
+        val chooserDialog = AlertDialog.Builder(this).apply {
+            setTitle(R.string.all_files_access_custom_location)
+            setNeutralButton(R.string.use_default, null)
+            setNegativeButton(R.string.choose_custom, null)
+            setPositiveButton(android.R.string.ok, null)
+            setMessage("")
+            setCancelable(false)
+        }.create()
+
+        fun setChooserDialogMessage(newPath: String? = null) {
+
+            val pathToCheck = newPath ?: getPrefString(PREF_DEFAULT_BACKUP_PATH, defaultInternalStorage)
+
+            val isPathSameAsDefault = FileX.new(pathToCheck, true).let {
+                val defaultInternalStorageFile = FileX.new(defaultInternalStorage, true)
+                it.canonicalPath == defaultInternalStorageFile.canonicalPath
+            }
+
+            val displayLocation: String =
+                    if (isPathSameAsDefault) {
+                        finalPath = defaultInternalStorage
+                        getString(R.string.intenal_storage_location_for_display)
+                    } else {
+                        pathToCheck.apply {
+                            finalPath = this
+                        }
+                    }
+
+
+            val message = getString(R.string.all_files_access_custom_location_desc1) + "\n\n" +
+                   displayLocation + "\n\n" +
+                   getText(R.string.all_files_access_custom_location_desc2)
+            chooserDialog.setMessage(message)
+        }
+
+        fun showInvalidLocation(){
+            AlertDialog.Builder(this).apply {
+                setCancelable(false)
+                setTitle(R.string.this_location_cannot_be_selected)
+                setMessage(R.string.all_files_access_invalid_location)
+                setPositiveButton(R.string.close, null)
+            }.show()
+        }
+
+        fun startChooser(){
+            FileXInit.setTraditional(false)
+            FileXInit.requestUserPermission(reRequest = true){resultCode, _ ->
+                if (resultCode == Activity.RESULT_OK){
+                    val root = FileX.new("/")
+                    val rootCanonical = root.canonicalPath
+                    if (!root.volumePath.isNullOrBlank() &&
+                            FileX.new(rootCanonical, true).canWrite()){
+                        setChooserDialogMessage(rootCanonical)
+                    }
+                    else {
+                        showInvalidLocation()
+                    }
+                }
+            }
+        }
+
+        fun showCustomStorageDialog(){
+            chooserDialog.setOnShowListener {
+                chooserDialog.apply {
+                    setChooserDialogMessage()
+                    getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener {
+                        startChooser()
+                    }
+                    getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
+                        setChooserDialogMessage(defaultInternalStorage)
+                    }
+                    getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                        dismiss()
+                        sendResult(true, StorageType.ALL_FILES_STORAGE, finalPath)
+                    }
+                }
+            }
+            chooserDialog.show()
+        }
+
+        if (isAllFilesAccessGranted()){
+            showCustomStorageDialog()
+        }
+        else {
+            startActivityForResult(Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
+                data = Uri.parse("package:$packageName")
+            }, REQUEST_CODE_ALL_FILES_ACCESS)
+        }
+
+    }
+
     private fun sendResult(success: Boolean = false, storageType: StorageType? = null, storagePath: String = defaultInternalStorage){
         if (success){
             storageType?.value?.let { putPrefString(PREF_STORAGE_TYPE, it) }
             putPrefString(PREF_DEFAULT_BACKUP_PATH, storagePath)
             setResult(Activity.RESULT_OK)
+            Toast.makeText(this, getString(R.string.selected_storage_path) + " : " + storagePath, Toast.LENGTH_SHORT).show()
         }
         else {
             setResult(Activity.RESULT_CANCELED)
         }
         finish()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_ALL_FILES_ACCESS){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (isAllFilesAccessGranted()) {
+                    allFilesAccess()
+                }
+            }
+        }
     }
 }
