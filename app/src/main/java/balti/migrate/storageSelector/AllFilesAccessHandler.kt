@@ -68,7 +68,6 @@ class AllFilesAccessHandler(private val context: Context, private val defaultInt
     // Path is usually inaccessible if it is not in Internal storage or SD-CARD.
     private fun showInvalidLocation(){
         AlertDialog.Builder(context).apply {
-            setCancelable(false)
             setTitle(R.string.this_location_cannot_be_selected)
             setMessage(R.string.all_files_access_invalid_location)
             setPositiveButton(R.string.close, null)

@@ -98,12 +98,10 @@ class StorageSelectorActivity: AppCompatActivity() {
                         setPositiveButton(android.R.string.ok){_, _ ->
                             sendResult(true, StorageType.CONVENTIONAL, handleSdSelector.getStoragePath())
                         }
-                        setCancelable(false)
                     }.show()
                 }
                 else {
                     AlertDialog.Builder(this).apply {
-                        setCancelable(false)
                         setTitle(R.string.write_not_allowed)
                         setMessage(root.canonicalPath + "\n\n" + getString(R.string.please_select_any_other_location))
                         setNegativeButton(R.string.close, null)
@@ -125,7 +123,6 @@ class StorageSelectorActivity: AppCompatActivity() {
 
                     if (root.volumePath.isNullOrBlank()) {
                         AlertDialog.Builder(this).apply {
-                            setCancelable(false)
                             setTitle(R.string.this_location_cannot_be_selected)
                             setMessage(R.string.this_location_cannot_be_selected_desc)
                             setPositiveButton(R.string.proceed) { _, _ ->
@@ -146,7 +143,6 @@ class StorageSelectorActivity: AppCompatActivity() {
             setMessage(R.string.choose_storage_location_desc_saf)
             setPositiveButton(R.string.proceed) { _, _ -> safStorageValidator() }
             setNeutralButton(android.R.string.cancel, onCancelDialogListener)
-            setCancelable(false)
         }
                 .show()
     }
