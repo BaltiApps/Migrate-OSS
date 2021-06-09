@@ -88,7 +88,7 @@ class StorageSelectorActivity: AppCompatActivity() {
         FileXInit.requestUserPermission(reRequest = true) { resultCode, data ->
             if (resultCode == Activity.RESULT_OK){
                 val root = FileX.new(defaultInternalStorage).apply {
-                    mkdirs()
+                    tryIt { mkdirs() }
                 }
                 if (root.canWrite()){
                     val handleSdSelector = HandleSdSelector(this)
