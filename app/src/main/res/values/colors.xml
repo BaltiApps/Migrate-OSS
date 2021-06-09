@@ -6,6 +6,8 @@
     <color name="extraItemBg">#9b222222</color>
     <color name="colorButtons">#00695c</color>
     <color name="grey_bg">#424242</color>
+    <color name="darker_grey_bg">#303030</color>
+    <color name="darkerThanPrimary">#151515</color>
     <color name="stock_android_label_color">#5A5A5A</color>
     <color name="error_color">#C62828</color>
     <color name="warning_color">#FFD600</color>
