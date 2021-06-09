@@ -24,7 +24,6 @@ class AllFilesAccessHandler(private val context: Context, private val defaultInt
             setNegativeButton(R.string.custom, null)
             setPositiveButton(android.R.string.ok, null)
             setMessage("")
-            setCancelable(false)
         }.create()
     }
 
