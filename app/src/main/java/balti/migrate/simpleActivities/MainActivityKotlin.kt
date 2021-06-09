@@ -30,6 +30,7 @@ import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.messages.MessagesView
 import balti.migrate.preferences.MainPreferenceActivity
+import balti.migrate.storageSelector.StorageSelectorActivity
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ALLOW_CONVENTIONAL_STORAGE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCELLING
@@ -107,6 +108,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         }
     }}
 
+    private val REQUEST_CODE_STORAGE_SELECTOR = 47
+
     private fun startStorageSpaceMonitor(){
         if (FileXInit.isUserPermissionGranted()) {
             refreshStorageSizes()
@@ -163,8 +166,16 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             loadingDialog?.show()
 
-            if (ALLOW_CONVENTIONAL_STORAGE) requestConventionalStorageAccess()
-            else requestScopedStorageAccess()
+            if (getPrefBoolean(PREF_FIRST_STORAGE_REQUEST, true) || !commonTools.isStorageValid()){
+                startActivityForResult(
+                        Intent(this, StorageSelectorActivity::class.java),
+                        REQUEST_CODE_STORAGE_SELECTOR
+                )
+            }
+            else {
+                // storage is ok. request root which also starts the backup activity.
+                requestRoot()
+            }
         }
 
         restoreMain.setOnClickListener {
@@ -636,114 +647,6 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         }
     }
 
-    // old code
-    /*override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == REQUEST_CODE_BACKUP){
-            if (grantResults.size == 2 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-
-                requestRoot()
-
-            } else {
-                showStorageDeniedMessage()
-            }
-
-            tryIt { loadingDialog?.dismiss() }
-        }
-    }*/
-
-    private fun requestConventionalStorageAccess(){
-        if (getPrefBoolean(PREF_FIRST_STORAGE_REQUEST, true) ||
-                getPrefString(PREF_DEFAULT_BACKUP_PATH, "").isBlank() ||
-                !FileXInit.isUserPermissionGranted()) {
-            AlertDialog.Builder(this).apply {
-                setTitle(R.string.select_storage_type)
-                setMessage(R.string.select_storage_type_desc)
-                setNegativeButton(R.string.old_way) { _, _ ->
-                    putPrefBoolean(PREF_USE_FILEX11, false)
-                    FileXInit.setTraditional(true)
-                    filexStorageRequest()
-                    // old code
-                    /*ActivityCompat.requestPermissions(this@MainActivityKotlin,
-                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        REQUEST_CODE_BACKUP)*/
-                }
-                setPositiveButton(R.string.new_way) { _, _ ->
-                    putPrefBoolean(PREF_USE_FILEX11, true)
-                    FileXInit.setTraditional(false)
-                    filexStorageRequest()
-                }
-                setNeutralButton(android.R.string.cancel){_, _ -> dismissLoading()}
-                setCancelable(false)
-            }
-                    .show()
-        }
-        else nextStepAfterStorageAccess()
-    }
-    private fun requestScopedStorageAccess(){
-        FileXInit.setTraditional(false)
-        putPrefBoolean(PREF_USE_FILEX11, true)
-        if (getPrefString(PREF_DEFAULT_BACKUP_PATH, "").isBlank() || !FileXInit.isUserPermissionGranted()) {
-            AlertDialog.Builder(this).apply {
-                setTitle(R.string.choose_storage_location)
-                //setMessage(R.string.choose_storage_location_desc)
-                setPositiveButton(R.string.proceed) { _, _ -> filexStorageRequest() }
-                setNeutralButton(android.R.string.cancel){_, _ -> dismissLoading()}
-                setCancelable(false)
-            }
-                    .show()
-        }
-        else nextStepAfterStorageAccess()
-    }
-    private fun filexStorageRequest(){
-        putPrefBoolean(PREF_FIRST_STORAGE_REQUEST, false)
-        FileXInit.requestUserPermission(reRequest = true) { resultCode, data ->
-            if (resultCode == Activity.RESULT_OK) {
-                if (FileXInit.isTraditional) {
-                    startStorageSpaceMonitor()
-                    nextStepAfterStorageAccess()
-                }
-                else {
-                    if (FileX.new("/").volumePath.isNullOrBlank()) {
-                        AlertDialog.Builder(this).apply {
-                            setCancelable(false)
-                            setTitle(R.string.this_location_cannot_be_selected)
-                            setMessage(R.string.this_location_cannot_be_selected_desc)
-                            setPositiveButton(R.string.proceed) { _, _ ->
-                                filexStorageRequest()
-                            }
-                            setNegativeButton(android.R.string.cancel) { _, _ ->
-                                putPrefString(PREF_DEFAULT_BACKUP_PATH, "")
-                                dismissLoading()
-                            }
-                        }.show()
-                    } else {
-                        startStorageSpaceMonitor()
-                        nextStepAfterStorageAccess()
-                    }
-                }
-            }
-            else {
-                dismissLoading()
-                showStorageDeniedMessage()
-            }
-        }
-    }
-    private fun showStorageDeniedMessage(){
-        AlertDialog.Builder(this)
-                .setMessage(R.string.storage_access_required)
-                .setPositiveButton(android.R.string.ok, null)
-                .show()
-    }
-
-    private fun nextStepAfterStorageAccess(){
-        putPrefString(PREF_DEFAULT_BACKUP_PATH, if(FileXInit.isTraditional) DEFAULT_INTERNAL_STORAGE_DIR else FileX.new("/").canonicalPath)
-        putPrefString(PREF_STORAGE_TYPE, if(FileXInit.isTraditional) STORAGE_TYPE_INTERNAL_STORAGE else STORAGE_TYPE_CUSTOM_LOCATION)
-        requestRoot()
-    }
-
     private fun requestRoot(){
         doBackgroundTask({
             return@doBackgroundTask isRootPermissionGranted()
@@ -840,6 +743,12 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == MESSAGE_ACTIVITY_CODE) messages.setImageResource(R.drawable.ic_messages)
+        else if (requestCode == REQUEST_CODE_STORAGE_SELECTOR) {
+            if (resultCode == Activity.RESULT_OK){
+                putPrefBoolean(PREF_FIRST_STORAGE_REQUEST, false)
+                requestRoot()
+            }
+        }
     }
 
     override fun onBackPressed() {
