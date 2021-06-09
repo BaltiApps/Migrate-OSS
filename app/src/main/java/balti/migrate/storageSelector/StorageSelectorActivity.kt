@@ -81,10 +81,6 @@ class StorageSelectorActivity: AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        sendResult(false)
-    }
-
     private val onCancelDialogListener = DialogInterface.OnClickListener { _, _ -> if (isOnlySafAvailable) sendResult(false) }
 
     private fun conventionalStorageRequest(){
@@ -155,21 +151,6 @@ class StorageSelectorActivity: AppCompatActivity() {
                 .show()
     }
 
-    private fun getManifestPermissions(): List<String>{
-        val manifestPermissions = ArrayList<String>(0)
-        try {
-            val packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
-            packageInfo?.run {
-                requestedPermissions.forEach {
-                    manifestPermissions.add(it)
-                }
-            }
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-        }
-        return manifestPermissions
-    }
-
     @RequiresApi(Build.VERSION_CODES.R)
     private fun isAllFilesAccessGranted() = Environment.isExternalStorageManager()
 
@@ -188,6 +169,21 @@ class StorageSelectorActivity: AppCompatActivity() {
             }, REQUEST_CODE_ALL_FILES_ACCESS)
         }
 
+    }
+
+    private fun getManifestPermissions(): List<String>{
+        val manifestPermissions = ArrayList<String>(0)
+        try {
+            val packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
+            packageInfo?.run {
+                requestedPermissions.forEach {
+                    manifestPermissions.add(it)
+                }
+            }
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+        return manifestPermissions
     }
 
     private fun sendResult(success: Boolean = false, storageType: StorageType? = null, storagePath: String = defaultInternalStorage){
@@ -212,5 +208,9 @@ class StorageSelectorActivity: AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
+        sendResult(false)
     }
 }
