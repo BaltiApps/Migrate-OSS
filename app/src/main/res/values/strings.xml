@@ -220,37 +220,6 @@
     <string name="next">Next</string>
     <string name="no_apps">No apps available\nin this category!</string>
 
-    <!--storage_selector.xml-->
-    <string name="select_storage_option">Select storage option</string>
-    <string name="recommended_in_bracket">(Recommended)</string>
-    <string name="not_recommended_in_bracket">(Not recommended)</string>
-    <string name="conventional_storage">Conventional storage</string>
-    <string name="conventional_storage_pros">\n
-        + Fast, reliable.\n
-        + SD-card storage for Android 9 and below, using Magisk module.
-    </string>
-    <string name="conventional_storage_cons">\n
-        - Cannot directly store in a SD card, USB.\n
-        - For all recent Android versions, stores in <b>[Internal storage]/Migrate</b>
-    </string>
-    <string name="custom_location">Custom location (SAF)</string>
-    <string name="custom_location_pros">\n
-        + Store in SD-CARD or USB-OTG.\n
-        + Store in any different directory name.
-    </string>
-    <string name="custom_location_cons">\n
-        - VERY, VERY slow.\n
-        - Unreliable, prone to corruption.\n
-        - Uses Storage Access Framework.\n
-        - <b>Please use only if absolute shortage of space.</b>
-    </string>
-    <string name="all_files_access">Grant all files access</string>
-    <string name="all_files_access_pros">\n
-        + Fast. Reliable.\n
-        + Store anywhere inside Internal Storage or SD-card.
-    </string>
-    <string name="all_files_access_cons">\n- Cannot store in USB-OTG</string>
-
     <!--ask_for_backup_name.xml-->
     <string name="enter_backup_name">Enter backup name</string>
     <string name="sd_card">SD card</string>
@@ -814,6 +783,37 @@
     <string name="no_header">No header</string>
     <string name="no_filepath">No filepath</string>
     <string name="log_reading_error">Log reading error</string>
+
+    <!--storage_selector.xml-->
+    <string name="select_storage_option">Select storage option</string>
+    <string name="recommended_in_bracket">(Recommended)</string>
+    <string name="not_recommended_in_bracket">(Not recommended)</string>
+    <string name="conventional_storage">Conventional storage</string>
+    <string name="conventional_storage_pros">\n
+        + Fast, reliable.\n
+        + SD-card storage for Android 9 and below, using Magisk module.
+    </string>
+    <string name="conventional_storage_cons">\n
+        - Cannot directly store in a SD card, USB.\n
+        - For all recent Android versions, stores in <b>[Internal storage]/Migrate</b>
+    </string>
+    <string name="custom_location">Custom location (SAF)</string>
+    <string name="custom_location_pros">\n
+        + Store in SD-CARD or USB-OTG.\n
+        + Store in any different directory name.
+    </string>
+    <string name="custom_location_cons">\n
+        - VERY, VERY slow.\n
+        - Unreliable, prone to corruption.\n
+        - Uses Storage Access Framework.\n
+        - <b>Please use only if absolute shortage of space.</b>
+    </string>
+    <string name="all_files_access">Grant all files access</string>
+    <string name="all_files_access_pros">\n
+        + Fast. Reliable.\n
+        + Store anywhere inside Internal Storage or SD-card.
+    </string>
+    <string name="all_files_access_cons">\n- Cannot store in USB-OTG</string>
 
     <!--StorageSelectorActivity.kt-->
     <string name="choose_storage_location">Please choose storage location</string>
