@@ -7,6 +7,7 @@ import balti.filex.FileX
 import balti.filex.FileXInit
 import balti.migrate.R
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
+import balti.module.baltitoolbox.functions.GetResources
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 
 class AllFilesAccessHandler(private val context: Context, private val defaultInternalStorage: String) {
@@ -20,7 +21,7 @@ class AllFilesAccessHandler(private val context: Context, private val defaultInt
         AlertDialog.Builder(context).apply {
             setTitle(R.string.all_files_access_custom_location)
             setNeutralButton(R.string.use_default, null)
-            setNegativeButton(R.string.choose_custom, null)
+            setNegativeButton(R.string.custom, null)
             setPositiveButton(android.R.string.ok, null)
             setMessage("")
             setCancelable(false)
@@ -115,10 +116,14 @@ class AllFilesAccessHandler(private val context: Context, private val defaultInt
                 }
 
                 // Button "OK"
-                getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                    // dismiss and send finalPath class variable
-                    dismiss()
-                    onSuccess(finalPath)
+                getButton(AlertDialog.BUTTON_POSITIVE).apply {
+                    background = GetResources.getDrawableFromRes(R.drawable.approximate_active_button)
+                    setTextColor(GetResources.getColorFromRes(android.R.color.white))
+                    setOnClickListener {
+                        // dismiss and send finalPath class variable
+                        dismiss()
+                        onSuccess(finalPath)
+                    }
                 }
             }
         }

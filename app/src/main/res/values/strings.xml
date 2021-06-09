@@ -829,7 +829,7 @@
     <string name="all_files_access_custom_location_desc2">You can choose a custom location in <b>SD card (not USB-OTG)</b> if you wish.</string>
     <string name="all_files_access_invalid_location">Cannot write to this location. Please use a location inside internal storage (recommended) or inside SD-Card.</string>
     <string name="use_default">Use default</string>
-    <string name="choose_custom">Choose custom</string>
+    <string name="custom">Custom</string>
     <string name="selected_storage_path">Selected storage path</string>
 
 
