@@ -18,6 +18,7 @@ import balti.migrate.AppInstance
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.simpleActivities.PrivacyPolicy
+import balti.migrate.storageSelector.StorageType
 import balti.module.baltitoolbox.functions.Misc.doBackgroundTask
 import balti.module.baltitoolbox.functions.Misc.isPackageInstalled
 import balti.module.baltitoolbox.functions.Misc.openWebLink
@@ -577,6 +578,16 @@ class CommonToolsKotlin(val context: Context? = null) {
             }
         }
         return possibleSDCards.toTypedArray()
+    }
+
+    fun isStorageValid(): Boolean {
+        val storageType = getPrefString(PREF_STORAGE_TYPE, StorageType.CONVENTIONAL.value)
+        val storageLocation = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
+        val isTraditional = storageType in arrayOf(StorageType.CONVENTIONAL.value, StorageType.ALL_FILES_STORAGE.value)
+        return FileX.new(if (isTraditional) storageLocation else "/", isTraditional).run {
+            tryIt { mkdirs() }
+            canWrite()
+        }
     }
 
     fun showSdCardSupportDialog(): AlertDialog =
