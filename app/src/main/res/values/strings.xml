@@ -221,7 +221,7 @@
     <string name="no_apps">No apps available\nin this category!</string>
 
     <!--storage_selector.xml-->
-    <string name="select_storage_location">Select storage location</string>
+    <string name="select_storage_option">Select storage option</string>
     <string name="recommended_in_bracket">(Recommended)</string>
     <string name="not_recommended_in_bracket">(Not recommended)</string>
     <string name="conventional_storage">Conventional storage</string>

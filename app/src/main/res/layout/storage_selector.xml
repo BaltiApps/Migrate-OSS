@@ -13,7 +13,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/select_storage_location"
+        android:text="@string/select_storage_option"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:paddingBottom="@dimen/xlarge_padding_width"
         />
