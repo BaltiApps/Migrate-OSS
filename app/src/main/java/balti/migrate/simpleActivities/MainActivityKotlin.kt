@@ -30,6 +30,7 @@ import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.messages.MessagesView
 import balti.migrate.preferences.MainPreferenceActivity
+import balti.migrate.storageSelector.StorageDisplayUtils
 import balti.migrate.storageSelector.StorageSelectorActivity
 import balti.migrate.storageSelector.StorageType
 import balti.migrate.utilities.CommonToolsKotlin
@@ -199,7 +200,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         learn_sd_card_support.paintFlags = Paint.UNDERLINE_TEXT_FLAG
         learn_sd_card_support.setOnClickListener {
-            commonTools.showSdCardSupportDialog()
+            StorageDisplayUtils.showSdCardSupportDialog(this)
         }
 
         startStorageSpaceMonitor()
