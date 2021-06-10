@@ -188,7 +188,7 @@ class ReportLogs: AppCompatActivity() {
                 .setTitle(R.string.log_files_do_not_exist)
                 .setMessage(msg)
                 .setCancelable(false)
-                .setNegativeButton(android.R.string.cancel){_, _ ->
+                .setNegativeButton(R.string.close){_, _ ->
                     finish()
                 }
                 .show()
