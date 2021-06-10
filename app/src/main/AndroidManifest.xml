@@ -48,6 +48,11 @@
             android:screenOrientation="portrait"
             />
 
+        <activity android:name=".simpleActivities.ReportLogs"
+            android:theme="@style/AppTheme.Floating"
+            android:screenOrientation="portrait"
+            />
+
         <activity android:name=".simpleActivities.InitialGuideKotlin"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance"/>
