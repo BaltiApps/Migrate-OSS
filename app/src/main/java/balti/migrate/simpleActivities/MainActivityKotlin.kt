@@ -31,6 +31,7 @@ import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.messages.MessagesView
 import balti.migrate.preferences.MainPreferenceActivity
 import balti.migrate.storageSelector.StorageSelectorActivity
+import balti.migrate.storageSelector.StorageType
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCELLING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_END
@@ -56,6 +57,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FIRST_RUN
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FIRST_STORAGE_REQUEST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_LAST_MESSAGE_LEVEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_LAST_MESSAGE_SNACK_LEVEL
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_STORAGE_TYPE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TERMINAL_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_VERSION_CURRENT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
@@ -74,7 +76,6 @@ import balti.module.baltitoolbox.functions.SharedPrefs.getPrefInt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 import balti.module.baltitoolbox.functions.SharedPrefs.putPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.putPrefInt
-import balti.module.baltitoolbox.functions.SharedPrefs.putPrefString
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
@@ -520,72 +521,34 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         try {
 
-            var availableBytes = 0L
-            var fullBytes = 0L
-            var consumedBytes = 0L
+            val rootFile = if (getPrefString(PREF_STORAGE_TYPE, StorageType.CONVENTIONAL.value) in
+                    arrayOf(StorageType.CONVENTIONAL.value, StorageType.ALL_FILES_STORAGE.value)){
 
-            //if (FileXInit.isUserPermissionGranted()){ return }
-
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P && FileXInit.isTraditional) {
-
-                fun calculateStorage(path: String) {
-                    val statFs = StatFs(path)
-
-                    availableBytes = (statFs.blockSizeLong * statFs.availableBlocksLong)
-                    fullBytes = (statFs.blockSizeLong * statFs.blockCountLong)
-                }
-
-                calculateStorage(Environment.getExternalStorageDirectory().absolutePath)
-
-                internal_storage_use_view.visibility = View.VISIBLE
-                internal_storage_bar.progress = ((consumedBytes * 100) / fullBytes).toInt()
-                internal_storage_text.text = getHumanReadableStorageSpace(consumedBytes) + "/" +
-                        getHumanReadableStorageSpace(fullBytes)
-
-                var sdCardRoot: FileX? = null
-                val defaultPath = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
-                val defaultFile = FileX.new(defaultPath)
-
-                if (defaultPath != DEFAULT_INTERNAL_STORAGE_DIR && defaultFile.canWrite()) {
-                    sdCardRoot = defaultFile.parentFile
-                } else {
-                    val sdCardPaths = commonTools.getTraditionalSdCardPaths()
-                    if (sdCardPaths.size == 1) {
-                        FileX.new(sdCardPaths[0]).let { if (it.canWrite()) sdCardRoot = it }
-                    }
-                }
-
-                if (sdCardRoot != null) {
-                    sd_card_storage_use_view.visibility = View.VISIBLE
-
-                    calculateStorage(sdCardRoot!!.absolutePath)
-
-                    sd_card_name.text = sdCardRoot!!.name
-                    sd_card_storage_bar.progress = ((consumedBytes * 100) / fullBytes).toInt()
-                    sd_card_storage_text.text = getHumanReadableStorageSpace(consumedBytes) + "/" +
-                            getHumanReadableStorageSpace(fullBytes)
-                } else {
-                    sd_card_storage_use_view.visibility = View.GONE
-                }
-
+                FileXInit.setTraditional(true)
+                FileX.new(getPrefString(PREF_DEFAULT_BACKUP_PATH, PREF_DEFAULT_BACKUP_PATH))
             }
             else {
-                sd_card_storage_use_view.visibility = View.GONE
-                val f = FileX.new("/")
-                allowed_storage_label.text = getString(R.string.storage_space)
-                availableBytes = f.usableSpace
-                fullBytes = f.totalSpace
-                consumedBytes = fullBytes - availableBytes
+                FileXInit.setTraditional(false)
+                FileX.new("/")
+            }
 
-                internal_storage_use_view.visibility = View.VISIBLE
-                internal_storage_bar.progress = ((consumedBytes * 100) / fullBytes).toInt()
-                internal_storage_text.text = getHumanReadableStorageSpace(consumedBytes) + "/" +
+            if (rootFile.canRead()){
+                storage_bar_layout.visibility = View.VISIBLE
+
+                val availableBytes = rootFile.usableSpace
+                val fullBytes = rootFile.totalSpace
+                val consumedBytes = fullBytes - availableBytes
+
+                storage_bar.progress = ((consumedBytes * 100) / fullBytes).toInt()
+                storage_text.text = getHumanReadableStorageSpace(consumedBytes) + "/" +
                         getHumanReadableStorageSpace(fullBytes)
+            }
+            else {
+                storage_bar_layout.visibility = View.GONE
             }
         }
         catch(_: Exception){
-            internal_storage_use_view.visibility = View.GONE
-            sd_card_storage_use_view.visibility = View.GONE
+            storage_bar_layout.visibility = View.GONE
         }
     }
 
