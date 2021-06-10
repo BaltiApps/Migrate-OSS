@@ -260,10 +260,6 @@ class CommonToolsKotlin(val context: Context? = null) {
         val PROPERTY_DATA_SELECTION = "data"        // used to set property in AppListAdapter
         val PROPERTY_PERMISSION_SELECTION = "permission"        // used to set property in AppListAdapter
 
-        val STORAGE_TYPE_INTERNAL_STORAGE = "INTERNAL_STORAGE"
-        val STORAGE_TYPE_SD_CARD_STORAGE = "SD_CARD_STORAGE"
-        val STORAGE_TYPE_CUSTOM_LOCATION = "CUSTOM_LOCATION"
-
         //extra backups
 
         val JOBCODE_READ_CONTACTS = 3443
