@@ -125,6 +125,8 @@ class CommonToolsKotlin(val context: Context? = null) {
         val EXTRA_IS_CANCELLED = "isCancelled"
         val EXTRA_FLASHER_ONLY = "flasherOnly"
 
+        val EXTRA_IS_ERROR_LOG_MANDATORY = "isErrorLogMandatory"
+
         val ERR_ZIP_TRY_CATCH = "ZIP_TRY_CATCH"
         val ERR_VERIFICATION_TRY_CATCH = "VERIFICATION_TRY_CATCH"
         val ERR_CORRECTION_SHELL = "CORRECTION_SHELL"
