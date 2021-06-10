@@ -2,6 +2,7 @@ package balti.migrate.storageSelector
 
 import android.app.Activity
 import android.content.Context
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import balti.filex.FileX
 import balti.filex.FileXInit
@@ -9,6 +10,7 @@ import balti.migrate.R
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_STORAGE_TYPE
 import balti.module.baltitoolbox.functions.GetResources
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 
 class AllFilesAccessHandler(private val context: Context, private val defaultInternalStorage: String) {
@@ -124,9 +126,22 @@ class AllFilesAccessHandler(private val context: Context, private val defaultInt
                     background = GetResources.getDrawableFromRes(R.drawable.approximate_active_button)
                     setTextColor(GetResources.getColorFromRes(android.R.color.white))
                     setOnClickListener {
-                        // dismiss and send finalPath class variable
-                        dismiss()
-                        onSuccess(finalPath)
+
+                        // check if finalPath class variable can be written to.
+                        FileX.new(finalPath, true).let {
+                            tryIt { it.mkdirs() }
+
+                            // If can write, then dismiss and send finalPath value.
+                            if (it.canWrite()) {
+                                dismiss()
+                                onSuccess(finalPath)
+                            }
+
+                            // Else show a toast message.
+                            else {
+                                Toast.makeText(context, R.string.all_files_access_please_use_custom_location, Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
                 }
             }
