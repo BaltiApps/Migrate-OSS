@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:padding="15dp"
+    android:id="@+id/report_logs_rootView"
     tools:context=".simpleActivities.ReportLogs"
     >
 
