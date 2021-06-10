@@ -185,7 +185,7 @@ class StorageSelectorActivity: AppCompatActivity() {
     private fun sendResult(success: Boolean = false, storageType: StorageType? = null, storagePath: String = defaultInternalStorage){
         if (success){
             storageType?.value?.let { putPrefString(PREF_STORAGE_TYPE, it) }
-            putPrefString(PREF_DEFAULT_BACKUP_PATH, storagePath)
+            putPrefString(PREF_DEFAULT_BACKUP_PATH, storagePath, true)
             setResult(Activity.RESULT_OK)
             Toast.makeText(this, getString(R.string.selected_storage_path) + " : " + storagePath, Toast.LENGTH_SHORT).show()
         }
