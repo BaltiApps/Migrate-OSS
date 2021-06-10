@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.view.WindowManager
 import android.widget.CheckBox
 import android.widget.Toast
@@ -172,6 +173,8 @@ class ReportLogs: AppCompatActivity() {
     }
 
     private fun noLogsExist(onlyError: Boolean = false) {
+
+        report_logs_rootView.visibility = View.GONE
 
         val msg = if (onlyError) {
             getString(R.string.error_log_does_not_exist)
