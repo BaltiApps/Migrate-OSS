@@ -37,7 +37,6 @@ import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCELLING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_RUNNING
-import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_MESSAGE_CONTENT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_SHOW_FIRST_WARNING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_ERRORLOG
@@ -108,10 +107,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     private val REQUEST_CODE_STORAGE_SELECTOR = 47
 
     private fun startStorageSpaceMonitor(){
-        if (FileXInit.isUserPermissionGranted()) {
-            refreshStorageSizes()
-            storageHandler.post(storageRunnable)
-        }
+        refreshStorageSizes()
+        storageHandler.post(storageRunnable)
     }
     private fun stopStorageSpaceMonitor(){
         tryIt { storageHandler.removeCallbacks(storageRunnable) }
