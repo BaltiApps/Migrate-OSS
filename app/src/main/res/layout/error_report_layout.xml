@@ -2,8 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:padding="15dp">
+    android:padding="15dp"
+    tools:context=".simpleActivities.ReportLogs"
+    >
 
     <ScrollView
         android:layout_width="match_parent"
