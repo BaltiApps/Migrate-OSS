@@ -27,14 +27,6 @@ class AllFilesAccessHandler(private val context: Context, private val defaultInt
         }.create()
     }
 
-    // Returns true if a path is same as /sdcard/Migrate
-    private fun isPathSameAsDefault(pathToCheck: String): Boolean {
-        return FileX.new(pathToCheck, true).let {
-            val defaultInternalStorageFile = FileX.new(defaultInternalStorage, true)
-            it.canonicalPath == defaultInternalStorageFile.canonicalPath
-        }
-    }
-
     // Method to update the message of chooserDialog
     // newPath: A string path to be set in the message of chooserDialog.
     //          Leave blank to get the last selected path from shared preference.
@@ -42,16 +34,18 @@ class AllFilesAccessHandler(private val context: Context, private val defaultInt
 
         val pathToCheck = newPath ?: getPrefString(PREF_DEFAULT_BACKUP_PATH, defaultInternalStorage)
 
-        // If path is /sdcard/Migrate, display the path as [Internal storage]/Migrate.
+        // If path begins with /sdcard/Migrate, display the path in terms of [Internal storage]/Migrate.
         // Else show the raw path.
         // Also set the finalPath class variable.
         val displayLocation: String =
-                if (isPathSameAsDefault(pathToCheck)) {
-                    finalPath = defaultInternalStorage
-                    context.getString(R.string.intenal_storage_location_for_display)
-                } else {
-                    pathToCheck.apply {
-                        finalPath = this
+                StorageDisplayUtils.getSubdirectoryForInternalStorage(pathToCheck).let {
+                    if (it == null) {
+                        pathToCheck.apply {
+                            finalPath = this
+                        }
+                    } else {
+                        finalPath = defaultInternalStorage + it
+                        context.getString(R.string.intenal_storage_location_for_display) + it
                     }
                 }
 
