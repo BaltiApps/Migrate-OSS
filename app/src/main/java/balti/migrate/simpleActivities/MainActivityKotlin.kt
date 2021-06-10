@@ -32,7 +32,6 @@ import balti.migrate.messages.MessagesView
 import balti.migrate.preferences.MainPreferenceActivity
 import balti.migrate.storageSelector.StorageSelectorActivity
 import balti.migrate.utilities.CommonToolsKotlin
-import balti.migrate.utilities.CommonToolsKotlin.Companion.ALLOW_CONVENTIONAL_STORAGE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCELLING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_RUNNING
@@ -57,14 +56,10 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FIRST_RUN
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FIRST_STORAGE_REQUEST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_LAST_MESSAGE_LEVEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_LAST_MESSAGE_SNACK_LEVEL
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_STORAGE_TYPE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TERMINAL_METHOD
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_USE_FILEX11
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_VERSION_CURRENT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_FILEPATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SIMPLE_LOG_VIEWER_HEAD
-import balti.migrate.utilities.CommonToolsKotlin.Companion.STORAGE_TYPE_CUSTOM_LOCATION
-import balti.migrate.utilities.CommonToolsKotlin.Companion.STORAGE_TYPE_INTERNAL_STORAGE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.TG_DEV_LINK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.TG_LINK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.THIS_VERSION
