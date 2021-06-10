@@ -7,6 +7,7 @@ import balti.filex.FileX
 import balti.filex.FileXInit
 import balti.migrate.R
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_STORAGE_TYPE
 import balti.module.baltitoolbox.functions.GetResources
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 
@@ -33,19 +34,30 @@ class AllFilesAccessHandler(private val context: Context, private val defaultInt
     private fun setChooserDialogMessage(newPath: String? = null) {
 
         val pathToCheck = newPath ?: getPrefString(PREF_DEFAULT_BACKUP_PATH, defaultInternalStorage)
+        val prefType = getPrefString(PREF_STORAGE_TYPE, StorageType.CONVENTIONAL.value)
 
         // If path begins with /sdcard/Migrate, display the path in terms of [Internal storage]/Migrate.
         // Else show the raw path.
         // Also set the finalPath class variable.
         val displayLocation: String =
-                StorageDisplayUtils.getSubdirectoryForInternalStorage(pathToCheck).let {
-                    if (it == null) {
-                        pathToCheck.apply {
-                            finalPath = this
+
+                // case if previously SAF type was selected. In that case, use defaultInternalStorage.
+                if (prefType != StorageType.ALL_FILES_STORAGE.value) {
+                    finalPath = defaultInternalStorage
+                    context.getString(R.string.intenal_storage_location_for_display)
+                }
+
+                // check if the path is same as or subdirectory of defaultInternalStorage
+                else {
+                    StorageDisplayUtils.getSubdirectoryForInternalStorage(pathToCheck).let {
+                        if (it == null) {
+                            pathToCheck.apply {
+                                finalPath = this
+                            }
+                        } else {
+                            finalPath = defaultInternalStorage + it
+                            context.getString(R.string.intenal_storage_location_for_display) + it
                         }
-                    } else {
-                        finalPath = defaultInternalStorage + it
-                        context.getString(R.string.intenal_storage_location_for_display) + it
                     }
                 }
 
