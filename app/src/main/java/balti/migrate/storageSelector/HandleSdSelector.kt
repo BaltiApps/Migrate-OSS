@@ -43,6 +43,10 @@ class HandleSdSelector(val context: Context) {
                 storagePointer = 0
             }
 
+            learn_sd_card_support.setOnClickListener {
+                StorageDisplayUtils.showSdCardSupportDialog(context)
+            }
+
             storage_show_sd_cards.setOnClickListener {
                 it.visibility = View.GONE
 
