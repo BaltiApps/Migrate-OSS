@@ -562,24 +562,6 @@ class CommonToolsKotlin(val context: Context? = null) {
         return arrayOf(suRequest.exitValue() == 0, errorMessage)
     }
 
-    fun getTraditionalSdCardPaths(): Array<String> {
-        val possibleSDCards = arrayListOf<String>()
-        val storage = FileX.new("/storage/", true)
-        if (storage.exists() && storage.canRead()) {
-            storage.listFiles { pathname ->
-                (pathname.isDirectory && pathname.canRead()
-                        && pathname.absolutePath != Environment.getExternalStorageDirectory().absolutePath)
-            }?.let { files ->
-                for (f in files) {
-                    val sdDir = FileX.new("/mnt/media_rw/" + f.name, true)
-                    if (sdDir.exists() && sdDir.isDirectory && sdDir.canWrite())
-                        possibleSDCards.add(sdDir.absolutePath)
-                }
-            }
-        }
-        return possibleSDCards.toTypedArray()
-    }
-
     fun isStorageValid(): Boolean {
         val storageType = getPrefString(PREF_STORAGE_TYPE, StorageType.CONVENTIONAL.value)
         val storageLocation = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
@@ -589,12 +571,6 @@ class CommonToolsKotlin(val context: Context? = null) {
             canWrite()
         }
     }
-
-    fun showSdCardSupportDialog(): AlertDialog =
-            AlertDialog.Builder(workingContext)
-                    .setView(View.inflate(workingContext, R.layout.learn_about_sd_card, null))
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show()
 
     fun applyNamingCorrectionForShell(name: String) =
             name
