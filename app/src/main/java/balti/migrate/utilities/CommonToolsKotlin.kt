@@ -4,28 +4,16 @@ import android.app.Activity
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.os.Handler
-import android.view.View
-import android.widget.CheckBox
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.FileProvider
 import balti.filex.FileX
 import balti.migrate.AppInstance
-import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
-import balti.migrate.simpleActivities.PrivacyPolicy
+import balti.migrate.simpleActivities.ReportLogs
 import balti.migrate.storageSelector.StorageType
-import balti.module.baltitoolbox.functions.Misc.doBackgroundTask
-import balti.module.baltitoolbox.functions.Misc.isPackageInstalled
-import balti.module.baltitoolbox.functions.Misc.openWebLink
-import balti.module.baltitoolbox.functions.Misc.playStoreLink
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
-import kotlinx.android.synthetic.main.error_report_layout.view.*
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
@@ -370,116 +358,13 @@ class CommonToolsKotlin(val context: Context? = null) {
     }
 
     fun reportLogs(isErrorLogMandatory: Boolean) {
-
-        fun noLogsExist(onlyError: Boolean = false) {
-
-            val msg = if (onlyError) {
-                workingContext.getString(R.string.error_log_does_not_exist)
-            } else {
-                workingContext.getString(R.string.progress_log_does_not_exist) + "\n" +
-                        workingContext.getString(R.string.error_log_does_not_exist) + "\n" +
-                        workingContext.getString(R.string.backup_script_does_not_exist) + "\n"
-            }
-
-            AlertDialog.Builder(workingContext)
-                    .setTitle(R.string.log_files_do_not_exist)
-                    .setMessage(msg)
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .show()
+        val reportLogsIntent = Intent(context, ReportLogs::class.java).apply {
+            putExtra(EXTRA_IS_ERROR_LOG_MANDATORY, isErrorLogMandatory)
         }
-
-        CACHE_DIR.let { cache ->
-
-            val progressLog = FileX.new(cache, FILE_PROGRESSLOG, isTraditional = true)
-            val errorLog = FileX.new(cache, FILE_ERRORLOG, isTraditional = true)
-
-            val backupScripts = cache.let {
-                FileX.new(it, true).listFiles { f: FileX ->
-                    (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT) || f.name.startsWith(FILE_PREFIX_TAR_CHECK))
-                            && f.name.endsWith(".sh")
-                }
-            } ?: emptyArray<FileX>()
-
-            val rawList = FileX.new(cache, FILE_RAW_LIST, true)
-            val mdpLog = FileX.new(cache, FILE_MDP_LOG, true)
-
-            if (isErrorLogMandatory && !errorLog.exists()) {
-                noLogsExist(true)
-            } else if (errorLog.exists() || progressLog.exists() || backupScripts.isNotEmpty()) {
-
-                val eView = View.inflate(workingContext, R.layout.error_report_layout, null)
-
-                fun CheckBox.setCheckedEnabled(value: Boolean) = this.apply {
-                    isChecked = value; isEnabled = value
-                }
-
-                eView.share_progress_checkbox.setCheckedEnabled(progressLog.exists())
-                eView.share_mdp_checkbox.setCheckedEnabled(mdpLog.exists())
-                eView.share_script_checkbox.setCheckedEnabled(backupScripts.isNotEmpty())
-                eView.share_errors_checkbox.setCheckedEnabled(errorLog.exists())
-                eView.share_rawList_checkbox.setCheckedEnabled(rawList.exists())
-
-                eView.report_button_privacy_policy.setOnClickListener {
-                    workingContext.startActivity(Intent(workingContext, PrivacyPolicy::class.java))
-                }
-
-                eView.report_button_join_group.setOnClickListener {
-                    openWebLink(TG_LINK)
-                }
-
-                fun getUris(): ArrayList<Uri> {
-
-                    val uris = ArrayList<Uri>(0)
-                    try {
-
-                        if (eView.share_errors_checkbox.isChecked) uris.add(getUri(errorLog))
-                        if (eView.share_progress_checkbox.isChecked) uris.add(getUri(progressLog))
-                        if (eView.share_mdp_checkbox.isChecked) uris.add(getUri(mdpLog))
-                        if (eView.share_script_checkbox.isChecked) for (f in backupScripts) uris.add(getUri(f))
-                        if (eView.share_rawList_checkbox.isChecked) uris.add(getUri(rawList))
-
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        Toast.makeText(workingContext, e.message.toString(), Toast.LENGTH_SHORT).show()
-                    }
-
-                    return uris
-                }
-
-                eView.report_button_old_email.setOnClickListener {
-                    sendIntent(getUris(), true)
-                }
-
-                var isTgClientInstalled = false
-                for (i in TG_CLIENTS.indices) {
-                    if (isPackageInstalled(TG_CLIENTS[i])) {
-                        isTgClientInstalled = true
-                        break
-                    }
-                }
-
-                if (!isTgClientInstalled) {
-                    eView.report_button_telegram.apply {
-                        text = context.getString(R.string.install_tg)
-                        setOnClickListener { playStoreLink(TG_CLIENTS[0]) }
-                    }
-                } else {
-                    eView.report_button_telegram.apply {
-                        text = context.getString(R.string.send_to_tg)
-                        setOnClickListener { sendIntent(getUris()) }
-                    }
-                }
-
-                AlertDialog.Builder(workingContext).setView(eView).show()
-
-            } else {
-                noLogsExist()
-            }
-
-        }
+        context?.startActivity(reportLogsIntent)
     }
 
-    var deviceSpecifications: String =
+    val deviceSpecifications: String =
             "CPU_ABI: " + Build.SUPPORTED_ABIS[0] + "\n" +
                     "Brand: " + Build.BRAND + "\n" +
                     "Manufacturer: " + Build.MANUFACTURER + "\n" +
@@ -488,45 +373,6 @@ class CommonToolsKotlin(val context: Context? = null) {
                     "SDK: " + Build.VERSION.SDK_INT + "\n" +
                     "Board: " + Build.BOARD + "\n" +
                     "Hardware: " + Build.HARDWARE
-        private set
-
-    private fun getUri(file: FileX) =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                FileProvider.getUriForFile(workingContext, "migrate.provider", file.file)
-            else Uri.fromFile(file.file)
-
-    private fun sendIntent(uris: ArrayList<Uri>, isEmail: Boolean = false) {
-        Intent().run {
-
-            action = Intent.ACTION_SEND_MULTIPLE
-            type = "text/plain"
-            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-
-            if (isEmail) {
-                putExtra(Intent.EXTRA_EMAIL, arrayOf(REPORTING_EMAIL))
-                putExtra(Intent.EXTRA_SUBJECT, "Log report for Migrate")
-                putExtra(Intent.EXTRA_TEXT, deviceSpecifications)
-
-                putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
-                workingContext.startActivity(Intent.createChooser(this, workingContext.getString(R.string.select_mail)))
-            } else doBackgroundTask({
-
-                tryIt {
-                    val infoFile = FileX.new(CACHE_DIR, FILE_DEVICE_INFO, true)
-                    infoFile.startWriting(object : FileX.Writer(){
-                        override fun writeLines() {
-                            writeLine(deviceSpecifications)
-                        }
-                    })
-                    uris.add(getUri(infoFile))
-                }
-
-            }, {
-                this.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
-                workingContext.startActivity(Intent.createChooser(this, workingContext.getString(R.string.select_telegram)))
-            })
-        }
-    }
 
     fun suEcho(): Array<Any> {
         val suRequest = Runtime.getRuntime().exec("su")
