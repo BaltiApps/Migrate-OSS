@@ -27,77 +27,38 @@
         android:layout_height="wrap_content"
         android:hint="@string/enter_backup_name" />
 
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/large_padding_width"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingStart="@dimen/large_padding_width"
-        android:paddingEnd="@dimen/large_padding_width"
-        android:id="@+id/filex_layout"
         >
 
         <TextView
+            android:id="@+id/destination_name"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/custom_location"
             android:layout_weight="1"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            />
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/large_padding_width"
+            tools:text="Destination name"
+            android:textStyle="bold"
+            android:textColor="@color/colorAccent" />
+
+        <Space
+            android:layout_width="@dimen/large_padding_width"
+            android:layout_height="@dimen/large_padding_width"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="@dimen/normal_button_height"
             android:text="@string/change"
-            android:id="@+id/filex_layout_change"
+            android:id="@+id/change_storage_button"
             />
 
     </LinearLayout>
-
-    <RadioGroup
-        android:id="@+id/storage_select_radio_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/large_padding_width"
-        >
-
-        <RadioButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/custom_location"
-            android:id="@+id/custom_location_radio_button"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/normal_button_height"
-            android:layout_marginStart="30dp"
-            android:text="@string/change"
-            android:id="@+id/location_change_button_for_radio_layout"
-            android:visibility="gone"
-            />
-
-        <RadioButton
-            android:id="@+id/internal_storage_radio_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/internal_storage" />
-
-
-        <RadioButton
-            android:id="@+id/sd_card_radio_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/sd_card" />
-
-    </RadioGroup>
-
-    <TextView
-        android:id="@+id/destination_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/large_padding_width"
-        tools:text="Destination name"
-        android:textStyle="bold"
-        android:textColor="@color/colorAccent" />
 
     <Space
         android:layout_width="wrap_content"
