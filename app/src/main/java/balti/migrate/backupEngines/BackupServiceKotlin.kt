@@ -39,6 +39,7 @@ import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacket
 import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.simpleActivities.ProgressShowActivity
+import balti.migrate.storageSelector.StorageType
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRESS
@@ -93,6 +94,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_COMPRESSION_LEVE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_COMPRESSION_LEVEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DELETE_ERROR_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_STORAGE_TYPE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_CHECK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.TIMEOUT_WAITING_TO_CANCEL_TASK
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
@@ -101,6 +103,7 @@ import balti.module.baltitoolbox.functions.Misc.makeNotificationChannel
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefInt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import java.io.BufferedWriter
 import java.io.OutputStreamWriter
@@ -396,6 +399,12 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         intent?.run {
             try {
                 if (!isBackupInitiated) {
+
+                    val isTraditional = getPrefString(PREF_STORAGE_TYPE, StorageType.CONVENTIONAL.value) in
+                            arrayOf(StorageType.CONVENTIONAL.value, StorageType.ALL_FILES_STORAGE.value)
+
+                    FileXInit.setTraditional(isTraditional)
+
                     destination = getStringExtra(EXTRA_DESTINATION).toString()
                     backupName = getStringExtra(EXTRA_BACKUP_NAME).toString()
                     flasherOnly = getBooleanExtra(EXTRA_FLASHER_ONLY, false)
