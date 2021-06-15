@@ -40,6 +40,7 @@ data class ZipAppBatch(val zipAppPackets: ArrayList<ZipAppPacket> = ArrayList(0)
                             }
                             else writeLine(name)
                         }
+                        else writeLine(name)
                     }
                 }
                 extrasFiles.forEach {ef ->
