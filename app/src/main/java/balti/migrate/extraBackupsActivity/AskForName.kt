@@ -11,12 +11,14 @@ import androidx.appcompat.app.AppCompatActivity
 import balti.migrate.R
 import balti.migrate.storageSelector.StorageDisplayUtils
 import balti.migrate.storageSelector.StorageSelectorActivity
+import balti.migrate.storageSelector.StorageType
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_MIGRATE_FLASHER
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_MANDATORY_FLASHER_WARNING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_STORAGE_TYPE
 import balti.module.baltitoolbox.functions.Misc.playStoreLink
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
@@ -98,6 +100,14 @@ class AskForName: AppCompatActivity() {
             else getString(R.string.intenal_storage_location_for_display) + it
         }
         destination_name.text = label
+
+        val storageType = getPrefString(PREF_STORAGE_TYPE, StorageType.CONVENTIONAL.value)
+        storage_type.text = when(storageType){
+            StorageType.CONVENTIONAL.value -> getString(R.string.label_traditional_storage)
+            StorageType.ALL_FILES_STORAGE.value -> getString(R.string.label_all_files_storage)
+            StorageType.SAF.value -> getString(R.string.label_saf_storage)
+            else -> ""
+        }
     }
 
     private fun showFlasherOnlyWarning(fromPreference: Boolean){
