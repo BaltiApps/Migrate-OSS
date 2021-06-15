@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -19,6 +20,7 @@ import balti.filex.FileX
 import balti.filex.FileXInit
 import balti.migrate.R
 import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_STORAGE_TYPE
@@ -183,6 +185,7 @@ class StorageSelectorActivity: AppCompatActivity() {
     }
 
     private fun sendResult(success: Boolean = false, storageType: StorageType? = null, storagePath: String = defaultInternalStorage){
+        Log.d(DEBUG_TAG, "Storage send result: $success, ${storageType?.value}, $storagePath")
         if (success){
             storageType?.value?.let { putPrefString(PREF_STORAGE_TYPE, it) }
             putPrefString(PREF_DEFAULT_BACKUP_PATH, storagePath, true)
