@@ -222,8 +222,8 @@
 
     <!--ask_for_backup_name.xml-->
     <string name="enter_backup_name">Enter backup name</string>
+    <string name="backup_location">Backup location</string>
     <string name="sd_card">SD card</string>
-    <string name="change">Change</string>
     <string name="start">Start</string>
     <string name="advanced_options">Advanced options</string>
     <string name="ignore_cache">Ignore app cache</string>
@@ -238,6 +238,9 @@
     <string name="grant">Grant</string>
     <string name="no_storage_selected">No storage selected!</string>
     <string name="please_select_a_storage_option">Please select a storage option</string>
+    <string name="label_traditional_storage">Traditional storage</string>
+    <string name="label_all_files_storage">All files access</string>
+    <string name="label_saf_storage">SAF storage access</string>
 
     <!--learn_about_sd_card.xml-->
     <string name="p1">1. SD card support is experimental, and requires a magisk module.</string>
@@ -469,6 +472,17 @@
     <string name="errors_in_batch">Errors found in batch</string>
     <string name="zip_size">Zip size</string>
 
+    <!--MakeZipBatch.kt-->
+    <string name="moving_files">Moving files</string>
+    <string name="moving_extras">Moving extras</string>
+    <string name="moving_files_su">Moving files [root]</string>
+    <string name="creating_script_to_move">Creating script to move file.</string>
+    <string name="app_file">App file</string>
+    <string name="extra_file">Extra file</string>
+    <string name="zip_batch_number">Zip batch no</string>
+    <string name="running_script_to_move">Running script to move file.</string>
+    <string name="moving_app_files">Moving app files</string>
+
     <!--MDPEngine.kt-->
     <string name="running_mdp_plugin">Data backup via MDP plugin</string>
     <string name="mdp_function_error">Failed in function block.</string>
@@ -537,9 +551,6 @@
     <string name="adding_bigger_apps">Adding bigger apps</string>
     <string name="adding">Adding</string>
     <string name="packet">Packet</string>
-    <string name="moving_files">Moving files</string>
-    <string name="moving_extras">Moving extras</string>
-    <string name="moving_app_files">Moving app files</string>
     <string name="use_usage_access_permission">Grant usage access permission?</string>
     <string name="usage_access_permission_needed_desc">This permission is needed to check app data size.</string>
     <string name="terminal_method_not_available_android_11">Older terminal / command-line based method for calculating size is no longer available on Android 11+</string>
