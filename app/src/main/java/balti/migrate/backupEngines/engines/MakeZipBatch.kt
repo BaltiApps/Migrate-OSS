@@ -447,21 +447,16 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                     if (showNotification) getStringFromRes(R.string.moving_extras).let { broadcastProgress(it, it, true, -1) }
 
                     fullDirToMoveTo.mkdirs()
-                    val newFiles = ArrayList<FileX>(0)
 
                     // extras of each zipBatch
-                    it.extrasFiles.forEach { ef ->
+                    it.extrasFileNames.forEach { name ->
 
                         if (BackupServiceKotlin.cancelAll) return
 
-                        val newFile = FileX.new(fullDirToMoveTo.path, ef.name)
-                        newFile.createNewFile()
-                        newFile.refreshFile()
-                        ef.renameTo(newFile)
-                        newFiles.add(newFile)
+                        val newFile = FileX.new(fullDirToMoveTo.path, name)
+                        val oldFile = FileX.new(actualDestination, name)
+                        oldFile.renameTo(newFile)
                     }
-                    it.extrasFiles.clear()
-                    it.extrasFiles.addAll(newFiles)
 
                     // app files of each zipPacket of each zipBatch
                     var c = 0
@@ -528,26 +523,23 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                             val fileListPath = "${fullDirToMoveTo.canonicalPath}/${CommonToolsKotlin.FILE_FILE_LIST}"
 
                             writeLine("mkdir -p ${fullDirToMoveTo.canonicalPath}")
-                            val newFiles = ArrayList<FileX>(0)
 
                             // extras of each zipBatch
-                            it.extrasFiles.forEach { ef ->
+                            it.extrasFileNames.forEach { name ->
 
                                 if (BackupServiceKotlin.cancelAll) return
 
-                                val newFile = FileX.new(fullDirToMoveTo.path, ef.name)
+                                val newFile = FileX.new(fullDirToMoveTo.path, name)
+                                val oldFile = FileX.new(actualDestination, name)
 
-                                writeLine("mv ${ef.canonicalPath} ${newFile.canonicalPath}")
-                                writeLine("echo \"${ef.name}\" >> $fileListPath")
-                                newFiles.add(newFile)
+                                writeLine("mv ${oldFile.canonicalPath} ${newFile.canonicalPath}")
+                                writeLine("echo \"${name}\" >> $fileListPath")
 
-                                val logMessage = "${getStringFromRes(R.string.extra_file)}: ${ef.name}, ${getStringFromRes(R.string.zip_batch_number)}: $c"
+                                val logMessage = "${getStringFromRes(R.string.extra_file)}: ${name}, ${getStringFromRes(R.string.zip_batch_number)}: $c"
                                 broadcastProgress(subTaskMakingScript, logMessage, false)
 
 
                             }
-                            it.extrasFiles.clear()
-                            it.extrasFiles.addAll(newFiles)
 
                             // app files of each zipPacket of each zipBatch
                             it.zipAppPackets.forEach { zp ->
