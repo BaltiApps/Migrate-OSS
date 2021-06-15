@@ -400,9 +400,10 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
             try {
                 if (!isBackupInitiated) {
 
-                    val isTraditional = getPrefString(PREF_STORAGE_TYPE, StorageType.CONVENTIONAL.value) in
-                            arrayOf(StorageType.CONVENTIONAL.value, StorageType.ALL_FILES_STORAGE.value)
+                    val type = getPrefString(PREF_STORAGE_TYPE, StorageType.CONVENTIONAL.value)
+                    val isTraditional = type in arrayOf(StorageType.CONVENTIONAL.value, StorageType.ALL_FILES_STORAGE.value)
 
+                    Log.d(DEBUG_TAG, "Storage before starting backup - type: $type, isTraditional: $isTraditional")
                     FileXInit.setTraditional(isTraditional)
 
                     destination = getStringExtra(EXTRA_DESTINATION).toString()
