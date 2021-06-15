@@ -529,10 +529,10 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                                 if (BackupServiceKotlin.cancelAll) return
 
-                                val newFile = FileX.new(fullDirToMoveTo.path, name)
-                                val oldFile = FileX.new(actualDestination, name)
+                                val oldFileLocation = "${rootDir.canonicalPath}/${name}"
+                                val newFileLocation = "${fullDirToMoveTo.canonicalPath}/${name}"
 
-                                writeLine("mv ${oldFile.canonicalPath} ${newFile.canonicalPath}")
+                                writeLine("mv $oldFileLocation $newFileLocation")
                                 writeLine("echo \"${name}\" >> $fileListPath")
 
                                 val logMessage = "${getStringFromRes(R.string.extra_file)}: ${name}, ${getStringFromRes(R.string.zip_batch_number)}: $c"
@@ -547,10 +547,10 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                                     if (BackupServiceKotlin.cancelAll) return
 
-                                    val newFile = FileX.new(fullDirToMoveTo.path, name)
-                                    val oldFile = FileX.new(actualDestination, name)
+                                    val oldFileLocation = "${rootDir.canonicalPath}/${name}"
+                                    val newFileLocation = "${fullDirToMoveTo.canonicalPath}/${name}"
 
-                                    writeLine("mv ${oldFile.canonicalPath} ${newFile.canonicalPath}")
+                                    writeLine("mv $oldFileLocation $newFileLocation")
                                     if (name.endsWith(".app")) {
                                         if (zp.appPacket_z.isSystem) writeLine("echo \"${name}_sys\" >> $fileListPath")
                                         else writeLine("echo \"${name}\" >> $fileListPath")
