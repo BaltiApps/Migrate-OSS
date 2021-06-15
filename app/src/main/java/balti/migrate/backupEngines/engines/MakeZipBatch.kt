@@ -3,6 +3,7 @@ package balti.migrate.backupEngines.engines
 import android.util.Log
 import balti.filex.FileX
 import balti.filex.FileXInit
+import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.AppInstance.Companion.RESERVED_SPACE
 import balti.migrate.R
@@ -14,10 +15,12 @@ import balti.migrate.backupEngines.containers.ZipAppBatch
 import balti.migrate.backupEngines.containers.ZipAppPacket
 import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
+import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APK_SIZE_INDEX_NOT_FOUND
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CASTING_APK_SIZE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_MOVING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_MOVING_ROOT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_READING_APK_SIZE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_ADDING_EXTRAS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_BATCHING
@@ -32,6 +35,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_BATCH
 import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.functions.Misc
 import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
+import balti.module.baltitoolbox.functions.Misc.iterateBufferedReader
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -53,7 +57,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
     private val allFiles by lazy { rootDir.listEverything() }
 
     private val showNotification by lazy { !FileXInit.isTraditional }
-    private val useShellToCheckApkSize by lazy { !FileXInit.isTraditional && getPrefBoolean(PREF_USE_SHELL_TO_SPEED_UP, true) }
+    private val useShellToBypassSlowness by lazy { !FileXInit.isTraditional && getPrefBoolean(PREF_USE_SHELL_TO_SPEED_UP, true) }
 
     private val allAppZipPackets by lazy { ArrayList<ZipAppPacket>(0) }
 
@@ -93,7 +97,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                         else "${it.packageName}.icon"
                 )*/
 
-                if (showNotification && !useShellToCheckApkSize){
+                if (showNotification){
                     val progress = Misc.getPercentage(++c, appList.size)
                     broadcastProgress(subTask, "${it.appName}(${c+1}/${appList.size})", true, progress)
                 }
@@ -115,7 +119,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 if (expectedSystemShFile.exists()) associatedFiles.add(expectedSystemShFile)*/
 
                 if (it.APP) {
-                    if (!useShellToCheckApkSize) {
+                    if (!useShellToBypassSlowness) {
                         FileX.new(actualDestination, appDirName).run {
                             refreshFile()
                             if (exists()) {
@@ -491,12 +495,118 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
         }
     }
 
-    override suspend fun doInBackground(arg: Any?): Any? {
+    /**
+     *  This will also create the fileList by script commands.
+     */
+    private fun moveToContainersBySu() {
+
+        val title = getTitle(R.string.moving_files_su)
+        resetBroadcast(true, title)
+
+        val scriptFile = FileX.new(engineContext.filesDir.canonicalPath, "${CommonToolsKotlin.FILE_PREFIX_MOVE_TO_CONTAINER_SCRIPT}.sh", true)
+        scriptFile.parentFile?.mkdirs()
+
+        try {
+
+            scriptFile.startWriting(object : FileX.Writer() {
+                override fun writeLines() {
+
+                    val subTaskMakingScript = getStringFromRes(R.string.creating_script_to_move)
+
+                    subTaskMakingScript.let { broadcastProgress(it, it, false) }
+
+                    var c = 0
+                    zipBatches.forEach {
+
+                        if (BackupServiceKotlin.cancelAll) return
+
+                        if (it.partName != "") {
+
+                            writeLine("\n# Part ${c++}, part name: ${it.partName}\n")
+
+                            val fullDirToMoveTo = FileX.new(actualDestination, it.partName)
+                            val fileListPath = "${fullDirToMoveTo.canonicalPath}/${CommonToolsKotlin.FILE_FILE_LIST}"
+
+                            writeLine("mkdir -p ${fullDirToMoveTo.canonicalPath}")
+                            val newFiles = ArrayList<FileX>(0)
+
+                            // extras of each zipBatch
+                            it.extrasFiles.forEach { ef ->
+
+                                if (BackupServiceKotlin.cancelAll) return
+
+                                val newFile = FileX.new(fullDirToMoveTo.path, ef.name)
+
+                                writeLine("mv ${ef.canonicalPath} ${newFile.canonicalPath}")
+                                writeLine("echo \"${ef.name}\" >> $fileListPath")
+                                newFiles.add(newFile)
+
+                                val logMessage = "${getStringFromRes(R.string.extra_file)}: ${ef.name}, ${getStringFromRes(R.string.zip_batch_number)}: $c"
+                                broadcastProgress(subTaskMakingScript, logMessage, false)
+
+
+                            }
+                            it.extrasFiles.clear()
+                            it.extrasFiles.addAll(newFiles)
+
+                            // app files of each zipPacket of each zipBatch
+                            it.zipAppPackets.forEach { zp ->
+                                zp.appFileNames.forEach { name ->
+
+                                    if (BackupServiceKotlin.cancelAll) return
+
+                                    val newFile = FileX.new(fullDirToMoveTo.path, name)
+                                    val oldFile = FileX.new(actualDestination, name)
+
+                                    writeLine("mv ${oldFile.canonicalPath} ${newFile.canonicalPath}")
+                                    if (name.endsWith(".app")) {
+                                        if (zp.appPacket_z.isSystem) writeLine("echo \"${name}_sys\" >> $fileListPath")
+                                        else writeLine("echo \"${name}\" >> $fileListPath")
+                                    } else writeLine("echo \"${name}\" >> $fileListPath")
+
+                                    val logMessage = "${getStringFromRes(R.string.app_file)}: ${name}, ${getStringFromRes(R.string.zip_batch_number)}: $c"
+                                    broadcastProgress(subTaskMakingScript, logMessage, false)
+                                }
+                            }
+                        }
+
+                        //it.createFileList(actualDestination)
+                    }
+                }
+            })
+
+            getStringFromRes(R.string.running_script_to_move).let { broadcastProgress(it, it, false) }
+            val suProcess = Runtime.getRuntime().exec("su")
+            suProcess?.let {
+                val suInputStream = BufferedWriter(OutputStreamWriter(it.outputStream))
+                val errorStream = BufferedReader(InputStreamReader(it.errorStream))
+
+                suInputStream.write("cp ${scriptFile.canonicalPath} $CACHE_DIR/\n")
+                suInputStream.write("sh ${scriptFile.canonicalPath}\n")
+                suInputStream.write("exit\n")
+                suInputStream.flush()
+
+                iterateBufferedReader(errorStream, { errorLine ->
+                    errors.add("$ERR_MOVING_ROOT: $errorLine")
+                    return@iterateBufferedReader false
+                })
+            }
+
+        }
+        catch (e: Exception){
+            e.printStackTrace()
+            errors.add("$ERR_MOVING: ${e.message}")
+        }
+    }
+
+    override suspend fun doInBackground(arg: Any?): Any {
 
         if (!BackupServiceKotlin.cancelAll) makeZipPackets()
-        if (!BackupServiceKotlin.cancelAll && useShellToCheckApkSize) recordAppDirSizeByRoot()
+        if (!BackupServiceKotlin.cancelAll && useShellToBypassSlowness) recordAppDirSizeByRoot()
         if (!BackupServiceKotlin.cancelAll) makeBatches()
-        if (errors.isEmpty()) movetoContainers()
+        if (errors.isEmpty()) {
+            if (useShellToBypassSlowness) moveToContainersBySu() else movetoContainers()
+        }
 
         return 0
     }
