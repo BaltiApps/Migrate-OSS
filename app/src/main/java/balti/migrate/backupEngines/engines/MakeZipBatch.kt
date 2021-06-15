@@ -82,20 +82,8 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                 if (BackupServiceKotlin.cancelAll) return@forEach
 
-                //val associatedFiles = ArrayList<FileX>(0)
                 val associatedFileNames = ArrayList<String>(0)
                 val associatedFileSizes = ArrayList<Long>(0)
-
-                // old code
-                /*val expectedAppDir = FileX.new(actualDestination, "${it.packageName}.app")
-                val expectedDataFile = FileX.new(actualDestination, "${it.packageName}.tar.gz")
-                val expectedPermFile = FileX.new(actualDestination, "${it.packageName}.perm")
-                val expectedJsonFile = FileX.new(actualDestination, "${it.packageName}.json")
-                val expectedSystemShFile = FileX.new(actualDestination, "${it.packageName}.sh")
-                val expectedIconFile = FileX.new(actualDestination,
-                        if (getPrefBoolean(PREF_NEW_ICON_METHOD, true)) "${it.packageName}.png"
-                        else "${it.packageName}.icon"
-                )*/
 
                 if (showNotification){
                     val progress = Misc.getPercentage(++c, appList.size)
@@ -109,14 +97,6 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 val systemShName = "${it.packageName}.sh"
                 val iconName = if (getPrefBoolean(PREF_NEW_ICON_METHOD, true)) "${it.packageName}.png"
                 else "${it.packageName}.icon"
-
-                // old code
-                /*if (it.APP && expectedAppDir.exists()) associatedFiles.add(expectedAppDir)
-                if (it.DATA && expectedDataFile.exists()) associatedFiles.add(expectedDataFile)
-                if (it.PERMISSION && expectedPermFile.exists()) associatedFiles.add(expectedPermFile)
-                if (expectedIconFile.exists()) associatedFiles.add(expectedIconFile)
-                if (expectedJsonFile.exists()) associatedFiles.add(expectedJsonFile)
-                if (expectedSystemShFile.exists()) associatedFiles.add(expectedSystemShFile)*/
 
                 if (it.APP) {
                     if (!useShellToBypassSlowness) {
