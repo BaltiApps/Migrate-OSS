@@ -58,6 +58,8 @@ class CommonToolsKotlin(val context: Context? = null) {
         val FILE_PREFIX_RETRY_SCRIPT = "retry_script"
         val FILE_PREFIX_TAR_CHECK = "tar_check"
 
+        val FILE_PREFIX_MOVE_TO_CONTAINER_SCRIPT = "move_to_containers"
+
         val FILE_ZIP_NAME_EXTRAS = "Extras"
 
         val FILE_FILE_LIST = "fileList.txt"
@@ -163,6 +165,7 @@ class CommonToolsKotlin(val context: Context? = null) {
         val ERR_ZIP_ADDING_EXTRAS = "ZIP_ADDING_EXTRAS"
         val ERR_ZIP_ENGINE_INIT = "ZIP_ENGINE_INIT"
         val ERR_MOVING = "MOVING_FILES"
+        val ERR_MOVING_ROOT = "MOVING_FILES_SU"
         val ERR_READING_APK_SIZE = "ERR_READING_APK_SIZE"
         val ERR_CASTING_APK_SIZE = "ERR_CASTING_APK_SIZE"
         val ERR_APK_SIZE_INDEX_NOT_FOUND = "ERR_APK_SIZE_INDEX_NOT_FOUND"
