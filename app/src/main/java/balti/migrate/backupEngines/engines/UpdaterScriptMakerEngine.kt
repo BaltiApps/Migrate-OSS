@@ -223,7 +223,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
             resetBroadcast(true, title)
 
-            zipAppBatch.extrasFiles.run {
+            zipAppBatch.extrasFileNames.run {
                 if (isNotEmpty()) {
 
                     // extract extras
@@ -231,8 +231,8 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                     updater_writer.write("ui_print(\"Extracting extras...\");\n")
 
                     forEach {
-                        updater_writer.write("ui_print(\"${it.name}\");\n")
-                        extractItToTemp(it.name)
+                        updater_writer.write("ui_print(\"${it}\");\n")
+                        extractItToTemp(it)
                     }
                 }
             }
