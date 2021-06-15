@@ -415,7 +415,7 @@ class CommonToolsKotlin(val context: Context? = null) {
         val isTraditional = storageType in arrayOf(StorageType.CONVENTIONAL.value, StorageType.ALL_FILES_STORAGE.value)
         return FileX.new(if (isTraditional) storageLocation else "/", isTraditional).run {
             tryIt { mkdirs() }
-            canWrite()
+            canWrite() && isDirectory
         }
     }
 
