@@ -7,7 +7,7 @@ data class ZipAppBatch(val zipAppPackets: ArrayList<ZipAppPacket> = ArrayList(0)
     var batchSystemSize : Long = 0
     var batchDataSize : Long = 0
     var zipFullSize : Long = 0
-    val extrasFiles: ArrayList<FileX> = ArrayList(0)
+    val extrasFileNames: ArrayList<String> = ArrayList(0)
     var partName = ""
     var fileList: FileX? = null
     init {
@@ -18,9 +18,9 @@ data class ZipAppBatch(val zipAppPackets: ArrayList<ZipAppPacket> = ArrayList(0)
         }
     }
     fun addExtras(extras: ArrayList<FileX>){
-        extrasFiles.clear()
-        extrasFiles.addAll(extras)
-        extrasFiles.forEach {
+        extrasFileNames.clear()
+        extras.forEach {
+            extrasFileNames.add(it.name)
             batchDataSize += it.length()
             zipFullSize += it.length()
         }
@@ -43,8 +43,8 @@ data class ZipAppBatch(val zipAppPackets: ArrayList<ZipAppPacket> = ArrayList(0)
                         else writeLine(name)
                     }
                 }
-                extrasFiles.forEach {ef ->
-                    writeLine(ef.name)
+                extrasFileNames.forEach {name ->
+                    writeLine(name)
                 }
             }
         })
