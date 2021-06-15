@@ -43,8 +43,9 @@ class AllFilesAccessHandler(private val context: Context, private val defaultInt
         // Also set the finalPath class variable.
         val displayLocation: String =
 
-                // case if previously SAF type was selected. In that case, use defaultInternalStorage.
-                if (prefType != StorageType.ALL_FILES_STORAGE.value) {
+                // case if previously SAF type was selected. In that case, use defaultInternalStorage, for the initial display.
+                // If newPath is not null, it is not the initial display.
+                if (newPath == null && prefType != StorageType.ALL_FILES_STORAGE.value) {
                     finalPath = defaultInternalStorage
                     context.getString(R.string.intenal_storage_location_for_display)
                 }
