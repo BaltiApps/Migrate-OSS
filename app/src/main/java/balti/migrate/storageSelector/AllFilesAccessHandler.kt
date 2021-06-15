@@ -132,7 +132,7 @@ class AllFilesAccessHandler(private val context: Context, private val defaultInt
                             tryIt { it.mkdirs() }
 
                             // If can write, then dismiss and send finalPath value.
-                            if (it.canWrite()) {
+                            if (it.canWrite() && it.isDirectory) {
                                 dismiss()
                                 onSuccess(finalPath)
                             }
