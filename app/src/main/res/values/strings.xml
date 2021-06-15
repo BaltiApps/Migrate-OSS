@@ -477,9 +477,6 @@
     <string name="moving_extras">Moving extras</string>
     <string name="moving_files_su">Moving files [root]</string>
     <string name="creating_script_to_move">Creating script to move file.</string>
-    <string name="app_file">App file</string>
-    <string name="extra_file">Extra file</string>
-    <string name="zip_batch_number">Zip batch no</string>
     <string name="running_script_to_move">Running script to move file.</string>
     <string name="moving_app_files">Moving app files</string>
 

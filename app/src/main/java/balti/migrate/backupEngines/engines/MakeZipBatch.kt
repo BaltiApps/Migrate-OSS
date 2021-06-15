@@ -506,9 +506,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
             scriptFile.startWriting(object : FileX.Writer() {
                 override fun writeLines() {
 
-                    val subTaskMakingScript = getStringFromRes(R.string.creating_script_to_move)
-
-                    subTaskMakingScript.let { broadcastProgress(it, it, false) }
+                    getStringFromRes(R.string.creating_script_to_move).let { broadcastProgress(it, it, false) }
 
                     var c = 0
                     zipBatches.forEach {
@@ -534,11 +532,6 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                                 writeLine("mv $oldFileLocation $newFileLocation")
                                 writeLine("echo \"${name}\" >> $fileListPath")
-
-                                val logMessage = "${getStringFromRes(R.string.extra_file)}: ${name}, ${getStringFromRes(R.string.zip_batch_number)}: $c"
-                                broadcastProgress(subTaskMakingScript, logMessage, false)
-
-
                             }
 
                             // app files of each zipPacket of each zipBatch
@@ -555,19 +548,15 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                                         if (zp.appPacket_z.isSystem) writeLine("echo \"${name}_sys\" >> $fileListPath")
                                         else writeLine("echo \"${name}\" >> $fileListPath")
                                     } else writeLine("echo \"${name}\" >> $fileListPath")
-
-                                    val logMessage = "${getStringFromRes(R.string.app_file)}: ${name}, ${getStringFromRes(R.string.zip_batch_number)}: $c"
-                                    broadcastProgress(subTaskMakingScript, logMessage, false)
                                 }
                             }
                         }
-
-                        //it.createFileList(actualDestination)
                     }
                 }
             })
 
             getStringFromRes(R.string.running_script_to_move).let { broadcastProgress(it, it, false) }
+
             val suProcess = Runtime.getRuntime().exec("su")
             suProcess?.let {
                 val suInputStream = BufferedWriter(OutputStreamWriter(it.outputStream))
