@@ -130,7 +130,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                 val zipPacket = ZipAppPacket(it, associatedFileNames, associatedFileSizes)
                 allAppZipPackets.add(zipPacket)
-                totalAppSize += zipPacket.zipPacketSize
+                if (!useShellToBypassSlowness) totalAppSize += zipPacket.zipPacketSize
             }
             catch (e: Exception){
                 e.printStackTrace()
@@ -196,6 +196,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                     if (index != -1) {
                         p.fileSizes[index] = sum
                         p.refreshTotal()
+                        totalAppSize += p.zipPacketSize
                         broadcastProgress(subTask, "$appName: ${p.appFileNames[index]} - ${p.fileSizes[index]}", true, percent)
                     } else {
                         val errorMsg = "$ERR_APK_SIZE_INDEX_NOT_FOUND: $packageName. Files: ${p.appFileNames}. Searched: \"${packageName}.app\""
@@ -304,6 +305,8 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                 var maxOuterLoop = 1000   // break if outerloop has scanned over this number.
 
+                Log.d(DEBUG_TAG, "cap size: $capSize, firstAdjust: $firstAdjust")
+
                 while (allAppZipPackets.isNotEmpty() && maxOuterLoop > 0) {
                     // all eligible apps must be put in packets
 
@@ -322,6 +325,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                             zipAppBatchList.add(p)
                             batchSize += p.zipPacketSize
                             allAppZipPackets.remove(p)
+                            Log.d(DEBUG_TAG, "adding app: ${p.appPacket_z.appName}, size: ${p.zipPacketSize}, packet no: $c")
                             shareProgress("${engineContext.getString(R.string.adding)}: ${p.appPacket_z.appName} | " +
                                     "${engineContext.getString(R.string.packet)}: ${zipBatches.size + 1}", getPercentage(allAppZipPackets.size))
                         } else c++
@@ -353,6 +357,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
                     if (p.zipPacketSize <= (this)) {
                         zipBatches.add(ZipAppBatch(arrayListOf(p)))
+                        Log.d(DEBUG_TAG, "adding bigger app: ${p.appPacket_z.appName}, size: ${p.zipPacketSize}, packet no: $c")
                         shareProgress("${engineContext.getString(R.string.adding_bigger_apps)}: ${p.appPacket_z.appName}",
                                 getPercentage(allAppZipPackets.size))
                         allAppZipPackets.remove(p)
