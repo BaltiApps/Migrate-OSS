@@ -125,7 +125,7 @@ fastlane/readme.md
 
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
-app/libs/
+# app/libs/
 app/release/
 app/src/main/res/drawable-v24/
 app/src/main/res/drawable-xxxhdpi/
