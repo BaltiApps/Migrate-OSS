@@ -142,6 +142,13 @@
             android:orientation="vertical"
             android:padding="@dimen/large_padding_width">
 
+            <fragment
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/contacts_fragment"
+                android:name="balti.migrate.extraBackupsActivity.contacts.ContactsFragment"
+                />
+
             <LinearLayout
                 android:id="@+id/contacts_main_item"
                 android:layout_width="match_parent"
