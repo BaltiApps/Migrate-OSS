@@ -42,6 +42,7 @@ import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.calls.LoadCallsForSelectionKotlin
 import balti.migrate.extraBackupsActivity.calls.ReadCallsKotlin
 import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
+import balti.migrate.extraBackupsActivity.contacts.ContactsFragment
 import balti.migrate.extraBackupsActivity.contacts.LoadContactsForSelectionKotlin
 import balti.migrate.extraBackupsActivity.contacts.ReadContactsKotlin
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
@@ -140,6 +141,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private val SETUP_MDP_JOBCODE = 1667
 
     private var mdpSetFromActivity = false
+
+    private val contactsFragment: ContactsFragment by lazy { supportFragmentManager.findFragmentById(R.id.contacts_fragment) as ContactsFragment }
 
     private val dialogView by lazy { View.inflate(this, R.layout.please_wait, null) }
     private val waitingDialog by lazy {
@@ -255,7 +258,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             }
 
             if (!isAnyRunning) {
-                if (selectedBackupDataPackets.isNotEmpty() || do_backup_contacts.isChecked || do_backup_calls.isChecked
+                if (selectedBackupDataPackets.isNotEmpty() || contactsFragment.isChecked() == true || do_backup_calls.isChecked
                         || do_backup_sms.isChecked || do_backup_dpi.isChecked || do_backup_keyboard.isChecked
                         || do_backup_adb.isChecked || do_backup_wifi.isChecked || do_backup_fontScale.isChecked) {                  //extras_markers
 
@@ -404,7 +407,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
         if (!isChecked) toggleBackupButton(1)
 
-        if (buttonView == do_backup_contacts){
+        /*if (buttonView == do_backup_contacts){
 
             if (isChecked) {
                 AlertDialog.Builder(this)
@@ -424,7 +427,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             }
             else deselectExtra(contactsList, contacts_main_item, contacts_selected_status, readContacts, contacts_read_progress)
 
-        } else if (buttonView == do_backup_sms) {
+        } else*/ if (buttonView == do_backup_sms) {
 
             if (isChecked) {
                 ActivityCompat.requestPermissions(this,
