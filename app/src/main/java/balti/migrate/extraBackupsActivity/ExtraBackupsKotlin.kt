@@ -24,7 +24,6 @@ import balti.migrate.AppInstance.Companion.adbState
 import balti.migrate.AppInstance.Companion.appBackupDataPackets
 import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.AppInstance.Companion.callsList
-import balti.migrate.AppInstance.Companion.contactsList
 import balti.migrate.AppInstance.Companion.doBackupInstallers
 import balti.migrate.AppInstance.Companion.dpiText
 import balti.migrate.AppInstance.Companion.fontScale
@@ -43,9 +42,6 @@ import balti.migrate.extraBackupsActivity.calls.LoadCallsForSelectionKotlin
 import balti.migrate.extraBackupsActivity.calls.ReadCallsKotlin
 import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
 import balti.migrate.extraBackupsActivity.contacts.ContactsFragment
-import balti.migrate.extraBackupsActivity.contacts.LoadContactsForSelectionKotlin
-import balti.migrate.extraBackupsActivity.contacts.ReadContactsKotlin
-import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.dpi.ReadDpiKotlin
 import balti.migrate.extraBackupsActivity.fontScale.ReadFontScaleKotlin
 import balti.migrate.extraBackupsActivity.installer.LoadInstallersForSelection
@@ -61,7 +57,6 @@ import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CALLS_PERMISSION
-import balti.migrate.utilities.CommonToolsKotlin.Companion.CONTACT_PERMISSION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
@@ -69,14 +64,12 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_ALL_APP_SELECTED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.IS_OTHER_APP_DATA_VISIBLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_CALLS
-import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_CONTACTS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_INSTALLERS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_KEYBOARDS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_MAKE_APP_PACKETS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_ADB
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_CALLS
-import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_CONTACTS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_DPI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_FONTSCALE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_SMS
@@ -122,7 +115,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private var backupName = ""
     private var isAllAppsSelected = true
 
-    private var readContacts: ReadContactsKotlin? = null                    //extras_markers
+                    //extras_markers
     private var readSms: ReadSmsKotlin? = null
     private var readCalls: ReadCallsKotlin? = null
     private var readDpi: ReadDpiKotlin? = null
@@ -240,7 +233,6 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         startBackupButton.setOnClickListener {
 
             val allReadTasks = arrayOf(
-                    readContacts,
                     readSms,
                     readCalls,
                     readDpi,
@@ -298,7 +290,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             }
         }
 
-        do_backup_contacts.setOnCheckedChangeListener(this)         //extras_markers
+                 //extras_markers
         do_backup_sms.setOnCheckedChangeListener(this)
         do_backup_calls.setOnCheckedChangeListener(this)
         do_backup_dpi.setOnCheckedChangeListener(this)
@@ -570,7 +562,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 do_backup_sms.setOnCheckedChangeListener(this)
             }
         }
-        else if (requestCode == CONTACT_PERMISSION){
+        /*else if (requestCode == CONTACT_PERMISSION){
 
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
@@ -587,7 +579,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 do_backup_contacts.isChecked = false
             }
 
-        }
+        }*/
         else if (requestCode == SMS_PERMISSION){
 
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -742,7 +734,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
         when (jobCode){
 
-            JOBCODE_READ_CONTACTS ->
+            /*JOBCODE_READ_CONTACTS ->
                 if (jobSuccess) {
                     tryIt({
                         updateContacts(jobResult as ArrayList<ContactsDataPacketKotlin>)
@@ -759,7 +751,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     tryIt({
                         updateContacts(jobResult as ArrayList<ContactsDataPacketKotlin>)
                     }, true)
-                }
+                }*/
 
             JOBCODE_READ_SMS -> sms()
 
@@ -915,7 +907,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
     }
 
-    private fun updateContacts(newList: ArrayList<ContactsDataPacketKotlin>){
+    /*private fun updateContacts(newList: ArrayList<ContactsDataPacketKotlin>){
 
         contactsList.clear()
 
@@ -941,7 +933,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     .setCancelable(false)
                     .show()
         }
-    }
+    }*/
 
     private fun updateSms(newList: ArrayList<SmsDataPacketKotlin>){
 
@@ -1037,7 +1029,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
 
         tryIt { makeAppPackets?.cancel(true) }
-        tryIt { readContacts?.cancel(true) }
+        //tryIt { readContacts?.cancel(true) }
         tryIt { readSms?.cancel(true) }
         tryIt { readCalls?.cancel(true) }
         tryIt { readDpi?.cancel(true) }
