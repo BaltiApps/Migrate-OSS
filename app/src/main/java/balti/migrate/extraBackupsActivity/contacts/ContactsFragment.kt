@@ -2,6 +2,7 @@ package balti.migrate.extraBackupsActivity.contacts
 
 import android.Manifest
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -10,7 +11,12 @@ import balti.migrate.AppInstance.Companion.contactsList
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.ExtrasParentFragment
 import balti.migrate.extraBackupsActivity.ExtrasParentReader
+import balti.migrate.extraBackupsActivity.ReaderJobResultHolder
+import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
+import balti.module.baltitoolbox.functions.Misc.runOnMainThread
 import balti.module.baltitoolbox.functions.Misc.runSuspendFunction
+import balti.module.baltitoolbox.functions.Misc.showErrorDialog
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import kotlinx.android.synthetic.main.extra_fragment_contacts.*
 
 class ContactsFragment: ExtrasParentFragment(R.layout.extra_fragment_contacts) {
@@ -32,17 +38,9 @@ class ContactsFragment: ExtrasParentFragment(R.layout.extra_fragment_contacts) {
         }
     }
 
-    private fun startReadTask(){
-        readTask = ReadContactsKotlin(this)
-
-        runSuspendFunction {
-            val results = readTask.executeWithResult()
-        }
-    }
-
     override fun onCreateView(savedInstanceState: Bundle?) {
 
-        contacts_fragment_checkbox.setOnCheckedChangeListener { buttonView, isChecked ->
+        delegateCheckbox?.setOnCheckedChangeListener { buttonView, isChecked ->
 
             mActivity?.run {
 
@@ -64,6 +62,57 @@ class ContactsFragment: ExtrasParentFragment(R.layout.extra_fragment_contacts) {
         }
 
 
+    }
+
+    private fun startReadTask(){
+        readTask = ReadContactsKotlin(this)
+
+        runSuspendFunction {
+            val jobResults = readTask.executeWithResult() as ReaderJobResultHolder
+            if (jobResults.success) {
+                runOnMainThread {
+                    tryIt({
+                        updateContacts(jobResults.result as ArrayList<ContactsDataPacketKotlin>)
+                    }, true)
+                }
+            } else {
+                delegateCheckbox?.isChecked = false
+                showErrorDialog(
+                    jobResults.result.toString(),
+                    getString(R.string.error_reading_contacts)
+                )
+            }
+        }
+    }
+
+    private fun updateContacts(newList: ArrayList<ContactsDataPacketKotlin>){
+
+        contactsList.clear()
+
+        delegateStatusText?.text = getString(R.string.reading)
+        delegateProgressBar?.visibility = View.GONE
+
+        var n = 0
+        newList.forEach {
+            if (it.selected) n++
+            contactsList.add(it)
+        }
+
+        if (contactsList.size > 0){
+            delegateStatusText?.text = "$n ${getString(R.string.of)} ${contactsList.size}"
+            delegateMainItem?.setOnClickListener {
+                //LoadContactsForSelectionKotlin(JOBCODE_LOAD_CONTACTS, this, contactsList).execute()
+            }
+        }
+        else {
+            mActivity?.let {
+                AlertDialog.Builder(it)
+                    .setMessage(R.string.empty_contacts)
+                    .setPositiveButton(R.string.close) {_, _ -> delegateCheckbox?.isChecked = false }
+                    .setCancelable(false)
+                    .show()
+            }
+        }
     }
 
     override val viewIdStatusText: Int = R.id.contacts_read_text_status
