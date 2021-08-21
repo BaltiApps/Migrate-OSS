@@ -12,7 +12,7 @@ import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
 import balti.module.baltitoolbox.functions.Misc.tryIt
 
-class ReadContactsKotlin1(fragment: ContactsFragment): ExtrasParentReader(fragment) {
+class ReadContactsKotlin(fragment: ContactsFragment): ExtrasParentReader(fragment) {
 
     private var contactsCount = 0
     private val vcfTools: VcfToolsKotlin by lazy { VcfToolsKotlin(context) }
