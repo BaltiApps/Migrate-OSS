@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
 import balti.module.baltitoolbox.functions.Misc.doBackgroundTask
 
-abstract class ParentSelectorActivity(layoutId: Int): AppCompatActivity(layoutId) {
+abstract class ParentSelectorActivityForExtras(layoutId: Int): AppCompatActivity(layoutId) {
 
     final override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

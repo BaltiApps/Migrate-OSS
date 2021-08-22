@@ -3,13 +3,13 @@ package balti.migrate.extraBackupsActivity.contacts
 import android.view.View
 import balti.migrate.AppInstance.Companion.contactsList
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.ParentSelectorActivity
+import balti.migrate.extraBackupsActivity.ParentSelectorActivityForExtras
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.contacts.utils.ContactListAdapterKotlin
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import kotlinx.android.synthetic.main.extra_item_selector.*
 
-class LoadContactsForSelection: ParentSelectorActivity(R.layout.extra_item_selector) {
+class LoadContactsForSelection: ParentSelectorActivityForExtras(R.layout.extra_item_selector) {
 
     private var dataPackets: ArrayList<ContactsDataPacketKotlin> = ArrayList(0)
     private var adapter: ContactListAdapterKotlin? = null
