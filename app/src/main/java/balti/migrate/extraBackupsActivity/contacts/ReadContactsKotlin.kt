@@ -7,7 +7,7 @@ import balti.migrate.extraBackupsActivity.ParentReaderForExtras
 import balti.migrate.extraBackupsActivity.ReaderJobResultHolder
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.contacts.utils.VcfToolsKotlin
-import balti.migrate.extraBackupsActivity.utils.ViewOperations
+import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.functions.Misc.tryIt
 
 class ReadContactsKotlin(fragment: ContactsFragment): ParentReaderForExtras(fragment) {
@@ -17,7 +17,6 @@ class ReadContactsKotlin(fragment: ContactsFragment): ParentReaderForExtras(frag
 
     private val cursor: Cursor? by lazy { vcfTools.getContactsCursor() }
 
-    private val vOp by lazy { ViewOperations(context) }
     private var error = ""
     private var isContactsChecked = false
 
@@ -61,14 +60,13 @@ class ReadContactsKotlin(fragment: ContactsFragment): ParentReaderForExtras(frag
                         break
                     }
 
-                    ContactsDataPacketKotlin(vcfTools.getVcfData(cursor), isContactsChecked
-                    ).let { cdp ->
+                    ContactsDataPacketKotlin(vcfTools.getVcfData(cursor), isContactsChecked).let { cdp ->
                         vcfTools.errorEncountered.trim().let { err ->
                             if (err == "") {
                                 if (!tmpList.contains(cdp)) tmpList.add(cdp)
                                 publishProgress(
                                     i,
-                                    "${vOp.getStringFromRes(R.string.filtering_duplicates)}\n$i"
+                                    "${getStringFromRes(R.string.filtering_duplicates)}\n$i"
                                 )
                                 cursor.moveToNext()
                             } else throw Exception(err)
