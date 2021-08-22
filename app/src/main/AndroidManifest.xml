@@ -105,6 +105,10 @@
             android:theme="@style/MessagesView"
             />
 
+        <!--Extra selectors-->
+        <activity android:name=".extraBackupsActivity.contacts.LoadContactsForSelection"
+            android:theme="@style/AppTheme.Floating"/>
+
         <service android:name=".backupEngines.BackupServiceKotlin"/>
 
         <provider
