@@ -11,8 +11,8 @@ import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import kotlinx.android.synthetic.main.extra_item_selector.view.*
 
-class LoadContactsForSelectionKotlin(private val jobCode: Int, val context: Context,
-                                     private val itemList: ArrayList<ContactsDataPacketKotlin> = ArrayList(0)):     //unique
+class LoadContactsForSelectionKotlin_legacy(private val jobCode: Int, val context: Context,
+                                            private val itemList: ArrayList<ContactsDataPacketKotlin> = ArrayList(0)):     //unique
         AsyncCoroutineTask() {
 
     private val selectorView by lazy { View.inflate(context, R.layout.extra_item_selector, null) }
