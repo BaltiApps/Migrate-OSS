@@ -85,9 +85,14 @@ class ContactsFragment: ExtrasParentFragment(R.layout.extra_fragment_contacts) {
         }
     }
 
-    private fun updateContacts(newList: ArrayList<ContactsDataPacketKotlin>){
+    private fun updateContacts(newList: ArrayList<ContactsDataPacketKotlin> = contactsList){
 
-        contactsList.clear()
+        contactsList.run {
+            if (newList != this) {
+                clear()
+                addAll(newList)
+            }
+        }
 
         delegateStatusText?.text = getString(R.string.reading)
         delegateProgressBar?.visibility = View.GONE
@@ -95,7 +100,6 @@ class ContactsFragment: ExtrasParentFragment(R.layout.extra_fragment_contacts) {
         var n = 0
         newList.forEach {
             if (it.selected) n++
-            contactsList.add(it)
         }
 
         if (contactsList.size > 0){
