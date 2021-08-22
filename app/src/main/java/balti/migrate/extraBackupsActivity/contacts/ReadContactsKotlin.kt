@@ -4,7 +4,7 @@ import android.database.Cursor
 import android.util.Log
 import android.view.View
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.ExtrasParentReader
+import balti.migrate.extraBackupsActivity.ParentReaderForExtras
 import balti.migrate.extraBackupsActivity.ReaderJobResultHolder
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.contacts.utils.VcfToolsKotlin
@@ -12,7 +12,7 @@ import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
 import balti.module.baltitoolbox.functions.Misc.tryIt
 
-class ReadContactsKotlin(fragment: ContactsFragment): ExtrasParentReader(fragment) {
+class ReadContactsKotlin(fragment: ContactsFragment): ParentReaderForExtras(fragment) {
 
     private var contactsCount = 0
     private val vcfTools: VcfToolsKotlin by lazy { VcfToolsKotlin(context) }

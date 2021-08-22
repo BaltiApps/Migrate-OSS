@@ -71,7 +71,7 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
     open fun onCreateFragment(){}
     abstract fun onCreateView(savedInstanceState: Bundle?)
     abstract fun isChecked(): Boolean?
-    abstract val readTask: ExtrasParentReader
+    abstract val readTask: ParentReaderForExtras
     abstract val viewIdStatusText: Int
     abstract val viewIdProgressBar: Int
     abstract val viewIdCheckbox: Int

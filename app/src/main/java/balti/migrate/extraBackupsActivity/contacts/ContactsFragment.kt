@@ -11,8 +11,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import balti.migrate.AppInstance.Companion.contactsList
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.ExtrasParentReader
 import balti.migrate.extraBackupsActivity.ParentFragmentForExtras
+import balti.migrate.extraBackupsActivity.ParentReaderForExtras
 import balti.migrate.extraBackupsActivity.ReaderJobResultHolder
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import balti.module.baltitoolbox.functions.Misc.runOnMainThread
@@ -26,7 +26,7 @@ class ContactsFragment: ParentFragmentForExtras(R.layout.extra_fragment_contacts
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
     private lateinit var selectorLauncher: ActivityResultLauncher<Intent>
 
-    override lateinit var readTask: ExtrasParentReader
+    override lateinit var readTask: ParentReaderForExtras
 
     override fun onCreateFragment() {
         super.onCreateFragment()

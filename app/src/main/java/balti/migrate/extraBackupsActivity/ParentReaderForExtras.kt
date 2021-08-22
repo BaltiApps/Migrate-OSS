@@ -7,7 +7,7 @@ import android.widget.TextView
 import balti.migrate.AppInstance
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 
-abstract class ExtrasParentReader(private val fragment: ParentFragmentForExtras): AsyncCoroutineTask() {
+abstract class ParentReaderForExtras(private val fragment: ParentFragmentForExtras): AsyncCoroutineTask() {
 
     val context by lazy { AppInstance.appContext }
 
