@@ -64,10 +64,7 @@ class ReadContactsKotlin(fragment: ContactsFragment): ParentReaderForExtras(frag
                         vcfTools.errorEncountered.trim().let { err ->
                             if (err == "") {
                                 if (!tmpList.contains(cdp)) tmpList.add(cdp)
-                                publishProgress(
-                                    i,
-                                    "${getStringFromRes(R.string.filtering_duplicates)}\n$i"
-                                )
+                                publishProgress(i, "${getStringFromRes(R.string.filtering_duplicates)}\n$i")
                                 cursor.moveToNext()
                             } else throw Exception(err)
                         }
