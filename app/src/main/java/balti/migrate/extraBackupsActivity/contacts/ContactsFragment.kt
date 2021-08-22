@@ -1,6 +1,8 @@
 package balti.migrate.extraBackupsActivity.contacts
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -22,6 +24,7 @@ import kotlinx.android.synthetic.main.extra_fragment_contacts.*
 class ContactsFragment: ExtrasParentFragment(R.layout.extra_fragment_contacts) {
 
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
+    private lateinit var selectorLauncher: ActivityResultLauncher<Intent>
 
     override lateinit var readTask: ExtrasParentReader
 
@@ -34,6 +37,11 @@ class ContactsFragment: ExtrasParentFragment(R.layout.extra_fragment_contacts) {
             else {
                 Toast.makeText(mActivity, R.string.contacts_access_needed, Toast.LENGTH_SHORT).show()
                 contacts_fragment_checkbox.isChecked = false
+            }
+        }
+        selectorLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+            if (it.resultCode == Activity.RESULT_OK){
+                updateContacts()
             }
         }
     }
@@ -106,6 +114,7 @@ class ContactsFragment: ExtrasParentFragment(R.layout.extra_fragment_contacts) {
             delegateStatusText?.text = "$n ${getString(R.string.of)} ${contactsList.size}"
             delegateMainItem?.setOnClickListener {
                 //LoadContactsForSelectionKotlin(JOBCODE_LOAD_CONTACTS, this, contactsList).execute()
+                selectorLauncher.launch(Intent(mActivity, LoadContactsForSelection::class.java))
             }
         }
         else {
