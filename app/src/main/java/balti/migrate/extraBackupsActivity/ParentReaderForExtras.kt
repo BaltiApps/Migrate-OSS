@@ -17,6 +17,10 @@ abstract class ParentReaderForExtras(private val fragment: ParentFragmentForExtr
         Log.d(DEBUG_TAG, "$className: $message")
     }
 
+    final override suspend fun onPostExecute(result: Any?) {
+        super.onPostExecute(result)
+    }
+
     val mainItem: LinearLayout? get() = fragment.delegateMainItem
     val readStatusText: TextView? get() = fragment.delegateStatusText
     val readProgressBar: ProgressBar? get() = fragment.delegateProgressBar
