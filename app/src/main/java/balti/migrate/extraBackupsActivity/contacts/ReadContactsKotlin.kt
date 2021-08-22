@@ -1,7 +1,6 @@
 package balti.migrate.extraBackupsActivity.contacts
 
 import android.database.Cursor
-import android.util.Log
 import android.view.View
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.ParentReaderForExtras
@@ -9,7 +8,6 @@ import balti.migrate.extraBackupsActivity.ReaderJobResultHolder
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.contacts.utils.VcfToolsKotlin
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
-import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
 import balti.module.baltitoolbox.functions.Misc.tryIt
 
 class ReadContactsKotlin(fragment: ContactsFragment): ParentReaderForExtras(fragment) {
@@ -22,6 +20,8 @@ class ReadContactsKotlin(fragment: ContactsFragment): ParentReaderForExtras(frag
     private val vOp by lazy { ViewOperations(context) }
     private var error = ""
     private var isContactsChecked = false
+
+    override val className: String = "ReadContactsKotlin"
 
     override suspend fun onPreExecute() {
         super.onPreExecute()
@@ -48,7 +48,7 @@ class ReadContactsKotlin(fragment: ContactsFragment): ParentReaderForExtras(frag
 
     override suspend fun doInBackground(arg: Any?): Any {
 
-        Log.d(DEBUG_TAG, "ReadContactsKotlin: Starting reading")
+        writeLog("Starting reading")
 
         val tmpList: ArrayList<ContactsDataPacketKotlin> = ArrayList(0)
         try {
@@ -57,13 +57,11 @@ class ReadContactsKotlin(fragment: ContactsFragment): ParentReaderForExtras(frag
                 for (i in 0 until contactsCount) {
 
                     if (doBackupCheckBox?.isChecked != true) {
-                        Log.d(DEBUG_TAG, "ReadContactsKotlin: Break reading contacts")
+                        writeLog("Break reading contacts")
                         break
                     }
 
-                    ContactsDataPacketKotlin(
-                        vcfTools.getVcfData(cursor),
-                        isContactsChecked
+                    ContactsDataPacketKotlin(vcfTools.getVcfData(cursor), isContactsChecked
                     ).let { cdp ->
                         vcfTools.errorEncountered.trim().let { err ->
                             if (err == "") {
@@ -91,10 +89,10 @@ class ReadContactsKotlin(fragment: ContactsFragment): ParentReaderForExtras(frag
             doOnMainThreadParallel {
                 mainItem?.isClickable = true
             }
-            Log.d(DEBUG_TAG, "ReadContactsKotlin: Read success. Read - ${tmpList.size}")
+            writeLog("Read success. Read - ${tmpList.size}")
             ReaderJobResultHolder(true, tmpList)
         } else {
-            Log.d(DEBUG_TAG, "ReadContactsKotlin: Read fail. Error - $error")
+            writeLog("Read fail. Error - $error")
             ReaderJobResultHolder(false, error)
         }
 
