@@ -39,7 +39,7 @@ import balti.migrate.extraBackupsActivity.adb.ReadAdbKotlin
 import balti.migrate.extraBackupsActivity.apps.MakeAppPackets
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.calls.LoadCallsForSelectionKotlin
-import balti.migrate.extraBackupsActivity.calls.ReadCallsKotlin
+import balti.migrate.extraBackupsActivity.calls.ReadCallsKotlin_legacy
 import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
 import balti.migrate.extraBackupsActivity.contacts.ContactsFragment
 import balti.migrate.extraBackupsActivity.dpi.ReadDpiKotlin
@@ -117,7 +117,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
                     //extras_markers
     private var readSms: ReadSmsKotlin? = null
-    private var readCalls: ReadCallsKotlin? = null
+    private var readCalls: ReadCallsKotlin_legacy? = null
     private var readDpi: ReadDpiKotlin? = null
     private var readAdb: ReadAdbKotlin? = null
     private var readWifi: ReadWifiKotlin? = null
@@ -604,7 +604,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
                 tryIt({
                     doWaitingJob {
-                        readCalls = ReadCallsKotlin(JOBCODE_READ_CALLS, this, calls_main_item, calls_selected_status, calls_read_progress, do_backup_calls)
+                        readCalls = ReadCallsKotlin_legacy(JOBCODE_READ_CALLS, this, calls_main_item, calls_selected_status, calls_read_progress, do_backup_calls)
                         readCalls?.execute()
                     }
                 }, true)
