@@ -11,8 +11,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import balti.migrate.AppInstance.Companion.contactsList
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.ExtrasParentFragment
 import balti.migrate.extraBackupsActivity.ExtrasParentReader
+import balti.migrate.extraBackupsActivity.ParentFragmentForExtras
 import balti.migrate.extraBackupsActivity.ReaderJobResultHolder
 import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
 import balti.module.baltitoolbox.functions.Misc.runOnMainThread
@@ -21,7 +21,7 @@ import balti.module.baltitoolbox.functions.Misc.showErrorDialog
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import kotlinx.android.synthetic.main.extra_fragment_contacts.*
 
-class ContactsFragment: ExtrasParentFragment(R.layout.extra_fragment_contacts) {
+class ContactsFragment: ParentFragmentForExtras(R.layout.extra_fragment_contacts) {
 
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
     private lateinit var selectorLauncher: ActivityResultLauncher<Intent>

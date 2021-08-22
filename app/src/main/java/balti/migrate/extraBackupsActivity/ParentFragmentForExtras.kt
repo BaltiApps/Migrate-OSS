@@ -13,7 +13,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import balti.module.baltitoolbox.functions.Misc.tryIt
 
-abstract class ExtrasParentFragment(layoutId: Int): Fragment() {
+abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
 
     private val rootView: LinearLayout by lazy { View.inflate(activity, layoutId, null) as LinearLayout }
     var mActivity: Activity? = null
