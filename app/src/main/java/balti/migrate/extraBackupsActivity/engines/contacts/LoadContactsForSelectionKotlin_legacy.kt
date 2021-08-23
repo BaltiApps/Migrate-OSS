@@ -1,11 +1,11 @@
-package balti.migrate.extraBackupsActivity.contacts
+package balti.migrate.extraBackupsActivity.engines.contacts
 
 import android.content.Context
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
-import balti.migrate.extraBackupsActivity.contacts.utils.ContactListAdapterKotlin
+import balti.migrate.extraBackupsActivity.engines.contacts.containers.ContactsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.engines.contacts.utils.ContactListAdapterKotlin
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask

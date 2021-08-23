@@ -1,4 +1,4 @@
-package balti.migrate.extraBackupsActivity.contacts
+package balti.migrate.extraBackupsActivity.engines.contacts
 
 import android.content.Context
 import android.database.Cursor
@@ -8,8 +8,8 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
-import balti.migrate.extraBackupsActivity.contacts.utils.VcfToolsKotlin
+import balti.migrate.extraBackupsActivity.engines.contacts.containers.ContactsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.engines.contacts.utils.VcfToolsKotlin
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask

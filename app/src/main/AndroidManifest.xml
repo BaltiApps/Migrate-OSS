@@ -106,7 +106,7 @@
             />
 
         <!--Extra selectors-->
-        <activity android:name=".extraBackupsActivity.contacts.LoadContactsForSelection"
+        <activity android:name="balti.migrate.extraBackupsActivity.engines.contacts.LoadContactsForSelection"
             android:theme="@style/AppTheme.Floating"/>
         <activity android:name=".extraBackupsActivity.calls.LoadCallsForSelection"
             android:theme="@style/AppTheme.Floating"/>

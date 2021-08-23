@@ -146,7 +146,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/contacts_fragment"
-                android:name="balti.migrate.extraBackupsActivity.contacts.ContactsFragment"
+                android:name="balti.migrate.extraBackupsActivity.engines.contacts.ContactsFragment"
                 />
 
             <LinearLayout

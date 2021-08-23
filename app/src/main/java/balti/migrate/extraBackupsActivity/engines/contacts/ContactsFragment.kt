@@ -1,4 +1,4 @@
-package balti.migrate.extraBackupsActivity.contacts
+package balti.migrate.extraBackupsActivity.engines.contacts
 
 import android.Manifest
 import android.app.Activity
@@ -14,7 +14,7 @@ import balti.migrate.R
 import balti.migrate.extraBackupsActivity.ParentFragmentForExtras
 import balti.migrate.extraBackupsActivity.ParentReaderForExtras
 import balti.migrate.extraBackupsActivity.ReaderJobResultHolder
-import balti.migrate.extraBackupsActivity.contacts.containers.ContactsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.engines.contacts.containers.ContactsDataPacketKotlin
 import balti.module.baltitoolbox.functions.Misc.runOnMainThread
 import balti.module.baltitoolbox.functions.Misc.runSuspendFunction
 import balti.module.baltitoolbox.functions.Misc.showErrorDialog
