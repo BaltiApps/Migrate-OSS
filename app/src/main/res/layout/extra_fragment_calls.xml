@@ -13,7 +13,10 @@
     android:orientation="horizontal"
     android:padding="@dimen/small_padding_width"
     android:paddingTop="@dimen/extra_items_padding"
-    android:paddingBottom="@dimen/extra_items_padding">
+    android:paddingBottom="@dimen/extra_items_padding"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="balti.migrate.extraBackupsActivity.engines.calls.CallsFragment"
+    >
 
     <ImageView
         android:layout_width="wrap_content"
