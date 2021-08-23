@@ -2,11 +2,13 @@ package balti.migrate.extraBackupsActivity.calls.utils
 
 import android.content.Context
 import android.provider.CallLog
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.calls.containers.CallsDataPacketsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
 import kotlinx.android.synthetic.main.calls_item.view.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -57,7 +59,12 @@ class CallsListAdapterKotlin(val context: Context,
                     "${CallLog.Calls.INCOMING_TYPE}" -> R.drawable.ic_incoming_call
                     "${CallLog.Calls.OUTGOING_TYPE}" -> R.drawable.ic_outgoing_call
                     "${CallLog.Calls.MISSED_TYPE}" -> R.drawable.ic_missed_call
-                    else -> R.drawable.ic_call_log_icon
+                    "${CallLog.Calls.BLOCKED_TYPE}" -> R.drawable.ic_blocked_call
+                    "${CallLog.Calls.REJECTED_TYPE}" -> R.drawable.ic_missed_call
+                    else -> {
+                        Log.d(DEBUG_TAG, "Call log: ${view.calls_item_person.text}, type - ${cdp.callsType}")
+                        R.drawable.ic_call_log_icon
+                    }
                 }
         )
 
