@@ -108,7 +108,7 @@
         <!--Extra selectors-->
         <activity android:name="balti.migrate.extraBackupsActivity.engines.contacts.LoadContactsForSelection"
             android:theme="@style/AppTheme.Floating"/>
-        <activity android:name=".extraBackupsActivity.calls.LoadCallsForSelection"
+        <activity android:name="balti.migrate.extraBackupsActivity.engines.calls.LoadCallsForSelection"
             android:theme="@style/AppTheme.Floating"/>
 
         <service android:name=".backupEngines.BackupServiceKotlin"/>
