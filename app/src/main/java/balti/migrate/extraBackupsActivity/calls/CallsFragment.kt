@@ -102,6 +102,7 @@ class CallsFragment: ParentFragmentForExtras(R.layout.extra_fragment_calls) {
             delegateStatusText?.text = "$n ${getString(R.string.of)} ${callsList.size}"
             delegateMainItem?.setOnClickListener {
                 //LoadCallsForSelectionKotlin(JOBCODE_LOAD_CALLS, this, callsList).execute()
+                selectorLauncher.launch(Intent(mActivity, LoadCallsForSelection::class.java))
             }
         }
         else {
