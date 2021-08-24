@@ -110,6 +110,8 @@
             android:theme="@style/AppTheme.Floating"/>
         <activity android:name="balti.migrate.extraBackupsActivity.engines.calls.LoadCallsForSelection"
             android:theme="@style/AppTheme.Floating"/>
+        <activity android:name="balti.migrate.extraBackupsActivity.sms.LoadSmsForSelection"
+            android:theme="@style/AppTheme.Floating"/>
 
         <service android:name=".backupEngines.BackupServiceKotlin"/>
 
