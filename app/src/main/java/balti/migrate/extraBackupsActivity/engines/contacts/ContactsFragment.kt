@@ -65,7 +65,7 @@ class ContactsFragment: ParentFragmentForExtras(R.layout.extra_fragment_contacts
                         .setCancelable(false)
                         .show()
                 }
-                else deselectExtra(contactsList, listOf(contacts_read_progress, contacts_read_text_status))
+                else deselectExtra(contactsList, listOf(delegateProgressBar, delegateStatusText))
             }
         }
 

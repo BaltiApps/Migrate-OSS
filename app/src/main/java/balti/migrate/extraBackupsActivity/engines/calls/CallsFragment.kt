@@ -55,7 +55,7 @@ class CallsFragment: ParentFragmentForExtras(R.layout.extra_fragment_calls) {
                 if (isChecked){
                     permissionLauncher.launch(Manifest.permission.READ_CALL_LOG)
                 }
-                else deselectExtra(callsList, listOf(calls_read_progress, calls_read_text_status))
+                else deselectExtra(callsList, listOf(delegateProgressBar, delegateStatusText))
             }
         }
     }
