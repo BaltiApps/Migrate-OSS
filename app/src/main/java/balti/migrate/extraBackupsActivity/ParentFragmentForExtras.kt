@@ -60,11 +60,11 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
         return try { rootView.findViewById(viewId) } catch (_: Exception) { null }
     }
 
-    protected fun deselectExtra(dataContainer: ArrayList<*>?, viewsToHide: List<View>? = null, viewsToShow: List<View>? = null) {
+    protected fun deselectExtra(dataContainer: ArrayList<*>?, viewsToHide: List<View?>? = null, viewsToShow: List<View?>? = null) {
         dataContainer?.clear()
         delegateMainItem?.isClickable = false
-        viewsToHide?.forEach { it.visibility = View.GONE }
-        viewsToShow?.forEach { it.visibility = View.VISIBLE }    //usually includes Stock Android recommended label
+        viewsToHide?.forEach { it?.visibility = View.GONE }
+        viewsToShow?.forEach { it?.visibility = View.VISIBLE }    //usually includes Stock Android recommended label
         tryIt { readTask.cancel() }
     }
 
