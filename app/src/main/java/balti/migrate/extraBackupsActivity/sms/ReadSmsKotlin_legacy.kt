@@ -14,12 +14,12 @@ import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 
-class ReadSmsKotlin(private val jobCode: Int,
-                    private val context: Context,
-                    private val menuMainItem: LinearLayout,
-                    private val menuSelectedStatus: TextView,
-                    private val menuReadProgressBar: ProgressBar,
-                    private val doBackupCheckbox: CheckBox
+class ReadSmsKotlin_legacy(private val jobCode: Int,
+                           private val context: Context,
+                           private val menuMainItem: LinearLayout,
+                           private val menuSelectedStatus: TextView,
+                           private val menuReadProgressBar: ProgressBar,
+                           private val doBackupCheckbox: CheckBox
                     ) : AsyncCoroutineTask() {
 
     private var smsCount = 0
