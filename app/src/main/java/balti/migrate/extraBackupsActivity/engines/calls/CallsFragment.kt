@@ -75,7 +75,7 @@ class CallsFragment: ParentFragmentForExtras(R.layout.extra_fragment_calls) {
                 delegateCheckbox?.isChecked = false
                 showErrorDialog(
                     jobResults.result.toString(),
-                    getString(R.string.error_reading_contacts)
+                    getString(R.string.error_reading_calls)
                 )
             }
         }
@@ -84,7 +84,7 @@ class CallsFragment: ParentFragmentForExtras(R.layout.extra_fragment_calls) {
     private fun updateCalls(newList: ArrayList<CallsDataPacketsKotlin> = callsList){
 
         callsList.apply {
-            if (newList != callsList){
+            if (newList != this){
                 clear()
                 addAll(newList)
             }
