@@ -130,8 +130,4 @@ class ContactsFragment: ParentFragmentForExtras(R.layout.extra_fragment_contacts
     override val viewIdStatusText: Int = R.id.contacts_read_text_status
     override val viewIdProgressBar: Int = R.id.contacts_read_progress
     override val viewIdCheckbox: Int = R.id.contacts_fragment_checkbox
-
-    override fun isChecked(): Boolean? = try {
-        delegateCheckbox?.isChecked
-    } catch (e: Exception) { null }
 }

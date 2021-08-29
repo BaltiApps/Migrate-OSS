@@ -119,8 +119,4 @@ class CallsFragment: ParentFragmentForExtras(R.layout.extra_fragment_calls) {
     override val viewIdProgressBar: Int = R.id.calls_read_progress
     override val viewIdCheckbox: Int = R.id.calls_fragment_checkbox
 
-    override fun isChecked(): Boolean? = try {
-        delegateCheckbox?.isChecked
-    } catch (e: Exception) { null }
-
 }

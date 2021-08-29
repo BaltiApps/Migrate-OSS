@@ -119,8 +119,4 @@ class SmsFragment: ParentFragmentForExtras(R.layout.extra_fragment_sms) {
     override val viewIdProgressBar: Int = R.id.sms_read_progress
     override val viewIdCheckbox: Int = R.id.sms_fragment_checkbox
 
-    override fun isChecked(): Boolean? = try {
-        delegateCheckbox?.isChecked
-    } catch (e: Exception) { null }
-
 }
