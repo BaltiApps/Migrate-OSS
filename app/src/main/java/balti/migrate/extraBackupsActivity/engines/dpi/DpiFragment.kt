@@ -7,7 +7,6 @@ import balti.migrate.AppInstance.Companion.dpiText
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.ParentFragmentForExtras
 import balti.migrate.extraBackupsActivity.ParentReaderForExtras
-import balti.migrate.extraBackupsActivity.ReaderJobResultHolder
 import balti.module.baltitoolbox.functions.Misc.runOnMainThread
 import balti.module.baltitoolbox.functions.Misc.runSuspendFunction
 import balti.module.baltitoolbox.functions.Misc.showErrorDialog
@@ -24,7 +23,7 @@ class DpiFragment: ParentFragmentForExtras(R.layout.extra_fragment_dpi) {
             readTask = ReadDpiKotlin(this)
 
             runSuspendFunction {
-                val jobResults = readTask.executeWithResult() as ReaderJobResultHolder
+                val jobResults = readTask.executeWithResult()
 
                 if (jobResults.success) {
 

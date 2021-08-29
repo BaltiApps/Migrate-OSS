@@ -13,7 +13,6 @@ import balti.migrate.AppInstance.Companion.callsList
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.ParentFragmentForExtras
 import balti.migrate.extraBackupsActivity.ParentReaderForExtras
-import balti.migrate.extraBackupsActivity.ReaderJobResultHolder
 import balti.migrate.extraBackupsActivity.engines.calls.containers.CallsDataPacketsKotlin
 import balti.module.baltitoolbox.functions.Misc.runOnMainThread
 import balti.module.baltitoolbox.functions.Misc.runSuspendFunction
@@ -64,7 +63,7 @@ class CallsFragment: ParentFragmentForExtras(R.layout.extra_fragment_calls) {
         readTask = ReadCallsKotlin(this)
 
         runSuspendFunction {
-            val jobResults = readTask.executeWithResult() as ReaderJobResultHolder
+            val jobResults = readTask.executeWithResult()
             if (jobResults.success) {
                 runOnMainThread {
                     tryIt({
