@@ -2,20 +2,57 @@ package balti.migrate.extraBackupsActivity.dpi
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import balti.migrate.AppInstance.Companion.dpiText
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.ParentFragmentForExtras
+import balti.migrate.extraBackupsActivity.ParentReaderForExtras
+import balti.migrate.extraBackupsActivity.ReaderJobResultHolder
+import balti.module.baltitoolbox.functions.Misc.runOnMainThread
+import balti.module.baltitoolbox.functions.Misc.runSuspendFunction
+import balti.module.baltitoolbox.functions.Misc.showErrorDialog
+import balti.module.baltitoolbox.functions.Misc.tryIt
 
 class DpiFragment: ParentFragmentForExtras(R.layout.extra_fragment_dpi) {
 
-    override fun onCreateFragment() {
-        super.onCreateFragment()
-    }
+    override lateinit var readTask: ParentReaderForExtras
 
     private fun startReadTask(){
         showStockWarning({
             delegateSalView?.visibility = View.GONE
             // call Read dpi kotlin
+            readTask = ReadDpiKotlin(this)
+
+            runSuspendFunction {
+                val jobResults = readTask.executeWithResult() as ReaderJobResultHolder
+
+                if (jobResults.success) {
+
+                    dpiText = jobResults.result.toString()
+
+                    runOnMainThread {
+                        tryIt({
+                              delegateMainItem?.setOnClickListener {
+                                  mActivity?.let { it1 ->
+                                      AlertDialog.Builder(it1)
+                                          .setTitle(R.string.dpi_label)
+                                          .setMessage(dpiText)
+                                          .setNegativeButton(R.string.close, null)
+                                          .show()
+                                  }
+
+                              }
+                        }, true)
+                    }
+                } else {
+                    delegateCheckbox?.isChecked = false
+                    showErrorDialog(
+                        jobResults.result.toString(),
+                        getString(R.string.error_reading_dpi)
+                    )
+                }
+            }
+
         }, {
             delegateCheckbox?.isChecked = false
         })
@@ -42,5 +79,5 @@ class DpiFragment: ParentFragmentForExtras(R.layout.extra_fragment_dpi) {
 
     override val viewIdStatusText: Int = R.id.dpi_read_text_status
     override val viewIdProgressBar: Int = R.id.dpi_read_progress
-    override val viewIdCheckbox: Int = R.id.calls_fragment_checkbox
+    override val viewIdCheckbox: Int = R.id.dpi_fragment_checkbox
 }
