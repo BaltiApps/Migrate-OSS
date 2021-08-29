@@ -9,7 +9,7 @@ import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
-import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.engines.sms.containers.SmsDataPacketKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_SMS_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_SMS_WRITE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_SMS_WRITE_TO_ACTUAL

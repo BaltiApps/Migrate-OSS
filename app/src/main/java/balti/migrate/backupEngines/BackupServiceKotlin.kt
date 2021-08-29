@@ -36,7 +36,7 @@ import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.apps.containers.MDP_Packet
 import balti.migrate.extraBackupsActivity.engines.calls.containers.CallsDataPacketsKotlin
 import balti.migrate.extraBackupsActivity.engines.contacts.containers.ContactsDataPacketKotlin
-import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.engines.sms.containers.SmsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.simpleActivities.ProgressShowActivity
 import balti.migrate.storageSelector.StorageType

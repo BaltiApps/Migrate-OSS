@@ -1,11 +1,11 @@
-package balti.migrate.extraBackupsActivity.sms
+package balti.migrate.extraBackupsActivity.engines.sms
 
 import android.content.Context
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
-import balti.migrate.extraBackupsActivity.sms.utils.SmsListAdapterKotlin
+import balti.migrate.extraBackupsActivity.engines.sms.containers.SmsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.engines.sms.utils.SmsListAdapterKotlin
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask

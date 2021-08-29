@@ -1,4 +1,4 @@
-package balti.migrate.extraBackupsActivity.sms
+package balti.migrate.extraBackupsActivity.engines.sms
 
 import android.content.Context
 import android.database.Cursor
@@ -8,8 +8,8 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.sms.containers.SmsDataPacketKotlin
-import balti.migrate.extraBackupsActivity.sms.utils.SmsToolsKotlin
+import balti.migrate.extraBackupsActivity.engines.sms.containers.SmsDataPacketKotlin
+import balti.migrate.extraBackupsActivity.engines.sms.utils.SmsToolsKotlin
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.utils.ViewOperations
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask

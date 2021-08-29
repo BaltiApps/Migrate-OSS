@@ -1,4 +1,4 @@
-package balti.migrate.extraBackupsActivity.sms.containers
+package balti.migrate.extraBackupsActivity.engines.sms.containers
 
 data class SmsDataPacketKotlin(val smsAddress: String?, val smsBody: String?, val smsDate: String?,
                                val smsDateSent: String?, val smsType: String?, val smsCreator: String?,

@@ -48,10 +48,10 @@ import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.dpi.ReadDpiKotlin
 import balti.migrate.extraBackupsActivity.engines.calls.CallsFragment
 import balti.migrate.extraBackupsActivity.engines.contacts.ContactsFragment
+import balti.migrate.extraBackupsActivity.engines.sms.SmsFragment
 import balti.migrate.extraBackupsActivity.fontScale.ReadFontScaleKotlin
 import balti.migrate.extraBackupsActivity.installer.LoadInstallersForSelection
 import balti.migrate.extraBackupsActivity.keyboard.LoadKeyboardForSelection
-import balti.migrate.extraBackupsActivity.sms.SmsFragment
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.wifi.ReadWifiKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
