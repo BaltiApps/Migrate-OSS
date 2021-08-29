@@ -33,7 +33,7 @@ import balti.migrate.AppInstance.Companion.adbState
 import balti.migrate.AppInstance.Companion.appBackupDataPackets
 import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.AppInstance.Companion.doBackupInstallers
-import balti.migrate.AppInstance.Companion.dpiText
+//import balti.migrate.AppInstance.Companion.dpiText
 import balti.migrate.AppInstance.Companion.fontScale
 import balti.migrate.AppInstance.Companion.keyboardText
 import balti.migrate.AppInstance.Companion.selectedBackupDataPackets
@@ -45,7 +45,8 @@ import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.extraBackupsActivity.adb.ReadAdbKotlin
 import balti.migrate.extraBackupsActivity.apps.MakeAppPackets
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
-import balti.migrate.extraBackupsActivity.dpi.ReadDpiKotlin_legacy
+import balti.migrate.extraBackupsActivity.dpi.DpiFragment
+//import balti.migrate.extraBackupsActivity.dpi.ReadDpiKotlin_legacy
 import balti.migrate.extraBackupsActivity.engines.calls.CallsFragment
 import balti.migrate.extraBackupsActivity.engines.contacts.ContactsFragment
 import balti.migrate.extraBackupsActivity.engines.sms.SmsFragment
@@ -69,7 +70,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_INSTALLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_KEYBOARDS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_MAKE_APP_PACKETS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_ADB
-import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_DPI
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_DPI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_FONTSCALE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_WIFI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
@@ -77,7 +78,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_PLAY_STO
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_AUTOSELECT_EXTRAS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_ADB
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_CALLS
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_DPI
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_DPI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_FONTSCALE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_INSTALLERS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_SMS
@@ -113,7 +114,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     //extras_markers
     //private var readSms: ReadSmsKotlin_legacy? = null
     //private var readCalls: ReadCallsKotlin_legacy? = null
-    private var readDpi: ReadDpiKotlin_legacy? = null
+    //private var readDpi: ReadDpiKotlin_legacy? = null
     private var readAdb: ReadAdbKotlin? = null
     private var readWifi: ReadWifiKotlin? = null
     private var readFontScale: ReadFontScaleKotlin? = null
@@ -133,6 +134,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private val contactsFragment: ContactsFragment by lazy { supportFragmentManager.findFragmentById(R.id.contacts_fragment) as ContactsFragment }
     private val callsFragment: CallsFragment by lazy { supportFragmentManager.findFragmentById(R.id.calls_fragment) as CallsFragment }
     private val smsFragment: SmsFragment by lazy { supportFragmentManager.findFragmentById(R.id.sms_fragment) as SmsFragment }
+    private val dpiFragment: DpiFragment by lazy { supportFragmentManager.findFragmentById(R.id.dpi_fragment) as DpiFragment }
 
     private val dialogView by lazy { View.inflate(this, R.layout.please_wait, null) }
     private val waitingDialog by lazy {
@@ -232,7 +234,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             val allReadTasks = arrayOf(
                     //readSms,
                     //readCalls,
-                    readDpi,
+                    //readDpi,
                     readAdb,
                     readWifi,
                     readFontScale
@@ -249,7 +251,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             if (!isAnyRunning) {
                 if (selectedBackupDataPackets.isNotEmpty()
                     || contactsFragment.isChecked() == true || callsFragment.isChecked() == true
-                        || smsFragment.isChecked() == true || do_backup_dpi.isChecked || do_backup_keyboard.isChecked
+                    || smsFragment.isChecked() == true || dpiFragment.isChecked() == true
+                    || do_backup_keyboard.isChecked
                         || do_backup_adb.isChecked || do_backup_wifi.isChecked || do_backup_fontScale.isChecked) {                  //extras_markers
 
                     if (IS_OTHER_APP_DATA_VISIBLE || selectedBackupDataPackets.filter { it.DATA }.isEmpty())
@@ -291,7 +294,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                  //extras_markers
         //do_backup_sms.setOnCheckedChangeListener(this)
         //do_backup_calls.setOnCheckedChangeListener(this)
-        do_backup_dpi.setOnCheckedChangeListener(this)
+        //do_backup_dpi.setOnCheckedChangeListener(this)
         do_backup_keyboard.setOnCheckedChangeListener(this)
         do_backup_installers.setOnCheckedChangeListener(this)
         do_backup_adb.setOnCheckedChangeListener(this)
@@ -325,7 +328,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             do_backup_installers.isChecked = getPrefBoolean(PREF_BACKUP_INSTALLERS, true)
             if (!getPrefBoolean(PREF_SHOW_STOCK_WARNING, true)){
                 do_backup_adb.isChecked = getPrefBoolean(PREF_BACKUP_ADB, false)
-                do_backup_dpi.isChecked = getPrefBoolean(PREF_BACKUP_DPI, false)
+                //do_backup_dpi.isChecked = getPrefBoolean(PREF_BACKUP_DPI, false)
                 do_backup_fontScale.isChecked = getPrefBoolean(PREF_BACKUP_FONTSCALE, false)
             }
         }
@@ -438,7 +441,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
             putPrefBoolean(PREF_BACKUP_CALLS, isChecked)
 
-        }*/ if (buttonView == do_backup_dpi) {
+        }*/ /*if (buttonView == do_backup_dpi) {
             if (isChecked) {
 
                 showStockWarning({
@@ -458,7 +461,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
             putPrefBoolean(PREF_BACKUP_DPI, isChecked)
 
-        } else if (buttonView == do_backup_adb) {
+        }*/  if (buttonView == do_backup_adb) {
             if (isChecked) {
 
                 showStockWarning({
@@ -784,7 +787,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     }, true)
                 }*/
 
-            JOBCODE_READ_DPI ->
+            /*JOBCODE_READ_DPI ->
                 tryIt ({
                     jobResult.toString().let {
                         if (jobSuccess) dpiText = it
@@ -793,7 +796,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                             showErrorDialog(it, getString(R.string.error_reading_dpi))
                         }
                     }
-                }, true)
+                }, true)*/
 
 
             JOBCODE_READ_ADB ->
@@ -1030,7 +1033,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         //tryIt { readContacts?.cancel(true) }
         //tryIt { readSms?.cancel(true) }
         //tryIt { readCalls?.cancel(true) }
-        tryIt { readDpi?.cancel(true) }
+        //tryIt { readDpi?.cancel(true) }
         tryIt { readAdb?.cancel(true) }
         tryIt { readWifi?.cancel(true) }
         tryIt { readFontScale?.cancel(true) }
