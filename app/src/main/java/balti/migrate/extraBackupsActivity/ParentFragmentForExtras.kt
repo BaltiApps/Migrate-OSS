@@ -99,9 +99,12 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
         }
     }
 
+    open fun isChecked(): Boolean? = try {
+        delegateCheckbox?.isChecked
+    } catch (e: Exception) { null }
+
     open fun onCreateFragment(){}
     abstract fun onCreateView(savedInstanceState: Bundle?)
-    abstract fun isChecked(): Boolean?
     abstract val readTask: ParentReaderForExtras
     abstract val viewIdStatusText: Int
     abstract val viewIdProgressBar: Int
