@@ -22,7 +22,16 @@ abstract class ParentReaderForExtras(private val fragment: ParentFragmentForExtr
     val readProgressBar: ProgressBar? get() = fragment.delegateProgressBar
     val doBackupCheckBox: CheckBox? get() = fragment.delegateCheckbox
 
+    final override suspend fun doInBackground(arg: Any?): Any {
+        return backgroundProcessing()
+    }
+
+    final suspend fun executeWithResult(): ReaderJobResultHolder {
+        return super.executeWithResult(null) as ReaderJobResultHolder
+    }
 
     abstract val className: String
+    abstract suspend fun backgroundProcessing(): ReaderJobResultHolder
+
 
 }
