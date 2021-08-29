@@ -45,7 +45,7 @@ import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.extraBackupsActivity.adb.ReadAdbKotlin
 import balti.migrate.extraBackupsActivity.apps.MakeAppPackets
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
-import balti.migrate.extraBackupsActivity.dpi.ReadDpiKotlin
+import balti.migrate.extraBackupsActivity.dpi.ReadDpiKotlin_legacy
 import balti.migrate.extraBackupsActivity.engines.calls.CallsFragment
 import balti.migrate.extraBackupsActivity.engines.contacts.ContactsFragment
 import balti.migrate.extraBackupsActivity.engines.sms.SmsFragment
@@ -113,7 +113,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     //extras_markers
     //private var readSms: ReadSmsKotlin_legacy? = null
     //private var readCalls: ReadCallsKotlin_legacy? = null
-    private var readDpi: ReadDpiKotlin? = null
+    private var readDpi: ReadDpiKotlin_legacy? = null
     private var readAdb: ReadAdbKotlin? = null
     private var readWifi: ReadWifiKotlin? = null
     private var readFontScale: ReadFontScaleKotlin? = null
@@ -443,7 +443,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
                 showStockWarning({
                     doWaitingJob {
-                        readDpi = ReadDpiKotlin(JOBCODE_READ_DPI, this, dpi_main_item, dpi_selected_status, dpi_read_progress, do_backup_dpi)
+                        readDpi = ReadDpiKotlin_legacy(JOBCODE_READ_DPI, this, dpi_main_item, dpi_selected_status, dpi_read_progress, do_backup_dpi)
                         readDpi?.execute()
                     }
                 }, {
