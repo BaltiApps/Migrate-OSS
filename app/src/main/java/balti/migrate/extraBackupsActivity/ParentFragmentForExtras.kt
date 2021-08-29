@@ -10,8 +10,12 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import balti.migrate.R
+import balti.migrate.utilities.CommonToolsKotlin
 import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.SharedPrefs
 
 abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
 
@@ -22,6 +26,7 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
     var delegateStatusText: TextView? = null
     var delegateProgressBar: ProgressBar? = null
     var delegateCheckbox: CheckBox? = null
+    var delegateSalView: TextView? = null
 
     final override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,6 +49,7 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
         delegateStatusText = getViewOrNull(viewIdStatusText)
         delegateProgressBar = getViewOrNull(viewIdProgressBar)
         delegateCheckbox = getViewOrNull(viewIdCheckbox)
+        delegateSalView = viewIdSalView?.let { getViewOrNull(it) }
         mActivity = context as Activity
     }
 
@@ -52,6 +58,7 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
         delegateStatusText = null
         delegateProgressBar = null
         delegateCheckbox = null
+        delegateSalView = null
         super.onDetach()
         mActivity = null
     }
@@ -68,6 +75,30 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
         tryIt { readTask.cancel() }
     }
 
+    fun showStockWarning(fPositive: () -> Unit, fNegative: () -> Unit) {
+        mActivity?.let {
+            if (SharedPrefs.getPrefBoolean(CommonToolsKotlin.PREF_SHOW_STOCK_WARNING, true)) {
+                AlertDialog.Builder(it)
+                        .setTitle(R.string.stock_android_title)
+                        .setMessage(R.string.stock_android_desc)
+                        .setPositiveButton(R.string.go_ahead) { _, _ ->
+                            fPositive()
+                        }
+                        .setNegativeButton(android.R.string.cancel) { _, _ ->
+                            fNegative()
+                        }
+                        .setNeutralButton(R.string.dont_show_stock_warning) { _, _ ->
+                            SharedPrefs.putPrefBoolean(CommonToolsKotlin.PREF_SHOW_STOCK_WARNING, false, immediate = true)
+                            fPositive()
+                        }
+                        .setCancelable(false)
+                        .show()
+            } else {
+                fPositive()
+            }
+        }
+    }
+
     open fun onCreateFragment(){}
     abstract fun onCreateView(savedInstanceState: Bundle?)
     abstract fun isChecked(): Boolean?
@@ -75,4 +106,5 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
     abstract val viewIdStatusText: Int
     abstract val viewIdProgressBar: Int
     abstract val viewIdCheckbox: Int
+    open val viewIdSalView: Int? = null
 }
