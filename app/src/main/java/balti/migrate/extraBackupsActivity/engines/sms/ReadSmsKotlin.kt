@@ -64,7 +64,7 @@ class ReadSmsKotlin(fragment: SmsFragment): ParentReaderForExtras(fragment) {
         isSmsChecked = doBackupCheckBox?.isChecked ?: false
     }
 
-    override suspend fun doInBackground(arg: Any?): Any? {
+    override suspend fun backgroundProcessing(): ReaderJobResultHolder {
 
         writeLog("Starting reading SMS")
 

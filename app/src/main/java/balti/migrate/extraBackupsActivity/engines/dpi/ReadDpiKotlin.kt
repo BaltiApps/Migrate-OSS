@@ -23,7 +23,7 @@ class ReadDpiKotlin(fragment: DpiFragment): ParentReaderForExtras(fragment) {
         readProgressBar?.visibility = View.VISIBLE
     }
 
-    override suspend fun doInBackground(arg: Any?): Any {
+    override suspend fun backgroundProcessing(): ReaderJobResultHolder {
 
         writeLog("Starting reading")
 

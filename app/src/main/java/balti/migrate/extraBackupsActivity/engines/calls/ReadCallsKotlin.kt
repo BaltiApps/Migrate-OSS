@@ -46,7 +46,7 @@ class ReadCallsKotlin(fragment: CallsFragment): ParentReaderForExtras(fragment) 
     }
 
 
-    override suspend fun doInBackground(arg: Any?): Any {
+    override suspend fun backgroundProcessing(): ReaderJobResultHolder {
 
         writeLog("Starting reading")
 
