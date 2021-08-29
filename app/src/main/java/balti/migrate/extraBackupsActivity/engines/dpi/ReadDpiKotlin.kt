@@ -64,21 +64,28 @@ class ReadDpiKotlin(fragment: DpiFragment): ParentReaderForExtras(fragment) {
             e.printStackTrace()
         }
 
-        doOnMainThreadParallel {
-            doBackupCheckBox?.isEnabled = true
-            readProgressBar?.visibility = View.GONE
-        }
-
         return if (error == "") {
-            doOnMainThreadParallel {
-                mainItem?.isClickable = true
-                readStatusText?.visibility = View.VISIBLE
-            }
             writeLog("Read success. Read - $dpiText")
             ReaderJobResultHolder(true, dpiText)
         } else {
             writeLog("Read fail. Error - $error")
             ReaderJobResultHolder(false, error)
         }
+    }
+
+    override suspend fun onPostExecute(result: Any?) {
+        super.onPostExecute(result)
+
+        writeLog("Post execute")
+
+        doBackupCheckBox?.isEnabled = true
+        readProgressBar?.visibility = View.GONE
+
+        if (error == "") {
+            mainItem?.isClickable = true
+            readStatusText?.visibility = View.VISIBLE
+        }
+
+        writeLog("Post execute complete")
     }
 }

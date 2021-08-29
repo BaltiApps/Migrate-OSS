@@ -82,9 +82,6 @@ class ReadCallsKotlin(fragment: CallsFragment): ParentReaderForExtras(fragment) 
         }
 
         return if (error == "") {
-            doOnMainThreadParallel {
-                mainItem?.isClickable = true
-            }
             writeLog("Read success. Read - ${tmpList.size}")
             ReaderJobResultHolder(true, tmpList)
         } else {
@@ -97,5 +94,12 @@ class ReadCallsKotlin(fragment: CallsFragment): ParentReaderForExtras(fragment) 
         super.onProgressUpdate(*values)
         readProgressBar?.progress = values[0] as Int
         readStatusText?.text = values[1] as String
+    }
+
+    override suspend fun onPostExecute(result: Any?) {
+        super.onPostExecute(result)
+        if (error == "") {
+            mainItem?.isClickable = true
+        }
     }
 }

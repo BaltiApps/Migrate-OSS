@@ -81,9 +81,6 @@ class ReadContactsKotlin(fragment: ContactsFragment): ParentReaderForExtras(frag
         }
 
         return if (error == "") {
-            doOnMainThreadParallel {
-                mainItem?.isClickable = true
-            }
             writeLog("Read success. Read - ${tmpList.size}")
             ReaderJobResultHolder(true, tmpList)
         } else {
@@ -105,5 +102,12 @@ class ReadContactsKotlin(fragment: ContactsFragment): ParentReaderForExtras(frag
         super.onProgressUpdate(*values)
         readProgressBar?.progress = values[0] as Int
         readStatusText?.text = values[1] as String
+    }
+
+    override suspend fun onPostExecute(result: Any?) {
+        super.onPostExecute(result)
+        if (error == "") {
+            mainItem?.isClickable = true
+        }
     }
 }
