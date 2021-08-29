@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/large_padding_width"
+    android:background="@color/extraItemBg"
+    android:clickable="true"
+    android:elevation="10dp"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/small_padding_width"
+    android:paddingTop="@dimen/extra_items_padding"
+    android:paddingBottom="@dimen/extra_items_padding"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="balti.migrate.extraBackupsActivity.dpi.DpiFragment"
+    >
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/extra_items_padding"
+        android:src="@drawable/ic_dpi_icon" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dpi_label"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:id="@+id/dpi_read_text_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/tap_to_see_values"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/selected_text_size"
+            android:visibility="gone" />
+
+
+        <ProgressBar
+            android:id="@+id/dpi_read_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:paddingStart="@dimen/small_padding_width"
+            android:paddingEnd="@dimen/small_padding_width"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/sal_dpi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/stock_android_rom"
+            android:textColor="@color/stock_android_label_color"
+            android:textSize="@dimen/stock_android_label_size"
+            android:textStyle="italic" />
+
+    </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/dpi_fragment_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/small_padding_width" />
+
+</LinearLayout>
