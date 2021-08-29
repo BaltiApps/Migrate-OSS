@@ -167,7 +167,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/dpi_fragment"
-                android:name="balti.migrate.extraBackupsActivity.dpi.DpiFragment"
+                android:name="balti.migrate.extraBackupsActivity.engines.dpi.DpiFragment"
                 />
 
             <LinearLayout
