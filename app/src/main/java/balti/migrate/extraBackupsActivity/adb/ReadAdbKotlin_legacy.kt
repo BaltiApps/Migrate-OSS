@@ -16,12 +16,12 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class ReadAdbKotlin(private val jobCode: Int,
-                    private val context: Context,
-                    private val menuMainItem: LinearLayout,
-                    private val menuSelectedStatus: TextView,
-                    private val menuReadProgressBar: ProgressBar,
-                    private val doBackupCheckbox: CheckBox
+class ReadAdbKotlin_legacy(private val jobCode: Int,
+                           private val context: Context,
+                           private val menuMainItem: LinearLayout,
+                           private val menuSelectedStatus: TextView,
+                           private val menuReadProgressBar: ProgressBar,
+                           private val doBackupCheckbox: CheckBox
 ) : AsyncCoroutineTask() {
 
 
