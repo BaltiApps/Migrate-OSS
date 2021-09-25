@@ -52,7 +52,7 @@ import balti.migrate.extraBackupsActivity.engines.calls.CallsFragment
 import balti.migrate.extraBackupsActivity.engines.contacts.ContactsFragment
 import balti.migrate.extraBackupsActivity.engines.dpi.DpiFragment
 import balti.migrate.extraBackupsActivity.engines.sms.SmsFragment
-import balti.migrate.extraBackupsActivity.fontScale.ReadFontScaleKotlin
+import balti.migrate.extraBackupsActivity.fontScale.ReadFontScaleKotlin_legacy
 import balti.migrate.extraBackupsActivity.installer.LoadInstallersForSelection
 import balti.migrate.extraBackupsActivity.keyboard.LoadKeyboardForSelection
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
@@ -117,7 +117,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     //private var readDpi: ReadDpiKotlin_legacy? = null
     private var readAdb: ReadAdbKotlin? = null
     private var readWifi: ReadWifiKotlin? = null
-    private var readFontScale: ReadFontScaleKotlin? = null
+    private var readFontScale: ReadFontScaleKotlin_legacy? = null
 
     private var makeAppPackets: MakeAppPackets? = null
 
@@ -525,7 +525,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
                 showStockWarning({
                     doWaitingJob {
-                        readFontScale = ReadFontScaleKotlin(JOBCODE_READ_FONTSCALE, this, fontScale_main_item, fontScale_selected_status, fontScale_read_progress, do_backup_fontScale)
+                        readFontScale = ReadFontScaleKotlin_legacy(JOBCODE_READ_FONTSCALE, this, fontScale_main_item, fontScale_selected_status, fontScale_read_progress, do_backup_fontScale)
                         readFontScale?.let { it.execute() }
                     }
                 }, {
