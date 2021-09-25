@@ -37,7 +37,7 @@ import balti.migrate.AppInstance.Companion.adbState
 import balti.migrate.AppInstance.Companion.appBackupDataPackets
 import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.AppInstance.Companion.doBackupInstallers
-import balti.migrate.AppInstance.Companion.fontScale
+//import balti.migrate.AppInstance.Companion.fontScale
 import balti.migrate.AppInstance.Companion.keyboardText
 import balti.migrate.AppInstance.Companion.selectedBackupDataPackets
 import balti.migrate.AppInstance.Companion.wifiData
@@ -52,7 +52,8 @@ import balti.migrate.extraBackupsActivity.engines.calls.CallsFragment
 import balti.migrate.extraBackupsActivity.engines.contacts.ContactsFragment
 import balti.migrate.extraBackupsActivity.engines.dpi.DpiFragment
 import balti.migrate.extraBackupsActivity.engines.sms.SmsFragment
-import balti.migrate.extraBackupsActivity.fontScale.ReadFontScaleKotlin_legacy
+import balti.migrate.extraBackupsActivity.fontScale.FontScaleFragment
+//import balti.migrate.extraBackupsActivity.fontScale.ReadFontScaleKotlin_legacy
 import balti.migrate.extraBackupsActivity.installer.LoadInstallersForSelection
 import balti.migrate.extraBackupsActivity.keyboard.LoadKeyboardForSelection
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
@@ -72,14 +73,14 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_INSTALLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_KEYBOARDS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_MAKE_APP_PACKETS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_ADB
-import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_FONTSCALE
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_FONTSCALE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_WIFI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_AUTOSELECT_EXTRAS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_ADB
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_CALLS
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_FONTSCALE
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_FONTSCALE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_INSTALLERS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
@@ -117,7 +118,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     //private var readDpi: ReadDpiKotlin_legacy? = null
     private var readAdb: ReadAdbKotlin? = null
     private var readWifi: ReadWifiKotlin? = null
-    private var readFontScale: ReadFontScaleKotlin_legacy? = null
+    //private var readFontScale: ReadFontScaleKotlin_legacy? = null
 
     private var makeAppPackets: MakeAppPackets? = null
 
@@ -135,6 +136,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private val callsFragment: CallsFragment by lazy { supportFragmentManager.findFragmentById(R.id.calls_fragment) as CallsFragment }
     private val smsFragment: SmsFragment by lazy { supportFragmentManager.findFragmentById(R.id.sms_fragment) as SmsFragment }
     private val dpiFragment: DpiFragment by lazy { supportFragmentManager.findFragmentById(R.id.dpi_fragment) as DpiFragment }
+    private val fontScaleFragment: FontScaleFragment by lazy { supportFragmentManager.findFragmentById(R.id.font_scale_fragment) as FontScaleFragment }
 
     private val dialogView by lazy { View.inflate(this, R.layout.please_wait, null) }
     private val waitingDialog by lazy {
@@ -237,7 +239,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     //readDpi,
                     readAdb,
                     readWifi,
-                    readFontScale
+                    //readFontScale
             )
 
             var isAnyRunning = false
@@ -253,7 +255,8 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     || contactsFragment.isChecked() == true || callsFragment.isChecked() == true
                     || smsFragment.isChecked() == true || dpiFragment.isChecked() == true
                     || do_backup_keyboard.isChecked
-                        || do_backup_adb.isChecked || do_backup_wifi.isChecked || do_backup_fontScale.isChecked) {                  //extras_markers
+                        || do_backup_adb.isChecked || do_backup_wifi.isChecked
+                    || fontScaleFragment.isChecked() == true) {                  //extras_markers
 
                     if (IS_OTHER_APP_DATA_VISIBLE || selectedBackupDataPackets.filter { it.DATA }.isEmpty())
                         askForName()
@@ -299,7 +302,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         do_backup_installers.setOnCheckedChangeListener(this)
         do_backup_adb.setOnCheckedChangeListener(this)
         do_backup_wifi.setOnCheckedChangeListener(this)
-        do_backup_fontScale.setOnCheckedChangeListener(this)
+        //do_backup_fontScale.setOnCheckedChangeListener(this)
 
         extraBackupsBackButton.setOnClickListener {
             startActivity(Intent(this, BackupActivityKotlin::class.java))
@@ -329,7 +332,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             if (!getPrefBoolean(PREF_SHOW_STOCK_WARNING, true)){
                 do_backup_adb.isChecked = getPrefBoolean(PREF_BACKUP_ADB, false)
                 //do_backup_dpi.isChecked = getPrefBoolean(PREF_BACKUP_DPI, false)
-                do_backup_fontScale.isChecked = getPrefBoolean(PREF_BACKUP_FONTSCALE, false)
+                //do_backup_fontScale.isChecked = getPrefBoolean(PREF_BACKUP_FONTSCALE, false)
             }
         }
 
@@ -520,7 +523,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 wifiData = null
                 deselectExtra(null, wifi_main_item, wifi_selected_status, readWifi, wifi_read_progress, sal_wifi)
             }
-        } else if (buttonView == do_backup_fontScale) {
+        } /*else if (buttonView == do_backup_fontScale) {
             if (isChecked){
 
                 showStockWarning({
@@ -539,7 +542,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             }
 
             putPrefBoolean(PREF_BACKUP_FONTSCALE, isChecked)
-        }
+        }*/
 
     }
 
@@ -859,7 +862,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     }
                 }, true)
 
-            JOBCODE_READ_FONTSCALE ->
+            /*JOBCODE_READ_FONTSCALE ->
                 tryIt ({
                     if (jobSuccess) {
                         if (jobResult == null) {
@@ -877,7 +880,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                         do_backup_fontScale.isChecked = false
                         showErrorDialog(jobResult.toString(), getString(R.string.error_reading_fontScale))
                     }
-                }, true)
+                }, true)*/
 
             JOBCODE_MAKE_APP_PACKETS ->
                 tryIt ({
@@ -1036,7 +1039,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         //tryIt { readDpi?.cancel(true) }
         tryIt { readAdb?.cancel(true) }
         tryIt { readWifi?.cancel(true) }
-        tryIt { readFontScale?.cancel(true) }
+        //tryIt { readFontScale?.cancel(true) }
     }
 
     override fun onBackPressed() {
