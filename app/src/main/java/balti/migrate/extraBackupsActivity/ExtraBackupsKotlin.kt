@@ -14,6 +14,10 @@ package balti.migrate.extraBackupsActivity
 //import balti.migrate.extraBackupsActivity.engines.dpi.ReadDpiKotlin_legacy
 //import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_DPI
 //import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_DPI
+//import balti.migrate.AppInstance.Companion.fontScale
+//import balti.migrate.extraBackupsActivity.engines.fontScale.ReadFontScaleKotlin_legacy
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_FONTSCALE
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_FONTSCALE
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -37,7 +41,6 @@ import balti.migrate.AppInstance.Companion.adbState
 import balti.migrate.AppInstance.Companion.appBackupDataPackets
 import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.AppInstance.Companion.doBackupInstallers
-//import balti.migrate.AppInstance.Companion.fontScale
 import balti.migrate.AppInstance.Companion.keyboardText
 import balti.migrate.AppInstance.Companion.selectedBackupDataPackets
 import balti.migrate.AppInstance.Companion.wifiData
@@ -51,9 +54,8 @@ import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.engines.calls.CallsFragment
 import balti.migrate.extraBackupsActivity.engines.contacts.ContactsFragment
 import balti.migrate.extraBackupsActivity.engines.dpi.DpiFragment
+import balti.migrate.extraBackupsActivity.engines.fontScale.FontScaleFragment
 import balti.migrate.extraBackupsActivity.engines.sms.SmsFragment
-import balti.migrate.extraBackupsActivity.fontScale.FontScaleFragment
-//import balti.migrate.extraBackupsActivity.fontScale.ReadFontScaleKotlin_legacy
 import balti.migrate.extraBackupsActivity.installer.LoadInstallersForSelection
 import balti.migrate.extraBackupsActivity.keyboard.LoadKeyboardForSelection
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
@@ -73,14 +75,12 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_INSTALLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_KEYBOARDS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_MAKE_APP_PACKETS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_ADB
-//import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_FONTSCALE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_WIFI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_AUTOSELECT_EXTRAS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_ADB
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_CALLS
-//import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_FONTSCALE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_INSTALLERS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH

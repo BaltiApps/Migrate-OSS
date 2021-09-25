@@ -432,7 +432,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/font_scale_fragment"
-                android:name="balti.migrate.extraBackupsActivity.fontScale.FontScaleFragment"
+                android:name="balti.migrate.extraBackupsActivity.engines.fontScale.FontScaleFragment"
                 />
 
         </LinearLayout>
