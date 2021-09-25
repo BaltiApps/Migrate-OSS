@@ -31,14 +31,16 @@ class FontScaleFragment: ParentFragmentForExtras(R.layout.extra_fragment_font_sc
 
                     runOnMainThread {
 
-                        if (receivedFontScale > 0) fontScale = receivedFontScale
+                        if (receivedFontScale > 0) {
+                            fontScale = receivedFontScale
+                            delegateStatusText?.text = fontScale.toString()
+                        }
                         else {
                             setDefaultValueForExtraNotPresent({
                                 fontScale = 1.0
+                                delegateStatusText?.text = fontScale.toString()
                             }, R.string.fontScale_label, R.string.no_default_font_scale)
                         }
-
-                        delegateStatusText?.text = fontScale.toString()
 
                         tryIt({
                             delegateMainItem?.setOnClickListener {
