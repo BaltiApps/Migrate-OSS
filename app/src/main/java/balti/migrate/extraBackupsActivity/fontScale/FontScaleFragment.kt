@@ -84,10 +84,10 @@ class FontScaleFragment: ParentFragmentForExtras(R.layout.extra_fragment_font_sc
         }
     }
 
-    override val viewIdSalView: Int = R.id.sal_dpi
+    override val viewIdSalView: Int = R.id.sal_font_scale
 
-    override val viewIdStatusText: Int = R.id.dpi_read_text_status
-    override val viewIdProgressBar: Int = R.id.dpi_read_progress
-    override val viewIdCheckbox: Int = R.id.dpi_fragment_checkbox
+    override val viewIdStatusText: Int = R.id.font_scale_read_text_status
+    override val viewIdProgressBar: Int = R.id.font_scale_read_progress
+    override val viewIdCheckbox: Int = R.id.font_scale_fragment_checkbox
 
 }
