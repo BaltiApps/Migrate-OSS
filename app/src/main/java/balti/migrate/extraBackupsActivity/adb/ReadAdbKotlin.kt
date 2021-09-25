@@ -65,9 +65,9 @@ class ReadAdbKotlin(fragment: AdbFragment): ParentReaderForExtras(fragment) {
 
             adbText = adbText.trim()
 
-            if (adbText.isBlank()) {
+            if (adbText.isBlank() || adbText == "null") {
                 // Usually means ADB is not toggled. Hence return 0.
-                writeLog("Blank ADB state. Returning default value: $adbState")
+                writeLog("Blank ADB state: $adbText. Returning default value: $adbState")
             }
             else try {
                 writeLog("Casting to ADB: $adbText")
