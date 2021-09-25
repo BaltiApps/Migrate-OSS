@@ -5,6 +5,7 @@ import balti.migrate.R
 import balti.migrate.extraBackupsActivity.ParentReaderForExtras
 import balti.migrate.extraBackupsActivity.ReaderJobResultHolder
 import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
@@ -14,7 +15,7 @@ class ReadFontScaleKotlin(fragment: FontScaleFragment): ParentReaderForExtras(fr
 
     private var error = ""
     private var fontScaleText = ""
-    private var scale = 0.0
+    private var scale = -1.0
 
     override val className: String = "ReadFontScaleKotlin"
 
@@ -63,9 +64,17 @@ class ReadFontScaleKotlin(fragment: FontScaleFragment): ParentReaderForExtras(fr
                 }
             }
 
-            if (fontScaleText != "null") scale = fontScaleText.trim().toDouble()
-            if (scale < 0)
+            fontScaleText = fontScaleText.trim()
+
+            if (fontScaleText.isNotBlank() && fontScaleText != "null") tryIt {
+                writeLog("Casting to font scale: $fontScaleText")
+                scale = fontScaleText.trim().toDouble()
+            }
+
+            if (scale <= 0 && scale != -1.0) {
+                writeLog("Weird font scale: $fontScaleText")
                 error = "${getStringFromRes(R.string.weird_font_scale)} ($scale)\n\n$error".trim()
+            }
 
         } catch (e: Exception){
             error += e.message
