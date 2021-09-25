@@ -41,7 +41,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="@string/tap_to_see_values"
             android:textColor="@color/colorAccent"
             android:textSize="@dimen/selected_text_size"
             android:visibility="gone" />
