@@ -31,8 +31,8 @@ class ReadFontScaleKotlin(fragment: FontScaleFragment): ParentReaderForExtras(fr
         writeLog("Starting reading")
 
         try {
-            val dpiReader = Runtime.getRuntime().exec("su")
-            BufferedWriter(OutputStreamWriter(dpiReader.outputStream)).let {
+            val fontScaleReader = Runtime.getRuntime().exec("su")
+            BufferedWriter(OutputStreamWriter(fontScaleReader.outputStream)).let {
 
                 writeLog("Writing to input buffer")
 
@@ -43,7 +43,7 @@ class ReadFontScaleKotlin(fragment: FontScaleFragment): ParentReaderForExtras(fr
                 }
             }
 
-            BufferedReader(InputStreamReader(dpiReader.inputStream)).let {
+            BufferedReader(InputStreamReader(fontScaleReader.inputStream)).let {
 
                 writeLog("Reading result buffer")
 
@@ -53,7 +53,7 @@ class ReadFontScaleKotlin(fragment: FontScaleFragment): ParentReaderForExtras(fr
                 }
             }
 
-            BufferedReader(InputStreamReader(dpiReader.errorStream)).let {
+            BufferedReader(InputStreamReader(fontScaleReader.errorStream)).let {
 
                 writeLog("Reading error buffer")
 
