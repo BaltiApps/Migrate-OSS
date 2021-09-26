@@ -40,10 +40,10 @@ class LoadInstallersForSelection: ParentSelectorActivityForExtras(R.layout.extra
         for (item in AppInstance.appInstallers)
             copiedData.add(PackageVsInstaller(item.key, item.value))
 
-        writeLog("Creating adapter.")
+        writeLog("Creating adapter. Size: ${copiedData.size}")
         if (copiedData.size > 0){
             tryIt {
-                // create adapter
+                adapter = InstallerListAdapter(this, copiedData)
             }
         }
         writeLog("Adapter created. Is null - ${adapter == null}")
