@@ -44,7 +44,7 @@ import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.appBackupDataPackets
 import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.AppInstance.Companion.doBackupInstallers
-import balti.migrate.AppInstance.Companion.keyboardText
+//import balti.migrate.AppInstance.Companion.keyboardText
 import balti.migrate.AppInstance.Companion.selectedBackupDataPackets
 import balti.migrate.AppInstance.Companion.wifiData
 import balti.migrate.R
@@ -60,7 +60,8 @@ import balti.migrate.extraBackupsActivity.engines.dpi.DpiFragment
 import balti.migrate.extraBackupsActivity.engines.fontScale.FontScaleFragment
 import balti.migrate.extraBackupsActivity.engines.sms.SmsFragment
 import balti.migrate.extraBackupsActivity.installer.LoadInstallersForSelection
-import balti.migrate.extraBackupsActivity.keyboard.LoadKeyboardForSelection_legacy
+import balti.migrate.extraBackupsActivity.keyboard.KeyboardFragment
+//import balti.migrate.extraBackupsActivity.keyboard.LoadKeyboardForSelection_legacy
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.wifi.ReadWifiKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
@@ -75,7 +76,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_ALL_APP_SELECTED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.IS_OTHER_APP_DATA_VISIBLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_INSTALLERS
-import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_KEYBOARDS
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_KEYBOARDS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_MAKE_APP_PACKETS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_WIFI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
@@ -123,7 +124,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     private var makeAppPackets: MakeAppPackets? = null
 
-    private var loadKeyboard: LoadKeyboardForSelection_legacy? = null
+    //private var loadKeyboard: LoadKeyboardForSelection_legacy? = null
     private var loadInstallers: LoadInstallersForSelection? = null
 
     private var flasherOnlyBackup = false
@@ -139,6 +140,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private val dpiFragment: DpiFragment by lazy { supportFragmentManager.findFragmentById(R.id.dpi_fragment) as DpiFragment }
     private val fontScaleFragment: FontScaleFragment by lazy { supportFragmentManager.findFragmentById(R.id.font_scale_fragment) as FontScaleFragment }
     private val adbFragment: AdbFragment by lazy { supportFragmentManager.findFragmentById(R.id.adb_fragment) as AdbFragment }
+    private val keyboardFragment: KeyboardFragment by lazy { supportFragmentManager.findFragmentById(R.id.keyboard_fragment) as KeyboardFragment }
 
     private val dialogView by lazy { View.inflate(this, R.layout.please_wait, null) }
     private val waitingDialog by lazy {
@@ -256,7 +258,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 if (selectedBackupDataPackets.isNotEmpty()
                     || contactsFragment.isChecked() == true || callsFragment.isChecked() == true
                     || smsFragment.isChecked() == true || dpiFragment.isChecked() == true
-                    || do_backup_keyboard.isChecked
+                    || keyboardFragment.isChecked() == true
                     || adbFragment.isChecked() == true || do_backup_wifi.isChecked
                     || fontScaleFragment.isChecked() == true) {                  //extras_markers
 
@@ -300,7 +302,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         //do_backup_sms.setOnCheckedChangeListener(this)
         //do_backup_calls.setOnCheckedChangeListener(this)
         //do_backup_dpi.setOnCheckedChangeListener(this)
-        do_backup_keyboard.setOnCheckedChangeListener(this)
+        //do_backup_keyboard.setOnCheckedChangeListener(this)
         do_backup_installers.setOnCheckedChangeListener(this)
         //do_backup_adb.setOnCheckedChangeListener(this)
         do_backup_wifi.setOnCheckedChangeListener(this)
@@ -486,7 +488,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
             putPrefBoolean(PREF_BACKUP_ADB, isChecked)
 
-        } else*/ if (buttonView == do_backup_keyboard) {
+        } else*/ /*if (buttonView == do_backup_keyboard) {
 
             if (isChecked) {
                 doWaitingJob {
@@ -499,7 +501,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 deselectExtra(null, keyboard_main_item, keyboard_selected_status, loadKeyboard)
             }
 
-        } else if (buttonView == do_backup_installers){
+        } else*/ if (buttonView == do_backup_installers){
             if (isChecked){
                 updateInstallers(selectedBackupDataPackets, true)
             }
@@ -836,14 +838,14 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                     }
                 }, true)*/
 
-            JOBCODE_LOAD_KEYBOARDS -> {
+            /*JOBCODE_LOAD_KEYBOARDS -> {
                 tryIt({
                     jobResult.toString().let {
                         keyboardText = if (jobSuccess) it
                         else null
                     }
                 }, true)
-            }
+            }*/
 
             JOBCODE_LOAD_INSTALLERS ->
                 if (jobSuccess) {
