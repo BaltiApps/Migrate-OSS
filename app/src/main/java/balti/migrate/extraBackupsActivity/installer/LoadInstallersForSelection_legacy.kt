@@ -38,7 +38,7 @@ class LoadInstallersForSelection_legacy(private val jobCode: Int,
     private var fdroidExtensionPresent = false
     private var playStorePresent = false
 
-    private lateinit var adapter: InstallerListAdapter
+    private lateinit var adapter: InstallerListAdapter_legacy
 
     init {
         selectorView.eis_ok.setOnClickListener(null)
@@ -79,7 +79,7 @@ class LoadInstallersForSelection_legacy(private val jobCode: Int,
         for (i in itemList)
             copiedItemList.add(i.copy())
 
-        if (copiedItemList.size > 0) adapter = InstallerListAdapter(context, copiedItemList)
+        if (copiedItemList.size > 0) adapter = InstallerListAdapter_legacy(context, copiedItemList)
         return null
     }
 

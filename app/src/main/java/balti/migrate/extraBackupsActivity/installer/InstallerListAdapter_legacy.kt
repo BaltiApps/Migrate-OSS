@@ -15,8 +15,8 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PLAY_STORE_POSITION
 import balti.migrate.utilities.IconTools
 import kotlinx.android.synthetic.main.installer_set_item.view.*
 
-class InstallerListAdapter(val context: Context,
-                           private val appList: ArrayList<BackupDataPacketKotlin>): BaseAdapter() {
+class InstallerListAdapter_legacy(val context: Context,
+                                  private val appList: ArrayList<BackupDataPacketKotlin>): BaseAdapter() {
 
     private val pm by lazy { context.packageManager }
     private val iconTools by lazy { IconTools() }
