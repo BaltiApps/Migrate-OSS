@@ -167,6 +167,15 @@ class AppInstance: Application() {
         var doBackupInstallers = false
 
         /**
+         * A map to store different installer package names for corresponding apps to backup.
+         * Example:
+         * balti.migrate -> com.android.vending
+         * org.mozilla.fenix -> com.android.vending
+         * com.pitchedapps.frost -> org.fdroid.fdroid.privileged
+         */
+        var appInstallers = HashMap<String, String>(0)
+
+        /**
          * This is an amount subtracted from [MAX_WORKING_SIZE].
          * This accounts for the helper apk and other scripts in the zip,
          * so that the overall zip size still remains under the [MAX_EFFECTIVE_ZIP_SIZE] limit.
