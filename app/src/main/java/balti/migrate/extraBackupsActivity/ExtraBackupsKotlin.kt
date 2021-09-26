@@ -22,6 +22,9 @@ package balti.migrate.extraBackupsActivity
 //import balti.migrate.extraBackupsActivity.engines.adb.ReadAdbKotlin_legacy
 //import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_ADB
 //import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_ADB
+//import balti.migrate.AppInstance.Companion.keyboardText
+//import balti.migrate.extraBackupsActivity.engines.keyboard.LoadKeyboardForSelection_legacy
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_KEYBOARDS
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -44,7 +47,6 @@ import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.appBackupDataPackets
 import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.AppInstance.Companion.doBackupInstallers
-//import balti.migrate.AppInstance.Companion.keyboardText
 import balti.migrate.AppInstance.Companion.selectedBackupDataPackets
 import balti.migrate.AppInstance.Companion.wifiData
 import balti.migrate.R
@@ -58,10 +60,9 @@ import balti.migrate.extraBackupsActivity.engines.calls.CallsFragment
 import balti.migrate.extraBackupsActivity.engines.contacts.ContactsFragment
 import balti.migrate.extraBackupsActivity.engines.dpi.DpiFragment
 import balti.migrate.extraBackupsActivity.engines.fontScale.FontScaleFragment
+import balti.migrate.extraBackupsActivity.engines.keyboard.KeyboardFragment
 import balti.migrate.extraBackupsActivity.engines.sms.SmsFragment
 import balti.migrate.extraBackupsActivity.installer.LoadInstallersForSelection
-import balti.migrate.extraBackupsActivity.keyboard.KeyboardFragment
-//import balti.migrate.extraBackupsActivity.keyboard.LoadKeyboardForSelection_legacy
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.wifi.ReadWifiKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
@@ -76,7 +77,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_ALL_APP_SELECTED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.IS_OTHER_APP_DATA_VISIBLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_INSTALLERS
-//import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_KEYBOARDS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_MAKE_APP_PACKETS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_WIFI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
