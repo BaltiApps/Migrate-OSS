@@ -18,9 +18,9 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PLAY_STORE_POSITION
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import kotlinx.android.synthetic.main.extra_item_selector.view.*
 
-class LoadInstallersForSelection(private val jobCode: Int,
-                                 private val context: Context,
-                                 private val itemList: ArrayList<BackupDataPacketKotlin> = ArrayList(0)) : AsyncCoroutineTask(){
+class LoadInstallersForSelection_legacy(private val jobCode: Int,
+                                        private val context: Context,
+                                        private val itemList: ArrayList<BackupDataPacketKotlin> = ArrayList(0)) : AsyncCoroutineTask(){
 
 
 

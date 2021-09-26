@@ -62,7 +62,7 @@ import balti.migrate.extraBackupsActivity.engines.dpi.DpiFragment
 import balti.migrate.extraBackupsActivity.engines.fontScale.FontScaleFragment
 import balti.migrate.extraBackupsActivity.engines.keyboard.KeyboardFragment
 import balti.migrate.extraBackupsActivity.engines.sms.SmsFragment
-import balti.migrate.extraBackupsActivity.installer.LoadInstallersForSelection
+import balti.migrate.extraBackupsActivity.installer.LoadInstallersForSelection_legacy
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.wifi.ReadWifiKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
@@ -125,7 +125,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private var makeAppPackets: MakeAppPackets? = null
 
     //private var loadKeyboard: LoadKeyboardForSelection_legacy? = null
-    private var loadInstallers: LoadInstallersForSelection? = null
+    private var loadInstallers: LoadInstallersForSelection_legacy? = null
 
     private var flasherOnlyBackup = false
 
@@ -1021,7 +1021,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             installers_main_item.isClickable = true
             installers_main_item.setOnClickListener {
                 doWaitingJob {
-                    loadInstallers = LoadInstallersForSelection(JOBCODE_LOAD_INSTALLERS, this, selectedBackupDataPackets)
+                    loadInstallers = LoadInstallersForSelection_legacy(JOBCODE_LOAD_INSTALLERS, this, selectedBackupDataPackets)
                     loadInstallers?.execute()
                 }
             }
