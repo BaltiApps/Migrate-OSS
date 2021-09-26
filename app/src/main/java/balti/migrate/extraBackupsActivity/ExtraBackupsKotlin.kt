@@ -60,7 +60,7 @@ import balti.migrate.extraBackupsActivity.engines.dpi.DpiFragment
 import balti.migrate.extraBackupsActivity.engines.fontScale.FontScaleFragment
 import balti.migrate.extraBackupsActivity.engines.sms.SmsFragment
 import balti.migrate.extraBackupsActivity.installer.LoadInstallersForSelection
-import balti.migrate.extraBackupsActivity.keyboard.LoadKeyboardForSelection
+import balti.migrate.extraBackupsActivity.keyboard.LoadKeyboardForSelection_legacy
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.wifi.ReadWifiKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
@@ -123,7 +123,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
     private var makeAppPackets: MakeAppPackets? = null
 
-    private var loadKeyboard: LoadKeyboardForSelection? = null
+    private var loadKeyboard: LoadKeyboardForSelection_legacy? = null
     private var loadInstallers: LoadInstallersForSelection? = null
 
     private var flasherOnlyBackup = false
@@ -490,7 +490,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
             if (isChecked) {
                 doWaitingJob {
-                    loadKeyboard = LoadKeyboardForSelection(JOBCODE_LOAD_KEYBOARDS, this, keyboard_main_item, keyboard_selected_status, do_backup_keyboard)
+                    loadKeyboard = LoadKeyboardForSelection_legacy(JOBCODE_LOAD_KEYBOARDS, this, keyboard_main_item, keyboard_selected_status, do_backup_keyboard)
                     loadKeyboard?.execute()
                 }
             }

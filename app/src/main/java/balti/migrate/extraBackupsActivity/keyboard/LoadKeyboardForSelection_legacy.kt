@@ -20,10 +20,10 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class LoadKeyboardForSelection (private val jobCode: Int, val context: Context,
-                                private val menuMainItem: LinearLayout,
-                                private val menuSelectedStatus: TextView,
-                                private val doBackupCheckbox: CheckBox):
+class LoadKeyboardForSelection_legacy (private val jobCode: Int, val context: Context,
+                                       private val menuMainItem: LinearLayout,
+                                       private val menuSelectedStatus: TextView,
+                                       private val doBackupCheckbox: CheckBox):
         AsyncCoroutineTask() {
 
     private val onJobCompletion by lazy { context as OnJobCompletion }
