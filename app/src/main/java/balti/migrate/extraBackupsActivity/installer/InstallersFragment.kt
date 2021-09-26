@@ -63,7 +63,7 @@ class InstallersFragment: ParentFragmentForExtras(R.layout.extra_fragment_instal
         delegateStatusText?.text = "$count ${getString(R.string.of)} ${AppInstance.selectedBackupDataPackets.size}"
     }
 
-    override val viewIdStatusText: Int = R.id.keyboard_read_text_status
-    override val viewIdCheckbox: Int = R.id.keyboard_fragment_checkbox
+    override val viewIdStatusText: Int = R.id.installers_read_text_status
+    override val viewIdCheckbox: Int = R.id.installers_fragment_checkbox
 
 }
