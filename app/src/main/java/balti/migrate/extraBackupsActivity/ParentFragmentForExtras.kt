@@ -47,7 +47,7 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
         super.onAttach(context)
         delegateMainItem = rootView
         delegateStatusText = getViewOrNull(viewIdStatusText)
-        delegateProgressBar = getViewOrNull(viewIdProgressBar)
+        delegateProgressBar = viewIdProgressBar?.let { getViewOrNull(it) }
         delegateCheckbox = getViewOrNull(viewIdCheckbox)
         delegateSalView = viewIdSalView?.let { getViewOrNull(it) }
         mActivity = context as Activity
@@ -122,7 +122,7 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
     abstract fun onCreateView(savedInstanceState: Bundle?)
     abstract val readTask: ParentReaderForExtras
     abstract val viewIdStatusText: Int
-    abstract val viewIdProgressBar: Int
+    open val viewIdProgressBar: Int? = null
     abstract val viewIdCheckbox: Int
     open val viewIdSalView: Int? = null
 }
