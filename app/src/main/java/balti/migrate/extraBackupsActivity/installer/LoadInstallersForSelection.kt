@@ -10,7 +10,6 @@ import balti.migrate.R
 import balti.migrate.extraBackupsActivity.ParentSelectorActivityForExtras
 import balti.migrate.extraBackupsActivity.installer.containers.PackageVsInstaller
 import balti.migrate.utilities.CommonToolsKotlin
-import balti.module.baltitoolbox.functions.Misc
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import kotlinx.android.synthetic.main.extra_item_selector.*
 
@@ -102,16 +101,14 @@ class LoadInstallersForSelection: ParentSelectorActivityForExtras(R.layout.extra
             val installerPackageName = it.key
             val installerAppName = it.value
 
-            if (Misc.isPackageInstalled(installerPackageName)) {
-                radioGroup.addView(RadioButton(this).apply {
-                    text = installerAppName
-                    id = radioId++
-                    radioGroup.setTag(id, installerPackageName)
-                                // store the package names via tag and id
-                    layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-                    setPadding(20, 20, 20, 20)
-                })
-            }
+            radioGroup.addView(RadioButton(this).apply {
+                text = installerAppName
+                id = radioId++
+                radioGroup.setTag(id, installerPackageName)
+                            // store the package names via tag and id
+                layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                setPadding(20, 20, 20, 20)
+            })
 
         }
 
