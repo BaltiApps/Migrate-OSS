@@ -46,12 +46,12 @@ import balti.filex.FileX
 import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.appBackupDataPackets
 import balti.migrate.AppInstance.Companion.appPackets
-import balti.migrate.AppInstance.Companion.doBackupInstallers
+//import balti.migrate.AppInstance.Companion.doBackupInstallers
 import balti.migrate.AppInstance.Companion.selectedBackupDataPackets
 import balti.migrate.AppInstance.Companion.wifiData
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
-import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
+//import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.extraBackupsActivity.apps.MakeAppPackets
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
@@ -62,7 +62,7 @@ import balti.migrate.extraBackupsActivity.engines.dpi.DpiFragment
 import balti.migrate.extraBackupsActivity.engines.fontScale.FontScaleFragment
 import balti.migrate.extraBackupsActivity.engines.keyboard.KeyboardFragment
 import balti.migrate.extraBackupsActivity.engines.sms.SmsFragment
-import balti.migrate.extraBackupsActivity.installer.LoadInstallersForSelection_legacy
+//import balti.migrate.extraBackupsActivity.installer.LoadInstallersForSelection_legacy
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
 import balti.migrate.extraBackupsActivity.wifi.ReadWifiKotlin
 import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
@@ -76,14 +76,14 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_ALL_APP_SELECTED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.IS_OTHER_APP_DATA_VISIBLE
-import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_INSTALLERS
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_INSTALLERS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_MAKE_APP_PACKETS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_WIFI
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_PLAY_STORE
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_AUTOSELECT_EXTRAS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_CALLS
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_INSTALLERS
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_INSTALLERS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_STOCK_WARNING
@@ -125,7 +125,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
     private var makeAppPackets: MakeAppPackets? = null
 
     //private var loadKeyboard: LoadKeyboardForSelection_legacy? = null
-    private var loadInstallers: LoadInstallersForSelection_legacy? = null
+    //private var loadInstallers: LoadInstallersForSelection_legacy? = null
 
     private var flasherOnlyBackup = false
 
@@ -303,7 +303,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         //do_backup_calls.setOnCheckedChangeListener(this)
         //do_backup_dpi.setOnCheckedChangeListener(this)
         //do_backup_keyboard.setOnCheckedChangeListener(this)
-        do_backup_installers.setOnCheckedChangeListener(this)
+        //do_backup_installers.setOnCheckedChangeListener(this)
         //do_backup_adb.setOnCheckedChangeListener(this)
         do_backup_wifi.setOnCheckedChangeListener(this)
         //do_backup_fontScale.setOnCheckedChangeListener(this)
@@ -332,7 +332,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 isCallsGranted -> do_backup_calls.isChecked = true
                 isSmsGranted -> do_backup_sms.isChecked = true*/
             }
-            do_backup_installers.isChecked = getPrefBoolean(PREF_BACKUP_INSTALLERS, true)
+            //do_backup_installers.isChecked = getPrefBoolean(PREF_BACKUP_INSTALLERS, true)
             if (!getPrefBoolean(PREF_SHOW_STOCK_WARNING, true)){
                 //do_backup_adb.isChecked = getPrefBoolean(PREF_BACKUP_ADB, false)
                 //do_backup_dpi.isChecked = getPrefBoolean(PREF_BACKUP_DPI, false)
@@ -501,7 +501,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 deselectExtra(null, keyboard_main_item, keyboard_selected_status, loadKeyboard)
             }
 
-        } else*/ if (buttonView == do_backup_installers){
+        } else*/ /*if (buttonView == do_backup_installers){
             if (isChecked){
                 updateInstallers(selectedBackupDataPackets, true)
             }
@@ -510,7 +510,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             doBackupInstallers = isChecked
             putPrefBoolean(PREF_BACKUP_INSTALLERS, isChecked)
 
-        } else if (buttonView == do_backup_wifi){
+        } else*/ if (buttonView == do_backup_wifi){
             if (isChecked) {
 
                 showStockWarning({
@@ -631,7 +631,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
 
         val backupName = if (previousName == null) {
             val sdf = SimpleDateFormat("yyyy.MM.dd_HH.mm.ss")
-            if (isAllAppsSelected && smsFragment.isChecked() == true && callsFragment.isChecked() == true && do_backup_installers.isChecked)              //extras_markers
+            if (isAllAppsSelected && smsFragment.isChecked() == true && callsFragment.isChecked() == true)              //extras_markers
                 "${getString(R.string.fullBackupLabel)}_${sdf.format(Calendar.getInstance().time)}"
             else "${getString(R.string.backupLabel)}_${sdf.format(Calendar.getInstance().time)}"
         }
@@ -847,12 +847,12 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
                 }, true)
             }*/
 
-            JOBCODE_LOAD_INSTALLERS ->
+            /*JOBCODE_LOAD_INSTALLERS ->
                 if (jobSuccess) {
                     tryIt ({
                         updateInstallers(jobResult as ArrayList<BackupDataPacketKotlin>)
                     }, true)
-                }
+                }*/
 
             JOBCODE_READ_WIFI ->
                 tryIt ({
@@ -999,7 +999,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
         }
     }*/
 
-    private fun updateInstallers(newAppList: ArrayList<BackupDataPacketKotlin>, selfCall: Boolean = false){
+    /*private fun updateInstallers(newAppList: ArrayList<BackupDataPacketKotlin>, selfCall: Boolean = false){
 
         if (selectedBackupDataPackets.isEmpty())
         {
@@ -1027,7 +1027,7 @@ class ExtraBackupsKotlin : AppCompatActivity(), OnJobCompletion, CompoundButton.
             }
         }
 
-    }
+    }*/
 
     override fun onDestroy() {                          //extras_markers
         super.onDestroy()
