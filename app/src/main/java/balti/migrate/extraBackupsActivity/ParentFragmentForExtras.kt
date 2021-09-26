@@ -72,7 +72,7 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
         delegateMainItem?.isClickable = false
         viewsToHide?.forEach { it?.visibility = View.GONE }
         viewsToShow?.forEach { it?.visibility = View.VISIBLE }    //usually includes Stock Android recommended label
-        tryIt { readTask.cancel() }
+        tryIt { readTask?.cancel() }
     }
 
     fun showStockWarning(fPositive: () -> Unit, fNegative: () -> Unit) {
@@ -120,7 +120,7 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
 
     open fun onCreateFragment(){}
     abstract fun onCreateView(savedInstanceState: Bundle?)
-    abstract val readTask: ParentReaderForExtras
+    abstract val readTask: ParentReaderForExtras?
     abstract val viewIdStatusText: Int
     open val viewIdProgressBar: Int? = null
     abstract val viewIdCheckbox: Int
