@@ -3,13 +3,13 @@ package balti.migrate.extraBackupsActivity.installer
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.ParentFragmentForExtras
 import balti.migrate.extraBackupsActivity.ParentReaderForExtras
-import balti.migrate.extraBackupsActivity.engines.calls.LoadCallsForSelection
 
 class InstallersFragment: ParentFragmentForExtras(R.layout.extra_fragment_installers) {
 
@@ -42,9 +42,6 @@ class InstallersFragment: ParentFragmentForExtras(R.layout.extra_fragment_instal
                 if (isChecked){
                     startReadTask()
                     updateInstallerCount()
-                    delegateMainItem?.setOnClickListener {
-                        selectorLauncher.launch(Intent(mActivity, LoadCallsForSelection::class.java))
-                    }
                 }
                 else {
                     deselectExtra(null, listOf(delegateStatusText))
@@ -60,7 +57,20 @@ class InstallersFragment: ParentFragmentForExtras(R.layout.extra_fragment_instal
             if (it.value.isNotBlank()) count++
         }
 
-        delegateStatusText?.text = "$count ${getString(R.string.of)} ${AppInstance.selectedBackupDataPackets.size}"
+        val selectedAppCount = AppInstance.selectedBackupDataPackets.size
+
+        delegateStatusText?.apply {
+            visibility = View.VISIBLE
+            text = if (selectedAppCount > 0)
+                "$count ${getString(R.string.of)} ${AppInstance.selectedBackupDataPackets.size}"
+            else getString(R.string.no_app_selected)
+        }
+
+        if (selectedAppCount > 0){
+            delegateMainItem?.setOnClickListener {
+                selectorLauncher.launch(Intent(mActivity, LoadInstallersForSelection::class.java))
+            }
+        }
     }
 
     override val viewIdStatusText: Int = R.id.installers_read_text_status
