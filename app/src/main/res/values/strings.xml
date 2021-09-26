@@ -367,6 +367,9 @@
     </string>
     <string name="selected_keyboard_not_present_in_backup">is not present in backup</string>
     <string name="selected_keyboard_not_present_in_backup_desc">Backup app list does not have the selected keyboard. Please go back to \"Select apps\" page and select the keyboard app.</string>
+    <string name="keyboard_app_name_label">Keyboard app name</string>
+    <string name="keyboard_package_label">Keyboard package</string>
+    <string name="keyboard_string_label">Keyboard string</string>
     <string name="extra_backups_help">
         <b>Contacts</b> : Backup contacts data as vcf\n
         <b>SMS messages</b> : Backup text messages\n
