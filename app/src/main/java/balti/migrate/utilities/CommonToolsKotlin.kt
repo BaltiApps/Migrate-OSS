@@ -12,7 +12,7 @@ import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.simpleActivities.ReportLogs
 import balti.migrate.storageSelector.StorageType
-import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
+import balti.module.baltitoolbox.functions.Misc
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 import java.io.BufferedReader
@@ -201,8 +201,8 @@ class CommonToolsKotlin(val context: Context? = null) {
         val PACKAGE_NAMES_PACKAGE_INSTALLER = arrayOf("com.google.android.packageinstaller")
 
         val QUALIFIED_PACKAGE_INSTALLERS = HashMap<String, String>().apply {
-            put(PACKAGE_NAME_PLAY_STORE, getStringFromRes(R.string.play_store))
-            put(PACKAGE_NAME_FDROID, getStringFromRes(R.string.f_droid))
+            PACKAGE_NAME_PLAY_STORE.run { Misc.getAppName(this).let { if (it.isNotBlank()) put(this,it) } }
+            PACKAGE_NAME_FDROID.run { Misc.getAppName(this).let { if (it.isNotBlank()) put(this,it) } }
         }
 
         val PREF_USE_FILEX11 = "use_filex"
