@@ -57,6 +57,20 @@ class IconTools {
         })
     }
 
+    fun loadIconFromApplication(iconView: ImageView, packageName: String, pm: PackageManager){
+        doBackgroundTask({
+            return@doBackgroundTask try {
+                pm.getApplicationIcon(packageName)
+            }
+            catch (e: Exception){
+                e.printStackTrace()
+                null
+            }
+        }, {
+            tryIt { if (it is Drawable) iconView.setImageDrawable(it) }
+        })
+    }
+
     fun setIconFromIconString(iconView: ImageView, iconString: String){
 
         doBackgroundTask({
