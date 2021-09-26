@@ -8,6 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.ParentSelectorActivityForExtras
+import balti.migrate.extraBackupsActivity.installer.containers.PackageVsInstaller
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.module.baltitoolbox.functions.Misc
 import balti.module.baltitoolbox.functions.Misc.tryIt
@@ -15,7 +16,7 @@ import kotlinx.android.synthetic.main.extra_item_selector.*
 
 class LoadInstallersForSelection: ParentSelectorActivityForExtras(R.layout.extra_item_selector) {
 
-    private var copiedData = HashMap<String, String>(0)
+    private var copiedData = ArrayList<PackageVsInstaller>(0)
     private var adapter: InstallerListAdapter? = null
 
     override fun setup() {
@@ -38,7 +39,7 @@ class LoadInstallersForSelection: ParentSelectorActivityForExtras(R.layout.extra
     override fun backgroundProcessing() {
         writeLog("Copying to temp list.")
         for (item in AppInstance.appInstallers)
-            copiedData[item.key] = item.value
+            copiedData.add(PackageVsInstaller(item.key, item.value))
 
         writeLog("Creating adapter.")
         if (copiedData.size > 0){
@@ -80,7 +81,7 @@ class LoadInstallersForSelection: ParentSelectorActivityForExtras(R.layout.extra
     }
 
     private fun updateAllCopiedData(value: String) {
-        for (item in copiedData) copiedData[item.key] = value
+        for (item in copiedData) item.installerName = value
     }
 
     /**
@@ -152,7 +153,7 @@ class LoadInstallersForSelection: ParentSelectorActivityForExtras(R.layout.extra
         AppInstance.appInstallers.apply {
             clear()
             copiedData.forEach {
-                this[it.key] = it.value
+                this[it.packageName] = it.installerName
             }
         }
     }
