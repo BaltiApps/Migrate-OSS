@@ -15,7 +15,7 @@
     android:paddingTop="@dimen/extra_items_padding"
     android:paddingBottom="@dimen/extra_items_padding"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".extraBackupsActivity.installer.InstallersFragment"
+    tools:context=".extraBackupsActivity.engines.installers.InstallersFragment"
     >
 
     <ImageView

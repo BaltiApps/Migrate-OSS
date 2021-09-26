@@ -1,4 +1,4 @@
-package balti.migrate.extraBackupsActivity.installer
+package balti.migrate.extraBackupsActivity.engines.installers
 
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.ParentSelectorActivityForExtras
-import balti.migrate.extraBackupsActivity.installer.containers.PackageVsInstaller
+import balti.migrate.extraBackupsActivity.engines.installers.containers.PackageVsInstaller
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import kotlinx.android.synthetic.main.extra_item_selector.*

@@ -181,7 +181,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/installer_fragment"
-                android:name="balti.migrate.extraBackupsActivity.installer.InstallersFragment"
+                android:name="balti.migrate.extraBackupsActivity.engines.installers.InstallersFragment"
                 />
 
             <fragment
