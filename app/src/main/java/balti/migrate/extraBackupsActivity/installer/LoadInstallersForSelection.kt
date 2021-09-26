@@ -104,7 +104,7 @@ class LoadInstallersForSelection: ParentSelectorActivityForExtras(R.layout.extra
             radioGroup.addView(RadioButton(this).apply {
                 text = installerAppName
                 id = radioId++
-                radioGroup.setTag(id, installerPackageName)
+                this.tag = installerPackageName
                             // store the package names via tag and id
                 layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 setPadding(20, 20, 20, 20)
@@ -116,7 +116,7 @@ class LoadInstallersForSelection: ParentSelectorActivityForExtras(R.layout.extra
         radioGroup.addView(RadioButton(this).apply {
             setText(R.string.not_set)
             id = radioId++
-            radioGroup.setTag(id, "")
+            this.tag = ""
                                 // store blank package name for this id
             layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             setPadding(20, 20, 20, 20)
@@ -128,7 +128,8 @@ class LoadInstallersForSelection: ParentSelectorActivityForExtras(R.layout.extra
             .setTitle(R.string.set_installer_for_all)
             .setPositiveButton(android.R.string.ok){_, _ ->
 
-                val installerForAll: String = radioGroup.run { getTag(checkedRadioButtonId) }.toString()
+                val installerForAll: String =
+                    radioGroup.run { findViewById<RadioButton>(checkedRadioButtonId).tag }.toString()
 
                 // validate the found package name.
                 if (installerForAll.isBlank()
