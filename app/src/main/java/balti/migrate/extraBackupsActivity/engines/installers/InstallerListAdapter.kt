@@ -58,21 +58,6 @@ class InstallerListAdapter(val context: Context,
         }
         else viewHolder = view.tag as ViewHolder
 
-        /*val installerDisplayList = ArrayList<String>(0)
-        val actualSelectedInstaller = ArrayList<String>(0)*/
-
-        /*for (i in availableInstallersAppNames.indices){
-            installerDisplayList.add(availableInstallersAppNames[i])
-            actualSelectedInstaller.add(availableInstallerPackageNames[i])
-        }
-        if (appItem.installerName !in availableInstallerPackageNames && appItem.installerName.isNotBlank()) {
-            installerDisplayList.add(Misc.getAppName(appItem.installerName))
-            actualSelectedInstaller.add(appItem.installerName)
-        }
-
-        installerDisplayList.add(context.getString(R.string.not_set))
-        actualSelectedInstaller.add("")*/
-
         val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, availableInstallersAppNames)
 
         viewHolder.installerSpinner.apply {
