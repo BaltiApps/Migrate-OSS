@@ -27,6 +27,9 @@ class InstallerListAdapter(val context: Context,
             availableInstallersAppNames.add(it.value)
         }
 
+        availableInstallersAppNames.add(context.getString(R.string.not_set))
+        availableInstallerPackageNames.add("")
+
         appVsInstallers.sortWith(Comparator { o1, o2 ->
             String.CASE_INSENSITIVE_ORDER.compare(
                 Misc.getAppName(o1.packageName),
@@ -55,10 +58,10 @@ class InstallerListAdapter(val context: Context,
         }
         else viewHolder = view.tag as ViewHolder
 
-        val installerDisplayList = ArrayList<String>(0)
-        val actualSelectedInstaller = ArrayList<String>(0)
+        /*val installerDisplayList = ArrayList<String>(0)
+        val actualSelectedInstaller = ArrayList<String>(0)*/
 
-        for (i in availableInstallersAppNames.indices){
+        /*for (i in availableInstallersAppNames.indices){
             installerDisplayList.add(availableInstallersAppNames[i])
             actualSelectedInstaller.add(availableInstallerPackageNames[i])
         }
@@ -68,21 +71,23 @@ class InstallerListAdapter(val context: Context,
         }
 
         installerDisplayList.add(context.getString(R.string.not_set))
-        actualSelectedInstaller.add("")
+        actualSelectedInstaller.add("")*/
 
-        val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, installerDisplayList)
+        val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, availableInstallersAppNames)
 
         viewHolder.installerSpinner.apply {
             this.adapter = adapter
 
-            setSelection(actualSelectedInstaller.indexOf(appItem.installerName))
+            val index = availableInstallerPackageNames.indexOf(appItem.installerName)
+            if (index != -1) setSelection(index)
+            else setSelection(availableInstallersAppNames.size - 1)
 
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
 
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     try {
-                        appItem.installerName = actualSelectedInstaller[position]
+                        appItem.installerName = availableInstallerPackageNames[position]
                     }
                     catch (e: Exception) {
                         e.printStackTrace()
