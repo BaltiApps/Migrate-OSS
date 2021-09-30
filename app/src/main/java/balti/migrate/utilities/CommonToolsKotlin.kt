@@ -197,10 +197,12 @@ class CommonToolsKotlin(val context: Context? = null) {
 
         val PACKAGE_NAME_PLAY_STORE = "com.android.vending"
         val PACKAGE_NAME_FDROID = "org.fdroid.fdroid.privileged"
-        val PACKAGE_NAMES_KNOWN = arrayOf(PACKAGE_NAME_PLAY_STORE, PACKAGE_NAME_FDROID)
+        val PACKAGE_NAME_AURORA = "com.aurora.services"
+        val PACKAGE_NAMES_KNOWN = arrayOf(PACKAGE_NAME_PLAY_STORE, PACKAGE_NAME_FDROID, PACKAGE_NAME_AURORA)
         val PACKAGE_NAMES_PACKAGE_INSTALLER = arrayOf("com.google.android.packageinstaller")
 
         val QUALIFIED_PACKAGE_INSTALLERS = HashMap<String, String>().apply {
+            PACKAGE_NAME_AURORA.run { Misc.getAppName(this).let { if (it.isNotBlank()) put(this,it) } }
             PACKAGE_NAME_PLAY_STORE.run { Misc.getAppName(this).let { if (it.isNotBlank()) put(this,it) } }
             PACKAGE_NAME_FDROID.run { Misc.getAppName(this).let { if (it.isNotBlank()) put(this,it) } }
         }
