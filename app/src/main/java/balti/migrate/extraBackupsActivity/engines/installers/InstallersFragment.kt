@@ -8,8 +8,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import balti.migrate.AppInstance
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.ParentFragmentForExtras
-import balti.migrate.extraBackupsActivity.ParentReaderForExtras
+import balti.migrate.extraBackupsActivity.utils.ParentFragmentForExtras
+import balti.migrate.extraBackupsActivity.utils.ParentReaderForExtras
 import balti.migrate.utilities.CommonToolsKotlin
 
 class InstallersFragment: ParentFragmentForExtras(R.layout.extra_fragment_installers) {

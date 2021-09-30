@@ -6,8 +6,8 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import balti.migrate.AppInstance
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.ParentFragmentForExtras
-import balti.migrate.extraBackupsActivity.ParentReaderForExtras
+import balti.migrate.extraBackupsActivity.utils.ParentFragmentForExtras
+import balti.migrate.extraBackupsActivity.utils.ParentReaderForExtras
 import balti.module.baltitoolbox.functions.Misc
 
 class KeyboardFragment: ParentFragmentForExtras(R.layout.extra_fragment_keyboard) {

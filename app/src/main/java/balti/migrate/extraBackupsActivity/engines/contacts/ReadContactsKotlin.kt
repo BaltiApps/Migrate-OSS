@@ -3,10 +3,10 @@ package balti.migrate.extraBackupsActivity.engines.contacts
 import android.database.Cursor
 import android.view.View
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.ParentReaderForExtras
-import balti.migrate.extraBackupsActivity.ReaderJobResultHolder
 import balti.migrate.extraBackupsActivity.engines.contacts.containers.ContactsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.engines.contacts.utils.VcfToolsKotlin
+import balti.migrate.extraBackupsActivity.utils.ParentReaderForExtras
+import balti.migrate.extraBackupsActivity.utils.ReaderJobResultHolder
 import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.functions.Misc.tryIt
 

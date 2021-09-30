@@ -1,4 +1,4 @@
-package balti.migrate.extraBackupsActivity
+package balti.migrate.extraBackupsActivity.utils
 
 import android.util.Log
 import android.widget.CheckBox

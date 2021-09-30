@@ -3,9 +3,9 @@ package balti.migrate.extraBackupsActivity.engines.contacts
 import android.view.View
 import balti.migrate.AppInstance.Companion.contactsList
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.ParentSelectorActivityForExtras
 import balti.migrate.extraBackupsActivity.engines.contacts.containers.ContactsDataPacketKotlin
 import balti.migrate.extraBackupsActivity.engines.contacts.utils.ContactListAdapterKotlin
+import balti.migrate.extraBackupsActivity.utils.ParentSelectorActivityForExtras
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import kotlinx.android.synthetic.main.extra_item_selector.*
 

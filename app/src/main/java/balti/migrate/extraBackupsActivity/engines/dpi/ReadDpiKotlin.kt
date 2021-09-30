@@ -1,8 +1,8 @@
 package balti.migrate.extraBackupsActivity.engines.dpi
 
 import android.view.View
-import balti.migrate.extraBackupsActivity.ParentReaderForExtras
-import balti.migrate.extraBackupsActivity.ReaderJobResultHolder
+import balti.migrate.extraBackupsActivity.utils.ParentReaderForExtras
+import balti.migrate.extraBackupsActivity.utils.ReaderJobResultHolder
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader

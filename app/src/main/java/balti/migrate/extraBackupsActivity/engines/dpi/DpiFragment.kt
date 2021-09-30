@@ -5,8 +5,8 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import balti.migrate.AppInstance.Companion.dpiText
 import balti.migrate.R
-import balti.migrate.extraBackupsActivity.ParentFragmentForExtras
-import balti.migrate.extraBackupsActivity.ParentReaderForExtras
+import balti.migrate.extraBackupsActivity.utils.ParentFragmentForExtras
+import balti.migrate.extraBackupsActivity.utils.ParentReaderForExtras
 import balti.module.baltitoolbox.functions.Misc.runOnMainThread
 import balti.module.baltitoolbox.functions.Misc.runSuspendFunction
 import balti.module.baltitoolbox.functions.Misc.showErrorDialog
