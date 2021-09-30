@@ -10,6 +10,7 @@ import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.ParentFragmentForExtras
 import balti.migrate.extraBackupsActivity.ParentReaderForExtras
+import balti.migrate.utilities.CommonToolsKotlin
 
 class InstallersFragment: ParentFragmentForExtras(R.layout.extra_fragment_installers) {
 
@@ -28,8 +29,11 @@ class InstallersFragment: ParentFragmentForExtras(R.layout.extra_fragment_instal
     private fun startReadTask(){
         AppInstance.appInstallers.apply {
             clear()
-            AppInstance.selectedBackupDataPackets.forEach {
-                this[it.PACKAGE_INFO.packageName] = it.installerName
+            AppInstance.selectedBackupDataPackets.forEach { packet ->
+                this[packet.PACKAGE_INFO.packageName] =
+                    packet.installerName.let {
+                        if (it in CommonToolsKotlin.QUALIFIED_PACKAGE_INSTALLERS.keys) it else ""
+                    }
             }
         }
     }
