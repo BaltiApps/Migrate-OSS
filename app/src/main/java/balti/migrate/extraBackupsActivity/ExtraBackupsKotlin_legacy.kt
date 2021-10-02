@@ -25,6 +25,17 @@ package balti.migrate.extraBackupsActivity
 //import balti.migrate.AppInstance.Companion.keyboardText
 //import balti.migrate.extraBackupsActivity.engines.keyboard.LoadKeyboardForSelection_legacy
 //import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_KEYBOARDS
+//import balti.migrate.AppInstance.Companion.doBackupInstallers
+//import balti.migrate.AppInstance.Companion.wifiData
+//import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
+//import balti.migrate.extraBackupsActivity.engines.installer.LoadInstallersForSelection_legacy
+//import balti.migrate.extraBackupsActivity.wifi.ReadWifiKotlin
+//import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_INSTALLERS
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_WIFI
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_PLAY_STORE
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_INSTALLERS
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -46,12 +57,9 @@ import balti.filex.FileX
 import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.appBackupDataPackets
 import balti.migrate.AppInstance.Companion.appPackets
-//import balti.migrate.AppInstance.Companion.doBackupInstallers
 import balti.migrate.AppInstance.Companion.selectedBackupDataPackets
-import balti.migrate.AppInstance.Companion.wifiData
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
-//import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.extraBackupsActivity.apps.MakeAppPackets
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
@@ -62,10 +70,7 @@ import balti.migrate.extraBackupsActivity.engines.dpi.DpiFragment
 import balti.migrate.extraBackupsActivity.engines.fontScale.FontScaleFragment
 import balti.migrate.extraBackupsActivity.engines.keyboard.KeyboardFragment
 import balti.migrate.extraBackupsActivity.engines.sms.SmsFragment
-//import balti.migrate.extraBackupsActivity.engines.installer.LoadInstallersForSelection_legacy
 import balti.migrate.extraBackupsActivity.utils.OnJobCompletion
-import balti.migrate.extraBackupsActivity.wifi.ReadWifiKotlin
-import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.simpleActivities.ProgressShowActivity
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRESS
@@ -76,21 +81,15 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_ALL_APP_SELECTED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.IS_OTHER_APP_DATA_VISIBLE
-//import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_LOAD_INSTALLERS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_MAKE_APP_PACKETS
-import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_READ_WIFI
-//import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
-//import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_AUTOSELECT_EXTRAS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_CALLS
-//import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_INSTALLERS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_STOCK_WARNING
 import balti.migrate.utilities.constants.MDP_Constants
 import balti.module.baltitoolbox.functions.GetResources.getColorFromRes
 import balti.module.baltitoolbox.functions.Misc
-import balti.module.baltitoolbox.functions.Misc.showErrorDialog
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
@@ -119,7 +118,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
     //private var readCalls: ReadCallsKotlin_legacy? = null
     //private var readDpi: ReadDpiKotlin_legacy? = null
     //private var readAdb: ReadAdbKotlin_legacy? = null
-    private var readWifi: ReadWifiKotlin? = null
+    //private var readWifi: ReadWifiKotlin? = null
     //private var readFontScale: ReadFontScaleKotlin_legacy? = null
 
     private var makeAppPackets: MakeAppPackets? = null
@@ -231,7 +230,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
         checkMdpLayout()
 
         // Disable wifi backup for now because it is unstable.
-        wifi_main_item.visibility = View.GONE
+        //wifi_main_item.visibility = View.GONE
         //if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
         //    wifi_main_item.visibility = View.GONE
 
@@ -242,7 +241,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
                     //readCalls,
                     //readDpi,
                     //readAdb,
-                    readWifi,
+                    //readWifi,
                     //readFontScale
             )
 
@@ -259,7 +258,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
                     || contactsFragment.isChecked() == true || callsFragment.isChecked() == true
                     || smsFragment.isChecked() == true || dpiFragment.isChecked() == true
                     || keyboardFragment.isChecked() == true
-                    || adbFragment.isChecked() == true || do_backup_wifi.isChecked
+                    || adbFragment.isChecked() == true //|| do_backup_wifi.isChecked
                     || fontScaleFragment.isChecked() == true) {                  //extras_markers
 
                     if (IS_OTHER_APP_DATA_VISIBLE || selectedBackupDataPackets.filter { it.DATA }.isEmpty())
@@ -305,7 +304,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
         //do_backup_keyboard.setOnCheckedChangeListener(this)
         //do_backup_installers.setOnCheckedChangeListener(this)
         //do_backup_adb.setOnCheckedChangeListener(this)
-        do_backup_wifi.setOnCheckedChangeListener(this)
+        //do_backup_wifi.setOnCheckedChangeListener(this)
         //do_backup_fontScale.setOnCheckedChangeListener(this)
 
         extraBackupsBackButton.setOnClickListener {
@@ -510,7 +509,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
             doBackupInstallers = isChecked
             putPrefBoolean(PREF_BACKUP_INSTALLERS, isChecked)
 
-        } else*/ if (buttonView == do_backup_wifi){
+        } else*/ /*if (buttonView == do_backup_wifi){
             if (isChecked) {
 
                 showStockWarning({
@@ -526,7 +525,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
             } else {
                 wifiData = null
                 deselectExtra(null, wifi_main_item, wifi_selected_status, readWifi, wifi_read_progress, sal_wifi)
-            }
+            }*/
         } /*else if (buttonView == do_backup_fontScale) {
             if (isChecked){
 
@@ -854,7 +853,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
                     }, true)
                 }*/
 
-            JOBCODE_READ_WIFI ->
+            /*JOBCODE_READ_WIFI ->
                 tryIt ({
                     if (jobSuccess) {
                         wifiData = jobResult as WifiDataPacket
@@ -864,7 +863,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
                         do_backup_wifi.isChecked = false
                         showErrorDialog(jobResult.toString(), getString(R.string.error_reading_wifi))
                     }
-                }, true)
+                }, true)*/
 
             /*JOBCODE_READ_FONTSCALE ->
                 tryIt ({
@@ -1042,7 +1041,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
         //tryIt { readCalls?.cancel(true) }
         //tryIt { readDpi?.cancel(true) }
         //tryIt { readAdb?.cancel(true) }
-        tryIt { readWifi?.cancel(true) }
+        //tryIt { readWifi?.cancel(true) }
         //tryIt { readFontScale?.cancel(true) }
     }
 
