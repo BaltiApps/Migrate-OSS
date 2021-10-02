@@ -6,18 +6,29 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import balti.migrate.R
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs
 
-abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
+abstract class ParentFragmentForExtras(layoutId: Int): Fragment(), LifecycleObserver {
+
+    /**
+     * Method to reach views of activity, once activity is fully created.
+     * Found from stackoverflow.com
+     * https://stackoverflow.com/questions/61306719/onactivitycreated-is-deprecated-how-to-properly-use-lifecycleobserver (last answer)
+     */
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onCreated(){
+        tryIt { delegateStartBackupButton = activity?.findViewById(R.id.startBackupButton) }
+        tryIt { delegateBackupButtonWaiting = activity?.findViewById(R.id.backupButtonWaiting) }
+    }
 
     private val rootView: LinearLayout by lazy { View.inflate(activity, layoutId, null) as LinearLayout }
     var mActivity: Activity? = null
@@ -27,6 +38,8 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
     var delegateProgressBar: ProgressBar? = null
     var delegateCheckbox: CheckBox? = null
     var delegateSalView: TextView? = null
+    var delegateStartBackupButton: Button? = null
+    var delegateBackupButtonWaiting: LinearLayout? = null
 
     final override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,6 +64,7 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
         delegateCheckbox = getViewOrNull(viewIdCheckbox)
         delegateSalView = viewIdSalView?.let { getViewOrNull(it) }
         mActivity = context as Activity
+        lifecycle.addObserver(this)
     }
 
     override fun onDetach() {
@@ -59,6 +73,9 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment() {
         delegateProgressBar = null
         delegateCheckbox = null
         delegateSalView = null
+        delegateStartBackupButton = null
+        delegateBackupButtonWaiting = null
+        lifecycle.removeObserver(this)
         super.onDetach()
         mActivity = null
     }
