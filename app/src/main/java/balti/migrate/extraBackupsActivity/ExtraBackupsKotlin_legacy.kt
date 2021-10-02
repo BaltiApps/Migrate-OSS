@@ -236,22 +236,22 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
 
         startBackupButton.setOnClickListener {
 
-            val allReadTasks = arrayOf(
+            /*val allReadTasks = arrayOf(
                     //readSms,
                     //readCalls,
                     //readDpi,
                     //readAdb,
                     //readWifi,
                     //readFontScale
-            )
+            )*/
 
             var isAnyRunning = false
-            for (t in allReadTasks.indices){
+            /*for (t in allReadTasks.indices){
                 allReadTasks[t]?.let {
                     if (it.status == AsyncCoroutineTask.RUNNING) isAnyRunning = true
                 }
                 if (isAnyRunning) break
-            }
+            }*/
 
             if (!isAnyRunning) {
                 if (selectedBackupDataPackets.isNotEmpty()
@@ -526,7 +526,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
                 wifiData = null
                 deselectExtra(null, wifi_main_item, wifi_selected_status, readWifi, wifi_read_progress, sal_wifi)
             }*/
-        } /*else if (buttonView == do_backup_fontScale) {
+         /*else if (buttonView == do_backup_fontScale) {
             if (isChecked){
 
                 showStockWarning({
