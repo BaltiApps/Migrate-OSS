@@ -1,6 +1,7 @@
 package balti.migrate.extraBackupsActivity.utils
 
 import android.util.Log
+import android.view.View
 import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -24,6 +25,8 @@ abstract class ParentReaderForExtras(private val fragment: ParentFragmentForExtr
 
     final override suspend fun onPreExecute() {
         super.onPreExecute()
+        fragment.delegateBackupButtonWaiting?.visibility = View.VISIBLE
+        fragment.delegateStartBackupButton?.visibility = View.GONE
         preExecute()
     }
 
@@ -38,6 +41,8 @@ abstract class ParentReaderForExtras(private val fragment: ParentFragmentForExtr
     final override suspend fun onPostExecute(result: Any?) {
         super.onPostExecute(result)
         postExecute(result)
+        fragment.delegateBackupButtonWaiting?.visibility = View.GONE
+        fragment.delegateStartBackupButton?.visibility = View.VISIBLE
     }
 
     abstract val className: String
