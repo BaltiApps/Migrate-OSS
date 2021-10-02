@@ -15,8 +15,7 @@ class ReadDpiKotlin(fragment: DpiFragment): ParentReaderForExtras(fragment) {
 
     override val className: String = "ReadDpiKotlin"
 
-    override suspend fun onPreExecute() {
-        super.onPreExecute()
+    override fun preExecute() {
         mainItem?.isClickable = false
         doBackupCheckBox?.isEnabled = false
         readStatusText?.visibility = View.GONE
@@ -73,8 +72,7 @@ class ReadDpiKotlin(fragment: DpiFragment): ParentReaderForExtras(fragment) {
         }
     }
 
-    override suspend fun onPostExecute(result: Any?) {
-        super.onPostExecute(result)
+    override fun postExecute(result: Any?) {
 
         writeLog("Post execute")
 

@@ -22,8 +22,7 @@ class ReadContactsKotlin(fragment: ContactsFragment): ParentReaderForExtras(frag
 
     override val className: String = "ReadContactsKotlin"
 
-    override suspend fun onPreExecute() {
-        super.onPreExecute()
+    override fun preExecute() {
         readStatusText?.visibility = View.VISIBLE
         readProgressBar?.visibility = View.VISIBLE
         tryIt {
@@ -104,8 +103,7 @@ class ReadContactsKotlin(fragment: ContactsFragment): ParentReaderForExtras(frag
         readStatusText?.text = values[1] as String
     }
 
-    override suspend fun onPostExecute(result: Any?) {
-        super.onPostExecute(result)
+    override fun postExecute(result: Any?) {
         if (error == "") {
             mainItem?.isClickable = true
         }

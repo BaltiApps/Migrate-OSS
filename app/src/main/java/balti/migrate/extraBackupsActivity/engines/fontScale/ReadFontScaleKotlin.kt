@@ -19,8 +19,7 @@ class ReadFontScaleKotlin(fragment: FontScaleFragment): ParentReaderForExtras(fr
 
     override val className: String = "ReadFontScaleKotlin"
 
-    override suspend fun onPreExecute() {
-        super.onPreExecute()
+    override fun preExecute() {
         mainItem?.isClickable = false
         doBackupCheckBox?.isEnabled = false
         readStatusText?.visibility = View.GONE
@@ -91,8 +90,7 @@ class ReadFontScaleKotlin(fragment: FontScaleFragment): ParentReaderForExtras(fr
 
     }
 
-    override suspend fun onPostExecute(result: Any?) {
-        super.onPostExecute(result)
+    override fun postExecute(result: Any?) {
 
         writeLog("Post execute")
 

@@ -18,8 +18,7 @@ class ReadAdbKotlin(fragment: AdbFragment): ParentReaderForExtras(fragment) {
 
     override val className: String = "ReadAdbKotlin"
 
-    override suspend fun onPreExecute() {
-        super.onPreExecute()
+    override fun preExecute() {
         mainItem?.isClickable = false
         doBackupCheckBox?.isEnabled = false
         readStatusText?.visibility = View.GONE
@@ -98,8 +97,7 @@ class ReadAdbKotlin(fragment: AdbFragment): ParentReaderForExtras(fragment) {
 
     }
 
-    override suspend fun onPostExecute(result: Any?) {
-        super.onPostExecute(result)
+    override fun postExecute(result: Any?) {
 
         writeLog("Post execute")
 

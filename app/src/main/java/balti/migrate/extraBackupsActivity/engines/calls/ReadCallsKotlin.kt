@@ -22,8 +22,8 @@ class ReadCallsKotlin(fragment: CallsFragment): ParentReaderForExtras(fragment) 
 
     override val className: String = "ReadCallsKotlin"
 
-    override suspend fun onPreExecute() {
-        super.onPreExecute()
+    override fun preExecute() {
+
         readStatusText?.visibility = View.VISIBLE
         readProgressBar?.visibility = View.VISIBLE
         tryIt {
@@ -96,8 +96,7 @@ class ReadCallsKotlin(fragment: CallsFragment): ParentReaderForExtras(fragment) 
         readStatusText?.text = values[1] as String
     }
 
-    override suspend fun onPostExecute(result: Any?) {
-        super.onPostExecute(result)
+    override fun postExecute(result: Any?) {
         if (error == "") {
             mainItem?.isClickable = true
         }
