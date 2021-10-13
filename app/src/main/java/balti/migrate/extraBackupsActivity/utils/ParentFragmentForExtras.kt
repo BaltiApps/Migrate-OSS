@@ -131,6 +131,15 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment(), LifecycleObse
         }
     }
 
+    fun checkCheckbox(isChecked: Boolean): Boolean = delegateCheckbox.run {
+        return if (this == null) false
+        else {
+            this.isChecked = isChecked
+            true
+        }
+    }
+
+
     open fun isChecked(): Boolean? = try {
         delegateCheckbox?.isChecked
     } catch (e: Exception) { null }
