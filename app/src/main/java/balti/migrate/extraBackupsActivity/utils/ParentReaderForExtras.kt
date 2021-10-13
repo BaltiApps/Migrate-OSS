@@ -57,6 +57,8 @@ abstract class ParentReaderForExtras(private val fragment: ParentFragmentForExtr
         super.onPostExecute(result)
         postExecute(result)
 
+        fragment.onReaderCompleteActivityCallback?.invoke()
+
         /**
          * Variable to store if the list is empty after removing reader class name.
          * By default value is true. So if there is any error in checking the list,

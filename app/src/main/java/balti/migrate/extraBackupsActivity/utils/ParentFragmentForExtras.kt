@@ -139,6 +139,18 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment(), LifecycleObse
         }
     }
 
+    /**
+     * Callback function to be triggered after [readTask] has completed reading.
+     * Used to notify the activity of the fragment if needed.
+     */
+    internal var onReaderCompleteActivityCallback: (() -> Unit)? = null
+
+    /**
+     * Setter function for [onReaderCompleteActivityCallback].
+     */
+    fun onReaderComplete(f: () -> Unit){
+        onReaderCompleteActivityCallback = f
+    }
 
     open fun isChecked(): Boolean? = try {
         delegateCheckbox?.isChecked
