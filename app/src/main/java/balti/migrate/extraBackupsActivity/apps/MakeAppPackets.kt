@@ -36,9 +36,9 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class MakeAppPackets_New(private val destination: String,
-                         private val flasherOnly: Boolean,
-                         private val activity: MakeAppPacketsActivity):
+class MakeAppPackets(private val destination: String,
+                     private val flasherOnly: Boolean,
+                     private val activity: MakeAppPacketsActivity):
         AsyncCoroutineTask() {
 
     private val commonTools by lazy { CommonToolsKotlin() }

@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.please_wait.*
 
 class MakeAppPacketsActivity: AppCompatActivity(R.layout.please_wait) {
 
-    private var readTask: MakeAppPackets_New? = null
+    private var readTask: MakeAppPackets? = null
 
     private var destination: String = ""
     private var backupName: String = ""
@@ -40,7 +40,7 @@ class MakeAppPacketsActivity: AppCompatActivity(R.layout.please_wait) {
 
         AppInstance.notificationManager.cancelAll()
 
-        readTask = MakeAppPackets_New(destination, flasherOnly, this)
+        readTask = MakeAppPackets(destination, flasherOnly, this)
 
         /**
          * Delete all cached files from previous backup.
