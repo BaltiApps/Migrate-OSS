@@ -144,10 +144,10 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         backupMain.setOnClickListener {
             val v = View.inflate(this, R.layout.please_wait, null)
-            v.waiting_details.visibility = View.GONE
+            v.waiting_progress_subtext.visibility = View.GONE
             v.waiting_cancel.visibility = View.GONE
 
-            v.waiting_progress.setText(R.string.checking_permissions)
+            v.waiting_progress_text.setText(R.string.checking_permissions)
 
             tryIt { loadingDialog?.dismiss() }
 

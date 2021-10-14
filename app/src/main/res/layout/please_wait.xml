@@ -22,7 +22,7 @@
 
 
     <TextView
-        android:id="@+id/waiting_progress"
+        android:id="@+id/waiting_progress_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -31,7 +31,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
-        android:id="@+id/waiting_details"
+        android:id="@+id/waiting_progress_subtext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/small_padding_width" />

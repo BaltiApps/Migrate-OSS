@@ -95,8 +95,8 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
                 true
             }
         }
-        vOp.visibilitySet(dialogView.waiting_progress, View.GONE)
-        vOp.visibilitySet(dialogView.waiting_details, View.GONE)
+        vOp.visibilitySet(dialogView.waiting_progress_text, View.GONE)
+        vOp.visibilitySet(dialogView.waiting_progress_subtext, View.GONE)
 
         totalSize = 0
         lastSize = 0
@@ -420,12 +420,12 @@ class MakeAppPackets(private val jobCode: Int, private val context: Context, pri
     override suspend fun onProgressUpdate(vararg values: Any) {
         super.onProgressUpdate(*values)
         if (!cancelThis) {
-            vOp.visibilitySet(dialogView.waiting_progress, View.VISIBLE)
-            vOp.visibilitySet(dialogView.waiting_details, View.VISIBLE)
+            vOp.visibilitySet(dialogView.waiting_progress_text, View.VISIBLE)
+            vOp.visibilitySet(dialogView.waiting_progress_subtext, View.VISIBLE)
             values.run {
                 0.let {if (size > it) vOp.textSet(dialogView.waiting_head, this[it].toString().trim()) }
-                1.let {if (size > it) vOp.textSet(dialogView.waiting_progress, this[it].toString().trim()) }
-                2.let {if (size > it) vOp.textSet(dialogView.waiting_details, this[it].toString().trim()) }
+                1.let {if (size > it) vOp.textSet(dialogView.waiting_progress_text, this[it].toString().trim()) }
+                2.let {if (size > it) vOp.textSet(dialogView.waiting_progress_subtext, this[it].toString().trim()) }
             }
         }
     }

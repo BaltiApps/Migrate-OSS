@@ -893,8 +893,8 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
                             appPackets.addAll(jobResult as ArrayList<AppPacket>)
 
                             waitingDialog.waiting_head.setText(R.string.just_a_minute)
-                            waitingDialog.waiting_progress.setText(R.string.starting_engine)
-                            waitingDialog.waiting_details.text = ""
+                            waitingDialog.waiting_progress_text.setText(R.string.starting_engine)
+                            waitingDialog.waiting_progress_subtext.text = ""
 
                             Intent(this, BackupServiceKotlin::class.java).apply {
                                 putExtra(EXTRA_DESTINATION, destination)
