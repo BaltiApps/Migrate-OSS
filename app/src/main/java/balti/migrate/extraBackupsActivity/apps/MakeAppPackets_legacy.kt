@@ -42,7 +42,7 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class MakeAppPackets(private val jobCode: Int, private val context: Context, private val destination: String,
+class MakeAppPackets_legacy(private val jobCode: Int, private val context: Context, private val destination: String,
                      private val dialogView: View, private val flasherOnly: Boolean):
         AsyncCoroutineTask() {
 
