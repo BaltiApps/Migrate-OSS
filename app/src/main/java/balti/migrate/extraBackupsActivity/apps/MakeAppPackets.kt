@@ -36,7 +36,7 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class MakeAppPackets(private val destination: String,
+internal class MakeAppPackets(private val destination: String,
                      private val flasherOnly: Boolean,
                      private val activity: MakeAppPacketsActivity):
         AsyncCoroutineTask() {
