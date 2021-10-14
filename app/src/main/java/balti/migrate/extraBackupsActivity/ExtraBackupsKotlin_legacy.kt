@@ -36,6 +36,7 @@ package balti.migrate.extraBackupsActivity
 //import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_FDROID
 //import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAME_PLAY_STORE
 //import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_INSTALLERS
+//import balti.migrate.utilities.constants.MDP_Constants
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -44,7 +45,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.graphics.Paint
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -86,9 +86,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_CALLS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_STOCK_WARNING
-import balti.migrate.utilities.constants.MDP_Constants
-import balti.module.baltitoolbox.functions.GetResources.getColorFromRes
-import balti.module.baltitoolbox.functions.Misc
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
@@ -128,9 +125,9 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
     private var flasherOnlyBackup = false
 
     private val ASK_FOR_NAME_JOBCODE = 1666
-    private val SETUP_MDP_JOBCODE = 1667
+    //private val SETUP_MDP_JOBCODE = 1667
 
-    private var mdpSetFromActivity = false
+    //private var mdpSetFromActivity = false
 
     private val contactsFragment: ContactsFragment by lazy { supportFragmentManager.findFragmentById(R.id.contacts_fragment) as ContactsFragment }
     private val callsFragment: CallsFragment by lazy { supportFragmentManager.findFragmentById(R.id.calls_fragment) as CallsFragment }
@@ -186,11 +183,11 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
         job()
     }
 
-    private fun launchMdpSetup(){
+    /*private fun launchMdpSetup(){
         startActivityForResult(Intent(this, MDP_Setup::class.java), SETUP_MDP_JOBCODE)
-    }
+    }*/
 
-    private fun checkMdpLayout(show: Boolean? = null){
+    /*private fun checkMdpLayout(show: Boolean? = null){
 
         fun show(){
             mdp_setup_layout.visibility = View.VISIBLE
@@ -214,7 +211,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
             if (Misc.isPackageInstalled(MDP_Constants.MDP_PACKAGE_NAME)) hide()
             else show()
         }
-    }
+    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -226,7 +223,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
         commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
         commonTools.LBM?.sendBroadcast(Intent(ACTION_REQUEST_BACKUP_DATA))
 
-        checkMdpLayout()
+        //checkMdpLayout()
 
         // Disable wifi backup for now because it is unstable.
         //wifi_main_item.visibility = View.GONE
@@ -262,7 +259,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
 
                     if (IS_OTHER_APP_DATA_VISIBLE || selectedBackupDataPackets.filter { it.DATA }.isEmpty())
                         askForName()
-                    else if (Misc.isPackageInstalled(MDP_Constants.MDP_PACKAGE_NAME))
+                    /*else if (Misc.isPackageInstalled(MDP_Constants.MDP_PACKAGE_NAME))
                         askForName()
                     else {
                         val ad = AlertDialog.Builder(this).apply {
@@ -282,7 +279,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
                             }
                         }
                         ad.show()
-                    }
+                    }*/
                 }
                 else {
                     Toast.makeText(this, R.string.nothing_to_backup, Toast.LENGTH_SHORT).show()
@@ -364,8 +361,8 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
 
     override fun onResume() {
         super.onResume()
-        if (mdpSetFromActivity) mdpSetFromActivity = false
-        else checkMdpLayout()
+        /*if (mdpSetFromActivity) mdpSetFromActivity = false
+        else checkMdpLayout()*/
     }
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {        //extras_markers
@@ -691,7 +688,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
                 validateName()
             }
         }
-        else if (requestCode == SETUP_MDP_JOBCODE){
+        /*else if (requestCode == SETUP_MDP_JOBCODE){
             mdpSetFromActivity = true
             if (resultCode == Activity.RESULT_OK) checkMdpLayout(false)
             else {
@@ -705,7 +702,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
                     }.show()
                 }
             }
-        }
+        }*/
     }
 
     override fun onComplete(jobCode: Int, jobSuccess: Boolean, jobResult: Any?) {           //extras_markers
