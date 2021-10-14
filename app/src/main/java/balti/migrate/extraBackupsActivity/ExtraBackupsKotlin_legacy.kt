@@ -61,7 +61,6 @@ import balti.migrate.AppInstance.Companion.selectedBackupDataPackets
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.backupEngines.BackupServiceKotlin
-import balti.migrate.extraBackupsActivity.apps.MakeAppPackets
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.engines.adb.AdbFragment
 import balti.migrate.extraBackupsActivity.engines.calls.CallsFragment
@@ -121,7 +120,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
     //private var readWifi: ReadWifiKotlin? = null
     //private var readFontScale: ReadFontScaleKotlin_legacy? = null
 
-    private var makeAppPackets: MakeAppPackets? = null
+    //private var makeAppPackets: MakeAppPackets? = null
 
     //private var loadKeyboard: LoadKeyboardForSelection_legacy? = null
     //private var loadInstallers: LoadInstallersForSelection_legacy? = null
@@ -663,8 +662,8 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
                                     backupName = this
                                     waitingDialog.show()
 
-                                    makeAppPackets = MakeAppPackets(JOBCODE_MAKE_APP_PACKETS, this@ExtraBackupsKotlin_legacy, destination, dialogView, flasherOnlyBackup)
-                                    makeAppPackets?.execute()
+                                    //makeAppPackets = MakeAppPackets(JOBCODE_MAKE_APP_PACKETS, this@ExtraBackupsKotlin_legacy, destination, dialogView, flasherOnlyBackup)
+                                    //makeAppPackets?.execute()
                                 }
 
                                 if (dir.exists() || zip.exists()) {
@@ -1035,7 +1034,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
 
         tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
 
-        tryIt { makeAppPackets?.cancel(true) }
+        //tryIt { makeAppPackets?.cancel(true) }
         //tryIt { readContacts?.cancel(true) }
         //tryIt { readSms?.cancel(true) }
         //tryIt { readCalls?.cancel(true) }
