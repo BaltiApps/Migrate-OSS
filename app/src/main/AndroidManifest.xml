@@ -114,6 +114,8 @@
             android:theme="@style/AppTheme.Floating"/>
         <activity android:name="balti.migrate.extraBackupsActivity.engines.installers.LoadInstallersForSelection"
             android:theme="@style/AppTheme.Floating"/>
+        <activity android:name=".extraBackupsActivity.apps.MakeAppPacketsActivity"
+            android:theme="@style/AppTheme.Floating"/>
 
         <service android:name=".backupEngines.BackupServiceKotlin"/>
 
