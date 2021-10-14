@@ -38,7 +38,7 @@ import java.io.OutputStreamWriter
 
 internal class MakeAppPackets(private val destination: String,
                      private val flasherOnly: Boolean,
-                     private val activity: MakeAppPacketsActivity):
+                     private val activity: AppSizeCalculationActivity):
         AsyncCoroutineTask() {
 
     private val commonTools by lazy { CommonToolsKotlin() }

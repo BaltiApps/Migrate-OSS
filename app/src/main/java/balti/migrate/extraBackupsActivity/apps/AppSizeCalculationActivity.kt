@@ -23,7 +23,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.module.baltitoolbox.functions.Misc
 import kotlinx.android.synthetic.main.please_wait.*
 
-class MakeAppPacketsActivity: AppCompatActivity(R.layout.please_wait) {
+class AppSizeCalculationActivity: AppCompatActivity(R.layout.please_wait) {
 
     private var readTask: MakeAppPackets? = null
 
