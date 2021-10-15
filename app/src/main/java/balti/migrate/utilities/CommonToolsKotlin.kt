@@ -253,6 +253,7 @@ class CommonToolsKotlin(val context: Context? = null) {
         val PREF_BACKUP_INSTALLERS = "last_installers_backup_state"
         val PREF_BACKUP_ADB = "last_adb_state"
         val PREF_BACKUP_FONTSCALE = "last_fontscale_state"
+        val PREF_BACKUP_KEYBOARD = "last_keyboard_state"
         val PREF_BACKUP_DPI = "last_dpi_state"
         val PREF_SHOW_MANDATORY_FLASHER_WARNING = "flasher_only_warning"
         val PREF_USE_FLASHER_ONLY = "use_flasher_only"

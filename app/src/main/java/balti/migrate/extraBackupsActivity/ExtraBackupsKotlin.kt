@@ -45,6 +45,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_CALLS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_DPI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_FONTSCALE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_INSTALLERS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_KEYBOARD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_STOCK_WARNING
@@ -228,6 +229,7 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
 
             /** Checking other extras like ADB, Font scale etc.*/
             installersFragment.checkCheckbox(getPrefBoolean(PREF_BACKUP_INSTALLERS, true))
+            keyboardFragment.checkCheckbox(getPrefBoolean(PREF_BACKUP_KEYBOARD, true))
             if (!getPrefBoolean(PREF_SHOW_STOCK_WARNING, true)) {
                 adbFragment.checkCheckbox(getPrefBoolean(PREF_BACKUP_ADB, false))
                 dpiFragment.checkCheckbox(getPrefBoolean(PREF_BACKUP_DPI, false))
@@ -331,6 +333,7 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
             putPrefBoolean(PREF_BACKUP_ADB, adbFragment.isChecked() == true)
             putPrefBoolean(PREF_BACKUP_DPI, dpiFragment.isChecked() == true)
             putPrefBoolean(PREF_BACKUP_FONTSCALE, fontScaleFragment.isChecked() == true)
+            putPrefBoolean(PREF_BACKUP_KEYBOARD, keyboardFragment.isChecked() == true)
         }
     }
 
