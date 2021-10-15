@@ -93,7 +93,7 @@ class AppSizeCalculationActivity: AppCompatActivity(R.layout.please_wait) {
 
     fun onFinishReading(results: Array<*>){
 
-        if (readTask?.cancelThis == true) return
+        if (readTask?.cancelThis == true) finish()
 
         try {
 
