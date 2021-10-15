@@ -14,6 +14,7 @@ import balti.migrate.storageSelector.StorageSelectorActivity
 import balti.migrate.storageSelector.StorageType
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_MIGRATE_FLASHER
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
@@ -153,6 +154,7 @@ class AskForName: AppCompatActivity() {
     private fun sendResult(success: Boolean){
         setResult(if (success) Activity.RESULT_OK else Activity.RESULT_CANCELED, Intent().apply {
             putExtra(EXTRA_BACKUP_NAME, backup_name_edit_text.text.toString())
+            putExtra(EXTRA_FLASHER_ONLY, migrate_flasher_only_checkbox.isChecked)
         })
         finish()
     }
