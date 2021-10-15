@@ -36,10 +36,8 @@ class FontScaleFragment: ParentFragmentForExtras(R.layout.extra_fragment_font_sc
                             delegateStatusText?.text = fontScale.toString()
                         }
                         else {
-                            setDefaultValueForExtraNotPresent({
-                                fontScale = 1.0
-                                delegateStatusText?.text = fontScale.toString()
-                            }, R.string.fontScale_label, R.string.no_default_font_scale)
+                            fontScale = 1.0
+                            delegateStatusText?.text = "${fontScale.toString()} (${getString(R.string.using_default_font_scale)})"
                         }
 
                         tryIt({
