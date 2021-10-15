@@ -275,11 +275,13 @@
     <string name="keyboard_label">Default keyboard</string>
     <string name="dpi_label">Screen DPI</string>
     <string name="adb_label">ADB state</string>
+    <string name="using_default_adb_value">Using default ADB value.</string>
     <string name="no_default_adb_scale">System does not have a default ADB connection value. In most cases, this means that it is set at 0 (ADB disabled)
     Do you want to backup this value as 0?</string>
     <string name="installer_label">App installers</string>
     <string name="wifi_label">Wifi passwords file</string>
     <string name="fontScale_label">Font scale</string>
+    <string name="using_default_font_scale">Using default font scale.</string>
     <string name="no_default_font_scale">System does not have a default font scale value. In most cases, this means that it is set at 1.0
     Do you want to backup this value as 1.0?</string>
     <string name="yes_recommended">Yes (Recommended)</string>
