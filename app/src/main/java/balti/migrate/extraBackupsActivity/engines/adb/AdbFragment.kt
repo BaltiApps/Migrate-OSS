@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import balti.migrate.AppInstance
+import balti.migrate.AppInstance.Companion.adbState
 import balti.migrate.R
 import balti.migrate.extraBackupsActivity.utils.ParentFragmentForExtras
 import balti.migrate.extraBackupsActivity.utils.ParentReaderForExtras
@@ -26,7 +26,12 @@ class AdbFragment: ParentFragmentForExtras(R.layout.extra_fragment_adb) {
                 if (jobResults.success) {
 
                     try {
-                        AppInstance.adbState = jobResults.result.toString().toInt()
+                        jobResults.result.toString().toInt().let {
+                            adbState = if (it == 1) it else 0
+                            if (it == -1) {
+                                delegateStatusText?.text = "${adbState.toString()} (${getString(R.string.using_default_adb_value)})"
+                            }
+                        }
                     }
                     catch (e: Exception){
                         Toast.makeText(mActivity, "Failed to cast ADB: ${jobResults.result}", Toast.LENGTH_SHORT).show()
@@ -40,7 +45,7 @@ class AdbFragment: ParentFragmentForExtras(R.layout.extra_fragment_adb) {
                                         .setTitle(R.string.adb_label)
                                         .setNegativeButton(R.string.close, null)
                                         .apply {
-                                            when (val state = AppInstance.adbState) {
+                                            when (val state = adbState) {
                                                 0 -> setMessage("${getString(R.string.adb_disabled)} ($state)")
                                                 1 -> setMessage("${getString(R.string.adb_enabled)} ($state)")
                                             }
@@ -74,7 +79,7 @@ class AdbFragment: ParentFragmentForExtras(R.layout.extra_fragment_adb) {
                     startReadTask()
                 }
                 else {
-                    AppInstance.adbState = null
+                    adbState = null
                     deselectExtra(null, listOf(delegateProgressBar, delegateStatusText), listOf(delegateSalView))
                 }
             }

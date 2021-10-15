@@ -14,7 +14,7 @@ class ReadAdbKotlin(fragment: AdbFragment): ParentReaderForExtras(fragment) {
 
     private var error = ""
     private var adbText = ""
-    private var adbState = 0
+    private var adbState = -1
 
     override val className: String = "ReadAdbKotlin"
 
@@ -76,7 +76,7 @@ class ReadAdbKotlin(fragment: AdbFragment): ParentReaderForExtras(fragment) {
                 error += e.message + "\n"
             }
 
-            if (adbState != 0 && adbState != 1)
+            if (adbState !in arrayOf(0,1,-1))
                 error = "${getStringFromRes(R.string.adb_unknown)} ($adbState)\n\n$error".trim()
 
         } catch (e: Exception){
