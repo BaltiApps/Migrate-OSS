@@ -48,7 +48,6 @@ class ReportLogs: AppCompatActivity() {
         } ?: emptyArray()
     }
     private val rawList by lazy { FileX.new(cache, CommonToolsKotlin.FILE_RAW_LIST, true) }
-    private val mdpLog by lazy { FileX.new(cache, CommonToolsKotlin.FILE_MDP_LOG, true) }
 
     private val deviceSpecifications by lazy {
         CommonToolsKotlin().deviceSpecifications
@@ -68,7 +67,6 @@ class ReportLogs: AppCompatActivity() {
         }
 
         share_progress_checkbox.setCheckedEnabled(progressLog.exists())
-        share_mdp_checkbox.setCheckedEnabled(mdpLog.exists())
         share_script_checkbox.setCheckedEnabled(backupScripts.isNotEmpty())
         share_errors_checkbox.setCheckedEnabled(errorLog.exists())
         share_rawList_checkbox.setCheckedEnabled(rawList.exists())
@@ -122,7 +120,6 @@ class ReportLogs: AppCompatActivity() {
 
             if (share_errors_checkbox.isChecked) uris.add(getUri(errorLog))
             if (share_progress_checkbox.isChecked) uris.add(getUri(progressLog))
-            if (share_mdp_checkbox.isChecked) uris.add(getUri(mdpLog))
             if (share_script_checkbox.isChecked) for (f in backupScripts) uris.add(getUri(f))
             if (share_rawList_checkbox.isChecked) uris.add(getUri(rawList))
 
