@@ -116,21 +116,6 @@ abstract class ParentFragmentForExtras(layoutId: Int): Fragment(), LifecycleObse
         }
     }
 
-    fun setDefaultValueForExtraNotPresent(execFunc: () -> Unit, titleRes: Int, bodyRes: Int){
-
-        mActivity?.let {
-            AlertDialog.Builder(it)
-                .setTitle(getString(titleRes))
-                .setMessage(getString(bodyRes))
-                .setPositiveButton(R.string.yes_recommended) {_, _ -> execFunc() }
-                .setNegativeButton(android.R.string.cancel) {_, _ ->
-                    delegateCheckbox?.isChecked = false
-                }
-                .setCancelable(false)
-                .show()
-        }
-    }
-
     fun checkCheckbox(isChecked: Boolean): Boolean = delegateCheckbox.run {
         return if (this == null) false
         else {
