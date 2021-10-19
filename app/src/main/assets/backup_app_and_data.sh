@@ -29,15 +29,6 @@ if [[ ${APK_PATH} != "NULL" && ${APK_NAME} != "NULL" ]]; then
     appDir="$DESTINATION/$PACKAGE_NAME.app"
     mkdir -p ${appDir}
 
-    # backup apk
-    #cd ${APK_PATH}; cp "$APK_NAME" "${appDir}/$PACKAGE_NAME.apk"
-    #if [[ -e "$DESTINATION/$PACKAGE_NAME.app/$PACKAGE_NAME.apk" ]]; then
-    #    echo "Apk copied"
-    #fi
-
-    # copy split apks (new in v2.0)
-    #cp ${APK_PATH}/*.apk "${appDir}/" 2>/dev/null && echo "Copied split apks"
-
     cd ${APK_PATH}
 
     # Loop over apk files and copy them.
