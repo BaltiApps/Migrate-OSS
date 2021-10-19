@@ -59,6 +59,11 @@ abstract class ParentBackupClass(private val bd: BackupIntentData,
      */
     val actualDestination by lazy { formatName("${bd.destination}/${bd.backupName}") }
 
+    val rootLocation by lazy { FileX.new(actualDestination) }
+    val appAuxFilesDir by lazy { FileX.new(engineContext.filesDir.canonicalPath, CommonToolsKotlin.DIR_APP_AUX_FILES, true) }
+    val pathForAuxFiles by lazy { appAuxFilesDir.canonicalPath }
+    val CACHE by lazy { FileX.new(AppInstance.CACHE_DIR, true) }
+
     private var lastProgress = 0
     private var isIndeterminate = true
 
