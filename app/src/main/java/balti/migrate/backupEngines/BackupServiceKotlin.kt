@@ -1,8 +1,5 @@
 package balti.migrate.backupEngines
 
-//import balti.migrate.extraBackupsActivity.apps.containers.MDP_Packet
-//import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MDP_PACKAGES
-//import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_MDP
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -542,14 +539,8 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                 }
 
                 JOBCODE_PERFORM_APP_BACKUP -> {
-                    /*if (CommonToolsKotlin.IS_OTHER_APP_DATA_VISIBLE)
-                        runConditionalTask(JOBCODE_PERFORM_APP_BACKUP_VERIFICATION)
-                    else runConditionalTask(JOBCODE_PERFORM_MDP)*/
                     runConditionalTask(JOBCODE_PERFORM_APP_BACKUP_VERIFICATION)
                 }
-
-                /*JOBCODE_PERFORM_MDP ->
-                    runConditionalTask(JOBCODE_PERFORM_APP_BACKUP_VERIFICATION)*/
 
                 JOBCODE_PERFORM_APP_BACKUP_VERIFICATION -> {
                     doFallThroughJob(JOBCODE_PERFORM_ZIP_BATCHING)
@@ -626,11 +617,6 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         try {
 
             when (jobCode) {
-
-                /*JOBCODE_PERFORM_MDP -> {
-                    val mdpPacket = MDP_Packet(FILE_MDP_PACKAGES, appPackets.filter { it.DATA }.map { it.packageName })
-                    task = MDPEngine(jobCode, bd, busyboxBinaryPath, getPrefBoolean(PREF_IGNORE_APP_CACHE, false), mdpPacket)
-                }*/
 
                 JOBCODE_PERFORM_APP_BACKUP_VERIFICATION ->
                     task = VerificationEngine(jobCode, bd, appPackets, busyboxBinaryPath)
