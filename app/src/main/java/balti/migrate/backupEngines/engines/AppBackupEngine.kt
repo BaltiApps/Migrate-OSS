@@ -320,7 +320,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
             val parts = it.split(":")
             val currentPackageName = parts[0]
             val apkName = parts[1]
-            val size = parts[2].toLong()
+            val size = try { parts[2].toLong() } catch (e: Exception) {-1}
 
             if (currentPackageName != lastPackageName){
 
