@@ -42,7 +42,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_SHOW_FIRST_WARN
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_ERRORLOG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MESSAGES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PROGRESSLOG
-import balti.migrate.utilities.CommonToolsKotlin.Companion.IS_OTHER_APP_DATA_VISIBLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.LAST_SUPPORTED_ANDROID_API
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_ACTIVITY_CODE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_BOARD_URL
@@ -617,29 +616,21 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
 
                 val isOreoAndAbove = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 val isAlternateMethod =
-                        if (IS_OTHER_APP_DATA_VISIBLE)
-                            getPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
-                        else true
+                    getPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
 
                 if (isOreoAndAbove && isAlternateMethod && !isUsageAccessGranted()) {
 
                     val accessPermissionDialog = AlertDialog.Builder(this).apply {
                         setTitle(R.string.use_usage_access_permission)
-                        if (getPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_TERMINAL_METHOD && !IS_OTHER_APP_DATA_VISIBLE){
-                            setMessage(getString(R.string.terminal_method_not_available_android_11) + "\n\n" + getString(R.string.usage_access_how))
-                        } else {
-                            setMessage(getString(R.string.usage_access_permission_needed_desc) + "\n\n" + getString(R.string.usage_access_how))
-                        }
+                        setMessage(getString(R.string.usage_access_permission_needed_desc) + "\n\n" + getString(R.string.usage_access_how))
                         setPositiveButton(R.string.proceed) { _, _ ->
                             val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
                             startActivity(intent)
                             Toast.makeText(this@MainActivityKotlin, R.string.usage_permission_toast, Toast.LENGTH_SHORT).show()
                         }
-                        if (IS_OTHER_APP_DATA_VISIBLE) {
-                            setNegativeButton(R.string.old_method_will_be_used) { _, _ ->
-                                putPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD, true)
-                                startBackupActivity()
-                            }
+                        setNegativeButton(R.string.old_method_will_be_used) { _, _ ->
+                            putPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_TERMINAL_METHOD, true)
+                            startBackupActivity()
                         }
                         setNeutralButton(android.R.string.cancel, null)
                         setCancelable(false)

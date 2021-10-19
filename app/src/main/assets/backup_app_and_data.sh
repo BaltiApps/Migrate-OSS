@@ -13,7 +13,6 @@ DATA_PATH="$5"
 DATA_NAME="$6"
 BUSYBOX="$7"
 IGNORE_CACHE=$8
-IS_OTHER_APP_DATA_VISIBLE=$9
 
 if [[ ! -e "$DESTINATION" ]]; then
     echo "Destination for package $PACKAGE_NAME: $DESTINATION does not exist. Making..."
@@ -42,7 +41,7 @@ fi
 
 # backup data
 chmod +x ${BUSYBOX}
-if [[ "$IS_OTHER_APP_DATA_VISIBLE" != "false" && ${DATA_PATH} != "NULL" && ${DATA_NAME} != "NULL" ]]; then
+if [[ ${DATA_PATH} != "NULL" && ${DATA_NAME} != "NULL" ]]; then
     if [[ -e "$DATA_PATH/$DATA_NAME" ]]; then
         cd "$DATA_PATH"
         if [[ "${IGNORE_CACHE}" == "true" ]]; then

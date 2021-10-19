@@ -14,11 +14,8 @@ import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DIR_APP_AUX_FILES
-import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_AUX_MOVING_SU
-import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_AUX_MOVING_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_AUX_MOVING_SU
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_AUX_MOVING_TRY_CATCH
-import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_DATA_INVISIBLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_SHELL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_SUPPRESSED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_TRY_CATCH
@@ -27,17 +24,14 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TAR_SHELL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TAR_SUPPRESSED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_VERIFICATION_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_VERIFYING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_TAR_CHECK
-import balti.migrate.utilities.CommonToolsKotlin.Companion.IS_OTHER_APP_DATA_VISIBLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.LOG_CORRECTION_NEEDED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TAR_GZ_INTEGRITY
 import balti.migrate.utilities.IconTools
-import balti.module.baltitoolbox.functions.FileHandlers.getDirLength
 import balti.module.baltitoolbox.functions.Misc
 import balti.module.baltitoolbox.functions.Misc.getPercentage
 import balti.module.baltitoolbox.functions.Misc.tryIt
@@ -83,20 +77,12 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         val actualDataName = fullDataPath.substring(fullDataPath.lastIndexOf('/') + 1)
         val dataPathParent = fullDataPath.substring(0, fullDataPath.lastIndexOf('/'))
 
-        if (IS_OTHER_APP_DATA_VISIBLE) {
-            return "if [ -e $fullDataPath ]; then\n" +
-                    "   cd $dataPathParent\n" +
-                    "   echo \"Copy data: ${expectedDataFile.name}\"\n" +
-                    "   chmod +x $busyboxBinaryPath\n" +
-                    "   $busyboxBinaryPath tar -vczpf ${expectedDataFile.canonicalPath} $actualDataName\n" +
-                    "fi\n\n"
-        }
-        else {
-            val appName = try { engineContext.packageManager.getApplicationLabel(pi.applicationInfo) } catch (_: Exception) { "NULL" }
-            val error = "$ERR_CORRECTION_DATA_INVISIBLE: Package: ${pi.packageName}; Name: $appName"
-            addToActualErrors(error)
-            return "echo \"$error\"\n"
-        }
+        return "if [ -e $fullDataPath ]; then\n" +
+                "   cd $dataPathParent\n" +
+                "   echo \"Copy data: ${expectedDataFile.name}\"\n" +
+                "   chmod +x $busyboxBinaryPath\n" +
+                "   $busyboxBinaryPath tar -vczpf ${expectedDataFile.canonicalPath} $actualDataName\n" +
+                "fi\n\n"
     }
 
     private fun getDataCorrectionCommand(dataName: String): String {

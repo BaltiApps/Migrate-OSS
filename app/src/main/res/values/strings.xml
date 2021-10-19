@@ -555,7 +555,6 @@
     <string name="packet">Packet</string>
     <string name="use_usage_access_permission">Grant usage access permission?</string>
     <string name="usage_access_permission_needed_desc">This permission is needed to check app data size.</string>
-    <string name="terminal_method_not_available_android_11">Older terminal / command-line based method for calculating size is no longer available on Android 11+</string>
     <string name="usage_access_how">Please click Proceed, scroll and select \"Migrate\" then enable \"Permit usage access\"</string>
     <string name="storage_access_required">Please grant storage access to write backups.</string>
     <string name="checking_permissions">Checking Storage and Root access</string>

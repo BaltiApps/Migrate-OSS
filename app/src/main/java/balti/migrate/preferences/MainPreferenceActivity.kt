@@ -9,7 +9,7 @@ import android.preference.Preference
 import android.preference.PreferenceActivity
 import android.provider.Settings
 import balti.migrate.R
-import balti.migrate.utilities.CommonToolsKotlin.Companion.IS_OTHER_APP_DATA_VISIBLE
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.IS_OTHER_APP_DATA_VISIBLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MIGRATE_CACHE_DEFAULT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_AUTOSELECT_EXTRAS
@@ -128,24 +128,17 @@ class MainPreferenceActivity: PreferenceActivity() {
         setValue(manualSystemPref, PREF_MANUAL_SYSTEM, "")
         setValue(manualBuildpropPref, PREF_MANUAL_BUILDPROP, "")
 
-        if (IS_OTHER_APP_DATA_VISIBLE) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                useNewSizingMethod.isEnabled = true
-                useNewSizingMethod.isChecked = getPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
-                useNewSizingMethod.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                    putPrefInt(PREF_CALCULATING_SIZE_METHOD, if (newValue as Boolean) PREF_ALTERNATE_METHOD else PREF_TERMINAL_METHOD)
-                    true
-                }
-            } else {
-                useNewSizingMethod.isChecked = false
-                useNewSizingMethod.isEnabled = false
-                useNewSizingMethod.summary = getString(R.string.only_for_oreo_and_above)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            useNewSizingMethod.isEnabled = true
+            useNewSizingMethod.isChecked = getPrefInt(PREF_CALCULATING_SIZE_METHOD, PREF_ALTERNATE_METHOD) == PREF_ALTERNATE_METHOD
+            useNewSizingMethod.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                putPrefInt(PREF_CALCULATING_SIZE_METHOD, if (newValue as Boolean) PREF_ALTERNATE_METHOD else PREF_TERMINAL_METHOD)
+                true
             }
-        }
-        else {
-            useNewSizingMethod.isChecked = true
+        } else {
+            useNewSizingMethod.isChecked = false
             useNewSizingMethod.isEnabled = false
-            useNewSizingMethod.summary = getString(R.string.terminal_method_not_available_android_11)
+            useNewSizingMethod.summary = getString(R.string.only_for_oreo_and_above)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

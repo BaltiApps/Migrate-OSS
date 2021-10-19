@@ -28,9 +28,6 @@ class CommonToolsKotlin(val context: Context? = null) {
         val ALLOW_CONVENTIONAL_STORAGE : Boolean by lazy {
             Build.VERSION.SDK_INT < Build.VERSION_CODES.R
         }
-        val IS_OTHER_APP_DATA_VISIBLE: Boolean by lazy {
-            AppInstance.appContext.applicationInfo.targetSdkVersion < Build.VERSION_CODES.R || Build.VERSION.SDK_INT < Build.VERSION_CODES.R
-        }
         val LAST_SUPPORTED_ANDROID_API = 30
 
         val DEBUG_TAG = "migrate_tag"
@@ -119,7 +116,6 @@ class CommonToolsKotlin(val context: Context? = null) {
         val ERR_CORRECTION_SHELL = "CORRECTION_SHELL"
         val ERR_CORRECTION_SUPPRESSED = "CORRECTION_SUPPRESSED"
         val ERR_CORRECTION_TRY_CATCH = "CORRECTION_TRY_CATCH"
-        val ERR_CORRECTION_DATA_INVISIBLE = "APP_DATA_INVISIBLE"
         val ERR_TAR_SHELL = "TAR_ERR"
         val ERR_TAR_SUPPRESSED = "TAR_SUPPRESSED"
         val ERR_TAR_CHECK_TRY_CATCH = "TAR_TRY_CATCH"

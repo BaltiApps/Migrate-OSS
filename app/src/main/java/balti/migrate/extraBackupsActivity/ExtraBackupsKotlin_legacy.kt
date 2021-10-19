@@ -79,7 +79,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_ALL_APP_SELECTED
-import balti.migrate.utilities.CommonToolsKotlin.Companion.IS_OTHER_APP_DATA_VISIBLE
+//import balti.migrate.utilities.CommonToolsKotlin.Companion.IS_OTHER_APP_DATA_VISIBLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_MAKE_APP_PACKETS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_AUTOSELECT_EXTRAS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_CALLS
@@ -257,7 +257,7 @@ class ExtraBackupsKotlin_legacy : AppCompatActivity(), OnJobCompletion, Compound
                     || adbFragment.isChecked() == true //|| do_backup_wifi.isChecked
                     || fontScaleFragment.isChecked() == true) {                  //extras_markers
 
-                    if (IS_OTHER_APP_DATA_VISIBLE || selectedBackupDataPackets.filter { it.DATA }.isEmpty())
+                    if (/*IS_OTHER_APP_DATA_VISIBLE ||*/ selectedBackupDataPackets.filter { it.DATA }.isEmpty())
                         askForName()
                     /*else if (Misc.isPackageInstalled(MDP_Constants.MDP_PACKAGE_NAME))
                         askForName()
