@@ -2,6 +2,7 @@ package balti.migrate.extraBackupsActivity
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -102,10 +103,10 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
     private val askForNameLauncher by lazy {
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
-
-            flasherOnly = it.data?.getBooleanExtra(EXTRA_FLASHER_ONLY, false) ?: false
-            validateNameAndStartBackup(it.data?.getStringExtra(EXTRA_BACKUP_NAME) ?: "")
-
+            if (it.resultCode == Activity.RESULT_OK) {
+                flasherOnly = it.data?.getBooleanExtra(EXTRA_FLASHER_ONLY, false) ?: false
+                validateNameAndStartBackup(it.data?.getStringExtra(EXTRA_BACKUP_NAME) ?: "")
+            }
         }
     }
 
