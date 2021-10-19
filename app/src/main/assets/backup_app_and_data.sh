@@ -57,7 +57,8 @@ if [[ ${APK_PATH} != "NULL" && ${APK_NAME} != "NULL" ]]; then
 
         # Output the file to APK_NAMES_LIST_FILE
         if [[ -n $APK_NAMES_LIST_FILE ]]; then
-            echo "$PACKAGE_NAME:$display_name" >> $APK_NAMES_LIST_FILE
+            echo -n ${PACKAGE_NAME}:${display_name}: >> $APK_NAMES_LIST_FILE
+            ls -al $f | awk '{printf "%s\n", $5}' >> $APK_NAMES_LIST_FILE
         fi
 
     done

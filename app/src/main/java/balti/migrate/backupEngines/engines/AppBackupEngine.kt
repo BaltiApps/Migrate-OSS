@@ -298,37 +298,42 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
     /**
      * The `backup_app_and_data.sh` script creates a file in below format
      * ```
-     * <package_name_1>:<apk_name_1>
-     * <package_name_1>:<apk_name_2>
-     * <package_name_1>:<apk_name_3>
-     * <package_name_2>:<apk_name_1>
-     * <package_name_2>:<apk_name_2>
-     * <package_name_2>:<apk_name_3>
-     * <package_name_2>:<apk_name_4>
+     * <package_name_1>:<apk_name_1>:<size>
+     * <package_name_1>:<apk_name_2>:<size>
+     * <package_name_1>:<apk_name_3>:<size>
+     * <package_name_2>:<apk_name_1>:<size>
+     * <package_name_2>:<apk_name_2>:<size>
+     * <package_name_2>:<apk_name_3>:<size>
+     * <package_name_2>:<apk_name_4>:<size>
      * ```
      * This function parses the file and groups apk names for different package names
      * and then stores them in [appApkFiles].
      */
     private fun populateSplitApkNames(){
         var lastPackageName = ""
-        val list = ArrayList<String>(0)
+        var list = ArrayList<Pair<String, Long>>(0)
 
         appApkFiles.clear()
 
         apkNamesListFile.readLines().forEach {
 
-            val currentPackageName = it.substring(0, it.indexOf(':'))
-            val apkName = it.substring(it.indexOf(":")+1)
+            val parts = it.split(":")
+            val currentPackageName = parts[0]
+            val apkName = parts[1]
+            val size = parts[2].toLong()
 
             if (currentPackageName != lastPackageName){
 
-                // first added list will be empty. It will be removed at the end.
+                // first created list will be empty.
+                // It will be removed near the end of the function.
                 appApkFiles[lastPackageName] = list
                 lastPackageName = currentPackageName
-                list.clear()
+                // Create a fresh list.
+                // DO NOT USE clear old list and use as it is messing with HashMap.
+                list = ArrayList(0)
             }
 
-            list.add(apkName)
+            list.add(Pair(apkName, size))
         }
 
         // the last list
