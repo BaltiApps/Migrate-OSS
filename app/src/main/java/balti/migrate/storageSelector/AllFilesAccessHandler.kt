@@ -23,7 +23,7 @@ class AllFilesAccessHandler(private val context: Context, private val defaultInt
     private val chooserDialog by lazy {
         AlertDialog.Builder(context).apply {
             setTitle(R.string.all_files_access_custom_location)
-            setNeutralButton(R.string.use_default, null)
+            setNeutralButton(R.string.set_default, null)
             setNegativeButton(R.string.custom, null)
             setPositiveButton(android.R.string.ok, null)
             setMessage("")
