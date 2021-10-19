@@ -68,9 +68,6 @@ class CommonToolsKotlin(val context: Context? = null) {
         val FILE_PACKAGE_DATA = "package-data.txt"
         val FILE_MESSAGES = "messages.txt"
 
-        val FILE_MDP_PACKAGES = "mdp_packages.txt"
-        val FILE_MDP_LOG = "mdp_backup.txt"
-
         val CHANNEL_BACKUP_END = "Backup finished notification"
         val CHANNEL_BACKUP_RUNNING = "Backup running notification"
         val CHANNEL_BACKUP_CANCELLING = "Cancelling current backup"
@@ -93,7 +90,6 @@ class CommonToolsKotlin(val context: Context? = null) {
         val EXTRA_PROGRESS_TYPE_SMS = "sms_progress"
         val EXTRA_PROGRESS_TYPE_CALLS = "calls_progress"
         val EXTRA_PROGRESS_TYPE_WIFI = "wifi_progress"
-        val EXTRA_PROGRESS_TYPE_MDP = "mdp_progress"
         val EXTRA_PROGRESS_TYPE_SETTINGS = "settings_progress"
         val EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS = "making_app_backup_scripts"
         val EXTRA_PROGRESS_TYPE_APP_PROGRESS = "app_progress"
@@ -152,7 +148,6 @@ class CommonToolsKotlin(val context: Context? = null) {
         val ERR_SMS_TRY_CATCH = "SMS_TRY_CATCH"
         val ERR_SMS_VERIFY = "SMS_VERIFY"
         val ERR_SMS_VERIFY_TRY_CATCH = "SMS_VERIFY_TRY_CATCH"
-        val ERR_MDP_TRY_CATCH = "MDP_TRY_CATCH"
         val ERR_WIFI_TRY_CATCH = "WIFI_TRY_CATCH"
         val ERR_SETTINGS_TRY_CATCH = "SETTINGS_TRY_CATCH"
         val ERR_TESTING_ERROR = "SYSTEM_TESTING_ERROR"
@@ -171,9 +166,6 @@ class CommonToolsKotlin(val context: Context? = null) {
         val ERR_CASTING_APK_SIZE = "ERR_CASTING_APK_SIZE"
         val ERR_APK_SIZE_INDEX_NOT_FOUND = "ERR_APK_SIZE_INDEX_NOT_FOUND"
 
-        val ERR_MDP_INSTALL = "MDP_INSTALL_ERROR"
-        val ERR_MDP_SU = "MDP_SU_ERROR"
-
         val ERR_BACKUP_SERVICE_ERROR = "BACKUP_SERVICE"
         val ERR_CONDITIONAL_TASK = "RUN_CONDITIONAL_TASK"
         val ERR_ON_COMPLETE_TASK = "ON_COMPLETE_TASK"
@@ -188,10 +180,9 @@ class CommonToolsKotlin(val context: Context? = null) {
         val WARNING_ZIP_FILELIST_UNAVAILABLE = "ZIP_FILELIST_UNAVAILABLE"
         val WARNING_ZIP_FILELIST_ITEM_UNAVAILABLE = "FILELIST_ITEM_UNAVAILABLE"
         val WARNING_FILE_LIST_COPY = "FILE_LIST_COPY"
-        val WARNING_MDP_ENGINE = "MDP_ENGINE_WARNING"
 
         val ALL_WARNINGS = arrayOf(WARNING_ZIP_BATCH, WARNING_CALLS, WARNING_SMS, WARNING_ZIP_FILELIST_VERIFICATION,
-                WARNING_ZIP_FILELIST_UNAVAILABLE, WARNING_ZIP_FILELIST_ITEM_UNAVAILABLE, WARNING_FILE_LIST_COPY, WARNING_MDP_ENGINE)
+                WARNING_ZIP_FILELIST_UNAVAILABLE, WARNING_ZIP_FILELIST_ITEM_UNAVAILABLE, WARNING_FILE_LIST_COPY)
 
         val LOG_CORRECTION_NEEDED = "CORRECTION_NEEDED"
 
@@ -288,7 +279,6 @@ class CommonToolsKotlin(val context: Context? = null) {
         val JOBCODE_PEFORM_BACKUP_WIFI = 50000
         val JOBCODE_PEFORM_BACKUP_SETTINGS = 60000
         val JOBCODE_PERFORM_APP_BACKUP = 70000
-        val JOBCODE_PERFORM_MDP = 75000
         val JOBCODE_PERFORM_APP_BACKUP_VERIFICATION = 80000
         val JOBCODE_PERFORM_ZIP_BATCHING = 85000
         val JOBCODE_PERFORM_UPDATER_SCRIPT = 90000
