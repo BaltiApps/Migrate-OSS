@@ -28,6 +28,9 @@ class CommonToolsKotlin(val context: Context? = null) {
         val IS_API_A11 : Boolean by lazy {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
         }
+        val IS_API_A8 : Boolean by lazy {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+        }
         val LAST_SUPPORTED_ANDROID_API = 30
 
         val DEBUG_TAG = "migrate_tag"
