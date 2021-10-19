@@ -88,6 +88,14 @@ class AppInstance: Application() {
         val appPackets = ArrayList<AppPacket>(0)
 
         /**
+         * Central location to store names of base apk and split apks for an app.
+         * Key - String - package name of an app.
+         * Value - List of String - base apk name and split apk names of the app.
+         * Note that base apk name is saved as "<package_name>.apk", as it would appear inside the zip.
+         */
+        val appApkFiles = HashMap<String, List<String>>(0)
+
+        /**
          * Central location to store all zip batches.
          * @see balti.migrate.backupEngines.containers.ZipAppBatch
          */
