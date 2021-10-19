@@ -13,7 +13,6 @@ import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
-import balti.migrate.utilities.CommonToolsKotlin.Companion.DIR_APP_AUX_FILES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_AUX_MOVING_SU
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_AUX_MOVING_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_SHELL
@@ -61,8 +60,6 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     private var suProcess : Process? = null
 
     private var lastProgress = 0
-    private val appAuxFilesDir by lazy { FileX.new(engineContext.filesDir.canonicalPath, DIR_APP_AUX_FILES, true) }
-    private val pathForAuxFiles by lazy { if (FileXInit.isTraditional) actualDestination else appAuxFilesDir.canonicalPath }
 
     private val allFiles by lazy { rootDir.listEverything() }
 
