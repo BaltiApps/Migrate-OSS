@@ -3,6 +3,7 @@ package balti.migrate.backupEngines.engines
 import balti.filex.FileX
 import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.CACHE_DIR
+import balti.migrate.AppInstance.Companion.appApkFiles
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass
@@ -10,7 +11,6 @@ import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolsKotlin
-import balti.migrate.utilities.CommonToolsKotlin.Companion.DIR_APP_AUX_FILES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APP_BACKUP_SHELL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APP_BACKUP_SUPPRESSED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APP_BACKUP_TRY_CATCH
@@ -22,6 +22,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_A
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_BACKUP_SCRIPT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_SPLIT_APK_NAMES_LIST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
@@ -54,9 +55,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
     private val allErrors by lazy { ArrayList<String>(0) }
     private val actualErrors by lazy { ArrayList<String>(0) }
 
-    private val rootLocation by lazy { FileX.new(actualDestination) }
-    private val appAuxFilesDir by lazy { FileX.new(engineContext.filesDir.canonicalPath, DIR_APP_AUX_FILES, true) }
-    private val pathForAuxFiles by lazy { if (FileXInit.isTraditional) actualDestination else appAuxFilesDir.canonicalPath }
+    private val apkNamesListFile by lazy { FileX.new(CACHE_DIR, FILE_SPLIT_APK_NAMES_LIST, true) }
 
     init {
         customPreExecuteFunction = {
@@ -75,10 +74,12 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                 }?.forEach { it.delete() }
             }
 
-            FileX.new(CACHE_DIR).listFiles { f: FileX ->
+            CACHE.listFiles { f: FileX ->
                 (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
                 f.name.endsWith(".sh")
             }?.forEach { it.delete() }
+
+            apkNamesListFile.createNewFile(true)
         }
     }
 
@@ -90,8 +91,8 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
     private fun systemAppInstallScript(packageName: String, apkPath: String) {
 
         val scriptName = "$packageName.sh"
-        val scriptLocation = "$actualDestination/$scriptName"
-        val script = FileX.new(scriptLocation)
+        val scriptLocation = "$pathForAuxFiles/$scriptName"
+        val script = FileX.new(scriptLocation, true)
 
         val pastingDir: String = if (apkPath.contains("priv-app"))
             apkPath.substring(apkPath.indexOf("/priv-app"))
@@ -130,8 +131,6 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
             val scriptFile = FileX.new(engineContext.filesDir.canonicalPath, "$FILE_PREFIX_BACKUP_SCRIPT.sh", true)
             scriptFile.parentFile?.mkdirs()
-            //val scriptWriter = BufferedWriter(FileWriter(scriptFile))
-            //val appAndDataBackupScript = commonTools.unpackAssetToInternal("backup_app_and_data.sh", "backup_app_and_data.sh", false)
             val appAndDataBackupScript = unpackAssetToInternal("backup_app_and_data.sh")
 
             scriptFile.startWriting(object : FileX.Writer(){
@@ -140,7 +139,6 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     write("echo \" \"\n")
                     write("sleep 1\n")
                     write("echo \"--- PID: $$\"\n")
-                    //write("cp ${scriptFile.absolutePath} ${engineContext.externalCacheDir}/\n")
                     write("cp ${scriptFile.absolutePath} ${CACHE_DIR}/${scriptFile.name}\n")
                     write("chown ${myUid}:${myUid} ${CACHE_DIR}/${scriptFile.name}\n")
 
@@ -183,10 +181,9 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                                     "$packageName ${rootLocation.canonicalPath} " +
                                     "${packet.apkPath} ${packet.apkName} " +
                                     "${packet.dataPath} ${packet.dataName} " +
-                                    "$busyboxBinaryPath $ignoreCache\n"
+                                    "$busyboxBinaryPath $ignoreCache " +
+                                    "${apkNamesListFile.canonicalPath}\n"
 
-                            //write(echoCopyCommand, 0, echoCopyCommand.length)
-                            //write(scriptCommand, 0, scriptCommand.length)
                             writeLine(echoCopyCommand)
                             writeLine(scriptCommand)
 
@@ -298,6 +295,49 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
         }
     }
 
+    /**
+     * The `backup_app_and_data.sh` script creates a file in below format
+     * ```
+     * <package_name_1>:<apk_name_1>
+     * <package_name_1>:<apk_name_2>
+     * <package_name_1>:<apk_name_3>
+     * <package_name_2>:<apk_name_1>
+     * <package_name_2>:<apk_name_2>
+     * <package_name_2>:<apk_name_3>
+     * <package_name_2>:<apk_name_4>
+     * ```
+     * This function parses the file and groups apk names for different package names
+     * and then stores them in [appApkFiles].
+     */
+    private fun populateSplitApkNames(){
+        var lastPackageName = ""
+        val list = ArrayList<String>(0)
+
+        appApkFiles.clear()
+
+        apkNamesListFile.readLines().forEach {
+
+            val currentPackageName = it.substring(0, it.indexOf(':'))
+            val apkName = it.substring(it.indexOf(":")+1)
+
+            if (currentPackageName != lastPackageName){
+
+                // first added list will be empty. It will be removed at the end.
+                appApkFiles[lastPackageName] = list
+                lastPackageName = currentPackageName
+                list.clear()
+            }
+
+            list.add(apkName)
+        }
+
+        // the last list
+        appApkFiles[lastPackageName] = list
+
+        // remove empty list
+        appApkFiles.remove("")
+    }
+
     private fun moveAuxFiles(){
         try {
             val title = getTitle(R.string.moving_aux_script)
@@ -318,6 +358,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
         val scriptLocation = makeBackupScript()
         if (!FileXInit.isTraditional) moveAuxFiles()
         if (!BackupServiceKotlin.cancelAll) scriptLocation?.let { runBackupScript(it) }
+        populateSplitApkNames()
         return 0
     }
 
