@@ -166,7 +166,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                             versionName = if (versionName == null || versionName == "") "_"
                             else formatName(versionName)
 
-                            var appIconFileName: String? = null
+                            var appIconFileName: String = ""
                             if (getPrefBoolean(PREF_NEW_ICON_METHOD, true)) {
                                 appIconFileName = backupUtils.makeNewIconFile(packageName, iconTools.getBitmap(packet.PACKAGE_INFO, pm), pathForAuxFiles)
                             }
@@ -189,7 +189,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
                             tryIt { if (packet.isSystem) systemAppInstallScript(packageName, packet.apkPath) }
 
-                            backupUtils.makeMetadataFile(pathForAuxFiles, versionName, appIconFileName, null, packet, doBackupInstallers).let {
+                            backupUtils.makeMetadataFile(pathForAuxFiles, versionName, appIconFileName, packet).let {
                                 if (it.isNotBlank()) addToActualErrors("$ERR_CREATING_MTD: ${packet.appName} - $it")
                             }
                         }
