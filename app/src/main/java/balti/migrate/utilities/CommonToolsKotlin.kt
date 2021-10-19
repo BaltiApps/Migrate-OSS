@@ -58,6 +58,8 @@ class CommonToolsKotlin(val context: Context? = null) {
         val FILE_PREFIX_RETRY_SCRIPT = "retry_script"
         val FILE_PREFIX_TAR_CHECK = "tar_check"
 
+        val FILE_SPLIT_APK_NAMES_LIST = "split_apk_names_list.txt"
+
         val FILE_PREFIX_MOVE_TO_CONTAINER_SCRIPT = "move_to_containers"
 
         val FILE_ZIP_NAME_EXTRAS = "Extras"
