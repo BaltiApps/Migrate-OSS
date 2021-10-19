@@ -1,9 +1,7 @@
 package balti.migrate.backupEngines.containers
 
 /**
- * A container to store string list of APK files.
- * Useful only for non-traditional FileX.
- * Objects for each package will be created in [balti.migrate.backupEngines.engines.MakeZipBatch.recordAppDirSizeByRoot].
+ * A container to store string list of APK files for an app. Stores the base apk and split apk names.
  * A list of such objects should significantly speed up creating raw file list in in
  * [balti.migrate.backupEngines.engines.UpdaterScriptMakerEngine.createRawList] as files do not need to be read again.
  *
