@@ -84,7 +84,7 @@ internal class MakeAppPackets(private val destination: String,
 
             if (busyboxPath.trim() == "") return getStringFromRes(R.string.no_busybox_binary)
 
-            val processMemoryFinder = Runtime.getRuntime().exec("su")
+            val processMemoryFinder = Runtime.getRuntime().exec(CommonToolsKotlin.SU_INIT)
             val processReader = BufferedReader(InputStreamReader(processMemoryFinder.inputStream))
             val processWriter = BufferedWriter(OutputStreamWriter(processMemoryFinder.outputStream))
 

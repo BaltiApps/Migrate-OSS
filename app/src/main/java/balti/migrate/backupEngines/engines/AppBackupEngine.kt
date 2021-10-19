@@ -9,6 +9,7 @@ import balti.migrate.backupEngines.ParentBackupClass
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
+import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DIR_APP_AUX_FILES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APP_BACKUP_SHELL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APP_BACKUP_SUPPRESSED
@@ -224,7 +225,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
             resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_APP_PROGRESS)
 
-            suProcess = Runtime.getRuntime().exec("su")
+            suProcess = Runtime.getRuntime().exec(CommonToolsKotlin.SU_INIT)
             suProcess?.let {
                 val suInputStream = BufferedWriter(OutputStreamWriter(it.outputStream))
                 val outputStream = BufferedReader(InputStreamReader(it.inputStream))

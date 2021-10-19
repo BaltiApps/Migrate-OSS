@@ -30,6 +30,8 @@ class CommonToolsKotlin(val context: Context? = null) {
         val IS_API_A11 : Boolean by lazy { Build.VERSION.SDK_INT >= Build.VERSION_CODES.R }
         val IS_API_A8 : Boolean by lazy { Build.VERSION.SDK_INT >= Build.VERSION_CODES.O }
 
+        val SU_INIT = if (IS_API_A11) "su --mount-master" else "su"
+
         val DEBUG_TAG = "migrate_tag"
 
         val NOTIFICATION_ID_ONGOING = 129
