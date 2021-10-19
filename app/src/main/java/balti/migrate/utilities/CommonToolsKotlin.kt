@@ -25,8 +25,8 @@ class CommonToolsKotlin(val context: Context? = null) {
     companion object {
 
         val THIS_VERSION = 50
-        val ALLOW_CONVENTIONAL_STORAGE : Boolean by lazy {
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.R
+        val IS_API_A11 : Boolean by lazy {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
         }
         val LAST_SUPPORTED_ANDROID_API = 30
 

@@ -25,7 +25,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STOR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_STORAGE_TYPE
 import balti.module.baltitoolbox.functions.Misc.tryIt
-import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 import balti.module.baltitoolbox.functions.SharedPrefs.putPrefString
 import kotlinx.android.synthetic.main.storage_selector.*
 
@@ -46,14 +45,14 @@ class StorageSelectorActivity: AppCompatActivity() {
 
         getManifestPermissions().run {
 
-            // 1st case for all older androids where SAF is avoided
-            if (CommonToolsKotlin.ALLOW_CONVENTIONAL_STORAGE) {
+            // 1st case for all older androids where All Files access is not present.
+            if (!CommonToolsKotlin.IS_API_A11) {
                 storage_select_all_files_access.visibility = View.GONE
                 storage_select_conventional.visibility = View.VISIBLE
             }
 
             // 2nd case: This will be false if Google decides to deny all files access.
-            // In that case the permission needs to be removed from manfest, and the check will be false.
+            // In that case the permission needs to be removed from manifest, and the check will be false.
             else if (contains(ALL_FILES_ACCESS_PERMISSION)){
                 storage_select_all_files_access.visibility = View.VISIBLE
                 storage_select_conventional.visibility = View.GONE
