@@ -95,8 +95,8 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                         return@iterateBufferedReader false
                     })
 
-                    expectedApkFile.refreshFile()
-                    expectedDataFile.refreshFile()
+                    expectedApkFile.exists()
+                    expectedDataFile.exists()
 
                     if (!expectedApkFile.exists() || expectedApkFile.length() == 0L)
                         errors.add(engineContext.getString(R.string.test_apk_not_found))
