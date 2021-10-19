@@ -1,6 +1,9 @@
 package balti.migrate.extraBackupsActivity.apps
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -17,11 +20,14 @@ import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.module.baltitoolbox.functions.Misc
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import kotlinx.android.synthetic.main.please_wait.*
+import kotlinx.coroutines.delay
 
 class AppSizeCalculationActivity: AppCompatActivity(R.layout.please_wait) {
 
@@ -32,6 +38,22 @@ class AppSizeCalculationActivity: AppCompatActivity(R.layout.please_wait) {
     private var flasherOnly: Boolean = false
 
     private val commonTools by lazy { CommonToolsKotlin(this) }
+
+    private val progressReceiver by lazy {
+        object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+
+                // Unregister yourself to not get re-triggered.
+                commonTools.LBM?.unregisterReceiver(this)
+
+                // Wait 2 seconds before closing else the animation is very jarring.
+                Misc.runSuspendFunction {
+                    delay(2000)
+                    finish()
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +97,11 @@ class AppSizeCalculationActivity: AppCompatActivity(R.layout.please_wait) {
 
         waiting_progress_text.visibility = View.GONE
         waiting_progress_subtext.visibility = View.GONE
+
+        /**
+         * Register receiver to close activity.
+         */
+        commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
 
         readTask?.execute()
     }
@@ -152,5 +179,10 @@ class AppSizeCalculationActivity: AppCompatActivity(R.layout.please_wait) {
                 startService(this)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
     }
 }
