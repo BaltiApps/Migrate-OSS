@@ -5,7 +5,6 @@ class MtdConstants {
     companion object{
         val MTD_APP_NAME = "app_name"
         val MTD_IS_SYSTEM = "is_system_app"
-        val MTD_APP_ICON = "icon"
         val MTD_PACKAGE_NAME = "package_name"
         val MTD_APK = "apk"
         val MTD_DATA = "data"
@@ -15,5 +14,6 @@ class MtdConstants {
         val MTD_PERMISSION = "permission"
         val MTD_ICON_FILE_NAME = "icon_file"
         val MTD_INSTALLER_NAME = "installer_name"
+        val MTD_SPLITS = "split_apks"
     }
 }

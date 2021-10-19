@@ -4,12 +4,11 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import balti.filex.FileX
-import balti.migrate.backupEngines.containers.BackupIntentData
+import balti.migrate.AppInstance
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
-import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.KB_DIVISION_SIZE
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_NAMES_KNOWN
 import balti.migrate.utilities.constants.MtdConstants
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -42,8 +41,7 @@ class BackupUtils {
     }
 
     fun makeMetadataFile(traditionalLocation: String, version: String,
-                         iconFileName: String?, iconString: String?,
-                         appPacket: AppPacket, doBackupInstallerName: Boolean): String{
+                         iconFileName: String, appPacket: AppPacket): String{
 
         val packageName = appPacket.PACKAGE_INFO.packageName
         val metadataFileName = "$packageName.json"
@@ -61,16 +59,13 @@ class BackupUtils {
             put(MtdConstants.MTD_DATA_SIZE, appPacket.dataSizeBytes / KB_DIVISION_SIZE)
             put(MtdConstants.MTD_SYSTEM_SIZE, appPacket.systemSizeBytes / KB_DIVISION_SIZE)
             put(MtdConstants.MTD_PERMISSION, appPacket.PERMISSION)
-            when {
-                iconFileName != null -> put(MtdConstants.MTD_ICON_FILE_NAME, iconFileName)
-                iconString != null -> put(MtdConstants.MTD_APP_ICON, iconString)
-            }
+            put(MtdConstants.MTD_SPLITS, JSONArray(appPacket.PACKAGE_INFO.splitNames?: arrayOf<String>()))
+            put(MtdConstants.MTD_ICON_FILE_NAME, iconFileName)
             put(MtdConstants.MTD_INSTALLER_NAME,
-                    if (doBackupInstallerName)
-                        appPacket.installerName.let {
-                            if (it in PACKAGE_NAMES_KNOWN) it else "NULL"
-                        }
-                    else "NULL"
+                    AppInstance.appInstallers[packageName].let {
+                        if (it?.isNotBlank() == true) it
+                        else "NULL"
+                    }
             )
         }
 
