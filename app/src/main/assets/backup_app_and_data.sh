@@ -55,10 +55,19 @@ if [[ ${APK_PATH} != "NULL" && ${APK_NAME} != "NULL" ]]; then
             cp "$f" "${appDir}/" && echo "Copied split apk: $f"
         fi
 
-        # Output the file to APK_NAMES_LIST_FILE
+        # Output the file name to APK_NAMES_LIST_FILE
+        # Note that this actually checks the file in the destination and not the apk source.
+        # Thus the result obtained is from the backed up file, hence verification is minimized.
         if [[ -n $APK_NAMES_LIST_FILE ]]; then
             echo -n ${PACKAGE_NAME}:${display_name}: >> $APK_NAMES_LIST_FILE
-            ls -al $f | awk '{printf "%s\n", $5}' >> $APK_NAMES_LIST_FILE
+
+            file_location="$DESTINATION/${PACKAGE_NAME}.app/${display_name}"
+
+            if [[ -e $file_location ]]; then
+                ls -al $file_location | awk '{printf "%s\n", $5}' >> $APK_NAMES_LIST_FILE
+            else
+                echo -1 >> $APK_NAMES_LIST_FILE
+            fi
         fi
 
     done
