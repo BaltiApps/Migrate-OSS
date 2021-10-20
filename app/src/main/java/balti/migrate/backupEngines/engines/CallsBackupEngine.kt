@@ -3,7 +3,6 @@ package balti.migrate.backupEngines.engines
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import balti.filex.FileX
-import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
@@ -107,7 +106,7 @@ class CallsBackupEngine(private val jobcode: Int,
                     "$CALLS_DURATION INTEGER, " +
                     "$CALLS_NEW INTEGER )"
 
-            val dataBase: SQLiteDatabase = getDataBase(if (FileXInit.isTraditional) callsDBFileActual else internalDB)
+            val dataBase: SQLiteDatabase = getDataBase(internalDB)
 
             dataBase.let { db ->
                 db.execSQL(DROP_TABLE)
@@ -190,7 +189,7 @@ class CallsBackupEngine(private val jobcode: Int,
             var totalSelected = 0
             callsPackets.forEach { if (it.selected) totalSelected++ }
 
-            val dataBase: SQLiteDatabase = getDataBase(if (FileXInit.isTraditional) callsDBFileActual else internalDB)
+            val dataBase: SQLiteDatabase = getDataBase(internalDB)
 
             val cursor = dataBase.query(CALLS_TABLE_NAME, arrayOf("id"), null, null, null, null, null)
             cursor.moveToFirst()
@@ -215,6 +214,31 @@ class CallsBackupEngine(private val jobcode: Int,
         }
     }
 
+    private fun copyInternalDbFilesToBackup(){
+
+        broadcastProgress(getStringFromRes(R.string.copying_database_to_backup), "", true)
+
+        // copy the main file
+        try {
+            callsDBFileActual.createNewFile(overwriteIfExists = true)
+            callsDBFileActual.refreshFile()
+            internalDB.copyTo(callsDBFileActual, true)
+            tryIt { internalDB.delete() }
+        } catch (e: Exception) {
+            errors.add("$ERR_CALLS_WRITE_TO_ACTUAL: ${getStringFromRes(R.string.call_log_write_to_actual_failed)} ${e.message}")
+        }
+
+        // copy other files like .journal .journal-wal
+        try {
+            CACHE.listFiles { file: FileX -> file.name.startsWith(callsNameWithoutExtension) }?.forEach {
+                it.copyTo(FileX.new(actualDestination, it.name))
+                tryIt { it.delete() }
+            }
+        } catch (e: Exception) {
+            warnings.add("$ERR_CALLS_WRITE_TO_ACTUAL: ${getStringFromRes(R.string.call_log_auxiliary_write_to_actual_failed)} ${e.message}")
+        }
+    }
+
     override suspend fun doInBackground(arg: Any?): Any? {
 
         writeCalls()
@@ -223,28 +247,7 @@ class CallsBackupEngine(private val jobcode: Int,
             verifyCalls()
         }
 
-        if (!FileXInit.isTraditional) {
-
-            // copy the main file
-            try {
-                callsDBFileActual.createNewFile(overwriteIfExists = true)
-                callsDBFileActual.refreshFile()
-                internalDB.copyTo(callsDBFileActual, true)
-                tryIt { internalDB.delete() }
-            } catch (e: Exception) {
-                errors.add("$ERR_CALLS_WRITE_TO_ACTUAL: ${getStringFromRes(R.string.call_log_write_to_actual_failed)} ${e.message}")
-            }
-
-            // copy other files like .journal .journal-wal
-            try {
-                FileX.new(CACHE_DIR).listFiles { file: FileX -> file.name.startsWith(callsNameWithoutExtension) }?.forEach {
-                    it.copyTo(FileX.new(actualDestination, it.name))
-                    tryIt { it.delete() }
-                }
-            } catch (e: Exception) {
-                warnings.add("$ERR_CALLS_WRITE_TO_ACTUAL: ${getStringFromRes(R.string.call_log_auxiliary_write_to_actual_failed)} ${e.message}")
-            }
-        }
+        copyInternalDbFilesToBackup()
 
         return 0
     }
