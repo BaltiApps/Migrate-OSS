@@ -366,6 +366,7 @@ internal class MakeAppPackets(private val destination: String,
             if (FileXInit.isTraditional) {
                 FileX.new(destination).let {
                     it.mkdirs()
+                    Log.d(DEBUG_TAG, "Destination: ${destination}, is traditional: ${FileXInit.isTraditional}, canonical path: ${it.canonicalPath}, is folder: ${it.isDirectory}")
                     if (!it.canWrite())
                         return arrayOf(false, getStringFromRes(R.string.could_not_create_destination), destination + "\n\n" + getStringFromRes(R.string.make_sure_destination_exists))
                 }
