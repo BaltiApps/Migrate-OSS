@@ -438,7 +438,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
 
 
-            suProcess = Runtime.getRuntime().exec("su")
+            suProcess = Runtime.getRuntime().exec(SU_INIT)
             suProcess?.let {
                 val suInputStream = BufferedWriter(OutputStreamWriter(it.outputStream))
                 val outputStream = BufferedReader(InputStreamReader(it.inputStream))
