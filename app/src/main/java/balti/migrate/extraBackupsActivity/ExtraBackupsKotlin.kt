@@ -22,7 +22,6 @@ import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.extraBackupsActivity.apps.AppSizeCalculationActivity
-import balti.migrate.extraBackupsActivity.apps.MakeAppPackets
 import balti.migrate.extraBackupsActivity.engines.adb.AdbFragment
 import balti.migrate.extraBackupsActivity.engines.calls.CallsFragment
 import balti.migrate.extraBackupsActivity.engines.contacts.ContactsFragment
@@ -66,12 +65,6 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
     private var backupName = ""
     private var flasherOnly = false
     private var isAllAppsSelected = true
-
-    private var makeAppPackets: MakeAppPackets? = null
-
-    private var flasherOnlyBackup = false
-
-    private val ASK_FOR_NAME_JOBCODE = 1666
 
     private val contactsFragment: ContactsFragment by lazy { supportFragmentManager.findFragmentById(R.id.contacts_fragment) as ContactsFragment }
     private val callsFragment: CallsFragment by lazy { supportFragmentManager.findFragmentById(R.id.calls_fragment) as CallsFragment }
