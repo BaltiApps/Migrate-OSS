@@ -21,6 +21,7 @@ import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRESS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
@@ -59,6 +60,10 @@ class AppSizeCalculationActivity: AppCompatActivity(R.layout.please_wait) {
         super.onCreate(savedInstanceState)
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        destination = intent.getStringExtra(EXTRA_DESTINATION) ?: DEFAULT_INTERNAL_STORAGE_DIR
+        backupName = intent.getStringExtra(EXTRA_BACKUP_NAME) ?: "No name backup"
+        flasherOnly = intent.getBooleanExtra(EXTRA_FLASHER_ONLY, false)
 
         AppInstance.notificationManager.cancelAll()
 
