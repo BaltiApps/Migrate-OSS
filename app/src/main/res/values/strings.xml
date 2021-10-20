@@ -469,6 +469,7 @@
     <string name="backupPartHadErrors">Backup part had errors.</string>
     <string name="incompleteZip">Not all files could be combined.</string>
     <string name="no_keyboard_data">No keyboard data</string>
+    <string name="copying_database_to_backup">Copying database to backup.</string>
 
     <string name="failed_to_make_batches">Failed to make batches</string>
     <string name="backup_error_system_check_failed">Backup cancelled because system check failed.</string>
