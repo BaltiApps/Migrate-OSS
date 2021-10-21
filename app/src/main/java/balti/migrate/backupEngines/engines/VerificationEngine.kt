@@ -14,6 +14,7 @@ import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APK_CHECK_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_AUX_MOVING_SU
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_AUX_MOVING_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_SHELL
@@ -242,49 +243,61 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
     }
 
-    private fun checkApks(): ArrayList<String>{
+    private fun checkApks(): ArrayList<String>?{
 
-        val title = getTitle(R.string.verifying_apks)
-        resetBroadcast(true, title, EXTRA_PROGRESS_TYPE_VERIFYING)
+        try {
 
-        val corrections = ArrayList<String>(0)
-        packagesWithApkCorrection.clear()
+            val title = getTitle(R.string.verifying_apks)
+            resetBroadcast(true, title, EXTRA_PROGRESS_TYPE_VERIFYING)
 
-        fun getCorrection(appPacket: AppPacket): String {
-            return appPacket.run {
-                val expectedAppDir = rootLocation.canonicalPath + "/${packageName}.app"
-                broadcastProgress("", "${LOG_CORRECTION_NEEDED}: ${appPacket.packageName} : \"app\" App directory - $expectedAppDir", false)
-                expectedAppDir.let {
-                    "echo \"Copy apk(s): $packageName\"\n" +
-                            "rm -rf $it/*.apk 2> /dev/null\n" +
-                            "cd $apkPath\n" +
-                            "cp *.apk $it/\n\n" +
-                            "mv $it/$apkName $it/${packageName}.apk\n"
-                }
-            }
-        }
+            val corrections = ArrayList<String>(0)
+            packagesWithApkCorrection.clear()
 
-        appList.forEach { appPacket ->
-
-            var correctionNeeded = false
-            val infoList = appApkFiles[appPacket.packageName] ?: listOf()
-
-            val base = infoList.find { it.first == "${appPacket.packageName}.apk" }
-            if (base == null || base.second <= 0) correctionNeeded = true
-            else {
-                for (pair in infoList) {
-                    if (pair.second <= 0) {
-                        correctionNeeded = true
-                        break
+            fun getCorrection(appPacket: AppPacket): String {
+                return appPacket.run {
+                    val expectedAppDir = rootLocation.canonicalPath + "/${packageName}.app"
+                    broadcastProgress(
+                        "",
+                        "${LOG_CORRECTION_NEEDED}: ${appPacket.packageName} : \"app\" App directory - $expectedAppDir",
+                        false
+                    )
+                    expectedAppDir.let {
+                        "echo \"Copy apk(s): $packageName\"\n" +
+                                "rm -rf $it/*.apk 2> /dev/null\n" +
+                                "cd $apkPath\n" +
+                                "cp *.apk $it/\n\n" +
+                                "mv $it/$apkName $it/${packageName}.apk\n"
                     }
                 }
             }
 
-            packagesWithApkCorrection.add(appPacket.packageName)
-            if (correctionNeeded) corrections.add(getCorrection(appPacket))
-        }
+            appList.forEach { appPacket ->
 
-        return corrections
+                var correctionNeeded = false
+                val infoList = appApkFiles[appPacket.packageName] ?: listOf()
+
+                val base = infoList.find { it.first == "${appPacket.packageName}.apk" }
+                if (base == null || base.second <= 0) correctionNeeded = true
+                else {
+                    for (pair in infoList) {
+                        if (pair.second <= 0) {
+                            correctionNeeded = true
+                            break
+                        }
+                    }
+                }
+
+                packagesWithApkCorrection.add(appPacket.packageName)
+                if (correctionNeeded) corrections.add(getCorrection(appPacket))
+            }
+
+            return corrections
+        }
+        catch (e: Exception){
+            e.printStackTrace()
+            addToActualErrors("$ERR_APK_CHECK_TRY_CATCH: ${e.message}")
+            return null
+        }
     }
 
     private fun checkTars(): ArrayList<String>?{
