@@ -283,6 +283,11 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 }
             }
 
+            FileX.new(apkFilesSizesDirPath, true).let {
+                if (it.exists()) it.deleteRecursively()
+                it.mkdirs()
+            }
+
             appList.forEach { appPacket ->
                 if (appPacket.APP) {
 
@@ -471,8 +476,6 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     write("cp ${retryScript.absolutePath} ${CACHE_DIR}/${retryScript.name}\n")
                     write("chown ${myUid}:${myUid} ${CACHE_DIR}/${retryScript.name}\n\n")
 
-                    writeLine("mkdir -p $apkFilesSizesDirPath")
-
                     for (i in 0 until defects.size){
                         if (BackupServiceKotlin.cancelAll) break
 
@@ -503,8 +506,6 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                             writeLine(defect)
                         }
                     }
-
-                    writeLine("\nrm -rf $apkFilesSizesDirPath\n")
 
                     write("echo \"--- Retry complete ---\"\n")
                 }
