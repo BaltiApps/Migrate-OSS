@@ -244,12 +244,16 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
     private fun checkApks(): ArrayList<String>{
 
+        val title = getTitle(R.string.verifying_apks)
+        resetBroadcast(true, title, EXTRA_PROGRESS_TYPE_VERIFYING)
+
         val corrections = ArrayList<String>(0)
         packagesWithApkCorrection.clear()
 
         fun getCorrection(appPacket: AppPacket): String {
             return appPacket.run {
                 val expectedAppDir = rootLocation.canonicalPath + "/${packageName}.app"
+                broadcastProgress("", "${LOG_CORRECTION_NEEDED}: ${appPacket.packageName} : \"app\" App directory - $expectedAppDir", false)
                 expectedAppDir.let {
                     "echo \"Copy apk(s): $packageName\"\n" +
                             "rm -rf $it/*.apk 2> /dev/null\n" +
