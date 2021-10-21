@@ -274,7 +274,9 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                                 "rm -rf $it/*.apk 2> /dev/null\n" +
                                 "cd $apkPath\n" +
                                 "cp *.apk $it/\n\n" +
-                                "mv $it/$apkName $it/${packageName}.apk\n"
+                                "mv $it/$apkName $it/${packageName}.apk\n\n" +
+                                "cd $it\n" +
+                                "ls -al * | awk '{printf \"%s %s\\n\", \$5, \$8}' > ${apkFilesSizesDirPath}/${packageName}\n\n"
                     }
                 }
             }
