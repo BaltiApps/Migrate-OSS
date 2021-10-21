@@ -221,7 +221,7 @@ class CallsBackupEngine(private val jobcode: Int,
         // copy the main file
         try {
             callsDBFileActual.createNewFile(overwriteIfExists = true)
-            callsDBFileActual.refreshFile()
+            callsDBFileActual.exists()
             internalDB.copyTo(callsDBFileActual, true)
             tryIt { internalDB.delete() }
         } catch (e: Exception) {

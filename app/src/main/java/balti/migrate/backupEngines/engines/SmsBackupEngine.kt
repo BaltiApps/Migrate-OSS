@@ -192,7 +192,7 @@ class SmsBackupEngine(private val jobcode: Int,
         // copy the main file
         try {
             smsDBFileActual.createNewFile(overwriteIfExists = true)
-            smsDBFileActual.refreshFile()
+            smsDBFileActual.exists()
             internalDB.copyTo(smsDBFileActual, true)
             tryIt { internalDB.delete() }
         } catch (e: Exception) {

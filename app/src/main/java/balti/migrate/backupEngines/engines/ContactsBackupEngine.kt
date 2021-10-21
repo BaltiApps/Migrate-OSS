@@ -32,7 +32,7 @@ class ContactsBackupEngine(private val jobcode: Int,
             heavyTask {
 
                 vcfFile.createNewFile(overwriteIfExists = true)
-                vcfFile.refreshFile()
+                vcfFile.exists()
 
                 vcfFile.startWriting(object : FileX.Writer(){
                     override fun writeLines() {
