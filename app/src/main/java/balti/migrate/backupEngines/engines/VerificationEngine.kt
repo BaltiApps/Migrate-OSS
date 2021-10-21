@@ -637,6 +637,6 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     override fun postExecuteFunction() {
         CORRECTION_PID = -999
         TAR_CHECK_CORRECTION_PID = -999
-        onEngineTaskComplete.onComplete(jobcode, actualErrors, jobResults = allErrors)
+        onEngineTaskComplete.onComplete(jobcode, actualErrors, jobResults = allErrors, jobWarnings = warnings)
     }
 }
