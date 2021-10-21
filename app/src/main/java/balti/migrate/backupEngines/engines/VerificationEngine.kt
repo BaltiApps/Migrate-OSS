@@ -175,7 +175,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     if (!iconFiles.contains("$packageName.icon")) allRecovery.add("$MIGRATE_STATUS:icon_old:$packageName")
                 }
 
-                if (packet.APP) {
+                /*if (packet.APP) {
 
                     val existsAppDir = allAppDirs.contains("$packageName.app")
                     val baseApkFileSize: Long =
@@ -209,7 +209,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                         }
                         //broadcastProgress(displayTitle, "${LOG_CORRECTION_NEEDED}: $packageName : \"app\" App directory - $existsAppDir, Base apk size - $baseApkFileSize", showNotification)
                     }
-                }
+                }*/
 
                 if (packet.DATA) {
 
