@@ -3,7 +3,6 @@ package balti.migrate.backupEngines.engines
 import android.content.pm.PackageInfo
 import android.util.Log
 import balti.filex.FileX
-import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.appApkFiles
 import balti.migrate.R
@@ -34,6 +33,8 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.MIGRATE_STATUS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_TAR_GZ_INTEGRITY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.SU_INIT
+import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_APK_SIZE_INFO_WRONG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_CASTING_APK_SIZE
 import balti.migrate.utilities.IconTools
 import balti.module.baltitoolbox.functions.Misc.getPercentage
 import balti.module.baltitoolbox.functions.Misc.tryIt
@@ -57,6 +58,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
     private val allErrors by lazy { ArrayList<String>(0) }
     private val actualErrors by lazy { ArrayList<String>(0) }
+    private val warnings by lazy { ArrayList<String>(0) }
 
     private var suProcess : Process? = null
 
@@ -573,6 +575,31 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
     private fun readCorrectedApkSizes(){
 
+        FileX.new(apkFilesSizesDirPath, true).listFiles()?.forEach { file ->
+            val packageName = file.name
+            val list = ArrayList<Pair<String, Long>>(0)
+            file.readLines().forEach {
+                if (it.isNotBlank()) {
+
+                    val split = it.split(' ')
+                    if (split.size > 2) {
+                        val size: Long =
+                            try {
+                                it.split(' ')[0].toLong()
+                            } catch (e: Exception) {
+                                warnings.add("${WARNING_CASTING_APK_SIZE}: Package: $packageName. Line: $it")
+                                0L
+                            }
+                        val apkName = it.split(' ')[1]
+
+                        list.add(Pair(apkName, size))
+
+                    } else warnings.add("${WARNING_APK_SIZE_INFO_WRONG}: Package: $packageName. Line: $it")
+                }
+            }
+
+            appApkFiles[packageName] = list
+        }
 
     }
 
