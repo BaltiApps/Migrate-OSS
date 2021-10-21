@@ -627,6 +627,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         verifyBackups()?.let { defects.addAll(it) }
         if (!BackupServiceKotlin.cancelAll && defects.size != 0)
             correctBackups(defects)
+        if (packagesWithApkCorrection.isNotEmpty()) readCorrectedApkSizes()
         if (appAuxFilesDir.exists() && !appAuxFilesDir.isEmpty && defects.any { it.startsWith(MIGRATE_STATUS) })
             moveAuxFiles()
 
