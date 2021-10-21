@@ -14,6 +14,7 @@ import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.DIR_APK_FILES_SIZES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APK_CHECK_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_AUX_MOVING_SU
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_AUX_MOVING_TRY_CATCH
@@ -62,7 +63,14 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     private var lastProgress = 0
 
     private val allFiles by lazy { rootLocation.listEverything() }
+
     private val packagesWithApkCorrection by lazy { ArrayList<String>(0) }
+
+    /**
+     * A directory where txt files are stored listing base and split APK sizes, after correction.
+     * Name of a file in this directory = package name of the app.
+     */
+    private val apkFilesSizesDirPath by lazy { CACHE.canonicalPath + "/" + DIR_APK_FILES_SIZES }
 
     private fun addToActualErrors(err: String){
         actualErrors.add(err)
@@ -455,7 +463,9 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     write("sleep 1\n")
                     write("echo \"--- RECOVERY PID: $$\"\n")
                     write("cp ${retryScript.absolutePath} ${CACHE_DIR}/${retryScript.name}\n")
-                    write("chown ${myUid}:${myUid} ${CACHE_DIR}/${retryScript.name}\n")
+                    write("chown ${myUid}:${myUid} ${CACHE_DIR}/${retryScript.name}\n\n")
+
+                    writeLine("mkdir -p $apkFilesSizesDirPath")
 
                     for (i in 0 until defects.size){
                         if (BackupServiceKotlin.cancelAll) break
@@ -487,6 +497,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                             writeLine(defect)
                         }
                     }
+
+                    writeLine("\nrm -rf $apkFilesSizesDirPath\n")
 
                     write("echo \"--- Retry complete ---\"\n")
                 }
@@ -555,6 +567,11 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
             e.printStackTrace()
             addToActualErrors("$ERR_CORRECTION_TRY_CATCH: ${e.message}")
         }
+    }
+
+    private fun readCorrectedApkSizes(){
+
+
     }
 
     private fun moveAuxFiles(){

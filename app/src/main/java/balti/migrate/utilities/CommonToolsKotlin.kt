@@ -47,6 +47,7 @@ class CommonToolsKotlin(val context: Context? = null) {
 
         val DIR_MANUAL_CONFIGS = "manualConfigs"
         val DIR_APP_AUX_FILES = "app_aux_files"
+        val DIR_APK_FILES_SIZES = "apk_files_sizes"
         val FILE_MIGRATE_CACHE_MANUAL = "MIGRATE_CACHE_MANUAL"
         val FILE_SYSTEM_MANUAL = "SYSTEM_MANUAL"
         val FILE_BUILDPROP_MANUAL = "BUILDPROP_MANUAL"
