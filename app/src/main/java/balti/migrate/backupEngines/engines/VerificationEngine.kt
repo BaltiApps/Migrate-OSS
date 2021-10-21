@@ -1,7 +1,6 @@
 package balti.migrate.backupEngines.engines
 
 import android.content.pm.PackageInfo
-import android.util.Log
 import balti.filex.FileX
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.appApkFiles
@@ -12,7 +11,6 @@ import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolsKotlin
-import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DIR_APK_FILES_SIZES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APK_CHECK_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CORRECTION_AUX_MOVING_SU
@@ -484,7 +482,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                                 when (parts[1]){
                                     "icon_new" -> {
                                         val pi = pm.getPackageInfo(parts[2], 0)
-                                        backupUtils.makeNewIconFile(parts[2], iconTools.getBitmap(pi, pm), actualDestination)
+                                        backupUtils.makeNewIconFile(parts[2], iconTools.getBitmap(pi, pm), pathForAuxFiles)
                                     }
                                     "icon_old" -> {
                                         val pi = pm.getPackageInfo(parts[2], 0)
