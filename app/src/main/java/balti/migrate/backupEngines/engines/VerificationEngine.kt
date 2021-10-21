@@ -623,10 +623,13 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
     override suspend fun doInBackground(arg: Any?): Any {
 
-        val defects = verifyBackups()
-        if (!BackupServiceKotlin.cancelAll && defects != null && defects.size != 0)
+        val defects = ArrayList<String>(0)
+        checkApks()?.let { defects.addAll(it) }
+        verifyBackups()?.let { defects.addAll(it) }
+        if (!BackupServiceKotlin.cancelAll && defects.size != 0)
             correctBackups(defects)
-        if (!FileXInit.isTraditional && defects?.any { it.startsWith(MIGRATE_STATUS) } == true) moveAuxFiles()
+        if (appAuxFilesDir.exists() && !appAuxFilesDir.isEmpty && defects.any { it.startsWith(MIGRATE_STATUS) })
+            moveAuxFiles()
 
         return 0
     }
