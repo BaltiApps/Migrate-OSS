@@ -1,7 +1,6 @@
 package balti.migrate.backupEngines.engines
 
 import balti.filex.FileX
-import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.appApkFiles
 import balti.migrate.R
@@ -155,11 +154,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                             broadcastProgress(modifiedAppName, modifiedAppName, true, getPercentage(i + 1, packets.size))
 
                             if (packet.PERMISSION) {
-                                backupUtils.makePermissionFile(
-                                        packageName,
-                                        if (FileXInit.isTraditional) actualDestination else appAuxFilesDir.canonicalPath,
-                                        pm
-                                )
+                                backupUtils.makePermissionFile(packageName, pathForAuxFiles, pm)
                             }
 
                             var versionName: String? = packet.PACKAGE_INFO.versionName
@@ -361,7 +356,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
     override suspend fun doInBackground(arg: Any?): Any? {
         val scriptLocation = makeBackupScript()
-        if (!FileXInit.isTraditional) moveAuxFiles()
+        moveAuxFiles()
         if (!BackupServiceKotlin.cancelAll) scriptLocation?.let { runBackupScript(it) }
         populateSplitApkNames()
         return 0
