@@ -2,6 +2,7 @@ package balti.migrate.backupEngines.engines
 
 import android.content.pm.PackageInfo
 import balti.filex.FileX
+import balti.filex.Quad
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.appApkFiles
 import balti.migrate.R
@@ -62,7 +63,10 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
     private var lastProgress = 0
 
-    private val allFiles by lazy { rootLocation.listEverything() }
+    private var allFiles: List<Quad<String, Boolean, Long, Long>>? = null
+
+    private val dataFileNames = ArrayList<String>(0)
+    private val dataFileSizes = ArrayList<Long>(0)
 
     private val packagesWithApkCorrection by lazy { ArrayList<String>(0) }
 
@@ -110,38 +114,30 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
             resetBroadcast(true, title, EXTRA_PROGRESS_TYPE_VERIFYING)
 
-            appAuxFilesDir.deleteRecursively()
-
-            val allAppDirs = ArrayList<String>(0)
-
-            val dataFileNames = ArrayList<String>(0)
-            val dataFileSizes = ArrayList<Long>(0)
+            appAuxFilesDir.run { deleteRecursively(); mkdirs() }
 
             val permFileNames = ArrayList<String>(0)
             val permFileSizes = ArrayList<Long>(0)
 
             val iconFiles = ArrayList<String>(0)
 
-            allFiles?.run {
-                for (i in first.indices) {
-                    val name = first[i]
-                    val isDir = second[i]
-                    val size = third[i]
-                    if (name.endsWith(".app") && isDir){
-                        allAppDirs.add(name)
-                    }
-                    if (name.endsWith(".tar.gz") && !isDir){
-                        dataFileNames.add(name)
-                        dataFileSizes.add(size)
-                    }
-                    if (name.endsWith(".perm") && !isDir){
-                        permFileNames.add(name)
-                        permFileSizes.add(size)
-                    }
-                    if ((name.endsWith(".icon") || name.endsWith(".png")) && !isDir){
-                        iconFiles.add(name)
-                    }
+            rootLocation.exists()
+            allFiles = rootLocation.listEverythingInQuad()
 
+            allFiles?.forEach {
+                val name = it.first
+                val isDir = it.second
+                val size = it.third
+                if (name.endsWith(".tar.gz") && !isDir){
+                    dataFileNames.add(name)
+                    dataFileSizes.add(size)
+                }
+                if (name.endsWith(".perm") && !isDir){
+                    permFileNames.add(name)
+                    permFileSizes.add(size)
+                }
+                if ((name.endsWith(".icon") || name.endsWith(".png")) && !isDir){
+                    iconFiles.add(name)
                 }
             }
 
@@ -327,8 +323,6 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
             lastProgress = 0
 
             val title = getTitle(R.string.verifying_tar)
-
-            val dataFileNames = allFiles?.first?.filter { it.endsWith(".tar.gz") } ?: listOf()
 
             resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_VERIFYING)
 
