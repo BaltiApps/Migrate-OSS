@@ -284,23 +284,25 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
             }
 
             appList.forEach { appPacket ->
+                if (appPacket.APP) {
 
-                var correctionNeeded = false
-                val infoList = appApkFiles[appPacket.packageName] ?: listOf()
+                    var correctionNeeded = false
+                    val infoList = appApkFiles[appPacket.packageName] ?: listOf()
 
-                val base = infoList.find { it.first == "${appPacket.packageName}.apk" }
-                if (base == null || base.second <= 0) correctionNeeded = true
-                else {
-                    for (pair in infoList) {
-                        if (pair.second <= 0) {
-                            correctionNeeded = true
-                            break
+                    val base = infoList.find { it.first == "${appPacket.packageName}.apk" }
+                    if (base == null || base.second <= 0) correctionNeeded = true
+                    else {
+                        for (pair in infoList) {
+                            if (pair.second <= 0) {
+                                correctionNeeded = true
+                                break
+                            }
                         }
                     }
-                }
 
-                packagesWithApkCorrection.add(appPacket.packageName)
-                if (correctionNeeded) corrections.add(getCorrection(appPacket))
+                    packagesWithApkCorrection.add(appPacket.packageName)
+                    if (correctionNeeded) corrections.add(getCorrection(appPacket))
+                }
             }
 
             return corrections
