@@ -583,19 +583,19 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                 if (it.isNotBlank()) {
 
                     val split = it.split(' ')
-                    if (split.size > 2) {
+                    if (split.size == 2) {
                         val size: Long =
                             try {
-                                it.split(' ')[0].toLong()
+                                it.split(' ')[0].trim().toLong()
                             } catch (e: Exception) {
                                 warnings.add("${WARNING_CASTING_APK_SIZE}: Package: $packageName. Line: $it")
                                 0L
                             }
-                        val apkName = it.split(' ')[1]
+                        val apkName = it.split(' ')[1].trim()
 
                         list.add(Pair(apkName, size))
 
-                    } else warnings.add("${WARNING_APK_SIZE_INFO_WRONG}: Package: $packageName. Line: $it")
+                    } else warnings.add("${WARNING_APK_SIZE_INFO_WRONG}: Package: $packageName. Line: $it. Split size: ${split.size}")
                 }
             }
 
