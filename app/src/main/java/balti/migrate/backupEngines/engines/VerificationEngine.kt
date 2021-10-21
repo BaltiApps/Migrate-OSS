@@ -102,7 +102,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         return getDataCorrectionCommand(pm.getPackageInfo(packageName, 0), expectedDataFile)
     }
 
-    private fun verifyBackups(): ArrayList<String>? {
+    private fun verifyDataPermIconBackups(): ArrayList<String>? {
 
         if (BackupServiceKotlin.cancelAll) return null
 
@@ -616,7 +616,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
         val defects = ArrayList<String>(0)
         checkApks()?.let { defects.addAll(it) }
-        verifyBackups()?.let { defects.addAll(it) }
+        verifyDataPermIconBackups()?.let { defects.addAll(it) }
         if (!BackupServiceKotlin.cancelAll && defects.size != 0)
             correctBackups(defects)
         if (packagesWithApkCorrection.isNotEmpty()) readCorrectedApkSizes()
