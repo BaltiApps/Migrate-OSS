@@ -1,6 +1,5 @@
 package balti.migrate.backupEngines.containers
 
-import balti.filex.FileX
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 
 /**
@@ -12,12 +11,15 @@ import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
  * @param appPacket_z AppPacket for the corresponding app.
  * @param appFileNames String list storing all names of all app related files.
  *                     This included the ".app" directory, ".tar.gz" data file, permissions in ".perm" file, icon file name etc.
+ *                     Does NOT include base/split apks individually.
  * @param fileSizes File sizes of the above file names. Size of each file is stored in the same index as its name in [appFileNames].
+ * @param appApkFiles List of Pair of apk name (base apk and split apks) and size.
  */
 data class ZipAppPacket(
         val appPacket_z: AppPacket,
         val appFileNames: ArrayList<String>,
-        val fileSizes: ArrayList<Long>
+        val fileSizes: ArrayList<Long>,
+        val appApkFiles: ArrayList<Pair<String, Long>>
         ) {
 
     /**
@@ -26,14 +28,6 @@ data class ZipAppPacket(
      */
     var zipPacketSize: Long = 0
         private set
-
-    /**
-     * For non-traditional FileX, this variable stores list of all apk files for an app.
-     * Please see [balti.migrate.backupEngines.containers.AppApkFiles].
-     * This variable initially stores empty list assuming FileX is traditional.
-     * Else an actual list is stored via [addAppApkList].
-     */
-    var appApkFiles = AppApkFiles(appPacket_z.packageName, listOf())
 
     init {
         refreshTotal()
@@ -49,13 +43,5 @@ data class ZipAppPacket(
         fileSizes.forEach {
             zipPacketSize += it
         }
-    }
-
-    /**
-     * Add APK file names to re-create [appApkFiles]. This method is called for non-traditional FileX.
-     * This is called in [balti.migrate.backupEngines.engines.MakeZipBatch.recordAppDirSizeByRoot].
-     */
-    fun addAppApkList(apkList: List<String>){
-        appApkFiles = AppApkFiles(appPacket_z.packageName, apkList)
     }
 }
