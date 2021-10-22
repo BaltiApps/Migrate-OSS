@@ -35,8 +35,6 @@ data class ZipAppPacket(
 
     /**
      * Calculate total size of packet.
-     * Function is public as it is also called from [balti.migrate.backupEngines.engines.MakeZipBatch.recordAppDirSizeByRoot],
-     * after setting the size of ".app" directory.
      */
     fun refreshTotal(){
         zipPacketSize = 0
