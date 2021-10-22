@@ -10,6 +10,16 @@ import balti.module.baltitoolbox.functions.Misc
  */
 class ZipExtraPacket {
 
+    private constructor()
+
+    constructor(filePathFromBackupRoot: String, size: Long, toExtractInSystem: Boolean = false): this() {
+        addExtra(filePathFromBackupRoot, size, toExtractInSystem)
+    }
+
+    constructor(list: ArrayList<Triple<String, Long, Boolean>>): this() {
+        addExtra(list)
+    }
+
     /**
      * List containing:
      * - String - path of the extra file from the backup location
