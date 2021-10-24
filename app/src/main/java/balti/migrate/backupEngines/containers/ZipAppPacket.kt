@@ -12,7 +12,9 @@ import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
  * @param appFileNames String list storing all names of all app related files.
  *                     This included the ".app" directory, ".tar.gz" data file, permissions in ".perm" file, icon file name etc.
  *                     Does NOT include base/split apks individually.
- * @param fileSizes File sizes of the above file names. Size of each file is stored in the same index as its name in [appFileNames].
+ * @param fileSizes File sizes of the above file names.
+ *                  Size of each file is stored in the same index as its name in [appFileNames].
+ *                  Size of ".app" dir to be passed as 0.
  * @param appApkFiles List of Pair of apk name (base apk and split apks) and size.
  */
 data class ZipAppPacket(
@@ -40,6 +42,9 @@ data class ZipAppPacket(
         zipPacketSize = 0
         fileSizes.forEach {
             zipPacketSize += it
+        }
+        appApkFiles.forEach {
+            zipPacketSize += it.second
         }
     }
 }
