@@ -42,8 +42,8 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
-                   private val appList: ArrayList<AppPacket>, private val extras: ArrayList<FileX>) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH) {
+class MakeZipBatch_old(private val jobcode: Int, bd: BackupIntentData,
+                       private val appList: ArrayList<AppPacket>, private val extras: ArrayList<FileX>) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH) {
 
     private val zipBatches by lazy { ArrayList<ZipAppBatch>(0) }
     private val errors by lazy { ArrayList<String>(0) }
