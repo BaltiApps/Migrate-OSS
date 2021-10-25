@@ -3,8 +3,7 @@ package balti.migrate.backupEngines.containers
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 
 /**
- * A container to store AppPacket with file sizes. Created in [balti.migrate.backupEngines.engines.MakeZipBatch.makeZipPackets].
- * This is used to sort apps in 4GB (or lower) flashable zip files in [balti.migrate.backupEngines.engines.MakeZipBatch.makeBatches].
+ * A container to store AppPacket with file sizes. Created in [balti.migrate.backupEngines.engines.MakeZipBatch.makeZipAppPackets].
  *
  * For AppPacket see [balti.migrate.extraBackupsActivity.apps.containers.AppPacket].
  *
