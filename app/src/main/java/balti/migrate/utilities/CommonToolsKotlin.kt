@@ -247,6 +247,8 @@ class CommonToolsKotlin(val context: Context? = null) {
         val PREF_FILELIST_IN_ZIP_VERIFICATION = "fileList_in__zip_verification"
         val PREF_SHOW_BACKUP_SUMMARY = "showBackupSummary"
         val PREF_USE_SHELL_TO_SPEED_UP = "useShellToSpeedUp"
+        val PREF_SEPARATE_EXTRAS_FOR_FLASHER_ONLY = "separate_extras_for_flasher_only"
+        val PREF_SEPARATE_EXTRAS_FOR_SMALL_BACKUP = "separate_extras_for_small_backup"
 
         val PREF_IGNORE_APP_CACHE = "ignore_app_cache"
 
