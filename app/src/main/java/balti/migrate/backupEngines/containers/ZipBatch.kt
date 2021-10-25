@@ -93,11 +93,10 @@ class ZipBatch {
              * However for any system apps, there will be a corresponding .sh file.
              * This also gets unpacked in /tmp in TWRP recovery, hence its not a system file.
              *
-             * For the ".app" directory, its size is 0, so it doesn't matter
-             * if its marked as under /system or under /data.
+             * If item is app directory, then store if system app.
              */
 
-            zipFiles.add(Quad(itemName, itemSize, isDirectory, false))
+            zipFiles.add(Quad(itemName, itemSize, isDirectory, isAppDirectory && isSystemApp))
         }
 
         /**
