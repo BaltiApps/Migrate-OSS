@@ -7,16 +7,16 @@ import balti.module.baltitoolbox.functions.Misc
  * Usage: For things like contacts, SMS, calls backup etc, create 1 packet for 1 db file.
  * In future, if there are plans to backup a bunch of files as one extra
  * (example external media, obb, adb keys...) then 1 packet can be used to bunch them together in one packet.
+ *
+ * @param displayName A string for logging purposes.
  */
-class ZipExtraPacket {
+class ZipExtraPacket private constructor(override val displayName: String) : ParentZipPacket() {
 
-    private constructor()
-
-    constructor(filePathFromBackupRoot: String, size: Long, toExtractInSystem: Boolean = false): this() {
+    constructor(displayName: String, filePathFromBackupRoot: String, size: Long, toExtractInSystem: Boolean = false): this(displayName) {
         addExtra(filePathFromBackupRoot, size, toExtractInSystem)
     }
 
-    constructor(list: ArrayList<Triple<String, Long, Boolean>>): this() {
+    constructor(displayName:String, list: ArrayList<Triple<String, Long, Boolean>>): this(displayName) {
         addExtra(list)
     }
 
@@ -28,13 +28,12 @@ class ZipExtraPacket {
      */
     val extraFiles = ArrayList<Triple<String, Long, Boolean>>(0)
 
-    var zipPacketSize: Long = 0
-        private set
+    override var zipPacketSize: Long = 0
 
     /**
      * Calculate total size of packet.
      */
-    fun refreshTotal(){
+    override fun refreshTotal(){
         zipPacketSize = 0
         extraFiles.forEach {
             zipPacketSize += it.second
