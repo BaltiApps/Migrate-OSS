@@ -22,14 +22,18 @@ data class ZipAppPacket(
         val appFileNames: ArrayList<String>,
         val fileSizes: ArrayList<Long>,
         val appApkFiles: ArrayList<Pair<String, Long>>
-        ) {
+        ): ParentZipPacket() {
 
     /**
      * This variable stores the total size of all the files in this packet.
      * It is calculated in [refreshTotal].
      */
-    var zipPacketSize: Long = 0
-        private set
+    override var zipPacketSize: Long = 0
+
+    /**
+     * A string for logging purposes.
+     */
+    override val displayName: String = appPacket_z.appName
 
     init {
         refreshTotal()
@@ -38,7 +42,7 @@ data class ZipAppPacket(
     /**
      * Calculate total size of packet.
      */
-    fun refreshTotal(){
+    override fun refreshTotal(){
         zipPacketSize = 0
         fileSizes.forEach {
             zipPacketSize += it
