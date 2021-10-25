@@ -23,7 +23,6 @@ class ZipBatch {
     val zipFullSize : Long get() = batchDataSize + batchSystemSize
 
     var zipName = ""
-    private set
 
     val appPackets = ArrayList<ZipAppPacket>(0)
     val extraPackets = ArrayList<ZipExtraPacket>(0)
