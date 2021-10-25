@@ -347,6 +347,7 @@
     <string name="cannot_split_hint">You may check \"Max zip size\" in Preferences. You may also use flasher-Only backup.</string>
     <string name="too_big_apps">Too big apps:</string>
     <string name="part">Part</string>
+    <string name="zip">Zip</string>
     <string name="parts">parts</string>
     <string name="of">of</string>
     <string name="allowed">allowed</string>
@@ -547,8 +548,11 @@
     <string name="making_packets">Making zip packets</string>
     <string name="making_batches">Making zip batches</string>
     <string name="reading_files_for_zip">Reading files for zip</string>
+    <string name="reading_app_related_files">Reading app related files</string>
+    <string name="reading_extra_backups_files">Reading extra backups files</string>
     <string name="reading_apk_size_for_zip">Reading apk size for zip</string>
     <string name="reading_extras">Reading extras</string>
+    <string name="grouping_into_batches">Grouping to batches</string>
     <string name="sorting">Sorting</string>
     <string name="total_extra_size">Extras size</string>
     <string name="capping_size">Capping size</string>
