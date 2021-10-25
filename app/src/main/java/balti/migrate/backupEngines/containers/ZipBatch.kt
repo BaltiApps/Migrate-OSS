@@ -72,8 +72,9 @@ class ZipBatch {
 
         zipAppPacket.appFileNames.indices.forEach { i ->
             val itemName = zipAppPacket.appFileNames[i]
+            val isAppDirectory = itemName.endsWith(".app")
             val isDirectory =
-                if (itemName.endsWith(".app")) {
+                if (isAppDirectory) {
                     appDirName = itemName
                     true
                 } else false
