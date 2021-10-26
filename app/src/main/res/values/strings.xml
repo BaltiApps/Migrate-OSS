@@ -910,6 +910,12 @@
     <string name="perform_system_check_desc">This will perform a basic apk copy and data copy (of this app itself) via Su shell before each backup. Thus checking if backup of other apps will be successful or not.</string>
     <string name="separate_extras_title">Separate extras backup</string>
     <string name="force_separate_extras">Force separate extras</string>
+    <string name="separate_extras_for_flasher">Separate extras for \'Migrate-flasher-only\' backup.</string>
+    <string name="separate_extras_for_flasher_desc">\'Migrate-flasher-only\' backup type usually has only 1 zip having all the backup contents.
+        If this checkbox is ticked, the extra backups (call logs, SMS etc) will be split into a separate zip.</string>
+    <string name="separate_extras_for_small_backup">Separate extras for small backup</string>
+    <string name="separate_extras_for_small_backup_desc">For small (TWRP based) backup along with extras (say, 2 apps and call logs),it is usually fine to put everything in 1 zip.
+        If this checkbox is ticked, the extra backups will be split into a separate zip.</string>
     <string name="force_separate_extras_desc">Extras will be backed up separately even for small backups</string>
     <string name="separate_extras_desc">Store extras (contacts, sms etc) as a standalone zip file and apps in separate zip files. Applicable only for backups having more than 1 part.</string>
     <string name="delete_error_backup_title">Delete backup with errors</string>
