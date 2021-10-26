@@ -55,17 +55,15 @@
         />
 
     <CheckBoxPreference
-        android:title="@string/separate_extras_title"
-        android:summary="@string/separate_extras_desc"
-        android:key="separateExtras"
+        android:title="@string/separate_extras_for_small_backup"
+        android:summary="@string/separate_extras_for_small_backup_desc"
+        android:key="separateExtrasForSmallBackup"
         />
 
-
     <CheckBoxPreference
-        android:title="@string/force_separate_extras"
-        android:summary="@string/force_separate_extras_desc"
-        android:key="forceSeparateExtras"
-        android:dependency="separateExtras"
+        android:title="@string/separate_extras_for_flasher"
+        android:summary="@string/separate_extras_for_flasher_desc"
+        android:key="separateExtrasForFlasher"
         />
 
     <CheckBoxPreference
