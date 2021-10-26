@@ -9,7 +9,6 @@ import android.preference.Preference
 import android.preference.PreferenceActivity
 import android.provider.Settings
 import balti.migrate.R
-//import balti.migrate.utilities.CommonToolsKotlin.Companion.IS_OTHER_APP_DATA_VISIBLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MIGRATE_CACHE_DEFAULT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_AUTOSELECT_EXTRAS
@@ -17,13 +16,13 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_CALCULATING_SIZE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_CALLS_VERIFY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DELETE_ERROR_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FILELIST_IN_ZIP_VERIFICATION
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FORCE_SEPARATE_EXTRAS_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_MANUAL_BUILDPROP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_MANUAL_MIGRATE_CACHE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_MANUAL_SYSTEM
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SEPARATE_EXTRAS_BACKUP
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SEPARATE_EXTRAS_FOR_FLASHER_ONLY
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SEPARATE_EXTRAS_FOR_SMALL_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_BACKUP_SUMMARY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SMS_VERIFY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_CHECK
@@ -48,8 +47,8 @@ class MainPreferenceActivity: PreferenceActivity() {
     private val smsVerification by lazy { findPreference("smsVerification") as CheckBoxPreference }
     private val callsVerification by lazy { findPreference("callsVerification") as CheckBoxPreference }
     private val performSystemCheck by lazy { findPreference("performSystemCheck") as CheckBoxPreference }
-    private val separateExtras by lazy { findPreference("separateExtras") as CheckBoxPreference }
-    private val forceSeparateExtras by lazy { findPreference("forceSeparateExtras") as CheckBoxPreference }
+    private val separateExtrasForSmallBackup by lazy { findPreference("separateExtrasForSmallBackup") as CheckBoxPreference }
+    private val separateExtrasForFlasher by lazy { findPreference("separateExtrasForFlasher") as CheckBoxPreference }
     private val deleteErrorBackup by lazy { findPreference("deleteErrorBackup") as CheckBoxPreference }
     private val zipVerification by lazy { findPreference("zipVerification") as CheckBoxPreference }
     private val ignoreCache by lazy { findPreference("ignoreCache") as CheckBoxPreference }
@@ -72,10 +71,6 @@ class MainPreferenceActivity: PreferenceActivity() {
             checkbox.isChecked = getPrefBoolean(field, defaultValue)
             checkbox.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                 putPrefBoolean(field, newValue as Boolean)
-                if (field == PREF_SEPARATE_EXTRAS_BACKUP && newValue == false) {
-                    forceSeparateExtras.isChecked = false
-                    putPrefBoolean(PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false)
-                }
                 true
             }
         }
@@ -115,8 +110,8 @@ class MainPreferenceActivity: PreferenceActivity() {
         setValue(smsVerification, PREF_SMS_VERIFY)
         setValue(callsVerification, PREF_CALLS_VERIFY)
         setValue(performSystemCheck, PREF_SYSTEM_CHECK)
-        setValue(separateExtras, PREF_SEPARATE_EXTRAS_BACKUP)
-        setValue(forceSeparateExtras, PREF_FORCE_SEPARATE_EXTRAS_BACKUP, false)
+        setValue(separateExtrasForSmallBackup, PREF_SEPARATE_EXTRAS_FOR_SMALL_BACKUP, false)
+        setValue(separateExtrasForFlasher, PREF_SEPARATE_EXTRAS_FOR_FLASHER_ONLY, false)
         setValue(deleteErrorBackup, PREF_DELETE_ERROR_BACKUP)
         setValue(zipVerification, PREF_ZIP_VERIFICATION)
         setValue(ignoreCache, PREF_IGNORE_APP_CACHE, false)
