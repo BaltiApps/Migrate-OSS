@@ -359,28 +359,6 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                             writeLine("mkdir -p $zipDestination")
 
                             /**
-                             * Filter out the directories and create them first.
-                             * Then move the files.
-                             */
-                            batch.zipFiles.filter { it.third }.apply {
-                                writeLine("\n# Creating directories. Items: ${this.size}.\n")
-                            }.forEach {
-                                val directoryLocation = "${zipDestination}/${it.first}"
-                                writeLine("mkdir -p $directoryLocation")
-                            }
-
-                            /**
-                             * Now move all the files.
-                             */
-                            batch.zipFiles.filter { !it.third }.apply {
-                                writeLine("\n# Moving files. Items: ${this.size}.\n")
-                            }.forEach {
-                                val oldFileLocation = "${rootLocation.canonicalPath}/${it.first}"
-                                val newFileLocation = "${zipDestination}/${it.first}"
-                                writeLine("mv $oldFileLocation $newFileLocation")
-                            }
-
-                            /**
                              * Find the top directory/file for each item.
                              * Example:
                              * Item: Calls.calls.db -> Header name: Calls.calls.db
@@ -388,17 +366,35 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                              * Item: com.whatsapp.app/com.whatsapp.apk -> Header name: com.whatsapp.app
                              * Item: some_directory/another_directory/another_file -> Header: some_directory
                              */
-                            val headers = arrayListOf<String>()
+                            var headers = arrayListOf<String>()
                             batch.zipFiles.map { it.first }.forEach {
                                 if (!it.contains('/')) headers.add(it)
                                 else headers.add(it.substring(0, it.indexOf('/')))
                             }
 
                             /**
-                             * Finally write to file list.
+                             * Remove duplicates.
+                             * For all split apks, there will be duplicates of the app directory.
                              */
-                            headers.toSet().run {
+                            headers = ArrayList(headers.distinct())
+
+                            headers.run {
                                 if (isNotEmpty()) {
+                                    /**
+                                     * Move the filtered headers.
+                                     * Thus if it is a single file, it gets moved.
+                                     * If it is a directory with many files under it, the whole thing gets moved.
+                                     */
+                                    writeLine("\n# Moving files. Items: ${this.size}.\n")
+                                    forEach {
+                                        val oldFileLocation = "${rootLocation.canonicalPath}/${it}"
+                                        val newFileLocation = "${zipDestination}/${it}"
+                                        writeLine("mv $oldFileLocation $newFileLocation")
+                                    }
+
+                                    /**
+                                     * Finally write to file list.
+                                     */
                                     writeLine("\n# Writing file list. Items: ${this.size}.\n")
                                     forEach {
                                         writeLine("echo \"${it}\" >> $fileListPath")
