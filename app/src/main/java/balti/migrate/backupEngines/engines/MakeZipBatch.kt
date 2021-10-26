@@ -22,6 +22,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_MOVE_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_MOVING_ROOT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_BATCHING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_MOVE_TO_CONTAINER_SCRIPT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SEPARATE_EXTRAS_FOR_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SEPARATE_EXTRAS_FOR_SMALL_BACKUP
@@ -48,6 +49,8 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
     private val allZipAppPackets by lazy { ArrayList<ZipAppPacket>(0) }
     private val allZipExtraPackets by lazy { ArrayList<ZipExtraPacket>(0) }
+
+    private val moveScriptFile = FileX.new(CACHE_DIR, "${FILE_PREFIX_MOVE_TO_CONTAINER_SCRIPT}.sh", true)
 
     private fun shareLogProgress(string: String){
         broadcastProgress("", string, false)
@@ -325,16 +328,15 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
     }
 
-    private fun createMoveScript(): FileX? {
+    private fun createMoveScript() {
 
         val title = getTitle(R.string.moving_files)
         resetBroadcast(true, title)
 
-        val scriptFile = FileX.new(CACHE_DIR, "${CommonToolsKotlin.FILE_PREFIX_MOVE_TO_CONTAINER_SCRIPT}.sh", true)
-        scriptFile.parentFile?.mkdirs()
+        moveScriptFile.parentFile?.mkdirs()
 
         try {
-            scriptFile.startWriting(object : FileX.Writer() {
+            moveScriptFile.startWriting(object : FileX.Writer() {
                 override fun writeLines() {
 
                     getStringFromRes(R.string.creating_script_to_move).let { broadcastProgress(it, it, false) }
@@ -403,18 +405,14 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 }
             })
 
-            return scriptFile
-
         }
         catch (e: Exception){
             e.printStackTrace()
             errors.add("$ERR_MOVE_SCRIPT: ${e.message}")
         }
-
-        return null
     }
 
-    private fun executeMoveScript(scriptFile: FileX) {
+    private fun executeMoveScript() {
         try {
             getStringFromRes(R.string.running_script_to_move).let { broadcastProgress(it, it, false) }
 
@@ -423,8 +421,8 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 val suInputStream = BufferedWriter(OutputStreamWriter(it.outputStream))
                 val errorStream = BufferedReader(InputStreamReader(it.errorStream))
 
-                suInputStream.write("cp ${scriptFile.canonicalPath} $CACHE_DIR/\n")
-                suInputStream.write("sh ${scriptFile.canonicalPath}\n")
+                suInputStream.write("cp ${moveScriptFile.canonicalPath} $CACHE_DIR/\n")
+                suInputStream.write("sh ${moveScriptFile.canonicalPath}\n")
                 suInputStream.write("exit\n")
                 suInputStream.flush()
 
@@ -445,8 +443,8 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
         if (!BackupServiceKotlin.cancelAll) makeZipAppPackets()
         if (!BackupServiceKotlin.cancelAll) makeZipExtraPackets()
         if (!BackupServiceKotlin.cancelAll) makeBatches()
-        val scriptFile = if (errors.isEmpty()) { createMoveScript() } else null
-        if (!BackupServiceKotlin.cancelAll) scriptFile?.let { executeMoveScript(it) }
+        if (errors.isEmpty()) { createMoveScript() }
+        if (!BackupServiceKotlin.cancelAll && errors.isEmpty()) executeMoveScript()
 
         return 0
     }
