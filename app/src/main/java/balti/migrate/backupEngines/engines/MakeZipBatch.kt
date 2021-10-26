@@ -224,8 +224,10 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                  * Different zips for apps and extras.
                  */
 
-                val totalParts = ((totalAppSize + totalExtraSize) / MAX_TWRP_ZIP_SIZE) + 1
-                /* Examples: assume
+                var totalParts = ((totalAppSize + totalExtraSize) / MAX_TWRP_ZIP_SIZE) + 1
+                /*
+                 * This is just a counter for naming zips, has no role in logic.
+                 * Examples: assume
                  * max size = 4 GB, total size = 10 kb
                  *    parts = (0 by decimal division) + 1 = 1
                  * max size = 4 GB, total size = 4 GB
@@ -233,6 +235,9 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                  * max size = 4 GB, total size = 4.1 GB
                  *    parts = (1 by decimal division) + 1 = 2  => Backup will be split into two parts of greater than 2 GB
                  */
+
+                totalParts+= if (doSeparateExtras) 1 else 0
+                /* Add 1 if new zip needed for separate extras */
 
                 /**
                  * Function to group into batches: applicable on app and extra packets both.
