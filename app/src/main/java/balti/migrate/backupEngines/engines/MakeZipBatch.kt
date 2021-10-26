@@ -121,20 +121,34 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
 
         try {
 
-            fun addToAllExtraPackets(fileExtension: String, isSystemFile: Boolean = false) {
-                extras.filter { it.name.endsWith(fileExtension) }.forEach { file ->
+            fun addToAllExtraPackets(vararg fileExtensions: String, isSystemFile: Boolean = false) {
+
+                val itemList = ArrayList<Triple<String, Long, Boolean>>(0)
+
+                extras.filter { e -> fileExtensions.any { e.name.endsWith(it) }  }.forEach { file ->
                     broadcastProgress(subTask, "${file.name})", false)
-                    val relativePath = file.canonicalPath.substring(rootLocation.canonicalPath.length)
-                    ZipExtraPacket(file.name, relativePath, file.length(), isSystemFile).let {
-                        allZipExtraPackets.add(it)
-                        totalExtraSize += it.zipPacketSize
-                    }
+
+                    val relativePath = file.canonicalPath.substring(rootLocation.canonicalPath.length+1)
+                    // +1 to remove slash
+                    itemList.add(Triple(relativePath, file.length(), isSystemFile))
+                }
+
+                if (itemList.isEmpty()) return
+
+                val displayName: String =
+                    itemList.map { it.first }.find { it.endsWith(fileExtensions[0]) }?:
+                    itemList[0].first
+
+                ZipExtraPacket(displayName, itemList).let {
+                    allZipExtraPackets.add(it)
+                    totalExtraSize += it.zipPacketSize
+                    Log.d(DEBUG_TAG, "Added extras. Extensions: $fileExtensions, Display name: $displayName, items: $itemList")
                 }
             }
 
             addToAllExtraPackets(".vcf")
-            addToAllExtraPackets(".calls.db")
-            addToAllExtraPackets(".sms.db")
+            addToAllExtraPackets(".calls.db", "calls.db-journal")
+            addToAllExtraPackets(".sms.db", "sms.db-journal")
             addToAllExtraPackets(BACKUP_NAME_SETTINGS)
 
         }
