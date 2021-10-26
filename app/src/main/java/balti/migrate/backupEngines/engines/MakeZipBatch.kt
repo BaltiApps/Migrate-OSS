@@ -383,7 +383,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                              * Item: com.whatsapp.app/com.whatsapp.apk -> Header name: com.whatsapp.app
                              * Item: some_directory/another_directory/another_file -> Header: some_directory
                              */
-                            val headers = mutableListOf<String>()
+                            val headers = arrayListOf<String>()
                             batch.zipFiles.map { it.first }.forEach {
                                 if (!it.contains('/')) headers.add(it)
                                 else headers.add(it.substring(0, it.indexOf('/')))
@@ -392,7 +392,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                             /**
                              * Finally write to file list.
                              */
-                            headers.run {
+                            headers.toSet().run {
                                 if (isNotEmpty()) {
                                     writeLine("\n# Writing file list. Items: ${this.size}.\n")
                                     forEach {
