@@ -7,7 +7,7 @@ import android.content.Context
 import balti.filex.FileX
 import balti.filex.FileXInit
 import balti.migrate.backupActivity.containers.BackupDataPacketKotlin
-import balti.migrate.backupEngines.containers.ZipAppBatch
+import balti.migrate.backupEngines.containers.ZipBatch
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.extraBackupsActivity.engines.calls.containers.CallsDataPacketsKotlin
 import balti.migrate.extraBackupsActivity.engines.contacts.containers.ContactsDataPacketKotlin
@@ -99,9 +99,9 @@ class AppInstance: Application() {
 
         /**
          * Central location to store all zip batches.
-         * @see balti.migrate.backupEngines.containers.ZipAppBatch
+         * @see balti.migrate.backupEngines.containers.ZipBatch
          */
-        val zipBatches = ArrayList<ZipAppBatch>(0)
+        val zipBatches = ArrayList<ZipBatch>(0)
 
         /**
          * Central location to store all contact related info for backup.
