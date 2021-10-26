@@ -915,7 +915,9 @@
         If this checkbox is ticked, the extra backups (call logs, SMS etc) will be split into a separate zip.</string>
     <string name="separate_extras_for_small_backup">Separate extras for small backup</string>
     <string name="separate_extras_for_small_backup_desc">For small (TWRP based) backup along with extras (say, 2 apps and call logs),it is usually fine to put everything in 1 zip.
-        If this checkbox is ticked, the extra backups will be split into a separate zip.</string>
+        If this checkbox is ticked, the extra backups will be split into a separate zip.\n
+        For multi-part TWRP backups (due to big backup size), extras will be always split into a separate zip.
+    </string>
     <string name="force_separate_extras_desc">Extras will be backed up separately even for small backups</string>
     <string name="separate_extras_desc">Store extras (contacts, sms etc) as a standalone zip file and apps in separate zip files. Applicable only for backups having more than 1 part.</string>
     <string name="delete_error_backup_title">Delete backup with errors</string>
