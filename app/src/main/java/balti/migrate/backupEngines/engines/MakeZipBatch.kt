@@ -142,7 +142,6 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                 ZipExtraPacket(displayName, itemList).let {
                     allZipExtraPackets.add(it)
                     totalExtraSize += it.zipPacketSize
-                    Log.d(DEBUG_TAG, "Added extras. Extensions: $fileExtensions, Display name: $displayName, items: $itemList")
                 }
             }
 
@@ -379,18 +378,21 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                              * Item: com.whatsapp.app -> Header name: com.whatsapp.app
                              * Item: com.whatsapp.app/com.whatsapp.apk -> Header name: com.whatsapp.app
                              * Item: some_directory/another_directory/another_file -> Header: some_directory
+                             *
+                             * Second argument is to mark system files.
                              */
-                            var headers = arrayListOf<String>()
-                            batch.zipFiles.map { it.first }.forEach {
-                                if (!it.contains('/')) headers.add(it)
-                                else headers.add(it.substring(0, it.indexOf('/')))
-                            }
+                            val headers = ArrayList<Pair<String, Boolean>>(0)
+                            batch.zipFiles.forEach {
+                                val name = it.first
+                                val headerName =
+                                    if (!name.contains('/')) name
+                                    else name.substring(0, name.indexOf('/'))
+                                val isSystem = it.fourth
+                                val pair = Pair(headerName, isSystem)
 
-                            /**
-                             * Remove duplicates.
-                             * For all split apks, there will be duplicates of the app directory.
-                             */
-                            headers = ArrayList(headers.distinct())
+                                /** Prevent duplicate entries */
+                                if (!headers.contains(pair)) headers.add(pair)
+                            }
 
                             headers.run {
                                 if (isNotEmpty()) {
@@ -401,8 +403,8 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                                      */
                                     writeLine("\n# Moving files. Items: ${this.size}.\n")
                                     forEach {
-                                        val oldFileLocation = "${rootLocation.canonicalPath}/${it}"
-                                        val newFileLocation = "${zipDestination}/${it}"
+                                        val oldFileLocation = "${rootLocation.canonicalPath}/${it.first}"
+                                        val newFileLocation = "${zipDestination}/${it.first}"
                                         writeLine("mv $oldFileLocation $newFileLocation")
                                     }
 
@@ -411,7 +413,9 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                                      */
                                     writeLine("\n# Writing file list. Items: ${this.size}.\n")
                                     forEach {
-                                        writeLine("echo \"${it}\" >> $fileListPath")
+                                        if (it.second)
+                                        writeLine("echo \"${it.first}_sys\" >> $fileListPath")
+                                        else writeLine("echo \"${it.first}\" >> $fileListPath")
                                     }
                                 }
                             }
