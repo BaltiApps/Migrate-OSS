@@ -360,63 +360,80 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                     getStringFromRes(R.string.creating_script_to_move).let { broadcastProgress(it, it, false) }
 
                     var c = 0
+
+                    /**
+                     * If there are multiple zip (for TWRP backup), each zip will have a name.
+                     * If there's only 1 zip batch, then it will not have a name.
+                     * For that lone zip batch, `zipName` = ""
+                     * This fact is used later below.
+                     *
+                     * This variable is also checked before issuing `mv` command.
+                     * No move is performed if this variable is true. Only fileList.txt is generated.
+                     */
+                    val multiZip = zipBatches.size > 1
+
                     zipBatches.forEach { batch ->
                         if (BackupServiceKotlin.cancelAll) return
 
-                        if (batch.zipName != "") {
+                        val zipDestination: String = rootLocation.canonicalPath.let {
+                            if (multiZip) "${it}/${batch.zipName}"
+                            else it
+                        }
+                        val fileListPath = "${zipDestination}/${CommonToolsKotlin.FILE_FILE_LIST}"
 
-                            val zipDestination = "${rootLocation.canonicalPath}/${batch.zipName}"
-                            val fileListPath = "${zipDestination}/${CommonToolsKotlin.FILE_FILE_LIST}"
-
+                        if (multiZip) {
                             writeLine("\n# Part ${++c}, part name: ${batch.zipName}\n")
                             writeLine("mkdir -p $zipDestination")
+                        }
 
-                            /**
-                             * Find the top directory/file for each item.
-                             * Example:
-                             * Item: Calls.calls.db -> Header name: Calls.calls.db
-                             * Item: com.whatsapp.app -> Header name: com.whatsapp.app
-                             * Item: com.whatsapp.app/com.whatsapp.apk -> Header name: com.whatsapp.app
-                             * Item: some_directory/another_directory/another_file -> Header: some_directory
-                             *
-                             * Second argument is to mark system files.
-                             */
-                            val headers = ArrayList<Pair<String, Boolean>>(0)
-                            batch.zipFiles.forEach {
-                                val name = it.first
-                                val headerName =
-                                    if (!name.contains('/')) name
-                                    else name.substring(0, name.indexOf('/'))
-                                val isSystem = it.fourth
-                                val pair = Pair(headerName, isSystem)
+                        /**
+                         * Find the top directory/file for each item.
+                         * Example:
+                         * Item: Calls.calls.db -> Header name: Calls.calls.db
+                         * Item: com.whatsapp.app -> Header name: com.whatsapp.app
+                         * Item: com.whatsapp.app/com.whatsapp.apk -> Header name: com.whatsapp.app
+                         * Item: some_directory/another_directory/another_file -> Header: some_directory
+                         *
+                         * Second argument is to mark system files.
+                         */
+                        val headers = ArrayList<Pair<String, Boolean>>(0)
+                        batch.zipFiles.forEach {
+                            val name = it.first
+                            val headerName =
+                                if (!name.contains('/')) name
+                                else name.substring(0, name.indexOf('/'))
+                            val isSystem = it.fourth
+                            val pair = Pair(headerName, isSystem)
 
-                                /** Prevent duplicate entries */
-                                if (!headers.contains(pair)) headers.add(pair)
-                            }
+                            /** Prevent duplicate entries */
+                            if (!headers.contains(pair)) headers.add(pair)
+                        }
 
-                            headers.run {
-                                if (isNotEmpty()) {
-                                    /**
-                                     * Move the filtered headers.
-                                     * Thus if it is a single file, it gets moved.
-                                     * If it is a directory with many files under it, the whole thing gets moved.
-                                     */
+                        headers.run {
+                            if (isNotEmpty()) {
+                                /**
+                                 * Move the filtered headers.
+                                 * Thus if it is a single file, it gets moved.
+                                 * If it is a directory with many files under it, the whole thing gets moved.
+                                 */
+                                if (multiZip) {
                                     writeLine("\n# Moving files. Items: ${this.size}.\n")
                                     forEach {
-                                        val oldFileLocation = "${rootLocation.canonicalPath}/${it.first}"
+                                        val oldFileLocation =
+                                            "${rootLocation.canonicalPath}/${it.first}"
                                         val newFileLocation = "${zipDestination}/${it.first}"
                                         writeLine("mv $oldFileLocation $newFileLocation")
                                     }
+                                }
 
-                                    /**
-                                     * Finally write to file list.
-                                     */
-                                    writeLine("\n# Writing file list. Items: ${this.size}.\n")
-                                    forEach {
-                                        if (it.second)
+                                /**
+                                 * Finally write to file list.
+                                 */
+                                writeLine("\n# Writing file list. Items: ${this.size}.\n")
+                                forEach {
+                                    if (it.second)
                                         writeLine("echo \"${it.first}_sys\" >> $fileListPath")
-                                        else writeLine("echo \"${it.first}\" >> $fileListPath")
-                                    }
+                                    else writeLine("echo \"${it.first}\" >> $fileListPath")
                                 }
                             }
                         }
