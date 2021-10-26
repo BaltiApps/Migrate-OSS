@@ -29,7 +29,7 @@ import balti.migrate.AppInstance.Companion.zipBatches
 import balti.migrate.R
 import balti.migrate.backupEngines.containers.AppApkFiles
 import balti.migrate.backupEngines.containers.BackupIntentData
-import balti.migrate.backupEngines.containers.ZipAppBatch
+import balti.migrate.backupEngines.containers.ZipBatch
 import balti.migrate.backupEngines.engines.*
 import balti.migrate.backupEngines.utils.OnEngineTaskComplete
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
@@ -80,7 +80,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PEFORM_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PEFORM_SYSTEM_TEST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_APP_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_APP_BACKUP_VERIFICATION
-import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_UPDATER_SCRIPT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_ZIP_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_ZIP_BATCHING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.JOBCODE_PERFORM_ZIP_VERIFICATION
@@ -179,7 +178,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
     private var cBackupName = ""
     private var cDestination = ""
     private var cBatchNumber = 0
-    private var cZipBatch: ZipAppBatch? = null
+    private var cZipBatch: ZipBatch? = null
 
     private val zipParentPaths by lazy { ArrayList<String>(0) }
 
@@ -334,14 +333,14 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
         if (cZipBatch == null) resetDest()
         else {
             cZipBatch?.run {
-                if (partName != ""){
+                if (zipName != ""){
                     if (FileXInit.isTraditional) {
                         cDestination = "$destination/$backupName"
-                        cBackupName = partName
+                        cBackupName = zipName
                     }
                     else {
                         cDestination = backupName
-                        cBackupName = partName
+                        cBackupName = zipName
                     }
                 }
                 else resetDest()
@@ -350,7 +349,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
         return BackupIntentData(cBackupName, cDestination).apply {
             cZipBatch?.run {
-                if (partName != "")
+                if (zipName != "")
                     setErrorTag("[${cBatchNumber}/${zipBatches.size}]")
             }
         }
@@ -498,7 +497,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                             JOBCODE_PEFORM_BACKUP_SETTINGS
                     )) {
                 if (jobResults == null || jobResults !is Array<*>){
-                    val label = if (cZipBatch != null) "[${cZipBatch!!.partName}]" else ""
+                    val label = if (cZipBatch != null) "[${cZipBatch!!.zipName}]" else ""
                     addError("${getString(R.string.improper_result_received)}$label: $jobCode: ${jobResults.toString()}")
                 }
                 else jobResults.let { extrasFiles.addAll(it as Array<FileX>) }
@@ -549,7 +548,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                 JOBCODE_PERFORM_ZIP_BATCHING -> {
                     if (jobSuccess) {
                         zipBatches.clear()
-                        zipBatches.addAll(jobResults as ArrayList<ZipAppBatch>)
+                        zipBatches.addAll(jobResults as ArrayList<ZipBatch>)
                         runNextZipBatch(lastErrorCount == criticalErrors.size)
                     }
                     else backupFinished(getString(R.string.failed_to_make_batches))
@@ -591,7 +590,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
         if (cancelAll) return
 
-        val label = if (cZipBatch != null) "[${cZipBatch!!.partName}]" else ""
+        val label = if (cZipBatch != null) "[${cZipBatch!!.zipName}]" else ""
         if (!isThisBatchSuccessful)
             addError("$ERR_BACKUP_SERVICE_ERROR$label: " +
                     "${getString(R.string.errors_in_batch)} ${criticalErrors.size - lastErrorCount}")
@@ -600,9 +599,9 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
         if (cBatchNumber < zipBatches.size) {
             cZipBatch = zipBatches[cBatchNumber]
-            val appApkList: List<AppApkFiles> = cZipBatch?.zipAppPackets?.map { it.appApkFiles }?: listOf()
+            //val appApkList: List<AppApkFiles> = cZipBatch?.zipAppPackets?.map { it.appApkFiles }?.map { AppApkFiles("", listOf()) }?: listOf()
             ++cBatchNumber
-            runConditionalTask(JOBCODE_PERFORM_UPDATER_SCRIPT, appApkList = appApkList)
+            //runConditionalTask(JOBCODE_PERFORM_UPDATER_SCRIPT, appApkList = appApkList)
         }
         else backupFinished("")
     }
@@ -622,23 +621,23 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     task = VerificationEngine(jobCode, bd, appPackets, busyboxBinaryPath)
 
 
-                JOBCODE_PERFORM_UPDATER_SCRIPT -> {
+                /*JOBCODE_PERFORM_UPDATER_SCRIPT -> {
                     cZipBatch?.let {
                         cUpdaterJobCode = jobCode + cBatchNumber
                         task = UpdaterScriptMakerEngine(cUpdaterJobCode, bd, it, timeStamp)
                     }
                     if (cZipBatch == null)
                         throw Exception("${getString(R.string.zip_batch_null_updater)}: [$cBatchNumber]")
-                }
+                }*/
 
-                JOBCODE_PERFORM_ZIP_BACKUP -> {
+                /*JOBCODE_PERFORM_ZIP_BACKUP -> {
                     cZipBatch?.let {
                         cZippingJobCode = jobCode + cBatchNumber
                         task = ZippingEngine(cZippingJobCode, bd, it)
                     }
                     if (cZipBatch == null)
                         throw Exception("${getString(R.string.zip_batch_null_zipping_engine)}: [$cBatchNumber]")
-                }
+                }*/
 
                 JOBCODE_PERFORM_ZIP_VERIFICATION -> {
                     cZipBatch?.let {
@@ -723,7 +722,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     tryIt {
                         putStringArrayListExtra(EXTRA_ZIP_NAMES, zipBatches.let { b ->
                             if (b.size == 1) arrayListOf(backupName)
-                            else ArrayList(b.map { it.partName })
+                            else ArrayList(b.map { it.zipName })
                         })
                     }
                 }
