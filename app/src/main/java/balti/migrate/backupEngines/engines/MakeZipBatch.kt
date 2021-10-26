@@ -350,7 +350,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                             val zipDestination = "${rootLocation.canonicalPath}/${batch.zipName}"
                             val fileListPath = "${zipDestination}/${CommonToolsKotlin.FILE_FILE_LIST}"
 
-                            writeLine("\n# Part ${c++}, part name: ${batch.zipName}\n")
+                            writeLine("\n# Part ${++c}, part name: ${batch.zipName}\n")
                             writeLine("mkdir -p $zipDestination")
 
                             /**
@@ -450,9 +450,9 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
     }
 
     override fun postExecuteFunction() {
-        if (errors.isEmpty()) {
+        /*if (errors.isEmpty()) {
             onEngineTaskComplete.onComplete(jobcode, errors, warnings, zipBatches)
-        }
+        }*/
     }
 
 }
