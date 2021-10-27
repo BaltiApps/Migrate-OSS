@@ -46,7 +46,7 @@ abstract class ParentBackupClass_new: AsyncCoroutineTask(DISP_IO) {
                 writeLog("Destination is null. Cancelling backup.")
                 errors.add("Fatal error: Destination is null in $className. Cancelling backup.")
                 cancelBackup = true
-                EngineJobResultHolder(false, errors)
+                EngineJobResultHolder(false, null, errors)
             }
             else -> super.executeWithResult(null) as EngineJobResultHolder
         }
