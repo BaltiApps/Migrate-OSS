@@ -13,6 +13,7 @@ class BackupProgressNotificationSystem {
         enum class ProgressType {
             BACKUP_CANCELLED,
             PROGRESS_TYPE_TESTING,
+            PROGRESS_TYPE_CONTACTS,
 
         }
 
