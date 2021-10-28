@@ -8,7 +8,6 @@ import balti.migrate.AppInstance.Companion.smsList
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass_new
-import balti.migrate.backupEngines.utils.EngineJobResultHolder
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_SMS_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_SMS_WRITE
@@ -215,7 +214,7 @@ class SmsBackupEngine(private val smsDBFileName: String) : ParentBackupClass_new
         }
     }
 
-    override suspend fun backgroundProcessing(): EngineJobResultHolder {
+    override suspend fun backgroundProcessing(): Any {
 
         writeSms()
 
@@ -225,7 +224,7 @@ class SmsBackupEngine(private val smsDBFileName: String) : ParentBackupClass_new
 
         copyInternalDbFilesToBackup()
 
-        return EngineJobResultHolder(errors.isEmpty(), generatedFiles, errors, warnings)
+        return generatedFiles
     }
 
 }

@@ -5,7 +5,6 @@ import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.backupEngines.utils.BackupUtils
-import balti.migrate.backupEngines.utils.EngineJobResultHolder
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_TESTING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TESTING_ERROR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TESTING_TRY_CATCH
@@ -28,7 +27,7 @@ class SystemTestingEngine(private val busyboxBinaryPath: String) : ParentBackupC
 
     override val className: String = "SystemTestingEngine"
 
-    override suspend fun backgroundProcessing(): EngineJobResultHolder {
+    override suspend fun backgroundProcessing(): Any? {
 
         fun test() {
             try {
@@ -121,6 +120,6 @@ class SystemTestingEngine(private val busyboxBinaryPath: String) : ParentBackupC
             }
         }
 
-        return EngineJobResultHolder(errors.isEmpty(), null, errors)
+        return null
     }
 }

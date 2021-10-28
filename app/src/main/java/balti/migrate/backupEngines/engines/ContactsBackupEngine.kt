@@ -5,7 +5,6 @@ import balti.migrate.AppInstance.Companion.contactsList
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass_new
-import balti.migrate.backupEngines.utils.EngineJobResultHolder
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_CONTACTS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CONTACTS_TRY_CATCH
 import balti.module.baltitoolbox.functions.Misc.getPercentage
@@ -17,7 +16,7 @@ class ContactsBackupEngine(private val vcfFileName: String): ParentBackupClass_n
     private val vcfFile by lazy { FileX.new(fileXDestination, vcfFileName) }
     private val contactPackets by lazy { contactsList }
 
-    override suspend fun backgroundProcessing(): EngineJobResultHolder {
+    override suspend fun backgroundProcessing(): Any {
 
         try {
 
@@ -54,7 +53,7 @@ class ContactsBackupEngine(private val vcfFileName: String): ParentBackupClass_n
             errors.add("$ERR_CONTACTS_TRY_CATCH: ${e.message}")
         }
 
-        return EngineJobResultHolder(errors.isEmpty(), arrayListOf(vcfFile), errors)
+        return arrayListOf(vcfFile)
     }
 
 }

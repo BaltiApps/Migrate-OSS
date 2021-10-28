@@ -8,7 +8,6 @@ import balti.migrate.AppInstance.Companion.callsList
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.ParentBackupClass_new
-import balti.migrate.backupEngines.utils.EngineJobResultHolder
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_CALLS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CALLS_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CALLS_WRITE
@@ -244,7 +243,7 @@ class CallsBackupEngine(private val callsDBFileName: String) : ParentBackupClass
         }
     }
 
-    override suspend fun backgroundProcessing(): EngineJobResultHolder {
+    override suspend fun backgroundProcessing(): Any {
 
         writeCalls()
 
@@ -254,6 +253,6 @@ class CallsBackupEngine(private val callsDBFileName: String) : ParentBackupClass
 
         copyInternalDbFilesToBackup()
 
-        return EngineJobResultHolder(errors.isEmpty(), generatedFiles, errors, warnings)
+        return generatedFiles
     }
 }
