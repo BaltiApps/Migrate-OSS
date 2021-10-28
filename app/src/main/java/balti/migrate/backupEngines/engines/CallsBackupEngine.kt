@@ -4,15 +4,15 @@ import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import balti.filex.FileX
 import balti.migrate.AppInstance.Companion.CACHE_DIR
+import balti.migrate.AppInstance.Companion.callsList
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
-import balti.migrate.backupEngines.ParentBackupClass
-import balti.migrate.backupEngines.containers.BackupIntentData
-import balti.migrate.extraBackupsActivity.engines.calls.containers.CallsDataPacketsKotlin
+import balti.migrate.backupEngines.ParentBackupClass_new
+import balti.migrate.backupEngines.utils.EngineJobResultHolder
+import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_CALLS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CALLS_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CALLS_WRITE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CALLS_WRITE_TO_ACTUAL
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_CALLS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_CALLS_VERIFY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_CALLS
 import balti.migrate.utilities.constants.CallsDBConstants.Companion.CALLS_CACHED_FORMATTED_NUMBER
@@ -44,11 +44,9 @@ import balti.module.baltitoolbox.functions.Misc.getPercentage
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 
-class CallsBackupEngine(private val jobcode: Int,
-                        private val bd: BackupIntentData,
-                        private val callsPackets: ArrayList<CallsDataPacketsKotlin>,
-                        private val callsDBFileName: String) :
-        ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_CALLS) {
+class CallsBackupEngine(private val callsDBFileName: String) : ParentBackupClass_new(PROGRESS_TYPE_CALLS) {
+
+    override val className: String = "CallsBackupEngine"
 
     private val callsNameWithoutExtension by lazy {
         callsDBFileName.run {
@@ -58,15 +56,17 @@ class CallsBackupEngine(private val jobcode: Int,
             else this
         }
     }
-    private val callsDBFileActual by lazy { FileX.new(actualDestination, callsDBFileName) }
+    private val callsDBFileActual by lazy { FileX.new(fileXDestination, callsDBFileName) }
     private val internalDB by lazy { FileX.new(CACHE_DIR, callsDBFileName, true) }
-    private val errors by lazy { ArrayList<String>(0) }
-    private val warnings by lazy { ArrayList<String>(0) }
+
+    private val callsPackets by lazy { callsList }
+
+    private val generatedFiles = ArrayList<FileX>(0)
 
     private fun writeCalls(){
         try {
 
-            FileX.new(actualDestination).mkdirs()
+            FileX.new(fileXDestination).mkdirs()
 
             val title = getTitle(R.string.backing_calls)
             if (callsDBFileActual.exists()) callsDBFileActual.delete()
@@ -206,7 +206,7 @@ class CallsBackupEngine(private val jobcode: Int,
             tryIt { dataBase.close() }
 
             if (c != totalSelected)
-                warnings.add("$WARNING_CALLS: ${engineContext.getString(R.string.call_logs_incomplete)} - $c/${totalSelected}}")
+                warnings.add("$WARNING_CALLS: ${getStringFromRes(R.string.call_logs_incomplete)} - $c/${totalSelected}}")
         }
         catch (e: Exception){
             e.printStackTrace()
@@ -223,6 +223,7 @@ class CallsBackupEngine(private val jobcode: Int,
             callsDBFileActual.createNewFile(overwriteIfExists = true)
             callsDBFileActual.exists()
             internalDB.copyTo(callsDBFileActual, true)
+            generatedFiles.add(callsDBFileActual)
             tryIt { internalDB.delete() }
         } catch (e: Exception) {
             errors.add("$ERR_CALLS_WRITE_TO_ACTUAL: ${getStringFromRes(R.string.call_log_write_to_actual_failed)} ${e.message}")
@@ -231,7 +232,11 @@ class CallsBackupEngine(private val jobcode: Int,
         // copy other files like .journal .journal-wal
         try {
             CACHE.listFiles { file: FileX -> file.name.startsWith(callsNameWithoutExtension) }?.forEach {
-                it.copyTo(FileX.new(actualDestination, it.name))
+                it.copyTo(
+                    FileX.new(fileXDestination, it.name).apply {
+                        generatedFiles.add(this)
+                    }
+                )
                 tryIt { it.delete() }
             }
         } catch (e: Exception) {
@@ -239,7 +244,7 @@ class CallsBackupEngine(private val jobcode: Int,
         }
     }
 
-    override suspend fun doInBackground(arg: Any?): Any? {
+    override suspend fun backgroundProcessing(): EngineJobResultHolder {
 
         writeCalls()
 
@@ -249,13 +254,6 @@ class CallsBackupEngine(private val jobcode: Int,
 
         copyInternalDbFilesToBackup()
 
-        return 0
-    }
-
-    override fun postExecuteFunction() {
-        val filesGenerated = FileX.new(actualDestination).listFiles { file: FileX ->
-            file.name.startsWith(callsNameWithoutExtension)
-        }
-        onEngineTaskComplete.onComplete(jobcode, errors, warnings, filesGenerated)
+        return EngineJobResultHolder(errors.isEmpty(), generatedFiles, errors, warnings)
     }
 }
