@@ -3,12 +3,12 @@ package balti.migrate.backupEngines.engines
 import balti.filex.FileX
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.appApkFiles
+import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
-import balti.migrate.backupEngines.ParentBackupClass
-import balti.migrate.backupEngines.containers.BackupIntentData
+import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.backupEngines.utils.BackupUtils
-import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
+import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.*
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APP_BACKUP_SHELL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APP_BACKUP_SUPPRESSED
@@ -17,8 +17,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_AUX_MOVING_SU
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_AUX_MOVING_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CREATING_MTD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_SCRIPT_MAKING_TRY_CATCH
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_APP_PROGRESS
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_BACKUP_SCRIPT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_SPLIT_APK_NAMES_LIST
@@ -27,6 +25,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_IGNORE_APP_CACHE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.IconTools
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
+import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.functions.Misc.getPercentage
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
@@ -35,56 +34,46 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData,
-                               private val appList: ArrayList<AppPacket>,
-                               private val doBackupInstallers : Boolean,
-                               private val busyboxBinaryPath: String) : ParentBackupClass(bd, "") {
+class AppBackupEngine(private val busyboxBinaryPath: String) : ParentBackupClass_new(EMPTY) {
 
     companion object {
         var ICON_STRING = ""
     }
 
+    override val className: String = "AppBackupEngine"
+
     private var BACKUP_PID = -999
 
-    private val pm by lazy { engineContext.packageManager }
     private val backupUtils by lazy { BackupUtils() }
     private val iconTools by lazy { IconTools() }
     private var suProcess : Process? = null
 
-    private val allErrors by lazy { ArrayList<String>(0) }
-    private val actualErrors by lazy { ArrayList<String>(0) }
+    private val appList by lazy { appPackets }
 
     private val apkNamesListFile by lazy { FileX.new(CACHE_DIR, FILE_SPLIT_APK_NAMES_LIST, true) }
 
-    init {
-        customPreExecuteFunction = {
+    override fun preExecute() {
+        super.preExecute()
+        // delete all scripts
 
-            // delete all scripts
-
-            engineContext.filesDir.listFiles {
+        globalContext.filesDir.listFiles {
                 f -> (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
+                f.name.endsWith(".sh")
+        }?.forEach { it.delete() }
+
+        globalContext.externalCacheDir?.let {
+            it.listFiles {
+                    f -> (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
                     f.name.endsWith(".sh")
             }?.forEach { it.delete() }
-
-            engineContext.externalCacheDir?.let {
-                it.listFiles {
-                    f -> (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
-                        f.name.endsWith(".sh")
-                }?.forEach { it.delete() }
-            }
-
-            CACHE.listFiles { f: FileX ->
-                (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
-                f.name.endsWith(".sh")
-            }?.forEach { it.delete() }
-
-            apkNamesListFile.createNewFile(true)
         }
-    }
 
-    private fun addToActualErrors(err: String){
-        actualErrors.add(err)
-        allErrors.add(err)
+        CACHE.listFiles { f: FileX ->
+            (f.name.startsWith(FILE_PREFIX_BACKUP_SCRIPT) || f.name.startsWith(FILE_PREFIX_RETRY_SCRIPT)) &&
+                    f.name.endsWith(".sh")
+        }?.forEach { it.delete() }
+
+        apkNamesListFile.createNewFile(true)
     }
 
     private fun systemAppInstallScript(packageName: String, apkPath: String) {
@@ -122,13 +111,13 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
 
             val title = getTitle(R.string.making_app_script)
 
-            resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS)
+            resetBroadcast(false, title, PROGRESS_TYPE_MAKING_APP_SCRIPTS)
 
             appAuxFilesDir.deleteRecursively()
 
             val ignoreCache = getPrefBoolean(PREF_IGNORE_APP_CACHE, false)
 
-            val scriptFile = FileX.new(engineContext.filesDir.canonicalPath, "$FILE_PREFIX_BACKUP_SCRIPT.sh", true)
+            val scriptFile = FileX.new(globalContext.filesDir.canonicalPath, "$FILE_PREFIX_BACKUP_SCRIPT.sh", true)
             scriptFile.parentFile?.mkdirs()
             val appAndDataBackupScript = unpackAssetToInternal("backup_app_and_data.sh")
 
@@ -139,7 +128,6 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     write("sleep 1\n")
                     write("echo \"--- PID: $$\"\n")
                     write("cp ${scriptFile.absolutePath} ${CACHE_DIR}/${scriptFile.name}\n")
-                    write("chown ${myUid}:${myUid} ${CACHE_DIR}/${scriptFile.name}\n")
 
                     appList.let {packets ->
                         for (i in 0 until packets.size) {
@@ -185,7 +173,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                             tryIt { if (packet.isSystem) systemAppInstallScript(packageName, packet.apkPath) }
 
                             backupUtils.makeMetadataFile(pathForAuxFiles, versionName, appIconFileName, packet).let {
-                                if (it.isNotBlank()) addToActualErrors("$ERR_CREATING_MTD: ${packet.appName} - $it")
+                                if (it.isNotBlank()) errors.add("$ERR_CREATING_MTD: ${packet.appName} - $it")
                             }
                         }
 
@@ -201,7 +189,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
         }
         catch (e: Exception){
             e.printStackTrace()
-            addToActualErrors("$ERR_SCRIPT_MAKING_TRY_CATCH: ${e.message}")
+            errors.add("$ERR_SCRIPT_MAKING_TRY_CATCH: ${e.message}")
             return null
         }
     }
@@ -211,11 +199,11 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
         try {
 
             if (!FileX.new(scriptFileLocation, true).exists())
-                throw Exception(engineContext.getString(R.string.script_file_does_not_exist))
+                throw Exception(getStringFromRes(R.string.script_file_does_not_exist))
 
             val title = getTitle(R.string.backingUp)
 
-            resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_APP_PROGRESS)
+            resetBroadcast(false, title, PROGRESS_TYPE_APP_PROGRESS)
 
             suProcess = Runtime.getRuntime().exec(CommonToolsKotlin.SU_INIT)
             suProcess?.let {
@@ -275,8 +263,8 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                     }
 
                     if (!ignorable)
-                        addToActualErrors("$ERR_APP_BACKUP_SHELL: $errorLine")
-                    else allErrors.add("$ERR_APP_BACKUP_SUPPRESSED: $errorLine")
+                        errors.add("$ERR_APP_BACKUP_SHELL: $errorLine")
+                    else warnings.add("$ERR_APP_BACKUP_SUPPRESSED: $errorLine")
 
                     return@iterateBufferedReader false
                 })
@@ -286,7 +274,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
         }
         catch (e: Exception){
             e.printStackTrace()
-            addToActualErrors("$ERR_APP_BACKUP_TRY_CATCH: ${e.message}")
+            errors.add("$ERR_APP_BACKUP_TRY_CATCH: ${e.message}")
         }
     }
 
@@ -341,29 +329,28 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
     private fun moveAuxFiles(){
         try {
             val title = getTitle(R.string.moving_aux_script)
-            resetBroadcast(true, title, EXTRA_PROGRESS_TYPE_MAKING_APP_SCRIPTS)
+            resetBroadcast(true, title, PROGRESS_TYPE_MOVING_APP_FILES)
             backupUtils.moveAuxFilesToBackupLocation(pathForAuxFiles, rootLocation.canonicalPath).let {
                 it.forEach {
-                    addToActualErrors("$ERR_AUX_MOVING_SU: $it")
+                    errors.add("$ERR_AUX_MOVING_SU: $it")
                 }
             }
         }
         catch (e: Exception){
             e.printStackTrace()
-            addToActualErrors("$ERR_AUX_MOVING_TRY_CATCH: ${e.message}")
+            errors.add("$ERR_AUX_MOVING_TRY_CATCH: ${e.message}")
         }
     }
 
-    override suspend fun doInBackground(arg: Any?): Any? {
+    override suspend fun backgroundProcessing(): Any? {
         val scriptLocation = makeBackupScript()
         moveAuxFiles()
         if (!BackupServiceKotlin.cancelAll) scriptLocation?.let { runBackupScript(it) }
         populateSplitApkNames()
-        return 0
+        return null
     }
 
-    override fun postExecuteFunction() {
+    override fun postExecute(result: Any?) {
         BACKUP_PID = -999
-        onEngineTaskComplete.onComplete(jobcode, actualErrors, jobResults = allErrors)
     }
 }
