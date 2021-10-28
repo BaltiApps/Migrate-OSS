@@ -326,7 +326,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
             resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_VERIFYING)
 
-            val tarCheckScript = FileX.new(engineContext.filesDir.canonicalPath, "$FILE_PREFIX_TAR_CHECK.sh", true)
+            val tarCheckScript = FileX.new(CACHE_DIR, "$FILE_PREFIX_TAR_CHECK.sh", true)
             //val scriptWriter = BufferedWriter(FileWriter(tarCheckScript))
 
             tarCheckScript.startWriting(object : FileX.Writer(){
@@ -336,8 +336,6 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     write("echo \" \"\n")
                     write("sleep 1\n")
                     write("echo \"--- TAR CHECK PID: $$\"\n")
-                    write("cp ${tarCheckScript.absolutePath} ${CACHE_DIR}/${tarCheckScript.name}\n")
-                    write("chown ${myUid}:${myUid} ${CACHE_DIR}/${tarCheckScript.name}\n")
 
                     writeLine(
                             "checkData(){\n" +
