@@ -11,12 +11,16 @@ class BackupProgressNotificationSystem {
     companion object {
 
         enum class ProgressType {
+            EMPTY,
             BACKUP_CANCELLED,
             PROGRESS_TYPE_TESTING,
             PROGRESS_TYPE_CONTACTS,
             PROGRESS_TYPE_SMS,
             PROGRESS_TYPE_CALLS,
             PROGRESS_TYPE_SETTINGS,
+            PROGRESS_TYPE_MAKING_APP_SCRIPTS,
+            PROGRESS_TYPE_APP_PROGRESS,
+            PROGRESS_TYPE_MOVING_APP_FILES,
 
         }
 
