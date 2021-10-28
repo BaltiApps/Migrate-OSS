@@ -117,7 +117,7 @@ class AppBackupEngine(private val busyboxBinaryPath: String) : ParentBackupClass
 
             val ignoreCache = getPrefBoolean(PREF_IGNORE_APP_CACHE, false)
 
-            val scriptFile = FileX.new(globalContext.filesDir.canonicalPath, "$FILE_PREFIX_BACKUP_SCRIPT.sh", true)
+            val scriptFile = FileX.new(CACHE_DIR, "$FILE_PREFIX_BACKUP_SCRIPT.sh", true)
             scriptFile.parentFile?.mkdirs()
             val appAndDataBackupScript = unpackAssetToInternal("backup_app_and_data.sh")
 
@@ -127,7 +127,6 @@ class AppBackupEngine(private val busyboxBinaryPath: String) : ParentBackupClass
                     write("echo \" \"\n")
                     write("sleep 1\n")
                     write("echo \"--- PID: $$\"\n")
-                    write("cp ${scriptFile.absolutePath} ${CACHE_DIR}/${scriptFile.name}\n")
 
                     appList.let {packets ->
                         for (i in 0 until packets.size) {
