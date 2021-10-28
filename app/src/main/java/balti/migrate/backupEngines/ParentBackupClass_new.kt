@@ -24,7 +24,10 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.NOTIFICATION_ID_ONGOI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PENDING_INTENT_BACKUP_CANCEL_ID
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PENDING_INTENT_REQUEST_ID
 import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
+import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
+import java.io.BufferedWriter
+import java.io.OutputStreamWriter
 
 abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCoroutineTask(DISP_IO) {
 
@@ -199,6 +202,34 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
         ))
 
         updateNotification("", progress)
+    }
+
+    /**
+     * Kill root sub-processes in side the parent root process.
+     * @param suProcess The main parent root process.
+     * @param pids Set of PIDs belonging to the sub-processes under [suProcess] which need to be terminated.
+     */
+    fun cancelTask(suProcess: Process?, vararg pids: Int) {
+
+        tryIt {
+            val killProcess = Runtime.getRuntime().exec("su")
+
+            val writer = BufferedWriter(OutputStreamWriter(killProcess.outputStream))
+            fun killId(pid: Int) {
+                writer.write("kill -9 $pid\n")
+                writer.write("kill -15 $pid\n")
+            }
+
+            for (pid in pids)
+                if (pid != -999) killId(pid)
+
+            writer.write("exit\n")
+            writer.flush()
+
+            tryIt { killProcess.waitFor() }
+            tryIt { suProcess?.waitFor() }
+        }
+
     }
 
     final override suspend fun onPreExecute() {
