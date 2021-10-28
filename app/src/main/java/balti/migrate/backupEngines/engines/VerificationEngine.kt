@@ -454,15 +454,13 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_CORRECTING)
 
         try {
-            val retryScript = FileX.new(engineContext.filesDir.canonicalPath, "$FILE_PREFIX_RETRY_SCRIPT.sh", true)
+            val retryScript = FileX.new(CACHE_DIR, "$FILE_PREFIX_RETRY_SCRIPT.sh", true)
             retryScript.startWriting(object : FileX.Writer(){
                 override fun writeLines() {
                     write("#!sbin/sh\n\n")
                     write("echo \" \"\n")
                     write("sleep 1\n")
                     write("echo \"--- RECOVERY PID: $$\"\n")
-                    write("cp ${retryScript.absolutePath} ${CACHE_DIR}/${retryScript.name}\n")
-                    write("chown ${myUid}:${myUid} ${CACHE_DIR}/${retryScript.name}\n\n")
 
                     for (i in 0 until defects.size){
                         if (BackupServiceKotlin.cancelAll) break
