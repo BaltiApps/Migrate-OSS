@@ -34,7 +34,7 @@ class BackupServiceKotlin_new: LifecycleService() {
          * If SAF storage, this will be blank.
          * If traditional storage, this will contain the full path.
          */
-        var fileXDestination: String? = null
+        var fileXDestination: String = ""
 
         /**
          * Flag to denote if backup is marked as cancelled.
@@ -114,8 +114,6 @@ class BackupServiceKotlin_new: LifecycleService() {
 
     override fun onDestroy() {
         super.onDestroy()
-
-        fileXDestination = null
 
         tryIt { commonTools.LBM?.unregisterReceiver(cancelReceiver) }
         tryIt { unregisterReceiver(cancelReceiver) }
