@@ -42,6 +42,7 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
     val globalContext by lazy { AppInstance.appContext }
 
     val commonTools by lazy { CommonToolsKotlin() }
+    val pm by lazy { globalContext.packageManager }
 
     val errors by lazy { ArrayList<String>(0) }
     val warnings by lazy { ArrayList<String>(0) }
