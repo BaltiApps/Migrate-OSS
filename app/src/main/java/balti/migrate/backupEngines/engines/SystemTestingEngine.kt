@@ -3,12 +3,12 @@ package balti.migrate.backupEngines.engines
 import balti.filex.FileX
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
-import balti.migrate.backupEngines.ParentBackupClass
-import balti.migrate.backupEngines.containers.BackupIntentData
+import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.backupEngines.utils.BackupUtils
+import balti.migrate.backupEngines.utils.EngineJobResultHolder
+import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_TESTING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TESTING_ERROR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TESTING_TRY_CATCH
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_TESTING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_RETRY_SYSTEM_CHECK
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
@@ -19,18 +19,16 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntentData,
-                          private val busyboxBinaryPath: String) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_TESTING) {
+class SystemTestingEngine(private val busyboxBinaryPath: String) : ParentBackupClass_new(PROGRESS_TYPE_TESTING) {
 
-    private val pm by lazy { engineContext.packageManager }
     private val backupUtils by lazy { BackupUtils() }
     private var suProcess : Process? = null
 
     private var TESTING_PID = -999
 
-    private val errors by lazy { ArrayList<String>(0) }
+    override val className: String = "SystemTestingEngine"
 
-    override suspend fun doInBackground(arg: Any?): Any? {
+    override suspend fun backgroundProcessing(): EngineJobResultHolder {
 
         fun test() {
             try {
@@ -40,11 +38,11 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                 resetBroadcast(true, title)
 
                 val testScriptPath = unpackAssetToInternal("systemTestScript.sh", "test.sh")
-                val thisPackageInfo = pm.getApplicationInfo(engineContext.packageName, 0)
+                val thisPackageInfo = pm.getApplicationInfo(globalContext.packageName, 0)
 
-                val rootLocation = FileX.new(actualDestination).apply { mkdirs() }.canonicalPath
-                val expectedApkFile = FileX.new(actualDestination, "${thisPackageInfo.packageName}.apk")
-                val expectedDataFile = FileX.new(actualDestination, "${thisPackageInfo.packageName}.tar.gz")
+                val rootLocation = FileX.new(fileXDestination).apply { mkdirs() }.canonicalPath
+                val expectedApkFile = FileX.new(fileXDestination, "${thisPackageInfo.packageName}.apk")
+                val expectedDataFile = FileX.new(fileXDestination, "${thisPackageInfo.packageName}.tar.gz")
                 expectedApkFile.run { if (exists()) delete() }
                 expectedDataFile.run { if (exists()) delete() }
 
@@ -99,11 +97,11 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                     expectedDataFile.exists()
 
                     if (!expectedApkFile.exists() || expectedApkFile.length() == 0L)
-                        errors.add(engineContext.getString(R.string.test_apk_not_found))
+                        errors.add(getStringFromRes(R.string.test_apk_not_found))
                     else expectedApkFile.delete()
 
                     if (!expectedDataFile.exists() || expectedDataFile.length() == 0L)
-                        errors.add(engineContext.getString(R.string.test_data_not_found))
+                        errors.add(getStringFromRes(R.string.test_data_not_found))
                     else expectedDataFile.delete()
                 }
             } catch (e: Exception) {
@@ -122,11 +120,7 @@ class SystemTestingEngine(private val jobcode: Int, private val bd: BackupIntent
                 test()
             }
         }
-        return 0
 
-    }
-
-    override fun postExecuteFunction() {
-        onEngineTaskComplete.onComplete(jobcode, errors)
+        return EngineJobResultHolder(errors.isEmpty(), null, errors)
     }
 }
