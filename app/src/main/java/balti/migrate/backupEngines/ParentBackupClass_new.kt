@@ -50,7 +50,7 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
     val rootLocation by lazy { FileX.new(fileXDestination?: "") }
     val appAuxFilesDir by lazy { FileX.new(AppInstance.appContext.filesDir.canonicalPath, DIR_APP_AUX_FILES, true) }
     val pathForAuxFiles by lazy { appAuxFilesDir.canonicalPath }
-    val cacheFileX by lazy { FileX.new(AppInstance.CACHE_DIR, true) }
+    val CACHE by lazy { FileX.new(AppInstance.CACHE_DIR, true) }
 
     private var lastTitle = ""
     private var lastProgressPercent = 0
