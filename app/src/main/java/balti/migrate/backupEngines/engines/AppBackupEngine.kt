@@ -101,7 +101,7 @@ class AppBackupEngine(private val jobcode: Int, private val bd: BackupIntentData
                 "\n" +
                 "SYSTEM=$(cat /tmp/migrate/SYSTEM)\n" +
                 "mkdir -p \$SYSTEM/$pastingDir\n" +
-                "mv /tmp/$packageName/*.apk \$SYSTEM/$pastingDir/\n" +
+                "mv /tmp/${packageName}.app/*.apk \$SYSTEM/$pastingDir/\n" +
                 "rm -rf /tmp/$packageName\n" +
                 "rm /tmp/$scriptName\n"
 
