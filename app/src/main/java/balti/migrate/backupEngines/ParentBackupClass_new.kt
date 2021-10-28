@@ -237,14 +237,17 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
         if (!cancelBackup) preExecute()
     }
 
-    final override suspend fun doInBackground(arg: Any?): Any {
+    final override suspend fun doInBackground(arg: Any?): Any? {
         return backgroundProcessing()
     }
 
     final suspend fun executeWithResult(): EngineJobResultHolder? {
         return when {
             cancelBackup -> null
-            else -> super.executeWithResult(null) as EngineJobResultHolder
+            else -> {
+                val result = super.executeWithResult(null)
+                return EngineJobResultHolder(errors.isEmpty(), result, errors, warnings)
+            }
         }
     }
 
@@ -259,7 +262,7 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
 
     abstract val className: String
     open fun preExecute() {}
-    abstract suspend fun backgroundProcessing(): EngineJobResultHolder
+    abstract suspend fun backgroundProcessing(): Any?
     open fun postExecute(result: Any?) {}
 
 }
