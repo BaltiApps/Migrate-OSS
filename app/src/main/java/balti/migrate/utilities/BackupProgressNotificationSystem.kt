@@ -15,6 +15,7 @@ class BackupProgressNotificationSystem {
             PROGRESS_TYPE_TESTING,
             PROGRESS_TYPE_CONTACTS,
             PROGRESS_TYPE_SMS,
+            PROGRESS_TYPE_CALLS,
 
         }
 
