@@ -19,7 +19,8 @@ class BackupProgressNotificationSystem {
             val type: ProgressType,
             val title: String,
             val subTask: String,
-            val log: String
+            val log: String,
+            val progressPercent: Int,
         )
 
         /**
