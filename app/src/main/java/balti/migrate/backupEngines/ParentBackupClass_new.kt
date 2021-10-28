@@ -258,8 +258,8 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
     }
 
     abstract val className: String
-    abstract fun preExecute()
+    open fun preExecute() {}
     abstract suspend fun backgroundProcessing(): EngineJobResultHolder
-    abstract fun postExecute(result: Any?)
+    open fun postExecute(result: Any?) {}
 
 }
