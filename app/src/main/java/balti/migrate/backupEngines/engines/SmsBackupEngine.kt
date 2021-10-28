@@ -202,7 +202,7 @@ class SmsBackupEngine(private val smsDBFileName: String) : ParentBackupClass_new
 
         // copy other files like .journal .journal-wal
         try {
-            FileX.new(CACHE_DIR).listFiles { file: FileX -> file.name.startsWith(smsNameWithoutExtension) }?.forEach {
+            CACHE.listFiles { file: FileX -> file.name.startsWith(smsNameWithoutExtension) }?.forEach {
                 it.copyTo(
                     FileX.new(fileXDestination, it.name).apply {
                         generatedFiles.add(this)
