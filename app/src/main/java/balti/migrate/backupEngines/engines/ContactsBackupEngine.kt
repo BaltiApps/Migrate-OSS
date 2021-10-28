@@ -54,7 +54,7 @@ class ContactsBackupEngine(private val vcfFileName: String): ParentBackupClass_n
             errors.add("$ERR_CONTACTS_TRY_CATCH: ${e.message}")
         }
 
-        return EngineJobResultHolder(errors.isEmpty(), arrayOf(vcfFile), errors)
+        return EngineJobResultHolder(errors.isEmpty(), null, errors, warnings)
     }
 
 }
