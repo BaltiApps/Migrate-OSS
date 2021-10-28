@@ -31,8 +31,7 @@ import java.io.OutputStreamWriter
 
 abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCoroutineTask(DISP_IO) {
 
-    val fileXDestination: String?
-        get() = BackupServiceKotlin_new.fileXDestination
+    val fileXDestination: String get() = BackupServiceKotlin_new.fileXDestination
 
     var cancelBackup: Boolean
         get() = BackupServiceKotlin_new.cancelBackup
@@ -244,12 +243,6 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
     final suspend fun executeWithResult(): EngineJobResultHolder? {
         return when {
             cancelBackup -> null
-            fileXDestination == null -> {
-                writeLog("Destination is null. Cancelling backup.")
-                errors.add("Fatal error: Destination is null in $className. Cancelling backup.")
-                cancelBackup = true
-                EngineJobResultHolder(false, null, errors)
-            }
             else -> super.executeWithResult(null) as EngineJobResultHolder
         }
     }
