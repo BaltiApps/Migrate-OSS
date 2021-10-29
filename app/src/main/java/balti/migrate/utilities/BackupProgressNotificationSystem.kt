@@ -24,6 +24,7 @@ class BackupProgressNotificationSystem {
             PROGRESS_TYPE_VERIFYING,
             PROGRESS_TYPE_CORRECTING,
             PROGRESS_TYPE_MAKING_ZIP_BATCH,
+            PROGRESS_TYPE_UPDATER_SCRIPT,
 
         }
 
