@@ -265,4 +265,11 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
     abstract suspend fun backgroundProcessing(): Any?
     open fun postExecute(result: Any?) {}
 
+    /**
+     * A string in the form of "[<current zip number>/<total zips>]".
+     * Mostly added in front of errors.
+     * Also used in [getTitle].
+     */
+    open val partTag: String = ""
+
 }
