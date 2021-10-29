@@ -5,12 +5,13 @@ import balti.filex.FileX
 import balti.filex.Quad
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.appApkFiles
+import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
-import balti.migrate.backupEngines.ParentBackupClass
-import balti.migrate.backupEngines.containers.BackupIntentData
+import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
+import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.*
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DIR_APK_FILES_SIZES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_APK_CHECK_TRY_CATCH
@@ -23,8 +24,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TAR_CHECK_TRY_CAT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TAR_SHELL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_TAR_SUPPRESSED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_VERIFICATION_TRY_CATCH
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_CORRECTING
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_VERIFYING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_RETRY_SCRIPT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_TAR_CHECK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.LOG_CORRECTION_NEEDED
@@ -35,6 +34,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.SU_INIT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_APK_SIZE_INFO_WRONG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_CASTING_APK_SIZE
 import balti.migrate.utilities.IconTools
+import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.functions.Misc.getPercentage
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
@@ -43,9 +43,10 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentData,
-                         private val appList: ArrayList<AppPacket>,
-                         private val busyboxBinaryPath: String) : ParentBackupClass(bd, "") {
+
+class VerificationEngine(private val busyboxBinaryPath: String) : ParentBackupClass_new(EMPTY) {
+
+    override val className: String = "VerificationEngine"
 
     private var CORRECTION_PID = -999
     private var TAR_CHECK_CORRECTION_PID = -999
@@ -53,11 +54,11 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     private val backupUtils by lazy { BackupUtils() }
     private val iconTools by lazy { IconTools() }
 
-    private val pm by lazy { engineContext.packageManager }
+    private val appList by lazy { appPackets }
 
-    private val allErrors by lazy { ArrayList<String>(0) }
+    /*private val allErrors by lazy { ArrayList<String>(0) }
     private val actualErrors by lazy { ArrayList<String>(0) }
-    private val warnings by lazy { ArrayList<String>(0) }
+    private val warnings by lazy { ArrayList<String>(0) }*/
 
     private var suProcess : Process? = null
 
@@ -76,10 +77,10 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
      */
     private val apkFilesSizesDirPath by lazy { CACHE.canonicalPath + "/" + DIR_APK_FILES_SIZES }
 
-    private fun addToActualErrors(err: String){
+    /*private fun addToActualErrors(err: String){
         actualErrors.add(err)
         allErrors.add(err)
-    }
+    }*/
 
     private fun getDataCorrectionCommand(pi: PackageInfo, expectedDataFile: FileX): String{
 
@@ -97,7 +98,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
     private fun getDataCorrectionCommand(dataName: String): String {
         val packageName = dataName.let { it.substring(0, it.lastIndexOf(".tar.gz")) }
-        val expectedDataFile = FileX.new(actualDestination, dataName)
+        val expectedDataFile = FileX.new(fileXDestination, dataName)
 
         return getDataCorrectionCommand(pm.getPackageInfo(packageName, 0), expectedDataFile)
     }
@@ -112,7 +113,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
             val title = getTitle(R.string.verifying_backups)
 
-            resetBroadcast(true, title, EXTRA_PROGRESS_TYPE_VERIFYING)
+            resetBroadcast(true, title, PROGRESS_TYPE_VERIFYING)
 
             appAuxFilesDir.run { deleteRecursively(); mkdirs() }
 
@@ -213,7 +214,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     val sizeData = if (existsData) dataFileSizes[index] else 0L
 
                     if (!existsData || sizeData == 0L) {
-                        allRecovery.add(getDataCorrectionCommand(pi, FileX.new(actualDestination, dataName)))
+                        allRecovery.add(getDataCorrectionCommand(pi, FileX.new(fileXDestination, dataName)))
                         broadcastProgress(displayTitle, "${LOG_CORRECTION_NEEDED}: $packageName : \"data\" Exists - $existsData, Size - $sizeData", false)
                     }
                 }
@@ -242,7 +243,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
         catch (e: Exception) {
             e.printStackTrace()
-            addToActualErrors("$ERR_VERIFICATION_TRY_CATCH: ${e.message}")
+            errors.add("$ERR_VERIFICATION_TRY_CATCH: ${e.message}")
             return null
         }
     }
@@ -252,7 +253,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         try {
 
             val title = getTitle(R.string.verifying_apks)
-            resetBroadcast(true, title, EXTRA_PROGRESS_TYPE_VERIFYING)
+            resetBroadcast(true, title, PROGRESS_TYPE_VERIFYING)
 
             val corrections = ArrayList<String>(0)
             packagesWithApkCorrection.clear()
@@ -308,7 +309,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
         catch (e: Exception){
             e.printStackTrace()
-            addToActualErrors("$ERR_APK_CHECK_TRY_CATCH: ${e.message}")
+            errors.add("$ERR_APK_CHECK_TRY_CATCH: ${e.message}")
             return null
         }
     }
@@ -324,7 +325,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
             val title = getTitle(R.string.verifying_tar)
 
-            resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_VERIFYING)
+            resetBroadcast(false, title, PROGRESS_TYPE_VERIFYING)
 
             val tarCheckScript = FileX.new(CACHE_DIR, "$FILE_PREFIX_TAR_CHECK.sh", true)
             //val scriptWriter = BufferedWriter(FileWriter(tarCheckScript))
@@ -427,8 +428,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     }
 
                     if (!ignorable)
-                        addToActualErrors("$ERR_TAR_SHELL: $errorLine")
-                    else allErrors.add("$ERR_TAR_SUPPRESSED: $errorLine")
+                        errors.add("$ERR_TAR_SHELL: $errorLine")
+                    else warnings.add("$ERR_TAR_SUPPRESSED: $errorLine")
 
                     return@iterateBufferedReader false
                 }, null)
@@ -438,7 +439,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
         catch (e: Exception){
             e.printStackTrace()
-            addToActualErrors("$ERR_TAR_CHECK_TRY_CATCH: ${e.message}")
+            errors.add("$ERR_TAR_CHECK_TRY_CATCH: ${e.message}")
             return null
         }
     }
@@ -451,7 +452,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
 
         val title = getTitle(R.string.correcting_errors)
 
-        resetBroadcast(false, title, EXTRA_PROGRESS_TYPE_CORRECTING)
+        resetBroadcast(false, title, PROGRESS_TYPE_CORRECTING)
 
         try {
             val retryScript = FileX.new(CACHE_DIR, "$FILE_PREFIX_RETRY_SCRIPT.sh", true)
@@ -530,7 +531,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     }
 
 
-                    broadcastProgress("${engineContext.getString(R.string.defect_no)} $defectNumber",
+                    broadcastProgress("${getStringFromRes(R.string.defect_no)} $defectNumber",
                             line, progress != lastProgress, progress)
 
                     lastProgress = progress
@@ -549,8 +550,8 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
                     }
 
                     if (!ignorable)
-                        addToActualErrors("$ERR_CORRECTION_SHELL: $errorLine")
-                    else allErrors.add("$ERR_CORRECTION_SUPPRESSED: $errorLine")
+                        errors.add("$ERR_CORRECTION_SHELL: $errorLine")
+                    else warnings.add("$ERR_CORRECTION_SUPPRESSED: $errorLine")
 
                     return@iterateBufferedReader false
                 }, null)
@@ -558,7 +559,7 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         }
         catch (e: Exception){
             e.printStackTrace()
-            addToActualErrors("$ERR_CORRECTION_TRY_CATCH: ${e.message}")
+            errors.add("$ERR_CORRECTION_TRY_CATCH: ${e.message}")
         }
     }
 
@@ -595,20 +596,20 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
     private fun moveAuxFiles(){
         try {
             val title = getTitle(R.string.moving_aux_script)
-            resetBroadcast(true, title, EXTRA_PROGRESS_TYPE_CORRECTING)
+            resetBroadcast(true, title, PROGRESS_TYPE_CORRECTING)
             backupUtils.moveAuxFilesToBackupLocation(pathForAuxFiles, rootLocation.canonicalPath).let {
                 it.forEach {
-                    addToActualErrors("$ERR_CORRECTION_AUX_MOVING_SU: $it")
+                    errors.add("$ERR_CORRECTION_AUX_MOVING_SU: $it")
                 }
             }
         }
         catch (e: Exception){
             e.printStackTrace()
-            addToActualErrors("$ERR_CORRECTION_AUX_MOVING_TRY_CATCH: ${e.message}")
+            errors.add("$ERR_CORRECTION_AUX_MOVING_TRY_CATCH: ${e.message}")
         }
     }
 
-    override suspend fun doInBackground(arg: Any?): Any {
+    override suspend fun backgroundProcessing(): Any? {
 
         val defects = ArrayList<String>(0)
         checkApks()?.let { defects.addAll(it) }
@@ -619,12 +620,11 @@ class VerificationEngine(private val jobcode: Int, private val bd: BackupIntentD
         if (appAuxFilesDir.exists() && !appAuxFilesDir.isEmpty && defects.any { it.startsWith(MIGRATE_STATUS) })
             moveAuxFiles()
 
-        return 0
+        return null
     }
 
-    override fun postExecuteFunction() {
+    override fun postExecute(result: Any?) {
         CORRECTION_PID = -999
         TAR_CHECK_CORRECTION_PID = -999
-        onEngineTaskComplete.onComplete(jobcode, actualErrors, jobResults = allErrors, jobWarnings = warnings)
     }
 }
