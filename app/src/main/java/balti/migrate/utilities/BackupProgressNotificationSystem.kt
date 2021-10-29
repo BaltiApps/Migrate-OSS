@@ -21,6 +21,8 @@ class BackupProgressNotificationSystem {
             PROGRESS_TYPE_MAKING_APP_SCRIPTS,
             PROGRESS_TYPE_APP_PROGRESS,
             PROGRESS_TYPE_MOVING_APP_FILES,
+            PROGRESS_TYPE_VERIFYING,
+            PROGRESS_TYPE_CORRECTING,
 
         }
 
