@@ -6,12 +6,14 @@ import balti.migrate.AppInstance
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.AppInstance.Companion.RESERVED_SPACE
+import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.BackupServiceKotlin.Companion.flasherOnly
-import balti.migrate.backupEngines.ParentBackupClass
+import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.backupEngines.containers.*
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
+import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_MAKING_ZIP_BATCH
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.BACKUP_NAME_SETTINGS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
@@ -21,7 +23,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_MOVE_SCRIPT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_MOVE_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_MOVING_ROOT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_BATCHING
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PREFIX_MOVE_TO_CONTAINER_SCRIPT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_NEW_ICON_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SEPARATE_EXTRAS_FOR_FLASHER_ONLY
@@ -36,16 +37,16 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
-                   private val appList: ArrayList<AppPacket>, private val extras: ArrayList<FileX>) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_MAKING_ZIP_BATCH) {
+class MakeZipBatch(private val extras: ArrayList<FileX>) : ParentBackupClass_new(PROGRESS_TYPE_MAKING_ZIP_BATCH) {
+
+    override val className: String = "MakeZipBatch"
 
     private val zipBatches by lazy { ArrayList<ZipBatch>(0) }
-    private val errors by lazy { ArrayList<String>(0) }
-    private val warnings by lazy { ArrayList<String>(0) }
     private var totalAppSize = 0L
     private var totalExtraSize = 0L
 
     private val allFiles by lazy { rootLocation.run { exists(); listEverything() } }
+    private val appList: ArrayList<AppPacket> by lazy { appPackets }
 
     private val allZipAppPackets by lazy { ArrayList<ZipAppPacket>(0) }
     private val allZipExtraPackets by lazy { ArrayList<ZipExtraPacket>(0) }
@@ -287,8 +288,8 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
                                 }
 
                                 shareLogProgress(
-                                        "${engineContext.getString(R.string.adding)}: ${p.displayName} | " +
-                                                "${engineContext.getString(R.string.packet)}: ${zipBatches.size + 1}"
+                                        "${getStringFromRes(R.string.adding)}: ${p.displayName} | " +
+                                                "${getStringFromRes(R.string.packet)}: ${zipBatches.size + 1}"
                                         )
 
                                 inputList.remove(p)
@@ -474,7 +475,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
         }
     }
 
-    override suspend fun doInBackground(arg: Any?): Any {
+    override suspend fun backgroundProcessing(): Any {
 
         if (!BackupServiceKotlin.cancelAll) makeZipAppPackets()
         if (!BackupServiceKotlin.cancelAll) makeZipExtraPackets()
@@ -482,13 +483,7 @@ class MakeZipBatch(private val jobcode: Int, bd: BackupIntentData,
         if (errors.isEmpty()) { createMoveScript() }
         if (!BackupServiceKotlin.cancelAll && errors.isEmpty()) executeMoveScript()
 
-        return 0
-    }
-
-    override fun postExecuteFunction() {
-        if (errors.isEmpty()) {
-            //onEngineTaskComplete.onComplete(jobcode, errors, warnings, zipBatches)
-        }
+        return zipBatches
     }
 
 }
