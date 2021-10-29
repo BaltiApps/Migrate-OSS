@@ -82,7 +82,12 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
                 )
     }
 
-    fun getTitle(stringRes: Int): String = getStringFromRes(stringRes)
+    /**
+     * Return title of a backup step, appended with [partTag] if it is not blank.
+     */
+    fun getTitle(stringRes: Int): String =
+        if (partTag == "") getStringFromRes(stringRes)
+        else "${getStringFromRes(stringRes)} : ${getStringFromRes(R.string.part)} - $partTag"
 
     /**
      * Get an [SQLiteDatabase] instance from a file in storage.
