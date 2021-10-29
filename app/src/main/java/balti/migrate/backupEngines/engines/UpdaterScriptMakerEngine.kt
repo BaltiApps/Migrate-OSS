@@ -2,21 +2,19 @@ package balti.migrate.backupEngines.engines
 
 import android.os.Build
 import balti.filex.FileX
-import balti.filex.FileXInit
-import balti.filex.Quad
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
 import balti.migrate.backupEngines.BackupServiceKotlin.Companion.flasherOnly
-import balti.migrate.backupEngines.ParentBackupClass
-import balti.migrate.backupEngines.containers.BackupIntentData
-import balti.migrate.backupEngines.containers.ZipAppBatch
+import balti.migrate.backupEngines.ParentBackupClass_new
+import balti.migrate.backupEngines.containers.ZipBatch
+import balti.migrate.backupEngines.utils.BackupUtils
+import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_UPDATER_SCRIPT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DIR_MANUAL_CONFIGS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_UPDATER_CONFIG_FILE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_UPDATER_EXTRACT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_UPDATER_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_WRITING_RAW_LIST
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_BUILDPROP_MANUAL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_FILE_LIST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MIGRATE_CACHE_MANUAL
@@ -33,48 +31,59 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.THIS_VERSION
 import balti.module.baltitoolbox.functions.FileHandlers
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
-import balti.module.baltitoolbox.functions.Misc
-import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.Misc.iterateBufferedReader
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
-import java.io.BufferedWriter
-import java.io.IOException
-import java.io.OutputStreamWriter
+import java.io.*
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 // extract helper, busybox, update-binary, mount_script.sh, prep.sh, helper_unpacking_script.sh, verify.sh
 
-class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupIntentData,
-                               private val zipAppBatch: ZipAppBatch,
-                               private val timeStamp: String) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_UPDATER_SCRIPT) {
+class UpdaterScriptMakerEngine(
+    override val partTag: String,
+    private val zipBatch: ZipBatch,
+    private val timeStamp: String
+) : ParentBackupClass_new(PROGRESS_TYPE_UPDATER_SCRIPT) {
 
-    private val errors by lazy { ArrayList<String>(0) }
-    private val warnings by lazy { ArrayList<String>(0) }
+    override val className: String = "UpdaterScriptMakerEngine"
 
-    private val showNotification by lazy { !FileXInit.isTraditional }
+    private val backupUtils by lazy { BackupUtils() }
 
-    private fun extractToBackup(fileName: String, targetPath: String){
-        val assetFile = FileX.new(unpackAssetToInternal(fileName, fileName, FileHandlers.INTERNAL_TYPE.INTERNAL_FILES), true)
-        val targetFile = FileX.new(targetPath, fileName)
+    override fun preExecute() {
+        super.preExecute()
+        appAuxFilesDir.run { deleteRecursively(); mkdirs() }
+    }
+
+    /**
+     * This function is used to unpack things like MigrateHelper.apk, update-binary
+     * and various assets to make a ZIP flashable via TWRP.
+     *
+     * @param assetName The Actual raw name of the asset packed with the apk of this app.
+     * @param unpackName The final name of the unpacked asset.
+     * @param unpackSubDirectory Optional path under which [appAuxFilesDir] under which
+     * the asset is to be unpacked. Example: update-binary needs to be under a directory structure:
+     * `META-INF/com/google/android/`
+     */
+    private fun extractToBackup(assetName: String, unpackName: String = assetName, unpackSubDirectory: String = ""){
+        val assetFile = FileX.new(unpackAssetToInternal(assetName, unpackName, FileHandlers.INTERNAL_TYPE.INTERNAL_FILES), true)
+        val targetFile = FileX.new("${pathForAuxFiles}/$unpackSubDirectory", unpackName, true)
+        targetFile.parentFile?.mkdirs()
         var err = ""
-
-        targetFile.createNewFile(makeDirectories = true, overwriteIfExists = true)
-        targetFile.refreshFile()
 
         if (assetFile.exists())
             err = try {
-                assetFile.copyTo(targetFile, overwrite = true)
+                assetFile.renameTo(targetFile)
                 assetFile.delete()
                 ""
             }catch (e: Exception){
                 e.printStackTrace()
                 e.message.toString()
             }
-        else errors.add("$ERR_UPDATER_EXTRACT${bd.batchErrorTag}: $fileName could not be unpacked")
+        else errors.add("$ERR_UPDATER_EXTRACT${partTag}: $assetName could not be unpacked")
 
         if (!targetFile.exists())
-            errors.add("$ERR_UPDATER_EXTRACT${bd.batchErrorTag}: $fileName could not be moved: $err")
+            errors.add("$ERR_UPDATER_EXTRACT${partTag}: $assetName could not be moved: $err")
 
     }
 
@@ -84,10 +93,10 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
         resetBroadcast(true, title)
 
-        val updaterScriptPath = FileX.new("$actualDestination/META-INF/com/google/android/")
+        val updaterScriptPath = FileX.new("$pathForAuxFiles/META-INF/com/google/android/", true)
         updaterScriptPath.mkdirs()
 
-        val updaterScriptFile = FileX.new(updaterScriptPath.path, "updater-script")
+        val updaterScriptFile = FileX.new(updaterScriptPath.path, "updater-script", true)
         updaterScriptFile.createNewFile(overwriteIfExists = true)
         updaterScriptFile.refreshFile()
 
@@ -96,11 +105,11 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             updater_writer.write("show_progress(0, 0);\n")
             updater_writer.write("ui_print(\" \");\n")
             updater_writer.write("ui_print(\"---------------------------------\");\n")
-            updater_writer.write("ui_print(\"      ${engineContext.getString(R.string.app_name)} Flash package      \");\n")
-            updater_writer.write("ui_print(\"      Version ${engineContext.getString(R.string.current_version_name)} - ${engineContext.getString(R.string.release_state)}       \");\n")
+            updater_writer.write("ui_print(\"      ${getStringFromRes(R.string.app_name)} Flash package      \");\n")
+            updater_writer.write("ui_print(\"      Version ${getStringFromRes(R.string.current_version_name)} - ${getStringFromRes(R.string.release_state)}       \");\n")
             updater_writer.write("ui_print(\"---------------------------------\");\n")
 
-            zipAppBatch.partName.let {
+            zipBatch.zipName.let {
                 if (it != "") {
                     updater_writer.write("ui_print(\"*** $it ***\");\n")
                     updater_writer.write("ui_print(\"---------------------------------\");\n")
@@ -149,7 +158,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
             // run prep.sh
             //updater_writer.write("run_program(\"/tmp/prep.sh\", \"$MIGRATE_CACHE_DEFAULT\", \"$timeStamp\", \"$FILE_PACKAGE_DATA\", \"$DATA_TEMP\", \"$DIR_MANUAL_CONFIGS\");\n")
-            updater_writer.write("run_program(\"/tmp/prep.sh\", \"$MIGRATE_CACHE_DEFAULT\", \"$timeStamp\", \"$FILE_PACKAGE_DATA\", \"$DIR_MANUAL_CONFIGS\", \"${bd.backupName}\", \"$FILE_RAW_LIST\", \"$FILE_FILE_LIST\");\n")
+            updater_writer.write("run_program(\"/tmp/prep.sh\", \"$MIGRATE_CACHE_DEFAULT\", \"$timeStamp\", \"$FILE_PACKAGE_DATA\", \"$DIR_MANUAL_CONFIGS\", \"${zipBatch.zipName}\", \"$FILE_RAW_LIST\", \"$FILE_FILE_LIST\");\n")
 
             // data will be unmounted if prep.sh aborted unsuccessfully
             updater_writer.write("ifelse(is_mounted(\"/data\"), ui_print(\"Parameters checked!\") && sleep(2s), abort(\"Exiting...\"));\n")
@@ -166,13 +175,10 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             }
 
             // extract app files
-            val packets = zipAppBatch.zipAppPackets
+            val packets = zipBatch.appPackets
             val size = packets.size
 
-            val subtask = getStringFromRes(R.string.writing_app_info)
-            if (showNotification) {
-                resetBroadcast(false, title)
-            }
+            var subtask = getStringFromRes(R.string.writing_app_info)
 
             for (c in packets.indices) {
 
@@ -184,10 +190,7 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 val packet = packets[c].appPacket_z
                 val packageName = packet.packageName
 
-                if (showNotification) {
-                    val progress = Misc.getPercentage((c+1), size)
-                    broadcastProgress(subtask, "$subtask: ${packet.appName}", true, progress)
-                }
+                broadcastProgress(subtask, "${getStringFromRes(R.string.app)}: ${packet.appName}", false)
 
                 if (packet.APP || packet.DATA || packet.PERMISSION) {
                     updater_writer.write("ui_print(\"${packet.appName} (${c + 1}/$size)\");\n")
@@ -221,9 +224,11 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                 updater_writer.write("set_progress($pString);\n")
             }
 
+            subtask = getStringFromRes(R.string.writing_extra_info)
+
             resetBroadcast(true, title)
 
-            zipAppBatch.extrasFileNames.run {
+            zipBatch.extraPackets.run {
                 if (isNotEmpty()) {
 
                     // extract extras
@@ -231,8 +236,13 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
                     updater_writer.write("ui_print(\"Extracting extras...\");\n")
 
                     forEach {
-                        updater_writer.write("ui_print(\"${it}\");\n")
-                        extractItToTemp(it)
+
+                        broadcastProgress(subtask, "${getStringFromRes(R.string.extras)}: ${it.displayName}", false)
+
+                        updater_writer.write("ui_print(\"${it.displayName}\");\n")
+                        it.extraFiles.forEach { f ->
+                            extractItToTemp(f.first)
+                        }
                     }
                 }
             }
@@ -280,22 +290,22 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
     }
 
-    private fun makePackageData() {        // done
+    private fun makePackageData() {
 
-        val packageData = FileX.new(actualDestination, FILE_PACKAGE_DATA)
+        val packageData = FileX.new(pathForAuxFiles, FILE_PACKAGE_DATA, true)
         var contents = ""
 
-        contents += "backup_name ${bd.backupName}\n"
+        contents += "backup_name ${zipBatch.zipName}\n"
         contents += "timestamp $timeStamp\n"
         contents += "device " + Build.DEVICE + "\n"
         contents += "sdk " + Build.VERSION.SDK_INT + "\n"
         contents += "cpu_abi " + Build.SUPPORTED_ABIS[0] + "\n"
-        contents += "data_required_size ${zipAppBatch.batchDataSize / KB_DIVISION_SIZE}\n"
-        contents += "system_required_size ${zipAppBatch.batchSystemSize / KB_DIVISION_SIZE}\n"
-        contents += "zip_expected_size ${zipAppBatch.zipFullSize / KB_DIVISION_SIZE}\n"
-        contents += "migrate_version " + "${engineContext.getString(R.string.app_name)}_" +
-                "${engineContext.getString(R.string.current_version_name)}_" +
-                engineContext.getString(R.string.release_state) + "\n"
+        contents += "data_required_size ${zipBatch.batchDataSize / KB_DIVISION_SIZE}\n"
+        contents += "system_required_size ${zipBatch.batchSystemSize / KB_DIVISION_SIZE}\n"
+        contents += "zip_expected_size ${zipBatch.zipFullSize / KB_DIVISION_SIZE}\n"
+        contents += "migrate_version " + "${getStringFromRes(R.string.app_name)}_" +
+                "${getStringFromRes(R.string.current_version_name)}_" +
+                getStringFromRes(R.string.release_state) + "\n"
 
         try {
             packageData.writeOneLine(contents)
@@ -312,14 +322,14 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
     private fun writeManualConfig(fileName: String, value: String){
         try {
-            FileX.new(actualDestination, DIR_MANUAL_CONFIGS).run {
+            FileX.new(pathForAuxFiles, DIR_MANUAL_CONFIGS, true).run {
                 mkdirs()
-                FileX.new(this.path, fileName).writeOneLine(getPrefString(value, ""))
+                FileX.new(this.path, fileName, true).writeOneLine(getPrefString(value, ""))
             }
         }
         catch (e: Exception) {
             e.printStackTrace()
-            warnings.add("$ERR_UPDATER_CONFIG_FILE${bd.batchErrorTag}: $fileName - ${e.message}")
+            warnings.add("$ERR_UPDATER_CONFIG_FILE${partTag}: $fileName - ${e.message}")
         }
     }
 
@@ -333,80 +343,67 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
         val title = getTitle(R.string.recording_raw_list)
         resetBroadcast(true, title)
 
-        val rawList = FileX.new(actualDestination, FILE_RAW_LIST)
         /**
          *  This file will be shipped inside the zip.
          *  This file will also be included while reporting logs via [balti.migrate.utilities.CommonToolsKotlin.reportLogs]
          *  A copy of this file is also created below for verification purposes.
          */
-        val subTask = getStringFromRes(R.string.recording_raw_list)
+        val rawList = FileX.new(pathForAuxFiles, FILE_RAW_LIST, true)
+
+
+        /**
+         * This file is a copy of the original raw file list created above.
+         * This file is used to compare contents of the zip in [ZipVerificationEngine]
+         */
+        val extRawList = FileX.new(CACHE_DIR, FILE_RAW_LIST, true)
+
         try {
-            if (showNotification) {
-                resetBroadcast(false, title)
-                subTask.let { broadcastProgress(it, it, true) }
-            }
-            else subTask.let { broadcastProgress(it, it, false) }
             heavyTask {
-                rawList.startWriting(object : FileX.Writer() {
-                    override fun writeLines() {
-                        write("\n")
-                        write("=================\n")
-                        write("${actualDestination}\n")
-                        write("=================\n")
-                        write("\n")
+                val suProcess = Runtime.getRuntime().exec("su")
+                suProcess?.let {
+                    val suInputStream = BufferedWriter(OutputStreamWriter(it.outputStream))
+                    val errorStream = BufferedReader(InputStreamReader(it.errorStream))
 
-                        if (showNotification) {
-                            resetBroadcast(false, title)
-                        }
+                    suInputStream.write("walk_dir () {\n")
+                    suInputStream.write("    for pathname in \"\$1\"/*; do\n")
+                    suInputStream.write("        if [ -d \"\$pathname\" ]; then\n")
+                    suInputStream.write("            walk_dir \"\$pathname\"\n")
+                    suInputStream.write("        else\n")
+                    suInputStream.write("            printf '%s\\n' \"\$pathname\"\n")
+                    suInputStream.write("        fi\n")
+                    suInputStream.write("    done\n")
+                    suInputStream.write("}\n")
 
-                        val rootDir = FileX.new(actualDestination)
-                        val all = rootDir.listEverythingInQuad() ?: listOf()
-                        for (i in all.indices) {
-                            if (showNotification) {
-                                val progress = Misc.getPercentage(i+1, all.size)
-                                broadcastProgress(subTask, "", true, progress)
-                            }
-                            val q = all[i]
-                            if (q.second) {
-                                FileX.new(rootDir.path, q.first).list()?.forEach {
-                                    writeLine("${q.first}/$it")
-                                }
-                            }
-                            else writeLine(q.first)
-                        }
-                    }
-                })
+                    suInputStream.write("touch ${rawList.canonicalPath}\n")
+
+                    suInputStream.write("echo \"=================\" > ${rawList.canonicalPath}\n")
+                    suInputStream.write("echo \"${zipBatch.zipName}\" >> ${rawList.canonicalPath}\n")
+                    suInputStream.write("echo \"=================\" >> ${rawList.canonicalPath}\n")
+
+                    suInputStream.write("cd ${rootLocation.canonicalPath}\n")
+                    suInputStream.write("walk_dir . >> ${rawList.canonicalPath}\n")
+                    suInputStream.write("walk_dir . > ${extRawList.canonicalPath}\n")
+                    suInputStream.write("exit\n")
+                    suInputStream.flush()
+
+                    iterateBufferedReader(errorStream, { errorLine ->
+                        errors.add(errorLine)
+                        return@iterateBufferedReader false
+                    })
+                }
             }
         }
         catch (e: Exception){
             e.printStackTrace()
-            warnings.add("$ERR_WRITING_RAW_LIST${bd.batchErrorTag}: ${e.message}")
-        }
-
-        tryIt {
-
-            val extRawList = FileX.new(CACHE_DIR, FILE_RAW_LIST, true)
-            /**
-             * This file is a copy of the original raw file list created above.
-             * This file is used to compare contents of the zip in [ZipVerificationEngine]
-             */
-
-            extRawList.startWriting(object : FileX.Writer(){
-                override fun writeLines() {
-                    if (rawList.exists())
-                        rawList.readLines().forEach {
-                            write("$it\n")
-                        }
-                }
-            }, true)
+            warnings.add("$ERR_WRITING_RAW_LIST${partTag}: ${e.message}")
         }
     }
 
-    override suspend fun doInBackground(arg: Any?): Any? {
+    override suspend fun backgroundProcessing(): Any? {
 
         try {
 
-            val title = getTitle(R.string.recording_raw_list)
+            val title = getTitle(R.string.making_zip_flashable)
 
             resetBroadcast(true, title)
 
@@ -414,15 +411,14 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
 
             if (!flasherOnly) {
                 getStringFromRes(R.string.unpacking_to_make_flashable).let { broadcastProgress(it, it, false) }
-                extractToBackup("busybox", actualDestination)
-                extractToBackup("update-binary", "$actualDestination/META-INF/com/google/android/")
-                extractToBackup("mount_script.sh", actualDestination)
-                extractToBackup("prep.sh", actualDestination)
-                extractToBackup("mover.sh", actualDestination)
-                extractToBackup("helper_unpacking_script.sh", actualDestination)
-                extractToBackup("verify.sh", actualDestination)
-                extractToBackup("MigrateHelper.apk", "$actualDestination/system/app/MigrateHelper/")
-                extractToBackup(getBusyboxAssetName(), actualDestination)
+                extractToBackup(getBusyboxAssetName(), "busybox")
+                extractToBackup("update-binary", unpackSubDirectory = "META-INF/com/google/android/")
+                extractToBackup("mount_script.sh")
+                extractToBackup("prep.sh")
+                extractToBackup("mover.sh")
+                extractToBackup("helper_unpacking_script.sh")
+                extractToBackup("verify.sh")
+                extractToBackup("MigrateHelper.apk")
 
                 writeManualConfig(FILE_MIGRATE_CACHE_MANUAL, PREF_MANUAL_MIGRATE_CACHE)
                 writeManualConfig(FILE_SYSTEM_MANUAL, PREF_MANUAL_SYSTEM)
@@ -432,17 +428,21 @@ class UpdaterScriptMakerEngine(private val jobcode: Int, private val bd: BackupI
             createRawList()
 
             if (!flasherOnly) makeUpdaterScript()
+
+            /**
+             * Finally move all file under [appAuxFilesDir] to actual backup location.
+             */
+            backupUtils.moveAuxFilesToBackupLocation(
+                pathForAuxFiles,
+                "${rootLocation.canonicalPath}/${zipBatch.zipName}"
+            )
         }
         catch (e: Exception){
             e.printStackTrace()
-            errors.add("$ERR_UPDATER_TRY_CATCH${bd.batchErrorTag}: ${e.message}")
+            errors.add("$ERR_UPDATER_TRY_CATCH${partTag}: ${e.message}")
         }
 
-        return 0
-    }
-
-    override fun postExecuteFunction() {
-        onEngineTaskComplete.onComplete(jobcode, errors, warnings)
+        return null
     }
 
 }
