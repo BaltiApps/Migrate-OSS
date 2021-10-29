@@ -442,7 +442,9 @@
     <string name="making_package_flash_ready">Making package flash ready</string>
     <string name="making_updater_script">Making updater-script</string>
     <string name="writing_app_info">Writing app info</string>
+    <string name="writing_extra_info">Writing extra info</string>
     <string name="recording_raw_list">Recording file list</string>
+    <string name="making_zip_flashable">Making zip flashable</string>
     <string name="unpacking_to_make_flashable">Unpacking files for TWRP</string>
     <string name="backing_app_permissions">Backing app permissions</string>
     <string name="verifying_backups">Verifying backup</string>
