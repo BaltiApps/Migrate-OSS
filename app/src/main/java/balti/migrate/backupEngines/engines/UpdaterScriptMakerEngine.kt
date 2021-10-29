@@ -382,7 +382,7 @@ class UpdaterScriptMakerEngine(
 
                     suInputStream.write("cd ${rootLocation.canonicalPath}\n")
                     suInputStream.write("walk_dir . >> ${rawList.canonicalPath}\n")
-                    suInputStream.write("walk_dir . > ${extRawList.canonicalPath}\n")
+                    suInputStream.write("cat ${rawList.canonicalPath} > ${extRawList.canonicalPath}\n")
                     suInputStream.write("exit\n")
                     suInputStream.flush()
 
