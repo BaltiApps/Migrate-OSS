@@ -345,15 +345,24 @@ class UpdaterScriptMakerEngine(
 
         /**
          *  This file will be shipped inside the zip.
-         *  This file will also be included while reporting logs via [balti.migrate.utilities.CommonToolsKotlin.reportLogs]
-         *  A copy of this file is also created below for verification purposes.
+         *  This file is only used for information and not used in any verification.
+         *  File is formatted as:
+         *
+         *  =================
+         *  <backup_name>
+         *  =================
+         *  ./<file1>
+         *  ./<dir1>/<dir2>/<file2>
+         *  ./system/app/MigrateHelper/MigrateHelper.apk
+         *  ...
          */
         val rawList = FileX.new(pathForAuxFiles, FILE_RAW_LIST, true)
 
 
         /**
          * This file is a copy of the original raw file list created above.
-         * This file is used to compare contents of the zip in [ZipVerificationEngine]
+         * This file will also be included while reporting logs via [balti.migrate.utilities.CommonToolsKotlin.reportLogs]
+         * Only for informational purpose.
          */
         val extRawList = FileX.new(CACHE_DIR, FILE_RAW_LIST, true)
 
