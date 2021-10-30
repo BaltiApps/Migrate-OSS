@@ -1,164 +1,285 @@
 package balti.migrate.backupEngines.engines
 
 import balti.filex.FileX
-import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
-import balti.migrate.backupEngines.ParentBackupClass
-import balti.migrate.backupEngines.containers.BackupIntentData
-import balti.migrate.backupEngines.containers.ZipAppBatch
+import balti.migrate.backupEngines.BackupServiceKotlin_new
+import balti.migrate.backupEngines.ParentBackupClass_new
+import balti.migrate.backupEngines.containers.ZipBatch
+import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_ZIPPING
 import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_NO_RAW_LIST
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_PARSING_RAW_LIST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_TRY_CATCH
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_PROGRESS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_RAW_LIST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_FILE_LIST_COPY
+import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.functions.Misc.getPercentage
-import balti.module.baltitoolbox.functions.Misc.tryIt
 import java.io.BufferedInputStream
 import java.util.zip.CRC32
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-class ZippingEngine(private val jobcode: Int,
-                    private val bd: BackupIntentData,
-                    private val zipBatch: ZipAppBatch) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_ZIP_PROGRESS) {
+class ZippingEngine(override val partTag: String,
+                    private val zipBatch: ZipBatch) : ParentBackupClass_new(PROGRESS_TYPE_ZIPPING) {
 
-    private val zippedFiles = ArrayList<String>(0)
-    private val zipErrors = ArrayList<String>(0)
-    private val warnings = ArrayList<String>(0)
+    override val className: String = "ZippingEngine"
+
     private lateinit var fileListCopied: FileX
 
-    private fun getAllFiles(directory: FileX, allFiles: ArrayList<FileX> = ArrayList(0)): ArrayList<FileX>{
-        if (!directory.isDirectory) return arrayListOf(directory)
-        else {
-            tryIt {
-                for (f in directory.listFiles()!!) {
-                    allFiles.add(f)
-                    if (f.isDirectory) getAllFiles(f, allFiles)
+    private val readSubDirectories = ArrayList<String>(0)
+    private val readFiles = ArrayList<String>(0)
+
+    /**
+     * List of paths encountered during zipping. Sent as job result.
+     * Will be used for zip verification.
+     */
+    private val zippedFilesPath = ArrayList<String>(0)
+
+    private val fileListFile by lazy { FileX.new("${fileXDestination}/${zipBatch.zipName}", FILE_RAW_LIST) }
+
+    /**
+     * Read rawList.txt file to get all the directories and files in the sub-directory.
+     * Return `true` if no error.
+     */
+    private fun getAllFiles(): Boolean {
+
+        val tempSubDirectories = ArrayList<String>(0)
+        val tempFiles = ArrayList<String>(0)
+
+        fileListFile.run {
+            if (!exists()) {
+                errors.add("${ERR_NO_RAW_LIST}: For $partTag, ${zipBatch.zipName}")
+                return false
+            }
+            var c = 0
+            forEachLine {
+
+                if (BackupServiceKotlin.cancelAll) return@forEachLine
+
+                ++c
+                /**
+                 * First 3 lines are useless. Hence skip them.
+                 * To see the format of rawList.txt, check [UpdaterScriptMakerEngine.createRawList].
+                 * Also each file name starts with ./<path/name>.
+                 * Hence ignore the first 2 characters.
+                 */
+                try {
+                    if (c > 3) {
+                        var formattedPath = it.substring(2)
+                        formattedPath = formattedPath.let { p ->
+                            if (p.endsWith('/')) p.dropLast(1)
+                            else p
+                        }
+                        formattedPath.run {
+                            if (contains('/')) {
+                                tempSubDirectories.add(substring(0, lastIndexOf('/')))
+                                tempFiles.add(substring(lastIndexOf('/') + 1))
+                            } else tempFiles.add(this)
+                        }
+                    }
+                }
+                catch (e: Exception){
+                    e.printStackTrace()
+                    errors.add("${ERR_PARSING_RAW_LIST}${partTag}: Line: \'${it}\', Error: ${e.message}")
                 }
             }
+
+            /**
+             * If any error occurs, return false.
+             */
+            if (errors.isNotEmpty()) return false
         }
-        return allFiles
+
+        /**
+         * Add non-duplicate entries.
+         * Example:
+         * dir1/dir2/file1
+         * dir1/dir2/file2
+         * Both will have the same sub-directory: dir1/dir2. But we only need to add them once.
+         */
+        readSubDirectories.addAll(tempSubDirectories.distinct())
+        readFiles.addAll(tempFiles.distinct())
+
+        return true
     }
 
-    override suspend fun doInBackground(arg: Any?): Any? {
+    override suspend fun backgroundProcessing(): Any? {
 
         try {
 
             val title = getTitle(R.string.zipping_all_files)
+            var subTask = ""
 
-            resetBroadcast(false, title)
+            resetBroadcast(true, title)
 
-            val directory = FileX.new(actualDestination)
-            val zipFile = FileX.new("$actualDestination.zip")
+            /**
+             * Copy the fileList.txt to internal storage for later comparison.
+             * Note that fileList.txt is not same as rawList.txt.
+             *
+             * Difference between rawList and fileList:
+             *
+             * - rawList.txt contains all the file names including backup files,
+             *   updater-script, various other shell scripts, MigrateHelper.apk etc.
+             * - fileList.txt contains only names of app backup files and extras.
+             * - rawList.txt is used for creating the zip.
+             * - fileList.txt is used in verification to check if the important backup
+             *   files are present in the final zip.
+             */
+            fileListFile.let {
 
-            // copy the fileList to internal storage for later comparison
+                subTask = getStringFromRes(R.string.copying_file_list)
+                broadcastProgress(subTask, subTask, false)
 
-            zipBatch.fileList?.let {
                 if (it.exists()) {
-                    val copyRes = try {
-                        it.copyTo(FileX.new(CACHE_DIR, "${it.name}_${zipBatch.partName}", true))
-                        ""
+                    try {
+                        val extFileList = FileX.new(CACHE_DIR, "${it.name}_${partTag}", true)
+                        it.copyTo(extFileList)
+                        fileListCopied = extFileList
                     }
                     catch (e: Exception){
                         e.printStackTrace()
-                        e.message.toString()
+                        warnings.add("$WARNING_FILE_LIST_COPY${partTag}: ${e.message.toString()}")
                     }
-                    if (copyRes != "")
-                        warnings.add("$WARNING_FILE_LIST_COPY${bd.batchErrorTag}: $copyRes")
-                    else fileListCopied = FileX.new(CACHE_DIR, "${it.name}_${zipBatch.partName}", true)
                 }
-                else warnings.add("$WARNING_FILE_LIST_COPY${bd.batchErrorTag}: ${engineContext.getString(R.string.file_list_not_in_zip_batch)}")
+                else errors.add("$WARNING_FILE_LIST_COPY${partTag}: ${getStringFromRes(R.string.file_list_not_in_zip_batch)}")
             }
 
+            /**
+             * Start creating the zip.
+             */
             heavyTask {
-                zipFile.createNewFile(overwriteIfExists = true)
-                zipFile.refreshFile()
 
-                val files = getAllFiles(directory)
+                /**
+                 * [fileXDestination] = path + backup name.
+                 * For non-traditional FileX, path = ""
+                 *
+                 * If single zip backup, all files will be generated in a folder under backup name.
+                 * But zip needs to be created one level above this backup name.
+                 * Hence if [fileXDestination] = "/sdcard/Migrate/Full_Backup_blah"
+                 * Zip = "/sdcard/Migrate/Full_Backup_blah.zip"
+                 * FOR THIS CASE: The qualifying condition would be [ZipBatch.zipName] == ""
+                 *
+                 * If multi zip backup, backup files would be under different directories.
+                 * "/sdcard/Migrate/Full_Backup_blah/App_Zip_1_of_3"
+                 * "/sdcard/Migrate/Full_Backup_blah/App_Zip_2_of_3"
+                 * "/sdcard/Migrate/Full_Backup_blah/App_Zip_3_of_3"
+                 * Zips need to be created outside these directories but under the "Full_Backup_blah" directory.
+                 * Hence zips will be:
+                 * "/sdcard/Migrate/Full_Backup_blah/App_Zip_1_of_3.zip"
+                 * "/sdcard/Migrate/Full_Backup_blah/App_Zip_2_of_3.zip"
+                 * "/sdcard/Migrate/Full_Backup_blah/App_Zip_3_of_3.zip"
+                 *
+                 * If for some reason [fileXDestination] is blank, use backup name itself.
+                 */
+                val zipFile: FileX =
+                    when {
+                        zipBatch.zipName.isNotBlank() -> FileX.new(fileXDestination, "${zipBatch.zipName}.zip")
+                        fileXDestination.isNotBlank() -> FileX.new("$fileXDestination.zip")
+                        else -> FileX.new("${BackupServiceKotlin_new.backupName}.zip")
+                    }
+
+                if (!getAllFiles() || BackupServiceKotlin.cancelAll) return@heavyTask
+
+                zipFile.createNewFile(overwriteIfExists = true)
+                zipFile.exists()
+
                 val zipOutputStream = ZipOutputStream(zipFile.outputStream())
 
-                for (i in 0 until files.size) {
+                /**
+                 * First create subdirectories
+                 */
 
-                    val file = files[i]
+                subTask = getStringFromRes(R.string.adding_directories)
+                broadcastProgress(subTask, subTask, false)
 
-                    if (BackupServiceKotlin.cancelAll) break
+                for (dir in readSubDirectories){
+                    val dirAdjustedPath = "${dir}/"
 
-                    val endPath = if (FileXInit.isTraditional) file.canonicalPath.substring(directory.canonicalPath.length + 1)
-                    else file.path.substring(directory.path.length + 1)
+                    broadcastProgress(subTask, dirAdjustedPath, false)
 
-                    val relativeFilePath = endPath.let {
-                        if (it.endsWith("/") && file.isFile) it.substring(0, it.length - 1)
-                        else if (file.isDirectory && !it.endsWith("/")) "$it/"
-                        else it
-                    }
+                    val zipEntry = ZipEntry(dirAdjustedPath)
+                    zipOutputStream.putNextEntry(zipEntry)
+                    zipOutputStream.closeEntry()
 
-                    val zipEntry: ZipEntry
-
-                    if (file.isDirectory) {
-                        zipEntry = ZipEntry(relativeFilePath)
-
-                        zipOutputStream.putNextEntry(zipEntry)
-                        zipOutputStream.closeEntry()
-                    } else {
-                        zipEntry = ZipEntry(relativeFilePath)
-
-                        val bufferedInputStream = BufferedInputStream(file.inputStream())
-                        var buffer = ByteArray(4096)
-                        var read: Int
-
-                        val crc32 = CRC32()
-
-                        while (true) {
-                            read = bufferedInputStream.read(buffer)
-                            if (read > 0)
-                                crc32.update(buffer, 0, read)
-                            else break
-                        }
-
-                        bufferedInputStream.close()
-
-                        zipEntry.size = file.length()
-                        zipEntry.compressedSize = file.length()
-                        zipEntry.crc = crc32.value
-                        zipEntry.method = ZipEntry.STORED
-
-                        zipOutputStream.putNextEntry(zipEntry)
-
-                        val fileInputStream = file.inputStream()
-                        buffer = ByteArray(4096)
-
-                        while (true) {
-                            read = fileInputStream!!.read(buffer)
-                            if (read > 0)
-                                zipOutputStream.write(buffer, 0, read)
-                            else break
-                        }
-
-                        zipOutputStream.closeEntry()
-                        fileInputStream.close()
-                        file.delete()
-
-                        broadcastProgress("", "zipped: ${file.name}", true,
-                                getPercentage((i + 1), files.size))
-                    }
-                    zippedFiles.add(relativeFilePath)
+                    zippedFilesPath.add(dirAdjustedPath)
                 }
 
+                /**
+                 * Then add the files.
+                 * This will take time. Reset broadcast to make it determinate.
+                 */
+
+                resetBroadcast(false, title)
+                subTask = getStringFromRes(R.string.adding_files_to_zip)
+                broadcastProgress(subTask, subTask, false)
+
+                for ((i, filePath) in readFiles.withIndex()){
+                    val file = FileX.new(filePath)
+                    val zipEntry = ZipEntry(filePath)
+
+                    file.exists()
+
+                    val bufferedInputStream = BufferedInputStream(file.inputStream())
+                    var buffer = ByteArray(4096)
+                    var read: Int
+
+                    val crc32 = CRC32()
+
+                    while (true) {
+                        read = bufferedInputStream.read(buffer)
+                        if (read > 0)
+                            crc32.update(buffer, 0, read)
+                        else break
+                    }
+
+                    bufferedInputStream.close()
+
+                    zipEntry.size = file.length()
+                    zipEntry.compressedSize = file.length()
+                    zipEntry.crc = crc32.value
+                    zipEntry.method = ZipEntry.STORED
+
+                    zipOutputStream.putNextEntry(zipEntry)
+
+                    val fileInputStream = file.inputStream()
+                    buffer = ByteArray(4096)
+
+                    while (true) {
+                        read = fileInputStream!!.read(buffer)
+                        if (read > 0)
+                            zipOutputStream.write(buffer, 0, read)
+                        else break
+                    }
+
+                    zipOutputStream.closeEntry()
+                    fileInputStream.close()
+                    file.delete()
+
+                    zippedFilesPath.add(filePath)
+
+                    broadcastProgress(
+                        subTask, "zipped: ${file.name}", true,
+                        getPercentage((i + 1), readFiles.size)
+                    )
+
+                }
+
+                /**
+                 * Finally close the zip output stream and delete the directory.
+                 */
+
                 zipOutputStream.close()
+                val directory = FileX.new("${fileXDestination}/${zipBatch.zipName}")
                 directory.let { if (CommonToolsKotlin.isDeletable(it)) it.deleteRecursively() }
             }
         }
         catch (e: Exception){
             e.printStackTrace()
-            zipErrors.add("$ERR_ZIP_TRY_CATCH${bd.batchErrorTag}: ${e.message}")
+            errors.add("$ERR_ZIP_TRY_CATCH${partTag}: ${e.message}")
         }
 
-        return 0
-    }
-
-    override fun postExecuteFunction() {
-        onEngineTaskComplete.onComplete(jobcode, zipErrors, warnings,
-                arrayOf(zippedFiles, if(this::fileListCopied.isInitialized) fileListCopied else null, actualDestination))
+        return arrayOf(zippedFilesPath, if(this::fileListCopied.isInitialized) fileListCopied else null)
     }
 }
