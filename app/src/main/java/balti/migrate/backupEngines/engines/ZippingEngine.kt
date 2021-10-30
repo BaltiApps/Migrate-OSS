@@ -27,15 +27,10 @@ class ZippingEngine(override val partTag: String,
     override val className: String = "ZippingEngine"
 
     private lateinit var fileListCopied: FileX
+    private lateinit var actualZipFile: FileX
 
     private val readSubDirectories = ArrayList<String>(0)
     private val readFiles = ArrayList<String>(0)
-
-    /**
-     * List of paths encountered during zipping. Sent as job result.
-     * Will be used for zip verification.
-     */
-    private val zippedFilesPath = ArrayList<String>(0)
 
     private val fileListFile by lazy { FileX.new("${fileXDestination}/${zipBatch.zipName}", FILE_RAW_LIST) }
 
@@ -173,7 +168,7 @@ class ZippingEngine(override val partTag: String,
                  *
                  * If for some reason [fileXDestination] is blank, use backup name itself.
                  */
-                val zipFile: FileX =
+                actualZipFile =
                     when {
                         zipBatch.zipName.isNotBlank() -> FileX.new(fileXDestination, "${zipBatch.zipName}.zip")
                         fileXDestination.isNotBlank() -> FileX.new("$fileXDestination.zip")
@@ -182,10 +177,10 @@ class ZippingEngine(override val partTag: String,
 
                 if (!getAllFiles() || BackupServiceKotlin.cancelAll) return@heavyTask
 
-                zipFile.createNewFile(overwriteIfExists = true)
-                zipFile.exists()
+                actualZipFile.createNewFile(overwriteIfExists = true)
+                actualZipFile.exists()
 
-                val zipOutputStream = ZipOutputStream(zipFile.outputStream())
+                val zipOutputStream = ZipOutputStream(actualZipFile.outputStream())
 
                 /**
                  * First create subdirectories
@@ -202,8 +197,6 @@ class ZippingEngine(override val partTag: String,
                     val zipEntry = ZipEntry(dirAdjustedPath)
                     zipOutputStream.putNextEntry(zipEntry)
                     zipOutputStream.closeEntry()
-
-                    zippedFilesPath.add(dirAdjustedPath)
                 }
 
                 /**
@@ -257,8 +250,6 @@ class ZippingEngine(override val partTag: String,
                     fileInputStream.close()
                     file.delete()
 
-                    zippedFilesPath.add(filePath)
-
                     broadcastProgress(
                         subTask, "zipped: ${file.name}", true,
                         getPercentage((i + 1), readFiles.size)
@@ -280,6 +271,9 @@ class ZippingEngine(override val partTag: String,
             errors.add("$ERR_ZIP_TRY_CATCH${partTag}: ${e.message}")
         }
 
-        return arrayOf(zippedFilesPath, if(this::fileListCopied.isInitialized) fileListCopied else null)
+        return arrayOf(
+            if (this::actualZipFile.isInitialized) actualZipFile else null,
+            if (this::fileListCopied.isInitialized) fileListCopied else null
+        )
     }
 }
