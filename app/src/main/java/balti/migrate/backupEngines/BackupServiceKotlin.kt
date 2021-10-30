@@ -48,7 +48,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_BACKUP_SERVICE_IN
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CONDITIONAL_TASK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ON_COMPLETE_TASK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ERRORS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_CANCELLED
@@ -395,7 +394,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                     Log.d(DEBUG_TAG, "Storage before starting backup - type: $type, isTraditional: $isTraditional")
                     FileXInit.setTraditional(isTraditional)
 
-                    destination = getStringExtra(EXTRA_DESTINATION).toString()
+                    //destination = getStringExtra(EXTRA_DESTINATION).toString()
                     backupName = getStringExtra(EXTRA_BACKUP_NAME).toString()
                     flasherOnly = getBooleanExtra(EXTRA_FLASHER_ONLY, false)
                     startBackup()
