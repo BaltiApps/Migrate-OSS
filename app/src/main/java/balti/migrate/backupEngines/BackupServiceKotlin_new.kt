@@ -42,6 +42,15 @@ class BackupServiceKotlin_new: LifecycleService() {
          */
         var cancelBackup: Boolean = false
 
+        var backupName: String = ""
+        var flasherOnly: Boolean = false
+
+        /**
+         * Will be set to true when the backup service starts.
+         * Used to prevent backup from re-initiating.
+         */
+        private var backupStarted: Boolean = false
+
     }
 
     /**
