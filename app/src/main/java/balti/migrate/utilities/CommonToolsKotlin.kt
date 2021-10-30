@@ -106,6 +106,8 @@ class CommonToolsKotlin(val context: Context? = null) {
 
         val EXTRA_IS_ALL_APP_SELECTED = "isAllAppsSelected"
         val EXTRA_BACKUP_NAME = "backupName"
+        val EXTRA_CANONICAL_DESTINATION = "canonicalDestination"
+        val EXTRA_FILEX_DESTINATION = "fileXDestination"
         val EXTRA_DESTINATION = "destination"
         val EXTRA_ACTUAL_DESTINATION = "actualDestination"
         val EXTRA_ERRORS = "errors"
