@@ -17,6 +17,9 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCELLING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_RUNNING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_ERRORLOG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PROGRESSLOG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.NOTIFICATION_ID_ONGOING
@@ -121,8 +124,32 @@ class BackupServiceKotlin_new: LifecycleService() {
         startForeground(NOTIFICATION_ID_ONGOING, loadingNotification)
     }
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
+        if (intent == null) return super.onStartCommand(intent, flags, startId)
+
+        if (!backupStarted) {
+            fileXDestination = intent.getStringExtra(EXTRA_DESTINATION) ?: ""
+            backupName = intent.getStringExtra(EXTRA_BACKUP_NAME) ?: ""
+            flasherOnly = intent.getBooleanExtra(EXTRA_FLASHER_ONLY, false)
+
+            startBackup()
+        }
+
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    /**
+     * Function to run all backup engines.
+     */
+    private fun startBackup(){
+        backupStarted = true
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+
+        backupStarted = false
 
         tryIt { commonTools.LBM?.unregisterReceiver(cancelReceiver) }
         tryIt { unregisterReceiver(cancelReceiver) }
