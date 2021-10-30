@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import balti.filex.FileX
+import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.simpleActivities.ProgressShowActivity
@@ -17,8 +18,10 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCELLING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_RUNNING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_CANONICAL_DESTINATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FILEX_DESTINATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_ERRORLOG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PROGRESSLOG
@@ -44,6 +47,13 @@ class BackupServiceKotlin_new: LifecycleService() {
          * All backup engines check this flag before proceeding.
          */
         var cancelBackup: Boolean = false
+
+        /**
+         * Canonical destination is full path to backup location.
+         * Usually never used.
+         * [fileXDestination] is usually used everywhere.
+         */
+        var canonicalDestination: String = ""
 
         var backupName: String = ""
         var flasherOnly: Boolean = false
@@ -129,9 +139,30 @@ class BackupServiceKotlin_new: LifecycleService() {
         if (intent == null) return super.onStartCommand(intent, flags, startId)
 
         if (!backupStarted) {
-            fileXDestination = intent.getStringExtra(EXTRA_DESTINATION) ?: ""
+            canonicalDestination = intent.getStringExtra(EXTRA_CANONICAL_DESTINATION) ?: DEFAULT_INTERNAL_STORAGE_DIR
+            val fxDestination = intent.getStringExtra(EXTRA_FILEX_DESTINATION) ?: ""
             backupName = intent.getStringExtra(EXTRA_BACKUP_NAME) ?: ""
             flasherOnly = intent.getBooleanExtra(EXTRA_FLASHER_ONLY, false)
+
+            /**
+             * If traditional storage, use full path. `fxDestination` will be same as [canonicalDestination].
+             * Use [fileXDestination] = "fxDestination/[backupName]"
+             *
+             * For Storage access framework (SAF)
+             * All generated backup files to be under a directory having name as backup name.
+             * Use [fileXDestination] = [backupName]
+             *
+             * For Storage access framework (SAF)
+             * If `fxDestination` is somehow not blank (should always be blank, but if in future, it is not blank)
+             * then it means store backup in a different folder under root, not directly under granted root location.
+             * Use [fileXDestination] = "fxDestination/[backupName]"
+             */
+            fileXDestination =
+                when {
+                    FileXInit.isTraditional -> "$fxDestination/$backupName"
+                    fxDestination.isBlank() -> backupName
+                    else -> "$fxDestination/$backupName"
+                }
 
             startBackup()
         }
