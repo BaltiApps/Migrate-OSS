@@ -345,9 +345,8 @@ class UpdaterScriptMakerEngine(
 
         /**
          *  This file will be shipped inside the zip.
-         *  This file is only used for information and not used in any verification.
+         *  This file is also used during zipping process in [ZippingEngine.getAllFiles].
          *  File is formatted as:
-         *
          *  =================
          *  <backup_name>
          *  =================
@@ -362,7 +361,6 @@ class UpdaterScriptMakerEngine(
         /**
          * This file is a copy of the original raw file list created above.
          * This file will also be included while reporting logs via [balti.migrate.utilities.CommonToolsKotlin.reportLogs]
-         * Only for informational purpose.
          */
         val extRawList = FileX.new(CACHE_DIR, FILE_RAW_LIST, true)
 
