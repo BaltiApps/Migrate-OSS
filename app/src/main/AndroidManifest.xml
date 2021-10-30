@@ -112,7 +112,7 @@
         <activity android:name=".extraBackupsActivity.apps.AppSizeCalculationActivity"
             android:theme="@style/AppTheme.Floating"/>
 
-        <service android:name=".backupEngines.BackupServiceKotlin"/>
+        <service android:name=".backupEngines.BackupServiceKotlin_new"/>
 
         <provider
             android:authorities="migrate.provider"
