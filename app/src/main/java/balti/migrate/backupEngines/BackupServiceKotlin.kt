@@ -30,13 +30,8 @@ import balti.migrate.R
 import balti.migrate.backupEngines.containers.AppApkFiles
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.containers.ZipBatch
-import balti.migrate.backupEngines.engines.*
+import balti.migrate.backupEngines.engines.ZipVerificationEngine
 import balti.migrate.backupEngines.utils.OnEngineTaskComplete
-import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
-import balti.migrate.extraBackupsActivity.engines.calls.containers.CallsDataPacketsKotlin
-import balti.migrate.extraBackupsActivity.engines.contacts.containers.ContactsDataPacketKotlin
-import balti.migrate.extraBackupsActivity.engines.sms.containers.SmsDataPacketKotlin
-import balti.migrate.extraBackupsActivity.wifi.containers.WifiDataPacket
 import balti.migrate.simpleActivities.ProgressShowActivity
 import balti.migrate.storageSelector.StorageType
 import balti.migrate.utilities.CommonToolsKotlin
@@ -90,7 +85,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_COMPRESSION_LEVE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_COMPRESSION_LEVEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DELETE_ERROR_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_STORAGE_TYPE
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_CHECK
 import balti.migrate.utilities.CommonToolsKotlin.Companion.TIMEOUT_WAITING_TO_CANCEL_TASK
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.Misc.doBackgroundTask
@@ -429,7 +423,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                 fallThrough = true
                 workingObject?.let {
 
-                    cTask = try {
+                    cTask = null /*try {
                         when (jCode) {
                             JOBCODE_PEFORM_SYSTEM_TEST -> if (getPrefBoolean(PREF_SYSTEM_CHECK, true)) {
                                 SystemTestingEngine(jCode, bd, busyboxBinaryPath)
@@ -453,7 +447,7 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                         e.printStackTrace()
                         addError("$ERR_BACKUP_SERVICE_ERROR${bd.batchErrorTag}: $jCode: DO_JOB ${e.message}")
                         null
-                    }
+                    }*/
 
                     fallThrough = cTask == null
                     cTask?.run {
@@ -617,8 +611,8 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
 
             when (jobCode) {
 
-                JOBCODE_PERFORM_APP_BACKUP_VERIFICATION ->
-                    task = VerificationEngine(jobCode, bd, appPackets, busyboxBinaryPath)
+                /*JOBCODE_PERFORM_APP_BACKUP_VERIFICATION ->
+                    task = VerificationEngine(jobCode, bd, appPackets, busyboxBinaryPath)*/
 
 
                 /*JOBCODE_PERFORM_UPDATER_SCRIPT -> {
