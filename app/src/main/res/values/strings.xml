@@ -428,6 +428,9 @@
     <string name="backingUp">Backing up apps</string>
     <string name="noErrors">Finished! No errors.</string>
     <string name="zipping_all_files">Zipping files</string>
+    <string name="copying_file_list">Copying file list</string>
+    <string name="adding_directories">Adding directories</string>
+    <string name="adding_files_to_zip">Adding files to zip</string>
     <string name="making_file_list">Making fileList</string>
     <string name="verifying_zip">Verifying zip</string>
     <string name="listing_zip_file">Listing zip file</string>
