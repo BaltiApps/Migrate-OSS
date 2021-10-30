@@ -18,7 +18,7 @@ import balti.migrate.AppInstance
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.R
-import balti.migrate.backupEngines.BackupServiceKotlin
+import balti.migrate.backupEngines.BackupServiceKotlin_new
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRESS
@@ -177,7 +177,7 @@ class AppSizeCalculationActivity: AppCompatActivity(R.layout.please_wait) {
         waiting_progress_text.setText(R.string.starting_engine)
         waiting_progress_subtext.text = ""
 
-        Intent(this, BackupServiceKotlin::class.java).apply {
+        Intent(this, BackupServiceKotlin_new::class.java).apply {
             putExtra(EXTRA_CANONICAL_DESTINATION, canonicalDestination)
             putExtra(EXTRA_FILEX_DESTINATION, fileXDestination)
             putExtra(EXTRA_BACKUP_NAME, backupName)
