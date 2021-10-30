@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import balti.filex.FileX
+import balti.filex.FileXInit
 import balti.migrate.AppInstance
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.appPackets
@@ -23,7 +24,8 @@ import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRESS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_CANONICAL_DESTINATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FILEX_DESTINATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.module.baltitoolbox.functions.Misc
 import balti.module.baltitoolbox.functions.Misc.tryIt
@@ -34,7 +36,8 @@ class AppSizeCalculationActivity: AppCompatActivity(R.layout.please_wait) {
 
     private var readTask: MakeAppPackets? = null
 
-    private var destination: String = ""
+    private var canonicalDestination: String = ""
+    private var fileXDestination: String = ""
     private var backupName: String = ""
     private var flasherOnly: Boolean = false
 
@@ -61,13 +64,14 @@ class AppSizeCalculationActivity: AppCompatActivity(R.layout.please_wait) {
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        destination = intent.getStringExtra(EXTRA_DESTINATION) ?: DEFAULT_INTERNAL_STORAGE_DIR
+        canonicalDestination = intent.getStringExtra(EXTRA_CANONICAL_DESTINATION) ?: DEFAULT_INTERNAL_STORAGE_DIR
+        fileXDestination = intent.getStringExtra(EXTRA_FILEX_DESTINATION) ?: if (FileXInit.isTraditional) canonicalDestination else ""
         backupName = intent.getStringExtra(EXTRA_BACKUP_NAME) ?: "No name backup"
         flasherOnly = intent.getBooleanExtra(EXTRA_FLASHER_ONLY, false)
 
         AppInstance.notificationManager.cancelAll()
 
-        readTask = MakeAppPackets(destination, flasherOnly, this)
+        readTask = MakeAppPackets(canonicalDestination, flasherOnly, this)
 
         /**
          * Delete all cached files from previous backup.
@@ -174,7 +178,8 @@ class AppSizeCalculationActivity: AppCompatActivity(R.layout.please_wait) {
         waiting_progress_subtext.text = ""
 
         Intent(this, BackupServiceKotlin::class.java).apply {
-            putExtra(EXTRA_DESTINATION, destination)
+            putExtra(EXTRA_CANONICAL_DESTINATION, canonicalDestination)
+            putExtra(EXTRA_FILEX_DESTINATION, fileXDestination)
             putExtra(EXTRA_BACKUP_NAME, backupName)
             putExtra(EXTRA_FLASHER_ONLY, flasherOnly)
         }.run {
