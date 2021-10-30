@@ -36,7 +36,8 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_DESTINATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_CANONICAL_DESTINATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FILEX_DESTINATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_ALL_APP_SELECTED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_AUTOSELECT_EXTRAS
@@ -61,7 +62,7 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
 
     private val commonTools by lazy { CommonToolsKotlin(this) }
 
-    private lateinit var destination: String
+    private lateinit var canonicalDestination: String
     private var backupName = ""
     private var flasherOnly = false
     private var isAllAppsSelected = true
@@ -106,7 +107,7 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        destination = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
+        canonicalDestination = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
         isAllAppsSelected = intent.getBooleanExtra(EXTRA_IS_ALL_APP_SELECTED, false)
 
         commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
@@ -272,8 +273,8 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
 
                 if (this != "") {
 
-                    val dir = if (FileXInit.isTraditional) FileX.new("$destination/$this") else FileX.new(this)
-                    val zip = if (FileXInit.isTraditional) FileX.new("$destination/$this.zip") else FileX.new("$this.zip")
+                    val dir = if (FileXInit.isTraditional) FileX.new("$canonicalDestination/$this") else FileX.new(this)
+                    val zip = if (FileXInit.isTraditional) FileX.new("$canonicalDestination/$this.zip") else FileX.new("$this.zip")
 
                     if (dir.exists() || zip.exists()) {
                         AlertDialog.Builder(this@ExtraBackupsKotlin)
@@ -308,7 +309,8 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
 
         startActivity(
             Intent(this@ExtraBackupsKotlin, AppSizeCalculationActivity::class.java).apply {
-                putExtra(EXTRA_DESTINATION, destination)
+                putExtra(EXTRA_CANONICAL_DESTINATION, canonicalDestination)
+                putExtra(EXTRA_FILEX_DESTINATION, if (FileXInit.isTraditional) canonicalDestination else "")
                 putExtra(EXTRA_BACKUP_NAME, backupName)
                 putExtra(EXTRA_FLASHER_ONLY, flasherOnly)
             }
