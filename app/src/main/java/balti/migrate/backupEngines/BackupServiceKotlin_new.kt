@@ -97,6 +97,9 @@ class BackupServiceKotlin_new: LifecycleService() {
     var lastTitle = ""
     var lastSubTask = ""
 
+    private val allErrors by lazy { ArrayList<String>(0) }
+    private val allWarnings by lazy { ArrayList<String>(0) }
+
     private val commonTools by lazy { CommonToolsKotlin(this) }
 
     override fun onCreate() {
