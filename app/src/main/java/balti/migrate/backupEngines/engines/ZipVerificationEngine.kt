@@ -23,8 +23,8 @@ class ZipVerificationEngine(private val zipFile: FileX,
 
     override val className: String = "ZipVerificationEngine"
 
-    val zipContents = ArrayList<String>(0)
-    val appDirectories = ArrayList<String>(0)
+    private val zipContents = ArrayList<String>(0)
+    private val appDirectories = ArrayList<String>(0)
 
     override suspend fun backgroundProcessing(): Any? {
         try {
