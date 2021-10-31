@@ -147,8 +147,8 @@ class MakeZipBatch(private val extras: ArrayList<FileX>) : ParentBackupClass_new
             }
 
             addToAllExtraPackets(".vcf")
-            addToAllExtraPackets(".calls.db", "calls.db-journal")
-            addToAllExtraPackets(".sms.db", "sms.db-journal")
+            addToAllExtraPackets(".calls.db", ".calls.db-journal", ".calls.db-wal", ".calls.db-shm")
+            addToAllExtraPackets(".sms.db", ".sms.db-journal", ".sms.db-wal", ".sms.db-shm")
             addToAllExtraPackets(BACKUP_NAME_SETTINGS)
 
         }
