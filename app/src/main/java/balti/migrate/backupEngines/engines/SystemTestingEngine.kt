@@ -39,7 +39,7 @@ class SystemTestingEngine(private val busyboxBinaryPath: String) : ParentBackupC
                 val testScriptPath = unpackAssetToInternal("systemTestScript.sh", "test.sh")
                 val thisPackageInfo = pm.getApplicationInfo(globalContext.packageName, 0)
 
-                val rootLocation = FileX.new(fileXDestination).apply { mkdirs() }.canonicalPath
+                rootLocation.mkdirs()
                 val expectedApkFile = FileX.new(fileXDestination, "${thisPackageInfo.packageName}.apk")
                 val expectedDataFile = FileX.new(fileXDestination, "${thisPackageInfo.packageName}.tar.gz")
                 expectedApkFile.run { if (exists()) delete() }
@@ -55,7 +55,7 @@ class SystemTestingEngine(private val busyboxBinaryPath: String) : ParentBackupC
                 suProcess = Runtime.getRuntime().exec("su")
                 suProcess?.let {
                     val suWriter = BufferedWriter(OutputStreamWriter(it.outputStream))
-                    suWriter.write("sh $testScriptPath ${thisPackageInfo.packageName} ${thisPackageInfo.sourceDir} $dataPath $dataName $rootLocation $busyboxBinaryPath\n")
+                    suWriter.write("sh $testScriptPath ${thisPackageInfo.packageName} ${thisPackageInfo.sourceDir} $dataPath $dataName ${rootLocation.canonicalPath} $busyboxBinaryPath\n")
                     suWriter.write("exit\n")
                     suWriter.flush()
 
@@ -74,7 +74,14 @@ class SystemTestingEngine(private val busyboxBinaryPath: String) : ParentBackupC
 
                         broadcastProgress("", line, false)
 
-                        return@iterateBufferedReader line == "--- Test done ---"
+                        return@iterateBufferedReader (line == "--- Test done ---").apply {
+                            if (this) {
+                                "End reading".let {
+                                    writeLog(it)
+                                    broadcastProgress("","\n$it\n", false)
+                                }
+                            }
+                        }
 
                     })
 
@@ -92,8 +99,23 @@ class SystemTestingEngine(private val busyboxBinaryPath: String) : ParentBackupC
                         return@iterateBufferedReader false
                     })
 
+                    sleepTask(1000)
+
                     expectedApkFile.exists()
                     expectedDataFile.exists()
+
+                    "Root location: ${rootLocation.canonicalPath}".let {
+                        writeLog(it)
+                        broadcastProgress("","\n$it\n", false)
+                    }
+                    "Apk location expected: ${expectedApkFile.canonicalPath}, exists: ${expectedApkFile.exists()}".let {
+                        writeLog(it)
+                        broadcastProgress("","$it\n", false)
+                    }
+                    "Data location expected: ${expectedDataFile.canonicalPath}, exists: ${expectedDataFile.exists()}".let {
+                        writeLog(it)
+                        broadcastProgress("","$it\n", false)
+                    }
 
                     if (!expectedApkFile.exists() || expectedApkFile.length() == 0L)
                         errors.add(getStringFromRes(R.string.test_apk_not_found))
@@ -118,6 +140,9 @@ class SystemTestingEngine(private val busyboxBinaryPath: String) : ParentBackupC
                 sleepTask(5000)
                 test()
             }
+        }
+        else {
+            "Successful test!".let { broadcastProgress(it, it, false) }
         }
 
         return null
