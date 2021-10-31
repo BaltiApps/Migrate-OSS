@@ -229,7 +229,23 @@ class BackupServiceKotlin_new: LifecycleService() {
      * Function to run all backup engines.
      */
     private fun startBackup(){
-        backupStarted = true
+        lifecycleScope.launch {
+            backupStarted = true
+
+            fun collectErrors(result: EngineJobResultHolder?) =
+                result?.run {
+                    allErrors.addAll(errors)
+                    allWarnings.addAll(warnings)
+                }
+
+            if (getPrefBoolean(PREF_SYSTEM_CHECK, true)){
+                SystemTestingEngine(busyboxBinaryPath).executeWithResult().let {
+                    collectErrors(it)
+                }
+            }
+
+            finishBackup()
+        }
     }
 
     override fun onDestroy() {
