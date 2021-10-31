@@ -76,7 +76,7 @@ class BackupServiceKotlin_new: LifecycleService() {
 
     /**
      * Broadcast receiver to receive when "Cancel" Button is pressed from notification
-     * or from [ProgressShowActivity].
+     * or from [ProgressShowActivity_new].
      */
     private val cancelReceiver by lazy {
         object : BroadcastReceiver() {
@@ -228,6 +228,7 @@ class BackupServiceKotlin_new: LifecycleService() {
 
     /**
      * Function to run all backup engines.
+     * WIP
      */
     private fun startBackup(){
         lifecycleScope.launch {
