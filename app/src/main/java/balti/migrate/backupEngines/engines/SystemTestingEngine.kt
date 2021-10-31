@@ -29,7 +29,7 @@ class SystemTestingEngine(private val busyboxBinaryPath: String) : ParentBackupC
 
     override suspend fun backgroundProcessing(): Any? {
 
-        fun test() {
+        suspend fun test() {
             try {
 
                 val title = getTitle(R.string.testing_system)
