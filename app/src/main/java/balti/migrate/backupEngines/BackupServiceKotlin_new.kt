@@ -188,6 +188,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                     else -> "$fxDestination/$backupName"
                 }
 
+            startReceivingLogs()
             startBackup()
         }
 
