@@ -8,11 +8,15 @@ import android.content.IntentFilter
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
 import balti.filex.FileX
 import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
-import balti.migrate.simpleActivities.ProgressShowActivity
+import balti.migrate.backupEngines.engines.SystemTestingEngine
+import balti.migrate.backupEngines.utils.EngineJobResultHolder
+import balti.migrate.simpleActivities.ProgressShowActivity_new
+import balti.migrate.utilities.BackupProgressNotificationSystem
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCELLING
@@ -30,6 +34,8 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_CHECK
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.Misc.makeNotificationChannel
 import balti.module.baltitoolbox.functions.Misc.tryIt
+import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
+import kotlinx.coroutines.launch
 import java.io.BufferedWriter
 import java.io.OutputStreamWriter
 
@@ -186,6 +192,37 @@ class BackupServiceKotlin_new: LifecycleService() {
         }
 
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    /**
+     * Method to receive progress updates and record them in progressLog.txt
+     */
+    private fun startReceivingLogs(){
+        lifecycleScope.launchWhenStarted {
+            BackupProgressNotificationSystem.addListener(false){ update ->
+
+                /**
+                 * Write title if its a new title.
+                 */
+                if (update.title != lastTitle){
+                    lastTitle = update.title
+                    progressWriter?.write("\n======== $lastTitle ========\n")
+                }
+
+                /**
+                 * Write subTask if its new.
+                 */
+                if (update.subTask != lastSubTask){
+                    lastSubTask = update.subTask
+                    progressWriter?.write("\n-------- $lastSubTask --------\n")
+                }
+
+                /**
+                 * Write the log always.
+                 */
+                progressWriter?.write("${update.log}\n")
+            }
+        }
     }
 
     /**
