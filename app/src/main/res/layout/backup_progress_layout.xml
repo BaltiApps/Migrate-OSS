@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/log_bg_portrait"
     android:orientation="vertical"
-    tools:context=".simpleActivities.ProgressShowActivity"
+    tools:context=".simpleActivities.ProgressShowActivity_new"
     >
 
     <LinearLayout
