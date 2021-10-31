@@ -59,15 +59,19 @@ class BackupProgressNotificationSystem {
         /**
          * Keeping suspend function to encourage listeners to listen from lifecycleScope.
          * @param getCache Send last 100 cached messages if true.
+         * @param listenOnce If `true` then the function [f] will be only launched once
+         * for the first received update, rest all updates will be ignored.
          */
-        suspend fun addListener(getCache: Boolean, f: (update: BackupUpdate) -> Unit){
-            if (getCache) {
+        suspend fun addListener(getCache: Boolean, listenOnce: Boolean = false, f: (update: BackupUpdate) -> Unit){
+            var dontLaunch = false
+            if (getCache && !listenOnce) {
                 flow.replayCache.forEach {
                     f(it)
                 }
             }
             flow.buffer(1000).collect {
-                f(it)
+                if (!dontLaunch) f(it)
+                if (listenOnce) dontLaunch = true
             }
         }
 
