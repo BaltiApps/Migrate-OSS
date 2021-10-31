@@ -51,7 +51,7 @@ class BackupProgressNotificationSystem {
 
         /**
          * Using SharedFlow to store last 100 messages
-         * for display purposes in [balti.migrate.simpleActivities.ProgressShowActivity].
+         * for display purposes in [balti.migrate.simpleActivities.ProgressShowActivity_new].
          */
         private val mutableFlow by lazy { MutableSharedFlow<BackupUpdate>(100) }
         private val flow = mutableFlow.asSharedFlow()
