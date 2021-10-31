@@ -3,10 +3,7 @@ package balti.migrate.extraBackupsActivity
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -14,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import balti.filex.FileX
 import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.appBackupDataPackets
@@ -30,10 +28,9 @@ import balti.migrate.extraBackupsActivity.engines.fontScale.FontScaleFragment
 import balti.migrate.extraBackupsActivity.engines.installers.InstallersFragment
 import balti.migrate.extraBackupsActivity.engines.keyboard.KeyboardFragment
 import balti.migrate.extraBackupsActivity.engines.sms.SmsFragment
-import balti.migrate.simpleActivities.ProgressShowActivity
+import balti.migrate.simpleActivities.ProgressShowActivity_new
+import balti.migrate.utilities.BackupProgressNotificationSystem
 import balti.migrate.utilities.CommonToolsKotlin
-import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_PROGRESS
-import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_REQUEST_BACKUP_DATA
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_CANONICAL_DESTINATION
@@ -50,7 +47,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_KEYBOARD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_BACKUP_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DEFAULT_BACKUP_PATH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SHOW_STOCK_WARNING
-import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefString
 import balti.module.baltitoolbox.functions.SharedPrefs.putPrefBoolean
@@ -76,24 +72,6 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
     private val keyboardFragment: KeyboardFragment by lazy { supportFragmentManager.findFragmentById(R.id.keyboard_fragment) as KeyboardFragment }
     private val installersFragment: InstallersFragment by lazy { supportFragmentManager.findFragmentById(R.id.installer_fragment) as InstallersFragment }
 
-    private val progressReceiver by lazy {
-        object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                startActivity(
-                    Intent(this@ExtraBackupsKotlin, ProgressShowActivity::class.java)   /*kotlin*/
-                    .apply {
-                        intent?.let {
-                            this.putExtras(it)
-                            this.action = it.action
-                        }
-                    }
-                )
-                tryIt { commonTools.LBM?.unregisterReceiver(this) }
-                finish()
-            }
-        }
-    }
-
     private val askForNameLauncher by lazy {
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
@@ -109,9 +87,6 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
 
         canonicalDestination = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
         isAllAppsSelected = intent.getBooleanExtra(EXTRA_IS_ALL_APP_SELECTED, false)
-
-        commonTools.LBM?.registerReceiver(progressReceiver, IntentFilter(ACTION_BACKUP_PROGRESS))
-        commonTools.LBM?.sendBroadcast(Intent(ACTION_REQUEST_BACKUP_DATA))
 
         startBackupButton.setOnClickListener {
             if (selectedBackupDataPackets.isNotEmpty()
@@ -179,6 +154,16 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
 
         askForNameLauncher  // just call to initialise
         autoSelectExtras()
+
+        /**
+         * Set listener, if any backup progress update comes along, start [ProgressShowActivity_new].
+         */
+        lifecycleScope.launchWhenStarted {
+            BackupProgressNotificationSystem.addListener(false, true){
+                startActivity(Intent(this@ExtraBackupsKotlin, ProgressShowActivity_new::class.java))
+                finish()
+            }
+        }
     }
 
     /**
@@ -331,10 +316,5 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
             putPrefBoolean(PREF_BACKUP_FONTSCALE, fontScaleFragment.isChecked() == true)
             putPrefBoolean(PREF_BACKUP_KEYBOARD, keyboardFragment.isChecked() == true)
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        tryIt { commonTools.LBM?.unregisterReceiver(progressReceiver) }
     }
 }
