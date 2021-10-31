@@ -4,57 +4,55 @@ import balti.filex.FileX
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
-import balti.migrate.backupEngines.BackupServiceKotlin.Companion.flasherOnly
-import balti.migrate.backupEngines.ParentBackupClass
-import balti.migrate.backupEngines.containers.BackupIntentData
+import balti.migrate.backupEngines.ParentBackupClass_new
+import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_ZIP_VERIFICATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_FILELIST_ITEM_UNAVAILABLE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_FILELIST_UNAVAILABLE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_SIZE_ZERO
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_TOO_BIG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_VERIFICATION_TRY_CATCH
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION
-import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_FILELIST_IN_ZIP_VERIFICATION
-import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_FILELIST_ITEM_UNAVAILABLE
-import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_FILELIST_UNAVAILABLE
-import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_ZIP_FILELIST_VERIFICATION
+import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
-import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-class ZipVerificationEngine(private val jobcode: Int,
-                            private val bd: BackupIntentData,
-                            private val zipList: ArrayList<String>,
-                            private val zipFile: FileX,
-                            private val fileListForComparison: FileX? = null) : ParentBackupClass(bd, EXTRA_PROGRESS_TYPE_ZIP_VERIFICATION) {
+class ZipVerificationEngine(private val zipFile: FileX,
+                            override val partTag: String,
+                            private val flasherOnly: Boolean = false,
+                            private val fileListForComparison: FileX? = null) : ParentBackupClass_new(PROGRESS_TYPE_ZIP_VERIFICATION) {
 
-    private val verificationErrors by lazy { ArrayList<String>(0) }
-    private val warnings by lazy { ArrayList<String>(0) }
+    override val className: String = "ZipVerificationEngine"
 
-    override suspend fun doInBackground(arg: Any?): Any? {
+    val zipContents = ArrayList<String>(0)
+    val appDirectories = ArrayList<String>(0)
+
+    override suspend fun backgroundProcessing(): Any? {
         try {
-            val contents = ArrayList<String>(0)
-            val appDirectories = ArrayList<String>(0)
-
-            val checkFileListContents = getPrefBoolean(PREF_FILELIST_IN_ZIP_VERIFICATION, true)
 
             val title = getTitle(R.string.verifying_zip)
 
             resetBroadcast(true, title)
 
-            // old code
-            //@Suppress("BlockingMethodInNonBlockingContext") val zip = ZipFile(zipFile.canonicalPath)
-            //val enumeration = zip.entries()
+            val fileSize = if (zipFile.exists()) zipFile.length() else 0
 
-            val fileSize = zipFile.length()
-
-            val fileSizeString = "${engineContext.getString(R.string.zip_size)}: ${getHumanReadableStorageSpace(fileSize)} (${fileSize} B) " +
-                    if (flasherOnly) "" else "${engineContext.getString(R.string.allowed)}: ${getHumanReadableStorageSpace(MAX_WORKING_SIZE)} (${MAX_WORKING_SIZE} B)"
-
-            if (!flasherOnly && fileSize > MAX_WORKING_SIZE){
-                verificationErrors.add("$ERR_ZIP_TOO_BIG: $fileSizeString")
-                return 0
+            if (fileSize == 0L) {
+                errors.add("$ERR_ZIP_SIZE_ZERO: Exists: ${zipFile.exists()}, Size: $fileSize")
+                return null
             }
 
-            var subTask = engineContext.getString(R.string.listing_zip_file)
-            Thread.sleep(50)
+            /**
+             * A string containing zip file's size and,
+             * if [flasherOnly] = `false` then maximum allowed size.
+             */
+            val fileSizeString = "${getStringFromRes(R.string.zip_size)}: ${getHumanReadableStorageSpace(fileSize)} (${fileSize} B) " +
+                    if (flasherOnly) "" else "${getStringFromRes(R.string.allowed)}: ${getHumanReadableStorageSpace(MAX_WORKING_SIZE)} (${MAX_WORKING_SIZE} B)"
+
+            if (!flasherOnly && fileSize > MAX_WORKING_SIZE){
+                errors.add("$ERR_ZIP_TOO_BIG: $fileSizeString")
+                return null
+            }
+
+            var subTask = getStringFromRes(R.string.listing_zip_file)
             broadcastProgress(subTask, "${subTask}\n${fileSizeString}", false)
 
             // old code
@@ -76,6 +74,10 @@ class ZipVerificationEngine(private val jobcode: Int,
                 }
             }*/
 
+            /**
+             * Read all files/directories just inside the zip (root of the zip).
+             * This does not check for files/subdirectories inside directories just under the root of the zip.
+             */
             val zipInputStream = ZipInputStream(zipFile.inputStream())
             var zEntryCheck: ZipEntry? = zipInputStream.nextEntry
             while (zEntryCheck != null) {
@@ -83,24 +85,28 @@ class ZipVerificationEngine(private val jobcode: Int,
                 if (BackupServiceKotlin.cancelAll) break
 
                 val entry = zEntryCheck
-                contents.add(entry.name)
+                val entryName = entry.name
 
-                if (checkFileListContents && entry.name.contains('/')) {
-                    entry.name.let { it ->
-                        it.substring(0, it.indexOf('/')).let {
-                            if (it.endsWith(".app") && !appDirectories.contains(it)) {
-                                appDirectories.add(it)
-                            }
+                if (entryName.contains('/')) {
+                    val nameWithNoEndingSlash = entryName.drop(1)
+                    nameWithNoEndingSlash.run {
+                        /**
+                         * Check if it is an app directory and add it to [appDirectories].
+                         */
+                        if (endsWith(".app") && !appDirectories.contains(this)) {
+                            appDirectories.add(this)
                         }
                     }
+                    zipContents.add(nameWithNoEndingSlash)
+                }
+                else {
+                    zipContents.add(entryName)
                 }
 
                 zEntryCheck = zipInputStream.nextEntry
             }
 
-            resetBroadcast(true, title)
-
-            for (i in 0 until zipList.size){
+            /*for (i in 0 until zipList.size){
 
                 val zipItem = zipList[i]
                 if (BackupServiceKotlin.cancelAll) break
@@ -108,60 +114,60 @@ class ZipVerificationEngine(private val jobcode: Int,
                 if (!contents.contains(zipItem)) {
                     warnings.add("$WARNING_ZIP_FILELIST_VERIFICATION${bd.batchErrorTag}: $zipItem")
                 }
-            }
+            }*/
 
-            subTask = "${engineContext.getString(R.string.compared_zip_contents)}(${zipList.size}/${contents.size})"
-            Thread.sleep(50)
+            subTask = getStringFromRes(R.string.compared_zip_contents)
             broadcastProgress(subTask, subTask, false)
 
-            if (checkFileListContents) {
+            if (fileListForComparison == null || !fileListForComparison.exists())
+                errors.add("$ERR_ZIP_FILELIST_UNAVAILABLE${partTag}")
+            else {
 
-                if (fileListForComparison == null || !fileListForComparison.exists())
-                    warnings.add("$WARNING_ZIP_FILELIST_UNAVAILABLE${bd.batchErrorTag}")
-                else {
+                /**
+                 * Count for all the file names present in [fileListForComparison].
+                 * Some files like .db-wal and .db-shm are, however, not counted.
+                 */
+                var filesCompared = 0
 
-                    var filesCompared = 0
-                    var filesPresent = 0
+                /**
+                 * Count for all the entries of fileList.txt which were actually found
+                 * to be present inside the zip.
+                 * i.e. the entry was present in [zipContents] or [appDirectories].
+                 */
+                var filesPresent = 0
 
-                    fileListForComparison.readLines().forEach {
-                        (if (it.endsWith(".app_sys")) "${it.substring(0, it.lastIndexOf('.'))}.app" else it).run {
+                fileListForComparison.forEachLine {
+                    (if (it.endsWith(".app_sys")) "${it.substring(0, it.lastIndexOf('.'))}.app" else it).trim().run {
 
-                            if (this.trim() != "" && !this.endsWith(".db-wal") && !this.endsWith(".db-shm")) {
-                                // ignore wal and shm files
+                        if (!this.endsWith(".db-wal") && !this.endsWith(".db-shm")) {
+                            // ignore wal and shm files
 
-                                filesCompared++
+                            filesCompared++
 
-                                if (this.endsWith(".app")) {
-                                    if (!appDirectories.contains(this))
-                                        warnings.add("$WARNING_ZIP_FILELIST_ITEM_UNAVAILABLE${bd.batchErrorTag}: $this")
-                                    else filesPresent++
-                                } else {
-                                    if (!contents.contains(this))
-                                        warnings.add("$WARNING_ZIP_FILELIST_ITEM_UNAVAILABLE${bd.batchErrorTag}: $this")
-                                    else filesPresent++
-                                }
+                            if (this.endsWith(".app")) {
+                                if (!appDirectories.contains(this))
+                                    errors.add("$ERR_ZIP_FILELIST_ITEM_UNAVAILABLE${partTag}: $this")
+                                else filesPresent++
+                            } else {
+                                if (!zipContents.contains(this))
+                                    errors.add("$ERR_ZIP_FILELIST_ITEM_UNAVAILABLE${partTag}: $this")
+                                else filesPresent++
                             }
                         }
                     }
-
-                    subTask = "${engineContext.getString(R.string.compared_fileList_contents)}($filesPresent/$filesCompared)"
-                    Thread.sleep(50)
-                    broadcastProgress(subTask, subTask, false)
                 }
+
+                subTask = "${getStringFromRes(R.string.compared_fileList_contents)}($filesPresent/$filesCompared)"
+                broadcastProgress(subTask, subTask, false)
             }
 
         }
         catch (e: Exception){
             e.printStackTrace()
-            verificationErrors.add("$ERR_ZIP_VERIFICATION_TRY_CATCH${bd.batchErrorTag}: ${e.message}")
+            errors.add("$ERR_ZIP_VERIFICATION_TRY_CATCH${partTag}: ${e.message}")
         }
 
-        return 0
-    }
-
-    override fun postExecuteFunction() {
-        fileListForComparison?.run { delete() }
-        onEngineTaskComplete.onComplete(jobcode, verificationErrors, warnings)
+        return null
     }
 
 }
