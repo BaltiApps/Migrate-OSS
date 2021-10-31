@@ -11,7 +11,7 @@ import balti.migrate.AppInstance
 import balti.migrate.R
 import balti.migrate.backupEngines.engines.AppBackupEngine
 import balti.migrate.backupEngines.utils.EngineJobResultHolder
-import balti.migrate.simpleActivities.ProgressShowActivity
+import balti.migrate.simpleActivities.ProgressShowActivity_new
 import balti.migrate.utilities.BackupProgressNotificationSystem
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.BackupUpdate
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType
@@ -58,7 +58,7 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
 
     /**
      * Progress type for this engine. This value may be changed from [resetBroadcast].
-     * The value of this type is used to display different icons in [ProgressShowActivity].
+     * The value of this type is used to display different icons in [ProgressShowActivity_new].
      */
     private var engineProgressType: ProgressType = defaultProgressType
 
@@ -121,7 +121,7 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
             setContentIntent(
                 PendingIntent.getActivity(
                     globalContext, PENDING_INTENT_REQUEST_ID,
-                    Intent(globalContext, ProgressShowActivity::class.java).apply {
+                    Intent(globalContext, ProgressShowActivity_new::class.java).apply {
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     },
                     (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0) or PendingIntent.FLAG_UPDATE_CURRENT
