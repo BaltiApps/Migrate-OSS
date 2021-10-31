@@ -1,5 +1,6 @@
 package balti.migrate.utilities
 
+import android.os.Bundle
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -38,6 +39,14 @@ class BackupProgressNotificationSystem {
             val subTask: String,
             val log: String,
             val progressPercent: Int,
+
+            /**
+             * Bundle to contain information like:
+             * - ArrayList of errors.
+             * - ArrayList of warnings.
+             * - ArrayList of zip file paths.
+             */
+            val extraInfoBundle: Bundle? = null
         )
 
         /**
