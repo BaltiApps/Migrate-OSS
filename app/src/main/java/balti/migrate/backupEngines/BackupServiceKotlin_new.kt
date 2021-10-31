@@ -26,6 +26,8 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_ERRORLOG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PROGRESSLOG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.NOTIFICATION_ID_ONGOING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_CHECK
+import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.Misc.makeNotificationChannel
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import java.io.BufferedWriter
@@ -101,6 +103,19 @@ class BackupServiceKotlin_new: LifecycleService() {
     private val allWarnings by lazy { ArrayList<String>(0) }
 
     private val commonTools by lazy { CommonToolsKotlin(this) }
+
+    /**
+     * Path to busybox binary.
+     * Busybox gets freshly unpacked from the assets and marked as executable.
+     */
+    private val busyboxBinaryPath by lazy {
+        val cpuAbi = Build.SUPPORTED_ABIS[0]
+        (if (cpuAbi == "x86" || cpuAbi == "x86_64")
+            unpackAssetToInternal("busybox-x86", "busybox")
+        else unpackAssetToInternal("busybox")).apply {
+            tryIt { FileX.new(this, true).file.setExecutable(true) }
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
