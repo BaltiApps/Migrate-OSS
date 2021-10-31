@@ -248,6 +248,23 @@ class BackupServiceKotlin_new: LifecycleService() {
         }
     }
 
+    /**
+     * WIP
+     */
+    private fun finishBackup(){
+        errorWriter?.write("======== WARNINGS ========\n\n")
+        allWarnings.forEach {
+            errorWriter?.write("$it\n")
+        }
+
+        errorWriter?.write("\n======== ERRORS ========\n\n")
+        allErrors.forEach {
+            errorWriter?.write("$it\n")
+        }
+
+        stopSelf()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 
