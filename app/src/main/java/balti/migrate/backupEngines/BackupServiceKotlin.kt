@@ -30,7 +30,6 @@ import balti.migrate.R
 import balti.migrate.backupEngines.containers.AppApkFiles
 import balti.migrate.backupEngines.containers.BackupIntentData
 import balti.migrate.backupEngines.containers.ZipBatch
-import balti.migrate.backupEngines.engines.ZipVerificationEngine
 import balti.migrate.backupEngines.utils.OnEngineTaskComplete
 import balti.migrate.simpleActivities.ProgressShowActivity
 import balti.migrate.storageSelector.StorageType
@@ -635,8 +634,8 @@ class BackupServiceKotlin: Service(), OnEngineTaskComplete {
                 JOBCODE_PERFORM_ZIP_VERIFICATION -> {
                     cZipBatch?.let {
                         cZipVerificationJobCode = jobCode + cBatchNumber
-                        task = ZipVerificationEngine(cZipVerificationJobCode, bd,
-                                zipListIfAny!!, FileX.new(cDestination, "$cBackupName.zip"), fileListIfAny)
+                        task = null /*ZipVerificationEngine(cZipVerificationJobCode, bd,
+                                zipListIfAny!!, FileX.new(cDestination, "$cBackupName.zip"), fileListIfAny)*/
                     }
                     if (cZipBatch == null)
                         throw Exception("${getString(R.string.zip_batch_null_zip_verification)}: [$cBatchNumber]")
