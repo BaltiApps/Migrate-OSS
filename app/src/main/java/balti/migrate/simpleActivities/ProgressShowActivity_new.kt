@@ -25,6 +25,7 @@ import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DIR_APP_AUX_FILES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ERRORS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FINISHED_ZIP_PATHS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_CANCELLED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TOTAL_TIME
@@ -173,10 +174,11 @@ class ProgressShowActivity_new: AppCompatActivity() {
      * - Update [progressActionButton] behaviour.
      *
      * @param bundle Bundle to read info from. Expected keys:
-     * - EXTRA_ERRORS: ArrayList<String>
-     * - EXTRA_WARNINGS: ArrayList<String>
-     * - EXTRA_IS_CANCELLED: Boolean
-     * - EXTRA_TOTAL_TIME: Long
+     * - [EXTRA_ERRORS]: ArrayList<String>
+     * - [EXTRA_WARNINGS]: ArrayList<String>
+     * - [EXTRA_IS_CANCELLED]: Boolean
+     * - [EXTRA_TOTAL_TIME]: Long
+     * - [EXTRA_FINISHED_ZIP_PATHS]: ArrayList<String>
      */
     private fun updateUiOnBackupFinished(bundle: Bundle){
 
@@ -329,12 +331,12 @@ class ProgressShowActivity_new: AppCompatActivity() {
      * to create a [BackupUpdate] object from intent extras.
      *
      * Expected keys:
-     * - EXTRA_IS_CANCELLED: Boolean
-     * - EXTRA_TITLE: String
-     * - EXTRA_ERRORS: ArrayList<String>
-     * - EXTRA_WARNINGS: ArrayList<String>
-     * - EXTRA_IS_CANCELLED: Boolean
-     * - EXTRA_TOTAL_TIME: Long
+     * - [EXTRA_ERRORS]: ArrayList<String>
+     * - [EXTRA_WARNINGS]: ArrayList<String>
+     * - [EXTRA_IS_CANCELLED]: Boolean
+     * - [EXTRA_TOTAL_TIME]: Long
+     * - [EXTRA_FINISHED_ZIP_PATHS]: ArrayList<String>
+     * - [EXTRA_TITLE]: String
      */
     private fun createFinishedUpdateFromIntent(bundle: Bundle): BackupUpdate {
         val backupUpdate = BackupUpdate(
