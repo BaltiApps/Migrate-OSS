@@ -312,7 +312,27 @@ class BackupServiceKotlin_new: LifecycleService() {
          * Create variables for final [BackupUpdate] object.
          * We will try to reuse them as much as possible for the final backup complete notification.
          */
-        val finishedTitle = if (customTitle.isNotBlank()) customTitle else getString(R.string.noErrors)
+        val finishedTitle: String =
+            when {
+                customTitle.isNotBlank() -> customTitle
+                isCancelled -> getString(R.string.backupCancelled)
+
+                /**
+                 * If errors are present, mention that.
+                 */
+                allErrors.isNotEmpty() -> getString(R.string.backupFinishedWithErrors)
+
+                /**
+                 * Next condition will run if the previous condition is false.
+                 * i.e no errors, but warnings are present.
+                 */
+                allWarnings.isNotEmpty() -> getString(R.string.backupFinishedWithWarnings)
+
+                /**
+                 * If no condition satisfies, mention no errors.
+                 */
+                else -> getString(R.string.noErrors)
+            }
         val finishedProgress = if(isCancelled) 0 else 100
 
         /**
