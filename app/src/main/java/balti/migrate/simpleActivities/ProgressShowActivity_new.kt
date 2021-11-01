@@ -357,6 +357,7 @@ class ProgressShowActivity_new: AppCompatActivity() {
                 putStringArrayList(EXTRA_WARNINGS, bundle.getStringArrayList(EXTRA_WARNINGS))
                 putBoolean(EXTRA_IS_CANCELLED, bundle.getBoolean(EXTRA_IS_CANCELLED, false))
                 putLong(EXTRA_TOTAL_TIME, bundle.getLong(EXTRA_TOTAL_TIME))
+                putStringArrayList(EXTRA_FINISHED_ZIP_PATHS, bundle.getStringArrayList(EXTRA_FINISHED_ZIP_PATHS)?: arrayListOf())
             }
 
         )
