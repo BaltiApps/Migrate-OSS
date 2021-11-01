@@ -1,6 +1,13 @@
 package balti.migrate.utilities
 
 import android.os.Bundle
+import balti.migrate.backupEngines.BackupServiceKotlin_new
+import balti.migrate.simpleActivities.ProgressShowActivity_new
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ERRORS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FINISHED_ZIP_PATHS
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_CANCELLED
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TOTAL_TIME
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_WARNINGS
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -42,9 +49,15 @@ class BackupProgressNotificationSystem {
 
             /**
              * Bundle to contain information like:
-             * - ArrayList of errors.
-             * - ArrayList of warnings.
-             * - ArrayList of zip file paths.
+             * - [EXTRA_ERRORS] : ArrayList of errors (Strings).
+             * - [EXTRA_WARNINGS] : ArrayList of warnings (Strings).
+             * - [EXTRA_IS_CANCELLED] : Boolean - `true` if cancelled.
+             * - [EXTRA_TOTAL_TIME] : Long - time in milli seconds.
+             * - [EXTRA_FINISHED_ZIP_PATHS] : ArrayList of zip file paths.
+             *
+             * Read in [ProgressShowActivity_new.updateUiOnBackupFinished].
+             * Also created in [ProgressShowActivity_new.createFinishedUpdateFromIntent].
+             * Also created in [BackupServiceKotlin_new.finishBackup].
              */
             val extraInfoBundle: Bundle? = null
         )
