@@ -256,6 +256,8 @@ class BackupServiceKotlin_new: LifecycleService() {
             backupStarted = true
             startTime = timeInMillis()
             zipCanonicalPaths.clear()
+            allErrors.clear()
+            allWarnings.clear()
 
             fun collectErrors(result: EngineJobResultHolder?) =
                 result?.run {
