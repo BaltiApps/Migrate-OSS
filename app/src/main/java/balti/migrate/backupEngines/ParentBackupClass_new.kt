@@ -2,6 +2,7 @@ package balti.migrate.backupEngines
 
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabase
 import android.os.Build
 import android.util.Log
@@ -42,7 +43,7 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
     val globalContext by lazy { AppInstance.appContext }
 
     val commonTools by lazy { CommonToolsKotlin() }
-    val pm by lazy { globalContext.packageManager }
+    val pm: PackageManager by lazy { globalContext.packageManager }
 
     val errors by lazy { ArrayList<String>(0) }
     val warnings by lazy { ArrayList<String>(0) }
