@@ -116,6 +116,7 @@ class CommonToolsKotlin(val context: Context? = null) {
         val EXTRA_FILEX_DESTINATION = "fileXDestination"
         val EXTRA_ACTUAL_DESTINATION = "actualDestination"
         val EXTRA_ERRORS = "errors"
+        val EXTRA_FINISHED_ZIP_PATHS = "finishedZipPaths"
         val EXTRA_WARNINGS = "warnings"
         val EXTRA_TOTAL_TIME = "total_time"
         val EXTRA_IS_CANCELLED = "isCancelled"
