@@ -121,8 +121,13 @@ class BackupServiceKotlin_new: LifecycleService() {
     var lastTitle = ""
     var lastSubTask = ""
 
+    private var startTime = 0L
+    private var endTime = 0L
+
     private val allErrors by lazy { ArrayList<String>(0) }
     private val allWarnings by lazy { ArrayList<String>(0) }
+
+    private val zipCanonicalPaths by lazy { ArrayList<String>(0) }
 
     private val commonTools by lazy { CommonToolsKotlin(this) }
 
