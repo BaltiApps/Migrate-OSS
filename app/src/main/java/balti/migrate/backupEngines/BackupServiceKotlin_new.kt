@@ -266,9 +266,12 @@ class BackupServiceKotlin_new: LifecycleService() {
                 }
 
             if (getPrefBoolean(PREF_SYSTEM_CHECK, true)){
-                SystemTestingEngine(busyboxBinaryPath).executeWithResult().let {
-                    collectErrors(it)
-                }
+                collectErrors(SystemTestingEngine(busyboxBinaryPath).executeWithResult())
+            }
+
+            if (allErrors.isNotEmpty()) {
+                finishBackup(getString(R.string.backup_error_system_check_failed))
+                return@launch
             }
 
             finishBackup()
