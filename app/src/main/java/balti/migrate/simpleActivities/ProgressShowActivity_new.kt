@@ -246,18 +246,18 @@ class ProgressShowActivity_new: AppCompatActivity() {
             bundle.getLong(EXTRA_TOTAL_TIME, -1).let {
                 if (it != -1L) subTask.text = calendarDifference(it)
             }
+        }
 
-            /**
-             * [progressActionButton] is by default used to cancel a backup.
-             * Now that backup is over, modify its behavior to close the activity.
-             */
-            progressActionButton.apply {
-                text = getString(R.string.close)
-                background = AppCompatResources.getDrawable(this@ProgressShowActivity_new, R.drawable.log_action_button)
-                setOnClickListener {
-                    startActivity(Intent(this@ProgressShowActivity_new, MainActivityKotlin::class.java))
-                    finish()
-                }
+        /**
+         * [progressActionButton] is by default used to cancel a backup.
+         * Now that backup is over, modify its behavior to close the activity.
+         */
+        progressActionButton.apply {
+            text = getString(R.string.close)
+            background = AppCompatResources.getDrawable(this@ProgressShowActivity_new, R.drawable.log_action_button)
+            setOnClickListener {
+                startActivity(Intent(this@ProgressShowActivity_new, MainActivityKotlin::class.java))
+                finish()
             }
         }
     }
