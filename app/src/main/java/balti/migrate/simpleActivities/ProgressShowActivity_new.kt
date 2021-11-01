@@ -410,7 +410,7 @@ class ProgressShowActivity_new: AppCompatActivity() {
          */
         progressActionButton.apply {
             text = getString(android.R.string.cancel)
-            background = getDrawable(R.drawable.cancel_backup)
+            background = AppCompatResources.getDrawable(this@ProgressShowActivity_new, R.drawable.cancel_backup)
             setOnClickListener {
                 if (this.text == getString(R.string.force_stop)) {
 
