@@ -1,22 +1,28 @@
 package balti.migrate.backupEngines
 
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import balti.filex.FileX
 import balti.filex.FileXInit
+import balti.migrate.AppInstance
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.engines.SystemTestingEngine
 import balti.migrate.backupEngines.utils.EngineJobResultHolder
 import balti.migrate.simpleActivities.ProgressShowActivity_new
 import balti.migrate.utilities.BackupProgressNotificationSystem
+import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.BackupUpdate
+import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.BACKUP_CANCELLED
+import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_FINISHED
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCELLING
@@ -25,10 +31,18 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_RUNNIN
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_CANONICAL_DESTINATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ERRORS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FILEX_DESTINATION
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FINISHED_ZIP_PATHS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_CANCELLED
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TITLE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TOTAL_TIME
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_WARNINGS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_ERRORLOG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PROGRESSLOG
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FLAG_UPDATE_CURRENT_PENDING_INTENT
+import balti.migrate.utilities.CommonToolsKotlin.Companion.NOTIFICATION_ID_FINISHED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.NOTIFICATION_ID_ONGOING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_CHECK
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
@@ -38,6 +52,8 @@ import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
 import kotlinx.coroutines.launch
 import java.io.BufferedWriter
 import java.io.OutputStreamWriter
+import java.util.*
+import kotlin.collections.ArrayList
 
 class BackupServiceKotlin_new: LifecycleService() {
 
@@ -266,6 +282,24 @@ class BackupServiceKotlin_new: LifecycleService() {
 
         stopSelf()
     }
+
+    /**
+     * Clear all stored data.
+     * This is done so that the variables in [AppInstance] are ready to receive new data for the next backup.
+     */
+    private fun clearAllDataForThisRun(){
+        AppInstance.appPackets.clear()
+        AppInstance.zipBatches.clear()
+        AppInstance.contactsList.clear()
+        AppInstance.callsList.clear()
+        AppInstance.smsList.clear()
+        AppInstance.dpiText = null
+        AppInstance.keyboardText = null
+        AppInstance.adbState = null
+        AppInstance.fontScale = null
+    }
+
+    private fun timeInMillis() = Calendar.getInstance().timeInMillis
 
     override fun onDestroy() {
         super.onDestroy()
