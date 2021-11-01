@@ -288,10 +288,78 @@ class BackupServiceKotlin_new: LifecycleService() {
             errorWriter?.write("$it\n")
         }
 
+        /**
+         * Write all warnings.
+         */
         errorWriter?.write("\n======== ERRORS ========\n\n")
         allErrors.forEach {
             errorWriter?.write("$it\n")
         }
+
+        /**
+         * End progressLog.txt and errorLog.txt with some additional information.
+         */
+        errorWriter?.write("\n--- Backup Name : $backupName ---\n")
+        if (isCancelled) errorWriter?.write("--- Cancelled! ---\n")
+        errorWriter?.write("--- Migrate version ${getString(R.string.current_version_name)} ---\n")
+        progressWriter?.write("\n--- Backup Name : $backupName ---\n")
+        progressWriter?.write("--- Total parts : ${zipCanonicalPaths.size} ---\n")
+        progressWriter?.write("--- Migrate version ${getString(R.string.current_version_name)} ---\n")
+
+        /**
+         * Create variables for final [BackupUpdate] object.
+         * We will try to reuse them as much as possible for the final backup complete notification.
+         */
+        val finishedTitle = if (customTitle.isNotBlank()) customTitle else getString(R.string.noErrors)
+        val finishedProgress = if(isCancelled) 0 else 100
+
+        /**
+         * Check the necessary extras in [BackupUpdate.extraInfoBundle].
+         * Values are read in [ProgressShowActivity_new.updateUiOnBackupFinished].
+         */
+        val extraInfoBundle = Bundle().apply {
+            putStringArrayList(EXTRA_ERRORS, allErrors)
+            putStringArrayList(EXTRA_WARNINGS, allWarnings)
+            putBoolean(EXTRA_IS_CANCELLED, isCancelled)
+            putLong(EXTRA_TOTAL_TIME, (endTime-startTime))
+            putStringArrayList(EXTRA_FINISHED_ZIP_PATHS, zipCanonicalPaths)
+        }
+
+        BackupProgressNotificationSystem.emitMessage(
+            BackupUpdate(
+                if (isCancelled) BACKUP_CANCELLED else PROGRESS_TYPE_FINISHED,
+                finishedTitle,
+                "",
+                "",
+                finishedProgress,
+                extraInfoBundle = extraInfoBundle
+            )
+        )
+
+        /**
+         * Send the final notification. Use a different notification ID
+         * to prevent the final notification from not be removed once the service is over.
+         *
+         * The final notification intent also needs an additional extra: [EXTRA_TITLE].
+         * See [ProgressShowActivity_new.createFinishedUpdateFromIntent].
+         */
+        val finalNotification = NotificationCompat.Builder(this, CHANNEL_BACKUP_END)
+            .setContentTitle(finishedTitle)
+            .setSmallIcon(R.drawable.ic_notification_icon)
+            .setContentIntent(
+                PendingIntent.getActivity(
+                    this, CommonToolsKotlin.PENDING_INTENT_REQUEST_ID,
+                    Intent(this, ProgressShowActivity_new::class.java).apply {
+                        putExtra(EXTRA_TITLE, finishedTitle)
+                        putExtras(extraInfoBundle)
+                    },
+                    FLAG_UPDATE_CURRENT_PENDING_INTENT
+                )
+            )
+
+        AppInstance.notificationManager.notify(NOTIFICATION_ID_FINISHED, finalNotification.build())
+
+        clearAllDataForThisRun()
 
         stopSelf()
     }
