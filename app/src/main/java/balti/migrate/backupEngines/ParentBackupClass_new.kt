@@ -47,7 +47,7 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
     val errors by lazy { ArrayList<String>(0) }
     val warnings by lazy { ArrayList<String>(0) }
 
-    val rootLocation by lazy { FileX.new(fileXDestination?: "") }
+    val rootLocation by lazy { FileX.new(fileXDestination) }
     val appAuxFilesDir by lazy { FileX.new(AppInstance.appContext.filesDir.canonicalPath, DIR_APP_AUX_FILES, true) }
     val pathForAuxFiles by lazy { appAuxFilesDir.canonicalPath }
     val CACHE by lazy { FileX.new(AppInstance.CACHE_DIR, true) }
