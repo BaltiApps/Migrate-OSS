@@ -276,7 +276,13 @@ class BackupServiceKotlin_new: LifecycleService() {
     /**
      * WIP
      */
-    private fun finishBackup(){
+    private fun finishBackup(customTitle: String = "", isCancelled: Boolean = false){
+
+        endTime = timeInMillis()
+
+        /**
+         * Write all errors.
+         */
         errorWriter?.write("======== WARNINGS ========\n\n")
         allWarnings.forEach {
             errorWriter?.write("$it\n")
