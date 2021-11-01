@@ -166,7 +166,7 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
             engineProgressType,
             lastTitle,
             subTask,
-            taskLog,
+            taskLog.let {if (it == subTask) "" else it},
             progress,
         ))
 
