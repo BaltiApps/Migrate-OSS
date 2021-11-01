@@ -1,6 +1,7 @@
 package balti.migrate.utilities
 
 import android.app.Activity
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -29,6 +30,11 @@ class CommonToolsKotlin(val context: Context? = null) {
 
         val IS_API_A11 : Boolean by lazy { Build.VERSION.SDK_INT >= Build.VERSION_CODES.R }
         val IS_API_A8 : Boolean by lazy { Build.VERSION.SDK_INT >= Build.VERSION_CODES.O }
+
+        val FLAG_UPDATE_CURRENT_PENDING_INTENT by lazy {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            else PendingIntent.FLAG_UPDATE_CURRENT
+        }
 
         val SU_INIT = if (IS_API_A11) "su --mount-master" else "su"
 
