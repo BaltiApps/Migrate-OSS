@@ -271,6 +271,13 @@ class BackupServiceKotlin_new: LifecycleService() {
      */
     private fun startBackup(){
         lifecycleScope.launch {
+
+            /**
+             * Stores name of last engine that ran successfully.
+             * Used for debugging purposes.
+             */
+            var lastSuccessEngine = ""
+
             try {
                 backupStarted = true
                 startTime = timeInMillis()
@@ -294,6 +301,8 @@ class BackupServiceKotlin_new: LifecycleService() {
                     collectErrors(SystemTestingEngine(busyboxBinaryPath).executeWithResult())
                 }
 
+                lastSuccessEngine = "SystemTestingEngine"
+
                 /**
                  * If errors are present after system test, end the backup.
                  */
@@ -313,6 +322,8 @@ class BackupServiceKotlin_new: LifecycleService() {
                     }
                 }
 
+                lastSuccessEngine = "ContactsBackupEngine"
+
                 /** STEP 3: SMS backup */
                 if (smsList.isNotEmpty()) {
                     val smsBackupName = "Sms_$timeStamp.sms.db"
@@ -323,6 +334,8 @@ class BackupServiceKotlin_new: LifecycleService() {
                         }
                     }
                 }
+
+                lastSuccessEngine = "SmsBackupEngine"
 
                 /** STEP 4: Calls backup */
                 if (callsList.isNotEmpty()) {
@@ -335,6 +348,8 @@ class BackupServiceKotlin_new: LifecycleService() {
                     }
                 }
 
+                lastSuccessEngine = "CallsBackupEngine"
+
                 /** STEP 5: Settings backup - ADB, Font scale, Keyboard, DPI */
                 val isSettingsNull: Boolean = (dpiText == null && keyboardText == null && adbState == null && fontScale == null)
                 if (!isSettingsNull) {
@@ -346,6 +361,8 @@ class BackupServiceKotlin_new: LifecycleService() {
                     }
                 }
 
+                lastSuccessEngine = "SettingsBackupEngine"
+
                 /**
                  * STEP 6: App backup
                  * Does not return any result.
@@ -354,6 +371,8 @@ class BackupServiceKotlin_new: LifecycleService() {
                     collectErrors(AppBackupEngine(busyboxBinaryPath).executeWithResult())
                 }
 
+                lastSuccessEngine = "AppBackupEngine"
+
                 /**
                  * STEP 7: App backup verification
                  * Does not return any result.
@@ -361,6 +380,8 @@ class BackupServiceKotlin_new: LifecycleService() {
                 if (appPackets.isNotEmpty()) {
                     collectErrors(VerificationEngine(busyboxBinaryPath).executeWithResult())
                 }
+
+                lastSuccessEngine = "VerificationEngine"
 
                 /**
                  * STEP 8: Making zip batches
@@ -378,6 +399,8 @@ class BackupServiceKotlin_new: LifecycleService() {
                         return@launch
                     }
                 }
+
+                lastSuccessEngine = "MakeZipBatch"
 
                 /**
                  * For each zip batch, run the next steps individually.
@@ -413,6 +436,8 @@ class BackupServiceKotlin_new: LifecycleService() {
                         continue
                     }
 
+                    lastSuccessEngine = "UpdaterScriptMakerEngine $partTag"
+
                     /**
                      * STEP 10: Compress the zip batch into a zip file.
                      * Result contains Pair(<FileX object for zip file>, <FileX object for fileList.txt>).
@@ -433,6 +458,8 @@ class BackupServiceKotlin_new: LifecycleService() {
                         continue
                     }
 
+                    lastSuccessEngine = "ZippingEngine $partTag"
+
                     /**
                      * STEP 11: Zip verification.
                      * Does not return any result.
@@ -446,11 +473,14 @@ class BackupServiceKotlin_new: LifecycleService() {
                     if (tryNextBatchDueToErrorsInThisBatch()) {
                         continue
                     }
+
+                    lastSuccessEngine = "ZipVerificationEngine $partTag"
                 }
             }
             catch (e: Exception){
                 e.printStackTrace()
                 allErrors.add("$ERR_GENERIC_BACKUP_ENGINE: ${e.message.toString()}")
+                allErrors.add("$ERR_GENERIC_BACKUP_ENGINE: Last success engine: $lastSuccessEngine")
                 finishBackup("${getString(R.string.generic_backup_engine_error)}: ${e.message}")
             }
 
