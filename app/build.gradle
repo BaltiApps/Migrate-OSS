@@ -37,7 +37,11 @@ dependencies {
 
     implementation project(path: ':baltitoolbox')
 
-    implementation(name:'FileX-release', ext:'aar')
+    // Un-comment to include from AAR
+    // implementation(name:'FileX-release', ext:'aar')
+
+    // Comment below line if including from AAR
+    implementation project(path: ':FileX')
 }
 repositories {
     mavenCentral()

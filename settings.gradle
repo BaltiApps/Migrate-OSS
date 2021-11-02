@@ -1,3 +1,7 @@
 include ':app'
 include ':baltitoolbox'
 project(':baltitoolbox').projectDir=new File('../baltitoolbox')
+
+// comment the next 2 lines if using from AAR
+include ':FileX'
+project(':FileX').projectDir=new File('../FileX')
