@@ -298,10 +298,11 @@ class BackupServiceKotlin_new: LifecycleService() {
 
                 /** STEP 1: System test */
                 if (getPrefBoolean(PREF_SYSTEM_CHECK, true)) {
-                    collectErrors(SystemTestingEngine(busyboxBinaryPath).executeWithResult())
+                    SystemTestingEngine(busyboxBinaryPath).executeWithResult()?.let {
+                        collectErrors(it)
+                        lastSuccessEngine = "SystemTestingEngine"
+                    }
                 }
-
-                lastSuccessEngine = "SystemTestingEngine"
 
                 /**
                  * If errors are present after system test, end the backup.
@@ -319,10 +320,9 @@ class BackupServiceKotlin_new: LifecycleService() {
                         if (it.success) {
                             listOfExtraFilesFromJobResults.add(it.result as FileX)
                         }
+                        lastSuccessEngine = "ContactsBackupEngine"
                     }
                 }
-
-                lastSuccessEngine = "ContactsBackupEngine"
 
                 /** STEP 3: SMS backup */
                 if (smsList.isNotEmpty()) {
@@ -332,10 +332,9 @@ class BackupServiceKotlin_new: LifecycleService() {
                         if (it.success) {
                             listOfExtraFilesFromJobResults.addAll(it.result as ArrayList<FileX>)
                         }
+                        lastSuccessEngine = "SmsBackupEngine"
                     }
                 }
-
-                lastSuccessEngine = "SmsBackupEngine"
 
                 /** STEP 4: Calls backup */
                 if (callsList.isNotEmpty()) {
@@ -345,10 +344,9 @@ class BackupServiceKotlin_new: LifecycleService() {
                         if (it.success) {
                             listOfExtraFilesFromJobResults.addAll(it.result as ArrayList<FileX>)
                         }
+                        lastSuccessEngine = "CallsBackupEngine"
                     }
                 }
-
-                lastSuccessEngine = "CallsBackupEngine"
 
                 /** STEP 5: Settings backup - ADB, Font scale, Keyboard, DPI */
                 val isSettingsNull: Boolean = (dpiText == null && keyboardText == null && adbState == null && fontScale == null)
@@ -358,30 +356,31 @@ class BackupServiceKotlin_new: LifecycleService() {
                         if (it.success) {
                             listOfExtraFilesFromJobResults.add(it.result as FileX)
                         }
+                        lastSuccessEngine = "SettingsBackupEngine"
                     }
                 }
-
-                lastSuccessEngine = "SettingsBackupEngine"
 
                 /**
                  * STEP 6: App backup
                  * Does not return any result.
                  */
                 if (appPackets.isNotEmpty()) {
-                    collectErrors(AppBackupEngine(busyboxBinaryPath).executeWithResult())
+                    AppBackupEngine(busyboxBinaryPath).executeWithResult()?.let {
+                        collectErrors(it)
+                        lastSuccessEngine = "AppBackupEngine"
+                    }
                 }
-
-                lastSuccessEngine = "AppBackupEngine"
 
                 /**
                  * STEP 7: App backup verification
                  * Does not return any result.
                  */
                 if (appPackets.isNotEmpty()) {
-                    collectErrors(VerificationEngine(busyboxBinaryPath).executeWithResult())
+                    VerificationEngine(busyboxBinaryPath).executeWithResult()?.let {
+                        collectErrors(it)
+                        lastSuccessEngine = "VerificationEngine"
+                    }
                 }
-
-                lastSuccessEngine = "VerificationEngine"
 
                 /**
                  * STEP 8: Making zip batches
@@ -398,9 +397,8 @@ class BackupServiceKotlin_new: LifecycleService() {
                         finishBackup(getString(R.string.failed_to_make_batches))
                         return@launch
                     }
+                    lastSuccessEngine = "MakeZipBatch"
                 }
-
-                lastSuccessEngine = "MakeZipBatch"
 
                 /**
                  * For each zip batch, run the next steps individually.
