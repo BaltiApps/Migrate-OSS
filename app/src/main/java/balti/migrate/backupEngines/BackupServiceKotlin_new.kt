@@ -415,8 +415,9 @@ class BackupServiceKotlin_new: LifecycleService() {
                      * Function collects errors from `result`.
                      * If result.success == `false`, returns `true` to indicate to `continue` the loop for next batch.
                      */
-                    fun tryNextBatchDueToErrorsInThisBatch(): Boolean {
+                    fun tryNextBatchDueToErrorsInThisBatch(currentStepName: String): Boolean {
                         collectErrors(result)
+                        if (result != null) lastSuccessEngine = currentStepName
                         if (result?.success == false) {
                             allErrors.add("${ERR_BACKUP_SERVICE_ERROR}: ${getString(R.string.errors_in_batch)} - ${i + 1}")
                             return true
@@ -432,11 +433,9 @@ class BackupServiceKotlin_new: LifecycleService() {
                      * - `false` - Errors in updater script. No point in proceeding in next engine. Try next zip batch.
                      */
                     result = UpdaterScriptMakerEngine(partTag, zipBatch, timeStamp).executeWithResult()
-                    if (tryNextBatchDueToErrorsInThisBatch()) {
+                    if (tryNextBatchDueToErrorsInThisBatch("UpdaterScriptMakerEngine $partTag")) {
                         continue
                     }
-
-                    lastSuccessEngine = "UpdaterScriptMakerEngine $partTag"
 
                     /**
                      * STEP 10: Compress the zip batch into a zip file.
@@ -454,11 +453,9 @@ class BackupServiceKotlin_new: LifecycleService() {
                             }
                         }
                     }
-                    if (tryNextBatchDueToErrorsInThisBatch()) {
+                    if (tryNextBatchDueToErrorsInThisBatch("ZippingEngine $partTag")) {
                         continue
                     }
-
-                    lastSuccessEngine = "ZippingEngine $partTag"
 
                     /**
                      * STEP 11: Zip verification.
@@ -470,11 +467,10 @@ class BackupServiceKotlin_new: LifecycleService() {
                      * even then no error should occur.
                      */
                     result = ZipVerificationEngine(lastZip, partTag, flasherOnly, fileListCopied).executeWithResult()
-                    if (tryNextBatchDueToErrorsInThisBatch()) {
+                    if (tryNextBatchDueToErrorsInThisBatch("ZipVerificationEngine $partTag")) {
                         continue
                     }
 
-                    lastSuccessEngine = "ZipVerificationEngine $partTag"
                 }
             }
             catch (e: Exception){
