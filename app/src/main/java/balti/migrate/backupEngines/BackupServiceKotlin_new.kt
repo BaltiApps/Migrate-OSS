@@ -132,8 +132,8 @@ class BackupServiceKotlin_new: LifecycleService() {
      * Store last received title and subtask.
      * Do not write to log if same title and sub-task is received.
      */
-    var lastTitle = ""
-    var lastSubTask = ""
+    private var lastTitle = ""
+    private var lastSubTask = ""
 
     private var startTime = 0L
     private var endTime = 0L
