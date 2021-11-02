@@ -9,11 +9,12 @@ import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.backupEngines.containers.ZipBatch
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_ZIPPING
 import balti.migrate.utilities.CommonToolsKotlin
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_FILE_LIST_COPY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_NO_RAW_LIST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_PARSING_RAW_LIST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_TRY_CATCH
+import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_FILE_LIST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_RAW_LIST
-import balti.migrate.utilities.CommonToolsKotlin.Companion.WARNING_FILE_LIST_COPY
 import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import balti.module.baltitoolbox.functions.Misc.getPercentage
 import java.io.BufferedInputStream
@@ -135,10 +136,10 @@ class ZippingEngine(override val partTag: String,
                     }
                     catch (e: Exception){
                         e.printStackTrace()
-                        warnings.add("$WARNING_FILE_LIST_COPY${partTag}: ${e.message.toString()}")
+                        warnings.add("$ERR_FILE_LIST_COPY${partTag}: ${e.message.toString()}")
                     }
                 }
-                else errors.add("$WARNING_FILE_LIST_COPY${partTag}: ${getStringFromRes(R.string.file_list_not_in_zip_batch)}")
+                else errors.add("$ERR_FILE_LIST_COPY${partTag}: ${getStringFromRes(R.string.file_list_not_in_zip_batch)}")
             }
 
             /**

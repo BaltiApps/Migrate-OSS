@@ -197,7 +197,7 @@ class CommonToolsKotlin(val context: Context? = null) {
         val WARNING_CALLS = "CALL_VERIFY_WARNING"
         val WARNING_SMS = "SMS_VERIFY_WARNING"
         val WARNING_ZIP_FILELIST_VERIFICATION = "ZIP_FILELIST"
-        val WARNING_FILE_LIST_COPY = "FILE_LIST_COPY"
+        val ERR_FILE_LIST_COPY = "FILE_LIST_COPY"
         val WARNING_CASTING_APK_SIZE = "CASTING_APK_SIZE_FAILED"
         val WARNING_APK_SIZE_INFO_WRONG = "APK_INFO_INCORRECT"
 
@@ -206,7 +206,6 @@ class CommonToolsKotlin(val context: Context? = null) {
             WARNING_CALLS,
             WARNING_SMS,
             WARNING_ZIP_FILELIST_VERIFICATION,
-            WARNING_FILE_LIST_COPY,
             WARNING_CASTING_APK_SIZE,
             WARNING_APK_SIZE_INFO_WRONG,
         )
