@@ -33,7 +33,11 @@ class ZippingEngine(override val partTag: String,
     private val readSubDirectories = ArrayList<String>(0)
     private val readFiles = ArrayList<String>(0)
 
-    private val fileListFile by lazy { FileX.new("${fileXDestination}/${zipBatch.zipName}", FILE_RAW_LIST) }
+    private val fileListFile by lazy {
+        FileX.new("${fileXDestination}/${zipBatch.zipName}", FILE_FILE_LIST).apply {
+            exists()
+        }
+    }
 
     /**
      * Read rawList.txt file to get all the directories and files in the sub-directory.
@@ -44,7 +48,12 @@ class ZippingEngine(override val partTag: String,
         val tempSubDirectories = ArrayList<String>(0)
         val tempFiles = ArrayList<String>(0)
 
-        fileListFile.run {
+        val rawList =
+            FileX.new("${fileXDestination}/${zipBatch.zipName}", FILE_RAW_LIST).apply {
+                exists()
+            }
+
+        rawList.run {
             if (!exists()) {
                 errors.add("${ERR_NO_RAW_LIST}: For $partTag, ${zipBatch.zipName}")
                 return false
