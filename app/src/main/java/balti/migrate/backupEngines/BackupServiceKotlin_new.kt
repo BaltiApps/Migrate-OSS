@@ -24,6 +24,7 @@ import balti.migrate.AppInstance.Companion.dpiText
 import balti.migrate.AppInstance.Companion.fontScale
 import balti.migrate.AppInstance.Companion.keyboardText
 import balti.migrate.AppInstance.Companion.smsList
+import balti.migrate.AppInstance.Companion.zipBatches
 import balti.migrate.R
 import balti.migrate.backupEngines.containers.ZipBatch
 import balti.migrate.backupEngines.engines.*
@@ -365,7 +366,7 @@ class BackupServiceKotlin_new: LifecycleService() {
              * If this step is not a success, then no point in proceeding further.
              * In that case, end the backup and return.
              */
-            val zipBatches = ArrayList<ZipBatch>(0)
+            zipBatches.addAll(ArrayList(0))
             MakeZipBatch(listOfExtraFilesFromJobResults).executeWithResult()?.let {
                 collectErrors(it)
                 if (it.success){
