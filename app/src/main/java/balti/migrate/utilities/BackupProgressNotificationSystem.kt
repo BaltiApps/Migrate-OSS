@@ -8,6 +8,8 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FINISHED_ZIP_PA
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_CANCELLED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_WARNINGS
+import balti.module.baltitoolbox.functions.Misc.tryIt
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -94,6 +96,19 @@ class BackupProgressNotificationSystem {
         fun emitMessage(update: BackupUpdate){
             GlobalScope.launch {
                 mutableFlow.emit(update)
+            }
+        }
+
+        /**
+         * Reset the flow.
+         * To be called before starting a backup.
+         * Do not call after finishing a backup, as opening [ProgressShowActivity_new] from notification
+         * will not show any verbose log.
+         */
+        @ExperimentalCoroutinesApi
+        fun resetReplayCache(){
+            tryIt {
+                mutableFlow.resetReplayCache()
             }
         }
     }
