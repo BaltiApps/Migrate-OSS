@@ -271,7 +271,7 @@ class ZippingEngine(override val partTag: String,
             errors.add("$ERR_ZIP_TRY_CATCH${partTag}: ${e.message}")
         }
 
-        return arrayOf(
+        return Pair(
             if (this::actualZipFile.isInitialized) actualZipFile else null,
             if (this::fileListCopied.isInitialized) fileListCopied else null
         )
