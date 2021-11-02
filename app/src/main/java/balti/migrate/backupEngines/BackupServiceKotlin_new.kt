@@ -49,7 +49,6 @@ import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.Misc.makeNotificationChannel
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import java.io.BufferedWriter
 import java.io.OutputStreamWriter
@@ -253,7 +252,6 @@ class BackupServiceKotlin_new: LifecycleService() {
      * This is the heart of the backup service.
      * WIP
      */
-    @ExperimentalCoroutinesApi
     private fun startBackup(){
         lifecycleScope.launch {
             backupStarted = true
@@ -261,8 +259,6 @@ class BackupServiceKotlin_new: LifecycleService() {
             zipCanonicalPaths.clear()
             allErrors.clear()
             allWarnings.clear()
-
-            BackupProgressNotificationSystem.resetReplayCache()
 
             fun collectErrors(result: EngineJobResultHolder?) =
                 result?.run {
@@ -394,6 +390,8 @@ class BackupServiceKotlin_new: LifecycleService() {
         AppInstance.notificationManager.notify(NOTIFICATION_ID_FINISHED, finalNotification.build())
 
         clearAllDataForThisRun()
+
+        BackupProgressNotificationSystem.resetImmediateUpdate()
 
         stopSelf()
     }
