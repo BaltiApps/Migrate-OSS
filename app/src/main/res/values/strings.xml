@@ -470,6 +470,7 @@
     <string name="errorMakingScripts">Error making scripts</string>
     <string name="backupCancelled">Backup cancelled</string>
     <string name="errorStartingBackup">Error starting backup (onStartCommand).</string>
+    <string name="generic_backup_engine_error">Fatal error in any one of the backup engines..</string>
     <string name="deletingFiles">Deleting files</string>
     <string name="backupFinishedWithErrors">Backup finished with errors!</string>
     <string name="backupFinishedWithWarnings">Backup finished with warnings!</string>
