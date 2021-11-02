@@ -140,7 +140,7 @@ class ZippingEngine(override val partTag: String,
                 if (it.exists()) {
                     try {
                         val extFileList = FileX.new(CACHE_DIR, "${it.name}_${partTag}", true)
-                        it.copyTo(extFileList)
+                        it.copyTo(extFileList, overwrite = true)
                         fileListCopied = extFileList
                     }
                     catch (e: Exception){
