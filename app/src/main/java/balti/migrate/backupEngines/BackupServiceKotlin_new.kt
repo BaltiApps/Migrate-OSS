@@ -574,15 +574,15 @@ class BackupServiceKotlin_new: LifecycleService() {
      * This is done so that the variables in [AppInstance] are ready to receive new data for the next backup.
      */
     private fun clearAllDataForThisRun(){
-        AppInstance.appPackets.clear()
-        AppInstance.zipBatches.clear()
-        AppInstance.contactsList.clear()
-        AppInstance.callsList.clear()
-        AppInstance.smsList.clear()
-        AppInstance.dpiText = null
-        AppInstance.keyboardText = null
-        AppInstance.adbState = null
-        AppInstance.fontScale = null
+        appPackets.clear()
+        zipBatches.clear()
+        contactsList.clear()
+        callsList.clear()
+        smsList.clear()
+        dpiText = null
+        keyboardText = null
+        adbState = null
+        fontScale = null
     }
 
     private fun timeInMillis() = Calendar.getInstance().timeInMillis
