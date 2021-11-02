@@ -155,9 +155,13 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
         askForNameLauncher  // just call to initialise
         autoSelectExtras()
 
-        /**
-         * Set listener, if any backup progress update comes along, start [ProgressShowActivity_new].
-         */
+        listenForUpdatesToStartProgressActivity()
+    }
+
+    /**
+     * Function to immediately start [ProgressShowActivity_new] if any update is received.
+     */
+    private fun listenForUpdatesToStartProgressActivity(){
         lifecycleScope.launchWhenStarted {
             BackupProgressNotificationSystem.addListener(false, true){
                 startActivity(Intent(this@ExtraBackupsKotlin, ProgressShowActivity_new::class.java))
