@@ -352,6 +352,7 @@ class MakeZipBatch(private val extras: ArrayList<FileX>) : ParentBackupClass_new
         val title = getTitle(R.string.moving_files)
         resetBroadcast(true, title)
 
+        moveScriptFile.delete()
         moveScriptFile.parentFile?.mkdirs()
 
         try {
@@ -458,7 +459,6 @@ class MakeZipBatch(private val extras: ArrayList<FileX>) : ParentBackupClass_new
                 val suInputStream = BufferedWriter(OutputStreamWriter(it.outputStream))
                 val errorStream = BufferedReader(InputStreamReader(it.errorStream))
 
-                suInputStream.write("cp ${moveScriptFile.canonicalPath} $CACHE_DIR/\n")
                 suInputStream.write("sh ${moveScriptFile.canonicalPath}\n")
                 suInputStream.write("exit\n")
                 suInputStream.flush()
