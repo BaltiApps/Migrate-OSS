@@ -249,6 +249,7 @@ class BackupServiceKotlin_new: LifecycleService() {
 
     /**
      * Function to run all backup engines.
+     * This is the heart of the backup service.
      * WIP
      */
     private fun startBackup(){
