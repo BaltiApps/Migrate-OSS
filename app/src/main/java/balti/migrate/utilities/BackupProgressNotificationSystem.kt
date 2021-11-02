@@ -2,19 +2,16 @@ package balti.migrate.utilities
 
 import android.os.Bundle
 import balti.migrate.backupEngines.BackupServiceKotlin_new
+import balti.migrate.extraBackupsActivity.ExtraBackupsKotlin
 import balti.migrate.simpleActivities.ProgressShowActivity_new
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ERRORS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FINISHED_ZIP_PATHS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_CANCELLED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_WARNINGS
-import balti.module.baltitoolbox.functions.Misc.tryIt
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class BackupProgressNotificationSystem {
@@ -64,12 +61,24 @@ class BackupProgressNotificationSystem {
             val extraInfoBundle: Bundle? = null
         )
 
+        private val initialValue = BackupUpdate(
+            ProgressType.EMPTY,
+            "", "", "", 0
+        )
+
         /**
          * Using SharedFlow to store last 100 messages
-         * for display purposes in [balti.migrate.simpleActivities.ProgressShowActivity_new].
+         * for display purposes in [ProgressShowActivity_new].
+         *
+         * Stateflow is mainly used for cases in which past value from a previous backup could cause malfunction.
+         * For example, [BackupServiceKotlin_new.progressWriter] does not need old values for the current backup.
+         * Similarly [ExtraBackupsKotlin.listenForUpdatesToStartProgressActivity] will be triggered
+         * for values of a previous backup if it doesn't listen to only current values.
          */
-        private val mutableFlow by lazy { MutableSharedFlow<BackupUpdate>(100) }
-        private val flow = mutableFlow.asSharedFlow()
+        private val mutableStateFlow by lazy { MutableStateFlow(initialValue) }
+        private val mutableSharedFlow by lazy { MutableSharedFlow<BackupUpdate>(100) }
+        private val stateFlow = mutableStateFlow.asStateFlow()
+        private val sharedFlow = mutableSharedFlow.asSharedFlow()
 
         /**
          * Keeping suspend function to encourage listeners to listen from lifecycleScope.
@@ -79,14 +88,19 @@ class BackupProgressNotificationSystem {
          */
         suspend fun addListener(getCache: Boolean, listenOnce: Boolean = false, f: (update: BackupUpdate) -> Unit){
             var dontLaunch = false
+            val bufferCapacity = 1000
             if (getCache && !listenOnce) {
-                flow.replayCache.forEach {
+                sharedFlow.buffer(bufferCapacity).collect {
                     f(it)
                 }
             }
-            flow.buffer(1000).collect {
-                if (!dontLaunch) f(it)
-                if (listenOnce) dontLaunch = true
+            else {
+                stateFlow.buffer(bufferCapacity).collect {
+                    if (it != initialValue) {
+                        if (!dontLaunch) f(it)
+                        if (listenOnce) dontLaunch = true
+                    }
+                }
             }
         }
 
@@ -95,20 +109,21 @@ class BackupProgressNotificationSystem {
          */
         fun emitMessage(update: BackupUpdate){
             GlobalScope.launch {
-                mutableFlow.emit(update)
+                mutableStateFlow.emit(update)
+                mutableSharedFlow.emit(update)
             }
         }
 
         /**
          * Reset the flow.
-         * To be called before starting a backup.
-         * Do not call after finishing a backup, as opening [ProgressShowActivity_new] from notification
-         * will not show any verbose log.
+         * To be called after finishing the backup, just before closing the backup service.
+         * If this is not called, [ExtraBackupsKotlin] will immediately receive a non empty value
+         * of the last backup and start the [ProgressShowActivity_new] class.
          */
-        @ExperimentalCoroutinesApi
-        fun resetReplayCache(){
-            tryIt {
-                mutableFlow.resetReplayCache()
+        fun resetImmediateUpdate(){
+            GlobalScope.launch {
+                delay(1000)
+                mutableStateFlow.value = initialValue
             }
         }
     }
