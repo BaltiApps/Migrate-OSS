@@ -53,7 +53,7 @@ class ContactsBackupEngine(private val vcfFileName: String): ParentBackupClass_n
             errors.add("$ERR_CONTACTS_TRY_CATCH: ${e.message}")
         }
 
-        return arrayListOf(vcfFile)
+        return vcfFile
     }
 
 }
