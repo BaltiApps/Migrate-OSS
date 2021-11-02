@@ -41,6 +41,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_END
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_RUNNING
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DEFAULT_INTERNAL_STORAGE_DIR
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_BACKUP_SERVICE_ERROR
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_GENERIC_BACKUP_ENGINE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_BACKUP_NAME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_CANONICAL_DESTINATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ERRORS
@@ -270,182 +271,187 @@ class BackupServiceKotlin_new: LifecycleService() {
      */
     private fun startBackup(){
         lifecycleScope.launch {
-            backupStarted = true
-            startTime = timeInMillis()
-            zipCanonicalPaths.clear()
-            allErrors.clear()
-            allWarnings.clear()
+            try {
+                backupStarted = true
+                startTime = timeInMillis()
+                zipCanonicalPaths.clear()
+                allErrors.clear()
+                allWarnings.clear()
 
-            val listOfExtraFilesFromJobResults = ArrayList<FileX>(0)
+                val listOfExtraFilesFromJobResults = ArrayList<FileX>(0)
 
-            /**
-             * Function to collect all errors and warnings from job result.
-             */
-            fun collectErrors(result: EngineJobResultHolder?) =
-                result?.run {
-                    allErrors.addAll(errors)
-                    allWarnings.addAll(warnings)
-                }
-
-            /** STEP 1: System test */
-            if (getPrefBoolean(PREF_SYSTEM_CHECK, true)){
-                collectErrors(SystemTestingEngine(busyboxBinaryPath).executeWithResult())
-            }
-
-            /**
-             * If errors are present after system test, end the backup.
-             */
-            if (allErrors.isNotEmpty()) {
-                finishBackup(getString(R.string.backup_error_system_check_failed))
-                return@launch
-            }
-
-            /** STEP 2: Contacts backup */
-            if (contactsList.isNotEmpty()) {
-                val contactsBackupName = "Contacts_$timeStamp.vcf"
-                ContactsBackupEngine(contactsBackupName).executeWithResult()?.let {
-                    collectErrors(it)
-                    if (it.success) {
-                        listOfExtraFilesFromJobResults.add(it.result as FileX)
+                /**
+                 * Function to collect all errors and warnings from job result.
+                 */
+                fun collectErrors(result: EngineJobResultHolder?) =
+                    result?.run {
+                        allErrors.addAll(errors)
+                        allWarnings.addAll(warnings)
                     }
+
+                /** STEP 1: System test */
+                if (getPrefBoolean(PREF_SYSTEM_CHECK, true)) {
+                    collectErrors(SystemTestingEngine(busyboxBinaryPath).executeWithResult())
                 }
-            }
 
-            /** STEP 3: SMS backup */
-            if (smsList.isNotEmpty()) {
-                val smsBackupName = "Sms_$timeStamp.sms.db"
-                SmsBackupEngine(smsBackupName).executeWithResult()?.let {
-                    collectErrors(it)
-                    if (it.success) {
-                        listOfExtraFilesFromJobResults.addAll(it.result as ArrayList<FileX>)
-                    }
-                }
-            }
-
-            /** STEP 4: Calls backup */
-            if (callsList.isNotEmpty()) {
-                val callsBackupName = "Calls_$timeStamp.calls.db"
-                CallsBackupEngine(callsBackupName).executeWithResult()?.let {
-                    collectErrors(it)
-                    if (it.success) {
-                        listOfExtraFilesFromJobResults.addAll(it.result as ArrayList<FileX>)
-                    }
-                }
-            }
-
-            /** STEP 5: Settings backup - ADB, Font scale, Keyboard, DPI */
-            val isSettingsNull : Boolean = (dpiText == null && keyboardText == null && adbState == null && fontScale == null)
-            if (!isSettingsNull) {
-                SettingsBackupEngine().executeWithResult()?.let {
-                    collectErrors(it)
-                    if (it.success) {
-                        listOfExtraFilesFromJobResults.add(it.result as FileX)
-                    }
-                }
-            }
-
-            /**
-             * STEP 6: App backup
-             * Does not return any result.
-             */
-            if (appPackets.isNotEmpty()){
-                collectErrors(AppBackupEngine(busyboxBinaryPath).executeWithResult())
-            }
-
-            /**
-             * STEP 7: App backup verification
-             * Does not return any result.
-             */
-            if (appPackets.isNotEmpty()){
-                collectErrors(VerificationEngine(busyboxBinaryPath).executeWithResult())
-            }
-
-            /**
-             * STEP 8: Making zip batches
-             * Result is ArrayList of [ZipBatch].
-             * If this step is not a success, then no point in proceeding further.
-             * In that case, end the backup and return.
-             */
-            zipBatches.addAll(ArrayList(0))
-            MakeZipBatch(listOfExtraFilesFromJobResults).executeWithResult()?.let {
-                collectErrors(it)
-                if (it.success){
-                    zipBatches.addAll(it.result as ArrayList<ZipBatch>)
-                }
-                else {
-                    finishBackup(getString(R.string.failed_to_make_batches))
+                /**
+                 * If errors are present after system test, end the backup.
+                 */
+                if (allErrors.isNotEmpty()) {
+                    finishBackup(getString(R.string.backup_error_system_check_failed))
                     return@launch
                 }
-            }
 
-            /**
-             * For each zip batch, run the next steps individually.
-             */
-
-            for ((i, zipBatch) in zipBatches.withIndex()) {
-
-                val partTag = "[${i+1}/${zipBatches.size}]"
-                var result: EngineJobResultHolder? = null
-
-                /**
-                 * Function collects errors from `result`.
-                 * If result.success == `false`, returns `true` to indicate to `continue` the loop for next batch.
-                 */
-                fun tryNextBatchDueToErrorsInThisBatch(): Boolean {
-                    collectErrors(result)
-                    if(result?.success == false){
-                        allErrors.add("${ERR_BACKUP_SERVICE_ERROR}: ${getString(R.string.errors_in_batch)} - ${i+1}")
-                        return true
-                    }
-                    return false
-                }
-
-                /**
-                 * STEP 9: Create updater script
-                 * Does not return any result.
-                 * If result.success is :
-                 * - `true` - All good, proceed to next engine.
-                 * - `false` - Errors in updater script. No point in proceeding in next engine. Try next zip batch.
-                 */
-                result = UpdaterScriptMakerEngine(partTag, zipBatch, timeStamp).executeWithResult()
-                if(tryNextBatchDueToErrorsInThisBatch()){
-                    continue
-                }
-
-                /**
-                 * STEP 10: Compress the zip batch into a zip file.
-                 * Result contains Pair(<FileX object for zip file>, <FileX object for fileList.txt>).
-                 */
-                lateinit var fileListCopied: FileX
-                lateinit var lastZip: FileX
-                result = ZippingEngine(partTag, zipBatch).executeWithResult()
-                result?.run {
-                    if (success){
-                        (this.result as Pair<FileX, FileX>).let {
-                            lastZip = it.first
-                            zipCanonicalPaths.add(it.first.canonicalPath)
-                            fileListCopied = it.second
+                /** STEP 2: Contacts backup */
+                if (contactsList.isNotEmpty()) {
+                    val contactsBackupName = "Contacts_$timeStamp.vcf"
+                    ContactsBackupEngine(contactsBackupName).executeWithResult()?.let {
+                        collectErrors(it)
+                        if (it.success) {
+                            listOfExtraFilesFromJobResults.add(it.result as FileX)
                         }
                     }
                 }
-                if(tryNextBatchDueToErrorsInThisBatch()){
-                    continue
+
+                /** STEP 3: SMS backup */
+                if (smsList.isNotEmpty()) {
+                    val smsBackupName = "Sms_$timeStamp.sms.db"
+                    SmsBackupEngine(smsBackupName).executeWithResult()?.let {
+                        collectErrors(it)
+                        if (it.success) {
+                            listOfExtraFilesFromJobResults.addAll(it.result as ArrayList<FileX>)
+                        }
+                    }
+                }
+
+                /** STEP 4: Calls backup */
+                if (callsList.isNotEmpty()) {
+                    val callsBackupName = "Calls_$timeStamp.calls.db"
+                    CallsBackupEngine(callsBackupName).executeWithResult()?.let {
+                        collectErrors(it)
+                        if (it.success) {
+                            listOfExtraFilesFromJobResults.addAll(it.result as ArrayList<FileX>)
+                        }
+                    }
+                }
+
+                /** STEP 5: Settings backup - ADB, Font scale, Keyboard, DPI */
+                val isSettingsNull: Boolean = (dpiText == null && keyboardText == null && adbState == null && fontScale == null)
+                if (!isSettingsNull) {
+                    SettingsBackupEngine().executeWithResult()?.let {
+                        collectErrors(it)
+                        if (it.success) {
+                            listOfExtraFilesFromJobResults.add(it.result as FileX)
+                        }
+                    }
                 }
 
                 /**
-                 * STEP 11: Zip verification.
+                 * STEP 6: App backup
                  * Does not return any result.
-                 *
-                 * If the last engine fails, then the control will anyway jump to next batch.
-                 * As such the control will not come to this statement.
-                 * Hence, if `fileListCopied` and `lastZip` is not initialized (if !result.success in last engine)
-                 * even then no error should occur.
                  */
-                result = ZipVerificationEngine(lastZip, partTag, flasherOnly, fileListCopied).executeWithResult()
-                if(tryNextBatchDueToErrorsInThisBatch()){
-                    continue
+                if (appPackets.isNotEmpty()) {
+                    collectErrors(AppBackupEngine(busyboxBinaryPath).executeWithResult())
                 }
 
+                /**
+                 * STEP 7: App backup verification
+                 * Does not return any result.
+                 */
+                if (appPackets.isNotEmpty()) {
+                    collectErrors(VerificationEngine(busyboxBinaryPath).executeWithResult())
+                }
+
+                /**
+                 * STEP 8: Making zip batches
+                 * Result is ArrayList of [ZipBatch].
+                 * If this step is not a success, then no point in proceeding further.
+                 * In that case, end the backup and return.
+                 */
+                zipBatches.addAll(ArrayList(0))
+                MakeZipBatch(listOfExtraFilesFromJobResults).executeWithResult()?.let {
+                    collectErrors(it)
+                    if (it.success) {
+                        zipBatches.addAll(it.result as ArrayList<ZipBatch>)
+                    } else {
+                        finishBackup(getString(R.string.failed_to_make_batches))
+                        return@launch
+                    }
+                }
+
+                /**
+                 * For each zip batch, run the next steps individually.
+                 */
+
+                for ((i, zipBatch) in zipBatches.withIndex()) {
+
+                    val partTag = "[${i + 1}/${zipBatches.size}]"
+                    var result: EngineJobResultHolder? = null
+
+                    /**
+                     * Function collects errors from `result`.
+                     * If result.success == `false`, returns `true` to indicate to `continue` the loop for next batch.
+                     */
+                    fun tryNextBatchDueToErrorsInThisBatch(): Boolean {
+                        collectErrors(result)
+                        if (result?.success == false) {
+                            allErrors.add("${ERR_BACKUP_SERVICE_ERROR}: ${getString(R.string.errors_in_batch)} - ${i + 1}")
+                            return true
+                        }
+                        return false
+                    }
+
+                    /**
+                     * STEP 9: Create updater script
+                     * Does not return any result.
+                     * If result.success is :
+                     * - `true` - All good, proceed to next engine.
+                     * - `false` - Errors in updater script. No point in proceeding in next engine. Try next zip batch.
+                     */
+                    result = UpdaterScriptMakerEngine(partTag, zipBatch, timeStamp).executeWithResult()
+                    if (tryNextBatchDueToErrorsInThisBatch()) {
+                        continue
+                    }
+
+                    /**
+                     * STEP 10: Compress the zip batch into a zip file.
+                     * Result contains Pair(<FileX object for zip file>, <FileX object for fileList.txt>).
+                     */
+                    lateinit var fileListCopied: FileX
+                    lateinit var lastZip: FileX
+                    result = ZippingEngine(partTag, zipBatch).executeWithResult()
+                    result?.run {
+                        if (success) {
+                            (this.result as Pair<FileX, FileX>).let {
+                                lastZip = it.first
+                                zipCanonicalPaths.add(it.first.canonicalPath)
+                                fileListCopied = it.second
+                            }
+                        }
+                    }
+                    if (tryNextBatchDueToErrorsInThisBatch()) {
+                        continue
+                    }
+
+                    /**
+                     * STEP 11: Zip verification.
+                     * Does not return any result.
+                     *
+                     * If the last engine fails, then the control will anyway jump to next batch.
+                     * As such the control will not come to this statement.
+                     * Hence, if `fileListCopied` and `lastZip` is not initialized (if !result.success in last engine)
+                     * even then no error should occur.
+                     */
+                    result = ZipVerificationEngine(lastZip, partTag, flasherOnly, fileListCopied).executeWithResult()
+                    if (tryNextBatchDueToErrorsInThisBatch()) {
+                        continue
+                    }
+                }
+            }
+            catch (e: Exception){
+                e.printStackTrace()
+                allErrors.add("$ERR_GENERIC_BACKUP_ENGINE: ${e.message.toString()}")
+                finishBackup("${getString(R.string.generic_backup_engine_error)}: ${e.message}")
             }
 
             finishBackup()
