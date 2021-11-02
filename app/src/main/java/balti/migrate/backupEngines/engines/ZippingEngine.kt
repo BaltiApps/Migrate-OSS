@@ -80,8 +80,8 @@ class ZippingEngine(override val partTag: String,
                         formattedPath.run {
                             if (contains('/')) {
                                 tempSubDirectories.add(substring(0, lastIndexOf('/')))
-                                tempFiles.add(substring(lastIndexOf('/') + 1))
-                            } else tempFiles.add(this)
+                            }
+                            tempFiles.add(this)
                         }
                     }
                 }
@@ -219,7 +219,7 @@ class ZippingEngine(override val partTag: String,
                 broadcastProgress(subTask, subTask, false)
 
                 for ((i, filePath) in readFiles.withIndex()){
-                    val file = FileX.new(filePath)
+                    val file = FileX.new(fileXDestination, filePath)
                     val zipEntry = ZipEntry(filePath)
 
                     file.exists()
