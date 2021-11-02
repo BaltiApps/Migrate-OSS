@@ -279,7 +279,11 @@ class BackupServiceKotlin_new: LifecycleService() {
     }
 
     /**
-     * WIP
+     * Some finishing work to do after backup is complete.
+     * Sends the final [BackupUpdate] broadcast and posts backup complete notification.
+     * Both of these contain a Bundle containing:
+     * [allErrors], [allWarnings], [zipCanonicalPaths], total time, boolean containing if backup is cancelled.
+     * These are read in [ProgressShowActivity_new.updateUiOnBackupFinished].
      */
     private fun finishBackup(customTitle: String = "", isCancelled: Boolean = false){
 
