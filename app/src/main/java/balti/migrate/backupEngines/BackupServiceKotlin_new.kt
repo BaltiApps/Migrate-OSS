@@ -478,7 +478,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                 finishBackup("${getString(R.string.generic_backup_engine_error)}: ${e.message}")
             }
 
-            finishBackup()
+            finishBackup(isCancelled = cancelBackup)
         }
     }
 
@@ -616,6 +616,7 @@ class BackupServiceKotlin_new: LifecycleService() {
         super.onDestroy()
 
         backupStarted = false
+        cancelBackup = false
 
         tryIt { commonTools.LBM?.unregisterReceiver(cancelReceiver) }
         tryIt { unregisterReceiver(cancelReceiver) }
