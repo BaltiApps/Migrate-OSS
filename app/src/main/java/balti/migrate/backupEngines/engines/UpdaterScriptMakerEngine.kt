@@ -382,8 +382,13 @@ class UpdaterScriptMakerEngine(
 
                     suInputStream.write("touch ${rawList.canonicalPath}\n")
 
+                    val displayName: String = zipBatch.zipName.let { zn ->
+                        if (zn.isBlank()) backupName
+                        else "$backupName - $zn"
+                    }
+
                     suInputStream.write("echo \"=================\" > ${rawList.canonicalPath}\n")
-                    suInputStream.write("echo \"${zipBatch.zipName}\" >> ${rawList.canonicalPath}\n")
+                    suInputStream.write("echo \"$displayName\" >> ${rawList.canonicalPath}\n")
                     suInputStream.write("echo \"=================\" >> ${rawList.canonicalPath}\n")
 
                     suInputStream.write("cd ${rootLocation.canonicalPath}\n")
