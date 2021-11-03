@@ -58,6 +58,9 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
     private var lastProgressPercent = 0
     private var isIndeterminate = true
 
+    private val CancellingString: String by lazy { getStringFromRes(R.string.cancelling) }
+    private val PleaseWaitString: String by lazy { getStringFromRes(R.string.please_wait) }
+
     /**
      * Progress type for this engine. This value may be changed from [resetBroadcast].
      * The value of this type is used to display different icons in [ProgressShowActivity_new].
