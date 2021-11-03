@@ -221,17 +221,30 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
         this.isIndeterminate = isIndeterminateProgress
         val progress = if (!isIndeterminateProgress) 0 else -1
 
-        lastTitle = title
+        lastTitle = if (BackupServiceKotlin_new.cancelBackup) CancellingString else title
         lastProgressPercent = progress
         engineProgressType = newProgressType
 
-        BackupProgressNotificationSystem.emitMessage(BackupUpdate(
-            newProgressType,
-            title,
-            "",
-            "",
-            progress,
-        ))
+        val update: BackupUpdate = if (BackupServiceKotlin_new.cancelBackup){
+            BackupUpdate(
+                ProgressType.PROGRESS_TYPE_WAITING_TO_CANCEL,
+                lastTitle,
+                PleaseWaitString,
+                "",
+                -1, // Indeterminate progress
+            )
+        }
+        else {
+            BackupUpdate(
+                newProgressType,
+                title,
+                "",
+                "",
+                progress,
+            )
+        }
+
+        BackupProgressNotificationSystem.emitMessage(update)
 
         updateNotification("", progress)
     }
