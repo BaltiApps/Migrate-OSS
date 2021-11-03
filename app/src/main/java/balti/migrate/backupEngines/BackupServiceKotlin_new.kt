@@ -87,7 +87,8 @@ class BackupServiceKotlin_new: LifecycleService() {
          */
         var cancelBackup: Boolean = false
         set(value) {
-            BackupProgressNotificationSystem.cancellingLock = value
+            if (value)
+                BackupProgressNotificationSystem.emitMessage(BackupProgressNotificationSystem.cancellingUpdate)
             field = value
         }
 
