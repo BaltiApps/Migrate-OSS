@@ -153,7 +153,7 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
      */
     fun broadcastProgress(subTask: String, taskLog: String, showNotification: Boolean, progressPercent: Int = -1){
 
-        if (BackupServiceKotlin.cancelAll) return
+        if (BackupServiceKotlin_new.cancelBackup) return
 
         val progress = progressPercent.let {
             when {

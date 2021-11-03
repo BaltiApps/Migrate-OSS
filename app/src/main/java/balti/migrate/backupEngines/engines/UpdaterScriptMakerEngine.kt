@@ -4,8 +4,8 @@ import android.os.Build
 import balti.filex.FileX
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
-import balti.migrate.backupEngines.BackupServiceKotlin
-import balti.migrate.backupEngines.BackupServiceKotlin.Companion.flasherOnly
+import balti.migrate.backupEngines.BackupServiceKotlin_new
+import balti.migrate.backupEngines.BackupServiceKotlin_new.Companion.flasherOnly
 import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.backupEngines.containers.ZipBatch
 import balti.migrate.backupEngines.utils.BackupUtils
@@ -183,7 +183,7 @@ class UpdaterScriptMakerEngine(
 
             for (c in packets.indices) {
 
-                if (BackupServiceKotlin.cancelAll) {
+                if (BackupServiceKotlin_new.cancelBackup) {
                     updater_writer.close()
                     break
                 }

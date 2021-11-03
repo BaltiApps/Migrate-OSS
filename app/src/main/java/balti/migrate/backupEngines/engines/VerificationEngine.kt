@@ -7,7 +7,7 @@ import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.appApkFiles
 import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.R
-import balti.migrate.backupEngines.BackupServiceKotlin
+import balti.migrate.backupEngines.BackupServiceKotlin_new
 import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
@@ -105,7 +105,7 @@ class VerificationEngine(private val busyboxBinaryPath: String) : ParentBackupCl
 
     private fun verifyDataPermIconBackups(): ArrayList<String>? {
 
-        if (BackupServiceKotlin.cancelAll) return null
+        if (BackupServiceKotlin_new.cancelBackup) return null
 
         val allRecovery = ArrayList<String>(0)
 
@@ -145,7 +145,7 @@ class VerificationEngine(private val busyboxBinaryPath: String) : ParentBackupCl
             val size = appList.size
             for (i in appList.indices) {
 
-                if (BackupServiceKotlin.cancelAll) break
+                if (BackupServiceKotlin_new.cancelBackup) break
 
                 val packet = appList[i]
                 val pi = packet.PACKAGE_INFO
@@ -318,7 +318,7 @@ class VerificationEngine(private val busyboxBinaryPath: String) : ParentBackupCl
 
         try {
 
-            if (BackupServiceKotlin.cancelAll) return null
+            if (BackupServiceKotlin_new.cancelBackup) return null
 
             val tarRecovery = ArrayList<String>(0)
             lastProgress = 0
@@ -387,7 +387,7 @@ class VerificationEngine(private val busyboxBinaryPath: String) : ParentBackupCl
 
                 backupUtils.iterateBufferedReader(outputStream, { line ->
 
-                    if (BackupServiceKotlin.cancelAll) {
+                    if (BackupServiceKotlin_new.cancelBackup) {
                         cancelTask(suProcess, TAR_CHECK_CORRECTION_PID)
                         return@iterateBufferedReader true
                     }
@@ -464,7 +464,7 @@ class VerificationEngine(private val busyboxBinaryPath: String) : ParentBackupCl
                     write("echo \"--- RECOVERY PID: $$\"\n")
 
                     for (i in 0 until defects.size){
-                        if (BackupServiceKotlin.cancelAll) break
+                        if (BackupServiceKotlin_new.cancelBackup) break
 
                         val defect = defects[i]
                         if (defect.startsWith(MIGRATE_STATUS)){
@@ -515,7 +515,7 @@ class VerificationEngine(private val busyboxBinaryPath: String) : ParentBackupCl
 
                 backupUtils.iterateBufferedReader(outputStream, {line ->
 
-                    if (BackupServiceKotlin.cancelAll) {
+                    if (BackupServiceKotlin_new.cancelBackup) {
                         cancelTask(suProcess, CORRECTION_PID)
                         return@iterateBufferedReader true
                     }
@@ -614,7 +614,7 @@ class VerificationEngine(private val busyboxBinaryPath: String) : ParentBackupCl
         val defects = ArrayList<String>(0)
         checkApks()?.let { defects.addAll(it) }
         verifyDataPermIconBackups()?.let { defects.addAll(it) }
-        if (!BackupServiceKotlin.cancelAll && defects.size != 0)
+        if (!BackupServiceKotlin_new.cancelBackup && defects.size != 0)
             correctBackups(defects)
         if (packagesWithApkCorrection.isNotEmpty()) readCorrectedApkSizes()
         if (appAuxFilesDir.exists() && !appAuxFilesDir.isEmpty && defects.any { it.startsWith(MIGRATE_STATUS) })

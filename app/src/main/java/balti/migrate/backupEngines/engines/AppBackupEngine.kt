@@ -5,7 +5,7 @@ import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.appApkFiles
 import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.R
-import balti.migrate.backupEngines.BackupServiceKotlin
+import balti.migrate.backupEngines.BackupServiceKotlin_new
 import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.*
@@ -131,7 +131,7 @@ class AppBackupEngine(private val busyboxBinaryPath: String) : ParentBackupClass
                     appList.let {packets ->
                         for (i in 0 until packets.size) {
 
-                            if (BackupServiceKotlin.cancelAll) break
+                            if (BackupServiceKotlin_new.cancelBackup) break
 
                             val packet = packets[i]
 
@@ -220,7 +220,7 @@ class AppBackupEngine(private val busyboxBinaryPath: String) : ParentBackupClass
 
                 backupUtils.iterateBufferedReader(outputStream, { output ->
 
-                    if (BackupServiceKotlin.cancelAll) {
+                    if (BackupServiceKotlin_new.cancelBackup) {
                         cancelTask(suProcess, BACKUP_PID)
                         return@iterateBufferedReader true
                     }
@@ -343,7 +343,7 @@ class AppBackupEngine(private val busyboxBinaryPath: String) : ParentBackupClass
 
     override suspend fun backgroundProcessing(): Any? {
         val scriptLocation = makeBackupScript()
-        if (!BackupServiceKotlin.cancelAll) scriptLocation?.let { runBackupScript(it) }
+        if (!BackupServiceKotlin_new.cancelBackup) scriptLocation?.let { runBackupScript(it) }
         moveAuxFiles()
         populateSplitApkNames()
         return null
