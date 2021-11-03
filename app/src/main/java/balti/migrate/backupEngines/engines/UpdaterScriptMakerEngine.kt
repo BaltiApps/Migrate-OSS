@@ -13,6 +13,7 @@ import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.Progre
 import balti.migrate.utilities.CommonToolsKotlin.Companion.DIR_MANUAL_CONFIGS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_UPDATER_CONFIG_FILE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_UPDATER_EXTRACT
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_UPDATER_MOVE_AUX
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_UPDATER_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_WRITING_RAW_LIST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_BUILDPROP_MANUAL
@@ -444,7 +445,9 @@ class UpdaterScriptMakerEngine(
             backupUtils.moveAuxFilesToBackupLocation(
                 pathForAuxFiles,
                 "${rootLocation.canonicalPath}/${zipBatch.zipName}"
-            )
+            ).forEach {
+                errors.add("$ERR_UPDATER_MOVE_AUX${partTag}: $it")
+            }
 
             createRawList()
         }
