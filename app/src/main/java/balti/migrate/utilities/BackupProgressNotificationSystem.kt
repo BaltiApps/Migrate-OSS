@@ -1,6 +1,7 @@
 package balti.migrate.utilities
 
 import android.os.Bundle
+import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin_new
 import balti.migrate.extraBackupsActivity.ExtraBackupsKotlin
 import balti.migrate.simpleActivities.ProgressShowActivity_new
@@ -9,6 +10,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FINISHED_ZIP_PA
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_CANCELLED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_WARNINGS
+import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -59,6 +61,28 @@ class BackupProgressNotificationSystem {
              */
             val extraInfoBundle: Bundle? = null
         )
+
+        /**
+         * If this value is set, all new updates in [emitMessage] will have their
+         * - title changed to "Cancelling backup"
+         * - type changed to [ProgressType.PROGRESS_TYPE_WAITING_TO_CANCEL].
+         *
+         * Also broadcast [cancellingUpdate] if set value is true.
+         */
+        var cancellingLock = false
+        set(value) {
+            if (value) emitMessage(cancellingUpdate)
+            field = value
+        }
+
+        private val cancellingUpdate by lazy {
+            BackupUpdate(
+                ProgressType.PROGRESS_TYPE_WAITING_TO_CANCEL,
+                getStringFromRes(R.string.cancelling),
+                getStringFromRes(R.string.please_wait),
+                "", 0
+            )
+        }
 
         private val initialValue = BackupUpdate(
             ProgressType.EMPTY,
