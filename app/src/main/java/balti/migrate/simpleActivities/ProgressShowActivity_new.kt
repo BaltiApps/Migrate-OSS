@@ -253,14 +253,15 @@ class ProgressShowActivity_new: AppCompatActivity() {
                 progressTask.setTextColor(resources.getColor(R.color.error_color))
                 subTask.setTextColor(resources.getColor(R.color.error_color))
             }
+        }
 
-            /**
-             * Get total time in millis and use [calendarDifference]
-             * to get a human readable form.
-             */
-            bundle.getLong(EXTRA_TOTAL_TIME, -1).let {
-                if (it != -1L) subTask.text = calendarDifference(it)
-            }
+        /**
+         * Get total time in millis and use [calendarDifference]
+         * to get a human readable form.
+         */
+        bundle.getLong(EXTRA_TOTAL_TIME, -1).let {
+            if (it != -1L) subTask.text = calendarDifference(it)
+            else subTask.text = ""
         }
 
         /**
