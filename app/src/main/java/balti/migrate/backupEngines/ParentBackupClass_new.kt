@@ -33,6 +33,7 @@ import java.io.OutputStreamWriter
 abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCoroutineTask(DISP_IO) {
 
     val fileXDestination: String get() = BackupServiceKotlin_new.fileXDestination
+    val backupName: String get() = BackupServiceKotlin_new.backupName
 
     var cancelBackup: Boolean
         get() = BackupServiceKotlin_new.cancelBackup
