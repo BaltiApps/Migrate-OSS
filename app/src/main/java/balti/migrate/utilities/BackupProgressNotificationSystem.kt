@@ -55,7 +55,6 @@ class BackupProgressNotificationSystem {
              * - [EXTRA_FINISHED_ZIP_PATHS] : ArrayList of zip file paths.
              *
              * Read in [ProgressShowActivity_new.updateUiOnBackupFinished].
-             * Also created in [ProgressShowActivity_new.createFinishedUpdateFromIntent].
              * Also created in [BackupServiceKotlin_new.finishBackup].
              */
             val extraInfoBundle: Bundle? = null
