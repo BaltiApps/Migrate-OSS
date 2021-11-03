@@ -34,6 +34,9 @@ import balti.migrate.utilities.IconTools
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import kotlinx.android.synthetic.main.backup_progress_layout.*
 import kotlinx.android.synthetic.main.zip_name_show.view.*
+import kotlinx.coroutines.delay
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ProgressShowActivity_new: AppCompatActivity() {
 
@@ -51,6 +54,9 @@ class ProgressShowActivity_new: AppCompatActivity() {
     private var forceStopDialog: AlertDialog? = null
 
     private val auxDirectory by lazy { FileX.new(filesDir.canonicalPath, DIR_APP_AUX_FILES, true) }
+
+    private val logQueue: Queue<String> = LinkedList()
+    private var checkLoop = false
 
     /**
      * Called from [updateUiOnProgress].
@@ -296,7 +302,7 @@ class ProgressShowActivity_new: AppCompatActivity() {
          */
         backupUpdate.log.run {
             if (this != lastLog && this != "") {
-                progressLogTextView.append("$this\n")
+                logQueue.add("$this\n")
                 lastLog = this
             }
         }
@@ -457,6 +463,19 @@ class ProgressShowActivity_new: AppCompatActivity() {
             }
         }
 
+        lifecycleScope.launchWhenStarted {
+            while (true){
+                if (checkLoop){
+                    while (logQueue.isNotEmpty()) {
+                        logQueue.poll()?.let {
+                            progressLogTextView.append(it)
+                        }
+                    }
+                }
+                delay(1)
+            }
+        }
+
         /**
          * In case activity is called from notification pending intent,
          * Intent extras will not be null.
@@ -467,6 +486,16 @@ class ProgressShowActivity_new: AppCompatActivity() {
                 updateUiOnProgress(createFinishedUpdateFromIntent(this))
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        checkLoop = false
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkLoop = true
     }
 
     override fun onDestroy() {
