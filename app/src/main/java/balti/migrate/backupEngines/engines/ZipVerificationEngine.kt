@@ -88,7 +88,7 @@ class ZipVerificationEngine(private val zipFile: FileX,
                 val entryName = entry.name
 
                 if (entryName.contains('/')) {
-                    val nameWithNoEndingSlash = entryName.drop(1)
+                    val nameWithNoEndingSlash = entryName.dropLast(1)
                     nameWithNoEndingSlash.run {
                         /**
                          * Check if it is an app directory and add it to [appDirectories].
