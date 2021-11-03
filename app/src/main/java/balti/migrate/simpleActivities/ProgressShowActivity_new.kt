@@ -35,6 +35,7 @@ import balti.module.baltitoolbox.functions.Misc.tryIt
 import kotlinx.android.synthetic.main.backup_progress_layout.*
 import kotlinx.android.synthetic.main.zip_name_show.view.*
 import kotlinx.coroutines.delay
+import org.apache.commons.collections4.queue.CircularFifoQueue
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -55,7 +56,7 @@ class ProgressShowActivity_new: AppCompatActivity() {
 
     private val auxDirectory by lazy { FileX.new(filesDir.canonicalPath, DIR_APP_AUX_FILES, true) }
 
-    private val logQueue: Queue<String> = LinkedList()
+    private val logQueue: Queue<String> = CircularFifoQueue(25)
     private var checkLoop = false
 
     /**
