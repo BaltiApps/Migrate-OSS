@@ -86,6 +86,10 @@ class BackupServiceKotlin_new: LifecycleService() {
          * All backup engines check this flag before proceeding.
          */
         var cancelBackup: Boolean = false
+        set(value) {
+            BackupProgressNotificationSystem.cancellingLock = value
+            field = value
+        }
 
         /**
          * Canonical destination is full path to backup location.
