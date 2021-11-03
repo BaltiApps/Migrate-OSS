@@ -229,7 +229,7 @@ class ZippingEngine(override val partTag: String,
                 broadcastProgress(subTask, subTask, false)
 
                 for ((i, filePath) in readFiles.withIndex()){
-                    val file = FileX.new(fileXDestination, filePath)
+                    val file = FileX.new("$fileXDestination/${zipBatch.zipName}", filePath)
                     val zipEntry = ZipEntry(filePath)
 
                     file.exists()
