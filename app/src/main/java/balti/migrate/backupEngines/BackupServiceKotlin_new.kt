@@ -49,6 +49,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FILEX_DESTINATI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FINISHED_ZIP_PATHS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_CANCELLED
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_ACTIVITY_FROM_FINISHED_NOTIFICATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_WARNINGS
@@ -583,6 +584,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                 PendingIntent.getActivity(
                     this, CommonToolsKotlin.PENDING_INTENT_REQUEST_ID,
                     Intent(this, ProgressShowActivity_new::class.java).apply {
+                        putExtra(EXTRA_PROGRESS_ACTIVITY_FROM_FINISHED_NOTIFICATION, true)
                         putExtra(EXTRA_TITLE, finishedTitle)
                         putExtras(extraInfoBundle)
                     },
