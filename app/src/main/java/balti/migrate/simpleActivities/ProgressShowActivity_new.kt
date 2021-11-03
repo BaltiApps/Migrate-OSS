@@ -245,14 +245,14 @@ class ProgressShowActivity_new: AppCompatActivity() {
                     errorLogTextView.append("$it\n")
                 }
             }
+        }
 
-            /**
-             * Colour the title and subTask in RED if there are errors, or backup is cancelled.
-             */
-            if (errors.size != 0 || bundle.getBoolean(EXTRA_IS_CANCELLED, false)) {
-                progressTask.setTextColor(resources.getColor(R.color.error_color))
-                subTask.setTextColor(resources.getColor(R.color.error_color))
-            }
+        /**
+         * Colour the title and subTask in RED if there are errors, or backup is cancelled.
+         */
+        if (errors.size != 0 || bundle.getBoolean(EXTRA_IS_CANCELLED, false)) {
+            progressTask.setTextColor(resources.getColor(R.color.error_color))
+            subTask.setTextColor(resources.getColor(R.color.error_color))
         }
 
         /**
