@@ -156,7 +156,7 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
      */
     fun broadcastProgress(subTask: String, taskLog: String, showNotification: Boolean, progressPercent: Int = -1){
 
-        if (BackupServiceKotlin_new.cancelBackup) return
+        //if (BackupServiceKotlin_new.cancelBackup) return
 
         val progress = progressPercent.let {
             when {
@@ -167,16 +167,38 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
         }
         lastProgressPercent = progress
 
-        BackupProgressNotificationSystem.emitMessage(BackupUpdate(
-            engineProgressType,
-            lastTitle,
-            subTask,
-            taskLog.let {if (it == subTask) "" else it},
-            progress,
-        ))
+        val update: BackupUpdate = if (BackupServiceKotlin_new.cancelBackup) {
+            lastTitle = CancellingString
+            isIndeterminate = true
+            BackupUpdate(
+                ProgressType.PROGRESS_TYPE_WAITING_TO_CANCEL,
+                lastTitle,
+                PleaseWaitString,
+                taskLog.let { if (it == subTask) "" else it },
+                -1, // Indeterminate progress
+            )
+        }
+        else {
+            BackupUpdate(
+                engineProgressType,
+                lastTitle,
+                subTask,
+                taskLog.let { if (it == subTask) "" else it },
+                progress,
+            )
+        }
 
-        if (showNotification)
-            updateNotification(subTask, progress)
+        BackupProgressNotificationSystem.emitMessage(update)
+
+        if (showNotification || BackupServiceKotlin_new.cancelBackup) {
+            /**
+             * If cancelBackup is `true`, update notification even if [showNotification] = `false`.
+             * In all engines, if cancelBackup becomes `true`,
+             * usually the engine terminates quickly without too many updates.
+             * Hence this will, most likely, not freeze system UI by too many updates.
+             */
+            updateNotification(update.subTask, update.progressPercent)
+        }
     }
 
     /**
