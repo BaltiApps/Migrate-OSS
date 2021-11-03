@@ -72,11 +72,21 @@ class ZippingEngine(override val partTag: String,
                  */
                 try {
                     if (c > 3) {
+
                         var formattedPath = it.substring(2)
+
+                        /** First remove any trailing slash. */
                         formattedPath = formattedPath.let { p ->
                             if (p.endsWith('/')) p.dropLast(1)
                             else p
                         }
+
+                        /**
+                         *  If there is any slash in-between the path, it means directory structure.
+                         *  Extract the directory part separately.
+                         *  For the file at the end of the directory, always use the full path,
+                         *  else incomplete path (from root of backup) will get sent while adding to zip.
+                         */
                         formattedPath.run {
                             if (contains('/')) {
                                 tempSubDirectories.add(substring(0, lastIndexOf('/')))
