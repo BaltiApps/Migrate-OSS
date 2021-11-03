@@ -63,24 +63,14 @@ class BackupProgressNotificationSystem {
         )
 
         /**
-         * If this value is set, all new updates in [emitMessage] will have their
-         * - title changed to "Cancelling backup"
-         * - type changed to [ProgressType.PROGRESS_TYPE_WAITING_TO_CANCEL].
-         *
-         * Also broadcast [cancellingUpdate] if set value is true.
+         * Simple update which gets immediately broadcasted when "Cancel" button is pressed.
          */
-        var cancellingLock = false
-        set(value) {
-            if (value) emitMessage(cancellingUpdate)
-            field = value
-        }
-
-        private val cancellingUpdate by lazy {
+        val cancellingUpdate by lazy {
             BackupUpdate(
                 ProgressType.PROGRESS_TYPE_WAITING_TO_CANCEL,
                 getStringFromRes(R.string.cancelling),
                 getStringFromRes(R.string.please_wait),
-                "", 0
+                "", -1
             )
         }
 
