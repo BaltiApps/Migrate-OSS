@@ -50,7 +50,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FINISHED_ZIP_PA
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FLASHER_ONLY
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_CANCELLED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_ACTIVITY_FROM_FINISHED_NOTIFICATION
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_WARNINGS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_ERRORLOG
@@ -522,7 +521,6 @@ class BackupServiceKotlin_new: LifecycleService() {
 
         /**
          * Create variables for final [BackupUpdate] object.
-         * We will try to reuse them as much as possible for the final backup complete notification.
          */
         val finishedTitle: String =
             when {
@@ -573,9 +571,6 @@ class BackupServiceKotlin_new: LifecycleService() {
         /**
          * Send the final notification. Use a different notification ID
          * to prevent the final notification from not be removed once the service is over.
-         *
-         * The final notification intent also needs an additional extra: [EXTRA_TITLE].
-         * See [ProgressShowActivity_new.createFinishedUpdateFromIntent].
          */
         val finalNotification = NotificationCompat.Builder(this, CHANNEL_BACKUP_END)
             .setContentTitle(finishedTitle)
@@ -585,8 +580,6 @@ class BackupServiceKotlin_new: LifecycleService() {
                     this, CommonToolsKotlin.PENDING_INTENT_REQUEST_ID,
                     Intent(this, ProgressShowActivity_new::class.java).apply {
                         putExtra(EXTRA_PROGRESS_ACTIVITY_FROM_FINISHED_NOTIFICATION, true)
-                        putExtra(EXTRA_TITLE, finishedTitle)
-                        putExtras(extraInfoBundle)
                     },
                     FLAG_UPDATE_CURRENT_PENDING_INTENT
                 )
