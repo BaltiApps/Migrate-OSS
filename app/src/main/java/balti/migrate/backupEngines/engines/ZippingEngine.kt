@@ -4,7 +4,6 @@ import balti.filex.FileX
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin
-import balti.migrate.backupEngines.BackupServiceKotlin_new
 import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.backupEngines.containers.ZipBatch
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_ZIPPING
@@ -192,7 +191,7 @@ class ZippingEngine(override val partTag: String,
                     when {
                         zipBatch.zipName.isNotBlank() -> FileX.new(fileXDestination, "${zipBatch.zipName}.zip")
                         fileXDestination.isNotBlank() -> FileX.new("$fileXDestination.zip")
-                        else -> FileX.new("${BackupServiceKotlin_new.backupName}.zip")
+                        else -> FileX.new("$backupName.zip")
                     }
 
                 if (!getAllFiles() || BackupServiceKotlin.cancelAll) return@heavyTask
