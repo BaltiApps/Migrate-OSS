@@ -129,28 +129,11 @@ class BackupProgressNotificationSystem {
 
         /**
          * Send a message to all the listeners.
-         * Block a lot of parts of the update if [cancellingLock] is set to `true`.
-         * Always allow update if type is [ProgressType.BACKUP_CANCELLED].
          */
         fun emitMessage(update: BackupUpdate){
             GlobalScope.launch {
-                if (update.type == ProgressType.BACKUP_CANCELLED || !cancellingLock) {
-                    mutableStateFlow.emit(update)
-                    mutableSharedFlow.emit(update)
-                }
-                else {
-                    BackupUpdate(
-                        cancellingUpdate.type,
-                        cancellingUpdate.title,
-                        cancellingUpdate.subTask,
-                        update.log,
-                        update.progressPercent,
-                        update.extraInfoBundle
-                    ).let {
-                        mutableStateFlow.emit(it)
-                        mutableSharedFlow.emit(it)
-                    }
-                }
+                mutableStateFlow.emit(update)
+                mutableSharedFlow.emit(update)
             }
         }
 
