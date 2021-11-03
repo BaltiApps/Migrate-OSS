@@ -121,6 +121,7 @@ class CommonToolsKotlin(val context: Context? = null) {
         val EXTRA_TOTAL_TIME = "total_time"
         val EXTRA_IS_CANCELLED = "isCancelled"
         val EXTRA_FLASHER_ONLY = "flasherOnly"
+        val EXTRA_PROGRESS_ACTIVITY_FROM_FINISHED_NOTIFICATION = "PROGRESS_ACTIVITY_FROM_FINISHED_NOTIFICATION"
 
         val EXTRA_IS_ERROR_LOG_MANDATORY = "isErrorLogMandatory"
 
