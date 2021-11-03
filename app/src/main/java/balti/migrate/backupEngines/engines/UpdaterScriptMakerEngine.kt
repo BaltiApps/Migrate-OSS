@@ -432,8 +432,6 @@ class UpdaterScriptMakerEngine(
                 writeManualConfig(FILE_BUILDPROP_MANUAL, PREF_MANUAL_BUILDPROP)
             }
 
-            createRawList()
-
             if (!flasherOnly) makeUpdaterScript()
 
             /**
@@ -443,6 +441,8 @@ class UpdaterScriptMakerEngine(
                 pathForAuxFiles,
                 "${rootLocation.canonicalPath}/${zipBatch.zipName}"
             )
+
+            createRawList()
         }
         catch (e: Exception){
             e.printStackTrace()
