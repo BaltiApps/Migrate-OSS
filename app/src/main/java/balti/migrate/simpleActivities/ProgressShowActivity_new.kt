@@ -28,7 +28,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ERRORS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FINISHED_ZIP_PATHS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_CANCELLED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_ACTIVITY_FROM_FINISHED_NOTIFICATION
-import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_WARNINGS
 import balti.migrate.utilities.IconTools
@@ -348,45 +347,6 @@ class ProgressShowActivity_new: AppCompatActivity() {
     }
 
     /**
-     * If activity is called from notification, use this function
-     * to create a [BackupUpdate] object from intent extras.
-     *
-     * Expected keys:
-     * - [EXTRA_ERRORS]: ArrayList<String>
-     * - [EXTRA_WARNINGS]: ArrayList<String>
-     * - [EXTRA_IS_CANCELLED]: Boolean
-     * - [EXTRA_TOTAL_TIME]: Long
-     * - [EXTRA_FINISHED_ZIP_PATHS]: ArrayList<String>
-     * - [EXTRA_TITLE]: String
-     */
-    private fun createFinishedUpdateFromIntent(bundle: Bundle): BackupUpdate {
-        val backupUpdate = BackupUpdate(
-            type =
-            if (bundle.getBoolean(EXTRA_IS_CANCELLED, false)) BACKUP_CANCELLED
-            else PROGRESS_TYPE_FINISHED,
-
-            title = bundle.getString(EXTRA_TITLE, ""),
-
-            subTask = "",        // subTask will have total time required to complete backup.
-
-            log = "",
-
-            progressPercent = 0,
-
-            extraInfoBundle = Bundle().apply {
-                putStringArrayList(EXTRA_ERRORS, bundle.getStringArrayList(EXTRA_ERRORS))
-                putStringArrayList(EXTRA_WARNINGS, bundle.getStringArrayList(EXTRA_WARNINGS))
-                putBoolean(EXTRA_IS_CANCELLED, bundle.getBoolean(EXTRA_IS_CANCELLED, false))
-                putLong(EXTRA_TOTAL_TIME, bundle.getLong(EXTRA_TOTAL_TIME))
-                putStringArrayList(EXTRA_FINISHED_ZIP_PATHS, bundle.getStringArrayList(EXTRA_FINISHED_ZIP_PATHS)?: arrayListOf())
-            }
-
-        )
-
-        return backupUpdate
-    }
-
-    /**
      * To be checked and set up from [onCreate].
      *
      * Logging all updates to [progressLogTextView] is causing UI to freeze.
@@ -504,17 +464,6 @@ class ProgressShowActivity_new: AppCompatActivity() {
         lifecycleScope.launchWhenStarted {
             BackupProgressNotificationSystem.addListener(true){
                 updateUiOnProgress(it)
-            }
-        }
-
-        /**
-         * In case activity is called from notification pending intent,
-         * Intent extras will not be null.
-         * Use the intent extras to create a new instance of [BackupUpdate] and pass to [updateUiOnProgress].
-         */
-        intent.extras?.run {
-            if (!isEmpty){
-                updateUiOnProgress(createFinishedUpdateFromIntent(this))
             }
         }
     }
