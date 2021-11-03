@@ -27,6 +27,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.DIR_APP_AUX_FILES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_ERRORS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_FINISHED_ZIP_PATHS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_CANCELLED
+import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_PROGRESS_ACTIVITY_FROM_FINISHED_NOTIFICATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TITLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_WARNINGS
@@ -56,8 +57,16 @@ class ProgressShowActivity_new: AppCompatActivity() {
 
     private val auxDirectory by lazy { FileX.new(filesDir.canonicalPath, DIR_APP_AUX_FILES, true) }
 
+    /** Queue to store log updates */
     private val logQueue: Queue<String> = CircularFifoQueue(25)
     private var checkLoop = false
+
+    /** This will be `false` IF this activity is called from the backup-finished notification. */
+    private val liveListenToLogs: Boolean by lazy {
+        val launchFromFinishedNotification =
+            intent?.getBooleanExtra(EXTRA_PROGRESS_ACTIVITY_FROM_FINISHED_NOTIFICATION, false)?: false
+        !launchFromFinishedNotification
+    }
 
     /**
      * Called from [updateUiOnProgress].
@@ -300,11 +309,16 @@ class ProgressShowActivity_new: AppCompatActivity() {
         /**
          * Set verbose log.
          * Not running trim() because it kills extra line breaks.
+         *
+         * If [liveListenToLogs] == true, then add the logs to [logQueue]
+         * which will be picked up by [useQueueToListenToLiveLogs] later.
+         * Else directly add to [progressLogTextView].
          */
         backupUpdate.log.run {
             if (this != lastLog && this != "") {
-                logQueue.add("$this\n")
                 lastLog = this
+                if (liveListenToLogs) logQueue.add("$this\n")
+                else progressLogTextView.append("$this\n")
             }
         }
 
@@ -370,6 +384,33 @@ class ProgressShowActivity_new: AppCompatActivity() {
         )
 
         return backupUpdate
+    }
+
+    /**
+     * To be checked and set up from [onCreate].
+     *
+     * Logging all updates to [progressLogTextView] is causing UI to freeze.
+     * This is because of the volume of the verbose logging coming in.
+     * This method uses a small queue [logQueue] to show a limited number of verbose log.
+     *
+     * This method is used only if [liveListenToLogs] is `true`.
+     * It will be `false` ONLY IF this activity is called from the backup-finished notification.
+     *
+     * If [liveListenToLogs] == `false`, all updates are read directly to [progressLogTextView].
+     */
+    private fun useQueueToListenToLiveLogs(){
+        lifecycleScope.launchWhenStarted {
+            while (true){
+                if (checkLoop){
+                    while (logQueue.isNotEmpty()) {
+                        logQueue.poll()?.let {
+                            progressLogTextView.append(it)
+                        }
+                    }
+                }
+                delay(10)
+            }
+        }
     }
 
     /**
@@ -455,25 +496,14 @@ class ProgressShowActivity_new: AppCompatActivity() {
             movementMethod = ScrollingMovementMethod()
         }
 
+        if (liveListenToLogs) useQueueToListenToLiveLogs()
+
         /**
          * Add listener to listen to updates.
          */
         lifecycleScope.launchWhenStarted {
             BackupProgressNotificationSystem.addListener(true){
                 updateUiOnProgress(it)
-            }
-        }
-
-        lifecycleScope.launchWhenStarted {
-            while (true){
-                if (checkLoop){
-                    while (logQueue.isNotEmpty()) {
-                        logQueue.poll()?.let {
-                            progressLogTextView.append(it)
-                        }
-                    }
-                }
-                delay(1)
             }
         }
 
