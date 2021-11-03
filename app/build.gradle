@@ -35,6 +35,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 
+    implementation 'org.apache.commons:commons-collections4:4.4'
+
     implementation project(path: ':baltitoolbox')
 
     // Un-comment to include from AAR
