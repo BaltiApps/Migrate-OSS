@@ -16,6 +16,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_UPDATER_EXTRACT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_UPDATER_MOVE_AUX
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_UPDATER_TRY_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_WRITING_RAW_LIST
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_WRITING_RAW_LIST_CATCH
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_BUILDPROP_MANUAL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_FILE_LIST
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MIGRATE_CACHE_MANUAL
@@ -399,7 +400,7 @@ class UpdaterScriptMakerEngine(
                     suInputStream.flush()
 
                     iterateBufferedReader(errorStream, { errorLine ->
-                        errors.add(errorLine)
+                        errors.add("$ERR_WRITING_RAW_LIST${partTag}: ${errorLine}")
                         return@iterateBufferedReader false
                     })
                 }
@@ -407,7 +408,7 @@ class UpdaterScriptMakerEngine(
         }
         catch (e: Exception){
             e.printStackTrace()
-            warnings.add("$ERR_WRITING_RAW_LIST${partTag}: ${e.message}")
+            warnings.add("$ERR_WRITING_RAW_LIST_CATCH${partTag}: ${e.message}")
         }
     }
 
