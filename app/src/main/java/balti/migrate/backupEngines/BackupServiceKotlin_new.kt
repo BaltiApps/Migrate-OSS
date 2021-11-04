@@ -32,8 +32,7 @@ import balti.migrate.backupEngines.utils.EngineJobResultHolder
 import balti.migrate.simpleActivities.ProgressShowActivity_new
 import balti.migrate.utilities.BackupProgressNotificationSystem
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.BackupUpdate
-import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.BACKUP_CANCELLED
-import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_FINISHED
+import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.*
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ACTION_BACKUP_CANCEL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.CHANNEL_BACKUP_CANCELLING
@@ -264,9 +263,16 @@ class BackupServiceKotlin_new: LifecycleService() {
                 }
 
                 /**
-                 * Write the log always.
+                 * Write the log if it is not for contacts, sms or calls as they have phone numbers.
                  */
-                progressWriter?.write("${update.log}\n")
+                if (update.type !in arrayOf(
+                        PROGRESS_TYPE_CONTACTS,
+                        PROGRESS_TYPE_SMS,
+                        PROGRESS_TYPE_CALLS
+                    )
+                ) {
+                    progressWriter?.write("${update.log}\n")
+                }
             }
         }
     }
