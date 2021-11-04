@@ -344,8 +344,8 @@ class AppBackupEngine(private val busyboxBinaryPath: String) : ParentBackupClass
     override suspend fun backgroundProcessing(): Any? {
         val scriptLocation = makeBackupScript()
         if (!BackupServiceKotlin_new.cancelBackup) scriptLocation?.let { runBackupScript(it) }
-        moveAuxFiles()
-        populateSplitApkNames()
+        if (!BackupServiceKotlin_new.cancelBackup) moveAuxFiles()
+        if (!BackupServiceKotlin_new.cancelBackup) populateSplitApkNames()
         return null
     }
 
