@@ -170,6 +170,8 @@ class MakeZipBatch(private val extras: ArrayList<FileX>) : ParentBackupClass_new
             getStringFromRes(R.string.grouping_into_batches).let { broadcastProgress(it, it, true) }
 
             val MAX_TWRP_ZIP_SIZE = MAX_WORKING_SIZE - RESERVED_SPACE
+            writeLog("MAX_TWRP_ZIP_SIZE: $MAX_TWRP_ZIP_SIZE")
+
             /**
              * This variable is true if a TWRP backup can be accommodated in a single zip.
              * i.e. if the total size of all app and extra packets
