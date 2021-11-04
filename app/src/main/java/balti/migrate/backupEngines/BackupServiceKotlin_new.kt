@@ -57,6 +57,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PROGRESSLOG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FLAG_UPDATE_CURRENT_PENDING_INTENT
 import balti.migrate.utilities.CommonToolsKotlin.Companion.NOTIFICATION_ID_FINISHED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.NOTIFICATION_ID_ONGOING
+import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_DELETE_ERROR_BACKUP
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_SYSTEM_CHECK
 import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.Misc.makeNotificationChannel
@@ -478,6 +479,20 @@ class BackupServiceKotlin_new: LifecycleService() {
                         continue
                     }
 
+                }
+
+                /**
+                 * STEP 12: Clean up
+                 * Delete empty directories.
+                 *
+                 * This engine does not listen to [cancelBackup].
+                 */
+                val isSuccess = allErrors.isEmpty() && !cancelBackup
+                if (isSuccess || getPrefBoolean(PREF_DELETE_ERROR_BACKUP, true)){
+                    CleaningEngine(zipBatches, isSuccess, busyboxBinaryPath).executeWithResult().let {
+                        collectErrors(it)
+                        lastSuccessEngine = "CleaningEngine"
+                    }
                 }
             }
             catch (e: Exception){
