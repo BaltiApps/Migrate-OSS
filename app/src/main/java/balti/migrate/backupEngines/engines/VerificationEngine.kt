@@ -125,6 +125,9 @@ class VerificationEngine(private val busyboxBinaryPath: String) : ParentBackupCl
             rootLocation.exists()
             allFiles = rootLocation.listEverythingInQuad()
 
+            writeLog("rootLocation: ${rootLocation.canonicalPath}, exists: ${rootLocation.exists()}")
+            writeLog("All files size: ${allFiles?.size}")
+
             allFiles?.forEach {
                 val name = it.first
                 val isDir = it.second
