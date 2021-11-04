@@ -259,7 +259,8 @@ class BackupServiceKotlin_new: LifecycleService() {
                  */
                 if (update.subTask != lastSubTask){
                     lastSubTask = update.subTask
-                    progressWriter?.write("\n-------- $lastSubTask --------\n")
+                    if (lastSubTask.isNotBlank())
+                        progressWriter?.write("\n-------- $lastSubTask --------\n")
                 }
 
                 /**
