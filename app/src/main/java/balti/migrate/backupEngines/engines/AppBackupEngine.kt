@@ -220,7 +220,7 @@ class AppBackupEngine(private val busyboxBinaryPath: String) : ParentBackupClass
 
                 backupUtils.iterateBufferedReader(outputStream, { output ->
 
-                    if (BackupServiceKotlin_new.cancelBackup) {
+                    if (BackupServiceKotlin_new.cancelBackup && BACKUP_PID != -999) {
                         cancelTask(suProcess, BACKUP_PID)
                         return@iterateBufferedReader true
                     }

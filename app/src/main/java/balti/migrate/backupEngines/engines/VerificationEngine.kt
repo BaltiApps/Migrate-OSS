@@ -387,7 +387,7 @@ class VerificationEngine(private val busyboxBinaryPath: String) : ParentBackupCl
 
                 backupUtils.iterateBufferedReader(outputStream, { line ->
 
-                    if (BackupServiceKotlin_new.cancelBackup) {
+                    if (BackupServiceKotlin_new.cancelBackup && TAR_CHECK_CORRECTION_PID != -999) {
                         cancelTask(suProcess, TAR_CHECK_CORRECTION_PID)
                         return@iterateBufferedReader true
                     }
@@ -515,7 +515,7 @@ class VerificationEngine(private val busyboxBinaryPath: String) : ParentBackupCl
 
                 backupUtils.iterateBufferedReader(outputStream, {line ->
 
-                    if (BackupServiceKotlin_new.cancelBackup) {
+                    if (BackupServiceKotlin_new.cancelBackup && CORRECTION_PID != -999) {
                         cancelTask(suProcess, CORRECTION_PID)
                         return@iterateBufferedReader true
                     }

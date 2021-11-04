@@ -63,7 +63,7 @@ class SystemTestingEngine(private val busyboxBinaryPath: String) : ParentBackupC
 
                     backupUtils.iterateBufferedReader(resultStream, { line ->
 
-                        if (BackupServiceKotlin_new.cancelBackup) {
+                        if (BackupServiceKotlin_new.cancelBackup && TESTING_PID != -999) {
                             cancelTask(suProcess, TESTING_PID)
                             return@iterateBufferedReader true
                         }
