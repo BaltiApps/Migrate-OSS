@@ -71,9 +71,22 @@ class CommonToolsKotlin(val context: Context? = null) {
 
         val FILE_ZIP_NAME_EXTRAS = "Extras"
 
+        /**
+         * Created in [balti.migrate.backupEngines.engines.MakeZipBatch.createMoveScript].
+         */
         val FILE_FILE_LIST = "fileList.txt"
+
+        /**
+         * Created in [balti.migrate.backupEngines.engines.UpdaterScriptMakerEngine.createRawList].
+         */
         val FILE_RAW_LIST = "rawList.txt"
+
+        /**
+         * Created in [balti.migrate.backupEngines.engines.UpdaterScriptMakerEngine.makePackageData].
+         */
         val FILE_PACKAGE_DATA = "package-data.txt"
+
+        /** Created in main activity. */
         val FILE_MESSAGES = "messages.txt"
 
         val CHANNEL_BACKUP_END = "Backup finished notification"
