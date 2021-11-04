@@ -11,6 +11,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_CANCELLED
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_TOTAL_TIME
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_WARNINGS
 import balti.module.baltitoolbox.functions.GetResources.getStringFromRes
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -138,6 +139,15 @@ class BackupProgressNotificationSystem {
                 delay(1000)
                 mutableStateFlow.value = initialValue
             }
+        }
+
+        /**
+         * Reset cache of shared flow.
+         * To be called before starting the backup.
+         */
+        @ExperimentalCoroutinesApi
+        fun resetReplayCache(){
+            mutableSharedFlow.resetReplayCache()
         }
     }
 }
