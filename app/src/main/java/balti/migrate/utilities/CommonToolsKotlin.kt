@@ -76,6 +76,11 @@ class CommonToolsKotlin(val context: Context? = null) {
         val FILE_PACKAGE_DATA = "package-data.txt"
         val FILE_MESSAGES = "messages.txt"
 
+        /**
+         * Created in [balti.migrate.backupEngines.engines.CleaningEngine.createMissedFilesList].
+         */
+        val FILE_ZIP_MISSED_FILES = "filesMissedByZip.txt"
+
         val CHANNEL_BACKUP_END = "Backup finished notification"
         val CHANNEL_BACKUP_RUNNING = "Backup running notification"
         val CHANNEL_BACKUP_CANCELLING = "Cancelling current backup"
