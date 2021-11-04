@@ -30,15 +30,18 @@ import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import java.io.BufferedWriter
 import java.io.OutputStreamWriter
 
-abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCoroutineTask(DISP_IO) {
+abstract class ParentBackupClass_new(
+    defaultProgressType: ProgressType,
+    private val checkBackupCancelled: Boolean = true
+) : AsyncCoroutineTask(DISP_IO) {
 
     val fileXDestination: String get() = BackupServiceKotlin_new.fileXDestination
     val backupName: String get() = BackupServiceKotlin_new.backupName
 
     var cancelBackup: Boolean
-        get() = BackupServiceKotlin_new.cancelBackup
+        get() = if (checkBackupCancelled) BackupServiceKotlin_new.cancelBackup else false
         set(value) {
-            BackupServiceKotlin_new.cancelBackup = value
+            if (checkBackupCancelled) BackupServiceKotlin_new.cancelBackup = value
         }
 
     val globalContext by lazy { AppInstance.appContext }
