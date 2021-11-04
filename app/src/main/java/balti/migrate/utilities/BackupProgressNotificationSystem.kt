@@ -37,6 +37,7 @@ class BackupProgressNotificationSystem {
             PROGRESS_TYPE_UPDATER_SCRIPT,
             PROGRESS_TYPE_ZIPPING,
             PROGRESS_TYPE_ZIP_VERIFICATION,
+            PROGRESS_TYPE_CLEANING,
             PROGRESS_TYPE_FINISHED,
             PROGRESS_TYPE_WAITING_TO_CANCEL,
 
