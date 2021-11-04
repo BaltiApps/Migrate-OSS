@@ -617,8 +617,12 @@ class VerificationEngine(private val busyboxBinaryPath: String) : ParentBackupCl
         if (!BackupServiceKotlin_new.cancelBackup && defects.size != 0)
             correctBackups(defects)
         if (packagesWithApkCorrection.isNotEmpty()) readCorrectedApkSizes()
-        if (appAuxFilesDir.exists() && !appAuxFilesDir.isEmpty && defects.any { it.startsWith(MIGRATE_STATUS) })
+        if (!BackupServiceKotlin_new.cancelBackup &&
+            appAuxFilesDir.exists() &&
+            !appAuxFilesDir.isEmpty &&
+            defects.any { it.startsWith(MIGRATE_STATUS) }) {
             moveAuxFiles()
+        }
 
         return null
     }
