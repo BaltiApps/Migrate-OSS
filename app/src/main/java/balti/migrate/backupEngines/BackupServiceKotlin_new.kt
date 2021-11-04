@@ -62,6 +62,7 @@ import balti.module.baltitoolbox.functions.FileHandlers.unpackAssetToInternal
 import balti.module.baltitoolbox.functions.Misc.makeNotificationChannel
 import balti.module.baltitoolbox.functions.Misc.tryIt
 import balti.module.baltitoolbox.functions.SharedPrefs.getPrefBoolean
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import java.io.BufferedWriter
 import java.io.OutputStreamWriter
@@ -274,6 +275,7 @@ class BackupServiceKotlin_new: LifecycleService() {
      * This is the heart of the backup service.
      * WIP
      */
+    @ExperimentalCoroutinesApi
     private fun startBackup(){
         lifecycleScope.launch {
 
@@ -289,6 +291,8 @@ class BackupServiceKotlin_new: LifecycleService() {
                 zipCanonicalPaths.clear()
                 allErrors.clear()
                 allWarnings.clear()
+
+                BackupProgressNotificationSystem.resetReplayCache()
 
                 val listOfExtraFilesFromJobResults = ArrayList<FileX>(0)
 
