@@ -3,7 +3,6 @@ package balti.migrate.backupEngines.engines
 import balti.filex.FileX
 import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.R
-import balti.migrate.backupEngines.BackupServiceKotlin_new
 import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_ZIP_VERIFICATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_FILELIST_ITEM_UNAVAILABLE
@@ -82,7 +81,7 @@ class ZipVerificationEngine(private val zipFile: FileX,
             var zEntryCheck: ZipEntry? = zipInputStream.nextEntry
             while (zEntryCheck != null) {
 
-                if (BackupServiceKotlin_new.cancelBackup) break
+                if (cancelBackup) break
 
                 val entry = zEntryCheck
                 val entryName = entry.name

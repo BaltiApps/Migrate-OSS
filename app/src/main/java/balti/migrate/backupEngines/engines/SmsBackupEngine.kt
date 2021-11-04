@@ -6,7 +6,6 @@ import balti.filex.FileX
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.smsList
 import balti.migrate.R
-import balti.migrate.backupEngines.BackupServiceKotlin_new
 import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_SMS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_SMS_TRY_CATCH
@@ -98,7 +97,7 @@ class SmsBackupEngine(private val smsDBFileName: String) : ParentBackupClass_new
                 for (i in 0 until smsPackets.size) {
                     try {
 
-                        if (BackupServiceKotlin_new.cancelBackup) {
+                        if (cancelBackup) {
                             tryIt { db.close() }
                             break
                         }
@@ -170,7 +169,7 @@ class SmsBackupEngine(private val smsDBFileName: String) : ParentBackupClass_new
                 c++
                 broadcastProgress("", "", true, getPercentage(c, smsPackets.size))
 
-            } while (cursor.moveToNext() && !BackupServiceKotlin_new.cancelBackup)
+            } while (cursor.moveToNext() && !cancelBackup)
 
             tryIt { cursor.close() }
             tryIt { dataBase.close() }
@@ -218,7 +217,7 @@ class SmsBackupEngine(private val smsDBFileName: String) : ParentBackupClass_new
 
         writeSms()
 
-        if (!BackupServiceKotlin_new.cancelBackup && getPrefBoolean(PREF_SMS_VERIFY, true) && errors.size == 0){
+        if (!cancelBackup && getPrefBoolean(PREF_SMS_VERIFY, true) && errors.size == 0){
             verifySms()
         }
 

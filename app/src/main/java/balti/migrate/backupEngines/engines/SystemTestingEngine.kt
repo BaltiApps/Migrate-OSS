@@ -2,7 +2,6 @@ package balti.migrate.backupEngines.engines
 
 import balti.filex.FileX
 import balti.migrate.R
-import balti.migrate.backupEngines.BackupServiceKotlin_new
 import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.backupEngines.utils.BackupUtils
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_TESTING
@@ -63,7 +62,7 @@ class SystemTestingEngine(private val busyboxBinaryPath: String) : ParentBackupC
 
                     backupUtils.iterateBufferedReader(resultStream, { line ->
 
-                        if (BackupServiceKotlin_new.cancelBackup && TESTING_PID != -999) {
+                        if (cancelBackup && TESTING_PID != -999) {
                             cancelTask(suProcess, TESTING_PID)
                             return@iterateBufferedReader true
                         }

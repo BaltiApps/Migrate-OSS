@@ -3,7 +3,6 @@ package balti.migrate.backupEngines.engines
 import balti.filex.FileX
 import balti.migrate.AppInstance.Companion.contactsList
 import balti.migrate.R
-import balti.migrate.backupEngines.BackupServiceKotlin_new
 import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_CONTACTS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CONTACTS_TRY_CATCH
@@ -35,7 +34,7 @@ class ContactsBackupEngine(private val vcfFileName: String): ParentBackupClass_n
                     override fun writeLines() {
                         for (i in 0 until contactPackets.size) {
 
-                            if (BackupServiceKotlin_new.cancelBackup) break
+                            if (cancelBackup) break
 
                             val packet = contactPackets[i]
 

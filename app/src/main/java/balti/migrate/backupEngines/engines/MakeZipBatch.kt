@@ -8,7 +8,6 @@ import balti.migrate.AppInstance.Companion.MAX_WORKING_SIZE
 import balti.migrate.AppInstance.Companion.RESERVED_SPACE
 import balti.migrate.AppInstance.Companion.appPackets
 import balti.migrate.R
-import balti.migrate.backupEngines.BackupServiceKotlin_new
 import balti.migrate.backupEngines.BackupServiceKotlin_new.Companion.flasherOnly
 import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.backupEngines.containers.*
@@ -68,7 +67,7 @@ class MakeZipBatch(private val extras: ArrayList<FileX>) : ParentBackupClass_new
 
             try {
 
-                if (BackupServiceKotlin_new.cancelBackup) return@forEach
+                if (cancelBackup) return@forEach
 
                 val associatedFileNames = ArrayList<String>(0)
                 val associatedFileSizes = ArrayList<Long>(0)
@@ -377,7 +376,7 @@ class MakeZipBatch(private val extras: ArrayList<FileX>) : ParentBackupClass_new
                     val multiZip = zipBatches.size > 1
 
                     zipBatches.forEach { batch ->
-                        if (BackupServiceKotlin_new.cancelBackup) return
+                        if (cancelBackup) return
 
                         val zipDestination: String = rootLocation.canonicalPath.let {
                             if (multiZip) "${it}/${batch.zipName}"
@@ -479,11 +478,11 @@ class MakeZipBatch(private val extras: ArrayList<FileX>) : ParentBackupClass_new
 
     override suspend fun backgroundProcessing(): Any {
 
-        if (!BackupServiceKotlin_new.cancelBackup) makeZipAppPackets()
-        if (!BackupServiceKotlin_new.cancelBackup) makeZipExtraPackets()
-        if (!BackupServiceKotlin_new.cancelBackup) makeBatches()
+        if (!cancelBackup) makeZipAppPackets()
+        if (!cancelBackup) makeZipExtraPackets()
+        if (!cancelBackup) makeBatches()
         if (errors.isEmpty()) { createMoveScript() }
-        if (!BackupServiceKotlin_new.cancelBackup && errors.isEmpty()) executeMoveScript()
+        if (!cancelBackup && errors.isEmpty()) executeMoveScript()
 
         return zipBatches
     }

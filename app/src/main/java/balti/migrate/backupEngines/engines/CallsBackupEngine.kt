@@ -6,7 +6,6 @@ import balti.filex.FileX
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.AppInstance.Companion.callsList
 import balti.migrate.R
-import balti.migrate.backupEngines.BackupServiceKotlin_new
 import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_CALLS
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_CALLS_TRY_CATCH
@@ -116,7 +115,7 @@ class CallsBackupEngine(private val callsDBFileName: String) : ParentBackupClass
                 for (i in 0 until callsPackets.size) {
                     try {
 
-                        if (BackupServiceKotlin_new.cancelBackup) {
+                        if (cancelBackup) {
                             tryIt { db.close() }
                             break
                         }
@@ -199,7 +198,7 @@ class CallsBackupEngine(private val callsDBFileName: String) : ParentBackupClass
                 c++
                 broadcastProgress("", "", true, getPercentage(c, callsPackets.size))
 
-            } while (cursor.moveToNext() && !BackupServiceKotlin_new.cancelBackup)
+            } while (cursor.moveToNext() && !cancelBackup)
 
             tryIt { cursor.close() }
             tryIt { dataBase.close() }

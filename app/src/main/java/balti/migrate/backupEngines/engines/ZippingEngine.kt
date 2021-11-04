@@ -3,7 +3,6 @@ package balti.migrate.backupEngines.engines
 import balti.filex.FileX
 import balti.migrate.AppInstance.Companion.CACHE_DIR
 import balti.migrate.R
-import balti.migrate.backupEngines.BackupServiceKotlin_new
 import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.backupEngines.containers.ZipBatch
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_ZIPPING
@@ -60,7 +59,7 @@ class ZippingEngine(override val partTag: String,
             var c = 0
             forEachLine {
 
-                if (BackupServiceKotlin_new.cancelBackup) return@forEachLine
+                if (cancelBackup) return@forEachLine
 
                 ++c
                 /**
@@ -194,7 +193,7 @@ class ZippingEngine(override val partTag: String,
                         else -> FileX.new("$backupName.zip")
                     }
 
-                if (!getAllFiles() || BackupServiceKotlin_new.cancelBackup) return@heavyTask
+                if (!getAllFiles() || cancelBackup) return@heavyTask
 
                 actualZipFile.createNewFile(overwriteIfExists = true)
                 actualZipFile.exists()
