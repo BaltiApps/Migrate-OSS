@@ -393,7 +393,9 @@ class UpdaterScriptMakerEngine(
                     suInputStream.write("echo \"$displayName\" >> ${rawList.canonicalPath}\n")
                     suInputStream.write("echo \"=================\" >> ${rawList.canonicalPath}\n")
 
-                    suInputStream.write("cd ${rootLocation.canonicalPath}\n")
+                    val batchRootLocation = FileX.new(fileXDestination, zipBatch.zipName)
+
+                    suInputStream.write("cd ${batchRootLocation.canonicalPath}\n")
                     suInputStream.write("walk_dir . >> ${rawList.canonicalPath}\n")
                     suInputStream.write("cat ${rawList.canonicalPath} > ${extRawList.canonicalPath}\n")
                     suInputStream.write("exit\n")
