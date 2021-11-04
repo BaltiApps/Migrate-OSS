@@ -89,6 +89,11 @@ class CommonToolsKotlin(val context: Context? = null) {
         /** Created in main activity. */
         val FILE_MESSAGES = "messages.txt"
 
+        /**
+         * Created in [balti.migrate.backupEngines.engines.CleaningEngine.createMissedFilesList].
+         */
+        val FILE_ZIP_MISSED_FILES = "filesMissedByZip.txt"
+
         val CHANNEL_BACKUP_END = "Backup finished notification"
         val CHANNEL_BACKUP_RUNNING = "Backup running notification"
         val CHANNEL_BACKUP_CANCELLING = "Cancelling current backup"
@@ -200,6 +205,9 @@ class CommonToolsKotlin(val context: Context? = null) {
         val ERR_PARSING_RAW_LIST = "PARSING_RAW_LIST"
         val ERR_ZIP_FILELIST_UNAVAILABLE = "NO_FILELIST_IN_ZIP_VERIFICATION"
         val ERR_ZIP_FILELIST_ITEM_UNAVAILABLE = "FILELIST_ITEM_UNAVAILABLE"
+        val ERR_MISSED_FILES_CREATION = "ERR_MISSED_FILES_CREATION"
+        val ERR_MISSED_FILES_CREATION_CATCH = "MISSED_FILES_CREATION_CATCH"
+        val ERR_FILE_MISSED_TO_ZIP = "FILE_MISSED_TO_ZIP"
 
         val ERR_BACKUP_SERVICE_ERROR = "BACKUP_SERVICE"
         val ERR_CONDITIONAL_TASK = "RUN_CONDITIONAL_TASK"
@@ -216,6 +224,8 @@ class CommonToolsKotlin(val context: Context? = null) {
         val ERR_FILE_LIST_COPY = "FILE_LIST_COPY"
         val WARNING_CASTING_APK_SIZE = "CASTING_APK_SIZE_FAILED"
         val WARNING_APK_SIZE_INFO_WRONG = "APK_INFO_INCORRECT"
+        val WARNING_CLEANING_UP = "ERR_CLEANING_UP"
+        val WARNING_CLEANING_UP_TRY_CATCH = "ERR_CLEANING_UP_CATCH"
 
         val ALL_WARNINGS = arrayOf(
             WARNING_ZIP_BATCH,
@@ -224,6 +234,8 @@ class CommonToolsKotlin(val context: Context? = null) {
             WARNING_ZIP_FILELIST_VERIFICATION,
             WARNING_CASTING_APK_SIZE,
             WARNING_APK_SIZE_INFO_WRONG,
+            WARNING_CLEANING_UP,
+            WARNING_CLEANING_UP_TRY_CATCH,
         )
 
         val LOG_CORRECTION_NEEDED = "CORRECTION_NEEDED"

@@ -142,6 +142,8 @@ class ProgressShowActivity_new: AppCompatActivity() {
                 PROGRESS_TYPE_ZIPPING -> R.drawable.ic_zipping_icon
                 PROGRESS_TYPE_ZIP_VERIFICATION -> R.drawable.ic_verifying_zip_icon
 
+                PROGRESS_TYPE_CLEANING -> R.drawable.ic_cleaning
+
                 PROGRESS_TYPE_WAITING_TO_CANCEL -> R.drawable.ic_canceling_icon
             }
 

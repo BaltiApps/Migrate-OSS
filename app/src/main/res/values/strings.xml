@@ -494,6 +494,12 @@
     <string name="running_script_to_move">Running script to move file.</string>
     <string name="moving_app_files">Moving app files</string>
 
+    <!--CleaningEngine.kt-->
+    <string name="cleaning_up">Cleaning up</string>
+    <string name="deleting_empty_directories">Deleting empty directories.</string>
+    <string name="deleting_backup">Deleting backup.</string>
+    <string name="checking_for_missed_files">Checking for missed files.</string>
+
     <!--MDPEngine.kt-->
     <string name="running_mdp_plugin">Data backup via MDP plugin</string>
     <string name="mdp_function_error">Failed in function block.</string>

@@ -68,7 +68,7 @@ class UpdaterScriptMakerEngine(
      * `META-INF/com/google/android/`
      */
     private fun extractToBackup(assetName: String, unpackName: String = assetName, unpackSubDirectory: String = ""){
-        val assetFile = FileX.new(unpackAssetToInternal(assetName, unpackName, FileHandlers.INTERNAL_TYPE.INTERNAL_FILES), true)
+        val assetFile = FileX.new(unpackAssetToInternal(assetName, unpackName, FileHandlers.INTERNAL_TYPE.INTERNAL_CACHE), true)
         val targetFile = FileX.new("${pathForAuxFiles}/$unpackSubDirectory", unpackName, true)
         targetFile.parentFile?.mkdirs()
         var err = ""

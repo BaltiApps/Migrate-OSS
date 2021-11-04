@@ -30,15 +30,18 @@ import balti.module.baltitoolbox.jobHandlers.AsyncCoroutineTask
 import java.io.BufferedWriter
 import java.io.OutputStreamWriter
 
-abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCoroutineTask(DISP_IO) {
+abstract class ParentBackupClass_new(
+    defaultProgressType: ProgressType,
+    private val checkBackupCancelled: Boolean = true
+) : AsyncCoroutineTask(DISP_IO) {
 
     val fileXDestination: String get() = BackupServiceKotlin_new.fileXDestination
     val backupName: String get() = BackupServiceKotlin_new.backupName
 
     var cancelBackup: Boolean
-        get() = BackupServiceKotlin_new.cancelBackup
+        get() = if (checkBackupCancelled) BackupServiceKotlin_new.cancelBackup else false
         set(value) {
-            BackupServiceKotlin_new.cancelBackup = value
+            if (checkBackupCancelled) BackupServiceKotlin_new.cancelBackup = value
         }
 
     val globalContext by lazy { AppInstance.appContext }
@@ -156,7 +159,7 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
      */
     fun broadcastProgress(subTask: String, taskLog: String, showNotification: Boolean, progressPercent: Int = -1){
 
-        //if (BackupServiceKotlin_new.cancelBackup) return
+        //if (cancelBackup) return
 
         val progress = progressPercent.let {
             when {
@@ -167,7 +170,7 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
         }
         lastProgressPercent = progress
 
-        val update: BackupUpdate = if (BackupServiceKotlin_new.cancelBackup) {
+        val update: BackupUpdate = if (cancelBackup) {
             lastTitle = CancellingString
             isIndeterminate = true
             BackupUpdate(
@@ -190,7 +193,7 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
 
         BackupProgressNotificationSystem.emitMessage(update)
 
-        if (showNotification || BackupServiceKotlin_new.cancelBackup) {
+        if (showNotification || cancelBackup) {
             /**
              * If cancelBackup is `true`, update notification even if [showNotification] = `false`.
              * In all engines, if cancelBackup becomes `true`,
@@ -221,11 +224,11 @@ abstract class ParentBackupClass_new(defaultProgressType: ProgressType): AsyncCo
         this.isIndeterminate = isIndeterminateProgress
         val progress = if (!isIndeterminateProgress) 0 else -1
 
-        lastTitle = if (BackupServiceKotlin_new.cancelBackup) CancellingString else title
+        lastTitle = if (cancelBackup) CancellingString else title
         lastProgressPercent = progress
         engineProgressType = newProgressType
 
-        val update: BackupUpdate = if (BackupServiceKotlin_new.cancelBackup){
+        val update: BackupUpdate = if (cancelBackup){
             BackupUpdate(
                 ProgressType.PROGRESS_TYPE_WAITING_TO_CANCEL,
                 lastTitle,
