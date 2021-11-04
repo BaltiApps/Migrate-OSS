@@ -301,7 +301,7 @@ class ProgressShowActivity_new: AppCompatActivity() {
          * Set sub-task if not same as [lastSubTask].
          */
         backupUpdate.subTask.trim().run {
-            if (this != lastSubTask && this != "") {
+            if (this != lastSubTask) {
                 subTask.text = this
                 progressLogTextView.append("\n$this\n")
                 lastSubTask = this
