@@ -157,7 +157,12 @@ class BackupUtils {
             val errorStream = BufferedReader(InputStreamReader(it.errorStream))
 
             //suInputStream.write("cp $auxDirectory/* $backupLocation/ && rm -rf $auxDirectory/*\n")
-            suInputStream.write("mv $auxDirectory/* $backupLocation/\n")
+            suInputStream.write("cd $auxDirectory\n")
+            suInputStream.write("ug=\$(stat -c \"%U:%G\" $backupLocation) 2> /dev/null\n")
+            suInputStream.write("if [[ -n \$ug ]]; then\n")
+            suInputStream.write("    chown -R \$ug * 2> /dev/null\n")
+            suInputStream.write("fi\n")
+            suInputStream.write("mv * $backupLocation/\n")
             suInputStream.write("exit\n")
             suInputStream.flush()
 
