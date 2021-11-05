@@ -462,6 +462,7 @@
     <string name="call_logs_incomplete">Call logs incomplete</string>
     <string name="call_log_write_to_actual_failed">Copying call logs to backup failed!</string>
     <string name="call_log_auxiliary_write_to_actual_failed">Some call log related files could not be copied. Call logs may or may not be restored.</string>
+    <string name="failed_to_copy">Failed to copy</string>
     <string name="sms_records_incomplete">Sms records incomplete</string>
     <string name="sms_records_write_to_actual_failed">Copying SMS records to backup failed!</string>
     <string name="sms_records_auxiliary_write_to_actual_failed">Some SMS related files could not be copied. SMS may or may not be restored.</string>
