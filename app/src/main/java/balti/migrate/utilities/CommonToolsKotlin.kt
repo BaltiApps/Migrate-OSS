@@ -73,6 +73,7 @@ class CommonToolsKotlin(val context: Context? = null) {
 
         /**
          * Created in [balti.migrate.backupEngines.engines.MakeZipBatch.createMoveScript].
+         * Copy is made in [balti.migrate.backupEngines.engines.ZippingEngine.createFileListCopy].
          */
         val FILE_FILE_LIST = "fileList.txt"
 
