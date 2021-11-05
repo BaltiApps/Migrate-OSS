@@ -54,6 +54,9 @@ class MakeZipBatch(private val extras: ArrayList<FileX>) : ParentBackupClass_new
         broadcastProgress("", string, false)
     }
 
+    /**
+     * Iterate over [appList] and add each app in a separate [ZipAppPacket].
+     */
     private fun makeZipAppPackets(){
         val title = getTitle(R.string.making_packets)
         resetBroadcast(true, title)
@@ -111,6 +114,18 @@ class MakeZipBatch(private val extras: ArrayList<FileX>) : ParentBackupClass_new
         }
     }
 
+    /**
+     * Sorts all the files in [extras] in different [ZipExtraPacket].
+     *
+     * IMPORTANT: This function is currently tailored to deal with only:
+     * - Contacts
+     * - Calls
+     * - SMS
+     * - Settings (ADB, Font scale, DPI, Keyboard)
+     * See the places of use of `addToAllExtraPackets`.
+     *
+     * For a new type of extra (if added in future), please adjust accordingly.
+     */
     private fun makeZipExtraPackets(){
         val title = getTitle(R.string.making_packets)
         resetBroadcast(true, title)
@@ -119,6 +134,15 @@ class MakeZipBatch(private val extras: ArrayList<FileX>) : ParentBackupClass_new
 
         try {
 
+            /**
+             * Takes a list of file extensions, then
+             * 1. searches through all the created extra backups files - [extras],
+             * 2. takes files having any of the file extensions as passed to this function
+             * 3. puts them together in one [ZipExtraPacket].
+             *
+             * @param fileExtensions Many extensions. Files having these extensions will be put in one packet.
+             * @param isSystemFile Pass as `true` if this packet is to be unpacked under /system
+             */
             fun addToAllExtraPackets(vararg fileExtensions: String, isSystemFile: Boolean = false) {
 
                 val itemList = ArrayList<Triple<String, Long, Boolean>>(0)
@@ -133,6 +157,10 @@ class MakeZipBatch(private val extras: ArrayList<FileX>) : ParentBackupClass_new
 
                 if (itemList.isEmpty()) return
 
+                /**
+                 * Display name is used for logging purpose.
+                 * Set it as the file name of the file having the first extension in the [fileExtensions].
+                 */
                 val displayName: String =
                     itemList.map { it.first }.find { it.endsWith(fileExtensions[0]) }?:
                     itemList[0].first
