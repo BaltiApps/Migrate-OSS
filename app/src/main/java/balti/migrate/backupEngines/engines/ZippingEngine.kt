@@ -226,6 +226,8 @@ class ZippingEngine(override val partTag: String,
                  * This will take time. Reset broadcast to make it determinate.
                  */
 
+                if (cancelBackup) return@heavyTask
+
                 resetBroadcast(false, title)
                 subTask = getStringFromRes(R.string.adding_files_to_zip)
                 broadcastProgress(subTask, subTask, false)
@@ -233,6 +235,8 @@ class ZippingEngine(override val partTag: String,
                 for ((i, filePath) in readFiles.withIndex()){
                     val file = FileX.new("$fileXDestination/${zipBatch.zipName}", filePath)
                     val zipEntry = ZipEntry(filePath)
+
+                    if (cancelBackup) return@heavyTask
 
                     file.exists()
 
@@ -257,6 +261,8 @@ class ZippingEngine(override val partTag: String,
                     zipEntry.method = ZipEntry.STORED
 
                     zipOutputStream.putNextEntry(zipEntry)
+
+                    if (cancelBackup) return@heavyTask
 
                     val fileInputStream = file.inputStream()
                     buffer = ByteArray(4096)
