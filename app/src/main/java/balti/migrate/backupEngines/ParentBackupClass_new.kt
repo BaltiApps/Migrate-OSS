@@ -317,6 +317,8 @@ abstract class ParentBackupClass_new(
      * A string in the form of "[<current zip number>/<total zips>]".
      * Mostly added in front of errors.
      * Also used in [getTitle].
+     *
+     * MUST NOT be added in any file name or file path!
      */
     open val partTag: String = ""
 
