@@ -228,8 +228,8 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
             }
 
             /** Checking other extras like ADB, Font scale etc.*/
-            installersFragment.checkCheckbox(getPrefBoolean(PREF_BACKUP_INSTALLERS, true))
-            keyboardFragment.checkCheckbox(getPrefBoolean(PREF_BACKUP_KEYBOARD, true))
+            installersFragment.checkCheckbox(getPrefBoolean(PREF_BACKUP_INSTALLERS, false))
+            keyboardFragment.checkCheckbox(getPrefBoolean(PREF_BACKUP_KEYBOARD, false))
             if (!getPrefBoolean(PREF_SHOW_STOCK_WARNING, true)) {
                 adbFragment.checkCheckbox(getPrefBoolean(PREF_BACKUP_ADB, false))
                 dpiFragment.checkCheckbox(getPrefBoolean(PREF_BACKUP_DPI, false))
