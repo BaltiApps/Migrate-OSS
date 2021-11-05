@@ -100,7 +100,6 @@ class SmsFragment: ParentFragmentForExtras(R.layout.extra_fragment_sms) {
         if (smsList.size > 0){
             delegateStatusText?.text = "$n ${getString(R.string.of)} ${smsList.size}"
             delegateMainItem?.setOnClickListener {
-                //LoadSmsForSelectionKotlin_legacy(JOBCODE_LOAD_SMS, this, smsList).execute()
                 selectorLauncher.launch(Intent(mActivity, LoadSmsForSelection::class.java))
             }
         }
