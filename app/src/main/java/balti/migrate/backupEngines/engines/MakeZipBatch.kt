@@ -1,6 +1,5 @@
 package balti.migrate.backupEngines.engines
 
-import android.util.Log
 import balti.filex.FileX
 import balti.migrate.AppInstance
 import balti.migrate.AppInstance.Companion.CACHE_DIR
@@ -15,7 +14,6 @@ import balti.migrate.extraBackupsActivity.apps.containers.AppPacket
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_MAKING_ZIP_BATCH
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.BACKUP_NAME_SETTINGS
-import balti.migrate.utilities.CommonToolsKotlin.Companion.DEBUG_TAG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_MAKING_APP_ZIP_PACKET
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_MAKING_EXTRA_ZIP_PACKET
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_MOVE_SCRIPT
@@ -272,7 +270,6 @@ class MakeZipBatch(private val extras: ArrayList<FileX>) : ParentBackupClass_new
                         val tempZipBatch = ZipBatch()
                         var c = 0
 
-                        // initially add small apps within 80% max size
                         while (c < inputList.size && tempZipBatch.zipFullSize <= MAX_TWRP_ZIP_SIZE) {
                             val p = inputList[c]
 
@@ -280,12 +277,12 @@ class MakeZipBatch(private val extras: ArrayList<FileX>) : ParentBackupClass_new
 
                                 if (p is ZipAppPacket) {
                                     tempZipBatch.addZipAppPacket(p)
-                                    Log.d(DEBUG_TAG, "adding app packet: ${p.displayName}, size: ${p.zipPacketSize}, packet no: $c")
+                                    writeLog("adding app packet: ${p.displayName}, size: ${p.zipPacketSize}, packet index: $c")
                                 }
 
                                 if (p is ZipExtraPacket) {
                                     tempZipBatch.addZipExtraPacket(p)
-                                    Log.d(DEBUG_TAG, "adding extra packet: ${p.displayName}, size: ${p.zipPacketSize}, packet no: $c")
+                                    writeLog("adding extra packet: ${p.displayName}, size: ${p.zipPacketSize}, packet index: $c")
                                 }
 
                                 shareLogProgress(
