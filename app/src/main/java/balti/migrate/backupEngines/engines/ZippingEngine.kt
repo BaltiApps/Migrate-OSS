@@ -118,6 +118,40 @@ class ZippingEngine(override val partTag: String,
         return true
     }
 
+    /**
+     * Copy the fileList.txt to internal storage for later comparison.
+     * Note that fileList.txt is not same as rawList.txt.
+     *
+     * Difference between rawList and fileList:
+     *
+     * - rawList.txt contains all the file names including backup files,
+     *   updater-script, various other shell scripts, MigrateHelper.apk etc.
+     * - fileList.txt contains only names of app backup files and extras.
+     * - rawList.txt is used for creating the zip.
+     * - fileList.txt is used in verification to check if the important backup
+     *   files are present in the final zip.
+     */
+    private fun createFileListCopy() {
+        fileListFile.let {
+
+            val subTask = getStringFromRes(R.string.copying_file_list)
+            broadcastProgress(subTask, "", false)
+
+            if (it.exists()) {
+                try {
+                    val extFileList = FileX.new(CACHE_DIR, "${it.name}_${zipBatch.zipName}.txt", true)
+                    it.copyTo(extFileList, overwrite = true)
+                    fileListCopied = extFileList
+                }
+                catch (e: Exception){
+                    e.printStackTrace()
+                    warnings.add("$ERR_FILE_LIST_COPY${partTag}: ${e.message.toString()}")
+                }
+            }
+            else errors.add("$ERR_FILE_LIST_COPY${partTag}: ${getStringFromRes(R.string.file_list_not_in_zip_batch)}")
+        }
+    }
+
     override suspend fun backgroundProcessing(): Any? {
 
         try {
@@ -127,37 +161,7 @@ class ZippingEngine(override val partTag: String,
 
             resetBroadcast(true, title)
 
-            /**
-             * Copy the fileList.txt to internal storage for later comparison.
-             * Note that fileList.txt is not same as rawList.txt.
-             *
-             * Difference between rawList and fileList:
-             *
-             * - rawList.txt contains all the file names including backup files,
-             *   updater-script, various other shell scripts, MigrateHelper.apk etc.
-             * - fileList.txt contains only names of app backup files and extras.
-             * - rawList.txt is used for creating the zip.
-             * - fileList.txt is used in verification to check if the important backup
-             *   files are present in the final zip.
-             */
-            fileListFile.let {
-
-                subTask = getStringFromRes(R.string.copying_file_list)
-                broadcastProgress(subTask, subTask, false)
-
-                if (it.exists()) {
-                    try {
-                        val extFileList = FileX.new(CACHE_DIR, "${it.name}_${partTag}.txt", true)
-                        it.copyTo(extFileList, overwrite = true)
-                        fileListCopied = extFileList
-                    }
-                    catch (e: Exception){
-                        e.printStackTrace()
-                        warnings.add("$ERR_FILE_LIST_COPY${partTag}: ${e.message.toString()}")
-                    }
-                }
-                else errors.add("$ERR_FILE_LIST_COPY${partTag}: ${getStringFromRes(R.string.file_list_not_in_zip_batch)}")
-            }
+            createFileListCopy()
 
             /**
              * Start creating the zip.
