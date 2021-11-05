@@ -54,25 +54,6 @@ class ZipVerificationEngine(private val zipFile: FileX,
             var subTask = getStringFromRes(R.string.listing_zip_file)
             broadcastProgress(subTask, "${subTask}\n${fileSizeString}", false)
 
-            // old code
-            /*while (enumeration.hasMoreElements()) {
-
-                if (BackupServiceKotlin.cancelAll) break
-
-                val entry = enumeration.nextElement()
-                contents.add(entry.name)
-
-                if (checkFileListContents && entry.name.contains('/')) {
-                    entry.name.let { it ->
-                        it.substring(0, it.indexOf('/')).let {
-                            if (it.endsWith(".app") && !appDirectories.contains(it)) {
-                                appDirectories.add(it)
-                            }
-                        }
-                    }
-                }
-            }*/
-
             /**
              * Read all files/directories just inside the zip (root of the zip).
              * This does not check for files/subdirectories inside directories just under the root of the zip.
@@ -104,16 +85,6 @@ class ZipVerificationEngine(private val zipFile: FileX,
 
                 zEntryCheck = zipInputStream.nextEntry
             }
-
-            /*for (i in 0 until zipList.size){
-
-                val zipItem = zipList[i]
-                if (BackupServiceKotlin.cancelAll) break
-
-                if (!contents.contains(zipItem)) {
-                    warnings.add("$WARNING_ZIP_FILELIST_VERIFICATION${bd.batchErrorTag}: $zipItem")
-                }
-            }*/
 
             subTask = getStringFromRes(R.string.compared_zip_contents)
             broadcastProgress(subTask, subTask, false)
