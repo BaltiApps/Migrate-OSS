@@ -362,7 +362,7 @@ class UpdaterScriptMakerEngine(
          * This file is a copy of the original raw file list created above.
          * This file will also be included while reporting logs via [balti.migrate.utilities.CommonToolsKotlin.reportLogs]
          */
-        val extRawList = FileX.new(CACHE_DIR, "${FILE_RAW_LIST}_${partTag}.txt", true)
+        val extRawList = FileX.new(CACHE_DIR, "${FILE_RAW_LIST}_${zipBatch.zipName}.txt", true)
 
         try {
             heavyTask {
