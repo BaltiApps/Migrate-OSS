@@ -230,12 +230,22 @@ class CallsBackupEngine(private val callsDBFileName: String) : ParentBackupClass
         // copy other files like .journal .journal-wal
         try {
             CACHE.listFiles { file: FileX -> file.name.startsWith(callsNameWithoutExtension) }?.forEach {
-                it.copyTo(
-                    FileX.new(fileXDestination, it.name).apply {
-                        generatedFiles.add(this)
+                val isSizeZero: Boolean = it.length() == 0L
+                try {
+                    it.copyTo(
+                        FileX.new(fileXDestination, it.name).apply {
+                            generatedFiles.add(this)
+                        }
+                    )
+                    tryIt { it.delete() }
+                }
+                catch (e: Exception){
+                    writeLog("Failed to copy: ${it.name}, size: ${it.length()}, path: ${it.canonicalPath}, error: ${e.message}")
+                    if (!isSizeZero){
+                        e.printStackTrace()
+                        warnings.add("$ERR_CALLS_WRITE_TO_ACTUAL: ${getStringFromRes(R.string.failed_to_copy)} - ${it.name}, ${e.message}")
                     }
-                )
-                tryIt { it.delete() }
+                }
             }
         } catch (e: Exception) {
             warnings.add("$ERR_CALLS_WRITE_TO_ACTUAL: ${getStringFromRes(R.string.call_log_auxiliary_write_to_actual_failed)} ${e.message}")
