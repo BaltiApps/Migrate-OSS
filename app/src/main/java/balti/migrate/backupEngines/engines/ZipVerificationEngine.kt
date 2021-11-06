@@ -42,7 +42,7 @@ class ZipVerificationEngine(private val zipFile: FileX?,
             val fileSize = if (zipFile.exists()) zipFile.length() else 0
 
             if (fileSize == 0L) {
-                errors.add("$ERR_ZIP_SIZE_ZERO: Exists: ${zipFile.exists()}, Size: $fileSize")
+                errors.add("$ERR_ZIP_SIZE_ZERO${partTag}: Exists: ${zipFile.exists()}, Size: $fileSize")
                 return null
             }
 
@@ -54,7 +54,7 @@ class ZipVerificationEngine(private val zipFile: FileX?,
                     if (flasherOnly) "" else "${getStringFromRes(R.string.allowed)}: ${getHumanReadableStorageSpace(MAX_WORKING_SIZE)} (${MAX_WORKING_SIZE} B)"
 
             if (!flasherOnly && fileSize > MAX_WORKING_SIZE){
-                errors.add("$ERR_ZIP_TOO_BIG: $fileSizeString")
+                errors.add("$ERR_ZIP_TOO_BIG${partTag}: $fileSizeString")
                 return null
             }
 
