@@ -7,6 +7,7 @@ import balti.migrate.backupEngines.ParentBackupClass_new
 import balti.migrate.utilities.BackupProgressNotificationSystem.Companion.ProgressType.PROGRESS_TYPE_ZIP_VERIFICATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_FILELIST_ITEM_UNAVAILABLE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_FILELIST_UNAVAILABLE
+import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_NULL_IN_VERIFICATION
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_SIZE_ZERO
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_TOO_BIG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.ERR_ZIP_VERIFICATION_TRY_CATCH
@@ -15,7 +16,7 @@ import balti.module.baltitoolbox.functions.Misc.getHumanReadableStorageSpace
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-class ZipVerificationEngine(private val zipFile: FileX,
+class ZipVerificationEngine(private val zipFile: FileX?,
                             override val partTag: String,
                             private val flasherOnly: Boolean = false,
                             private val fileListForComparison: FileX? = null) : ParentBackupClass_new(PROGRESS_TYPE_ZIP_VERIFICATION) {
@@ -26,6 +27,12 @@ class ZipVerificationEngine(private val zipFile: FileX,
     private val appDirectories = ArrayList<String>(0)
 
     override suspend fun backgroundProcessing(): Any? {
+
+        if (zipFile == null) {
+            errors.add("${ERR_ZIP_NULL_IN_VERIFICATION}: Part - $partTag")
+            return null
+        }
+
         try {
 
             val title = getTitle(R.string.verifying_zip)
