@@ -231,7 +231,7 @@ class SmsBackupEngine(private val smsDBFileName: String) : ParentBackupClass_new
             verifySms()
         }
 
-        copyInternalDbFilesToBackup()
+        if (!cancelBackup) copyInternalDbFilesToBackup()
 
         return generatedFiles
     }
