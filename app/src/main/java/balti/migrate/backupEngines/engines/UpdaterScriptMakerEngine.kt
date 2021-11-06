@@ -67,6 +67,9 @@ class UpdaterScriptMakerEngine(
      * `META-INF/com/google/android/`
      */
     private fun extractToBackup(assetName: String, unpackName: String = assetName, unpackSubDirectory: String = ""){
+
+        if (!cancelBackup) return
+
         val assetFile = FileX.new(unpackAssetToInternal(assetName, unpackName, FileHandlers.INTERNAL_TYPE.INTERNAL_CACHE), true)
         val targetFile = FileX.new("${pathForAuxFiles}/$unpackSubDirectory", unpackName, true)
         targetFile.parentFile?.mkdirs()
@@ -322,6 +325,9 @@ class UpdaterScriptMakerEngine(
     }
 
     private fun writeManualConfig(fileName: String, value: String){
+
+        if (!cancelBackup) return
+
         try {
             FileX.new(pathForAuxFiles, DIR_MANUAL_CONFIGS, true).run {
                 mkdirs()
@@ -439,19 +445,21 @@ class UpdaterScriptMakerEngine(
                 writeManualConfig(FILE_BUILDPROP_MANUAL, PREF_MANUAL_BUILDPROP)
             }
 
-            if (!flasherOnly) makeUpdaterScript()
+            if (!cancelBackup && !flasherOnly) makeUpdaterScript()
 
             /**
              * Finally move all file under [appAuxFilesDir] to actual backup location.
              */
-            backupUtils.moveAuxFilesToBackupLocation(
-                pathForAuxFiles,
-                "${rootLocation.canonicalPath}/${zipBatch.zipName}"
-            ).forEach {
-                errors.add("$ERR_UPDATER_MOVE_AUX${partTag}: $it")
+            if (!cancelBackup) {
+                backupUtils.moveAuxFilesToBackupLocation(
+                    pathForAuxFiles,
+                    "${rootLocation.canonicalPath}/${zipBatch.zipName}"
+                ).forEach {
+                    errors.add("$ERR_UPDATER_MOVE_AUX${partTag}: $it")
+                }
             }
 
-            createRawList()
+            if (!cancelBackup) createRawList()
         }
         catch (e: Exception){
             e.printStackTrace()
