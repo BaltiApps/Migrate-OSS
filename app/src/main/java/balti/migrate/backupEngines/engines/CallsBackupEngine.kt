@@ -256,11 +256,11 @@ class CallsBackupEngine(private val callsDBFileName: String) : ParentBackupClass
 
         writeCalls()
 
-        if (getPrefBoolean(PREF_CALLS_VERIFY, true) && errors.size == 0){
+        if (!cancelBackup && getPrefBoolean(PREF_CALLS_VERIFY, true) && errors.size == 0){
             verifyCalls()
         }
 
-        copyInternalDbFilesToBackup()
+        if (!cancelBackup) copyInternalDbFilesToBackup()
 
         return generatedFiles
     }
