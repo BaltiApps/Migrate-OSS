@@ -154,6 +154,8 @@ class ZippingEngine(override val partTag: String,
 
     override suspend fun backgroundProcessing(): Any? {
 
+        if (!cancelBackup) return null
+
         try {
 
             val title = getTitle(R.string.zipping_all_files)
@@ -162,6 +164,8 @@ class ZippingEngine(override val partTag: String,
             resetBroadcast(true, title)
 
             createFileListCopy()
+
+            if (!cancelBackup) return null
 
             /**
              * Start creating the zip.
