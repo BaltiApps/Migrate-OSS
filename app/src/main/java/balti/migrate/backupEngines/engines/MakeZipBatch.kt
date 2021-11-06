@@ -506,7 +506,7 @@ class MakeZipBatch(private val extras: ArrayList<FileX>) : ParentBackupClass_new
         if (!cancelBackup) makeZipAppPackets()
         if (!cancelBackup) makeZipExtraPackets()
         if (!cancelBackup) makeBatches()
-        if (errors.isEmpty()) { createMoveScript() }
+        if (!cancelBackup && errors.isEmpty()) { createMoveScript() }
         if (!cancelBackup && errors.isEmpty()) executeMoveScript()
 
         return zipBatches
