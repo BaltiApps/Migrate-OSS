@@ -456,8 +456,8 @@ class BackupServiceKotlin_new: LifecycleService() {
                      * STEP 10: Compress the zip batch into a zip file.
                      * Result contains Pair(<FileX object for zip file>, <FileX object for fileList.txt>).
                      */
-                    lateinit var fileListCopied: FileX
-                    lateinit var lastZip: FileX
+                    var fileListCopied: FileX? = null
+                    var lastZip: FileX? = null
                     result = ZippingEngine(partTag, zipBatch).executeWithResult()
                     result?.run {
                         if (success) {
