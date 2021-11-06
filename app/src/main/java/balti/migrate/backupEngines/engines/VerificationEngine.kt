@@ -614,11 +614,11 @@ class VerificationEngine(private val busyboxBinaryPath: String) : ParentBackupCl
     override suspend fun backgroundProcessing(): Any? {
 
         val defects = ArrayList<String>(0)
-        checkApks()?.let { defects.addAll(it) }
-        verifyDataPermIconBackups()?.let { defects.addAll(it) }
+        if (!cancelBackup) checkApks()?.let { defects.addAll(it) }
+        if (!cancelBackup) verifyDataPermIconBackups()?.let { defects.addAll(it) }
         if (!cancelBackup && defects.size != 0)
             correctBackups(defects)
-        if (packagesWithApkCorrection.isNotEmpty()) readCorrectedApkSizes()
+        if (!cancelBackup && packagesWithApkCorrection.isNotEmpty()) readCorrectedApkSizes()
         if (!cancelBackup &&
             appAuxFilesDir.exists() &&
             !appAuxFilesDir.isEmpty &&
