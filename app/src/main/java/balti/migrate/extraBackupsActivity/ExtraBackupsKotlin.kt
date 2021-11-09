@@ -71,7 +71,7 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
     private val keyboardFragment: KeyboardFragment by lazy { supportFragmentManager.findFragmentById(R.id.keyboard_fragment) as KeyboardFragment }
     private val installersFragment: InstallersFragment by lazy { supportFragmentManager.findFragmentById(R.id.installer_fragment) as InstallersFragment }
 
-    private val askForNameLauncher by lazy {
+    private val askForNameLauncher =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
@@ -84,7 +84,7 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
                 validateNameAndStartBackup(it.data?.getStringExtra(EXTRA_BACKUP_NAME) ?: "")
             }
         }
-    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -156,7 +156,6 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
             }
         }
 
-        askForNameLauncher  // just call to initialise
         autoSelectExtras()
 
         listenForUpdatesToStartProgressActivity()
