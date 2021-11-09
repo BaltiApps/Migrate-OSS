@@ -154,7 +154,7 @@ class ZippingEngine(override val partTag: String,
 
     override suspend fun backgroundProcessing(): Any? {
 
-        if (!cancelBackup) return null
+        if (cancelBackup) return null
 
         try {
 
@@ -165,7 +165,7 @@ class ZippingEngine(override val partTag: String,
 
             createFileListCopy()
 
-            if (!cancelBackup) return null
+            if (cancelBackup) return null
 
             /**
              * Start creating the zip.
