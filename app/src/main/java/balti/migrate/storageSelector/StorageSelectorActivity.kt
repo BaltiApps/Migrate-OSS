@@ -36,6 +36,14 @@ class StorageSelectorActivity: AppCompatActivity() {
     private var isOnlySafAvailable = false
     private val defaultInternalStorage = DEFAULT_INTERNAL_STORAGE_DIR
 
+    private val allFilesRequestLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                isAllFilesAccessGranted()
+                allFilesAccess()
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.storage_selector)
@@ -197,11 +205,6 @@ class StorageSelectorActivity: AppCompatActivity() {
          * If not granted, then launch intent to ask for permission.
          */
         else {
-            val allFilesRequestLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-                if (isAllFilesAccessGranted()) {
-                    allFilesAccess()
-                }
-            }
             allFilesRequestLauncher.launch(
                 Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
                     data = Uri.parse("package:$packageName")
