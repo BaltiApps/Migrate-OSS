@@ -75,6 +75,11 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
+                /**
+                 * Refresh destination location and flasherOnly status
+                 * when [AskForName] activity finishes.
+                 */
+                canonicalDestination = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
                 flasherOnly = it.data?.getBooleanExtra(EXTRA_FLASHER_ONLY, false) ?: false
                 validateNameAndStartBackup(it.data?.getStringExtra(EXTRA_BACKUP_NAME) ?: "")
             }
