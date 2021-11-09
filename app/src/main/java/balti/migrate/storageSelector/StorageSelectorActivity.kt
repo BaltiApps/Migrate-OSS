@@ -235,6 +235,7 @@ class StorageSelectorActivity: AppCompatActivity() {
      */
     private fun sendResult(success: Boolean = false, storageType: StorageType? = null, storagePath: String = defaultInternalStorage){
         Log.d(DEBUG_TAG, "Storage send result: $success, ${storageType?.value}, $storagePath")
+        FileXInit.setTraditional(storageType != StorageType.SAF)
         if (success){
             storageType?.value?.let { putPrefString(PREF_STORAGE_TYPE, it) }
             putPrefString(PREF_DEFAULT_BACKUP_PATH, storagePath, true)
