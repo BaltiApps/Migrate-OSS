@@ -68,7 +68,7 @@ class UpdaterScriptMakerEngine(
      */
     private fun extractToBackup(assetName: String, unpackName: String = assetName, unpackSubDirectory: String = ""){
 
-        if (!cancelBackup) return
+        if (cancelBackup) return
 
         val assetFile = FileX.new(unpackAssetToInternal(assetName, unpackName, FileHandlers.INTERNAL_TYPE.INTERNAL_CACHE), true)
         val targetFile = FileX.new("${pathForAuxFiles}/$unpackSubDirectory", unpackName, true)
@@ -326,7 +326,7 @@ class UpdaterScriptMakerEngine(
 
     private fun writeManualConfig(fileName: String, value: String){
 
-        if (!cancelBackup) return
+        if (cancelBackup) return
 
         try {
             FileX.new(pathForAuxFiles, DIR_MANUAL_CONFIGS, true).run {
