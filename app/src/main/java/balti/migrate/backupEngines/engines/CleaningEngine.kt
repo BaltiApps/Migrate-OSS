@@ -198,6 +198,8 @@ class CleaningEngine(private val allBatches: ArrayList<ZipBatch>,
 
     override suspend fun backgroundProcessing(): Any? {
 
+        if (!rootLocation.exists()) return null
+
         if (isBackupSuccess){
             createMissedFilesList()
             readMissedFiles()
