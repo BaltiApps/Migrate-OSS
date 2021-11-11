@@ -302,6 +302,24 @@ class BackupServiceKotlin_new: LifecycleService() {
                     allWarnings.addAll(warnings)
                 }
 
+            /**
+             * This variable will be set to `true` if there is any fatal errors
+             * in any backup engine (example: [SystemTestingEngine]) or in the try block.
+             *
+             * This will be passed to [CleaningEngine], it `true`, no progress about
+             * cleaning will be shared. Also no errors (if any) from cleaning will be recorded.
+             *
+             * Reason: We want to see cleaning being done if backup is without any serious errors.
+             * If backup has anyway failed due to any fatal error, even then we want cleaning,
+             * but the progress updates are not important.
+             * Anyway, [CleaningEngine] will be placed in `finally` block.
+             * [finishBackup] will have been called in case of such errors, by the `catch` block.
+             * In that case, `finally` block is called after `catch` block.
+             * After [finishBackup] is called (broadcasts the final backup finished notification),
+             * it makes no sense to get new progress from cleaning, as the backup is effectively over.
+             */
+            var silentClean = false
+
             try {
                 backupStarted = true
                 startTime = timeInMillis()
