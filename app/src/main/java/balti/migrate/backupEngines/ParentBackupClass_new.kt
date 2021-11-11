@@ -32,7 +32,8 @@ import java.io.OutputStreamWriter
 
 abstract class ParentBackupClass_new(
     defaultProgressType: ProgressType,
-    private val checkBackupCancelled: Boolean = true
+    private val checkBackupCancelled: Boolean = true,
+    private val beSilent: Boolean = false,
 ) : AsyncCoroutineTask(DISP_IO) {
 
     val fileXDestination: String get() = BackupServiceKotlin_new.fileXDestination
@@ -122,6 +123,8 @@ abstract class ParentBackupClass_new(
      */
     private fun updateNotification(subTask: String, progressPercent: Int){
 
+        if (beSilent) return
+
         onGoingNotification.apply {
             setContentTitle(lastTitle)
             setContentText(subTask)
@@ -160,6 +163,7 @@ abstract class ParentBackupClass_new(
     fun broadcastProgress(subTask: String, taskLog: String, showNotification: Boolean, progressPercent: Int = -1){
 
         //if (cancelBackup) return
+        if (beSilent) return
 
         val progress = progressPercent.let {
             when {
@@ -220,6 +224,8 @@ abstract class ParentBackupClass_new(
      * @param newProgressType If an new step needs a separate value than the [engineProgressType].
      */
     fun resetBroadcast(isIndeterminateProgress: Boolean, title: String, newProgressType: ProgressType = engineProgressType){
+
+        if (beSilent) return
 
         this.isIndeterminate = isIndeterminateProgress
         val progress = if (!isIndeterminateProgress) 0 else -1
