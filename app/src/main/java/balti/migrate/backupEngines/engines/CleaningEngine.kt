@@ -22,7 +22,8 @@ import java.io.OutputStreamWriter
 class CleaningEngine(private val allBatches: ArrayList<ZipBatch>,
                      private val isBackupSuccess: Boolean,
                      private val busyBoxBinaryPath: String,
-): ParentBackupClass_new(PROGRESS_TYPE_CLEANING, false) {
+                     beSilent: Boolean,
+): ParentBackupClass_new(PROGRESS_TYPE_CLEANING, false, beSilent) {
 
     override val className: String = "CleaningEngine"
 
@@ -197,6 +198,8 @@ class CleaningEngine(private val allBatches: ArrayList<ZipBatch>,
     }
 
     override suspend fun backgroundProcessing(): Any? {
+
+        if (!rootLocation.exists()) return null
 
         if (isBackupSuccess){
             createMissedFilesList()

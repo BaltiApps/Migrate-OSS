@@ -293,6 +293,33 @@ class BackupServiceKotlin_new: LifecycleService() {
              */
             var lastSuccessEngine = ""
 
+            /**
+             * Function to collect all errors and warnings from job result.
+             */
+            fun collectErrors(result: EngineJobResultHolder?) =
+                result?.run {
+                    allErrors.addAll(errors)
+                    allWarnings.addAll(warnings)
+                }
+
+            /**
+             * This variable will be set to `true` if there is any fatal errors
+             * in any backup engine (example: [SystemTestingEngine]) or in the try block.
+             *
+             * This will be passed to [CleaningEngine], it `true`, no progress about
+             * cleaning will be shared. Also no errors (if any) from cleaning will be recorded.
+             *
+             * Reason: We want to see cleaning being done if backup is without any serious errors.
+             * If backup has anyway failed due to any fatal error, even then we want cleaning,
+             * but the progress updates are not important.
+             * Anyway, [CleaningEngine] will be placed in `finally` block.
+             * [finishBackup] will have been called in case of such errors, by the `catch` block.
+             * In that case, `finally` block is called after `catch` block.
+             * After [finishBackup] is called (broadcasts the final backup finished notification),
+             * it makes no sense to get new progress from cleaning, as the backup is effectively over.
+             */
+            var silentClean = false
+
             try {
                 backupStarted = true
                 startTime = timeInMillis()
@@ -303,15 +330,6 @@ class BackupServiceKotlin_new: LifecycleService() {
                 BackupProgressNotificationSystem.resetReplayCache()
 
                 val listOfExtraFilesFromJobResults = ArrayList<FileX>(0)
-
-                /**
-                 * Function to collect all errors and warnings from job result.
-                 */
-                fun collectErrors(result: EngineJobResultHolder?) =
-                    result?.run {
-                        allErrors.addAll(errors)
-                        allWarnings.addAll(warnings)
-                    }
 
                 /** STEP 1: System test */
                 if (getPrefBoolean(PREF_SYSTEM_CHECK, true)) {
@@ -326,6 +344,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                  */
                 if (allErrors.isNotEmpty()) {
                     finishBackup(getString(R.string.backup_error_system_check_failed))
+                    silentClean = true
                     return@launch
                 }
 
@@ -334,7 +353,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                     val contactsBackupName = "Contacts_$timeStamp.vcf"
                     ContactsBackupEngine(contactsBackupName).executeWithResult()?.let {
                         collectErrors(it)
-                        if (it.success) {
+                        if (it.successResultNotNull) {
                             listOfExtraFilesFromJobResults.add(it.result as FileX)
                         }
                         lastSuccessEngine = "ContactsBackupEngine"
@@ -346,7 +365,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                     val smsBackupName = "Sms_$timeStamp.sms.db"
                     SmsBackupEngine(smsBackupName).executeWithResult()?.let {
                         collectErrors(it)
-                        if (it.success) {
+                        if (it.successResultNotNull) {
                             listOfExtraFilesFromJobResults.addAll(it.result as ArrayList<FileX>)
                         }
                         lastSuccessEngine = "SmsBackupEngine"
@@ -358,7 +377,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                     val callsBackupName = "Calls_$timeStamp.calls.db"
                     CallsBackupEngine(callsBackupName).executeWithResult()?.let {
                         collectErrors(it)
-                        if (it.success) {
+                        if (it.successResultNotNull) {
                             listOfExtraFilesFromJobResults.addAll(it.result as ArrayList<FileX>)
                         }
                         lastSuccessEngine = "CallsBackupEngine"
@@ -370,7 +389,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                 if (!isSettingsNull) {
                     SettingsBackupEngine().executeWithResult()?.let {
                         collectErrors(it)
-                        if (it.success) {
+                        if (it.successResultNotNull) {
                             listOfExtraFilesFromJobResults.add(it.result as FileX)
                         }
                         lastSuccessEngine = "SettingsBackupEngine"
@@ -408,10 +427,11 @@ class BackupServiceKotlin_new: LifecycleService() {
                 zipBatches.addAll(ArrayList(0))
                 MakeZipBatch(listOfExtraFilesFromJobResults).executeWithResult()?.let {
                     collectErrors(it)
-                    if (it.success) {
+                    if (it.successResultNotNull) {
                         zipBatches.addAll(it.result as ArrayList<ZipBatch>)
                     } else {
                         finishBackup(getString(R.string.failed_to_make_batches))
+                        silentClean = true
                         return@launch
                     }
                     lastSuccessEngine = "MakeZipBatch"
@@ -460,7 +480,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                     var lastZip: FileX? = null
                     result = ZippingEngine(partTag, zipBatch).executeWithResult()
                     result?.run {
-                        if (success) {
+                        if (successResultNotNull) {
                             (this.result as Pair<FileX, FileX>).let {
                                 lastZip = it.first
                                 zipCanonicalPaths.add(it.first.canonicalPath)
@@ -487,26 +507,40 @@ class BackupServiceKotlin_new: LifecycleService() {
                     }
 
                 }
-
-                /**
-                 * STEP 12: Clean up
-                 * Delete empty directories.
-                 *
-                 * This engine does not listen to [cancelBackup].
-                 */
-                val isSuccess = allErrors.isEmpty() && !cancelBackup
-                if (isSuccess || getPrefBoolean(PREF_DELETE_ERROR_BACKUP, true)){
-                    CleaningEngine(zipBatches, isSuccess, busyboxBinaryPath).executeWithResult().let {
-                        collectErrors(it)
-                        lastSuccessEngine = "CleaningEngine"
-                    }
-                }
             }
             catch (e: Exception){
+                silentClean = true
                 e.printStackTrace()
                 allErrors.add("$ERR_GENERIC_BACKUP_ENGINE: ${e.message.toString()}")
                 allErrors.add("$ERR_GENERIC_BACKUP_ENGINE: Last success engine: $lastSuccessEngine")
                 finishBackup("${getString(R.string.generic_backup_engine_error)}: ${e.message}")
+                return@launch
+            }
+            finally {
+
+                try {
+
+                    /**
+                     * STEP 12: Clean up
+                     * Delete empty directories.
+                     *
+                     * This engine does not listen to [cancelBackup].
+                     */
+                    val isSuccess = allErrors.isEmpty() && !cancelBackup
+                    if (isSuccess || getPrefBoolean(PREF_DELETE_ERROR_BACKUP, true)){
+                        CleaningEngine(zipBatches, isSuccess, busyboxBinaryPath, silentClean).executeWithResult().let {
+                            collectErrors(it)
+                            lastSuccessEngine = "CleaningEngine"
+                        }
+                    }
+                }
+                catch (e: Exception){
+                    e.printStackTrace()
+                    if (!silentClean) {
+                        allErrors.add("$ERR_GENERIC_BACKUP_ENGINE: ${e.message.toString()}")
+                        allErrors.add("$ERR_GENERIC_BACKUP_ENGINE: Last success engine: $lastSuccessEngine")
+                    }
+                }
             }
 
             finishBackup(isCancelled = cancelBackup)

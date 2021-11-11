@@ -71,15 +71,20 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
     private val keyboardFragment: KeyboardFragment by lazy { supportFragmentManager.findFragmentById(R.id.keyboard_fragment) as KeyboardFragment }
     private val installersFragment: InstallersFragment by lazy { supportFragmentManager.findFragmentById(R.id.installer_fragment) as InstallersFragment }
 
-    private val askForNameLauncher by lazy {
+    private val askForNameLauncher =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
+                /**
+                 * Refresh destination location and flasherOnly status
+                 * when [AskForName] activity finishes.
+                 */
+                canonicalDestination = getPrefString(PREF_DEFAULT_BACKUP_PATH, DEFAULT_INTERNAL_STORAGE_DIR)
                 flasherOnly = it.data?.getBooleanExtra(EXTRA_FLASHER_ONLY, false) ?: false
                 validateNameAndStartBackup(it.data?.getStringExtra(EXTRA_BACKUP_NAME) ?: "")
             }
         }
-    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,7 +156,6 @@ class ExtraBackupsKotlin: AppCompatActivity(R.layout.extra_backups) {
             }
         }
 
-        askForNameLauncher  // just call to initialise
         autoSelectExtras()
 
         listenForUpdatesToStartProgressActivity()
