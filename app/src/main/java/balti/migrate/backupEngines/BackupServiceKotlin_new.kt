@@ -344,6 +344,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                  */
                 if (allErrors.isNotEmpty()) {
                     finishBackup(getString(R.string.backup_error_system_check_failed))
+                    silentClean = true
                     return@launch
                 }
 
@@ -430,6 +431,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                         zipBatches.addAll(it.result as ArrayList<ZipBatch>)
                     } else {
                         finishBackup(getString(R.string.failed_to_make_batches))
+                        silentClean = true
                         return@launch
                     }
                     lastSuccessEngine = "MakeZipBatch"
@@ -521,6 +523,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                 }
             }
             catch (e: Exception){
+                silentClean = true
                 e.printStackTrace()
                 allErrors.add("$ERR_GENERIC_BACKUP_ENGINE: ${e.message.toString()}")
                 allErrors.add("$ERR_GENERIC_BACKUP_ENGINE: Last success engine: $lastSuccessEngine")
