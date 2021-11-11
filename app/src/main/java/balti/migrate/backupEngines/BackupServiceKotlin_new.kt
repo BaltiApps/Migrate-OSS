@@ -525,6 +525,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                 allErrors.add("$ERR_GENERIC_BACKUP_ENGINE: ${e.message.toString()}")
                 allErrors.add("$ERR_GENERIC_BACKUP_ENGINE: Last success engine: $lastSuccessEngine")
                 finishBackup("${getString(R.string.generic_backup_engine_error)}: ${e.message}")
+                return@launch
             }
 
             finishBackup(isCancelled = cancelBackup)
