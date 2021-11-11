@@ -507,20 +507,6 @@ class BackupServiceKotlin_new: LifecycleService() {
                     }
 
                 }
-
-                /**
-                 * STEP 12: Clean up
-                 * Delete empty directories.
-                 *
-                 * This engine does not listen to [cancelBackup].
-                 */
-                val isSuccess = allErrors.isEmpty() && !cancelBackup
-                if (isSuccess || getPrefBoolean(PREF_DELETE_ERROR_BACKUP, true)){
-                    CleaningEngine(zipBatches, isSuccess, busyboxBinaryPath).executeWithResult().let {
-                        collectErrors(it)
-                        lastSuccessEngine = "CleaningEngine"
-                    }
-                }
             }
             catch (e: Exception){
                 silentClean = true
@@ -529,6 +515,32 @@ class BackupServiceKotlin_new: LifecycleService() {
                 allErrors.add("$ERR_GENERIC_BACKUP_ENGINE: Last success engine: $lastSuccessEngine")
                 finishBackup("${getString(R.string.generic_backup_engine_error)}: ${e.message}")
                 return@launch
+            }
+            finally {
+
+                try {
+
+                    /**
+                     * STEP 12: Clean up
+                     * Delete empty directories.
+                     *
+                     * This engine does not listen to [cancelBackup].
+                     */
+                    val isSuccess = allErrors.isEmpty() && !cancelBackup
+                    if (isSuccess || getPrefBoolean(PREF_DELETE_ERROR_BACKUP, true)){
+                        CleaningEngine(zipBatches, isSuccess, busyboxBinaryPath, silentClean).executeWithResult().let {
+                            collectErrors(it)
+                            lastSuccessEngine = "CleaningEngine"
+                        }
+                    }
+                }
+                catch (e: Exception){
+                    e.printStackTrace()
+                    if (!silentClean) {
+                        allErrors.add("$ERR_GENERIC_BACKUP_ENGINE: ${e.message.toString()}")
+                        allErrors.add("$ERR_GENERIC_BACKUP_ENGINE: Last success engine: $lastSuccessEngine")
+                    }
+                }
             }
 
             finishBackup(isCancelled = cancelBackup)
