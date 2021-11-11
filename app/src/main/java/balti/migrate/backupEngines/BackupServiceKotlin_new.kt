@@ -353,7 +353,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                     val contactsBackupName = "Contacts_$timeStamp.vcf"
                     ContactsBackupEngine(contactsBackupName).executeWithResult()?.let {
                         collectErrors(it)
-                        if (it.success) {
+                        if (it.successResultNotNull) {
                             listOfExtraFilesFromJobResults.add(it.result as FileX)
                         }
                         lastSuccessEngine = "ContactsBackupEngine"
@@ -365,7 +365,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                     val smsBackupName = "Sms_$timeStamp.sms.db"
                     SmsBackupEngine(smsBackupName).executeWithResult()?.let {
                         collectErrors(it)
-                        if (it.success) {
+                        if (it.successResultNotNull) {
                             listOfExtraFilesFromJobResults.addAll(it.result as ArrayList<FileX>)
                         }
                         lastSuccessEngine = "SmsBackupEngine"
@@ -377,7 +377,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                     val callsBackupName = "Calls_$timeStamp.calls.db"
                     CallsBackupEngine(callsBackupName).executeWithResult()?.let {
                         collectErrors(it)
-                        if (it.success) {
+                        if (it.successResultNotNull) {
                             listOfExtraFilesFromJobResults.addAll(it.result as ArrayList<FileX>)
                         }
                         lastSuccessEngine = "CallsBackupEngine"
@@ -389,7 +389,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                 if (!isSettingsNull) {
                     SettingsBackupEngine().executeWithResult()?.let {
                         collectErrors(it)
-                        if (it.success) {
+                        if (it.successResultNotNull) {
                             listOfExtraFilesFromJobResults.add(it.result as FileX)
                         }
                         lastSuccessEngine = "SettingsBackupEngine"
@@ -427,7 +427,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                 zipBatches.addAll(ArrayList(0))
                 MakeZipBatch(listOfExtraFilesFromJobResults).executeWithResult()?.let {
                     collectErrors(it)
-                    if (it.success) {
+                    if (it.successResultNotNull) {
                         zipBatches.addAll(it.result as ArrayList<ZipBatch>)
                     } else {
                         finishBackup(getString(R.string.failed_to_make_batches))
@@ -480,7 +480,7 @@ class BackupServiceKotlin_new: LifecycleService() {
                     var lastZip: FileX? = null
                     result = ZippingEngine(partTag, zipBatch).executeWithResult()
                     result?.run {
-                        if (success) {
+                        if (successResultNotNull) {
                             (this.result as Pair<FileX, FileX>).let {
                                 lastZip = it.first
                                 zipCanonicalPaths.add(it.first.canonicalPath)
