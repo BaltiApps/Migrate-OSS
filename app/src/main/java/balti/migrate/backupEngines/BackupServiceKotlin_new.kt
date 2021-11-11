@@ -293,6 +293,15 @@ class BackupServiceKotlin_new: LifecycleService() {
              */
             var lastSuccessEngine = ""
 
+            /**
+             * Function to collect all errors and warnings from job result.
+             */
+            fun collectErrors(result: EngineJobResultHolder?) =
+                result?.run {
+                    allErrors.addAll(errors)
+                    allWarnings.addAll(warnings)
+                }
+
             try {
                 backupStarted = true
                 startTime = timeInMillis()
@@ -303,15 +312,6 @@ class BackupServiceKotlin_new: LifecycleService() {
                 BackupProgressNotificationSystem.resetReplayCache()
 
                 val listOfExtraFilesFromJobResults = ArrayList<FileX>(0)
-
-                /**
-                 * Function to collect all errors and warnings from job result.
-                 */
-                fun collectErrors(result: EngineJobResultHolder?) =
-                    result?.run {
-                        allErrors.addAll(errors)
-                        allWarnings.addAll(warnings)
-                    }
 
                 /** STEP 1: System test */
                 if (getPrefBoolean(PREF_SYSTEM_CHECK, true)) {
