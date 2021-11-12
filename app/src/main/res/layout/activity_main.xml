@@ -204,6 +204,17 @@
                         android:gravity="end"
                         />
 
+                    <TextView
+                        android:id="@+id/migrate_oss_link"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/based_on_migrate_oss"
+                        android:textColor="@color/colorAccent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        />
+
                 </LinearLayout>
 
             </LinearLayout>
