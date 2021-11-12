@@ -2,7 +2,7 @@
     tools:ignore="ExtraTranslation">
 
     <string name="app_name">Migrate</string>
-    <string name="distribution_label"></string>
+    <string name="distribution_label">@string/label_for_oss</string>
     <string name="current_version_name">5.0</string>
     <string name="current_version_codename">Apollo</string>
     <string name="release_state">beta</string>
