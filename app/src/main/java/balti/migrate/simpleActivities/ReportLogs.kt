@@ -133,7 +133,7 @@ class ReportLogs: AppCompatActivity() {
 
     private fun getUri(file: FileX) =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                FileProvider.getUriForFile(this, "migrate.provider", file.file)
+                FileProvider.getUriForFile(this, "migrate.provider.oss", file.file)
             else Uri.fromFile(file.file)
 
     private fun sendIntent(uris: ArrayList<Uri>, isEmail: Boolean = false) {
