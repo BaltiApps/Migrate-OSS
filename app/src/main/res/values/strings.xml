@@ -4,8 +4,8 @@
 
     <!--Version changes to be made in
 
-    app_name (Migrate-GPE or Migrate-NG)
-    gpe_label
+    app_name (Migrate-GPE or Migrate-NG or Migrate-OSS)
+    distribution_label
     current_version_name (must not have blank spaces)           !!!
     current_version_codename
     last_tested_label
@@ -23,7 +23,7 @@
 
     <string name="app_name">Migrate</string>
     <string name="display_name">@string/app_name</string>
-    <string name="gpe_label"></string>
+    <string name="distribution_label"></string>
     <string name="current_version_name">5.0</string>
     <string name="current_version_codename">Apollo</string>
     <string name="release_state">beta</string>
