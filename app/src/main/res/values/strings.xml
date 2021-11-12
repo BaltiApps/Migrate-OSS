@@ -893,10 +893,6 @@
     Meanwhile, please continue using the app and share bug reports. Your love and support means a lot to me. Thanks!\n\n
     - SayantanRC</string>-->
 
-    <string name="copied_app">This app has been copied and is fake.</string>
-    <string name="copied_app_exp">Please get the original app from BaltiApps by clicking the Install button.</string>
-    <string name="install_original_migrate">Install original app</string>
-
     <!--preferences.xml-->
 
     <string name="disable_battery_optimisation">Disable battery optimisation</string>

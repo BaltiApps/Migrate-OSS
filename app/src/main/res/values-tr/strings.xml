@@ -652,10 +652,6 @@
     Bu arada, uygulamayı kullanmaya devam edin ve hata raporlarını paylaşın. Sevgin ve desteğin benim için çok şey ifade ediyor. Teşekkürler!\n\n
     - SayantanRC</string>-->
 
-    <string name="copied_app">Bu uygulama kopyalandı ve sahte.</string>
-    <string name="copied_app_exp">Lütfen Yükle düğmesini tıklayarak orijinal uygulamayı BaltiApps\'ten edinin.</string>
-    <string name="install_original_migrate">Orijinal uygulamayı yükle</string>
-
     <!--preferences.xml-->
 
     <string name="disable_battery_optimisation">Pil optimizasyonunu devre dışı bırak</string>
