@@ -13,4 +13,4 @@ Version: 5.0 (Apollo)
 2. Open `Migrate-OSS` project in Android Studio. Then compile and run (`Shift+F10` in most cases).
 
 ### Contact
-Telegram group link: https://t.me/migrateApp    
+Telegram group link: https://t.me/migrateApp  
