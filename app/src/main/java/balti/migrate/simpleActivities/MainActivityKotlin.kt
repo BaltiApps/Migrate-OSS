@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Paint
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
@@ -30,7 +29,6 @@ import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.messages.MessagesView
 import balti.migrate.preferences.MainPreferenceActivity
-import balti.migrate.storageSelector.StorageDisplayUtils
 import balti.migrate.storageSelector.StorageSelectorActivity
 import balti.migrate.storageSelector.StorageType
 import balti.migrate.utilities.CommonToolsKotlin
@@ -194,10 +192,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             drawer_layout.openDrawer(GravityCompat.START)
         }
 
-        learn_sd_card_support.paintFlags = Paint.UNDERLINE_TEXT_FLAG
-        learn_sd_card_support.setOnClickListener {
-            StorageDisplayUtils.showSdCardSupportDialog(this)
-        }
+
 
         startStorageSpaceMonitor()
 
