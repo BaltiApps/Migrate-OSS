@@ -200,6 +200,8 @@
     <string name="restoreApp">In app restore</string>
     <string name="internal_storage">Internal storage</string>
     <string name="learn_about_sd_card_support">Learn about SD card support</string>
+    <string name="based_on_migrate_oss">Based on Open Source Migrate-OSS</string>
+    <string name="migrate_oss_link">Open source codebase on GitHub</string>
 
     <!--backup_layout.xml-->
     <string name="select_apps">Select apps</string>
