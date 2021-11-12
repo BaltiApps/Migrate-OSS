@@ -586,20 +586,6 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         }
 
         resizeButtons()
-
-        if (packageName != "balti.migrate") {
-            val ad = AlertDialog.Builder(this)
-            ad.setTitle(R.string.copied_app)
-            ad.setMessage(R.string.copied_app_exp)
-            ad.setCancelable(false)
-            ad.setNegativeButton(R.string.close) { _, _ ->
-                finish()
-            }
-            ad.setPositiveButton(R.string.install_original_migrate) { _, _ ->
-                playStoreLink("balti.migrate")
-            }
-            ad.show()
-        }
     }
 
     private fun requestRoot(){
