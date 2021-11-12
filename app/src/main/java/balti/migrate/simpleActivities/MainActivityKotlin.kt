@@ -30,7 +30,6 @@ import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.messages.MessagesView
 import balti.migrate.preferences.MainPreferenceActivity
-import balti.migrate.storageSelector.StorageDisplayUtils
 import balti.migrate.storageSelector.StorageSelectorActivity
 import balti.migrate.storageSelector.StorageType
 import balti.migrate.utilities.CommonToolsKotlin
@@ -46,6 +45,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.LAST_SUPPORTED_ANDROI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_ACTIVITY_CODE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_BOARD_URL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_FIELD_LAST_UPDATE_NO
+import balti.migrate.utilities.CommonToolsKotlin.Companion.MIGRATE_OSS_GITHUB
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_MIGRATE_FLASHER
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ANDROID_VERSION_WARNING
@@ -194,9 +194,9 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             drawer_layout.openDrawer(GravityCompat.START)
         }
 
-        learn_sd_card_support.paintFlags = Paint.UNDERLINE_TEXT_FLAG
-        learn_sd_card_support.setOnClickListener {
-            StorageDisplayUtils.showSdCardSupportDialog(this)
+        migrate_oss_link.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+        migrate_oss_link.setOnClickListener {
+            openWebLink(MIGRATE_OSS_GITHUB)
         }
 
         startStorageSpaceMonitor()

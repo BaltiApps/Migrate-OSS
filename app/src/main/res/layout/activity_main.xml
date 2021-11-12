@@ -213,10 +213,10 @@
                         />
 
                     <TextView
-                        android:id="@+id/learn_sd_card_support"
+                        android:id="@+id/migrate_oss_link"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/learn_about_sd_card_support"
+                        android:text="@string/based_on_migrate_oss"
                         android:textColor="@color/colorAccent"
                         android:clickable="true"
                         android:focusable="true"

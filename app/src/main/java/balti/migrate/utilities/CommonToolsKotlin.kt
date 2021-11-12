@@ -385,6 +385,8 @@ class CommonToolsKotlin(val context: Context? = null) {
 
         val MESSAGE_BOARD_URL = "https://gitlab.com/SayantanRC/update-files/-/raw/master/migrate_message_board.txt"
 
+        val MIGRATE_OSS_GITHUB = "https://github.com/BaltiApps/Migrate-OSS.git"
+
         val MESSAGE_FIELD_LAST_UPDATE_NO = "message_update_no"
         val MESSAGE_FIELD_MESSAGE_ARRAY = "messages"
         val MESSAGE_FIELD_MESSAGE_NO = "message_no"
