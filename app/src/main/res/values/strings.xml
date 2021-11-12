@@ -21,7 +21,6 @@
     <!--Update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt if compatible with new Android version-->
 
     <string name="app_name">Migrate</string>
-    <string name="display_name">@string/app_name</string>
     <string name="current_version_name">5.0</string>             <!--NO blank space-->
     <string name="current_version_codename">Apollo</string>
     <string name="release_state">beta</string>                   <!--NO blank space-->
