@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Paint
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
@@ -44,6 +45,7 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.LAST_SUPPORTED_ANDROI
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_ACTIVITY_CODE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_BOARD_URL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_FIELD_LAST_UPDATE_NO
+import balti.migrate.utilities.CommonToolsKotlin.Companion.MIGRATE_OSS_GITHUB
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PACKAGE_MIGRATE_FLASHER
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ALTERNATE_METHOD
 import balti.migrate.utilities.CommonToolsKotlin.Companion.PREF_ANDROID_VERSION_WARNING
@@ -192,7 +194,10 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             drawer_layout.openDrawer(GravityCompat.START)
         }
 
-
+        migrate_oss_link.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+        migrate_oss_link.setOnClickListener {
+            openWebLink(MIGRATE_OSS_GITHUB)
+        }
 
         startStorageSpaceMonitor()
 
