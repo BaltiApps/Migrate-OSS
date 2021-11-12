@@ -1,5 +1,7 @@
 # Migrate - custom ROM migration tool
 
+![Feature graphic](display_assets/migrate_oss_github.png)
+
 ## Branch version
 Version: 5.0 (Apollo)
 
