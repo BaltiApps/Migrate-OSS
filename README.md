@@ -10,4 +10,4 @@ Version: 5.0 (Apollo)
    git clone https://github.com/BaltiApps/FileX.git
    git clone https://github.com/BaltiApps/baltitoolbox.git
    ```
-2. Open `migrate-oss` project in Android Studio. Then compile and run (`Shift+F10` in most cases).
+2. Open `Migrate-OSS` project in Android Studio. Then compile and run (`Shift+F10` in most cases).
