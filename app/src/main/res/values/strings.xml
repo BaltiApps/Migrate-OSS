@@ -2,7 +2,7 @@
     tools:ignore="MissingTranslation,ExtraTranslation"
     >
 
-    <!--Version changes to be made in
+    <!--Changes to be made for version upgrades (!!! - represent important changes)
 
     app_name (Migrate-GPE or Migrate-NG or Migrate-OSS)
     current_version_name (must not have blank spaces)           !!!
@@ -11,20 +11,20 @@
     release_state (must not have blank spaces)
     changelog                                                   !!!
     build.gradle [versionCode, versionName]                     !!!
-    MainActivity.java [showChangeLog()]
+    MainActivityKotlin.kt [showChangeLog()]
     CommonToolsKotlin [THIS_VERSION]                            !!!
     CommonToolsKotlin [LAST_SUPPORTED_ANDROID_API]
     build.gradle version in Migrate helper (optional)
 
     -->
 
-    <!--please also update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt-->
+    <!--Update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt if compatible with new Android version-->
 
     <string name="app_name">Migrate</string>
     <string name="display_name">@string/app_name</string>
-    <string name="current_version_name">5.0</string>
+    <string name="current_version_name">5.0</string>             <!--NO blank space-->
     <string name="current_version_codename">Apollo</string>
-    <string name="release_state">beta</string>
+    <string name="release_state">beta</string>                   <!--NO blank space-->
     <string name="last_tested_label">Last tested on: Android 11</string>
 
     <!--about_app.xml-->
