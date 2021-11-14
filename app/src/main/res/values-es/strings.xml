@@ -38,31 +38,31 @@
     <string name="version_1.0.2">Versión 1.0.2 (beta)</string>
     <string name="version_1.0.2_content">\u2022 Se agregaron más nombres en la lista de agradecimientos</string>
     <string name="version_1.0.3">Versión 1.0.3 (beta)</string>
-    <string name="version_1.0.3_content">\u2022 Corrección al compartir el registro \n
-	\u2022 También comparta el archivo de script en el registro \n
-	\u2022 Lista negra del sistema Android de la lista de copia de seguridad (evita el error del socket tar)</string>
+    <string name="version_1.0.3_content">        \u2022 Corrección al compartir el registro\n
+	\u2022 También comparta el archivo de script en el registro\n
+	\u2022 Lista negra del sistema Android de la lista de copia de seguridad (evita el error del socket tar)    </string>
     <string name="version_1.0.4">Versión 1.0.4 (beta)</string>
-    <string name="version_1.0.4_content">\u2022 Mejoras en el registro \n        
-	\u2022 Ignorar advertencias de socket tar \n        
-	\u2022 La nueva actualización-binaria debería evitar el problema TWRP error 3\n        
-	\u2022 Debería solucionar un problema de espacio nulo mientras se lee datos de copia de seguridad
-    </string>
+    <string name="version_1.0.4_content">        \u2022 Mejoras en el registro\n
+	\u2022 Ignorar advertencias de socket tar\n
+	\u2022 La nueva actualización-binaria debería evitar el problema TWRP error 3\n
+	\u2022 Debería solucionar un problema de espacio nulo mientras se lee datos de copia de seguridad    </string>
     <string name="version_1.0.5">Versión 1.0.5 (beta)</string>
-    <string name="version_1.0.5_content">\u2022 Solución probable a \"android.os.TransactionTooLargeException\" \n
-	\u2022 Mejor en la protección de la aplicación para evitar que no se creen zips \n        
-	\u2022 La versión de la aplicación ahora está escrita en registros \n        
-	\u2022 La aplicación ahora apunta a Oreo en lugar de Pie para evitar posibles cierres inesperados \n        
-	\u2022 Arreglado inesperado \'(\' en el proceso de restauración</string>
+    <string name="version_1.0.5_content">        \u2022 Solución probable a \"android.os.TransactionTooLargeException\"\n
+	\u2022 Mejora en la protección de la aplicación para evitar que no se creen ZIPs\n 
+	\u2022 La versión de la aplicación ahora está escrita en registros\n
+	\u2022 La aplicación ahora apunta a Oreo en lugar de Pie para evitar posibles cierres inesperados\n        
+	\u2022 Arreglado inesperado \'(\' en el proceso de restauración    </string>
     <string name="version_1.1">Versión 1.1 (beta)</string>
-    <string name="version_1.1_content">\u2022 [Nuevo] Verificación de respaldo antes de comprimir \n        
-	\u2022 Refactorización de código principal y cambios bajo el capó \n        
-	\u2022 El botón CANCELAR ahora mata el proceso de copia de seguridad \n        
-	\u2022 Arreglar a \"set_progress()\" en recuperación \n        
-	\u2022 Solución probable a \"Error al cambiar la configuración regional para db\" \n        
-	\u2022 Solución probable al script de actualización faltante \n        
-	\u2022 Solución probable a algunos problemas de \"Operación no permitida\" \n        
-	\u2022 Eliminar caracteres ilegales del nombre de la copia de seguridad \n        
-	\u2022 La opción \"Compartir scripts\" ahora debería funcionar correctamente.</string>
+    <string name="version_1.1_content">        \u2022 [Nuevo] Verificación de respaldo antes de comprimir\n
+        \u2022 Refactorización de código principal y cambios bajo el capó\n        
+        \u2022 El botón CANCELAR ahora mata el proceso de copia de seguridad\n
+        \u2022 Arreglo de \"set_progress()\" en recovery\n
+        \u2022 Solución probable a \"Error al cambiar la configuración regional para db\"\n
+        \u2022 Solución probable al script de actualización faltante\n
+        \u2022 Solución probable a algunos problemas de \"Operación no permitida\"\n
+        \u2022 Eliminar caracteres ilegales del nombre de la copia de seguridad\n
+        \u2022 La opción \"Compartir scripts\" ahora debería funcionar correctamente.
+    </string>
     <string name="version_1.1.1">Versión 1.1.1 (beta)</string>
     <string name="version_1.1.1_content">v1.1 \n\n    
 	\u2022 [Nuevo] Verificación de respaldo antes de comprimir \n    
@@ -76,12 +76,13 @@
 	\u2022 La opción \"Compartir scripts\" ahora debería funcionar correctamente. \n\n
 	v1.1.1 \n\n    
 	\u2022 Se solucionó un problema de sin comillas de cierre en helper</string>
-    <string name="version_1.1.1_only_content">\u2022 Se solucionó un problema de sin comillas de cierre en helper</string>
+    <string name="version_1.1.1_only_content">    \u2022 Se ha corregido un problema de no cerrar comillas en el helper
+    </string>
     <string name="version_1.2">Versión 1.2 (beta)</string>
     <string name="version_1.2_content">\u2022 Evita completamente \"dumpsys\" mientras respaldas los permisos de la aplicación \n    
 	\u2022 Ahora los datos de la aplicación en tar.gz están desempaquetados en /data /data \n        
 	(Solución probable a problemas de Operación no permitidos en Google Pixel)</string>
-    <string name="version_2.0">Versión 2.0 (christmas_beta)</string>
+    <string name="version_2.0">Versión 2.0 (beta navideña)</string>
     <string name="version_2.0_content">¡Feliz navidad y próspero año nuevo! \n \n    
 	\u2022 Algunos cambios bajo el capó. \n    
 	\u2022 Soporte de tarjeta SD experimental (con módulo Magisk) \n    
@@ -92,18 +93,20 @@
 	\u2022 Ahora cada paquete zip de migración tiene un binario busybox como respaldo \n    
 	\u2022 Migrate helper obtiene la nueva opción de desactivación temporal. \n    
 	\u2022 Migrate helper obtiene la nueva opción Abortar. \n</string>
-    <string name="version_2.0.1">Versión 2.0.1 (christmas_beta)</string>
-    <string name="version_2.0.1_content">\u2022 Se corrigió un bloqueo probable en Migrate helper. \n</string>
+    <string name="version_2.0.1">Versión 2.0.1 (beta navideña)</string>
+    <string name="version_2.0.1_content">    \u2022 Se ha corregido un probable fallo en el helper de Migrate.\n
+    </string>
     <string name="version_2.1">Versión 2.1</string>
-    <string name="version_2.1_content">\u2022 Los errores menores ahora se suprimen, pero se registran en el registro. \n    
-	\u2022 Arreglar la retención de iconos desde la copia de seguridad anterior. \n    
-	\u2022 Repara la visualización incorrecta de la duración de la copia de seguridad. \n    
-	\u2022 Se corrigió un error en el mecanismo de corrección de errores. \n    
-	\u2022 Solución probable para algunas aplicaciones que no se respaldan. \n    
-	\u2022 Se corrigió el error 6 en TWRP para algunas configuraciones regionales. \n    
-	\u2022 Se corrigió un cálculo de espacio de datos /incorrecto de larga data en TWRP. \n    
-	\u2022 Migrate helper ya no desinstala la aplicación antes de instalarla. \n    
-	\u2022 ¡Enlace de grupo de Telegram agregado! \n</string>
+    <string name="version_2.1_content">    \u2022 Los errores menores ahora se suprimen, pero se registran en el log.\n
+    \u2022 Corrección de la retención de iconos de las copias de seguridad anteriores.\n
+    \u2022 Corregir la visualización errónea de la duración de la copia de seguridad.\n
+    \u2022 Se ha corregido un error en el mecanismo de corrección de errores.\n
+    \u2022 Probable corrección de algunas aplicaciones que no se respaldan.\n
+    \u2022 Corrección del error 6 en TWRP para algunas localizaciones.\n
+    \u2022 Se ha corregido un error de cálculo del espacio de datos en TWRP.\n
+    \u2022 El helper de Migrate ya no desinstala la aplicación antes de instalarla.\n
+    \u2022 Se ha añadido un enlace al grupo de Telegram.\n
+    </string>
     <string name="version_3.0">Versión 3.0</string>
     <string name="version_3.0_content">        De 2.1 a 3.0\n\n
         \u2022 La aplicación se reescribe en Kotlin\n
@@ -128,7 +131,7 @@
     <string name="version_3.0.3_content">\u2022 Cambios para que la aplicación cumpla con las políticas de Google Play. \n        \u2022 Eliminar método alternativo para el cálculo del tamaño de la aplicación debajo de Android Nougat. \n        \u2022 Solución probable a No se encontraron metadatos después de la restauración. \n        \u2022 Algunas otras correcciones. \n</string>
     <string name="version_3.1">Versión 3.1</string>
     <string name="version_3.1_content">\u2022 Helper actualizado para reparar la restauración de datos. \n        \u2022 Helper actualizado. \n        \u2022 Mostrar advertencia para el primer uso. \n        \u2022 Grabar lista sin procesar de archivos en la copia de seguridad. \n</string>
-    <string name="version_3.1.1">Version 3.1.1</string>
+    <string name="version_3.1.1">Versión 3.1.1</string>
     <string name="version_3.1.1_content">Version 3.1.1         
 	\u2022 Helper actualizado para restaurar aplicaciones con caracteres problemáticos. \n        
 	\u2022 Agregar número de compilación a los registros. \n        
@@ -137,7 +140,7 @@
 	\u2022 Helper actualizado. \n        
 	\u2022 Mostrar advertencia para el primer uso. \n        
 	\u2022 Grabar lista sin procesar de archivos en la copia de seguridad. \n</string>
-    <string name="version_4.0">Version 4.0</string>
+    <string name="version_4.0">Versión 4.0</string>
     <string name="version_4.0_content">        \u2022 Compatibility fixes for Android 11\n
         \u2022 Add Message center to display important announcements.\n
         \u2022 Migrate helper now allows to retry failed apk installs\n
@@ -149,7 +152,7 @@
         \u2022 Don\'t remount /data partition in system test\n
         \u2022 Many under the hood changes\n
     </string>
-    <string name="version_5.0">Version 5.0 beta</string>
+    <string name="version_5.0">Versión 5.0 beta</string>
     <string name="version_5.0_content">        \u2022 Landscape layout fix for Main activity\n
         \u2022 Update contributors list\n
     </string>
@@ -160,8 +163,8 @@
     <string name="restoreApp">Restaurar en la aplicación</string>
     <string name="internal_storage">Almacenamiento interno</string>
     <string name="learn_about_sd_card_support">Información sobre el soporte de tarjetas SD</string>
-    <string name="based_on_migrate_oss">Based on Open Source Migrate-OSS</string>
-    <string name="migrate_oss_link">Open source codebase on GitHub</string>
+    <string name="based_on_migrate_oss">Basado en Migrate-OSS de código abierto</string>
+    <string name="migrate_oss_link">Código base del código abierto en GitHub</string>
     <!--backup_layout.xml-->
     <string name="select_apps">Seleccionar aplicaciones</string>
     <string name="backupLabel">Copia de seguridad</string>
@@ -189,85 +192,85 @@
     <string name="migrate_flasher_only_backup">Migrate-flasher-only backup</string>
     <string name="flasher_only_desc1">You will be able to restore the backup <b>ONLY</b> using the <b>Migrate Flasher</b> app.</string>
     <string name="flasher_only_desc2"><b>You will not be able to flash the backup using TWRP!!</b></string>
-    <string name="disable_this">Disable this!</string>
-    <string name="get_on_google_play">Get on Google Play</string>
+    <string name="disable_this">¡Deshabilitar esto!</string>
+    <string name="get_on_google_play">Consígela en Google Play</string>
     <!--AskForName.kt-->
-    <string name="grant_internal_storage_access">Please grant access to internal storage</string>
-    <string name="grant">Grant</string>
-    <string name="no_storage_selected">No storage selected!</string>
-    <string name="please_select_a_storage_option">Please select a storage option</string>
-    <string name="label_traditional_storage">Traditional storage</string>
-    <string name="label_all_files_storage">All files access</string>
+    <string name="grant_internal_storage_access">Por favor, concede acceso al almacenamiento interno</string>
+    <string name="grant">Conceder</string>
+    <string name="no_storage_selected">¡No se ha seleccionado almacenamiento!</string>
+    <string name="please_select_a_storage_option">Por favor, seleccione una opción de almacenamiento</string>
+    <string name="label_traditional_storage">Almacenamiento tradicional</string>
+    <string name="label_all_files_storage">Acceso a todos los archivos</string>
     <string name="label_saf_storage">SAF storage access</string>
     <!--learn_about_sd_card.xml-->
-    <string name="p1">1. La compatibilidad con tarjetas SD es experimental y requiere un módulo magisk.</string>
+    <string name="p1">1. El soporte de tarjetas SD es experimental, y requiere un módulo de magisk.</string>
     <string name="p2">2. La implementación actual requiere que su ROM sea compatible con FUSE, que ha sido reemplazado por SDCARDFS en versiones recientes de Android. FUSE todavía está en su lugar para el soporte heredado en algunas ROM.</string>
     <string name="p3">3. Debido a la razón anterior, la opción de tarjeta SD puede o no funcionar dependiendo del dispositivo, la ROM y la versión de Android.</string>
     <string name="p4">4. Si la implementación actual no funciona para usted, espere hasta que el desarrollador del módulo reescriba un nuevo módulo o encuentre otra alternativa. Gracias por su paciencia.</string>
     <string name="p5">Para intentar obtener soporte para la tarjeta SD, descargue e instale el módulo magisk \"ExSDCard Access Enabler\" y reinicie \n    
 	Este módulo está hecho por el desarrollador Romain.</string>
     <!--in_app_restore-->
-    <string name="in_app_restore">En la restauración de la aplicación</string>
+    <string name="in_app_restore">In app restore</string>
     <!--zip_picker.xml-->
     <string name="select_storage">Seleccionar almacenamiento</string>
     <string name="expected_zip_location">El zip de respaldo debe estar en el directorio Migrate</string>
-    <string name="zip_picker">Selector de zips</string>
+    <string name="zip_picker">Selector de ZIPs</string>
     <string name="up_one_dir">Un nivel arriba</string>
     <!--extra_backups.xml-->
     <string name="extras">Extras</string>
-    <string name="setup_migrate_data_plugin">Setup Migrate data plugin (MDP)</string>
-    <string name="setup_migrate_data_plugin_desc">MDP is required to backup app data in Android 11+\nThis is because of system restrictions.</string>
-    <string name="mdp_not_set_up">Data plugin (MDP) is not set up!</string>
-    <string name="mdp_not_set_up_desc">If you proceed without setting up MDP, <b>all app data backups will be skipped</b>. Only APK will be backed up. Are you sure to proceed?</string>
-    <string name="proceed_without_mdp">Proceed without MDP!</string>
-    <string name="why">Why?</string>
-    <string name="install">Install</string>
+    <string name="setup_migrate_data_plugin">Configurar el Complemento de datos Migrate (MDP)</string>
+    <string name="setup_migrate_data_plugin_desc">Se requiere el Complemento de datos Migrate (MDP) para hacer copia de seguridad de datos de aplicaciones en Android 11+\nEsto es debido a las restricciones del sistema.</string>
+    <string name="mdp_not_set_up">¡El Complemento de datos Migrate (MDP) no está configurado!</string>
+    <string name="mdp_not_set_up_desc">Si continúa sin configurar el Complemento de datos Migrate (MDP), <b>se omitirán todas las copias de seguridad de datos de la aplicación</b>. Solo se realizará una copia de seguridad de APK. ¿Está seguro de continuar?</string>
+    <string name="proceed_without_mdp">¡Continuar sin el Complemento de datos Migrate (MDP)!</string>
+    <string name="why">¿Por qué?</string>
+    <string name="install">Instalar</string>
     <string name="contacts_label">Contactos</string>
     <string name="sms_label">Mensajes SMS</string>
     <string name="call_log_label">Registros de llamadas</string>
     <string name="keyboard_label">Teclado predeterminado</string>
     <string name="dpi_label">DPI de pantalla</string>
     <string name="adb_label">Estado ADB</string>
-    <string name="using_default_adb_value">Using default ADB value.</string>
+    <string name="using_default_adb_value">Utilizando el valor predeterminado de ADB.</string>
     <string name="no_default_adb_scale">El sistema no tiene un valor de conexión ADB predeterminado. En la mayoría de los casos, esto significa que se establece en 0 (ADB deshabilitado)
 	¿Desea hacer una copia de seguridad de este valor como 0?</string>
-    <string name="installer_label">Instaladores de aplicaciones</string>
-    <string name="wifi_label">Archivo de contraseñas wifi</string>
+    <string name="installer_label">Instalador de aplicaciones</string>
+    <string name="wifi_label">Archivo de contraseñas Wi-Fi</string>
     <string name="fontScale_label">Escala de fuente</string>
-    <string name="using_default_font_scale">Using default font scale.</string>
+    <string name="using_default_font_scale">Utilizando escala de fuente predeterminada.</string>
     <string name="no_default_font_scale">El sistema no tiene un valor de escala de fuente predeterminado. En la mayoría de los casos, esto significa que se establece en 1.0
 	¿Desea hacer una copia de seguridad de este valor como 1.0?</string>
     <string name="yes_recommended">Sí (recomendado)</string>
-    <string name="only_for_android_8">Solo para Android Oreo y superior (8.0)</string>
-    <string name="filtering_duplicates">Filtrado \nduplicados</string>
+    <string name="only_for_android_8">Sólo para Android Oreo y superior (8.0+)</string>
+    <string name="filtering_duplicates">Filtrado\nduplicados</string>
     <string name="reading_sms">Leyendo SMS</string>
     <string name="reading_calls">Leyendo llamadas</string>
     <string name="reading">Leyendo...</string>
-    <string name="reading_error">Error de lectura</string>
+    <string name="reading_error">Error al leer</string>
     <string name="no_app_selected">¡Ninguna aplicación seleccionada!</string>
-    <string name="apps_selected">Apps selected:</string>
-    <string name="filtering_apps">Aplicaciones de filtrado</string>
-    <string name="tap_to_see_values">Toque para ver valores</string>
+    <string name="apps_selected">Aplicaciones seleccionadas:</string>
+    <string name="filtering_apps">Aplicaciones filtradas</string>
+    <string name="tap_to_see_values">Toque para ver los valores</string>
     <string name="adb_enabled">Depuración de ADB habilitada</string>
     <string name="adb_disabled">Depuración de ADB deshabilitada</string>
-    <string name="adb_unknown">ADB estado desconocido! El valor no será respaldado.</string>
-    <string name="weird_font_scale">Escala de fuente extraña. El valor no será respaldado.</string>
-    <string name="empty_call_logs">No se encontraron registros de llamadas en el dispositivo. Nada que respaldar</string>
+    <string name="adb_unknown">¡Estado ADB desconocido! El valor no será respaldado.</string>
+    <string name="weird_font_scale">Escala de fuente extraña. No se realizará una copia de seguridad del valor.</string>
+    <string name="empty_call_logs">No se encontraron registros de llamadas en el dispositivo. Nada para respaldar</string>
     <string name="empty_sms">No se encontraron mensajes SMS en el dispositivo. Nada que respaldar</string>
     <string name="empty_contacts">No hay contactos en el dispositivo. Nada que respaldar</string>
     <!--mdp_layout.xml-->
-    <string name="set_up_mdp">Set up MDP</string>
-    <string name="install_mdp">Install Migrate data plugin (MDP)</string>
-    <string name="grant_root_access_to_mdp">Grant root access</string>
-    <string name="mdp_su_please_wait">Please wait for sometime (about a minute)</string>
+    <string name="set_up_mdp">Configurar el Complemento de datos Migrate (MDP)</string>
+    <string name="install_mdp">Instalar el Complemento de datos Migrate (MDP)</string>
+    <string name="grant_root_access_to_mdp">Otorgar acceso root</string>
+    <string name="mdp_su_please_wait">Por favor, espere un momento (alrededor de un minuto)</string>
     <string name="one">1</string>
     <string name="two">2</string>
     <!--ExtraBackups.java-->
     <string name="not_recommended">¡No recomendado!</string>
     <string name="new_method_not_available_below_oreo">Nuevo método no para el cálculo del tamaño disponible debajo de Android Oreo. Usando el método terminal.</string>
     <string name="contacts_not_recommended">No se recomienda la copia de seguridad y restauración de contactos<b> si tiene la intención de iniciar sesión con Google</b> en tu próxima ROM. La restauración de contactos hará duplicados innecesarios de las mismas entradas de contacto.</string>
-    <string name="dont_backup">No hagas copias de seguridad</string>
-    <string name="backup_contacts_anyway">Copia de seguridad de contactos de todos modos</string>
+    <string name="dont_backup">No hacer copia de seguridad</string>
+    <string name="backup_contacts_anyway">Copiar contactos de todos modos</string>
     <string name="estimated_files_size">Tamaño total estimado de la copia de seguridad:</string>
     <string name="estimated_app_size">Tamaño estimado de la aplicación:</string>
     <string name="current_app">Aplicación actual:</string>
@@ -298,7 +301,7 @@
     <string name="cannot_split_hint">You may check \"Max zip size\" in Preferences. You may also use flasher-Only backup.</string>
     <string name="too_big_apps">Too big apps:</string>
     <string name="part">Parte</string>
-    <string name="zip">Zip</string>
+    <string name="zip">ZIP</string>
     <string name="parts">partes</string>
     <string name="of">de</string>
     <string name="allowed">permitido</string>
@@ -314,15 +317,15 @@
     <string name="no_keyboard_enabled_desc">Por favor ve a \n        Configuración -&gt; Sistema -&gt; Idiomas</string>
     <string name="selected_keyboard_not_present_in_backup">no está presente en la copia de seguridad</string>
     <string name="selected_keyboard_not_present_in_backup_desc">La lista de aplicaciones de respaldo no tiene el teclado seleccionado. Vuelva a la página \"Seleccionar aplicaciones \" y seleccione la aplicación de teclado.</string>
-    <string name="keyboard_app_name_label">Keyboard app name</string>
-    <string name="keyboard_package_label">Keyboard package</string>
-    <string name="keyboard_string_label">Keyboard string</string>
+    <string name="keyboard_app_name_label">Nombre de la aplicación de teclado</string>
+    <string name="keyboard_package_label">Paquete del teclado</string>
+    <string name="keyboard_string_label">Texto del teclado</string>
     <string name="extra_backups_help"><b> Contactos</b> : Copia de seguridad de datos de contactos como vcf \n<b> Mensajes SMS</b> : Copia de seguridad de mensajes de texto \n<b> Registros de llamadas</b> : Copia de seguridad de registros de llamadas. Esto no incluye favoritos \n<b> DPI de pantalla</b> : Copia de seguridad de la densidad de pantalla actual \n<b> Teclado predeterminado</b> : Haga una copia de seguridad de la selección de teclado predeterminada. Se requiere selección manual \n<b> Instaladores de aplicaciones</b> : El sistema trata que las aplicaciones restauradas se instalen desde Play Store o F-droid. \n<b> Estado ADB</b> : Copia de seguridad del estado ADB (depuración USB) \n<b> Escala de fuente</b> : Se realiza una copia de seguridad del tamaño de la fuente \n        \norte         Después de marcar una casilla de verificación en un elemento, haga clic en el elemento para obtener más opciones.</string>
     <string name="change_size_calculation_method">Puede intentar ir a la pantalla principal de la aplicación -&gt; \"Preferencias \" -&gt; Desmarcar \"Usar nuevo método para calcular el tamaño \"</string>
     <string name="no_sd_card_detected">No se detectó la tarjeta SD (o no se montó como R /W).</string>
     <string name="no_sd_card_detected_exp">Asegúrese de haber montado una tarjeta SD externa (si es compatible con su dispositivo) \n    También asegúrese de instalar el módulo magisk \"ExSDCard Access Enabler \". \n \n    [módulo realizado por el desarrollador Romain.]</string>
     <string name="please_select_sd_card">Por favor seleccione tarjeta SD</string>
-    <string name="no_busybox_binary">\"busybox \" no disponible!</string>
+    <string name="no_busybox_binary">¡\"busybox\" no disponibles!</string>
     <string name="re_calculating_size">Recalculando el tamaño usando el método terminal</string>
     <string name="error_occurred">¡¡Se produjo un error!!</string>
     <string name="wait_while_reading_data">Los datos están siendo leídos</string>
@@ -356,7 +359,7 @@
     <string name="zipping_all_files">Comprimir archivos</string>
     <string name="copying_file_list">Copying file list</string>
     <string name="adding_directories">Adding directories</string>
-    <string name="adding_files_to_zip">Adding files to zip</string>
+    <string name="adding_files_to_zip">Agregando archivos al ZIP</string>
     <string name="making_file_list">Hacer fileList</string>
     <string name="verifying_zip">Verificando zip</string>
     <string name="listing_zip_file">Listado de archivo zip</string>
@@ -373,7 +376,7 @@
     <string name="writing_app_info">Writing app info</string>
     <string name="writing_extra_info">Writing extra info</string>
     <string name="recording_raw_list">Recording file list</string>
-    <string name="making_zip_flashable">Making zip flashable</string>
+    <string name="making_zip_flashable">Haciendo ZIP flasheable</string>
     <string name="unpacking_to_make_flashable">Unpacking files for TWRP</string>
     <string name="backing_app_permissions">Respaldo de permisos de aplicaciones</string>
     <string name="verifying_backups">Verificación de respaldo</string>
@@ -424,12 +427,12 @@
     <string name="deleting_backup">Deleting backup.</string>
     <string name="checking_for_missed_files">Checking for missed files.</string>
     <!--MDPEngine.kt-->
-    <string name="running_mdp_plugin">Data backup via MDP plugin</string>
-    <string name="mdp_function_error">Failed in function block.</string>
-    <string name="mdp_cancelled">Data backup cancelled</string>
-    <string name="mdp_finished">Data backup finished</string>
-    <string name="mdp_finished_with_errors">Data backup done with errors</string>
-    <string name="mdp_progress_copy_failed">Data backup progress copy failed</string>
+    <string name="running_mdp_plugin">Copia de seguridad de datos a través del Complemento de datos Migrate (MDP)</string>
+    <string name="mdp_function_error">Error en el bloque de función.</string>
+    <string name="mdp_cancelled">Copia de seguridad de datos cancelada</string>
+    <string name="mdp_finished">Copia de seguridad de datos finalizada</string>
+    <string name="mdp_finished_with_errors">Copia de seguridad de datos hecha con errores</string>
+    <string name="mdp_progress_copy_failed">Copia de seguridad de datos fallida</string>
     <string name="busybox_copy_failed">Failed to copy busybox</string>
     <!--BackupActivity.java-->
     <string name="setBackupName">Establecer nombre de respaldo</string>
@@ -461,10 +464,10 @@
     <string name="root_permission_denied_desc">Asegúrese de que su dispositivo esté rooteado y que haya permitido el permiso de root. \n \n    Si su ROM fue rooteada previamente, intente flashear Magisk.</string>
     <string name="making_packets">Hacer paquetes zip</string>
     <string name="making_batches">Hacer lotes de zip</string>
-    <string name="reading_files_for_zip">Reading files for zip</string>
+    <string name="reading_files_for_zip">Leyendo archivos para el ZIP</string>
     <string name="reading_app_related_files">Reading app related files</string>
     <string name="reading_extra_backups_files">Reading extra backups files</string>
-    <string name="reading_apk_size_for_zip">Reading apk size for zip</string>
+    <string name="reading_apk_size_for_zip">Leyendo tamaño de apk para el ZIP</string>
     <string name="reading_extras">Reading extras</string>
     <string name="grouping_into_batches">Grouping to batches</string>
     <string name="sorting">Sorting</string>
@@ -521,7 +524,7 @@
     <!--error_report_layout.xml-->
     <string name="report_header">Informe a través de Telegram</string>
     <string name="share_progress_logs">Compartir registros de progreso</string>
-    <string name="share_mdp_logs">Share Migrate data plugin (MDP) logs</string>
+    <string name="share_mdp_logs">Compartir registros del Complemento de datos Migrate (MDP)</string>
     <string name="share_error_logs">Compartir registros de errores</string>
     <string name="share_script">Compartir guión</string>
     <string name="share_rawList">Compartir lista de archivos sin formato</string>
@@ -677,11 +680,11 @@
     <!--StorageSelectorActivity.kt-->
     <string name="choose_storage_location">Please choose storage location</string>
     <string name="choose_storage_location_desc_saf">In the next screen, please choose a folder where you would like to store the backups. <b>A location in internal storage is preferred.</b></string>
-    <string name="this_location_cannot_be_selected">Cannot use this location!</string>
+    <string name="this_location_cannot_be_selected">¡No se puede usar esta ubicación!</string>
     <string name="this_location_cannot_be_selected_desc">The chosen location cannot be used to store backups. Please try another location.</string>
-    <string name="write_not_allowed">Write not allowed!</string>
-    <string name="please_select_any_other_location">Please select any other storage option</string>
-    <string name="intenal_storage_location_for_display">[Internal storage]/Migrate</string>
+    <string name="write_not_allowed">¡Escritura no permitida!</string>
+    <string name="please_select_any_other_location">Por favor, seleccione otra opción de almacenamiento</string>
+    <string name="intenal_storage_location_for_display">[Almacenamiento interno]/Migrate</string>
     <string name="show_sd_cards">Show SD cards. (Legacy, requires Magisk module)</string>
     <string name="all_files_access_custom_location">Choose a custom location (optional)</string>
     <string name="all_files_access_custom_location_desc1">Chosen backup location is:</string>
@@ -802,7 +805,7 @@
     <string name="translation_available_at">El archivo strings.xml está disponible en:\n<a href="https://github.com/SayantanRC/translations">https://github.com/SayantanRC/translations</a>\n
     Siga las instrucciones del README para enviar una traducción.
     </string>
-    <string name="translators">Traductores</string>
+    <string name="translators">Peter Cuevas :)</string>
     <string name="translators_list">        <b>Peter Cuevas (@peter9811)</b>: Español\n
         <b>@Fatih Fırıncı (@Trexfat)</b>: Turco\n
         <b>@rzlamrr</b>: Indonesio\n
@@ -838,9 +841,9 @@
     <!--ZipItemAdapter.java-->
     <string name="empty">Vacío</string>
     <!--messages_activity.xml-->
-    <string name="messages">Messages / Announcements</string>
+    <string name="messages">Mensajes/Anuncios</string>
     <!--MessagesView.kt-->
-    <string name="no_messages">No messages!</string>
+    <string name="no_messages">¡No hay ningún mensaje!</string>
     <string name="file_list_not_in_zip_batch">Lista de archivos no presente en zipBatch</string>
     <string name="zip_batch_null_updater">Zip Batch es nulo antes del script de actualización</string>
     <string name="zip_batch_null_zipping_engine">Zip Batch es nulo antes de comenzar a comprimir</string>
@@ -850,7 +853,7 @@
     <!--Needs to be translated-->
     <string name="label_for_gpe">Edición Google Play</string>
     <string name="label_for_ng">Edición no Google /Beta</string>
-    <string name="label_for_oss">Open Source Edition</string>
+    <string name="label_for_oss">Edición de código abierto</string>
     <string name="check_for_updates_ng">Buscar actualizaciones</string>
     <string name="switch_to_ng_in_gpe">Cambiar a Migrate-NG</string>
     <string name="ng_desc">Migrate-NG es una versión beta de la aplicación. La versión en Google Play es estable. La versión beta está disponible como una aplicación separada para descargar en el hilo XDA.</string>
