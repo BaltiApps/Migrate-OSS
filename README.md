@@ -14,6 +14,8 @@ Version: 5.0 (Apollo)
    ```
 2. Open `Migrate-OSS` project in Android Studio. Then compile and run (`Shift+F10` in most cases).
 
+### Email Contact: sayantan.kgp@gmail.com
+
 ### Links
 [Telegram group link](https://t.me/migrateApp)  
 [XDA thread Link](https://forum.xda-developers.com/t/app-root-5-0-1st-nov-2020-migrate-custom-rom-migration-tool.3862763/)  
