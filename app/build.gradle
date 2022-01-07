@@ -11,6 +11,16 @@ android {
         targetSdkVersion 30
         versionCode 50
         versionName "apollo (v5.0) [alpha]"
+
+        // generate provider authority string
+        def contentProviderAuthority = applicationId + ".provider"
+
+        // Creates a placeholder property to use in the manifest.
+        // This will replace "${cpAuthority}" string in AndroidManifest.xml
+        manifestPlaceholders = [cpAuthority: contentProviderAuthority]
+
+        // Adds a new field for the authority to the BuildConfig class.
+        buildConfigField("String", "CONTENT_PROVIDER_AUTHORITY", "\"${contentProviderAuthority}\"")
     }
     buildTypes {
         release {
