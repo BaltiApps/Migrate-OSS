@@ -47,13 +47,11 @@ dependencies {
 
     implementation 'org.apache.commons:commons-collections4:4.4'
 
-    implementation project(path: ':baltitoolbox')
 
-    // Un-comment to include from AAR
-    // implementation(name:'FileX-release', ext:'aar')
+    implementation fileTree(dir: 'libs', include: ['*.aar'])
+    implementation files('libs/FileX-release.aar')
+    implementation files('libs/baltitoolbox-release.aar')
 
-    // Comment below line if including from AAR
-    implementation project(path: ':FileX')
 }
 repositories {
     mavenCentral()

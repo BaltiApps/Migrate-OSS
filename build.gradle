@@ -19,10 +19,6 @@ allprojects {
     repositories {
         jcenter()
         google()
-        // Un-comment to include from AAR
-        /*flatDir {
-            dirs 'libs'
-        }*/
     }
 }
 
