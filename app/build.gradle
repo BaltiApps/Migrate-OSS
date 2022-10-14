@@ -10,7 +10,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 50
-        versionName "apollo (v5.0) [alpha]"
+        versionName "apollo (v5.0) [beta]"
 
         // generate provider authority string
         def contentProviderAuthority = applicationId + ".provider"

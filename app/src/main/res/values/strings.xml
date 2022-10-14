@@ -26,7 +26,7 @@
     <string name="current_version_name">5.0</string>
     <string name="current_version_codename">Apollo</string>
     <string name="release_state">beta</string>                   <!--NO blank space-->
-    <string name="last_tested_label">Last tested on: Android 11</string>
+    <string name="last_tested_label">Last tested on: Android 12</string>
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
