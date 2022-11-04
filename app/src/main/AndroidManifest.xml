@@ -35,6 +35,7 @@
         <activity android:name=".simpleActivities.MainActivityKotlin"
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme.Launcher"
+            android:exported="true"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
