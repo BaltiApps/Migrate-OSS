@@ -4,13 +4,13 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 33
     defaultConfig {
         applicationId "balti.migrate.oss"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 32
         versionCode 50
-        versionName "apollo (v5.0) [alpha]"
+        versionName "apollo (v5.0) [beta]"
 
         // generate provider authority string
         def contentProviderAuthority = applicationId + ".provider"
@@ -29,6 +29,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -37,23 +41,17 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    def coroutines_version = '1.4.3'
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
-
-    def lifecycle_version = '2.3.1'
+    def lifecycle_version = '2.5.1'
     implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 
     implementation 'org.apache.commons:commons-collections4:4.4'
 
-    implementation project(path: ':baltitoolbox')
 
-    // Un-comment to include from AAR
-    // implementation(name:'FileX-release', ext:'aar')
+    implementation fileTree(dir: 'libs', include: ['*.aar'])
+    implementation files('libs/FileX-release.aar')
+    implementation files('libs/baltitoolbox-release.aar')
 
-    // Comment below line if including from AAR
-    implementation project(path: ':FileX')
 }
 repositories {
     mavenCentral()
