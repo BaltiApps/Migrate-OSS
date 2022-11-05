@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import balti.filex.FileX
 import balti.migrate.AppInstance
+import balti.migrate.BuildConfig
 import balti.migrate.R
 import balti.migrate.utilities.CommonToolsKotlin
 import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_IS_ERROR_LOG_MANDATORY
@@ -133,7 +134,7 @@ class ReportLogs: AppCompatActivity() {
 
     private fun getUri(file: FileX) =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                FileProvider.getUriForFile(this, "migrate.provider.oss", file.file)
+                FileProvider.getUriForFile(this, BuildConfig.CONTENT_PROVIDER_AUTHORITY, file.file)
             else Uri.fromFile(file.file)
 
     private fun sendIntent(uris: ArrayList<Uri>, isEmail: Boolean = false) {

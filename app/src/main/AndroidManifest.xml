@@ -35,6 +35,7 @@
         <activity android:name=".simpleActivities.MainActivityKotlin"
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme.Launcher"
+            android:exported="true"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -115,7 +116,7 @@
         <service android:name=".backupEngines.BackupServiceKotlin_new"/>
 
         <provider
-            android:authorities="migrate.provider.oss"
+            android:authorities="${cpAuthority}"
             android:name="androidx.core.content.FileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
