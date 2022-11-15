@@ -11,6 +11,9 @@ def versionPatch = 0
 // NO BLANK SPACE
 def versionCodename = "Artemis"
 def releaseState = "beta"
+
+def lastTestedAndroidLabel = "Android 12"
+def lastTestedAndroidAPI = 32
 //*********** UPDATE IN RELEASES ***********
 
 // NO BLANK SPACE as it will be used in updater script.
@@ -35,6 +38,10 @@ android {
         // release state
         buildConfigField "String", "RELEASE_STATE", "\"${releaseState}\""
         resValue "string", "release_state", "\"${releaseState}\""
+
+        // last tested android
+        buildConfigField "String", "LAST_TESTED_ANDROID_LABEL", "\"${lastTestedAndroidLabel}\""
+        buildConfigField "int", "LAST_TESTED_ANDROID_API", "$lastTestedAndroidAPI"
 
         // generate provider authority string
         def contentProviderAuthority = applicationId + ".provider"

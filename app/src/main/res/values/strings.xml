@@ -1,4 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
+    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2"
     tools:ignore="MissingTranslation,ExtraTranslation"
     >
 
@@ -21,7 +22,7 @@
 
     <!--Update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt if compatible with new Android version-->
 
-    <string name="last_tested_label">Last tested on: Android 12</string>
+    <string name="last_tested_label">Last tested on: <xliff:g id="androidVersion" example="Android 12">%1$s</xliff:g></string>
 
     <!--about_app.xml-->
     <string name="made_with_android_studio">Made with Android Studio</string>
@@ -540,7 +541,7 @@
 
     <!--MainActivityKotlin.kt-->
     <string name="too_fast">Whoa, too fast!!</string>
-    <string name="too_fast_desc">The app has not been explicitly tested version above Android 11.0.\n\nPlease submit your feedback on whether the app works or not.</string>
+    <string name="too_fast_desc">The app has not been explicitly tested version above <xliff:g id="androidVersion" example="Android 12">%1$s</xliff:g>.\n\nPlease submit your feedback on whether the app works or not.</string>
     <string name="dont_show_again">Don\'t show again</string>
     <string name="dont_show_stock_warning">Don\'t show again</string>
     <string name="stock_android_rom">Stock android ROM recommended</string>

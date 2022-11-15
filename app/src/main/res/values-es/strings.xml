@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation,ExtraTranslation">
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" tools:ignore="MissingTranslation,ExtraTranslation">
     <!--Changes to be made for version upgrades (!!! - represent important changes)
 
     app_name (Migrate-GPE or Migrate-NG or Migrate-OSS)
@@ -18,7 +18,7 @@
     -->
     <!--Update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt if compatible with new Android version-->
 
-    <string name="last_tested_label">Última prueba: Android 11</string>
+    <string name="last_tested_label">Última prueba: <xliff:g id="androidVersion" example="Android 12">%1$s</xliff:g></string>
     <!--about_app.xml-->
     <string name="made_with_android_studio">Hecho en Android Studio</string>
     <string name="codename">Nombre clave:</string>
@@ -444,7 +444,7 @@
     <string name="error_loading_engine">Error al cargar el motor</string>
     <!--MainActivityKotlin.kt-->
     <string name="too_fast">¡Vaya, demasiado rápido!</string>
-    <string name="too_fast_desc">La aplicación no ha sido probada explícitamente en la versión de Android superior a Pie (9.0).\n\nPor favor, envíe sus comentarios sobre si la aplicación funciona o no.</string>
+    <string name="too_fast_desc">La aplicación no ha sido probada explícitamente en la versión de Android superior a <xliff:g id="androidVersion" example="Android 12">%1$s</xliff:g>.\n\nPor favor, envíe sus comentarios sobre si la aplicación funciona o no.</string>
     <string name="dont_show_again">No mostrar de nuevo</string>
     <string name="dont_show_stock_warning">No mostrar de nuevo</string>
     <string name="stock_android_rom">Stock Android ROM recomendado</string>

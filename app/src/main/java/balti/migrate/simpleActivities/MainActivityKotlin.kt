@@ -26,6 +26,7 @@ import androidx.core.view.GravityCompat
 import balti.filex.FileX
 import balti.filex.FileXInit
 import balti.migrate.AppInstance.Companion.CACHE_DIR
+import balti.migrate.BuildConfig
 import balti.migrate.R
 import balti.migrate.backupActivity.BackupActivityKotlin
 import balti.migrate.messages.MessagesView
@@ -41,7 +42,6 @@ import balti.migrate.utilities.CommonToolsKotlin.Companion.EXTRA_SHOW_FIRST_WARN
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_ERRORLOG
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_MESSAGES
 import balti.migrate.utilities.CommonToolsKotlin.Companion.FILE_PROGRESSLOG
-import balti.migrate.utilities.CommonToolsKotlin.Companion.LAST_SUPPORTED_ANDROID_API
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_ACTIVITY_CODE
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_BOARD_URL
 import balti.migrate.utilities.CommonToolsKotlin.Companion.MESSAGE_FIELD_LAST_UPDATE_NO
@@ -83,6 +83,7 @@ import kotlinx.android.synthetic.main.please_wait.view.*
 import kotlinx.android.synthetic.main.restore_by_flasher.view.*
 import org.json.JSONObject
 import java.net.URL
+import kotlinx.android.synthetic.main.about_app.view.last_tested_label
 
 class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -124,6 +125,8 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        last_tested_label.text = getString(R.string.last_tested_label, BuildConfig.LAST_TESTED_ANDROID_LABEL)
 
         if (getPrefBoolean(PREF_FIRST_RUN, true)){
             externalCacheDir
@@ -206,10 +209,10 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
         val cpuAbi = Build.SUPPORTED_ABIS[0]
 
         if (cpuAbi == "armeabi-v7a" || cpuAbi == "arm64-v8a" || cpuAbi == "x86" || cpuAbi == "x86_64"){
-            if (Build.VERSION.SDK_INT > LAST_SUPPORTED_ANDROID_API && !getPrefBoolean(PREF_ANDROID_VERSION_WARNING, false)){
+            if (Build.VERSION.SDK_INT > BuildConfig.LAST_TESTED_ANDROID_API && !getPrefBoolean(PREF_ANDROID_VERSION_WARNING, false)){
                 AlertDialog.Builder(this)
                         .setTitle(R.string.too_fast)
-                        .setMessage(R.string.too_fast_desc)
+                        .setMessage(getString(R.string.too_fast_desc, BuildConfig.LAST_TESTED_ANDROID_LABEL))
                         .setPositiveButton(android.R.string.ok, null)
                         .setNegativeButton(R.string.dont_show_again) { _, _ ->
                                 putPrefBoolean(PREF_ANDROID_VERSION_WARNING, value = true, immediate = true)
@@ -374,6 +377,7 @@ class MainActivityKotlin : AppCompatActivity(), NavigationView.OnNavigationItemS
             R.id.about -> {
                 val about = AlertDialog.Builder(this)
                 val v = layoutInflater.inflate(R.layout.about_app, null)
+                v.last_tested_label.text = getString(R.string.last_tested_label, BuildConfig.LAST_TESTED_ANDROID_LABEL)
                 about.setView(v)
                         .setTitle(getString(R.string.about))
                         .setPositiveButton(android.R.string.ok, null)
