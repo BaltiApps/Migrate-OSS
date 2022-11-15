@@ -17,13 +17,8 @@
 
     -->
     <!--Update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt if compatible with new Android version-->
-    <string name="app_name">Migrate-OSS</string>
-    <string name="distribution_label">@string/label_for_oss</string>
     <string name="current_version_name">5.0</string>
-    <!--NO blank space-->
     <string name="current_version_codename">Apollo</string>
-    <string name="release_state">beta</string>
-    <!--NO blank space-->
     <string name="last_tested_label">Última prueba: Android 11</string>
     <!--about_app.xml-->
     <string name="made_with_android_studio">Hecho en Android Studio</string>

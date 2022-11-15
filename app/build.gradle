@@ -26,6 +26,16 @@ android {
         versionCode versionMajor * 100 + versionMinor * 10 + versionPatch
         versionName "$versionCodename (v$shortVersionName) [$releaseState]"
 
+        // Version
+        buildConfigField "String", "SHORT_VERSION_NAME", "\"${shortVersionName}\""
+        resValue "string", "short_version_name", "\"${shortVersionName}\""
+        buildConfigField "String", "VERSION_CODENAME", "\"${versionCodename}\""
+        resValue "string", "version_codename", "\"${versionCodename}\""
+
+        // release state
+        buildConfigField "String", "RELEASE_STATE", "\"${releaseState}\""
+        resValue "string", "release_state", "\"${releaseState}\""
+
         // generate provider authority string
         def contentProviderAuthority = applicationId + ".provider"
 
@@ -56,9 +66,13 @@ android {
     productFlavors {
         GPE {
             dimension "distribution"
+            resValue "string", "app_name", "Migrate-GPE"
+            resValue "string", "distribution_label", "Google Play Edition"
         }
         NG {
             dimension "distribution"
+            resValue "string", "app_name", "Migrate-NG"
+            resValue "string", "distribution_label", "Non-Google Edition"
             applicationIdSuffix ".ng"
         }
     }
