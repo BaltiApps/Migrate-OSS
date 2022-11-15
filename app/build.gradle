@@ -3,14 +3,28 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
+//*********** UPDATE IN RELEASES ***********
+def versionMajor = 6
+def versionMinor = 0
+def versionPatch = 0
+
+// NO BLANK SPACE
+def versionCodename = "Artemis"
+def releaseState = "beta"
+//*********** UPDATE IN RELEASES ***********
+
+// NO BLANK SPACE as it will be used in updater script.
+def shortVersionName = "${versionMajor}.${versionMinor}.${versionPatch}"
+
 android {
-    compileSdkVersion 33
+    compileSdk 33
+
     defaultConfig {
-        applicationId "balti.migrate.oss"
-        minSdkVersion 21
-        targetSdkVersion 32
-        versionCode 51
-        versionName "apollo (v5.0.1) [beta]"
+        applicationId "balti.migrate"
+        minSdk 21
+        targetSdk 32
+        versionCode versionMajor * 100 + versionMinor * 10 + versionPatch
+        versionName "$versionCodename (v$shortVersionName) [$releaseState]"
 
         // generate provider authority string
         def contentProviderAuthority = applicationId + ".provider"
@@ -22,6 +36,7 @@ android {
         // Adds a new field for the authority to the BuildConfig class.
         buildConfigField("String", "CONTENT_PROVIDER_AUTHORITY", "\"${contentProviderAuthority}\"")
     }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -29,6 +44,25 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "Migrate-${shortVersionName}-${variant.flavorName}-${variant.buildType.name}.apk"
+        }
+    }
+
+    flavorDimensions.add("distribution")
+
+    productFlavors {
+        GPE {
+            dimension "distribution"
+        }
+        NG {
+            dimension "distribution"
+            applicationIdSuffix ".ng"
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
