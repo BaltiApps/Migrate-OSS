@@ -3,7 +3,16 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
+
 //*********** UPDATE IN RELEASES ***********
+/**
+ * Other changes for version updates:
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * strings: changelog
+ * build.gradle: versionMajor, versionMinor, versionPatch
+ * MainActivityKotlin.kt: showChangeLog()
+ * CommonToolsKotlin: THIS_VERSION
+ */
 def versionMajor = 6
 def versionMinor = 0
 def versionPatch = 0
@@ -15,6 +24,9 @@ def releaseState = "beta"
 def lastTestedAndroidLabel = "Android 12"
 def lastTestedAndroidAPI = 32
 //*********** UPDATE IN RELEASES ***********
+
+
+
 
 // NO BLANK SPACE as it will be used in updater script.
 def shortVersionName = "${versionMajor}.${versionMinor}.${versionPatch}"

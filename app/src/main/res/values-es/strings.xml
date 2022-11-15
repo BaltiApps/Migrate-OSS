@@ -1,22 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" tools:ignore="MissingTranslation,ExtraTranslation">
-    <!--Changes to be made for version upgrades (!!! - represent important changes)
-
-    app_name (Migrate-GPE or Migrate-NG or Migrate-OSS)
-    distribution_label
-    current_version_name (must not have blank spaces)           !!!
-    current_version_codename                                    !!!
-    last_tested_label
-    release_state (must not have blank spaces)
-    changelog                                                   !!!
-    build.gradle [versionCode, versionName]                     !!!
-    MainActivityKotlin.kt [showChangeLog()]
-    CommonToolsKotlin [THIS_VERSION]                            !!!
-    CommonToolsKotlin [LAST_SUPPORTED_ANDROID_API]
-    build.gradle version in Migrate helper (optional)
-
-    -->
-    <!--Update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt if compatible with new Android version-->
 
     <string name="last_tested_label">Última prueba: <xliff:g id="androidVersion" example="Android 12">%1$s</xliff:g></string>
     <!--about_app.xml-->
