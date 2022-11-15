@@ -21,8 +21,6 @@
 
     <!--Update LAST_SUPPORTED_ANDROID_API in CommonToolsKotlin.kt if compatible with new Android version-->
 
-    <string name="current_version_name">5.0</string>
-    <string name="current_version_codename">Apollo</string>
     <string name="last_tested_label">Last tested on: Android 12</string>
 
     <!--about_app.xml-->

@@ -1,8 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingTranslation,ExtraTranslation">
 
-    <string name="current_version_name">5.0</string>
-    <string name="current_version_codename">Apollo</string>
     <string name="last_tested_label">Протестированно на: Android 11</string>
 
     <!--about_app.xml-->

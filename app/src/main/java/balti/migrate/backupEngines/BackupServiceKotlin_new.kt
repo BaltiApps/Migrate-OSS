@@ -25,6 +25,7 @@ import balti.migrate.AppInstance.Companion.fontScale
 import balti.migrate.AppInstance.Companion.keyboardText
 import balti.migrate.AppInstance.Companion.smsList
 import balti.migrate.AppInstance.Companion.zipBatches
+import balti.migrate.BuildConfig
 import balti.migrate.R
 import balti.migrate.backupEngines.containers.ZipBatch
 import balti.migrate.backupEngines.engines.*
@@ -579,10 +580,10 @@ class BackupServiceKotlin_new: LifecycleService() {
          */
         errorWriter?.write("\n--- Backup Name : $backupName ---\n")
         if (isCancelled) errorWriter?.write("--- Cancelled! ---\n")
-        errorWriter?.write("--- Migrate version ${getString(R.string.current_version_name)} ---\n")
+        errorWriter?.write("--- Migrate version ${BuildConfig.SHORT_VERSION_NAME} ---\n")
         progressWriter?.write("\n--- Backup Name : $backupName ---\n")
         progressWriter?.write("--- Total parts : ${zipCanonicalPaths.size} ---\n")
-        progressWriter?.write("--- Migrate version ${getString(R.string.current_version_name)} ---\n")
+        progressWriter?.write("--- Migrate version ${BuildConfig.SHORT_VERSION_NAME} ---\n")
 
         /**
          * Create variables for final [BackupUpdate] object.

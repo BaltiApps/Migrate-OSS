@@ -3,6 +3,7 @@ package balti.migrate.backupEngines.engines
 import android.os.Build
 import balti.filex.FileX
 import balti.migrate.AppInstance.Companion.CACHE_DIR
+import balti.migrate.BuildConfig
 import balti.migrate.R
 import balti.migrate.backupEngines.BackupServiceKotlin_new.Companion.flasherOnly
 import balti.migrate.backupEngines.ParentBackupClass_new
@@ -110,7 +111,7 @@ class UpdaterScriptMakerEngine(
             updater_writer.write("ui_print(\" \");\n")
             updater_writer.write("ui_print(\"---------------------------------\");\n")
             updater_writer.write("ui_print(\"      ${getStringFromRes(R.string.app_name)} Flash package      \");\n")
-            updater_writer.write("ui_print(\"      Version ${getStringFromRes(R.string.current_version_name)} - ${getStringFromRes(R.string.release_state)}       \");\n")
+            updater_writer.write("ui_print(\"      Version ${BuildConfig.SHORT_VERSION_NAME} - ${BuildConfig.RELEASE_STATE}       \");\n")
             updater_writer.write("ui_print(\"---------------------------------\");\n")
 
             zipBatch.zipName.let {
@@ -308,8 +309,7 @@ class UpdaterScriptMakerEngine(
         contents += "system_required_size ${zipBatch.batchSystemSize / KB_DIVISION_SIZE}\n"
         contents += "zip_expected_size ${zipBatch.zipFullSize / KB_DIVISION_SIZE}\n"
         contents += "migrate_version " + "${getStringFromRes(R.string.app_name)}_" +
-                "${getStringFromRes(R.string.current_version_name)}_" +
-                getStringFromRes(R.string.release_state) + "\n"
+                "${BuildConfig.SHORT_VERSION_NAME}_${BuildConfig.RELEASE_STATE}\n"
 
         try {
             packageData.writeOneLine(contents)
