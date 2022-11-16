@@ -115,6 +115,7 @@ dependencies {
     implementation 'org.apache.commons:commons-collections4:4.4'
 
     implementation project(path: ':app:backup')
+    implementation project(path: ':app:core')
 
     implementation fileTree(dir: 'libs', include: ['*.aar'])
     implementation files('libs/FileX-release.aar')
