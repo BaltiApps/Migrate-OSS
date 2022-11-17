@@ -67,6 +67,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            releaseState = "debug"
+        }
         release {
             minifyEnabled true
             shrinkResources true
