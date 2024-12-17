@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="screen_padding">18dp</dimen>
+    <dimen name="column_item_padding">8dp</dimen>
+    <dimen name="standard_padding">16dp</dimen>
+</resources>
