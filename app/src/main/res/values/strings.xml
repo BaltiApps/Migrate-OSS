@@ -5,12 +5,14 @@
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
 
-    <!--RouteBackupList-->
+    <!--ContactBackup.kt-->
     <string name="label_contacts_backup">Contacts backup</string>
+
+    <!--CallLogBackup.kt-->
     <string name="label_call_log_backup">Call log backup</string>
+
+    <!--SmsBackup.kt-->
     <string name="label_sms_backup">SMS backup</string>
-    <string name="select_all">Select all</string>
-    <string name="deselect_all">Deselect all</string>
 
     <!--ScreenBackup-->
     <string name="call">Call</string>
@@ -49,4 +51,6 @@
     <string name="scroll_down">Scroll down</string>
     <string name="done">Done</string>
     <string name="cancel">Cancel</string>
+    <string name="select_all">Select all</string>
+    <string name="deselect_all">Deselect all</string>
 </resources>

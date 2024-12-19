@@ -1,6 +1,5 @@
 package balti.migrate.backup.ui.screens.listScreen
 
-import baltiapps.migrate.domain.backup.model.ListItem
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

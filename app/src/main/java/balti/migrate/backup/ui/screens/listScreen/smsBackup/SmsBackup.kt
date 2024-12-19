@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -33,23 +34,16 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
+import balti.migrate.backup.ui.screens.listScreen.ListScreenShell
 import baltiapps.migrate.domain.backup.model.SmsListItem
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SmsBackup(
-    isLoading: (Boolean) -> Unit,
-    setStagingBlock: (() -> Unit) -> Unit,
-    onPostStaging: () -> Unit,
-    setToggleAll: ((Boolean) -> Unit) -> Unit,
+    navigateUp: () -> Unit,
+    goToNextScreen: () -> Unit,
     viewModel: SmsBackupViewModel = koinViewModel()
 ) {
-    setStagingBlock {
-        viewModel.performAction(SmsBackupAction.StageSms(onPostStaging))
-    }
-    setToggleAll {
-        viewModel.performAction(SmsBackupAction.ToggleAllSms(it))
-    }
     val lifecycleOwner = LocalLifecycleOwner.current
 
     val state by viewModel.state.collectAsStateWithLifecycle(
@@ -58,9 +52,18 @@ fun SmsBackup(
 
     Content(
         state = { state },
-        isLoading = isLoading,
+        navigateUp = navigateUp,
+        onSelectAll = {
+            viewModel.performAction(SmsBackupAction.ToggleAllSms(true))
+        },
+        onDeselectAll = {
+            viewModel.performAction(SmsBackupAction.ToggleAllSms(false))
+        },
         onItemToggled = { item ->
             viewModel.performAction(SmsBackupAction.ToggleSmsItem(item))
+        },
+        onNext = {
+            viewModel.performAction(SmsBackupAction.StageSms(goToNextScreen))
         }
     )
 }
@@ -68,60 +71,72 @@ fun SmsBackup(
 @Composable
 private fun Content(
     state: () -> SmsBackupState,
-    isLoading: (Boolean) -> Unit,
-    onItemToggled: (SmsListItem) -> Unit
+    navigateUp: () -> Unit,
+    onSelectAll: () -> Unit,
+    onDeselectAll: () -> Unit,
+    onItemToggled: (SmsListItem) -> Unit,
+    onNext: () -> Unit,
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        if (state().progress.percentage < 1.0) {
-            isLoading(true)
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center),
-                progress = { state().progress.percentage.toFloat() },
-            )
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(
-                    items = state().smsList,
-                    key = { it._id }
-                ) { item ->
-                    ListItem(
-                        modifier = Modifier.clickable {
-                            onItemToggled(item)
-                        },
-                        leadingContent = {
-                            SmsListItemIcon(item)
-                        },
-                        headlineContent = {
-                            Text(text = item.smsAddress)
-                        },
-                        supportingContent = {
-                            Column {
-                                Text(
-                                    text = item.smsBody,
-                                    maxLines = 3,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                                Text(
-                                    text = item.creationDate.displayDate,
-                                    fontWeight = FontWeight.Thin,
-                                    fontSize = 12.sp
+    val isLoading = state().progress.percentage < 1.0
+    ListScreenShell(
+        backupTitle = stringResource(R.string.label_sms_backup),
+        navigateUp = navigateUp,
+        onSelectAll = onSelectAll,
+        onDeselectAll = onDeselectAll,
+        isLoading = isLoading,
+        isStaging = state().isStaging,
+        onNext = onNext,
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier.fillMaxSize().padding(paddingValues)
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    progress = { state().progress.percentage.toFloat() },
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(
+                        items = state().smsList,
+                        key = { it._id }
+                    ) { item ->
+                        ListItem(
+                            modifier = Modifier.clickable {
+                                onItemToggled(item)
+                            },
+                            leadingContent = {
+                                SmsListItemIcon(item)
+                            },
+                            headlineContent = {
+                                Text(text = item.smsAddress)
+                            },
+                            supportingContent = {
+                                Column {
+                                    Text(
+                                        text = item.smsBody,
+                                        maxLines = 3,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                    Text(
+                                        text = item.creationDate.displayDate,
+                                        fontWeight = FontWeight.Thin,
+                                        fontSize = 12.sp
+                                    )
+                                }
+                            },
+                            trailingContent = {
+                                Checkbox(
+                                    checked = item.isChecked,
+                                    onCheckedChange = null,
                                 )
                             }
-                        },
-                        trailingContent = {
-                            Checkbox(
-                                checked = item.isChecked,
-                                onCheckedChange = null,
-                            )
-                        }
-                    )
+                        )
+                    }
                 }
             }
-            isLoading(false)
         }
     }
 }

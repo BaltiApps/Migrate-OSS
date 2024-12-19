@@ -4,18 +4,17 @@ import balti.migrate.backup.data.model.CallLogData
 import balti.migrate.backup.data.model.ContactData
 import balti.migrate.backup.data.model.SmsData
 import balti.migrate.backup.data.repository.DataRepository
+import balti.migrate.backup.data.service.NotificationHandler
 import balti.migrate.backup.data.sources.CallLogSource
 import balti.migrate.backup.data.sources.ContactsSource
-import balti.migrate.backup.data.sources.files.FileSystemSource
 import balti.migrate.backup.data.sources.SmsSource
 import balti.migrate.backup.data.sources.files.CallLogDBWriter
+import balti.migrate.backup.data.sources.files.FileSystemSource
 import balti.migrate.backup.data.sources.files.SmsDBWriter
 import balti.migrate.backup.data.sources.files.TextWriterImpl
-import balti.migrate.backup.ui.screens.listScreen.ListScreenRootViewModel
 import balti.migrate.backup.ui.screens.listScreen.callLogBackup.CallLogBackupViewModel
 import balti.migrate.backup.ui.screens.listScreen.contactBackup.ContactBackupViewModel
 import balti.migrate.backup.ui.screens.listScreen.smsBackup.SmsBackupViewModel
-import balti.migrate.backup.data.service.NotificationHandler
 import balti.migrate.backup.ui.screens.progressScreen.ProgressScreenViewModel
 import balti.migrate.backup.utils.ContextSource
 import baltiapps.migrate.domain.backup.notification.PlatformNotificationHandler
@@ -96,10 +95,6 @@ val backupDiModule = module {
     singleOf(::StageSelectedCallLogs)
     singleOf(::StageSelectedContacts)
     singleOf(::StageSelectedSms)
-
-    viewModel {
-        ListScreenRootViewModel()
-    }
 
     viewModel {
         ContactBackupViewModel(

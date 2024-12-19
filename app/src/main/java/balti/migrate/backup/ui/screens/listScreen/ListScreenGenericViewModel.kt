@@ -8,13 +8,12 @@ import baltiapps.migrate.domain.backup.model.ListItem
 import baltiapps.migrate.domain.backup.model.Progress
 import baltiapps.migrate.domain.backup.model.SmsListItem
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-abstract class ListSubScreenViewModel<T: ListItem>: ViewModel() {
+abstract class ListScreenGenericViewModel<T: ListItem>: ViewModel() {
 
     abstract fun getListFromState(): List<T>
     abstract fun updateStateWithItems(list: List<T>)

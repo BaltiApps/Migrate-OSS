@@ -72,7 +72,7 @@ fun AppNavigation(
         }
         composable<RouteBackup> {
             ScreenBackup(
-                parentNavController = navController,
+                parentNavControllerNavigateUp = navController::navigateUp,
                 startBackupService = { startBackupService(it) },
                 cancelBackup = cancelBackup,
             )

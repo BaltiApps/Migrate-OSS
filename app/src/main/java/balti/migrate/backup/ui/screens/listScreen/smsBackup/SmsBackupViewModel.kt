@@ -1,6 +1,6 @@
 package balti.migrate.backup.ui.screens.listScreen.smsBackup
 
-import balti.migrate.backup.ui.screens.listScreen.ListSubScreenViewModel
+import balti.migrate.backup.ui.screens.listScreen.ListScreenGenericViewModel
 import baltiapps.migrate.domain.backup.model.Progress
 import baltiapps.migrate.domain.backup.model.SmsListItem
 import baltiapps.migrate.domain.backup.usecase.ReadSmsUseCase
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.update
 class SmsBackupViewModel(
     private val readSmsUseCase: ReadSmsUseCase,
     private val stageSelectedSms: StageSelectedSms,
-) : ListSubScreenViewModel<SmsListItem>() {
+) : ListScreenGenericViewModel<SmsListItem>() {
 
     private val _state = MutableStateFlow(SmsBackupState())
     val state = _state.asStateFlow()
