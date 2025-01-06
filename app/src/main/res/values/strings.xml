@@ -45,6 +45,9 @@
     <string name="backup_cancelled">Backup cancelled</string>
     <string name="older_logs_truncated">Older logs are truncated</string>
 
+    <!--ProgressScreen.kt-->
+    <string name="show_only_errors">Show only errors</string>
+
     <!--misc-->
     <string name="go_back">Go back</string>
     <string name="scroll_up">Scroll up</string>
