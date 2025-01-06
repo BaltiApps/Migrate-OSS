@@ -19,11 +19,14 @@ class ProgressScreenViewModel(
 
     private var observeErrorsOnly: Boolean = false
     private var isCancelling: Boolean = false
+    private var isLogsPaused: Boolean = false
 
     private fun startObserving() {
         viewModelScope.launch {
             BackupService.backupProgress.collect { progress ->
-                publishProgress(progress)
+                if (!isLogsPaused) {
+                    publishProgress(progress)
+                }
             }
         }
     }
@@ -75,6 +78,8 @@ class ProgressScreenViewModel(
                     it.copy(isCancelling = true)
                 }
             }
+            is ProgressScreenAction.PauseProgressLogs -> { isLogsPaused = true }
+            is ProgressScreenAction.ResumeProgressLogs -> { isLogsPaused = false }
         }
     }
 

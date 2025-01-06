@@ -70,6 +70,12 @@ fun ProgressScreen(
             viewModel.performAction(ProgressScreenAction.CancelBackup)
             cancelBackup()
         },
+        pauseLogs = {
+            viewModel.performAction(ProgressScreenAction.PauseProgressLogs)
+        },
+        resumeLogs = {
+            viewModel.performAction(ProgressScreenAction.ResumeProgressLogs)
+        },
         closeProgressScreen = closeProgressScreen,
     )
 }
@@ -81,6 +87,8 @@ private fun Content(
     state: () -> ProgressScreenState,
     onToggleErrorOnly: (Boolean) -> Unit,
     cancelBackup: () -> Unit,
+    pauseLogs: () -> Unit,
+    resumeLogs: () -> Unit,
     closeProgressScreen: () -> Unit,
 ) {
     var shouldAutoScroll by rememberSaveable { mutableStateOf(true) }
@@ -118,6 +126,7 @@ private fun Content(
                     scope.launch {
                         scrollToBottom(listState, items)
                         shouldAutoScroll = true
+                        resumeLogs()
                     }
                 },
                 cancelBackup = cancelBackup,
@@ -155,6 +164,7 @@ private fun Content(
                                 val event = awaitPointerEvent()
                                 if (event.type == PointerEventType.Press) {
                                     shouldAutoScroll = false
+                                    pauseLogs()
                                 }
                             }
                         }
@@ -170,6 +180,12 @@ private fun Content(
                             MaterialTheme.colorScheme.error
                         } else Color.Unspecified
                     )
+                }
+                item {
+                    LaunchedEffect(true) {
+                        resumeLogs()
+                        shouldAutoScroll = true
+                    }
                 }
             }
             LaunchedEffect(items) {
