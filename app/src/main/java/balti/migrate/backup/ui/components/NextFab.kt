@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -48,9 +49,14 @@ fun NextFab(
         is ButtonStatus.Error -> MaterialTheme.colorScheme.onErrorContainer
         else -> MaterialTheme.colorScheme.onSurface
     }
+    val fabBackgroundColor = when(buttonStatus) {
+        is ButtonStatus.Error -> MaterialTheme.colorScheme.errorContainer
+        else -> FloatingActionButtonDefaults.containerColor
+    }
     // https://stackoverflow.com/a/74312669/10967630
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         ExtendedFloatingActionButton(
+            containerColor = fabBackgroundColor,
             onClick = {
                 buttonStatus.onPressed()
             },
