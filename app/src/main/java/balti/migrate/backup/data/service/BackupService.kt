@@ -88,7 +88,7 @@ class BackupService : LifecycleService() {
                 }
             }
             ACTION_CANCEL_BACKUP -> {
-                backupJob?.let { cancelBackup(it) }
+                cancelBackup()
             }
         }
 
@@ -209,18 +209,24 @@ class BackupService : LifecycleService() {
     }
 
     private fun cleanup() {
-        logWriter.close()
-        errorWriter.close()
+        if (isSetup()) {
+            logWriter.close()
+            errorWriter.close()
+        }
         stopSelf()
     }
 
-    private fun cancelBackup(
-        backupJob: Job,
-    ) {
+    private fun isSetup(): Boolean {
+        return ::logWriter.isInitialized && ::errorWriter.isInitialized
+    }
+
+    private fun cancelBackup() {
         lifecycleScope.launch {
-            backupJob.cancel()
-            delay(1000)
-            emitHeadingLog(Progress.ProgressType.BACKUP_CANCELLED)
+            backupJob?.cancel()
+            if (isSetup()) {
+                delay(1000)
+                emitHeadingLog(Progress.ProgressType.BACKUP_CANCELLED)
+            }
             delay(1000)
             cleanup()
         }
