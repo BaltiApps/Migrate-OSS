@@ -3,6 +3,7 @@ package balti.migrate.backup.di
 import balti.migrate.backup.data.model.CallLogData
 import balti.migrate.backup.data.model.ContactData
 import balti.migrate.backup.data.model.SmsData
+import balti.migrate.backup.data.repository.BackupProgressLogRepositoryImpl
 import balti.migrate.backup.data.repository.DataRepository
 import balti.migrate.backup.data.service.NotificationHandler
 import balti.migrate.backup.data.sources.CallLogSource
@@ -18,6 +19,7 @@ import balti.migrate.backup.ui.screens.listScreen.smsBackup.SmsBackupViewModel
 import balti.migrate.backup.ui.screens.progressScreen.ProgressScreenViewModel
 import balti.migrate.backup.utils.ContextSource
 import baltiapps.migrate.domain.backup.notification.PlatformNotificationHandler
+import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
 import baltiapps.migrate.domain.backup.repository.PlatformDataRepository
 import baltiapps.migrate.domain.backup.sources.DBWriter
 import baltiapps.migrate.domain.backup.sources.PlatformContextSource
@@ -33,7 +35,9 @@ import baltiapps.migrate.domain.backup.usecase.StageSelectedSms
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 private enum class Names {
@@ -117,9 +121,7 @@ val backupDiModule = module {
         )
     }
 
-    viewModel {
-        ProgressScreenViewModel(
-            contextSource = get(),
-        )
-    }
+    singleOf(::BackupProgressLogRepositoryImpl) bind BackupProgressLogRepository::class
+
+    viewModelOf(::ProgressScreenViewModel)
 }

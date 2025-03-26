@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -25,6 +26,7 @@ abstract class PlatformNotificationHandler<T> {
     fun listenAtSafeIntervals() {
         CoroutineScope(progressSamplerJob).launch {
             while (true) {
+                ensureActive()
                 val latestProgress = getLatestProgress()
                 if (latestProgress.isLogHeading) continue
                 withContext(Dispatchers.Main) {

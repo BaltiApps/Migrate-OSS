@@ -2,8 +2,7 @@ package balti.migrate.backup.ui.screens.progressScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import balti.migrate.backup.data.service.BackupService
-import baltiapps.migrate.domain.backup.model.Progress
+import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
 import baltiapps.migrate.domain.backup.sources.PlatformContextSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,6 +11,7 @@ import kotlinx.coroutines.launch
 
 class ProgressScreenViewModel(
     private val contextSource: PlatformContextSource,
+    private val backupProgressLogRepository: BackupProgressLogRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProgressScreenState.Empty)
@@ -23,9 +23,20 @@ class ProgressScreenViewModel(
 
     private fun startObserving() {
         viewModelScope.launch {
-            BackupService.backupProgress.collect { progress ->
-                if (!isLogsPaused) {
-                    publishProgress(progress)
+            backupProgressLogRepository.setProgressObserver {p, e ->
+                if (isLogsPaused) return@setProgressObserver
+                val progressList = if (observeErrorsOnly) e else p
+                if (progressList.isEmpty()) return@setProgressObserver
+                val latestProgress = progressList.last()
+                val headingText = contextSource.getProgressTitle(latestProgress.progressType)
+                _state.update {
+                    it.copy(
+                        progressList = progressList,
+                        headingText = headingText,
+                        isBackupFinished = latestProgress.isFinished(),
+                        isCancelling = isCancelling,
+                        errorOnly = observeErrorsOnly,
+                    )
                 }
             }
         }
@@ -35,42 +46,11 @@ class ProgressScreenViewModel(
         startObserving()
     }
 
-    private fun getTruncatedLogs(logs: List<Progress>): List<Progress> {
-        val lastLogs = logs.takeLast(BackupService.LOG_CACHE)
-        return if (logs.size == BackupService.LOG_CACHE) {
-            listOf(BackupService.truncatedProgress) + lastLogs
-        } else lastLogs
-    }
-
-    private fun publishProgress(collectedProgress: Progress?) {
-
-        val latestProgress = collectedProgress ?: BackupService.progressCache.first()
-        val isFinishedProgress = latestProgress.isFinished()
-
-        val progressToShow =
-            if (observeErrorsOnly) BackupService.errorsCache
-            else BackupService.progressCache
-
-        if (isFinishedProgress) {
-            isCancelling = false
-        }
-
-        _state.update {
-            it.copy(
-                progressList = getTruncatedLogs(progressToShow),
-                headingText = contextSource.getProgressTitle(latestProgress.progressType),
-                isBackupFinished = isFinishedProgress,
-                isCancelling = isCancelling,
-                errorOnly = observeErrorsOnly,
-            )
-        }
-    }
-
     fun performAction(action: ProgressScreenAction) {
         when (action) {
             is ProgressScreenAction.ToggleErrorOnly -> {
                 observeErrorsOnly = action.enabled
-                publishProgress(null)
+                backupProgressLogRepository.dispatchLatestObservedProgress()
             }
             is ProgressScreenAction.CancelBackup -> {
                 _state.update {
@@ -79,7 +59,10 @@ class ProgressScreenViewModel(
                 }
             }
             is ProgressScreenAction.PauseProgressLogs -> { isLogsPaused = true }
-            is ProgressScreenAction.ResumeProgressLogs -> { isLogsPaused = false }
+            is ProgressScreenAction.ResumeProgressLogs -> {
+                isLogsPaused = false
+                backupProgressLogRepository.dispatchLatestObservedProgress()
+            }
         }
     }
 

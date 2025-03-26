@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import balti.migrate.R
 import balti.migrate.backup.data.service.NotificationHandler.Companion.NOTIFICATION_ID_BACKUP_ONGOING
 import balti.migrate.backup.data.sources.files.TextWriterImpl
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
@@ -14,16 +13,15 @@ import baltiapps.migrate.domain.BACKUP_LOG
 import baltiapps.migrate.domain.EXTRA_BACKUP_ROOT
 import baltiapps.migrate.domain.backup.model.Progress
 import baltiapps.migrate.domain.backup.notification.PlatformNotificationHandler
+import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
 import baltiapps.migrate.domain.backup.repository.PlatformDataRepository
+import baltiapps.migrate.domain.backup.sources.PlatformContextSource
 import baltiapps.migrate.domain.backup.sources.TextWriter
-import com.google.common.collect.EvictingQueue
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import timber.log.Timber
@@ -32,34 +30,17 @@ import java.io.File
 class BackupService : LifecycleService() {
 
     companion object {
-        const val LOG_CACHE = 1000
-
-        private fun getNewProgressFlow(): MutableSharedFlow<Progress> {
-            return MutableSharedFlow()
-        }
-
-        private var _backupProgress = getNewProgressFlow()
-        val backupProgress get() = _backupProgress.asSharedFlow()
-
-        private val _progressCache = EvictingQueue.create<Progress>(LOG_CACHE)
-        val progressCache get() = _progressCache.toList()
-
-        private val _errorsCache = EvictingQueue.create<Progress>(LOG_CACHE)
-        val errorsCache get() = _errorsCache.toList()
-
         private const val BREAK_LINE = "===================================="
-
-        var truncatedProgress = Progress.Empty
-            private set
     }
 
+    private val contextSource: PlatformContextSource by inject()
     private val repository: PlatformDataRepository by inject()
+    private val backupProgressLogRepository: BackupProgressLogRepository by inject()
+    private val notificationHandler:
+            PlatformNotificationHandler<NotificationCompat.Builder> by inject()
 
     private val backupLog by lazy { File(this.cacheDir, BACKUP_LOG) }
     private val backupErrorLog by lazy { File(this.cacheDir, BACKUP_ERROR_LOG) }
-
-    private val notificationHandler:
-            PlatformNotificationHandler<NotificationCompat.Builder> by inject()
 
     private lateinit var logWriter: TextWriter
     private lateinit var errorWriter: TextWriter
@@ -73,9 +54,6 @@ class BackupService : LifecycleService() {
         startForeground(
             NOTIFICATION_ID_BACKUP_ONGOING,
             notificationHandler.getInitialNotification().build()
-        )
-        truncatedProgress = truncatedProgress.copy(
-            logs = "${getString(R.string.older_logs_truncated)}\n$BREAK_LINE\n"
         )
     }
 
@@ -100,9 +78,12 @@ class BackupService : LifecycleService() {
         backupRoot: String,
     ): Job {
         return lifecycleScope.launch(Dispatchers.IO) {
+            Timber.i("backup - setup")
             setup()
 
             notificationHandler.listenAtSafeIntervals()
+
+            Timber.i("backup - start")
 
             runBackupStage(
                 backupRoot = backupRoot,
@@ -112,6 +93,8 @@ class BackupService : LifecycleService() {
                 errorMessage = { "Contacts backup exception: ${it.message}" },
             )
 
+            Timber.i("backup - contacts")
+
             runBackupStage(
                 backupRoot = backupRoot,
                 shouldRun = repository::shouldBackupCalls,
@@ -119,6 +102,8 @@ class BackupService : LifecycleService() {
                 progressType = Progress.ProgressType.CALL_LOG_BACKUP,
                 errorMessage = { "Call log backup exception: ${it.message}" },
             )
+
+            Timber.i("backup - calls")
 
             runBackupStage(
                 backupRoot = backupRoot,
@@ -128,22 +113,26 @@ class BackupService : LifecycleService() {
                 errorMessage = { "SMS backup exception: ${it.message}" },
             )
 
+            Timber.i("backup - sms")
+
             emitHeadingLog(Progress.ProgressType.BACKUP_FINISHED)
 
+            Timber.i("backup - finished")
+
             notificationHandler.stopListening()
+            Timber.i("backup - stopListening")
             cleanup()
+            Timber.i("backup - cleanup")
         }
     }
 
-    private fun setup() {
+    private suspend fun setup() {
         logWriter = TextWriterImpl()
         logWriter.setup(backupLog.canonicalPath, append = true)
         errorWriter = TextWriterImpl()
         errorWriter.setup(backupErrorLog.canonicalPath, append = true)
 
-        _backupProgress = getNewProgressFlow()
-        _progressCache.clear()
-        _errorsCache.clear()
+        backupProgressLogRepository.reset()
     }
 
     private suspend fun runBackupStage(
@@ -178,26 +167,17 @@ class BackupService : LifecycleService() {
         progress: Progress,
     ) {
         if (progress.isFailure || progress.isFinished()) {
-            _errorsCache.add(progress)
+            backupProgressLogRepository.pushError(progress)
             errorWriter.writeLine(progress.logs)
         }
-        _progressCache.add(progress)
+        backupProgressLogRepository.pushProgress(progress)
         logWriter.writeLine(progress.logs)
-        _backupProgress.emit(progress)
     }
 
     private suspend fun emitHeadingLog(
         progressType: Progress.ProgressType,
     ) {
-        val headingTitle = when (progressType) {
-            Progress.ProgressType.CONTACTS_BACKUP -> R.string.start_contacts_backup
-            Progress.ProgressType.CALL_LOG_BACKUP -> R.string.start_call_log_backup
-            Progress.ProgressType.SMS_BACKUP -> R.string.start_sms_backup
-            Progress.ProgressType.BACKUP_FINISHED -> R.string.backup_finished
-            Progress.ProgressType.BACKUP_FINISHED_WITH_ERRORS -> R.string.backup_finished_with_errors
-            Progress.ProgressType.BACKUP_CANCELLED -> R.string.backup_cancelled
-            else -> R.string.loading
-        }.run { getString(this) }
+        val headingTitle = contextSource.getProgressTitle(progressType)
         collectLogs(
             progress = Progress(
                 progressType = progressType,

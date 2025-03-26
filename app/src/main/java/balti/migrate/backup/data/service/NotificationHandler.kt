@@ -9,15 +9,16 @@ import androidx.core.app.NotificationCompat
 import balti.migrate.R
 import baltiapps.migrate.domain.backup.model.Progress
 import baltiapps.migrate.domain.backup.notification.PlatformNotificationHandler
+import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
 import baltiapps.migrate.domain.backup.sources.PlatformContextSource
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.first
 import timber.log.Timber
 import kotlin.math.roundToInt
 
 class NotificationHandler(
     private val context: Context,
-    private val contextSource: PlatformContextSource
+    private val contextSource: PlatformContextSource,
+    private val backupProgressLogRepository: BackupProgressLogRepository,
 ): PlatformNotificationHandler<NotificationCompat.Builder>() {
 
     companion object {
@@ -75,7 +76,7 @@ class NotificationHandler(
     }
 
     override suspend fun getLatestProgress(): Progress {
-        return BackupService.backupProgress.first()
+        return backupProgressLogRepository.getLatestProgress()
     }
 
     override fun displayNotification(progress: Progress) {
