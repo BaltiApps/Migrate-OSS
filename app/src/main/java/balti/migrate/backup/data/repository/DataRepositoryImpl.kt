@@ -1,14 +1,11 @@
 package balti.migrate.backup.data.repository
 
 import balti.migrate.backup.data.model.ContactData
-import balti.migrate.backup.data.model.SmsData
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_CONTACTS
-import baltiapps.migrate.domain.BACKUP_FILE_NAME_SMS
 import baltiapps.migrate.domain.backup.getPercentage
 import baltiapps.migrate.domain.backup.model.DataItem
 import baltiapps.migrate.domain.backup.model.Progress
 import baltiapps.migrate.domain.backup.repository.DataRepository
-import baltiapps.migrate.domain.backup.sources.DBWriter
 import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.backup.sources.FileSystemSource
 import baltiapps.migrate.domain.backup.sources.TextWriter
@@ -20,24 +17,16 @@ import kotlinx.coroutines.flow.flowOn
 
 class DataRepositoryImpl(
     private val contactsSource: DataSource<ContactData>,
-    private val smsSource: DataSource<SmsData>,
     private val textWriter: TextWriter,
-    private val smsDBWriter: DBWriter<SmsData>,
     private val fileSystemSource: FileSystemSource,
 ) : DataRepository() {
 
     override val contactsDataItems: MutableList<ContactData> = mutableListOf()
-    override val smsDataItems: MutableList<SmsData> = mutableListOf()
 
     override val stagedContacts: MutableList<ContactData> = mutableListOf()
-    override val stagedSms: MutableList<SmsData> = mutableListOf()
 
     override suspend fun readContactsFromDevice(): Flow<Progress> {
         return collectData(contactsSource::getData, contactsDataItems)
-    }
-
-    override suspend fun readSmsFromDevice(): Flow<Progress> {
-        return collectData(smsSource::getData, smsDataItems)
     }
 
     override fun setStagedContacts(ids: List<String>) {
@@ -91,24 +80,6 @@ class DataRepositoryImpl(
                     progressType = Progress.ProgressType.CONTACTS_BACKUP,
                 ) { item ->
                     writer.writeLine(item.vcfContent)
-                }
-            }
-        }.flowOn(IO)
-    }
-
-    override fun backupSms(backupRoot: String): Flow<Progress> {
-        return flow {
-            if (stagedSms.isEmpty()) return@flow
-            fileSystemSource.writeDB(
-                directory = backupRoot,
-                fileName = BACKUP_FILE_NAME_SMS,
-                dbWriter = smsDBWriter,
-            ) { dbWriter ->
-                tryPerformWrite(
-                    items = stagedSms,
-                    progressType = Progress.ProgressType.SMS_BACKUP,
-                ) { item ->
-                    dbWriter.writeRow(item)
                 }
             }
         }.flowOn(IO)

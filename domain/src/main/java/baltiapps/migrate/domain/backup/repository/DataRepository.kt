@@ -11,22 +11,23 @@ import kotlinx.coroutines.flow.Flow
 abstract class DataRepository {
     abstract val contactsDataItems: List<DataItem<ContactListItem>>
     val callLogDataItems = mutableListOf<DataItem<CallLogListItem>>()
-    abstract val smsDataItems: List<DataItem<SmsListItem>>
+    val smsDataItems = mutableListOf<DataItem<SmsListItem>>()
 
     protected abstract val stagedContacts: List<DataItem<ContactListItem>>
     protected val stagedCallLogs = mutableListOf<DataItem<CallLogListItem>>()
-    protected abstract val stagedSms: List<DataItem<SmsListItem>>
+    protected val stagedSms = mutableListOf<DataItem<SmsListItem>>()
 
     abstract suspend fun readContactsFromDevice(): Flow<Progress>
-    abstract suspend fun readSmsFromDevice(): Flow<Progress>
 
     abstract fun setStagedContacts(ids: List<String>)
     abstract fun setStagedCallLogs(ids: List<String>)
     abstract fun setStagedSms(ids: List<String>)
 
     fun storeReadCallLogs(list: List<DataItem<CallLogListItem>>) {
-        callLogDataItems.clear()
-        callLogDataItems.addAll(list)
+        callLogDataItems.apply {
+            clear()
+            addAll(list)
+        }
     }
     fun getReadCallLogs(): List<CallLogListItem> {
         return callLogDataItems.toListItems()
@@ -34,8 +35,19 @@ abstract class DataRepository {
     }
     fun retrieveStagedCallLogs() = stagedCallLogs
 
+    fun storeReadSms(list: List<DataItem<SmsListItem>>) {
+        smsDataItems.apply {
+            clear()
+            addAll(list)
+        }
+    }
+    fun getReadSms(): List<SmsListItem> {
+        return smsDataItems.toListItems()
+            .sortedByDescending { it.creationDate.dateInLong }
+    }
+    fun retrieveStagedSms() = stagedSms
+
     abstract fun backupContacts(backupRoot: String): Flow<Progress>
-    abstract fun backupSms(backupRoot: String): Flow<Progress>
 
     fun shouldBackupContacts(): Boolean {
         return stagedContacts.isNotEmpty()

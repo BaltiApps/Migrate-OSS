@@ -20,6 +20,7 @@ import baltiapps.migrate.domain.backup.repository.DataRepository
 import baltiapps.migrate.domain.backup.sources.ContextSource
 import baltiapps.migrate.domain.backup.sources.TextWriter
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
+import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -43,6 +44,7 @@ class BackupService : LifecycleService() {
             NotificationHandler<NotificationCompat.Builder> by inject()
 
     private val backupCallLogUseCase: BackupCallLogUseCase by inject()
+    private val backupSmsUseCase: BackupSmsUseCase by inject()
 
     private val backupLog by lazy { File(this.cacheDir, BACKUP_LOG) }
     private val backupErrorLog by lazy { File(this.cacheDir, BACKUP_ERROR_LOG) }
@@ -114,7 +116,8 @@ class BackupService : LifecycleService() {
             runBackupStage(
                 backupRoot = backupRoot,
                 shouldRun = repository::shouldBackupSms,
-                backupBody = repository::backupSms,
+                backupItems = repository.retrieveStagedSms(),
+                backupBody = backupSmsUseCase::invoke,
                 progressType = Progress.ProgressType.SMS_BACKUP,
                 errorMessage = { "SMS backup exception: ${it.message}" },
             )

@@ -27,6 +27,7 @@ import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.backup.sources.FileSystemSource
 import baltiapps.migrate.domain.backup.sources.TextWriter
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
+import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadSmsUseCase
@@ -84,21 +85,24 @@ val backupDiModule = module {
     single<DataRepository> {
         DataRepositoryImpl(
             contactsSource = get(named(Names.CONTACTS_SOURCE)),
-            smsSource = get(named(Names.SMS_SOURCE)),
             textWriter = get(),
-            smsDBWriter = get(named(Names.DB_WRITER_SMS)),
             fileSystemSource = get(),
         )
     }
 
-    single<ReadCallLogUseCase> {
+    single {
         ReadCallLogUseCase(
             callLogSource = get(named(Names.CALL_LOG_SOURCE)),
             dataRepository = get(),
         )
     }
+    single {
+        ReadSmsUseCase(
+            smsSource = get(named(Names.SMS_SOURCE)),
+            dataRepository = get(),
+        )
+    }
     singleOf(::ReadContactsUseCase)
-    singleOf(::ReadSmsUseCase)
 
     singleOf(::StageSelectedCallLogs)
     singleOf(::StageSelectedContacts)
@@ -113,21 +117,23 @@ val backupDiModule = module {
 
     viewModelOf(::CallLogBackupViewModel)
 
-    viewModel {
-        SmsBackupViewModel(
-            readSmsUseCase = get(),
-            stageSelectedSms = get(),
-        )
-    }
+    viewModelOf(::SmsBackupViewModel)
 
     singleOf(::BackupProgressLogRepositoryImpl) bind BackupProgressLogRepository::class
 
     viewModelOf(::ProgressScreenViewModel)
 
-    single<BackupCallLogUseCase> {
+    single {
         BackupCallLogUseCase(
             fileSystemSource = get(),
             callLogDBWriter = get(named(Names.DB_WRITER_CALL_LOG)),
+        )
+    }
+
+    single {
+        BackupSmsUseCase(
+            fileSystemSource = get(),
+            smsDBWriter = get(named(Names.DB_WRITER_SMS))
         )
     }
 }
