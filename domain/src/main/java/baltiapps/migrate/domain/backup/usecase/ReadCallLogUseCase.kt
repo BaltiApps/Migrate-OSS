@@ -1,20 +1,19 @@
 package baltiapps.migrate.domain.backup.usecase
 
 import baltiapps.migrate.domain.backup.model.CallLogListItem
+import baltiapps.migrate.domain.backup.model.DataItem
 import baltiapps.migrate.domain.backup.model.Progress
 import baltiapps.migrate.domain.backup.repository.DataRepository
-import baltiapps.migrate.domain.backup.toListItems
+import baltiapps.migrate.domain.backup.sources.DataSource
 import kotlinx.coroutines.flow.Flow
 
 class ReadCallLogUseCase(
+    private val callLogSource: DataSource<DataItem<CallLogListItem>>,
     private val dataRepository: DataRepository,
 ) {
-    suspend fun read(): Flow<Progress> {
-        return dataRepository.readCallLogsFromDevice()
-    }
-
-    fun getReadCallLogs(): List<CallLogListItem> {
-        return dataRepository.callLogDataItems.toListItems()
-            .sortedByDescending { it.creationDate.dateInLong }
+    suspend fun invoke(): Flow<Progress> {
+        return callLogSource.getData {
+            dataRepository.storeReadCallLogs(it)
+        }
     }
 }

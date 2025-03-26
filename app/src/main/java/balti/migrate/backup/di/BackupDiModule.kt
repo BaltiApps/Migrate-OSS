@@ -26,6 +26,7 @@ import baltiapps.migrate.domain.backup.sources.ContextSource
 import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.backup.sources.FileSystemSource
 import baltiapps.migrate.domain.backup.sources.TextWriter
+import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadSmsUseCase
@@ -83,16 +84,19 @@ val backupDiModule = module {
     single<DataRepository> {
         DataRepositoryImpl(
             contactsSource = get(named(Names.CONTACTS_SOURCE)),
-            callLogSource = get(named(Names.CALL_LOG_SOURCE)),
             smsSource = get(named(Names.SMS_SOURCE)),
             textWriter = get(),
-            callLogDBWriter = get(named(Names.DB_WRITER_CALL_LOG)),
             smsDBWriter = get(named(Names.DB_WRITER_SMS)),
             fileSystemSource = get(),
         )
     }
 
-    singleOf(::ReadCallLogUseCase)
+    single<ReadCallLogUseCase> {
+        ReadCallLogUseCase(
+            callLogSource = get(named(Names.CALL_LOG_SOURCE)),
+            dataRepository = get(),
+        )
+    }
     singleOf(::ReadContactsUseCase)
     singleOf(::ReadSmsUseCase)
 
@@ -107,12 +111,7 @@ val backupDiModule = module {
         )
     }
 
-    viewModel {
-        CallLogBackupViewModel(
-            readCallLogUseCase = get(),
-            stageSelectedCallLogs = get(),
-        )
-    }
+    viewModelOf(::CallLogBackupViewModel)
 
     viewModel {
         SmsBackupViewModel(
@@ -124,4 +123,11 @@ val backupDiModule = module {
     singleOf(::BackupProgressLogRepositoryImpl) bind BackupProgressLogRepository::class
 
     viewModelOf(::ProgressScreenViewModel)
+
+    single<BackupCallLogUseCase> {
+        BackupCallLogUseCase(
+            fileSystemSource = get(),
+            callLogDBWriter = get(named(Names.DB_WRITER_CALL_LOG)),
+        )
+    }
 }

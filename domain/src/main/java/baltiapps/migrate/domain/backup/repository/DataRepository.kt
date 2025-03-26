@@ -5,27 +5,36 @@ import baltiapps.migrate.domain.backup.model.ContactListItem
 import baltiapps.migrate.domain.backup.model.DataItem
 import baltiapps.migrate.domain.backup.model.Progress
 import baltiapps.migrate.domain.backup.model.SmsListItem
+import baltiapps.migrate.domain.backup.toListItems
 import kotlinx.coroutines.flow.Flow
 
 abstract class DataRepository {
     abstract val contactsDataItems: List<DataItem<ContactListItem>>
-    abstract val callLogDataItems: List<DataItem<CallLogListItem>>
+    val callLogDataItems = mutableListOf<DataItem<CallLogListItem>>()
     abstract val smsDataItems: List<DataItem<SmsListItem>>
 
     protected abstract val stagedContacts: List<DataItem<ContactListItem>>
-    protected abstract val stagedCallLogs: List<DataItem<CallLogListItem>>
+    protected val stagedCallLogs = mutableListOf<DataItem<CallLogListItem>>()
     protected abstract val stagedSms: List<DataItem<SmsListItem>>
 
     abstract suspend fun readContactsFromDevice(): Flow<Progress>
-    abstract suspend fun readCallLogsFromDevice(): Flow<Progress>
     abstract suspend fun readSmsFromDevice(): Flow<Progress>
 
     abstract fun setStagedContacts(ids: List<String>)
     abstract fun setStagedCallLogs(ids: List<String>)
     abstract fun setStagedSms(ids: List<String>)
 
+    fun storeReadCallLogs(list: List<DataItem<CallLogListItem>>) {
+        callLogDataItems.clear()
+        callLogDataItems.addAll(list)
+    }
+    fun getReadCallLogs(): List<CallLogListItem> {
+        return callLogDataItems.toListItems()
+            .sortedByDescending { it.creationDate.dateInLong }
+    }
+    fun retrieveStagedCallLogs() = stagedCallLogs
+
     abstract fun backupContacts(backupRoot: String): Flow<Progress>
-    abstract fun backupCalls(backupRoot: String): Flow<Progress>
     abstract fun backupSms(backupRoot: String): Flow<Progress>
 
     fun shouldBackupContacts(): Boolean {

@@ -11,12 +11,15 @@ import baltiapps.migrate.domain.ACTION_START_BACKUP
 import baltiapps.migrate.domain.BACKUP_ERROR_LOG
 import baltiapps.migrate.domain.BACKUP_LOG
 import baltiapps.migrate.domain.EXTRA_BACKUP_ROOT
+import baltiapps.migrate.domain.backup.model.DataItem
+import baltiapps.migrate.domain.backup.model.ListItem
 import baltiapps.migrate.domain.backup.model.Progress
 import baltiapps.migrate.domain.backup.sources.NotificationHandler
 import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
 import baltiapps.migrate.domain.backup.repository.DataRepository
 import baltiapps.migrate.domain.backup.sources.ContextSource
 import baltiapps.migrate.domain.backup.sources.TextWriter
+import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -38,6 +41,8 @@ class BackupService : LifecycleService() {
     private val backupProgressLogRepository: BackupProgressLogRepository by inject()
     private val notificationHandler:
             NotificationHandler<NotificationCompat.Builder> by inject()
+
+    private val backupCallLogUseCase: BackupCallLogUseCase by inject()
 
     private val backupLog by lazy { File(this.cacheDir, BACKUP_LOG) }
     private val backupErrorLog by lazy { File(this.cacheDir, BACKUP_ERROR_LOG) }
@@ -98,7 +103,8 @@ class BackupService : LifecycleService() {
             runBackupStage(
                 backupRoot = backupRoot,
                 shouldRun = repository::shouldBackupCalls,
-                backupBody = repository::backupCalls,
+                backupItems = repository.retrieveStagedCallLogs(),
+                backupBody = backupCallLogUseCase::invoke,
                 progressType = Progress.ProgressType.CALL_LOG_BACKUP,
                 errorMessage = { "Call log backup exception: ${it.message}" },
             )
@@ -146,6 +152,35 @@ class BackupService : LifecycleService() {
             if (shouldRun()) {
                 emitHeadingLog(progressType)
                 backupBody(backupRoot).collect {
+                    collectLogs(it)
+                }
+            }
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            e.printStackTrace()
+            Progress(
+                progressType = progressType,
+                percentage = 1.0,
+                logs = errorMessage(e),
+                isFailure = true,
+            ).run {
+                collectLogs(this)
+            }
+        }
+    }
+
+    private suspend fun <T: ListItem> runBackupStage(
+        backupRoot: String,
+        shouldRun: () -> Boolean,
+        backupItems: List<DataItem<T>>,
+        backupBody: (String, List<DataItem<T>>) -> Flow<Progress>,
+        progressType: Progress.ProgressType,
+        errorMessage: (Exception) -> String,
+    ) {
+        try {
+            if (shouldRun()) {
+                emitHeadingLog(progressType)
+                backupBody(backupRoot, backupItems).collect {
                     collectLogs(it)
                 }
             }
