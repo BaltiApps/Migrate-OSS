@@ -1,9 +1,9 @@
 package balti.migrate.backup.data.sources.files
 
-import baltiapps.migrate.domain.backup.sources.PlatformFileSystemSource
+import baltiapps.migrate.domain.backup.sources.FileSystemSource
 import java.io.File
 
-class FileSystemSource : PlatformFileSystemSource() {
+class FileSystemSourceImpl : FileSystemSource() {
     override fun checkPermission(filePath: String): Boolean {
         return File(filePath).canWrite()
     }

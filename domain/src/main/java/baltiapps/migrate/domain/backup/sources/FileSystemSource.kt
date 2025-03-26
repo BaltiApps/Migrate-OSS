@@ -2,7 +2,7 @@ package baltiapps.migrate.domain.backup.sources
 
 import baltiapps.migrate.domain.backup.model.DataItem
 
-abstract class PlatformFileSystemSource() {
+abstract class FileSystemSource() {
     abstract fun checkPermission(filePath: String = ""): Boolean
     abstract fun createDirectory(dirPath: String): Boolean
 

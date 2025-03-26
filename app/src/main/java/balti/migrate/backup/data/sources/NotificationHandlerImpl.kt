@@ -1,4 +1,4 @@
-package balti.migrate.backup.data.service
+package balti.migrate.backup.data.sources
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -8,18 +8,18 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import balti.migrate.R
 import baltiapps.migrate.domain.backup.model.Progress
-import baltiapps.migrate.domain.backup.notification.PlatformNotificationHandler
+import baltiapps.migrate.domain.backup.sources.NotificationHandler
 import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
-import baltiapps.migrate.domain.backup.sources.PlatformContextSource
+import baltiapps.migrate.domain.backup.sources.ContextSource
 import kotlinx.coroutines.Job
 import timber.log.Timber
 import kotlin.math.roundToInt
 
-class NotificationHandler(
+class NotificationHandlerImpl(
     private val context: Context,
-    private val contextSource: PlatformContextSource,
+    private val contextSource: ContextSource,
     private val backupProgressLogRepository: BackupProgressLogRepository,
-): PlatformNotificationHandler<NotificationCompat.Builder>() {
+): NotificationHandler<NotificationCompat.Builder>() {
 
     companion object {
         const val CHANNEL_BACKUP_END_ID = "backup_finished"

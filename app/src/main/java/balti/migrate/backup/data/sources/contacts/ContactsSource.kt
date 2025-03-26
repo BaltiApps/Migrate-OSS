@@ -1,4 +1,4 @@
-package balti.migrate.backup.data.sources
+package balti.migrate.backup.data.sources.contacts
 
 import android.Manifest
 import android.content.Context
@@ -13,7 +13,7 @@ import balti.migrate.backup.data.utils.getCursorData
 import baltiapps.migrate.domain.exceptions.ContentReadException
 import baltiapps.migrate.domain.backup.getPercentage
 import baltiapps.migrate.domain.backup.model.Progress
-import baltiapps.migrate.domain.backup.sources.PlatformDataSource
+import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.exceptions.PermissionException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.flowOn
 
 class ContactsSource(
     private val context: Context,
-): PlatformDataSource<ContactData> {
+): DataSource<ContactData> {
     override fun checkPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
             context,

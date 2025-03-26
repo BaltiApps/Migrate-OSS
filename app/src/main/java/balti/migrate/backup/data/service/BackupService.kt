@@ -4,7 +4,7 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import balti.migrate.backup.data.service.NotificationHandler.Companion.NOTIFICATION_ID_BACKUP_ONGOING
+import balti.migrate.backup.data.sources.NotificationHandlerImpl.Companion.NOTIFICATION_ID_BACKUP_ONGOING
 import balti.migrate.backup.data.sources.files.TextWriterImpl
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
 import baltiapps.migrate.domain.ACTION_START_BACKUP
@@ -12,10 +12,10 @@ import baltiapps.migrate.domain.BACKUP_ERROR_LOG
 import baltiapps.migrate.domain.BACKUP_LOG
 import baltiapps.migrate.domain.EXTRA_BACKUP_ROOT
 import baltiapps.migrate.domain.backup.model.Progress
-import baltiapps.migrate.domain.backup.notification.PlatformNotificationHandler
+import baltiapps.migrate.domain.backup.sources.NotificationHandler
 import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
-import baltiapps.migrate.domain.backup.repository.PlatformDataRepository
-import baltiapps.migrate.domain.backup.sources.PlatformContextSource
+import baltiapps.migrate.domain.backup.repository.DataRepository
+import baltiapps.migrate.domain.backup.sources.ContextSource
 import baltiapps.migrate.domain.backup.sources.TextWriter
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -33,11 +33,11 @@ class BackupService : LifecycleService() {
         private const val BREAK_LINE = "===================================="
     }
 
-    private val contextSource: PlatformContextSource by inject()
-    private val repository: PlatformDataRepository by inject()
+    private val contextSource: ContextSource by inject()
+    private val repository: DataRepository by inject()
     private val backupProgressLogRepository: BackupProgressLogRepository by inject()
     private val notificationHandler:
-            PlatformNotificationHandler<NotificationCompat.Builder> by inject()
+            NotificationHandler<NotificationCompat.Builder> by inject()
 
     private val backupLog by lazy { File(this.cacheDir, BACKUP_LOG) }
     private val backupErrorLog by lazy { File(this.cacheDir, BACKUP_ERROR_LOG) }

@@ -9,10 +9,10 @@ import baltiapps.migrate.domain.BACKUP_FILE_NAME_SMS
 import baltiapps.migrate.domain.backup.getPercentage
 import baltiapps.migrate.domain.backup.model.DataItem
 import baltiapps.migrate.domain.backup.model.Progress
-import baltiapps.migrate.domain.backup.repository.PlatformDataRepository
+import baltiapps.migrate.domain.backup.repository.DataRepository
 import baltiapps.migrate.domain.backup.sources.DBWriter
-import baltiapps.migrate.domain.backup.sources.PlatformDataSource
-import baltiapps.migrate.domain.backup.sources.PlatformFileSystemSource
+import baltiapps.migrate.domain.backup.sources.DataSource
+import baltiapps.migrate.domain.backup.sources.FileSystemSource
 import baltiapps.migrate.domain.backup.sources.TextWriter
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
@@ -20,15 +20,15 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-class DataRepository(
-    private val contactsSource: PlatformDataSource<ContactData>,
-    private val callLogSource: PlatformDataSource<CallLogData>,
-    private val smsSource: PlatformDataSource<SmsData>,
+class DataRepositoryImpl(
+    private val contactsSource: DataSource<ContactData>,
+    private val callLogSource: DataSource<CallLogData>,
+    private val smsSource: DataSource<SmsData>,
     private val textWriter: TextWriter,
     private val callLogDBWriter: DBWriter<CallLogData>,
     private val smsDBWriter: DBWriter<SmsData>,
-    private val fileSystemSource: PlatformFileSystemSource,
-) : PlatformDataRepository() {
+    private val fileSystemSource: FileSystemSource,
+) : DataRepository() {
 
     override val contactsDataItems: MutableList<ContactData> = mutableListOf()
     override val callLogDataItems: MutableList<CallLogData> = mutableListOf()

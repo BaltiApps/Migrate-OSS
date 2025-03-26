@@ -4,7 +4,7 @@ import baltiapps.migrate.domain.backup.model.DataItem
 import baltiapps.migrate.domain.backup.model.Progress
 import kotlinx.coroutines.flow.Flow
 
-interface PlatformDataSource<T: DataItem<*>> {
+interface DataSource<T: DataItem<*>> {
     fun checkPermission(): Boolean
     suspend fun getData(
         onFinishedLoading: (List<T>) -> Unit,

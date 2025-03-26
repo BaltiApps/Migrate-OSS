@@ -2,6 +2,6 @@ package baltiapps.migrate.domain.backup.sources
 
 import baltiapps.migrate.domain.backup.model.Progress
 
-interface PlatformContextSource {
+interface ContextSource {
     fun getProgressTitle(progressType: Progress.ProgressType): String
 }

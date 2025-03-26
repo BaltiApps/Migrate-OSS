@@ -1,11 +1,11 @@
-package balti.migrate.backup.utils
+package balti.migrate.backup.data.sources
 
 import android.content.Context
 import balti.migrate.R
 import baltiapps.migrate.domain.backup.model.Progress
-import baltiapps.migrate.domain.backup.sources.PlatformContextSource
+import baltiapps.migrate.domain.backup.sources.ContextSource
 
-class ContextSource(private val context: Context): PlatformContextSource {
+class ContextSourceImpl(private val context: Context): ContextSource {
     override fun getProgressTitle(progressType: Progress.ProgressType): String {
         return when (progressType) {
             Progress.ProgressType.CONTACTS_BACKUP -> context.getString(R.string.label_contacts_backup)

@@ -3,14 +3,14 @@ package balti.migrate.backup.ui.screens.progressScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
-import baltiapps.migrate.domain.backup.sources.PlatformContextSource
+import baltiapps.migrate.domain.backup.sources.ContextSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProgressScreenViewModel(
-    private val contextSource: PlatformContextSource,
+    private val contextSource: ContextSource,
     private val backupProgressLogRepository: BackupProgressLogRepository,
 ) : ViewModel() {
 

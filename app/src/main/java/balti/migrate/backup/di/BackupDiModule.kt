@@ -4,27 +4,27 @@ import balti.migrate.backup.data.model.CallLogData
 import balti.migrate.backup.data.model.ContactData
 import balti.migrate.backup.data.model.SmsData
 import balti.migrate.backup.data.repository.BackupProgressLogRepositoryImpl
-import balti.migrate.backup.data.repository.DataRepository
-import balti.migrate.backup.data.service.NotificationHandler
-import balti.migrate.backup.data.sources.CallLogSource
-import balti.migrate.backup.data.sources.ContactsSource
-import balti.migrate.backup.data.sources.SmsSource
-import balti.migrate.backup.data.sources.files.CallLogDBWriter
-import balti.migrate.backup.data.sources.files.FileSystemSource
-import balti.migrate.backup.data.sources.files.SmsDBWriter
+import balti.migrate.backup.data.repository.DataRepositoryImpl
+import balti.migrate.backup.data.sources.NotificationHandlerImpl
+import balti.migrate.backup.data.sources.callLog.CallLogSource
+import balti.migrate.backup.data.sources.contacts.ContactsSource
+import balti.migrate.backup.data.sources.sms.SmsSource
+import balti.migrate.backup.data.sources.callLog.CallLogDBWriter
+import balti.migrate.backup.data.sources.files.FileSystemSourceImpl
+import balti.migrate.backup.data.sources.sms.SmsDBWriter
 import balti.migrate.backup.data.sources.files.TextWriterImpl
 import balti.migrate.backup.ui.screens.listScreen.callLogBackup.CallLogBackupViewModel
 import balti.migrate.backup.ui.screens.listScreen.contactBackup.ContactBackupViewModel
 import balti.migrate.backup.ui.screens.listScreen.smsBackup.SmsBackupViewModel
 import balti.migrate.backup.ui.screens.progressScreen.ProgressScreenViewModel
-import balti.migrate.backup.utils.ContextSource
-import baltiapps.migrate.domain.backup.notification.PlatformNotificationHandler
+import balti.migrate.backup.data.sources.ContextSourceImpl
+import baltiapps.migrate.domain.backup.sources.NotificationHandler
 import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
-import baltiapps.migrate.domain.backup.repository.PlatformDataRepository
+import baltiapps.migrate.domain.backup.repository.DataRepository
 import baltiapps.migrate.domain.backup.sources.DBWriter
-import baltiapps.migrate.domain.backup.sources.PlatformContextSource
-import baltiapps.migrate.domain.backup.sources.PlatformDataSource
-import baltiapps.migrate.domain.backup.sources.PlatformFileSystemSource
+import baltiapps.migrate.domain.backup.sources.ContextSource
+import baltiapps.migrate.domain.backup.sources.DataSource
+import baltiapps.migrate.domain.backup.sources.FileSystemSource
 import baltiapps.migrate.domain.backup.sources.TextWriter
 import baltiapps.migrate.domain.backup.usecase.ReadCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadContactsUseCase
@@ -50,15 +50,15 @@ private enum class Names {
 
 val backupDiModule = module {
 
-    single<PlatformDataSource<ContactData>>(named(Names.CONTACTS_SOURCE)) {
+    single<DataSource<ContactData>>(named(Names.CONTACTS_SOURCE)) {
         ContactsSource(get())
     }
 
-    single<PlatformDataSource<CallLogData>>(named(Names.CALL_LOG_SOURCE)) {
+    single<DataSource<CallLogData>>(named(Names.CALL_LOG_SOURCE)) {
         CallLogSource(get())
     }
 
-    single<PlatformDataSource<SmsData>>(named(Names.SMS_SOURCE)) {
+    single<DataSource<SmsData>>(named(Names.SMS_SOURCE)) {
         SmsSource(get())
     }
 
@@ -72,16 +72,16 @@ val backupDiModule = module {
         SmsDBWriter()
     }
 
-    single<PlatformFileSystemSource> {
-        FileSystemSource()
+    single<FileSystemSource> {
+        FileSystemSourceImpl()
     }
 
-    singleOf(::ContextSource) { bind<PlatformContextSource>() }
+    singleOf(::ContextSourceImpl) { bind<ContextSource>() }
 
-    singleOf(::NotificationHandler) { bind<PlatformNotificationHandler<*>>() }
+    singleOf(::NotificationHandlerImpl) { bind<NotificationHandler<*>>() }
 
-    single<PlatformDataRepository> {
-        DataRepository(
+    single<DataRepository> {
+        DataRepositoryImpl(
             contactsSource = get(named(Names.CONTACTS_SOURCE)),
             callLogSource = get(named(Names.CALL_LOG_SOURCE)),
             smsSource = get(named(Names.SMS_SOURCE)),

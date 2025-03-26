@@ -1,4 +1,4 @@
-package baltiapps.migrate.domain.backup.notification
+package baltiapps.migrate.domain.backup.sources
 
 import baltiapps.migrate.domain.backup.model.Progress
 import kotlinx.coroutines.CoroutineScope
@@ -9,7 +9,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-abstract class PlatformNotificationHandler<T> {
+abstract class NotificationHandler<T> {
 
     companion object {
         private const val SAFE_NOTIFICATION_INTERVAL = 300L

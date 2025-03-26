@@ -7,7 +7,7 @@ import baltiapps.migrate.domain.backup.model.Progress
 import baltiapps.migrate.domain.backup.model.SmsListItem
 import kotlinx.coroutines.flow.Flow
 
-abstract class PlatformDataRepository {
+abstract class DataRepository {
     abstract val contactsDataItems: List<DataItem<ContactListItem>>
     abstract val callLogDataItems: List<DataItem<CallLogListItem>>
     abstract val smsDataItems: List<DataItem<SmsListItem>>
