@@ -100,9 +100,6 @@ class DataRepository(
                     items = stagedContacts,
                     progressType = Progress.ProgressType.CONTACTS_BACKUP,
                 ) { item ->
-//                    if (item._id.toInt() % 2 == 0) {
-//                        throw Exception("Haha ${item.logInfo}")
-//                    }
                     writer.writeLine(item.vcfContent)
                 }
             }
