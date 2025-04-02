@@ -13,7 +13,7 @@ class ReadCallLogUseCase(
 ) {
     suspend fun invoke(): Flow<Progress> {
         return callLogSource.getData {
-            dataRepository.storeReadCallLogs(it)
+            dataRepository.storeDataItems(it)
         }
     }
 }

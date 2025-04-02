@@ -13,7 +13,7 @@ class ReadSmsUseCase(
 ) {
     suspend fun invoke(): Flow<Progress> {
         return smsSource.getData {
-            dataRepository.storeReadSms(it)
+            dataRepository.storeDataItems(it)
         }
     }
 }

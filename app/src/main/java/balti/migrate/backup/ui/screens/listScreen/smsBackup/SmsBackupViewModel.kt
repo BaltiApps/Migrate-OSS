@@ -44,7 +44,7 @@ class SmsBackupViewModel(
     init {
         super.readItems(
             reader = readSmsUseCase::invoke,
-            getReadItems = dataRepository::getReadSms
+            getReadItems = dataRepository::getReadListItems
         )
     }
 
