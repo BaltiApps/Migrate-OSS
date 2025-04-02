@@ -26,8 +26,8 @@ class ProgressScreenViewModel(
             backupProgressLogRepository.setProgressObserver {p, e ->
                 if (isLogsPaused) return@setProgressObserver
                 val progressList = if (observeErrorsOnly) e else p
-                if (progressList.isEmpty()) return@setProgressObserver
-                val latestProgress = progressList.last()
+                if (p.isEmpty()) return@setProgressObserver
+                val latestProgress = p.last()
                 val headingText = contextSource.getProgressTitle(latestProgress.progressType)
                 _state.update {
                     it.copy(
