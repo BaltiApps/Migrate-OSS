@@ -33,14 +33,6 @@ class DataRepositoryImpl(
         setStagedItems(ids, contactsDataItems, stagedContacts)
     }
 
-    override fun setStagedCallLogs(ids: List<String>) {
-        setStagedItems(ids, callLogDataItems, stagedCallLogs)
-    }
-
-    override fun setStagedSms(ids: List<String>) {
-        setStagedItems(ids, smsDataItems, stagedSms)
-    }
-
     private suspend fun <T : DataItem<*>> FlowCollector<Progress>.tryPerformWrite(
         items: List<T>,
         progressType: Progress.ProgressType,

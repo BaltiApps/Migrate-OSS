@@ -44,7 +44,7 @@ class CallLogBackupViewModel(
     init {
         super.readItems(
             reader = readCallLogUseCase::invoke,
-            getReadItems = dataRepository::getReadListItems
+            getReadItems = dataRepository::callLogListItems
         )
     }
 

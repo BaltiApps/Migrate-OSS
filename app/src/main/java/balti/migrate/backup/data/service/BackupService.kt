@@ -105,7 +105,7 @@ class BackupService : LifecycleService() {
             runBackupStage(
                 backupRoot = backupRoot,
                 shouldRun = repository::shouldBackupCalls,
-                backupItems = repository.retrieveStagedCallLogs(),
+                backupItems = repository.stagedCallLogs,
                 backupBody = backupCallLogUseCase::invoke,
                 progressType = Progress.ProgressType.CALL_LOG_BACKUP,
                 errorMessage = { "Call log backup exception: ${it.message}" },
@@ -116,7 +116,7 @@ class BackupService : LifecycleService() {
             runBackupStage(
                 backupRoot = backupRoot,
                 shouldRun = repository::shouldBackupSms,
-                backupItems = repository.retrieveStagedSms(),
+                backupItems = repository.stagedSms,
                 backupBody = backupSmsUseCase::invoke,
                 progressType = Progress.ProgressType.SMS_BACKUP,
                 errorMessage = { "SMS backup exception: ${it.message}" },

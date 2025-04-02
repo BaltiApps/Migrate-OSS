@@ -1,5 +1,6 @@
 package baltiapps.migrate.domain.backup.usecase
 
+import baltiapps.migrate.domain.backup.clearAndAddAll
 import baltiapps.migrate.domain.backup.model.CallLogListItem
 import baltiapps.migrate.domain.backup.model.DataItem
 import baltiapps.migrate.domain.backup.model.Progress
@@ -13,7 +14,7 @@ class ReadCallLogUseCase(
 ) {
     suspend fun invoke(): Flow<Progress> {
         return callLogSource.getData {
-            dataRepository.storeDataItems(it)
+            dataRepository.callLogDataItems.clearAndAddAll(it)
         }
     }
 }

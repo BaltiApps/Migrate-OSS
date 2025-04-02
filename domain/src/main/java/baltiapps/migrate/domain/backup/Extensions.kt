@@ -37,3 +37,8 @@ suspend fun <T : DataItem<*>> FlowCollector<Progress>.tryPerformWrite(
         )
     }
 }
+
+fun <T> MutableList<T>.clearAndAddAll(items: List<T>) {
+    this.clear()
+    this.addAll(items)
+}

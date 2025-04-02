@@ -1,5 +1,6 @@
 package baltiapps.migrate.domain.backup.usecase
 
+import baltiapps.migrate.domain.backup.clearAndAddAll
 import baltiapps.migrate.domain.backup.model.DataItem
 import baltiapps.migrate.domain.backup.model.Progress
 import baltiapps.migrate.domain.backup.model.SmsListItem
@@ -13,7 +14,7 @@ class ReadSmsUseCase(
 ) {
     suspend fun invoke(): Flow<Progress> {
         return smsSource.getData {
-            dataRepository.storeDataItems(it)
+            dataRepository.smsDataItems.clearAndAddAll(it)
         }
     }
 }

@@ -1,5 +1,6 @@
 package baltiapps.migrate.domain.backup.usecase
 
+import baltiapps.migrate.domain.backup.clearAndAddAll
 import baltiapps.migrate.domain.backup.model.CallLogListItem
 import baltiapps.migrate.domain.backup.repository.DataRepository
 
@@ -10,6 +11,7 @@ class StageSelectedCallLogs(
         allListItems: List<CallLogListItem>
     ) {
         val selectedIds = allListItems.filter { it.isChecked }.map { it._id }
-        dataRepository.setStagedCallLogs(selectedIds)
+        val selectedDataItems = dataRepository.callLogDataItems.filter { it._id in selectedIds }
+        dataRepository.stagedCallLogs.clearAndAddAll(selectedDataItems)
     }
 }
