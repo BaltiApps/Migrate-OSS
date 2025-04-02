@@ -11,7 +11,7 @@ import balti.migrate.backup.data.sources.callLog.CallLogSource
 import balti.migrate.backup.data.sources.contacts.ContactsSource
 import balti.migrate.backup.data.sources.files.FileSystemSourceImpl
 import balti.migrate.backup.data.sources.files.TextWriterImpl
-import balti.migrate.backup.data.sources.sms.ContactsWriter
+import balti.migrate.backup.data.sources.contacts.ContactsWriter
 import balti.migrate.backup.data.sources.sms.SmsDBWriter
 import balti.migrate.backup.data.sources.sms.SmsSource
 import balti.migrate.backup.ui.screens.listScreen.callLogBackup.CallLogBackupViewModel

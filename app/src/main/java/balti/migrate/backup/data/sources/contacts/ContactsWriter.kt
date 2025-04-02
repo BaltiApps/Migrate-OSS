@@ -1,4 +1,4 @@
-package balti.migrate.backup.data.sources.sms
+package balti.migrate.backup.data.sources.contacts
 
 import balti.migrate.backup.data.model.ContactData
 import baltiapps.migrate.domain.backup.sources.TextWriter
