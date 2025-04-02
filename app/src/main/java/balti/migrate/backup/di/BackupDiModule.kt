@@ -4,28 +4,27 @@ import balti.migrate.backup.data.model.CallLogData
 import balti.migrate.backup.data.model.ContactData
 import balti.migrate.backup.data.model.SmsData
 import balti.migrate.backup.data.repository.BackupProgressLogRepositoryImpl
-import balti.migrate.backup.data.repository.DataRepositoryImpl
+import balti.migrate.backup.data.sources.ContextSourceImpl
 import balti.migrate.backup.data.sources.NotificationHandlerImpl
+import balti.migrate.backup.data.sources.callLog.CallLogDBWriter
 import balti.migrate.backup.data.sources.callLog.CallLogSource
 import balti.migrate.backup.data.sources.contacts.ContactsSource
-import balti.migrate.backup.data.sources.sms.SmsSource
-import balti.migrate.backup.data.sources.callLog.CallLogDBWriter
 import balti.migrate.backup.data.sources.files.FileSystemSourceImpl
-import balti.migrate.backup.data.sources.sms.SmsDBWriter
 import balti.migrate.backup.data.sources.files.TextWriterImpl
+import balti.migrate.backup.data.sources.sms.ContactsWriter
+import balti.migrate.backup.data.sources.sms.SmsDBWriter
+import balti.migrate.backup.data.sources.sms.SmsSource
 import balti.migrate.backup.ui.screens.listScreen.callLogBackup.CallLogBackupViewModel
 import balti.migrate.backup.ui.screens.listScreen.contactBackup.ContactBackupViewModel
 import balti.migrate.backup.ui.screens.listScreen.smsBackup.SmsBackupViewModel
 import balti.migrate.backup.ui.screens.progressScreen.ProgressScreenViewModel
-import balti.migrate.backup.data.sources.ContextSourceImpl
-import balti.migrate.backup.data.sources.sms.ContactsWriter
-import baltiapps.migrate.domain.backup.sources.NotificationHandler
 import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
 import baltiapps.migrate.domain.backup.repository.DataRepository
-import baltiapps.migrate.domain.backup.sources.DBWriter
 import baltiapps.migrate.domain.backup.sources.ContextSource
+import baltiapps.migrate.domain.backup.sources.DBWriter
 import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.backup.sources.FileSystemSource
+import baltiapps.migrate.domain.backup.sources.NotificationHandler
 import baltiapps.migrate.domain.backup.sources.TextWriter
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
@@ -38,7 +37,6 @@ import baltiapps.migrate.domain.backup.usecase.StageSelectedContacts
 import baltiapps.migrate.domain.backup.usecase.StageSelectedSms
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -92,13 +90,7 @@ val backupDiModule = module {
 
     singleOf(::NotificationHandlerImpl) { bind<NotificationHandler<*>>() }
 
-    single<DataRepository> {
-        DataRepositoryImpl(
-            contactsSource = get(named(Names.CONTACTS_SOURCE)),
-            textWriter = get(named(Names.TEXT_WRITER)),
-            fileSystemSource = get(),
-        )
-    }
+    singleOf(::DataRepository)
 
     single {
         ReadContactsUseCase(
