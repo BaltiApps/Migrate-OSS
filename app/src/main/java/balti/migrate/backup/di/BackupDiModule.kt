@@ -18,6 +18,7 @@ import balti.migrate.backup.ui.screens.listScreen.contactBackup.ContactBackupVie
 import balti.migrate.backup.ui.screens.listScreen.smsBackup.SmsBackupViewModel
 import balti.migrate.backup.ui.screens.progressScreen.ProgressScreenViewModel
 import balti.migrate.backup.data.sources.ContextSourceImpl
+import balti.migrate.backup.data.sources.sms.ContactsWriter
 import baltiapps.migrate.domain.backup.sources.NotificationHandler
 import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
 import baltiapps.migrate.domain.backup.repository.DataRepository
@@ -27,6 +28,7 @@ import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.backup.sources.FileSystemSource
 import baltiapps.migrate.domain.backup.sources.TextWriter
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
+import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadContactsUseCase
@@ -48,6 +50,7 @@ private enum class Names {
     SMS_SOURCE,
     DB_WRITER_CALL_LOG,
     DB_WRITER_SMS,
+    CONTACTS_WRITER,
     TEXT_WRITER,
 }
 
@@ -67,6 +70,10 @@ val backupDiModule = module {
 
     single<TextWriter<String>>(named(Names.TEXT_WRITER)) {
         TextWriterImpl()
+    }
+
+    single<TextWriter<ContactData>>(named(Names.CONTACTS_WRITER)) {
+        ContactsWriter()
     }
 
     single<DBWriter<CallLogData>>(named(Names.DB_WRITER_CALL_LOG)) {
@@ -94,6 +101,12 @@ val backupDiModule = module {
     }
 
     single {
+        ReadContactsUseCase(
+            contactsSource = get(named(Names.CONTACTS_SOURCE)),
+            dataRepository = get(),
+        )
+    }
+    single {
         ReadCallLogUseCase(
             callLogSource = get(named(Names.CALL_LOG_SOURCE)),
             dataRepository = get(),
@@ -105,18 +118,12 @@ val backupDiModule = module {
             dataRepository = get(),
         )
     }
-    singleOf(::ReadContactsUseCase)
 
     singleOf(::StageSelectedCallLogs)
     singleOf(::StageSelectedContacts)
     singleOf(::StageSelectedSms)
 
-    viewModel {
-        ContactBackupViewModel(
-            readContactsUseCase = get(),
-            stageSelectedContacts = get(),
-        )
-    }
+    viewModelOf(::ContactBackupViewModel)
 
     viewModelOf(::CallLogBackupViewModel)
 
@@ -125,6 +132,13 @@ val backupDiModule = module {
     singleOf(::BackupProgressLogRepositoryImpl) bind BackupProgressLogRepository::class
 
     viewModelOf(::ProgressScreenViewModel)
+
+    single {
+        BackupContactsUseCase(
+            fileSystemSource = get(),
+            contactsWriter = get(named(Names.CONTACTS_WRITER))
+        )
+    }
 
     single {
         BackupCallLogUseCase(

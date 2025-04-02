@@ -20,6 +20,7 @@ import baltiapps.migrate.domain.backup.repository.DataRepository
 import baltiapps.migrate.domain.backup.sources.ContextSource
 import baltiapps.migrate.domain.backup.sources.TextWriter
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
+import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +44,7 @@ class BackupService : LifecycleService() {
     private val notificationHandler:
             NotificationHandler<NotificationCompat.Builder> by inject()
 
+    private val backupContactsUseCase: BackupContactsUseCase by inject()
     private val backupCallLogUseCase: BackupCallLogUseCase by inject()
     private val backupSmsUseCase: BackupSmsUseCase by inject()
 
@@ -95,7 +97,8 @@ class BackupService : LifecycleService() {
             runBackupStage(
                 backupRoot = backupRoot,
                 shouldRun = repository::shouldBackupContacts,
-                backupBody = repository::backupContacts,
+                backupItems = repository.stagedContacts,
+                backupBody = backupContactsUseCase::invoke,
                 progressType = Progress.ProgressType.CONTACTS_BACKUP,
                 errorMessage = { "Contacts backup exception: ${it.message}" },
             )
@@ -142,34 +145,6 @@ class BackupService : LifecycleService() {
         errorWriter.setup(backupErrorLog.canonicalPath, append = true)
 
         backupProgressLogRepository.reset()
-    }
-
-    private suspend fun runBackupStage(
-        backupRoot: String,
-        shouldRun: () -> Boolean,
-        backupBody: (String) -> Flow<Progress>,
-        progressType: Progress.ProgressType,
-        errorMessage: (Exception) -> String,
-    ) {
-        try {
-            if (shouldRun()) {
-                emitHeadingLog(progressType)
-                backupBody(backupRoot).collect {
-                    collectLogs(it)
-                }
-            }
-        } catch (e: Exception) {
-            if (e is CancellationException) throw e
-            e.printStackTrace()
-            Progress(
-                progressType = progressType,
-                percentage = 1.0,
-                logs = errorMessage(e),
-                isFailure = true,
-            ).run {
-                collectLogs(this)
-            }
-        }
     }
 
     private suspend fun <T: ListItem> runBackupStage(
