@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.flowOn
 
 class DataRepositoryImpl(
     private val contactsSource: DataSource<ContactData>,
-    private val textWriter: TextWriter,
+    private val textWriter: TextWriter<String>,
     private val fileSystemSource: FileSystemSource,
 ) : DataRepository() {
 

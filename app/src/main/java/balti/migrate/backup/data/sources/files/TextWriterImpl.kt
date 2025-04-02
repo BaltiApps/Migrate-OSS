@@ -4,7 +4,7 @@ import baltiapps.migrate.domain.backup.sources.TextWriter
 import java.io.File
 import java.io.FileWriter
 
-class TextWriterImpl: TextWriter {
+class TextWriterImpl: TextWriter<String> {
     private lateinit var file: File
     private lateinit var fileWriter: FileWriter
 
@@ -18,12 +18,12 @@ class TextWriterImpl: TextWriter {
         }
     }
 
-    override fun write(text: String) {
-        fileWriter.write(text)
+    override fun write(data: String) {
+        fileWriter.write(data)
     }
 
-    override fun writeLine(line: String) {
-        write("${line}\n")
+    override fun writeLine(data: String) {
+        write("${data}\n")
     }
 
     override fun close() {

@@ -49,8 +49,8 @@ class BackupService : LifecycleService() {
     private val backupLog by lazy { File(this.cacheDir, BACKUP_LOG) }
     private val backupErrorLog by lazy { File(this.cacheDir, BACKUP_ERROR_LOG) }
 
-    private lateinit var logWriter: TextWriter
-    private lateinit var errorWriter: TextWriter
+    private lateinit var logWriter: TextWriter<String>
+    private lateinit var errorWriter: TextWriter<String>
 
     private var backupJob: Job? = null
 

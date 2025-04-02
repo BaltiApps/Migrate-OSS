@@ -6,12 +6,12 @@ abstract class FileSystemSource() {
     abstract fun checkPermission(filePath: String = ""): Boolean
     abstract fun createDirectory(dirPath: String): Boolean
 
-    inline fun <T: TextWriter> writeText(
+    inline fun <T, V: TextWriter<T>> writeText(
         directory: String,
         fileName: String,
         append: Boolean,
-        textWriter: T,
-        writerBlock: (fileWriter: T) -> Unit,
+        textWriter: V,
+        writerBlock: (fileWriter: V) -> Unit,
     ) {
         try {
             if (!createDirectory(directory)) {
@@ -40,10 +40,10 @@ abstract class FileSystemSource() {
     }
 }
 
-interface TextWriter {
+interface TextWriter<T> {
     fun setup(fileLocation: String, append: Boolean)
-    fun write(text: String)
-    fun writeLine(line: String)
+    fun write(data: T)
+    fun writeLine(data: T)
     fun close()
 }
 

@@ -48,6 +48,7 @@ private enum class Names {
     SMS_SOURCE,
     DB_WRITER_CALL_LOG,
     DB_WRITER_SMS,
+    TEXT_WRITER,
 }
 
 val backupDiModule = module {
@@ -64,7 +65,9 @@ val backupDiModule = module {
         SmsSource(get())
     }
 
-    singleOf(::TextWriterImpl) { bind<TextWriter>() }
+    single<TextWriter<String>>(named(Names.TEXT_WRITER)) {
+        TextWriterImpl()
+    }
 
     single<DBWriter<CallLogData>>(named(Names.DB_WRITER_CALL_LOG)) {
         CallLogDBWriter()
@@ -85,7 +88,7 @@ val backupDiModule = module {
     single<DataRepository> {
         DataRepositoryImpl(
             contactsSource = get(named(Names.CONTACTS_SOURCE)),
-            textWriter = get(),
+            textWriter = get(named(Names.TEXT_WRITER)),
             fileSystemSource = get(),
         )
     }
