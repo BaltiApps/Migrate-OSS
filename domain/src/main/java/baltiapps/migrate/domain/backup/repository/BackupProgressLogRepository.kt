@@ -1,6 +1,6 @@
 package baltiapps.migrate.domain.backup.repository
 
-import baltiapps.migrate.domain.backup.model.Progress
+import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.sync.Mutex

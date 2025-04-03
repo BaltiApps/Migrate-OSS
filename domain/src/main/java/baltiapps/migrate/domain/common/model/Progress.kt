@@ -1,4 +1,4 @@
-package baltiapps.migrate.domain.backup.model
+package baltiapps.migrate.domain.common.model
 
 data class Progress(
     val progressType: ProgressType,
@@ -21,12 +21,12 @@ data class Progress(
     }
 
     private val backupFinishedTypes = setOf(
-        Progress.ProgressType.BACKUP_FINISHED,
-        Progress.ProgressType.BACKUP_FINISHED_WITH_ERRORS,
-        Progress.ProgressType.BACKUP_CANCELLED,
+        ProgressType.BACKUP_FINISHED,
+        ProgressType.BACKUP_FINISHED_WITH_ERRORS,
+        ProgressType.BACKUP_CANCELLED,
     )
 
-    fun isFinished(): Boolean {
+    fun isBackupFinished(): Boolean {
         return progressType in backupFinishedTypes
     }
 

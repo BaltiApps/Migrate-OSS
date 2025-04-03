@@ -7,7 +7,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import balti.migrate.R
-import baltiapps.migrate.domain.backup.model.Progress
+import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.backup.sources.NotificationHandler
 import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
 import baltiapps.migrate.domain.backup.sources.ContextSource

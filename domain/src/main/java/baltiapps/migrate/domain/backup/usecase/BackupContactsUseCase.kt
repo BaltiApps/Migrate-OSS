@@ -3,7 +3,7 @@ package baltiapps.migrate.domain.backup.usecase
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_CONTACTS
 import baltiapps.migrate.domain.backup.model.ContactListItem
 import baltiapps.migrate.domain.common.model.DataItem
-import baltiapps.migrate.domain.backup.model.Progress
+import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import baltiapps.migrate.domain.backup.tryPerformWrite

@@ -2,7 +2,7 @@ package balti.migrate.backup.data.sources
 
 import android.content.Context
 import balti.migrate.R
-import baltiapps.migrate.domain.backup.model.Progress
+import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.backup.sources.ContextSource
 
 class ContextSourceImpl(private val context: Context): ContextSource {

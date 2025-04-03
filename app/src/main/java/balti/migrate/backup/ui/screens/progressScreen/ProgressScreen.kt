@@ -42,7 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.backup.ui.components.ButtonStatus
 import balti.migrate.backup.ui.components.NextFab
-import baltiapps.migrate.domain.backup.model.Progress
+import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel

@@ -10,7 +10,7 @@ import balti.migrate.common.model.CallLogData
 import balti.migrate.backup.data.utils.getCursorData
 import baltiapps.migrate.domain.exceptions.ContentReadException
 import baltiapps.migrate.domain.backup.getPercentage
-import baltiapps.migrate.domain.backup.model.Progress
+import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.exceptions.PermissionException
 import kotlinx.coroutines.Dispatchers

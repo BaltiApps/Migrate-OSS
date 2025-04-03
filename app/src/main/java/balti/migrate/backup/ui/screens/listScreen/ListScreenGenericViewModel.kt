@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import baltiapps.migrate.domain.backup.model.CallLogListItem
 import baltiapps.migrate.domain.backup.model.ContactListItem
 import baltiapps.migrate.domain.common.model.ListItem
-import baltiapps.migrate.domain.backup.model.Progress
+import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.backup.model.SmsListItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

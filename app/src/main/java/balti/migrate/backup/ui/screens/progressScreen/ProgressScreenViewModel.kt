@@ -33,7 +33,7 @@ class ProgressScreenViewModel(
                     it.copy(
                         progressList = progressList,
                         headingText = headingText,
-                        isBackupFinished = latestProgress.isFinished(),
+                        isBackupFinished = latestProgress.isBackupFinished(),
                         isCancelling = isCancelling,
                         errorOnly = observeErrorsOnly,
                     )

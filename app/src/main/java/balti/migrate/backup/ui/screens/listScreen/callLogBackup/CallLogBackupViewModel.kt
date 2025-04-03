@@ -2,7 +2,7 @@ package balti.migrate.backup.ui.screens.listScreen.callLogBackup
 
 import balti.migrate.backup.ui.screens.listScreen.ListScreenGenericViewModel
 import baltiapps.migrate.domain.backup.model.CallLogListItem
-import baltiapps.migrate.domain.backup.model.Progress
+import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.backup.repository.DataRepository
 import baltiapps.migrate.domain.backup.usecase.ReadCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.StageSelectedCallLogs

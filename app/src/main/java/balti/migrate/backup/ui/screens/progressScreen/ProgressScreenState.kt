@@ -1,6 +1,6 @@
 package balti.migrate.backup.ui.screens.progressScreen
 
-import baltiapps.migrate.domain.backup.model.Progress
+import baltiapps.migrate.domain.common.model.Progress
 
 data class ProgressScreenState(
     val progressList: List<Progress>,

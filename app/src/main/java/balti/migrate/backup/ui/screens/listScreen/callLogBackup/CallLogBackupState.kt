@@ -1,7 +1,7 @@
 package balti.migrate.backup.ui.screens.listScreen.callLogBackup
 
 import baltiapps.migrate.domain.backup.model.CallLogListItem
-import baltiapps.migrate.domain.backup.model.Progress
+import baltiapps.migrate.domain.common.model.Progress
 
 data class CallLogBackupState(
     val progress: Progress = Progress.Empty,

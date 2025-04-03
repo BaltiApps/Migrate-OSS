@@ -13,7 +13,7 @@ import baltiapps.migrate.domain.BACKUP_LOG
 import baltiapps.migrate.domain.EXTRA_BACKUP_ROOT
 import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.model.ListItem
-import baltiapps.migrate.domain.backup.model.Progress
+import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.backup.sources.NotificationHandler
 import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
 import baltiapps.migrate.domain.backup.repository.DataRepository
@@ -179,7 +179,7 @@ class BackupService : LifecycleService() {
     private suspend fun collectLogs(
         progress: Progress,
     ) {
-        if (progress.isFailure || progress.isFinished()) {
+        if (progress.isFailure || progress.isBackupFinished()) {
             backupProgressLogRepository.pushError(progress)
             errorWriter.writeLine(progress.logs)
         }
