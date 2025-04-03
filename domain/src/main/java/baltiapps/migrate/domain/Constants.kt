@@ -11,6 +11,8 @@ const val ACTION_CANCEL_BACKUP = "action_stop_backup"
 
 const val EXTRA_BACKUP_ROOT = "backup_root"
 
+const val DEFAULT_BACKUP_ROOT = "/storage/emulated/0/Migrate"
+
 class CallLogDBConstants {
     companion object{
         const val CALLS_TABLE_NAME = "calls"

@@ -78,7 +78,11 @@ fun AppNavigation(
             )
         }
         composable<RouteRestore> {
-            ScreenRestore(navController)
+            ScreenRestore(
+                parentNavControllerNavigateUp = navController::navigateUp,
+                startRestoreService = {},
+                cancelRestore = {},
+            )
         }
     }
 }

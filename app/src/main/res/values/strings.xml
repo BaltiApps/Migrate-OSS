@@ -45,6 +45,9 @@
     <!--ProgressScreen.kt-->
     <string name="show_only_errors">Show only errors</string>
 
+    <!--BrowseRestoreDirectory.kt-->
+    <string name="select_directory">Select directory</string>"
+
     <!--misc-->
     <string name="go_back">Go back</string>
     <string name="scroll_up">Scroll up</string>
@@ -53,4 +56,5 @@
     <string name="cancel">Cancel</string>
     <string name="select_all">Select all</string>
     <string name="deselect_all">Deselect all</string>
+    <string name="reload">Reload</string>
 </resources>
