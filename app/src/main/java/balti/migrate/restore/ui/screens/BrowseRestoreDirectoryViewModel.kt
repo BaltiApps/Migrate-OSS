@@ -24,6 +24,7 @@ class BrowseRestoreDirectoryViewModel(
                 basePath = DEFAULT_BACKUP_ROOT,
                 name = "",
                 parent = null,
+                creationTime = 0,
                 isValidBackupDirectory = false,
             )
         )

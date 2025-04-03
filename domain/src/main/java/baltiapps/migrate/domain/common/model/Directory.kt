@@ -5,5 +5,6 @@ data class Directory(
     val basePath: String,
     val name: String,
     val parent: Directory?,
+    val creationTime: Long,
     val isValidBackupDirectory: Boolean,
 )

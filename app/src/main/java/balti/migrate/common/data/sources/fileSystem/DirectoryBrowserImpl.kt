@@ -6,6 +6,9 @@ import baltiapps.migrate.domain.BACKUP_FILE_NAME_SMS
 import baltiapps.migrate.domain.common.model.Directory
 import baltiapps.migrate.domain.common.sources.fileSystem.DirectoryBrowser
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.attribute.FileTime
+import kotlin.io.path.Path
 
 class DirectoryBrowserImpl: DirectoryBrowser {
     override fun isDirectoryAccessible(path: String): Boolean {
@@ -31,11 +34,13 @@ class DirectoryBrowserImpl: DirectoryBrowser {
         if (!isDirectoryAccessible(directory.directoryFullPath)) return emptyList()
         return File(directory.directoryFullPath).run {
             this.listFiles { dir, _ -> isDirectoryAccessible(dir.absolutePath) }?.map {
+                val creationTime = Files.getAttribute(Path(it.absolutePath), "basic:creationTime") as FileTime
                 Directory(
                     directoryFullPath = it.absolutePath,
                     basePath = directory.basePath,
                     name = it.name,
                     parent = directory,
+                    creationTime = creationTime.toMillis(),
                     isValidBackupDirectory = isValidBackupDirectory(it.absolutePath)
                 )
             }?: listOf()

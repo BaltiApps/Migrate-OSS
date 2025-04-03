@@ -103,6 +103,7 @@ fun Content(
                                     basePath = state.currentDirectory.basePath,
                                     name = "..",
                                     parent = state.currentDirectory.parent,
+                                    creationTime = 0,
                                     isValidBackupDirectory = false,
                                 ),
                                 onDirectoryClick = onDirectoryUp
