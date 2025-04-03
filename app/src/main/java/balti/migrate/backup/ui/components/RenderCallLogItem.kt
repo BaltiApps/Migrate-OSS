@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import balti.migrate.R
 import baltiapps.migrate.domain.backup.model.CallLogListItem
-import baltiapps.migrate.domain.backup.model.ItemCreationDate
+import baltiapps.migrate.domain.common.model.ItemCreationDate
 
 @Composable
 fun RenderCallLogItem(

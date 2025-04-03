@@ -1,8 +1,8 @@
 package balti.migrate.backup.data.model
 
 import balti.migrate.backup.data.utils.convertToDisplayDate
-import baltiapps.migrate.domain.backup.model.DataItem
-import baltiapps.migrate.domain.backup.model.ItemCreationDate
+import baltiapps.migrate.domain.common.model.DataItem
+import baltiapps.migrate.domain.common.model.ItemCreationDate
 import baltiapps.migrate.domain.backup.model.SmsListItem
 
 data class SmsData(

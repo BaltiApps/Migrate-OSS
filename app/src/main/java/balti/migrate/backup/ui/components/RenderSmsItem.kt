@@ -38,7 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import balti.migrate.R
-import baltiapps.migrate.domain.backup.model.ItemCreationDate
+import baltiapps.migrate.domain.common.model.ItemCreationDate
 import baltiapps.migrate.domain.backup.model.SmsListItem
 
 @Composable

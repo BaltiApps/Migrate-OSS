@@ -1,6 +1,6 @@
 package baltiapps.migrate.domain.common.sources.fileSystem
 
-import baltiapps.migrate.domain.backup.model.DataItem
+import baltiapps.migrate.domain.common.model.DataItem
 
 abstract class FileSystemSource() {
     abstract fun checkPermission(filePath: String = ""): Boolean

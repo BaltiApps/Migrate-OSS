@@ -1,7 +1,7 @@
 package baltiapps.migrate.domain.backup
 
-import baltiapps.migrate.domain.backup.model.DataItem
-import baltiapps.migrate.domain.backup.model.ListItem
+import baltiapps.migrate.domain.common.model.DataItem
+import baltiapps.migrate.domain.common.model.ListItem
 import baltiapps.migrate.domain.backup.model.Progress
 import kotlinx.coroutines.flow.FlowCollector
 

@@ -11,8 +11,8 @@ import baltiapps.migrate.domain.ACTION_START_BACKUP
 import baltiapps.migrate.domain.BACKUP_ERROR_LOG
 import baltiapps.migrate.domain.BACKUP_LOG
 import baltiapps.migrate.domain.EXTRA_BACKUP_ROOT
-import baltiapps.migrate.domain.backup.model.DataItem
-import baltiapps.migrate.domain.backup.model.ListItem
+import baltiapps.migrate.domain.common.model.DataItem
+import baltiapps.migrate.domain.common.model.ListItem
 import baltiapps.migrate.domain.backup.model.Progress
 import baltiapps.migrate.domain.backup.sources.NotificationHandler
 import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository

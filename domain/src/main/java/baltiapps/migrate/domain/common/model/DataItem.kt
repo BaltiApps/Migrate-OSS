@@ -1,4 +1,4 @@
-package baltiapps.migrate.domain.backup.model
+package baltiapps.migrate.domain.common.model
 
 interface DataItem<T: ListItem> {
     val _id: String

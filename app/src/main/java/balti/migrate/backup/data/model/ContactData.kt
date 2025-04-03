@@ -1,7 +1,7 @@
 package balti.migrate.backup.data.model
 
 import baltiapps.migrate.domain.backup.model.ContactListItem
-import baltiapps.migrate.domain.backup.model.DataItem
+import baltiapps.migrate.domain.common.model.DataItem
 
 data class ContactData(
     override val _id: String,
