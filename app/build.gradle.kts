@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "balti.migrate"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "balti.migrate"
