@@ -2,6 +2,7 @@ package balti.migrate
 
 import android.app.Application
 import balti.migrate.backup.di.backupDiModule
+import balti.migrate.common.di.commonDiModule
 import balti.migrate.restore.di.restoreDiModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -16,7 +17,7 @@ class BaseApplication: Application() {
         }
         startKoin {
             androidContext(this@BaseApplication)
-            modules(backupDiModule, restoreDiModule)
+            modules(commonDiModule, backupDiModule, restoreDiModule)
         }
     }
 }
