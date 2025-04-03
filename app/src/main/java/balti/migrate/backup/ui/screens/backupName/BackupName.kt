@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import balti.migrate.R
 import balti.migrate.backup.ui.screens.listScreen.getDefaultBackupName
+import baltiapps.migrate.domain.DEFAULT_BACKUP_ROOT
 import baltiapps.migrate.domain.backup.model.BackupLocation
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,7 +71,7 @@ fun BackupName(
                                 goToNextScreen(
                                     BackupLocation(
                                         backupName = backupName,
-                                        backupLocation = "/sdcard/Migrate"
+                                        backupLocation = DEFAULT_BACKUP_ROOT
                                     )
                                 )
                             },
