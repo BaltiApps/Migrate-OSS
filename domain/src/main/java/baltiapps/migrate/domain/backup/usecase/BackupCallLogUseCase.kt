@@ -4,8 +4,8 @@ import baltiapps.migrate.domain.BACKUP_FILE_NAME_CALL_LOGS
 import baltiapps.migrate.domain.backup.model.CallLogListItem
 import baltiapps.migrate.domain.backup.model.DataItem
 import baltiapps.migrate.domain.backup.model.Progress
-import baltiapps.migrate.domain.backup.sources.DBWriter
-import baltiapps.migrate.domain.backup.sources.FileSystemSource
+import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
+import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import baltiapps.migrate.domain.backup.tryPerformWrite
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow

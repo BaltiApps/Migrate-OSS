@@ -5,7 +5,7 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import balti.migrate.backup.data.sources.NotificationHandlerImpl.Companion.NOTIFICATION_ID_BACKUP_ONGOING
-import balti.migrate.backup.data.sources.files.TextWriterImpl
+import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
 import baltiapps.migrate.domain.ACTION_START_BACKUP
 import baltiapps.migrate.domain.BACKUP_ERROR_LOG
@@ -18,7 +18,7 @@ import baltiapps.migrate.domain.backup.sources.NotificationHandler
 import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
 import baltiapps.migrate.domain.backup.repository.DataRepository
 import baltiapps.migrate.domain.backup.sources.ContextSource
-import baltiapps.migrate.domain.backup.sources.TextWriter
+import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase

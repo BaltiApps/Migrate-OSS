@@ -4,13 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import baltiapps.migrate.domain.DEFAULT_BACKUP_ROOT
 import baltiapps.migrate.domain.common.model.Directory
-import baltiapps.migrate.domain.common.sources.DirectoryBrowser
+import baltiapps.migrate.domain.common.sources.fileSystem.DirectoryBrowser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class BrowseRestoreDirectoryViewModel(
     private val directoryBrowser: DirectoryBrowser

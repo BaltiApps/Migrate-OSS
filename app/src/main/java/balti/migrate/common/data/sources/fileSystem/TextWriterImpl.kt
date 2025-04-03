@@ -1,6 +1,6 @@
-package balti.migrate.backup.data.sources.files
+package balti.migrate.common.data.sources.fileSystem
 
-import baltiapps.migrate.domain.backup.sources.TextWriter
+import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import java.io.File
 import java.io.FileWriter
 

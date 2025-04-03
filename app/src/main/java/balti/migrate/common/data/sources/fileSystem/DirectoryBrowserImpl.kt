@@ -1,10 +1,10 @@
-package balti.migrate.common.data.sources
+package balti.migrate.common.data.sources.fileSystem
 
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_CALL_LOGS
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_CONTACTS
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_SMS
 import baltiapps.migrate.domain.common.model.Directory
-import baltiapps.migrate.domain.common.sources.DirectoryBrowser
+import baltiapps.migrate.domain.common.sources.fileSystem.DirectoryBrowser
 import java.io.File
 
 class DirectoryBrowserImpl: DirectoryBrowser {

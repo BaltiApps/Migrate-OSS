@@ -21,7 +21,7 @@ import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_TABLE_NAME
 import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_TRANSCRIPTION
 import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_TYPE
 import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_VOICEMAIL_URI
-import baltiapps.migrate.domain.backup.sources.DBWriter
+import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
 import java.io.File
 
 class CallLogDBWriter: DBWriter<CallLogData> {

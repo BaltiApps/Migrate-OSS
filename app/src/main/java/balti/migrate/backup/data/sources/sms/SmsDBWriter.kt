@@ -21,7 +21,7 @@ import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_SUBJECT
 import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_TABLE_NAME
 import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_THREAD_ID
 import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_TYPE
-import baltiapps.migrate.domain.backup.sources.DBWriter
+import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
 import java.io.File
 
 class SmsDBWriter: DBWriter<SmsData> {

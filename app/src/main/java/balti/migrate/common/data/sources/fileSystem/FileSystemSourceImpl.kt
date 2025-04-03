@@ -1,6 +1,6 @@
-package balti.migrate.backup.data.sources.files
+package balti.migrate.common.data.sources.fileSystem
 
-import baltiapps.migrate.domain.backup.sources.FileSystemSource
+import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import java.io.File
 
 class FileSystemSourceImpl : FileSystemSource() {

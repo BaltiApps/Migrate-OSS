@@ -1,4 +1,4 @@
-package baltiapps.migrate.domain.backup.sources
+package baltiapps.migrate.domain.common.sources.fileSystem
 
 import baltiapps.migrate.domain.backup.model.DataItem
 

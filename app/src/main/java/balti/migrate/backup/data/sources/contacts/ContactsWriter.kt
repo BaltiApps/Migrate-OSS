@@ -1,7 +1,7 @@
 package balti.migrate.backup.data.sources.contacts
 
 import balti.migrate.backup.data.model.ContactData
-import baltiapps.migrate.domain.backup.sources.TextWriter
+import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import java.io.File
 import java.io.FileWriter
 

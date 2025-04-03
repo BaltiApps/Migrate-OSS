@@ -9,8 +9,8 @@ import balti.migrate.backup.data.sources.NotificationHandlerImpl
 import balti.migrate.backup.data.sources.callLog.CallLogDBWriter
 import balti.migrate.backup.data.sources.callLog.CallLogSource
 import balti.migrate.backup.data.sources.contacts.ContactsSource
-import balti.migrate.backup.data.sources.files.FileSystemSourceImpl
-import balti.migrate.backup.data.sources.files.TextWriterImpl
+import balti.migrate.common.data.sources.fileSystem.FileSystemSourceImpl
+import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import balti.migrate.backup.data.sources.contacts.ContactsWriter
 import balti.migrate.backup.data.sources.sms.SmsDBWriter
 import balti.migrate.backup.data.sources.sms.SmsSource
@@ -21,11 +21,11 @@ import balti.migrate.backup.ui.screens.progressScreen.ProgressScreenViewModel
 import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
 import baltiapps.migrate.domain.backup.repository.DataRepository
 import baltiapps.migrate.domain.backup.sources.ContextSource
-import baltiapps.migrate.domain.backup.sources.DBWriter
+import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
 import baltiapps.migrate.domain.backup.sources.DataSource
-import baltiapps.migrate.domain.backup.sources.FileSystemSource
+import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import baltiapps.migrate.domain.backup.sources.NotificationHandler
-import baltiapps.migrate.domain.backup.sources.TextWriter
+import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
@@ -49,7 +49,6 @@ private enum class Names {
     DB_WRITER_CALL_LOG,
     DB_WRITER_SMS,
     CONTACTS_WRITER,
-    TEXT_WRITER,
 }
 
 val backupDiModule = module {
@@ -66,10 +65,6 @@ val backupDiModule = module {
         SmsSource(get())
     }
 
-    single<TextWriter<String>>(named(Names.TEXT_WRITER)) {
-        TextWriterImpl()
-    }
-
     single<TextWriter<ContactData>>(named(Names.CONTACTS_WRITER)) {
         ContactsWriter()
     }
@@ -80,10 +75,6 @@ val backupDiModule = module {
 
     single<DBWriter<SmsData>>(named(Names.DB_WRITER_SMS)) {
         SmsDBWriter()
-    }
-
-    single<FileSystemSource> {
-        FileSystemSourceImpl()
     }
 
     singleOf(::ContextSourceImpl) { bind<ContextSource>() }
