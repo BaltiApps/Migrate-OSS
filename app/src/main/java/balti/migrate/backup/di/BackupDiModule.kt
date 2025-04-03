@@ -1,6 +1,6 @@
 package balti.migrate.backup.di
 
-import balti.migrate.backup.data.model.CallLogData
+import balti.migrate.common.model.CallLogData
 import balti.migrate.backup.data.model.ContactData
 import balti.migrate.backup.data.model.SmsData
 import balti.migrate.backup.data.repository.BackupProgressLogRepositoryImpl
@@ -9,8 +9,6 @@ import balti.migrate.backup.data.sources.NotificationHandlerImpl
 import balti.migrate.backup.data.sources.callLog.CallLogDBWriter
 import balti.migrate.backup.data.sources.callLog.CallLogSource
 import balti.migrate.backup.data.sources.contacts.ContactsSource
-import balti.migrate.common.data.sources.fileSystem.FileSystemSourceImpl
-import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import balti.migrate.backup.data.sources.contacts.ContactsWriter
 import balti.migrate.backup.data.sources.sms.SmsDBWriter
 import balti.migrate.backup.data.sources.sms.SmsSource
@@ -23,7 +21,6 @@ import baltiapps.migrate.domain.backup.repository.DataRepository
 import baltiapps.migrate.domain.backup.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
 import baltiapps.migrate.domain.backup.sources.DataSource
-import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import baltiapps.migrate.domain.backup.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase

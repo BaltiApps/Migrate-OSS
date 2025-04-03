@@ -1,4 +1,4 @@
-package balti.migrate.backup.data.model
+package balti.migrate.common.model
 
 import balti.migrate.backup.data.utils.convertToDisplayDate
 import baltiapps.migrate.domain.backup.model.CallLogListItem

@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.provider.CallLog
 import androidx.core.content.ContextCompat
-import balti.migrate.backup.data.model.CallLogData
+import balti.migrate.common.model.CallLogData
 import balti.migrate.backup.data.utils.getCursorData
 import baltiapps.migrate.domain.exceptions.ContentReadException
 import baltiapps.migrate.domain.backup.getPercentage
