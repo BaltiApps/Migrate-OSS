@@ -38,7 +38,9 @@ class BrowseRestoreDirectoryViewModel(
     private fun loadDirectory(directory: Directory) {
         viewModelScope.launch(Dispatchers.IO) {
             _state.update { it.copy(isLoading = true) }
-            val contents = directoryBrowser.getDirectoriesUnder(directory)
+            val contents = directoryBrowser.getDirectoriesUnder(directory).run {
+                this.sortedByDescending { it.creationTime }
+            }
             _state.update {
                 it.copy(
                     isLoading = false,
