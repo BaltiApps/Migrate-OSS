@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import balti.migrate.R
-import baltiapps.migrate.domain.backup.model.ContactListItem
+import baltiapps.migrate.domain.common.model.ContactListItem
 
 @Composable
 fun RenderContactItem(

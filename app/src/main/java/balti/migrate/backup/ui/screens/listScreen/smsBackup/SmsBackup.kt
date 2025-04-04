@@ -35,7 +35,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.backup.ui.screens.listScreen.ListScreenShell
-import baltiapps.migrate.domain.backup.model.SmsListItem
+import baltiapps.migrate.domain.common.model.SmsListItem
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import balti.migrate.R
 import baltiapps.migrate.domain.common.model.ItemCreationDate
-import baltiapps.migrate.domain.backup.model.SmsListItem
+import baltiapps.migrate.domain.common.model.SmsListItem
 
 @Composable
 fun RenderSmsItem(

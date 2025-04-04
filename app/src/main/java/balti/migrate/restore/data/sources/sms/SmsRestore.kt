@@ -3,7 +3,7 @@ package balti.migrate.restore.data.sources.sms
 import android.content.ContentValues
 import android.content.Context
 import android.provider.Telephony
-import balti.migrate.backup.data.model.SmsData
+import balti.migrate.common.model.SmsData
 import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.restore.sources.DataRestore
 

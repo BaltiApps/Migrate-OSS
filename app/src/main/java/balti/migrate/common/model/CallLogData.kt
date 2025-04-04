@@ -1,7 +1,7 @@
 package balti.migrate.common.model
 
 import balti.migrate.backup.data.utils.convertToDisplayDate
-import baltiapps.migrate.domain.backup.model.CallLogListItem
+import baltiapps.migrate.domain.common.model.CallLogListItem
 import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.model.ItemCreationDate
 

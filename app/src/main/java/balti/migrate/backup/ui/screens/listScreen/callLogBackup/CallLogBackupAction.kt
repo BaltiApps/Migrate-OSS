@@ -1,6 +1,6 @@
 package balti.migrate.backup.ui.screens.listScreen.callLogBackup
 
-import baltiapps.migrate.domain.backup.model.CallLogListItem
+import baltiapps.migrate.domain.common.model.CallLogListItem
 
 sealed class CallLogBackupAction {
     class ToggleCallLogItem(val item: CallLogListItem): CallLogBackupAction()

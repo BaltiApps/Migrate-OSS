@@ -1,9 +1,9 @@
 package baltiapps.migrate.domain.backup.repository
 
-import baltiapps.migrate.domain.backup.model.CallLogListItem
-import baltiapps.migrate.domain.backup.model.ContactListItem
+import baltiapps.migrate.domain.common.model.CallLogListItem
+import baltiapps.migrate.domain.common.model.ContactListItem
 import baltiapps.migrate.domain.common.model.DataItem
-import baltiapps.migrate.domain.backup.model.SmsListItem
+import baltiapps.migrate.domain.common.model.SmsListItem
 import baltiapps.migrate.domain.common.toListItems
 
 class BackupDataRepository {

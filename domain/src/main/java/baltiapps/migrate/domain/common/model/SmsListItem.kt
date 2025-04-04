@@ -1,7 +1,4 @@
-package baltiapps.migrate.domain.backup.model
-
-import baltiapps.migrate.domain.common.model.ItemCreationDate
-import baltiapps.migrate.domain.common.model.ListItem
+package baltiapps.migrate.domain.common.model
 
 data class SmsListItem(
     override val _id: String,

@@ -1,8 +1,8 @@
 package balti.migrate.backup.di
 
 import balti.migrate.common.model.CallLogData
-import balti.migrate.backup.data.model.ContactData
-import balti.migrate.backup.data.model.SmsData
+import balti.migrate.common.model.ContactData
+import balti.migrate.common.model.SmsData
 import balti.migrate.backup.data.repository.BackupProgressLogRepositoryImpl
 import balti.migrate.backup.data.sources.ContextSourceImpl
 import balti.migrate.backup.data.sources.NotificationHandlerImpl

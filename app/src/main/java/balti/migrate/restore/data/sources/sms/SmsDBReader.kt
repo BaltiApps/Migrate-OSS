@@ -2,7 +2,7 @@ package balti.migrate.restore.data.sources.sms
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import balti.migrate.backup.data.model.SmsData
+import balti.migrate.common.model.SmsData
 import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.SmsDBConstant
 import baltiapps.migrate.domain.common.getPercentage

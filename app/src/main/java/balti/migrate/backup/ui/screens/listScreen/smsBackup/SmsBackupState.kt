@@ -1,7 +1,7 @@
 package balti.migrate.backup.ui.screens.listScreen.smsBackup
 
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.backup.model.SmsListItem
+import baltiapps.migrate.domain.common.model.SmsListItem
 
 data class SmsBackupState(
     val progress: Progress = Progress.Empty,

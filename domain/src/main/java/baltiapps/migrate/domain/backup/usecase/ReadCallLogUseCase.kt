@@ -1,7 +1,7 @@
 package baltiapps.migrate.domain.backup.usecase
 
 import baltiapps.migrate.domain.common.clearAndAddAll
-import baltiapps.migrate.domain.backup.model.CallLogListItem
+import baltiapps.migrate.domain.common.model.CallLogListItem
 import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository

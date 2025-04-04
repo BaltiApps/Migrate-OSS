@@ -2,7 +2,7 @@ package balti.migrate.backup.ui.screens.listScreen.smsBackup
 
 import balti.migrate.backup.ui.screens.listScreen.ListScreenGenericViewModel
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.backup.model.SmsListItem
+import baltiapps.migrate.domain.common.model.SmsListItem
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.ReadSmsUseCase
 import baltiapps.migrate.domain.backup.usecase.StageSelectedSms

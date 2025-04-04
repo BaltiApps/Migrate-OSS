@@ -1,6 +1,6 @@
 package balti.migrate.backup.ui.screens.listScreen.callLogBackup
 
-import baltiapps.migrate.domain.backup.model.CallLogListItem
+import baltiapps.migrate.domain.common.model.CallLogListItem
 import baltiapps.migrate.domain.common.model.Progress
 
 data class CallLogBackupState(

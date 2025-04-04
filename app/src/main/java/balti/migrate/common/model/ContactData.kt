@@ -1,6 +1,6 @@
-package balti.migrate.backup.data.model
+package balti.migrate.common.model
 
-import baltiapps.migrate.domain.backup.model.ContactListItem
+import baltiapps.migrate.domain.common.model.ContactListItem
 import baltiapps.migrate.domain.common.model.DataItem
 
 data class ContactData(
