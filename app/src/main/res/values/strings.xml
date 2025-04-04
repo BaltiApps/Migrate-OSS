@@ -48,6 +48,11 @@
     <!--BrowseRestoreDirectory.kt-->
     <string name="select_directory">Select directory</string>"
 
+    <!--sms dummies-->
+    <string name="new_sms_received">New SMS received</string>
+    <string name="new_mms_received">New MMS received</string>
+    <string name="please_change_sms_app">Please change SMS app</string>
+
     <!--misc-->
     <string name="go_back">Go back</string>
     <string name="scroll_up">Scroll up</string>
