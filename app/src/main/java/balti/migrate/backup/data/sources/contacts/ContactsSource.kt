@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import balti.migrate.backup.data.model.ContactData
 import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.exceptions.ContentReadException
-import baltiapps.migrate.domain.backup.getPercentage
+import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.exceptions.PermissionException

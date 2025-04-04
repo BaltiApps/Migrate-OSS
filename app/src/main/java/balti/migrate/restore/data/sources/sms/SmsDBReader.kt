@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import balti.migrate.backup.data.model.SmsData
 import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.SmsDBConstant
-import baltiapps.migrate.domain.backup.getPercentage
+import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
 import baltiapps.migrate.domain.exceptions.ContentReadException

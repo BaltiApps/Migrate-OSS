@@ -4,7 +4,7 @@ import baltiapps.migrate.domain.backup.model.CallLogListItem
 import baltiapps.migrate.domain.backup.model.ContactListItem
 import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.backup.model.SmsListItem
-import baltiapps.migrate.domain.backup.toListItems
+import baltiapps.migrate.domain.common.toListItems
 
 class BackupDataRepository {
     val contactsDataItems = mutableListOf<DataItem<ContactListItem>>()

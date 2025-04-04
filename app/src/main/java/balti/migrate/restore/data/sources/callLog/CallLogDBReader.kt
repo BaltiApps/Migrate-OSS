@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import balti.migrate.common.model.CallLogData
 import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.CallLogDBConstants
-import baltiapps.migrate.domain.backup.getPercentage
+import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
 import baltiapps.migrate.domain.exceptions.ContentReadException
