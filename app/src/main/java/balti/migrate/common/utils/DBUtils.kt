@@ -1,5 +1,6 @@
 package balti.migrate.common.utils
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
@@ -28,6 +29,23 @@ class DBUtils {
         }
     }
 
+    inline fun <reified T> putContentData(
+        contentValues: ContentValues,
+        columnName: String,
+        data: T,
+    ) {
+        when(T::class) {
+            String::class -> contentValues.put(columnName, data as String)
+            Int::class -> contentValues.put(columnName, data as Int)
+            Long::class -> contentValues.put(columnName, data as Long)
+            Boolean::class -> contentValues.put(columnName, if (data as Boolean) 1 else 0)
+            else -> throw UnknownDataTypeException(
+                type = T::class,
+                message = "Enter content values - Unknown data type - ${T::class}"
+            )
+        }
+    }
+
     fun getDataBase(dbFile: File): SQLiteDatabase {
         val location = dbFile.canonicalPath
         if (!dbFile.exists()) {
@@ -51,5 +69,20 @@ class DBUtils {
             null,
             null,
         ) ?: throw ContentReadException("Read cursor is null for Uri - $uri")
+    }
+
+    fun getCursor(
+        db: SQLiteDatabase,
+        tableName: String,
+    ): Cursor {
+        return db.query(
+            tableName,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+        )
     }
 }
