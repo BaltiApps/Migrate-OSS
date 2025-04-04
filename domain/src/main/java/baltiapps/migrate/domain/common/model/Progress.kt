@@ -18,6 +18,8 @@ data class Progress(
         BACKUP_FINISHED,
         BACKUP_FINISHED_WITH_ERRORS,
         BACKUP_CANCELLED,
+        CALL_LOG_BACKUP_READ,
+        SMS_BACKUP_READ,
     }
 
     private val backupFinishedTypes = setOf(
