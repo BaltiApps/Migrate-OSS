@@ -1,0 +1,40 @@
+package balti.migrate.restore.data.sources.sms
+
+import android.content.ContentValues
+import android.content.Context
+import android.provider.Telephony
+import balti.migrate.backup.data.model.SmsData
+import balti.migrate.common.utils.DBUtils
+import baltiapps.migrate.domain.restore.sources.DataRestore
+
+class SmsRestore(
+    private val context: Context,
+    private val dbUtils: DBUtils,
+): DataRestore<SmsData> {
+    override fun checkPermission(): Boolean {
+        return Telephony.Sms.getDefaultSmsPackage(context) == context.packageName
+    }
+
+    override fun restoreDataItem(dataItem: SmsData) {
+        val cv = ContentValues()
+        dataItem.run {
+            dbUtils.putContentData(cv, Telephony.Sms.ADDRESS, smsAddress)
+            dbUtils.putContentData(cv, Telephony.Sms.BODY, smsBody)
+            dbUtils.putContentData(cv, Telephony.Sms.DATE, smsDate)
+            dbUtils.putContentData(cv, Telephony.Sms.DATE_SENT, smsDateSent)
+            dbUtils.putContentData(cv, Telephony.Sms.TYPE, smsType)
+            dbUtils.putContentData(cv, Telephony.Sms.PERSON, smsPerson)
+            dbUtils.putContentData(cv, Telephony.Sms.PROTOCOL, smsProtocol)
+            dbUtils.putContentData(cv, Telephony.Sms.SEEN, smsSeen)
+            dbUtils.putContentData(cv, Telephony.Sms.SERVICE_CENTER, smsServiceCenter)
+            dbUtils.putContentData(cv, Telephony.Sms.STATUS, smsStatus)
+            dbUtils.putContentData(cv, Telephony.Sms.SUBJECT, smsSubject)
+            dbUtils.putContentData(cv, Telephony.Sms.THREAD_ID, smsThreadID)
+            dbUtils.putContentData(cv, Telephony.Sms.ERROR_CODE, smsErrorCode)
+            dbUtils.putContentData(cv, Telephony.Sms.READ, smsRead)
+            dbUtils.putContentData(cv, Telephony.Sms.LOCKED, smsLocked)
+            dbUtils.putContentData(cv, Telephony.Sms.REPLY_PATH_PRESENT, smsReplyPathPresent)
+        }
+        context.contentResolver.insert(Telephony.Sms.CONTENT_URI, cv)
+    }
+}
