@@ -51,15 +51,15 @@ private enum class Names {
 val backupDiModule = module {
 
     single<DataSource<ContactData>>(named(Names.CONTACTS_SOURCE)) {
-        ContactsSource(get())
+        ContactsSource(get(), get())
     }
 
     single<DataSource<CallLogData>>(named(Names.CALL_LOG_SOURCE)) {
-        CallLogSource(get())
+        CallLogSource(get(), get())
     }
 
     single<DataSource<SmsData>>(named(Names.SMS_SOURCE)) {
-        SmsSource(get())
+        SmsSource(get(), get())
     }
 
     single<TextWriter<ContactData>>(named(Names.CONTACTS_WRITER)) {
@@ -67,11 +67,11 @@ val backupDiModule = module {
     }
 
     single<DBWriter<CallLogData>>(named(Names.DB_WRITER_CALL_LOG)) {
-        CallLogDBWriter()
+        CallLogDBWriter(get())
     }
 
     single<DBWriter<SmsData>>(named(Names.DB_WRITER_SMS)) {
-        SmsDBWriter()
+        SmsDBWriter(get())
     }
 
     singleOf(::ContextSourceImpl) { bind<ContextSource>() }
