@@ -3,7 +3,7 @@ package balti.migrate.backup.ui.screens.listScreen.callLogBackup
 import balti.migrate.backup.ui.screens.listScreen.ListScreenGenericViewModel
 import baltiapps.migrate.domain.backup.model.CallLogListItem
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.backup.repository.DataRepository
+import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.ReadCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.StageSelectedCallLogs
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.update
 class CallLogBackupViewModel(
     private val readCallLogUseCase: ReadCallLogUseCase,
     private val stageSelectedCallLogs: StageSelectedCallLogs,
-    private val dataRepository: DataRepository,
+    private val backupDataRepository: BackupDataRepository,
 ): ListScreenGenericViewModel<CallLogListItem>() {
 
     private val _state = MutableStateFlow(CallLogBackupState())
@@ -44,7 +44,7 @@ class CallLogBackupViewModel(
     init {
         super.readItems(
             reader = readCallLogUseCase::invoke,
-            getReadItems = dataRepository::callLogListItems
+            getReadItems = backupDataRepository::callLogListItems
         )
     }
 

@@ -17,7 +17,7 @@ import balti.migrate.backup.ui.screens.listScreen.contactBackup.ContactBackupVie
 import balti.migrate.backup.ui.screens.listScreen.smsBackup.SmsBackupViewModel
 import balti.migrate.backup.ui.screens.progressScreen.ProgressScreenViewModel
 import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
-import baltiapps.migrate.domain.backup.repository.DataRepository
+import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
 import baltiapps.migrate.domain.backup.sources.DataSource
@@ -78,24 +78,24 @@ val backupDiModule = module {
 
     singleOf(::NotificationHandlerImpl) { bind<NotificationHandler<*>>() }
 
-    singleOf(::DataRepository)
+    singleOf(::BackupDataRepository)
 
     single {
         ReadContactsUseCase(
             contactsSource = get(named(Names.CONTACTS_SOURCE)),
-            dataRepository = get(),
+            backupDataRepository = get(),
         )
     }
     single {
         ReadCallLogUseCase(
             callLogSource = get(named(Names.CALL_LOG_SOURCE)),
-            dataRepository = get(),
+            backupDataRepository = get(),
         )
     }
     single {
         ReadSmsUseCase(
             smsSource = get(named(Names.SMS_SOURCE)),
-            dataRepository = get(),
+            backupDataRepository = get(),
         )
     }
 

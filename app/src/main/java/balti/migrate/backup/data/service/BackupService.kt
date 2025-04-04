@@ -16,7 +16,7 @@ import baltiapps.migrate.domain.common.model.ListItem
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.backup.sources.NotificationHandler
 import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
-import baltiapps.migrate.domain.backup.repository.DataRepository
+import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
@@ -39,7 +39,7 @@ class BackupService : LifecycleService() {
     }
 
     private val contextSource: ContextSource by inject()
-    private val repository: DataRepository by inject()
+    private val repository: BackupDataRepository by inject()
     private val backupProgressLogRepository: BackupProgressLogRepository by inject()
     private val notificationHandler:
             NotificationHandler<NotificationCompat.Builder> by inject()
