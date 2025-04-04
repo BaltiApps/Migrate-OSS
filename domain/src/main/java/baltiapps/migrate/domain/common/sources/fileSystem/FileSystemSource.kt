@@ -1,6 +1,8 @@
 package baltiapps.migrate.domain.common.sources.fileSystem
 
 import baltiapps.migrate.domain.common.model.DataItem
+import baltiapps.migrate.domain.common.model.Progress
+import kotlinx.coroutines.flow.Flow
 
 abstract class FileSystemSource() {
     abstract fun checkPermission(filePath: String = ""): Boolean
@@ -50,5 +52,11 @@ interface TextWriter<T> {
 interface DBWriter<T: DataItem<*>> {
     fun setup(fileLocation: String)
     fun writeRow(dataItem: T)
+    fun close()
+}
+
+interface DBReader<T: DataItem<*>> {
+    fun setup(fileLocation: String)
+    fun readRows(onFinished: (List<T>) -> Unit): Flow<Progress>
     fun close()
 }
