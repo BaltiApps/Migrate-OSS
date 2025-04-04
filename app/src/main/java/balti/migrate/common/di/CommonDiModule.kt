@@ -3,6 +3,7 @@ package balti.migrate.common.di
 import balti.migrate.common.data.sources.fileSystem.DirectoryBrowserImpl
 import balti.migrate.common.data.sources.fileSystem.FileSystemSourceImpl
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
+import balti.migrate.common.utils.DBUtils
 import balti.migrate.restore.ui.screens.BrowseRestoreDirectoryViewModel
 import baltiapps.migrate.domain.common.sources.fileSystem.DirectoryBrowser
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
@@ -18,6 +19,8 @@ enum class Names {
 }
 
 val commonDiModule = module {
+
+    singleOf(::DBUtils)
 
     single<TextWriter<String>>(named(Names.TEXT_WRITER)) {
         TextWriterImpl()

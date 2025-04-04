@@ -3,7 +3,7 @@ package balti.migrate.backup.data.sources.sms
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import balti.migrate.backup.data.model.SmsData
-import balti.migrate.backup.data.utils.getDataBase
+import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_ADDRESS
 import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_BODY
 import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_DATE
@@ -24,7 +24,9 @@ import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_TYPE
 import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
 import java.io.File
 
-class SmsDBWriter: DBWriter<SmsData> {
+class SmsDBWriter(
+    private val dbUtils: DBUtils,
+): DBWriter<SmsData> {
 
     private lateinit var sqLiteDatabase: SQLiteDatabase
 
@@ -33,7 +35,7 @@ class SmsDBWriter: DBWriter<SmsData> {
             if (exists()) delete()
         }
 
-        getDataBase(dbFile).run {
+        dbUtils.getDataBase(dbFile).run {
             val sqlDropTable = "DROP TABLE IF EXISTS $SMS_TABLE_NAME"
             val sqlCreateTable = "CREATE TABLE $SMS_TABLE_NAME ( " +
                     "id INTEGER PRIMARY KEY" +

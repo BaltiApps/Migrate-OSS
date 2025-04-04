@@ -9,7 +9,7 @@ import android.net.Uri
 import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
 import balti.migrate.backup.data.model.ContactData
-import balti.migrate.backup.data.utils.getCursorData
+import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.exceptions.ContentReadException
 import baltiapps.migrate.domain.backup.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.flowOn
 
 class ContactsSource(
     private val context: Context,
+    private val dbUtils: DBUtils,
 ): DataSource<ContactData> {
     override fun checkPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -41,13 +42,7 @@ class ContactsSource(
                 )
             }
 
-            val cursor = context.contentResolver.query(
-                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                null,
-                null,
-                null,
-                null
-            ) ?: throw ContentReadException("Contacts read cursor is null!")
+            val cursor = dbUtils.getCursor(context, ContactsContract.CommonDataKinds.Phone.CONTENT_URI)
 
             val contactCount = cursor.count
             if (contactCount == 0) return@flow
@@ -75,30 +70,32 @@ class ContactsSource(
     private fun getSingleContact(
         cursor: Cursor
     ): ContactData {
-        val lookupKey = getCursorData<String>(cursor, ContactsContract.Contacts.LOOKUP_KEY)
+        dbUtils.run {
+            val lookupKey = getCursorData<String>(cursor, ContactsContract.Contacts.LOOKUP_KEY)
 
-        val fullName =
-            getCursorData<String>(cursor, ContactsContract.Contacts.DISPLAY_NAME)
-        val primaryContact =
-            getCursorData<String>(cursor, ContactsContract.CommonDataKinds.Phone.NUMBER)
+            val fullName =
+                getCursorData<String>(cursor, ContactsContract.Contacts.DISPLAY_NAME)
+            val primaryContact =
+                getCursorData<String>(cursor, ContactsContract.CommonDataKinds.Phone.NUMBER)
 
-        val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey)
-        val fd: AssetFileDescriptor = context.contentResolver.openAssetFileDescriptor(uri, "r")
-            ?: throw ContentReadException("Contacts - AssetFileDescriptor is null")
+            val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey)
+            val fd: AssetFileDescriptor = context.contentResolver.openAssetFileDescriptor(uri, "r")
+                ?: throw ContentReadException("Contacts - AssetFileDescriptor is null")
 
-        val byteArray = fd.use {
-            it.createInputStream().use {
-                it.readBytes()
+            val byteArray = fd.use {
+                it.createInputStream().use {
+                    it.readBytes()
+                }
             }
-        }
-        val vcardString = String(byteArray)
+            val vcardString = String(byteArray)
 
-        return ContactData(
-            _id = getCursorData<String>(cursor, ContactsContract.Contacts._ID),
-            displayName = fullName,
-            displayNumber = primaryContact,
-            vcfContent = vcardString,
-            logInfo = fullName.ifBlank { primaryContact },
-        )
+            return ContactData(
+                _id = getCursorData<String>(cursor, ContactsContract.Contacts._ID),
+                displayName = fullName,
+                displayNumber = primaryContact,
+                vcfContent = vcardString,
+                logInfo = fullName.ifBlank { primaryContact },
+            )
+        }
     }
 }

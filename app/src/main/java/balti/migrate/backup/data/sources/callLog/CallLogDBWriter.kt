@@ -3,7 +3,7 @@ package balti.migrate.backup.data.sources.callLog
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import balti.migrate.common.model.CallLogData
-import balti.migrate.backup.data.utils.getDataBase
+import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_CACHED_NAME
 import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_COUNTRY_ISO
 import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_DATA_USAGE
@@ -24,7 +24,9 @@ import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_VOICEMAIL_URI
 import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
 import java.io.File
 
-class CallLogDBWriter: DBWriter<CallLogData> {
+class CallLogDBWriter(
+    private val dbUtils: DBUtils,
+): DBWriter<CallLogData> {
 
     private lateinit var sqLiteDatabase: SQLiteDatabase
 
@@ -33,7 +35,7 @@ class CallLogDBWriter: DBWriter<CallLogData> {
             if (exists()) delete()
         }
 
-        getDataBase(dbFile).run {
+        dbUtils.getDataBase(dbFile).run {
             val sqlDropTable = "DROP TABLE IF EXISTS $CALLS_TABLE_NAME"
             val sqlCreateTable = "CREATE TABLE $CALLS_TABLE_NAME ( " +
                     "id INTEGER PRIMARY KEY" +

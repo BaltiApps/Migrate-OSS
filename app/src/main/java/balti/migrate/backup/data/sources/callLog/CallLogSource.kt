@@ -7,8 +7,7 @@ import android.database.Cursor
 import android.provider.CallLog
 import androidx.core.content.ContextCompat
 import balti.migrate.common.model.CallLogData
-import balti.migrate.backup.data.utils.getCursorData
-import baltiapps.migrate.domain.exceptions.ContentReadException
+import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.backup.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.backup.sources.DataSource
@@ -20,6 +19,7 @@ import kotlinx.coroutines.flow.flowOn
 
 class CallLogSource(
     private val context: Context,
+    private val dbUtils: DBUtils,
 ): DataSource<CallLogData> {
     override fun checkPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -39,13 +39,7 @@ class CallLogSource(
                 )
             }
 
-            val cursor = context.contentResolver.query(
-                CallLog.Calls.CONTENT_URI,
-                null,
-                null,
-                null,
-                null
-            ) ?: throw ContentReadException("Call log read cursor is null!")
+            val cursor = dbUtils.getCursor(context, CallLog.Calls.CONTENT_URI)
 
             val totalCount = cursor.count
             if (totalCount == 0) return@flow
@@ -74,29 +68,31 @@ class CallLogSource(
         cursor: Cursor,
     ): CallLogData {
 
-        val callerNumber = getCursorData<String>(cursor, CallLog.Calls.NUMBER)
-        val callerName = getCursorData<String>(cursor, CallLog.Calls.CACHED_NAME)
+        dbUtils.run {
+            val callerNumber = getCursorData<String>(cursor, CallLog.Calls.NUMBER)
+            val callerName = getCursorData<String>(cursor, CallLog.Calls.CACHED_NAME)
 
-        return CallLogData(
-            _id = getCursorData<String>(cursor, CallLog.Calls._ID),
-            logInfo = callerName.ifBlank { callerNumber },
+            return CallLogData(
+                _id = getCursorData<String>(cursor, CallLog.Calls._ID),
+                logInfo = callerName.ifBlank { callerNumber },
 
-            callsCachedName = callerName,
-            callsCountryIso = getCursorData<String>(cursor, CallLog.Calls.COUNTRY_ISO),
-            callsDataUsage = getCursorData<Long>(cursor, CallLog.Calls.DATA_USAGE),
-            callsFeatures = getCursorData<Int>(cursor, CallLog.Calls.FEATURES),
-            callsGeocodedLocation = getCursorData<String>(cursor, CallLog.Calls.GEOCODED_LOCATION),
-            callsIsRead = getCursorData<Boolean>(cursor, CallLog.Calls.IS_READ),
-            callsNumber = callerNumber,
-            callsNumberPresentation = getCursorData<Int>(cursor, CallLog.Calls.NUMBER_PRESENTATION),
-            callsPhoneAccountComponentName = getCursorData<String>(cursor, CallLog.Calls.PHONE_ACCOUNT_COMPONENT_NAME),
-            callsPhoneAccountId = getCursorData<String>(cursor, CallLog.Calls.PHONE_ACCOUNT_ID),
-            callsTranscription = getCursorData<String>(cursor, CallLog.Calls.TRANSCRIPTION),
-            callsType = getCursorData<Int>(cursor, CallLog.Calls.TYPE),
-            callsVoicemailUri = getCursorData<String>(cursor, CallLog.Calls.VOICEMAIL_URI),
-            callsDate = getCursorData<Long>(cursor, CallLog.Calls.DATE),
-            callsDuration = getCursorData<Long>(cursor, CallLog.Calls.DURATION),
-            callsNew = getCursorData<Boolean>(cursor, CallLog.Calls.NEW),
-        )
+                callsCachedName = callerName,
+                callsCountryIso = getCursorData<String>(cursor, CallLog.Calls.COUNTRY_ISO),
+                callsDataUsage = getCursorData<Long>(cursor, CallLog.Calls.DATA_USAGE),
+                callsFeatures = getCursorData<Int>(cursor, CallLog.Calls.FEATURES),
+                callsGeocodedLocation = getCursorData<String>(cursor, CallLog.Calls.GEOCODED_LOCATION),
+                callsIsRead = getCursorData<Boolean>(cursor, CallLog.Calls.IS_READ),
+                callsNumber = callerNumber,
+                callsNumberPresentation = getCursorData<Int>(cursor, CallLog.Calls.NUMBER_PRESENTATION),
+                callsPhoneAccountComponentName = getCursorData<String>(cursor, CallLog.Calls.PHONE_ACCOUNT_COMPONENT_NAME),
+                callsPhoneAccountId = getCursorData<String>(cursor, CallLog.Calls.PHONE_ACCOUNT_ID),
+                callsTranscription = getCursorData<String>(cursor, CallLog.Calls.TRANSCRIPTION),
+                callsType = getCursorData<Int>(cursor, CallLog.Calls.TYPE),
+                callsVoicemailUri = getCursorData<String>(cursor, CallLog.Calls.VOICEMAIL_URI),
+                callsDate = getCursorData<Long>(cursor, CallLog.Calls.DATE),
+                callsDuration = getCursorData<Long>(cursor, CallLog.Calls.DURATION),
+                callsNew = getCursorData<Boolean>(cursor, CallLog.Calls.NEW),
+            )
+        }
     }
 }
