@@ -51,38 +51,26 @@ enum class Names {
 
 val backupDiModule = module {
 
+    /* Sources */
+
     single<DataSource<ContactData>>(named(Names.CONTACTS_SOURCE)) {
         ContactsSource(get(), get())
     }
-
-    single<DataSource<CallLogData>>(named(Names.CALL_LOG_SOURCE)) {
-        CallLogSource(get(), get())
-    }
-
-    single<DataSource<SmsData>>(named(Names.SMS_SOURCE)) {
-        SmsSource(get(), get())
-    }
-
     single<TextWriter<ContactData>>(named(Names.CONTACTS_WRITER)) {
         ContactsWriter()
     }
-
+    single<DataSource<CallLogData>>(named(Names.CALL_LOG_SOURCE)) {
+        CallLogSource(get(), get())
+    }
     single<DBWriter<CallLogData>>(named(Names.DB_WRITER_CALL_LOG)) {
         CallLogDBWriter(get())
     }
-
+    single<DataSource<SmsData>>(named(Names.SMS_SOURCE)) {
+        SmsSource(get(), get())
+    }
     single<DBWriter<SmsData>>(named(Names.DB_WRITER_SMS)) {
         SmsDBWriter(get())
     }
-
-    singleOf(::ContextSourceImpl) { bind<ContextSource>() }
-
-    singleOf(::BackupDataRepository)
-
-    single<ProgressLogRepository>(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP)) {
-        BackupProgressLogRepositoryImpl(get())
-    }
-
     single<NotificationHandler<*>> {
         NotificationHandlerImpl(
             context = get(),
@@ -90,6 +78,16 @@ val backupDiModule = module {
             progressLogRepository = get(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP))
         )
     }
+    singleOf(::ContextSourceImpl) { bind<ContextSource>() }
+
+    /* Repositories */
+
+    singleOf(::BackupDataRepository)
+    single<ProgressLogRepository>(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP)) {
+        BackupProgressLogRepositoryImpl(get())
+    }
+
+    /* Use cases */
 
     single {
         ReadContactsUseCase(
@@ -109,42 +107,37 @@ val backupDiModule = module {
             backupDataRepository = get(),
         )
     }
-
     singleOf(::StageSelectedCallLogs)
     singleOf(::StageSelectedContacts)
     singleOf(::StageSelectedSms)
-
-    viewModelOf(::ContactBackupViewModel)
-
-    viewModelOf(::CallLogBackupViewModel)
-
-    viewModelOf(::SmsBackupViewModel)
-
-    viewModel {
-        ProgressScreenViewModel(
-            contextSource = get(),
-            progressLogRepository = get(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP))
-        )
-    }
-
     single {
         BackupContactsUseCase(
             fileSystemSource = get(),
             contactsWriter = get(named(Names.CONTACTS_WRITER))
         )
     }
-
     single {
         BackupCallLogUseCase(
             fileSystemSource = get(),
             callLogDBWriter = get(named(Names.DB_WRITER_CALL_LOG)),
         )
     }
-
     single {
         BackupSmsUseCase(
             fileSystemSource = get(),
             smsDBWriter = get(named(Names.DB_WRITER_SMS))
+        )
+    }
+
+    /* ViewModels */
+
+    viewModelOf(::ContactBackupViewModel)
+    viewModelOf(::CallLogBackupViewModel)
+    viewModelOf(::SmsBackupViewModel)
+    viewModel {
+        ProgressScreenViewModel(
+            contextSource = get(),
+            progressLogRepository = get(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP))
         )
     }
 }
