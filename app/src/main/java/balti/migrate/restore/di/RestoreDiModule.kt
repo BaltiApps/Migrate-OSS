@@ -1,5 +1,6 @@
 package balti.migrate.restore.di
 
+import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
 import balti.migrate.common.model.CallLogData
 import balti.migrate.common.model.SmsData
 import balti.migrate.restore.data.sources.callLog.CallLogDBReader
@@ -7,6 +8,7 @@ import balti.migrate.restore.data.sources.callLog.CallLogRestore
 import balti.migrate.restore.data.sources.sms.SmsDBReader
 import balti.migrate.restore.data.sources.sms.SmsRestore
 import balti.migrate.restore.ui.screens.BrowseRestoreDirectoryViewModel
+import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import baltiapps.migrate.domain.restore.sources.DataRestore
@@ -25,6 +27,7 @@ enum class Names {
     CALL_LOG_RESTORE_SOURCE,
     SMS_DB_READER,
     SMS_RESTORE_SOURCE,
+    PROGRESS_LOG_REPOSITORY_RESTORE,
 }
 
 val restoreDiModule = module {
@@ -47,6 +50,9 @@ val restoreDiModule = module {
     /* Repositories */
 
     singleOf(::RestoreDataRepository)
+    single<ProgressLogRepository>(named(Names.PROGRESS_LOG_REPOSITORY_RESTORE)) {
+        ProgressLogRepositoryImpl(get())
+    }
 
     /* Use cases */
 
