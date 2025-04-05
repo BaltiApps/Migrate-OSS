@@ -46,7 +46,8 @@ enum class Names {
     DB_WRITER_CALL_LOG,
     DB_WRITER_SMS,
     CONTACTS_WRITER,
-    PROGRESS_LOG_REPOSITORY_BACKUP
+    PROGRESS_LOG_REPOSITORY_BACKUP,
+    NOTIFICATION_HANDLER_BACKUP,
 }
 
 val backupDiModule = module {
@@ -71,7 +72,7 @@ val backupDiModule = module {
     single<DBWriter<SmsData>>(named(Names.DB_WRITER_SMS)) {
         SmsDBWriter(get())
     }
-    single<NotificationHandler<*>> {
+    single<NotificationHandler<*>>(named(Names.NOTIFICATION_HANDLER_BACKUP)) {
         NotificationHandlerImpl(
             context = get(),
             contextSource = get(),

@@ -44,7 +44,7 @@ class BackupService : LifecycleService() {
     private val repository: BackupDataRepository by inject()
     private val progressLogRepository: ProgressLogRepository by inject(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP))
     private val notificationHandler:
-            NotificationHandler<NotificationCompat.Builder> by inject()
+            NotificationHandler<NotificationCompat.Builder> by inject(named(Names.NOTIFICATION_HANDLER_BACKUP))
 
     private val backupContactsUseCase: BackupContactsUseCase by inject()
     private val backupCallLogUseCase: BackupCallLogUseCase by inject()
