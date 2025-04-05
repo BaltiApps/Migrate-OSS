@@ -2,7 +2,7 @@ package balti.migrate.backup.ui.screens.progressScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
+import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.backup.sources.ContextSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class ProgressScreenViewModel(
     private val contextSource: ContextSource,
-    private val backupProgressLogRepository: BackupProgressLogRepository,
+    private val progressLogRepository: ProgressLogRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProgressScreenState.Empty)
@@ -23,7 +23,7 @@ class ProgressScreenViewModel(
 
     private fun startObserving() {
         viewModelScope.launch {
-            backupProgressLogRepository.setProgressObserver {p, e ->
+            progressLogRepository.setProgressObserver { p, e ->
                 if (isLogsPaused) return@setProgressObserver
                 val progressList = if (observeErrorsOnly) e else p
                 if (p.isEmpty()) return@setProgressObserver
@@ -50,7 +50,7 @@ class ProgressScreenViewModel(
         when (action) {
             is ProgressScreenAction.ToggleErrorOnly -> {
                 observeErrorsOnly = action.enabled
-                backupProgressLogRepository.dispatchLatestObservedProgress()
+                progressLogRepository.dispatchLatestObservedProgress()
             }
             is ProgressScreenAction.CancelBackup -> {
                 _state.update {
@@ -61,7 +61,7 @@ class ProgressScreenViewModel(
             is ProgressScreenAction.PauseProgressLogs -> { isLogsPaused = true }
             is ProgressScreenAction.ResumeProgressLogs -> {
                 isLogsPaused = false
-                backupProgressLogRepository.dispatchLatestObservedProgress()
+                progressLogRepository.dispatchLatestObservedProgress()
             }
         }
     }

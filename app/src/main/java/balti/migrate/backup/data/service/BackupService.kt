@@ -15,7 +15,7 @@ import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.model.ListItem
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.backup.sources.NotificationHandler
-import baltiapps.migrate.domain.backup.repository.BackupProgressLogRepository
+import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
@@ -40,7 +40,7 @@ class BackupService : LifecycleService() {
 
     private val contextSource: ContextSource by inject()
     private val repository: BackupDataRepository by inject()
-    private val backupProgressLogRepository: BackupProgressLogRepository by inject()
+    private val progressLogRepository: ProgressLogRepository by inject()
     private val notificationHandler:
             NotificationHandler<NotificationCompat.Builder> by inject()
 
@@ -144,7 +144,7 @@ class BackupService : LifecycleService() {
         errorWriter = TextWriterImpl()
         errorWriter.setup(backupErrorLog.canonicalPath, append = true)
 
-        backupProgressLogRepository.reset()
+        progressLogRepository.reset()
     }
 
     private suspend fun <T: ListItem> runBackupStage(
@@ -180,10 +180,10 @@ class BackupService : LifecycleService() {
         progress: Progress,
     ) {
         if (progress.isFailure || progress.isBackupFinished()) {
-            backupProgressLogRepository.pushError(progress)
+            progressLogRepository.pushError(progress)
             errorWriter.writeLine(progress.logs)
         }
-        backupProgressLogRepository.pushProgress(progress)
+        progressLogRepository.pushProgress(progress)
         logWriter.writeLine(progress.logs)
     }
 

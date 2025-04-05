@@ -1,9 +1,11 @@
 package balti.migrate.common.di
 
+import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
 import balti.migrate.common.data.sources.fileSystem.DirectoryBrowserImpl
 import balti.migrate.common.data.sources.fileSystem.FileSystemSourceImpl
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import balti.migrate.common.utils.DBUtils
+import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.fileSystem.DirectoryBrowser
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
@@ -17,6 +19,8 @@ enum class Names {
 }
 
 val commonDiModule = module {
+
+    singleOf(::ProgressLogRepositoryImpl) bind ProgressLogRepository::class
 
     singleOf(::DBUtils)
 

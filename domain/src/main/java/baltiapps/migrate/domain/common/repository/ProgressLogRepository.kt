@@ -1,4 +1,4 @@
-package baltiapps.migrate.domain.backup.repository
+package baltiapps.migrate.domain.common.repository
 
 import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-abstract class BackupProgressLogRepository {
+abstract class ProgressLogRepository {
     abstract val truncatedIndicator: Progress
 
     private val progressLogQueue = ArrayDeque<Progress>()
