@@ -5,6 +5,7 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import balti.migrate.backup.data.sources.NotificationHandlerImpl.Companion.NOTIFICATION_ID_BACKUP_ONGOING
+import balti.migrate.backup.di.Names
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
 import baltiapps.migrate.domain.ACTION_START_BACKUP
@@ -29,6 +30,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
 import timber.log.Timber
 import java.io.File
 
@@ -40,7 +42,7 @@ class BackupService : LifecycleService() {
 
     private val contextSource: ContextSource by inject()
     private val repository: BackupDataRepository by inject()
-    private val progressLogRepository: ProgressLogRepository by inject()
+    private val progressLogRepository: ProgressLogRepository by inject(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP))
     private val notificationHandler:
             NotificationHandler<NotificationCompat.Builder> by inject()
 

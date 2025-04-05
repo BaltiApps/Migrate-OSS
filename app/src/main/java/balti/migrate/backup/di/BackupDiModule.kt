@@ -1,5 +1,6 @@
 package balti.migrate.backup.di
 
+import balti.migrate.backup.data.repository.BackupProgressLogRepositoryImpl
 import balti.migrate.backup.data.sources.ContextSourceImpl
 import balti.migrate.backup.data.sources.NotificationHandlerImpl
 import balti.migrate.backup.data.sources.callLog.CallLogDBWriter
@@ -28,21 +29,24 @@ import baltiapps.migrate.domain.backup.usecase.ReadSmsUseCase
 import baltiapps.migrate.domain.backup.usecase.StageSelectedCallLogs
 import baltiapps.migrate.domain.backup.usecase.StageSelectedContacts
 import baltiapps.migrate.domain.backup.usecase.StageSelectedSms
+import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-private enum class Names {
+enum class Names {
     CONTACTS_SOURCE,
     CALL_LOG_SOURCE,
     SMS_SOURCE,
     DB_WRITER_CALL_LOG,
     DB_WRITER_SMS,
     CONTACTS_WRITER,
+    PROGRESS_LOG_REPOSITORY_BACKUP
 }
 
 val backupDiModule = module {
@@ -73,9 +77,19 @@ val backupDiModule = module {
 
     singleOf(::ContextSourceImpl) { bind<ContextSource>() }
 
-    singleOf(::NotificationHandlerImpl) { bind<NotificationHandler<*>>() }
-
     singleOf(::BackupDataRepository)
+
+    single<ProgressLogRepository>(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP)) {
+        BackupProgressLogRepositoryImpl(get())
+    }
+
+    single<NotificationHandler<*>> {
+        NotificationHandlerImpl(
+            context = get(),
+            contextSource = get(),
+            progressLogRepository = get(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP))
+        )
+    }
 
     single {
         ReadContactsUseCase(
@@ -106,7 +120,12 @@ val backupDiModule = module {
 
     viewModelOf(::SmsBackupViewModel)
 
-    viewModelOf(::ProgressScreenViewModel)
+    viewModel {
+        ProgressScreenViewModel(
+            contextSource = get(),
+            progressLogRepository = get(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP))
+        )
+    }
 
     single {
         BackupContactsUseCase(

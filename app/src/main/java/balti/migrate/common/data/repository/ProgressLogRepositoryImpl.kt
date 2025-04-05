@@ -5,7 +5,7 @@ import balti.migrate.R
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 
-class ProgressLogRepositoryImpl (
+open class ProgressLogRepositoryImpl (
     applicationContext: Context,
 ): ProgressLogRepository() {
     override val truncatedIndicator: Progress = Progress.Empty.copy(
