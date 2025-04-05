@@ -1,9 +1,11 @@
 package balti.migrate.common.data.sources.fileSystem
 
+import balti.migrate.common.model.JavaFile
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_CALL_LOGS
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_CONTACTS
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_SMS
 import baltiapps.migrate.domain.common.model.Directory
+import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.sources.fileSystem.DirectoryBrowser
 import java.io.File
 import java.nio.file.Files
@@ -44,6 +46,15 @@ class DirectoryBrowserImpl: DirectoryBrowser {
                     isValidBackupDirectory = isValidBackupDirectory(it.absolutePath)
                 )
             }?: listOf()
+        }
+    }
+
+    override suspend fun getFilesUnder(directory: Directory): List<GenericFile> {
+        if (!isDirectoryAccessible(directory.directoryFullPath)) return emptyList()
+        return File(directory.directoryFullPath).run {
+            this.listFiles()?.toList()?.map {
+                JavaFile(it)
+            } ?: emptyList()
         }
     }
 }
