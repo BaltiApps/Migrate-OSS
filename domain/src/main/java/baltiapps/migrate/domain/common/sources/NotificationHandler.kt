@@ -1,4 +1,4 @@
-package baltiapps.migrate.domain.backup.sources
+package baltiapps.migrate.domain.common.sources
 
 import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.CoroutineScope

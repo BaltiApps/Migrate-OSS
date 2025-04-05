@@ -1,8 +1,6 @@
 package balti.migrate.backup.di
 
 import balti.migrate.backup.data.repository.BackupProgressLogRepositoryImpl
-import balti.migrate.backup.data.sources.ContextSourceImpl
-import balti.migrate.backup.data.sources.NotificationHandlerImpl
 import balti.migrate.backup.data.sources.callLog.CallLogDBWriter
 import balti.migrate.backup.data.sources.callLog.CallLogSource
 import balti.migrate.backup.data.sources.contacts.ContactsSource
@@ -13,13 +11,12 @@ import balti.migrate.backup.ui.screens.listScreen.callLogBackup.CallLogBackupVie
 import balti.migrate.backup.ui.screens.listScreen.contactBackup.ContactBackupViewModel
 import balti.migrate.backup.ui.screens.listScreen.smsBackup.SmsBackupViewModel
 import balti.migrate.backup.ui.screens.progressScreen.ProgressScreenViewModel
+import balti.migrate.common.data.sources.NotificationHandlerImpl
 import balti.migrate.common.model.CallLogData
 import balti.migrate.common.model.ContactData
 import balti.migrate.common.model.SmsData
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
-import baltiapps.migrate.domain.backup.sources.ContextSource
 import baltiapps.migrate.domain.backup.sources.DataSource
-import baltiapps.migrate.domain.backup.sources.NotificationHandler
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
@@ -30,9 +27,9 @@ import baltiapps.migrate.domain.backup.usecase.StageSelectedCallLogs
 import baltiapps.migrate.domain.backup.usecase.StageSelectedContacts
 import baltiapps.migrate.domain.backup.usecase.StageSelectedSms
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
+import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
-import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -79,7 +76,6 @@ val backupDiModule = module {
             progressLogRepository = get(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP))
         )
     }
-    singleOf(::ContextSourceImpl) { bind<ContextSource>() }
 
     /* Repositories */
 

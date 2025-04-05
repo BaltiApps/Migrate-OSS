@@ -3,7 +3,7 @@ package balti.migrate.backup.ui.screens.progressScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
-import baltiapps.migrate.domain.backup.sources.ContextSource
+import baltiapps.migrate.domain.common.sources.ContextSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

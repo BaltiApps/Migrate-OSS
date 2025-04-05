@@ -1,9 +1,11 @@
 package balti.migrate.common.di
 
+import balti.migrate.common.data.sources.ContextSourceImpl
 import balti.migrate.common.data.sources.fileSystem.DirectoryBrowserImpl
 import balti.migrate.common.data.sources.fileSystem.FileSystemSourceImpl
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import balti.migrate.common.utils.DBUtils
+import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.fileSystem.DirectoryBrowser
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
@@ -27,4 +29,6 @@ val commonDiModule = module {
     singleOf(::FileSystemSourceImpl) bind FileSystemSource::class
 
     singleOf(::DirectoryBrowserImpl) bind DirectoryBrowser::class
+
+    singleOf(::ContextSourceImpl) bind ContextSource::class
 }

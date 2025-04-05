@@ -1,4 +1,4 @@
-package balti.migrate.backup.data.sources
+package balti.migrate.common.data.sources
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -8,9 +8,9 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import balti.migrate.R
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.backup.sources.NotificationHandler
+import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
-import baltiapps.migrate.domain.backup.sources.ContextSource
+import baltiapps.migrate.domain.common.sources.ContextSource
 import kotlinx.coroutines.Job
 import timber.log.Timber
 import kotlin.math.roundToInt

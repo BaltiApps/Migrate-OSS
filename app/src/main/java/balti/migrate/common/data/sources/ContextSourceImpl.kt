@@ -1,9 +1,9 @@
-package balti.migrate.backup.data.sources
+package balti.migrate.common.data.sources
 
 import android.content.Context
 import balti.migrate.R
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.backup.sources.ContextSource
+import baltiapps.migrate.domain.common.sources.ContextSource
 
 class ContextSourceImpl(private val context: Context): ContextSource {
     override fun getProgressTitle(progressType: Progress.ProgressType): String {
