@@ -2,8 +2,8 @@ package balti.migrate.restore.di
 
 import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
 import balti.migrate.common.data.sources.NotificationHandlerImpl
-import balti.migrate.common.model.CallLogData
-import balti.migrate.common.model.SmsData
+import balti.migrate.common.data.model.CallLogData
+import balti.migrate.common.data.model.SmsData
 import balti.migrate.restore.data.sources.callLog.CallLogDBReader
 import balti.migrate.restore.data.sources.callLog.CallLogRestore
 import balti.migrate.restore.data.sources.sms.SmsDBReader

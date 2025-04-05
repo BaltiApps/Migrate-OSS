@@ -1,4 +1,4 @@
-package balti.migrate.common.model
+package balti.migrate.common.data.model
 
 import baltiapps.migrate.domain.common.model.ContactListItem
 import baltiapps.migrate.domain.common.model.DataItem

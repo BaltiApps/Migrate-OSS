@@ -2,7 +2,7 @@ package balti.migrate.restore.data.sources.callLog
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import balti.migrate.common.model.CallLogData
+import balti.migrate.common.data.model.CallLogData
 import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.CallLogDBConstants
 import baltiapps.migrate.domain.common.getPercentage

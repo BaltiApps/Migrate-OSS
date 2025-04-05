@@ -12,9 +12,9 @@ import balti.migrate.backup.ui.screens.listScreen.smsBackup.SmsBackupViewModel
 import balti.migrate.backup.ui.screens.progressScreen.ProgressScreenViewModel
 import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
 import balti.migrate.common.data.sources.NotificationHandlerImpl
-import balti.migrate.common.model.CallLogData
-import balti.migrate.common.model.ContactData
-import balti.migrate.common.model.SmsData
+import balti.migrate.common.data.model.CallLogData
+import balti.migrate.common.data.model.ContactData
+import balti.migrate.common.data.model.SmsData
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase

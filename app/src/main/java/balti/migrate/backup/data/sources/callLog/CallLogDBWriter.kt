@@ -2,7 +2,7 @@ package balti.migrate.backup.data.sources.callLog
 
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
-import balti.migrate.common.model.CallLogData
+import balti.migrate.common.data.model.CallLogData
 import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_CACHED_NAME
 import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_COUNTRY_ISO

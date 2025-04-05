@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.provider.CallLog
 import androidx.core.content.ContextCompat
-import balti.migrate.common.model.CallLogData
+import balti.migrate.common.data.model.CallLogData
 import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress

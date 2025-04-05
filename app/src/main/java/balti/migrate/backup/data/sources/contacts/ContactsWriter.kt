@@ -1,6 +1,6 @@
 package balti.migrate.backup.data.sources.contacts
 
-import balti.migrate.common.model.ContactData
+import balti.migrate.common.data.model.ContactData
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import java.io.File
 import java.io.FileWriter

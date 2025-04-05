@@ -8,7 +8,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
-import balti.migrate.common.model.ContactData
+import balti.migrate.common.data.model.ContactData
 import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.exceptions.ContentReadException
 import baltiapps.migrate.domain.common.getPercentage

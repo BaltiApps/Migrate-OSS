@@ -2,7 +2,7 @@ package balti.migrate.backup.data.sources.sms
 
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
-import balti.migrate.common.model.SmsData
+import balti.migrate.common.data.model.SmsData
 import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_ADDRESS
 import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_BODY

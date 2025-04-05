@@ -1,6 +1,6 @@
 package balti.migrate.common.data.sources.fileSystem
 
-import balti.migrate.common.model.JavaFile
+import balti.migrate.common.data.model.JavaFile
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_CALL_LOGS
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_CONTACTS
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_SMS
