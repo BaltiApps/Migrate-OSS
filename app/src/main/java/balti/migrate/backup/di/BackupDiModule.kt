@@ -1,6 +1,5 @@
 package balti.migrate.backup.di
 
-import balti.migrate.backup.data.repository.BackupProgressLogRepositoryImpl
 import balti.migrate.backup.data.sources.callLog.CallLogDBWriter
 import balti.migrate.backup.data.sources.callLog.CallLogSource
 import balti.migrate.backup.data.sources.contacts.ContactsSource
@@ -11,6 +10,7 @@ import balti.migrate.backup.ui.screens.listScreen.callLogBackup.CallLogBackupVie
 import balti.migrate.backup.ui.screens.listScreen.contactBackup.ContactBackupViewModel
 import balti.migrate.backup.ui.screens.listScreen.smsBackup.SmsBackupViewModel
 import balti.migrate.backup.ui.screens.progressScreen.ProgressScreenViewModel
+import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
 import balti.migrate.common.data.sources.NotificationHandlerImpl
 import balti.migrate.common.model.CallLogData
 import balti.migrate.common.model.ContactData
@@ -81,7 +81,7 @@ val backupDiModule = module {
 
     singleOf(::BackupDataRepository)
     single<ProgressLogRepository>(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP)) {
-        BackupProgressLogRepositoryImpl(get())
+        ProgressLogRepositoryImpl(get())
     }
 
     /* Use cases */
