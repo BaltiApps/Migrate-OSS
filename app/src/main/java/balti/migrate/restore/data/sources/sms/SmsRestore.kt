@@ -5,7 +5,13 @@ import android.content.Context
 import android.provider.Telephony
 import balti.migrate.common.model.SmsData
 import balti.migrate.common.utils.DBUtils
+import baltiapps.migrate.domain.common.getPercentage
+import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.restore.sources.DataRestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 class SmsRestore(
     private val context: Context,
@@ -15,7 +21,23 @@ class SmsRestore(
         return Telephony.Sms.getDefaultSmsPackage(context) == context.packageName
     }
 
-    override fun restoreDataItem(dataItem: SmsData) {
+    override fun restoreDataItems(items: List<SmsData>): Flow<Progress> {
+         return flow {
+            if (!checkPermission()) return@flow
+            items.forEachIndexed { index, item ->
+                restoreSingleItem(item)
+                emit(
+                    Progress(
+                        progressType = Progress.ProgressType.SMS_RESTORE,
+                        percentage = getPercentage(index + 1, items.size),
+                        logs = "(${index + 1}/${items.size}) ${item.logInfo}"
+                    )
+                )
+            }
+        }.flowOn(Dispatchers.Default)
+    }
+
+    private fun restoreSingleItem(dataItem: SmsData) {
         val cv = ContentValues()
         dataItem.run {
             dbUtils.putContentData(cv, Telephony.Sms.ADDRESS, smsAddress)
