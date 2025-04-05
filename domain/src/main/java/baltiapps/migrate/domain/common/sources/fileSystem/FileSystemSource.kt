@@ -1,6 +1,7 @@
 package baltiapps.migrate.domain.common.sources.fileSystem
 
 import baltiapps.migrate.domain.common.model.DataItem
+import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.flow.Flow
 
@@ -38,6 +39,19 @@ abstract class FileSystemSource() {
             writerBlock(dbWriter)
         } finally {
             dbWriter.close()
+        }
+    }
+
+    inline fun <T: DBReader<*>> readDB(
+        file: GenericFile,
+        dbReader: T,
+        readerBlock: (dbReader: T) -> Flow<Progress>,
+    ): Flow<Progress> {
+        try {
+            dbReader.setup(file.path)
+            return readerBlock(dbReader)
+        } finally {
+            dbReader.close()
         }
     }
 }
