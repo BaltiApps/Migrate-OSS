@@ -6,6 +6,7 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import balti.migrate.common.data.sources.NotificationHandlerImpl.Companion.NOTIFICATION_ID_BACKUP_ONGOING
 import balti.migrate.backup.di.Names
+import balti.migrate.common.data.repository.ProgressLogRepositoryImpl.Companion.BREAK_LINE
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
 import baltiapps.migrate.domain.ACTION_START_BACKUP
@@ -35,10 +36,6 @@ import timber.log.Timber
 import java.io.File
 
 class BackupService : LifecycleService() {
-
-    companion object {
-        private const val BREAK_LINE = "===================================="
-    }
 
     private val contextSource: ContextSource by inject()
     private val repository: BackupDataRepository by inject()

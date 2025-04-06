@@ -8,7 +8,12 @@ import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 open class ProgressLogRepositoryImpl (
     applicationContext: Context,
 ): ProgressLogRepository() {
+
+    companion object {
+        const val BREAK_LINE = "===================================="
+    }
+
     override val truncatedIndicator: Progress = Progress.Empty.copy(
-        logs = "${applicationContext.getString(R.string.older_logs_truncated)}\n"
+        logs = "${applicationContext.getString(R.string.older_logs_truncated)}\n${BREAK_LINE}\n"
     )
 }
