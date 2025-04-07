@@ -57,7 +57,7 @@ class BackupService : LifecycleService() {
 
     override fun onCreate() {
         super.onCreate()
-        Timber.i("Start foreground")
+        Timber.i("Start foreground restore service")
         notificationHandler.setup()
         val initialNotification = notificationHandler.getInitialNotification()
         startForeground(
@@ -95,7 +95,7 @@ class BackupService : LifecycleService() {
 
             notificationHandler.listenAtSafeIntervals()
 
-            Timber.i("backup - start")
+            Timber.i("backup - start - contacts")
 
             runBackupStage(
                 backupRoot = backupRoot,
@@ -106,7 +106,9 @@ class BackupService : LifecycleService() {
                 errorMessage = { "Contacts backup exception: ${it.message}" },
             )
 
-            Timber.i("backup - contacts")
+            Timber.i("backup - finished - contacts")
+
+            Timber.i("backup - start - call logs")
 
             runBackupStage(
                 backupRoot = backupRoot,
@@ -117,7 +119,9 @@ class BackupService : LifecycleService() {
                 errorMessage = { "Call log backup exception: ${it.message}" },
             )
 
-            Timber.i("backup - calls")
+            Timber.i("backup - finished - call logs")
+
+            Timber.i("backup - start - sms")
 
             runBackupStage(
                 backupRoot = backupRoot,
@@ -128,16 +132,16 @@ class BackupService : LifecycleService() {
                 errorMessage = { "SMS backup exception: ${it.message}" },
             )
 
-            Timber.i("backup - sms")
+            Timber.i("backup - finished - sms")
 
             emitHeadingLog(Progress.ProgressType.BACKUP_FINISHED)
 
             Timber.i("backup - finished")
 
             notificationHandler.stopListening()
-            Timber.i("backup - stopListening")
+            Timber.i("restore - notification handler stopped listening")
             cleanup()
-            Timber.i("backup - cleanup")
+            Timber.i("restore - cleanup done")
         }
     }
 
