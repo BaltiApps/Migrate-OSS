@@ -1,4 +1,4 @@
-package balti.migrate.restore.ui.screens
+package balti.migrate.restore.ui.screens.browseRestoreDirectory
 
 import baltiapps.migrate.domain.common.model.Directory
 

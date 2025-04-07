@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import balti.migrate.restore.ui.screens.BrowseRestoreDirectory
+import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDirectory
 import baltiapps.migrate.domain.common.model.Directory
 import kotlinx.serialization.Serializable
 

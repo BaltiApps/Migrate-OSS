@@ -1,4 +1,4 @@
-package balti.migrate.restore.ui.screens
+package balti.migrate.restore.ui.screens.browseRestoreDirectory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
