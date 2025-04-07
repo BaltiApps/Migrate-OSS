@@ -22,6 +22,9 @@ data class Progress(
         SMS_BACKUP_READ,
         CALL_LOG_RESTORE,
         SMS_RESTORE,
+        RESTORE_FINISHED,
+        RESTORE_FINISHED_WITH_ERRORS,
+        RESTORE_CANCELLED,
     }
 
     private val backupFinishedTypes = setOf(
@@ -30,8 +33,18 @@ data class Progress(
         ProgressType.BACKUP_CANCELLED,
     )
 
+    private val restoreFinishedTypes = setOf(
+        ProgressType.RESTORE_FINISHED,
+        ProgressType.RESTORE_FINISHED_WITH_ERRORS,
+        ProgressType.RESTORE_CANCELLED,
+    )
+
     fun isBackupFinished(): Boolean {
         return progressType in backupFinishedTypes
+    }
+
+    fun isFinished(): Boolean {
+        return progressType in (backupFinishedTypes + restoreFinishedTypes)
     }
 
     companion object {
