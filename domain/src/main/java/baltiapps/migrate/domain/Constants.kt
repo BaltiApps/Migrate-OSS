@@ -13,6 +13,8 @@ const val EXTRA_BACKUP_ROOT = "backup_root"
 
 const val DEFAULT_BACKUP_ROOT = "/storage/emulated/0/Migrate"
 
+const val BREAK_LINE = "===================================="
+
 class CallLogDBConstants {
     companion object{
         const val CALLS_TABLE_NAME = "calls"

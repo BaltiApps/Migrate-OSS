@@ -6,12 +6,12 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import balti.migrate.backup.di.Names
 import balti.migrate.common.data.model.NotificationInfo
-import balti.migrate.common.data.repository.ProgressLogRepositoryImpl.Companion.BREAK_LINE
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
 import baltiapps.migrate.domain.ACTION_START_BACKUP
 import baltiapps.migrate.domain.BACKUP_ERROR_LOG
 import baltiapps.migrate.domain.BACKUP_LOG
+import baltiapps.migrate.domain.BREAK_LINE
 import baltiapps.migrate.domain.EXTRA_BACKUP_ROOT
 import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.model.ListItem
