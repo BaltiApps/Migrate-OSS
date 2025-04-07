@@ -16,11 +16,11 @@ abstract class NotificationHandler<T> {
     }
 
     protected lateinit var progressSamplerJob: Job
-    protected var currentNotification: T? = null
 
     abstract fun setup()
-    abstract fun displayNotification(progress: Progress)
     abstract fun getInitialNotification(): T
+    abstract fun getProgressNotification(progress: Progress): T
+    abstract fun displayNotification(notification: T)
     protected abstract suspend fun getLatestProgress(): Progress
 
     fun listenAtSafeIntervals() {
@@ -30,7 +30,7 @@ abstract class NotificationHandler<T> {
                 val latestProgress = getLatestProgress()
                 if (latestProgress.isLogHeading) continue
                 withContext(Dispatchers.Main) {
-                    displayNotification(latestProgress)
+                    displayNotification(getProgressNotification(latestProgress))
                 }
                 delay(SAFE_NOTIFICATION_INTERVAL)
             }

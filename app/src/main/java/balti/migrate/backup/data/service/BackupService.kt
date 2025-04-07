@@ -4,8 +4,8 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import balti.migrate.common.data.sources.NotificationHandlerImpl.Companion.NOTIFICATION_ID_BACKUP_ONGOING
 import balti.migrate.backup.di.Names
+import balti.migrate.common.data.model.NotificationInfo
 import balti.migrate.common.data.repository.ProgressLogRepositoryImpl.Companion.BREAK_LINE
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
@@ -41,7 +41,7 @@ class BackupService : LifecycleService() {
     private val repository: BackupDataRepository by inject()
     private val progressLogRepository: ProgressLogRepository by inject(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP))
     private val notificationHandler:
-            NotificationHandler<NotificationCompat.Builder> by inject(named(Names.NOTIFICATION_HANDLER_BACKUP))
+            NotificationHandler<NotificationInfo> by inject(named(Names.NOTIFICATION_HANDLER_BACKUP))
 
     private val backupContactsUseCase: BackupContactsUseCase by inject()
     private val backupCallLogUseCase: BackupCallLogUseCase by inject()
@@ -59,9 +59,13 @@ class BackupService : LifecycleService() {
         super.onCreate()
         Timber.i("Start foreground")
         notificationHandler.setup()
+        val initialNotification = notificationHandler.getInitialNotification()
         startForeground(
-            NOTIFICATION_ID_BACKUP_ONGOING,
-            notificationHandler.getInitialNotification().build()
+            initialNotification.notificationId,
+            initialNotification.convertToNotificationBuilder(this).apply {
+                // https://stackoverflow.com/a/73074884/10967630
+                setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
+            }.build()
         )
     }
 

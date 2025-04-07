@@ -1,5 +1,6 @@
 package balti.migrate.backup.di
 
+import balti.migrate.backup.data.sources.BackupNotificationHandlerImpl
 import balti.migrate.backup.data.sources.callLog.CallLogDBWriter
 import balti.migrate.backup.data.sources.callLog.CallLogSource
 import balti.migrate.backup.data.sources.contacts.ContactsSource
@@ -11,7 +12,6 @@ import balti.migrate.backup.ui.screens.listScreen.contactBackup.ContactBackupVie
 import balti.migrate.backup.ui.screens.listScreen.smsBackup.SmsBackupViewModel
 import balti.migrate.backup.ui.screens.progressScreen.ProgressScreenViewModel
 import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
-import balti.migrate.common.data.sources.NotificationHandlerImpl
 import balti.migrate.common.data.model.CallLogData
 import balti.migrate.common.data.model.ContactData
 import balti.migrate.common.data.model.SmsData
@@ -70,8 +70,9 @@ val backupDiModule = module {
         SmsDBWriter(get())
     }
     single<NotificationHandler<*>>(named(Names.NOTIFICATION_HANDLER_BACKUP)) {
-        NotificationHandlerImpl(
+        BackupNotificationHandlerImpl(
             context = get(),
+            notificationUtils = get(),
             contextSource = get(),
             progressLogRepository = get(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP))
         )
