@@ -54,6 +54,7 @@ class BrowseRestoreDirectoryViewModel(
     }
 
     fun onAction(action: BrowseRestoreDirectoryActions) {
+        if (_state.value.isLoading) return
         viewModelScope.launch {
             when(action) {
                 is BrowseRestoreDirectoryActions.OnReloadDirectoryContents -> {
@@ -66,14 +67,10 @@ class BrowseRestoreDirectoryViewModel(
                     _state.value.currentDirectory.parent?.let { loadDirectory(it) }
                 }
                 is BrowseRestoreDirectoryActions.OnBackupSelected -> {
-                    _state.update {
-                        it.copy(isLoading = true)
-                    }
+                    _state.update { it.copy(isLoading = true) }
                     readFilesFromBackupUseCase.invoke(action.directory)
                     action.onLoadingFinished()
-                    _state.update {
-                        it.copy(isLoading = false)
-                    }
+                    _state.update { it.copy(isLoading = false) }
                 }
             }
         }
