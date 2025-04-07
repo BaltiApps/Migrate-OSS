@@ -105,7 +105,7 @@ class BackupService : LifecycleService() {
             Timber.i("backup - start - call logs")
 
             serviceUtils.runStage(
-                shouldRun = repository::shouldBackupCalls,
+                shouldRun = repository::shouldBackupCallLogs,
                 stageBody = { backupCallLogUseCase.invoke(backupRoot, repository.stagedCallLogs) },
                 progressType = Progress.ProgressType.CALL_LOG_BACKUP,
                 errorMessage = { "Call log backup exception: ${it.message}" },

@@ -33,7 +33,7 @@ class RestoreDataRepository {
     fun shouldRestoreContacts(): Boolean {
         return stagedContacts.isNotEmpty()
     }
-    fun shouldRestoreCalls(): Boolean {
+    fun shouldRestoreCallLogs(): Boolean {
         return stagedCallLogs.isNotEmpty()
     }
     fun shouldRestoreSms(): Boolean {

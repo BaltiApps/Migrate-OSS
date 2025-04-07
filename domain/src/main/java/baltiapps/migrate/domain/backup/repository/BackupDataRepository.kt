@@ -27,7 +27,7 @@ class BackupDataRepository {
     fun shouldBackupContacts(): Boolean {
         return stagedContacts.isNotEmpty()
     }
-    fun shouldBackupCalls(): Boolean {
+    fun shouldBackupCallLogs(): Boolean {
         return stagedCallLogs.isNotEmpty()
     }
     fun shouldBackupSms(): Boolean {

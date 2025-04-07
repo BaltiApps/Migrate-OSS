@@ -87,7 +87,7 @@ class RestoreService: LifecycleService() {
             Timber.i("restore - start - call logs")
 
             serviceUtils.runStage(
-                shouldRun = repository::shouldRestoreCalls,
+                shouldRun = repository::shouldRestoreCallLogs,
                 stageBody = restoreCallLogUseCase::invoke,
                 progressType = Progress.ProgressType.CALL_LOG_RESTORE,
                 errorMessage = { "Call log restore exception: ${it.message}" },
