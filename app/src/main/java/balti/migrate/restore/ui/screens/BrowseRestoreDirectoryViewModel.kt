@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import baltiapps.migrate.domain.DEFAULT_BACKUP_ROOT
 import baltiapps.migrate.domain.common.model.Directory
 import baltiapps.migrate.domain.common.sources.fileSystem.DirectoryBrowser
+import baltiapps.migrate.domain.restore.usecase.ReadFilesFromBackupUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +13,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class BrowseRestoreDirectoryViewModel(
-    private val directoryBrowser: DirectoryBrowser
+    private val directoryBrowser: DirectoryBrowser,
+    private val readFilesFromBackupUseCase: ReadFilesFromBackupUseCase,
 ): ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -62,6 +64,16 @@ class BrowseRestoreDirectoryViewModel(
                 }
                 is BrowseRestoreDirectoryActions.OnDirectoryUp -> {
                     _state.value.currentDirectory.parent?.let { loadDirectory(it) }
+                }
+                is BrowseRestoreDirectoryActions.OnBackupSelected -> {
+                    _state.update {
+                        it.copy(isLoading = true)
+                    }
+                    readFilesFromBackupUseCase.invoke(action.directory)
+                    action.onLoadingFinished()
+                    _state.update {
+                        it.copy(isLoading = false)
+                    }
                 }
             }
         }

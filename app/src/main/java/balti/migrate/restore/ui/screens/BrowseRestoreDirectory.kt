@@ -41,7 +41,13 @@ fun BrowseRestoreDirectory(
     val state by viewModel.state.collectAsStateWithLifecycle()
     Content(
         state = state,
-        onBackupSelected = onBackupSelected,
+        onBackupSelected = {
+            viewModel.onAction(
+                BrowseRestoreDirectoryActions.OnBackupSelected(it) {
+                    onBackupSelected(it)
+                }
+            )
+        },
         onDirectoryOpen = {
             viewModel.onAction(BrowseRestoreDirectoryActions.OnDirectoryOpen(it))
         },
