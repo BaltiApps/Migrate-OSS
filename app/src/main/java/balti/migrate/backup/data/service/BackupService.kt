@@ -7,28 +7,24 @@ import androidx.lifecycle.lifecycleScope
 import balti.migrate.backup.di.Names
 import balti.migrate.common.data.model.NotificationInfo
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
+import balti.migrate.common.utils.ServiceUtils
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
 import baltiapps.migrate.domain.ACTION_START_BACKUP
 import baltiapps.migrate.domain.BACKUP_ERROR_LOG
 import baltiapps.migrate.domain.BACKUP_LOG
-import baltiapps.migrate.domain.BREAK_LINE
 import baltiapps.migrate.domain.EXTRA_BACKUP_ROOT
-import baltiapps.migrate.domain.common.model.DataItem
-import baltiapps.migrate.domain.common.model.ListItem
-import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.common.sources.NotificationHandler
-import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
-import baltiapps.migrate.domain.common.sources.ContextSource
-import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
-import kotlinx.coroutines.CancellationException
+import baltiapps.migrate.domain.common.model.Progress
+import baltiapps.migrate.domain.common.repository.ProgressLogRepository
+import baltiapps.migrate.domain.common.sources.ContextSource
+import baltiapps.migrate.domain.common.sources.NotificationHandler
+import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -52,6 +48,8 @@ class BackupService : LifecycleService() {
 
     private lateinit var logWriter: TextWriter<String>
     private lateinit var errorWriter: TextWriter<String>
+
+    private lateinit var serviceUtils: ServiceUtils
 
     private var backupJob: Job? = null
 
@@ -81,8 +79,6 @@ class BackupService : LifecycleService() {
                 cancelBackup()
             }
         }
-
-
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -97,11 +93,9 @@ class BackupService : LifecycleService() {
 
             Timber.i("backup - start - contacts")
 
-            runBackupStage(
-                backupRoot = backupRoot,
+            serviceUtils.runStage(
                 shouldRun = repository::shouldBackupContacts,
-                backupItems = repository.stagedContacts,
-                backupBody = backupContactsUseCase::invoke,
+                stageBody = { backupContactsUseCase.invoke(backupRoot, repository.stagedContacts) },
                 progressType = Progress.ProgressType.CONTACTS_BACKUP,
                 errorMessage = { "Contacts backup exception: ${it.message}" },
             )
@@ -110,11 +104,9 @@ class BackupService : LifecycleService() {
 
             Timber.i("backup - start - call logs")
 
-            runBackupStage(
-                backupRoot = backupRoot,
+            serviceUtils.runStage(
                 shouldRun = repository::shouldBackupCalls,
-                backupItems = repository.stagedCallLogs,
-                backupBody = backupCallLogUseCase::invoke,
+                stageBody = { backupCallLogUseCase.invoke(backupRoot, repository.stagedCallLogs) },
                 progressType = Progress.ProgressType.CALL_LOG_BACKUP,
                 errorMessage = { "Call log backup exception: ${it.message}" },
             )
@@ -123,18 +115,16 @@ class BackupService : LifecycleService() {
 
             Timber.i("backup - start - sms")
 
-            runBackupStage(
-                backupRoot = backupRoot,
+            serviceUtils.runStage(
                 shouldRun = repository::shouldBackupSms,
-                backupItems = repository.stagedSms,
-                backupBody = backupSmsUseCase::invoke,
+                stageBody = { backupSmsUseCase.invoke(backupRoot, repository.stagedSms) },
                 progressType = Progress.ProgressType.SMS_BACKUP,
                 errorMessage = { "SMS backup exception: ${it.message}" },
             )
 
             Timber.i("backup - finished - sms")
 
-            emitHeadingLog(Progress.ProgressType.BACKUP_FINISHED)
+            serviceUtils.emitHeadingLog(Progress.ProgressType.BACKUP_FINISHED)
 
             Timber.i("backup - finished")
 
@@ -152,59 +142,12 @@ class BackupService : LifecycleService() {
         errorWriter.setup(backupErrorLog.canonicalPath, append = true)
 
         progressLogRepository.reset()
-    }
 
-    private suspend fun <T: ListItem> runBackupStage(
-        backupRoot: String,
-        shouldRun: () -> Boolean,
-        backupItems: List<DataItem<T>>,
-        backupBody: (String, List<DataItem<T>>) -> Flow<Progress>,
-        progressType: Progress.ProgressType,
-        errorMessage: (Exception) -> String,
-    ) {
-        try {
-            if (shouldRun()) {
-                emitHeadingLog(progressType)
-                backupBody(backupRoot, backupItems).collect {
-                    collectLogs(it)
-                }
-            }
-        } catch (e: Exception) {
-            if (e is CancellationException) throw e
-            e.printStackTrace()
-            Progress(
-                progressType = progressType,
-                percentage = 1.0,
-                logs = errorMessage(e),
-                isFailure = true,
-            ).run {
-                collectLogs(this)
-            }
-        }
-    }
-
-    private suspend fun collectLogs(
-        progress: Progress,
-    ) {
-        if (progress.isFailure || progress.isBackupFinished()) {
-            progressLogRepository.pushError(progress)
-            errorWriter.writeLine(progress.logs)
-        }
-        progressLogRepository.pushProgress(progress)
-        logWriter.writeLine(progress.logs)
-    }
-
-    private suspend fun emitHeadingLog(
-        progressType: Progress.ProgressType,
-    ) {
-        val headingTitle = contextSource.getProgressTitle(progressType)
-        collectLogs(
-            progress = Progress(
-                progressType = progressType,
-                percentage = 1.0,
-                logs = "\n${headingTitle}\n${BREAK_LINE}\n",
-                isLogHeading = true,
-            ),
+        serviceUtils = ServiceUtils(
+            contextSource = contextSource,
+            progressLogRepository = progressLogRepository,
+            logWriter = logWriter,
+            errorWriter = errorWriter,
         )
     }
 
@@ -225,7 +168,7 @@ class BackupService : LifecycleService() {
             backupJob?.cancel()
             if (isSetup()) {
                 delay(1000)
-                emitHeadingLog(Progress.ProgressType.BACKUP_CANCELLED)
+                serviceUtils.emitHeadingLog(Progress.ProgressType.BACKUP_CANCELLED)
             }
             delay(1000)
             cleanup()
