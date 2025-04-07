@@ -5,9 +5,14 @@ const val BACKUP_FILE_NAME_CALL_LOGS = "call_logs.db"
 const val BACKUP_FILE_NAME_SMS = "sms.db"
 const val BACKUP_LOG = "backup_log.txt"
 const val BACKUP_ERROR_LOG = "backup_error_log.txt"
+const val RESTORE_LOG = "restore_log.txt"
+const val RESTORE_ERROR_LOG = "restore_error_log.txt"
 
 const val ACTION_START_BACKUP = "action_start_backup"
 const val ACTION_CANCEL_BACKUP = "action_stop_backup"
+
+const val ACTION_START_RESTORE = "action_start_restore"
+const val ACTION_CANCEL_RESTORE = "action_stop_restore"
 
 const val EXTRA_BACKUP_ROOT = "backup_root"
 
