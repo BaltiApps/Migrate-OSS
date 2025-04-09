@@ -5,7 +5,7 @@ import baltiapps.migrate.domain.common.model.CallLogListItem
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.ReadCallLogUseCase
-import baltiapps.migrate.domain.backup.usecase.StageSelectedCallLogs
+import baltiapps.migrate.domain.common.usecase.StageSelectedCallLogs
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

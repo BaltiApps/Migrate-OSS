@@ -9,6 +9,7 @@ import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.fileSystem.DirectoryBrowser
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
+import baltiapps.migrate.domain.common.usecase.StageSelectedCallLogs
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -31,4 +32,8 @@ val commonDiModule = module {
     singleOf(::DirectoryBrowserImpl) bind DirectoryBrowser::class
 
     singleOf(::ContextSourceImpl) bind ContextSource::class
+
+    /* Use cases */
+
+    singleOf(::StageSelectedCallLogs)
 }
