@@ -15,6 +15,7 @@ class ContextSourceImpl(private val context: Context): ContextSource {
             Progress.ProgressType.BACKUP_FINISHED_WITH_ERRORS -> context.getString(R.string.backup_finished_with_errors)
             Progress.ProgressType.BACKUP_CANCELLED -> context.getString(R.string.backup_cancelled)
             Progress.ProgressType.CALL_LOG_RESTORE -> context.getString(R.string.label_call_log_restore)
+            Progress.ProgressType.SMS_RESTORE -> context.getString(R.string.label_sms_restore)
             else -> context.getString(R.string.loading)
         }
     }
