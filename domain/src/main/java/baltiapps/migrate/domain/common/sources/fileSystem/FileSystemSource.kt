@@ -4,6 +4,7 @@ import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onCompletion
 
 abstract class FileSystemSource() {
     abstract fun checkPermission(filePath: String = ""): Boolean
@@ -47,11 +48,9 @@ abstract class FileSystemSource() {
         dbReader: T,
         readerBlock: (dbReader: T) -> Flow<Progress>,
     ): Flow<Progress> {
-        try {
-            dbReader.setup(file.path)
-            return readerBlock(dbReader)
-        } finally {
-            dbReader.close()
+        dbReader.setup(file.path)
+        return readerBlock(dbReader).apply {
+            onCompletion { dbReader.close() }
         }
     }
 }
