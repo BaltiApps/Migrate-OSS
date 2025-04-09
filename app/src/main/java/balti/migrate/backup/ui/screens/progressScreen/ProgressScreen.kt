@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
-import balti.migrate.backup.ui.components.ButtonStatus
-import balti.migrate.backup.ui.components.NextFab
+import balti.migrate.common.ui.components.ButtonStatus
+import balti.migrate.common.ui.components.NextFab
 import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

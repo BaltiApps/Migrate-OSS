@@ -1,4 +1,4 @@
-package balti.migrate.backup.ui.components
+package balti.migrate.common.ui.components
 
 import android.provider.CallLog
 import androidx.compose.foundation.Image

@@ -21,8 +21,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import balti.migrate.R
-import balti.migrate.backup.ui.components.ButtonStatus
-import balti.migrate.backup.ui.components.NextFab
+import balti.migrate.common.ui.components.ButtonStatus
+import balti.migrate.common.ui.components.NextFab
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

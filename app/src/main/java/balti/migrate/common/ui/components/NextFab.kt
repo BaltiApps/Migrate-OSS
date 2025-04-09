@@ -1,4 +1,4 @@
-package balti.migrate.backup.ui.components
+package balti.migrate.common.ui.components
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
