@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.Queue
 import androidx.compose.material.icons.filled.Sms
 import androidx.compose.material.icons.filled.SmsFailed
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,6 +34,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.common.ui.ListScreenShell
+import balti.migrate.common.ui.components.LoadingProgressBar
 import baltiapps.migrate.domain.common.model.SmsListItem
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -91,9 +91,9 @@ private fun Content(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {
             if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
-                    progress = { state().progress.percentage.toFloat() },
+                LoadingProgressBar(
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    progress = state().progress
                 )
             } else {
                 LazyColumn(
