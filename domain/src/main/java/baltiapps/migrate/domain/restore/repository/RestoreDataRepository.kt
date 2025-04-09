@@ -9,6 +9,16 @@ import baltiapps.migrate.domain.common.repository.DataRepository
 class RestoreDataRepository: DataRepository() {
     val backupFiles = mutableListOf<GenericFile>()
 
+    fun shouldRestoreContacts(): Boolean {
+        return stagedContacts.isNotEmpty()
+    }
+    fun shouldRestoreCallLogs(): Boolean {
+        return stagedCallLogs.isNotEmpty()
+    }
+    fun shouldRestoreSms(): Boolean {
+        return stagedSms.isNotEmpty()
+    }
+
     fun getContactBackupFile(): GenericFile? = backupFiles.find { it.name == BACKUP_FILE_NAME_CONTACTS }
     fun getCallLogBackupFile(): GenericFile? = backupFiles.find { it.name == BACKUP_FILE_NAME_CALL_LOGS }
     fun getSmsBackupFile(): GenericFile? = backupFiles.find { it.name == BACKUP_FILE_NAME_SMS }

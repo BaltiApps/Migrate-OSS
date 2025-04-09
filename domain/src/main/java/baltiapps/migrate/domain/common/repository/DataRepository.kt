@@ -23,14 +23,4 @@ abstract class DataRepository {
 
     val smsListItems: List<SmsListItem>
         get() = smsDataItems.toListItems().sortedByDescending { it.creationDate.dateInLong }
-
-    fun shouldBackupContacts(): Boolean {
-        return stagedContacts.isNotEmpty()
-    }
-    fun shouldBackupCallLogs(): Boolean {
-        return stagedCallLogs.isNotEmpty()
-    }
-    fun shouldBackupSms(): Boolean {
-        return stagedSms.isNotEmpty()
-    }
 }
