@@ -97,6 +97,7 @@ fun Content(
                 .padding(16.dp),
         ) {
             PullToRefreshBox(
+                modifier = Modifier.fillMaxSize(),
                 isRefreshing = state.isLoading,
                 onRefresh = onReloadDirectoryContents
             ) {
