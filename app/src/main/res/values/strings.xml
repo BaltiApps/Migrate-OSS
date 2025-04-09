@@ -51,6 +51,9 @@
     <!--CallLogRestoreSelection.kt-->
     <string name="label_call_log_restore">Call log restore</string>
 
+    <!--SmsRestoreSelection.kt-->
+    <string name="label_sms_restore">SMS restore</string>
+
     <!--sms dummies-->
     <string name="new_sms_received">New SMS received</string>
     <string name="new_mms_received">New MMS received</string>
