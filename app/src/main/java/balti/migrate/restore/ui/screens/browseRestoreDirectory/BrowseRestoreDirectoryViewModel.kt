@@ -19,7 +19,7 @@ class BrowseRestoreDirectoryViewModel(
 
     private val _state = MutableStateFlow(
         BrowseRestoreDirectoryState(
-            isLoading = true,
+            isLoading = false,
             directoriesToShow = listOf(),
             currentDirectory = Directory(
                 directoryFullPath = DEFAULT_BACKUP_ROOT,
