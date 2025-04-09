@@ -16,7 +16,6 @@ import kotlin.math.roundToInt
 
 class RestoreNotificationHandlerImpl(
     private val context: Context,
-    private val notificationUtils: NotificationUtils,
     private val contextSource: ContextSource,
     private val progressLogRepository: ProgressLogRepository,
 ): NotificationHandler<NotificationInfo>() {
@@ -40,6 +39,8 @@ class RestoreNotificationHandlerImpl(
 
     private var currentNotificationInfo: NotificationInfo? = null
     private var currentNotificationBuilder: NotificationCompat.Builder? = null
+
+    private val notificationUtils = NotificationUtils()
 
     override fun setup() {
         Timber.i("Creating progress sample job")

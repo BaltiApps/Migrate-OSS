@@ -1,9 +1,9 @@
 package balti.migrate.restore.di
 
-import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
-import balti.migrate.restore.data.sources.RestoreNotificationHandlerImpl
 import balti.migrate.common.data.model.CallLogData
 import balti.migrate.common.data.model.SmsData
+import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
+import balti.migrate.restore.data.sources.RestoreNotificationHandlerImpl
 import balti.migrate.restore.data.sources.callLog.CallLogDBReader
 import balti.migrate.restore.data.sources.callLog.CallLogRestore
 import balti.migrate.restore.data.sources.sms.SmsDBReader
@@ -52,7 +52,6 @@ val restoreDiModule = module {
     single<NotificationHandler<*>>(named(Names.NOTIFICATION_HANDLER_RESTORE)) {
         RestoreNotificationHandlerImpl(
             context = get(),
-            notificationUtils = get(),
             contextSource = get(),
             progressLogRepository = get(named(Names.PROGRESS_LOG_REPOSITORY_RESTORE))
         )
