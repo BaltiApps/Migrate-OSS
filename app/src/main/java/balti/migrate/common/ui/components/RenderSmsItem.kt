@@ -3,13 +3,7 @@ package balti.migrate.common.ui.components
 import android.provider.Telephony
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Drafts
@@ -19,23 +13,16 @@ import androidx.compose.material.icons.filled.Queue
 import androidx.compose.material.icons.filled.Sms
 import androidx.compose.material.icons.filled.SmsFailed
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import balti.migrate.R
 import baltiapps.migrate.domain.common.model.ItemCreationDate
@@ -44,83 +31,64 @@ import baltiapps.migrate.domain.common.model.SmsListItem
 @Composable
 fun RenderSmsItem(
     item: SmsListItem,
-    onItemChecked: (SmsListItem, Boolean) -> Unit
+    onItemToggled: (SmsListItem) -> Unit
 ) {
-    val contentPadding = dimensionResource(R.dimen.standard_padding)
-    var isChecked by remember { mutableStateOf(item.isChecked) }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                isChecked = !isChecked
-                onItemChecked(item, isChecked)
+    ListItem(
+        modifier = Modifier.clickable {
+            onItemToggled(item)
+        },
+        leadingContent = {
+            SmsListItemIcon(item)
+        },
+        headlineContent = {
+            Text(text = item.smsAddress)
+        },
+        supportingContent = {
+            Column {
+                Text(
+                    text = item.smsBody,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = item.creationDate.displayDate,
+                    fontWeight = FontWeight.Thin,
+                    fontSize = 12.sp
+                )
             }
-            .padding(contentPadding),
-        horizontalArrangement = Arrangement.spacedBy(contentPadding),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            modifier = Modifier.size(48.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                modifier = Modifier.size(32.dp),
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
-                imageVector = when(item.smsType) {
-                    Telephony.Sms.MESSAGE_TYPE_INBOX -> Icons.Default.Inbox
-                    Telephony.Sms.MESSAGE_TYPE_OUTBOX -> Icons.Default.Outbox
-                    Telephony.Sms.MESSAGE_TYPE_SENT -> Icons.Default.Check
-                    Telephony.Sms.MESSAGE_TYPE_DRAFT -> Icons.Default.Drafts
-                    Telephony.Sms.MESSAGE_TYPE_FAILED -> Icons.Default.SmsFailed
-                    Telephony.Sms.MESSAGE_TYPE_QUEUED -> Icons.Default.Queue
-                    else -> Icons.Default.Sms
-                },
-                contentDescription = when(item.smsType) {
-                    Telephony.Sms.MESSAGE_TYPE_INBOX -> stringResource(R.string.sms_inbox)
-                    Telephony.Sms.MESSAGE_TYPE_OUTBOX -> stringResource(R.string.sms_outbox)
-                    Telephony.Sms.MESSAGE_TYPE_SENT -> stringResource(R.string.sms_sent)
-                    Telephony.Sms.MESSAGE_TYPE_DRAFT -> stringResource(R.string.sms_draft)
-                    Telephony.Sms.MESSAGE_TYPE_FAILED -> stringResource(R.string.sms_failed)
-                    Telephony.Sms.MESSAGE_TYPE_QUEUED -> stringResource(R.string.sms_queued)
-                    else -> stringResource(R.string.sms)
-                },
+        },
+        trailingContent = {
+            Checkbox(
+                checked = item.isChecked,
+                onCheckedChange = null,
             )
         }
+    )
+}
 
-        Column(
-            modifier = Modifier
-                .weight(1F, fill = true)
-        ) {
-            Text(
-                text = item.smsAddress,
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
-            )
-            Text(
-                text = item.smsBody,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-                style = TextStyle(
-                    fontSize = 16.sp
-                )
-            )
-            Text(
-                text = item.creationDate.displayDate,
-                fontWeight = FontWeight.Thin,
-                fontSize = 16.sp,
-            )
-        }
-        Checkbox(
-            modifier = Modifier.padding(
-                horizontal = contentPadding
-            ),
-            checked = isChecked,
-            onCheckedChange = null,
-        )
-    }
+@Composable
+private fun SmsListItemIcon(item: SmsListItem) {
+    Image(
+        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+        imageVector = when(item.smsType) {
+            Telephony.Sms.MESSAGE_TYPE_INBOX -> Icons.Default.Inbox
+            Telephony.Sms.MESSAGE_TYPE_OUTBOX -> Icons.Default.Outbox
+            Telephony.Sms.MESSAGE_TYPE_SENT -> Icons.Default.Check
+            Telephony.Sms.MESSAGE_TYPE_DRAFT -> Icons.Default.Drafts
+            Telephony.Sms.MESSAGE_TYPE_FAILED -> Icons.Default.SmsFailed
+            Telephony.Sms.MESSAGE_TYPE_QUEUED -> Icons.Default.Queue
+            else -> Icons.Default.Sms
+        },
+        contentDescription = when(item.smsType) {
+            Telephony.Sms.MESSAGE_TYPE_INBOX -> stringResource(R.string.sms_inbox)
+            Telephony.Sms.MESSAGE_TYPE_OUTBOX -> stringResource(R.string.sms_outbox)
+            Telephony.Sms.MESSAGE_TYPE_SENT -> stringResource(R.string.sms_sent)
+            Telephony.Sms.MESSAGE_TYPE_DRAFT -> stringResource(R.string.sms_draft)
+            Telephony.Sms.MESSAGE_TYPE_FAILED -> stringResource(R.string.sms_failed)
+            Telephony.Sms.MESSAGE_TYPE_QUEUED -> stringResource(R.string.sms_queued)
+            else -> stringResource(R.string.sms)
+        },
+    )
 }
 
 @Preview
@@ -138,6 +106,6 @@ private fun SmsDisplayItemPreview() {
         isChecked = true,
     )
     Column {
-        RenderSmsItem(item1) { _, _ -> }
+        RenderSmsItem(item1) {}
     }
 }
