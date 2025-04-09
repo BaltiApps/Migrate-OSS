@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDirectory
 import balti.migrate.restore.ui.screens.listScreen.callLogRestore.CallLogRestoreSelection
+import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestoreSelection
 import baltiapps.migrate.domain.common.model.Directory
 import kotlinx.serialization.Serializable
 
@@ -31,6 +32,14 @@ fun ScreenRestore(
         composable<RouteCallLogRestoreSelection> {
             CallLogRestoreSelection(
                 navigateUp = navController::navigateUp,
+                goToNextScreen = {
+                    navController.navigate(RouteSmsRestoreSelection)
+                }
+            )
+        }
+        composable<RouteSmsRestoreSelection> {
+            SmsRestoreSelection(
+                navigateUp = navController::navigateUp,
                 goToNextScreen = {}
             )
         }
@@ -42,3 +51,6 @@ object RouteDirectorySelection
 
 @Serializable
 object RouteCallLogRestoreSelection
+
+@Serializable
+object RouteSmsRestoreSelection
