@@ -11,6 +11,7 @@ import baltiapps.migrate.domain.common.sources.fileSystem.DirectoryBrowser
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import baltiapps.migrate.domain.common.usecase.StageSelectedCallLogs
+import baltiapps.migrate.domain.common.usecase.StageSelectedSms
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -42,4 +43,5 @@ val commonDiModule = module {
     /* Use cases */
 
     singleOf(::StageSelectedCallLogs)
+    singleOf(::StageSelectedSms)
 }

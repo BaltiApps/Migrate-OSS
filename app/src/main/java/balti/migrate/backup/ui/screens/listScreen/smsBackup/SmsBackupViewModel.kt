@@ -5,7 +5,7 @@ import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.model.SmsListItem
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.ReadSmsUseCase
-import baltiapps.migrate.domain.backup.usecase.StageSelectedSms
+import baltiapps.migrate.domain.common.usecase.StageSelectedSms
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -58,7 +58,12 @@ class SmsBackupViewModel(
             }
             is SmsBackupAction.StageSms -> {
                 super.stageItems(
-                    stagingBlock = stageSelectedSms::invoke,
+                    stagingBlock = {
+                        stageSelectedSms.invoke(
+                            allListItems = it,
+                            dataRepository = backupDataRepository
+                        )
+                    },
                     onStagingDone = { action.onStagingDone() }
                 )
             }
