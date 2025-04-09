@@ -9,6 +9,7 @@ import balti.migrate.restore.data.sources.callLog.CallLogRestore
 import balti.migrate.restore.data.sources.sms.SmsDBReader
 import balti.migrate.restore.data.sources.sms.SmsRestore
 import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDirectoryViewModel
+import balti.migrate.restore.ui.screens.listScreen.callLogRestore.CallLogRestoreSelectionViewModel
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
@@ -97,4 +98,5 @@ val restoreDiModule = module {
     /* View models*/
 
     viewModelOf(::BrowseRestoreDirectoryViewModel)
+    viewModelOf(::CallLogRestoreSelectionViewModel)
 }
