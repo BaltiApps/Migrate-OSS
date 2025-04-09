@@ -1,4 +1,4 @@
-package balti.migrate.backup.ui.screens.listScreen
+package balti.migrate.common.ui
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
