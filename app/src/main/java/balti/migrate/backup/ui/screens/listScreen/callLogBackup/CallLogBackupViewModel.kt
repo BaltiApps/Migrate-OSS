@@ -58,7 +58,12 @@ class CallLogBackupViewModel(
             }
             is CallLogBackupAction.StageCallLogs -> {
                 super.stageItems(
-                    stagingBlock = stageSelectedCallLogs::invoke,
+                    stagingBlock = {
+                        stageSelectedCallLogs.invoke(
+                            allListItems = it,
+                            dataRepository = backupDataRepository,
+                        )
+                    },
                     onStagingDone = { action.onStagingDone() }
                 )
             }
