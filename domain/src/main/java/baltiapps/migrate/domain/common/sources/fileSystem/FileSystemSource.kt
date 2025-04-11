@@ -33,21 +33,6 @@ abstract class FileSystemSource() {
         }
     }
 
-    inline fun <T: DBWriter<*>> writeDB(
-        directory: String,
-        fileName: String,
-        dbWriter: T,
-        writerBlock: (dbWriter: T) -> Unit,
-    ) {
-        try {
-            if (!createDirectory(directory)) return
-            dbWriter.setup("$directory/$fileName")
-            writerBlock(dbWriter)
-        } finally {
-            dbWriter.close()
-        }
-    }
-
     inline fun <T: REWRITE_DBWriter<*>> writeDB(
         directory: Directory,
         file: GenericFile,
@@ -79,12 +64,6 @@ interface TextWriter<T> {
     fun setup(fileLocation: String, append: Boolean)
     fun write(data: T)
     fun writeLine(data: T)
-    fun close()
-}
-
-interface DBWriter<T: DataItem<*>> {
-    fun setup(fileLocation: String)
-    fun writeRow(dataItem: T)
     fun close()
 }
 
