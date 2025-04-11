@@ -33,7 +33,7 @@ abstract class FileSystemSource() {
         }
     }
 
-    inline fun <T: REWRITE_DBWriter<*>> writeDB(
+    inline fun <T: DBWriter<*>> writeDB(
         directory: Directory,
         file: GenericFile,
         dbWriter: T,
@@ -67,7 +67,7 @@ interface TextWriter<T> {
     fun close()
 }
 
-interface REWRITE_DBWriter<T: DataItem<*>> {
+interface DBWriter<T: DataItem<*>> {
     fun setup(file: GenericFile)
     fun writeRows(dataItems: List<T>): Flow<Progress>
     fun close()

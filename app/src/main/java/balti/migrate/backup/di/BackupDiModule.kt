@@ -1,11 +1,11 @@
 package balti.migrate.backup.di
 
 import balti.migrate.backup.data.sources.BackupNotificationHandlerImpl
-import balti.migrate.backup.data.sources.callLog.REWRITE_CallLogDBWriter
+import balti.migrate.backup.data.sources.callLog.CallLogDBWriter
 import balti.migrate.backup.data.sources.callLog.CallLogSource
 import balti.migrate.backup.data.sources.contacts.ContactsSource
-import balti.migrate.backup.data.sources.contacts.REWRITE_ContactsDBWriter
-import balti.migrate.backup.data.sources.sms.REWRITE_SmsDBWriter
+import balti.migrate.backup.data.sources.contacts.ContactsDBWriter
+import balti.migrate.backup.data.sources.sms.SmsDBWriter
 import balti.migrate.backup.data.sources.sms.SmsSource
 import balti.migrate.backup.ui.screens.listScreen.callLogBackup.CallLogBackupViewModel
 import balti.migrate.backup.ui.screens.listScreen.contactBackup.ContactBackupViewModel
@@ -26,7 +26,7 @@ import baltiapps.migrate.domain.backup.usecase.ReadSmsUseCase
 import baltiapps.migrate.domain.backup.usecase.StageSelectedContacts
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
-import baltiapps.migrate.domain.common.sources.fileSystem.REWRITE_DBWriter
+import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -51,20 +51,20 @@ val backupDiModule = module {
     single<DataSource<ContactData>>(named(Names.CONTACTS_SOURCE)) {
         ContactsSource(get(), get())
     }
-    single<REWRITE_DBWriter<ContactData>>(named(Names.REWRITE_CONTACTS_WRITER)) {
-        REWRITE_ContactsDBWriter(get())
+    single<DBWriter<ContactData>>(named(Names.REWRITE_CONTACTS_WRITER)) {
+        ContactsDBWriter(get())
     }
     single<DataSource<CallLogData>>(named(Names.CALL_LOG_SOURCE)) {
         CallLogSource(get(), get())
     }
-    single<REWRITE_DBWriter<CallLogData>>(named(Names.REWRITE_DB_WRITER_CALL_LOG)) {
-        REWRITE_CallLogDBWriter(get())
+    single<DBWriter<CallLogData>>(named(Names.REWRITE_DB_WRITER_CALL_LOG)) {
+        CallLogDBWriter(get())
     }
     single<DataSource<SmsData>>(named(Names.SMS_SOURCE)) {
         SmsSource(get(), get())
     }
-    single<REWRITE_DBWriter<SmsData>>(named(Names.REWRITE_DB_WRITER_SMS)) {
-        REWRITE_SmsDBWriter(get())
+    single<DBWriter<SmsData>>(named(Names.REWRITE_DB_WRITER_SMS)) {
+        SmsDBWriter(get())
     }
     single<NotificationHandler<*>>(named(Names.NOTIFICATION_HANDLER_BACKUP)) {
         BackupNotificationHandlerImpl(

@@ -25,16 +25,16 @@ import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.runCatchingWithProgress
-import baltiapps.migrate.domain.common.sources.fileSystem.REWRITE_DBWriter
+import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.io.File
 
-class REWRITE_SmsDBWriter(
+class SmsDBWriter(
     private val dbUtils: DBUtils,
-): REWRITE_DBWriter<SmsData> {
+): DBWriter<SmsData> {
 
     private lateinit var sqLiteDatabase: SQLiteDatabase
 

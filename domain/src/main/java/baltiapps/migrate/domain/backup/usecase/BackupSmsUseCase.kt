@@ -6,13 +6,13 @@ import baltiapps.migrate.domain.common.model.Directory
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.model.SmsListItem
-import baltiapps.migrate.domain.common.sources.fileSystem.REWRITE_DBWriter
+import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import kotlinx.coroutines.flow.Flow
 
 class BackupSmsUseCase(
     private val fileSystemSource: FileSystemSource,
-    private val smsDBWriter: REWRITE_DBWriter<DataItem<SmsListItem>>,
+    private val smsDBWriter: DBWriter<DataItem<SmsListItem>>,
     private val dataRepository: BackupDataRepository,
 ) {
     operator fun invoke(
