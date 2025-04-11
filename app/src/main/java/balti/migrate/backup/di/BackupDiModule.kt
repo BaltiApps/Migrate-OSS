@@ -37,9 +37,9 @@ enum class Names {
     CONTACTS_SOURCE,
     CALL_LOG_SOURCE,
     SMS_SOURCE,
-    REWRITE_DB_WRITER_CALL_LOG,
-    REWRITE_DB_WRITER_SMS,
-    REWRITE_CONTACTS_WRITER,
+    DB_WRITER_CONTACTS,
+    DB_WRITER_CALL_LOG,
+    DB_WRITER_SMS,
     PROGRESS_LOG_REPOSITORY_BACKUP,
     NOTIFICATION_HANDLER_BACKUP,
 }
@@ -51,19 +51,19 @@ val backupDiModule = module {
     single<DataSource<ContactData>>(named(Names.CONTACTS_SOURCE)) {
         ContactsSource(get(), get())
     }
-    single<DBWriter<ContactData>>(named(Names.REWRITE_CONTACTS_WRITER)) {
+    single<DBWriter<ContactData>>(named(Names.DB_WRITER_CONTACTS)) {
         ContactsDBWriter(get())
     }
     single<DataSource<CallLogData>>(named(Names.CALL_LOG_SOURCE)) {
         CallLogSource(get(), get())
     }
-    single<DBWriter<CallLogData>>(named(Names.REWRITE_DB_WRITER_CALL_LOG)) {
+    single<DBWriter<CallLogData>>(named(Names.DB_WRITER_CALL_LOG)) {
         CallLogDBWriter(get())
     }
     single<DataSource<SmsData>>(named(Names.SMS_SOURCE)) {
         SmsSource(get(), get())
     }
-    single<DBWriter<SmsData>>(named(Names.REWRITE_DB_WRITER_SMS)) {
+    single<DBWriter<SmsData>>(named(Names.DB_WRITER_SMS)) {
         SmsDBWriter(get())
     }
     single<NotificationHandler<*>>(named(Names.NOTIFICATION_HANDLER_BACKUP)) {
@@ -105,21 +105,21 @@ val backupDiModule = module {
     single {
         BackupContactsUseCase(
             fileSystemSource = get(),
-            contactsDBWriter = get(named(Names.REWRITE_CONTACTS_WRITER)),
+            contactsDBWriter = get(named(Names.DB_WRITER_CONTACTS)),
             dataRepository = get()
         )
     }
     single {
         BackupCallLogUseCase(
             fileSystemSource = get(),
-            callLogDBWriter = get(named(Names.REWRITE_DB_WRITER_CALL_LOG)),
+            callLogDBWriter = get(named(Names.DB_WRITER_CALL_LOG)),
             dataRepository = get()
         )
     }
     single {
         BackupSmsUseCase(
             fileSystemSource = get(),
-            smsDBWriter = get(named(Names.REWRITE_DB_WRITER_SMS)),
+            smsDBWriter = get(named(Names.DB_WRITER_SMS)),
             dataRepository = get()
         )
     }
