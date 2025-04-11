@@ -5,7 +5,7 @@ import baltiapps.migrate.domain.common.model.ContactListItem
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.ReadContactsUseCase
-import baltiapps.migrate.domain.backup.usecase.StageSelectedContacts
+import baltiapps.migrate.domain.common.usecase.StageSelectedContacts
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -58,7 +58,12 @@ class ContactBackupViewModel(
             }
             is ContactBackupAction.StageContacts -> {
                 super.stageItems(
-                    stagingBlock = stageSelectedContacts::invoke,
+                    stagingBlock = {
+                        stageSelectedContacts.invoke(
+                            allListItems = it,
+                            dataRepository = backupDataRepository,
+                        )
+                    },
                     onStagingDone = { action.onStagingDone() }
                 )
             }

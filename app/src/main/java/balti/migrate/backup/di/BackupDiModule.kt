@@ -23,7 +23,6 @@ import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadSmsUseCase
-import baltiapps.migrate.domain.backup.usecase.StageSelectedContacts
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
@@ -101,7 +100,6 @@ val backupDiModule = module {
             backupDataRepository = get(),
         )
     }
-    singleOf(::StageSelectedContacts)
     single {
         BackupContactsUseCase(
             fileSystemSource = get(),
