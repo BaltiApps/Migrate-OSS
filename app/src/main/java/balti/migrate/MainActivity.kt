@@ -19,7 +19,6 @@ import baltiapps.migrate.domain.ACTION_START_BACKUP
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
 import baltiapps.migrate.domain.EXTRA_BACKUP_LOCATION
 import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
-import baltiapps.migrate.domain.EXTRA_BACKUP_ROOT
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import kotlinx.serialization.Serializable
 
@@ -40,7 +39,6 @@ class MainActivity : ComponentActivity() {
     private fun startBackupService(backupLocation: BackupLocation) {
         Intent(this, BackupService::class.java).apply {
             action = ACTION_START_BACKUP
-            putExtra(EXTRA_BACKUP_ROOT, backupLocation.getFullPath())
             putExtra(EXTRA_BACKUP_LOCATION, backupLocation.backupLocation)
             putExtra(EXTRA_BACKUP_NAME, backupLocation.backupName)
         }.run {

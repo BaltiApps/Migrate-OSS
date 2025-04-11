@@ -14,7 +14,6 @@ const val ACTION_CANCEL_BACKUP = "action_stop_backup"
 const val ACTION_START_RESTORE = "action_start_restore"
 const val ACTION_CANCEL_RESTORE = "action_stop_restore"
 
-const val EXTRA_BACKUP_ROOT = "backup_root"
 const val EXTRA_BACKUP_LOCATION = "backup_location"
 const val EXTRA_BACKUP_NAME = "backup_name"
 

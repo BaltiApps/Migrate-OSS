@@ -92,10 +92,6 @@ class BackupService : LifecycleService() {
                 )
 
                 backupJob = startBackup(directory)
-
-//                intent.getStringExtra(EXTRA_BACKUP_ROOT)?.takeIf { it.isNotBlank() }?.run {
-//                    backupJob = startBackup(this)
-//                }
             }
             ACTION_CANCEL_BACKUP -> {
                 cancelBackup()
