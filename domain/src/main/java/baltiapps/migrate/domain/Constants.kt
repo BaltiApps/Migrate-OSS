@@ -1,6 +1,6 @@
 package baltiapps.migrate.domain
 
-const val BACKUP_FILE_NAME_CONTACTS = "contacts.vcf"
+const val BACKUP_FILE_NAME_CONTACTS = "contacts.db"
 const val BACKUP_FILE_NAME_CALL_LOGS = "call_logs.db"
 const val BACKUP_FILE_NAME_SMS = "sms.db"
 const val BACKUP_LOG = "backup_log.txt"
@@ -15,6 +15,8 @@ const val ACTION_START_RESTORE = "action_start_restore"
 const val ACTION_CANCEL_RESTORE = "action_stop_restore"
 
 const val EXTRA_BACKUP_ROOT = "backup_root"
+const val EXTRA_BACKUP_LOCATION = "backup_location"
+const val EXTRA_BACKUP_NAME = "backup_name"
 
 const val DEFAULT_BACKUP_ROOT = "/storage/emulated/0/Migrate"
 
@@ -63,5 +65,14 @@ class SmsDBConstant {
         const val SMS_READ = "smsRead"
         const val SMS_LOCKED = "smsLocked"
         const val SMS_REPLY_PATH_PRESENT = "smsReplyPathPresent"
+    }
+}
+
+class ContactsDBConstants {
+    companion object {
+        const val CONTACTS_TABLE_NAME = "contacts"
+
+        const val DISPLAY_NAME = "displayName"
+        const val VCF_CONTENT = "vcfContent"
     }
 }
