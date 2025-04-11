@@ -5,18 +5,29 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import balti.migrate.backup.di.Names
+import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.NotificationInfo
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import balti.migrate.common.utils.ServiceUtils
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
 import baltiapps.migrate.domain.ACTION_START_BACKUP
 import baltiapps.migrate.domain.BACKUP_ERROR_LOG
+import baltiapps.migrate.domain.BACKUP_FILE_NAME_CALL_LOGS
+import baltiapps.migrate.domain.BACKUP_FILE_NAME_CONTACTS
+import baltiapps.migrate.domain.BACKUP_FILE_NAME_SMS
 import baltiapps.migrate.domain.BACKUP_LOG
+import baltiapps.migrate.domain.EXTRA_BACKUP_LOCATION
+import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
 import baltiapps.migrate.domain.EXTRA_BACKUP_ROOT
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
+import baltiapps.migrate.domain.backup.usecase.REWRITE_BackupCallLogUseCase
+import baltiapps.migrate.domain.backup.usecase.REWRITE_BackupContactsUseCase
+import baltiapps.migrate.domain.backup.usecase.REWRITE_BackupSmsUseCase
+import baltiapps.migrate.domain.common.model.Directory
+import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.ContextSource
@@ -42,6 +53,10 @@ class BackupService : LifecycleService() {
     private val backupContactsUseCase: BackupContactsUseCase by inject()
     private val backupCallLogUseCase: BackupCallLogUseCase by inject()
     private val backupSmsUseCase: BackupSmsUseCase by inject()
+
+    private val REWRITE_backupContactsUseCase: REWRITE_BackupContactsUseCase by inject()
+    private val REWRITE_backupCallLogUseCase: REWRITE_BackupCallLogUseCase by inject()
+    private val REWRITE_backupSmsUseCase: REWRITE_BackupSmsUseCase by inject()
 
     private val backupLog by lazy { File(this.cacheDir, BACKUP_LOG) }
     private val backupErrorLog by lazy { File(this.cacheDir, BACKUP_ERROR_LOG) }
@@ -71,15 +86,87 @@ class BackupService : LifecycleService() {
 
         when (intent?.action) {
             ACTION_START_BACKUP -> {
-                intent.getStringExtra(EXTRA_BACKUP_ROOT)?.takeIf { it.isNotBlank() }?.run {
-                    backupJob = startBackup(this)
-                }
+                val location = intent.getStringExtra(EXTRA_BACKUP_LOCATION)
+                val name = intent.getStringExtra(EXTRA_BACKUP_NAME)
+
+                if (location == null || name == null) return super.onStartCommand(intent, flags, startId)
+
+                val directory = Directory(
+                    directoryFullPath = "$location/$name",
+                    basePath = location,
+                    name = name,
+                    creationTime = 0L,
+                    parent = null,
+                    isValidBackupDirectory = true,
+                )
+
+                backupJob = startBackup(directory)
+
+//                intent.getStringExtra(EXTRA_BACKUP_ROOT)?.takeIf { it.isNotBlank() }?.run {
+//                    backupJob = startBackup(this)
+//                }
             }
             ACTION_CANCEL_BACKUP -> {
                 cancelBackup()
             }
         }
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun startBackup(
+        directory: Directory,
+    ): Job {
+        return lifecycleScope.launch(Dispatchers.IO) {
+            Timber.i("backup - setup")
+            setup()
+
+            notificationHandler.listenAtSafeIntervals()
+
+            Timber.i("backup - start - contacts")
+
+            val contactsBackupFile = JavaFile("${directory.directoryFullPath}/$BACKUP_FILE_NAME_CONTACTS")
+            serviceUtils.runStage(
+                shouldRun = repository::shouldBackupContacts,
+                stageBody = { REWRITE_backupContactsUseCase.invoke(directory, contactsBackupFile) },
+                progressType = Progress.ProgressType.CONTACTS_BACKUP,
+                errorMessage = { "Contacts backup exception: ${it.message}" },
+            )
+
+            Timber.i("backup - finished - contacts")
+
+            Timber.i("backup - start - call logs")
+
+            val callLogBackupFile = JavaFile("${directory.directoryFullPath}/$BACKUP_FILE_NAME_CALL_LOGS")
+            serviceUtils.runStage(
+                shouldRun = repository::shouldBackupCallLogs,
+                stageBody = { REWRITE_backupCallLogUseCase.invoke(directory, callLogBackupFile) },
+                progressType = Progress.ProgressType.CALL_LOG_BACKUP,
+                errorMessage = { "Call log backup exception: ${it.message}" },
+            )
+
+            Timber.i("backup - finished - call logs")
+
+            Timber.i("backup - start - sms")
+
+            val smsBackupFile = JavaFile("${directory.directoryFullPath}/$BACKUP_FILE_NAME_SMS")
+            serviceUtils.runStage(
+                shouldRun = repository::shouldBackupSms,
+                stageBody = { REWRITE_backupSmsUseCase.invoke(directory, smsBackupFile) },
+                progressType = Progress.ProgressType.SMS_BACKUP,
+                errorMessage = { "SMS backup exception: ${it.message}" },
+            )
+
+            Timber.i("backup - finished - sms")
+
+            serviceUtils.emitHeadingLog(Progress.ProgressType.BACKUP_FINISHED)
+
+            Timber.i("backup - finished")
+
+            notificationHandler.stopListening()
+            Timber.i("restore - notification handler stopped listening")
+            cleanup()
+            Timber.i("restore - cleanup done")
+        }
     }
 
     private fun startBackup(

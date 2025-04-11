@@ -17,6 +17,8 @@ import balti.migrate.ui.screens.ScreenHome
 import balti.migrate.ui.theme.MigrateTheme
 import baltiapps.migrate.domain.ACTION_START_BACKUP
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
+import baltiapps.migrate.domain.EXTRA_BACKUP_LOCATION
+import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
 import baltiapps.migrate.domain.EXTRA_BACKUP_ROOT
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import kotlinx.serialization.Serializable
@@ -39,6 +41,8 @@ class MainActivity : ComponentActivity() {
         Intent(this, BackupService::class.java).apply {
             action = ACTION_START_BACKUP
             putExtra(EXTRA_BACKUP_ROOT, backupLocation.getFullPath())
+            putExtra(EXTRA_BACKUP_LOCATION, backupLocation.backupLocation)
+            putExtra(EXTRA_BACKUP_NAME, backupLocation.backupName)
         }.run {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(this)
