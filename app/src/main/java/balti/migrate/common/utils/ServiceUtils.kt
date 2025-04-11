@@ -48,7 +48,9 @@ class ServiceUtils(
         try {
             if (shouldRun()) {
                 emitHeadingLog(progressType)
-                stageBody()
+                stageBody().collect {
+                    collectLogs(it)
+                }
             }
         } catch (e: Exception) {
             if (e is CancellationException) throw e
