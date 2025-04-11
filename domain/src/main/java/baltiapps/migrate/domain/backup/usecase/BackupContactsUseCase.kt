@@ -10,7 +10,7 @@ import baltiapps.migrate.domain.common.sources.fileSystem.REWRITE_DBWriter
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import kotlinx.coroutines.flow.Flow
 
-class REWRITE_BackupContactsUseCase(
+class BackupContactsUseCase(
     private val fileSystemSource: FileSystemSource,
     private val contactsDBWriter: REWRITE_DBWriter<DataItem<ContactListItem>>,
     private val dataRepository: BackupDataRepository,

@@ -18,13 +18,11 @@ import baltiapps.migrate.domain.BACKUP_FILE_NAME_SMS
 import baltiapps.migrate.domain.BACKUP_LOG
 import baltiapps.migrate.domain.EXTRA_BACKUP_LOCATION
 import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
-import baltiapps.migrate.domain.EXTRA_BACKUP_ROOT
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
-import baltiapps.migrate.domain.backup.usecase.REWRITE_BackupCallLogUseCase
-import baltiapps.migrate.domain.backup.usecase.REWRITE_BackupContactsUseCase
-import baltiapps.migrate.domain.backup.usecase.REWRITE_BackupSmsUseCase
+import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
+import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
+import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
 import baltiapps.migrate.domain.common.model.Directory
-import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.ContextSource
@@ -47,9 +45,9 @@ class BackupService : LifecycleService() {
     private val notificationHandler:
             NotificationHandler<NotificationInfo> by inject(named(Names.NOTIFICATION_HANDLER_BACKUP))
 
-    private val REWRITE_backupContactsUseCase: REWRITE_BackupContactsUseCase by inject()
-    private val REWRITE_backupCallLogUseCase: REWRITE_BackupCallLogUseCase by inject()
-    private val REWRITE_backupSmsUseCase: REWRITE_BackupSmsUseCase by inject()
+    private val backupContactsUseCase: BackupContactsUseCase by inject()
+    private val backupCallLogUseCase: BackupCallLogUseCase by inject()
+    private val backupSmsUseCase: BackupSmsUseCase by inject()
 
     private val backupLog by lazy { File(this.cacheDir, BACKUP_LOG) }
     private val backupErrorLog by lazy { File(this.cacheDir, BACKUP_ERROR_LOG) }
@@ -120,7 +118,7 @@ class BackupService : LifecycleService() {
             val contactsBackupFile = JavaFile("${directory.directoryFullPath}/$BACKUP_FILE_NAME_CONTACTS")
             serviceUtils.runStage(
                 shouldRun = repository::shouldBackupContacts,
-                stageBody = { REWRITE_backupContactsUseCase.invoke(directory, contactsBackupFile) },
+                stageBody = { backupContactsUseCase.invoke(directory, contactsBackupFile) },
                 progressType = Progress.ProgressType.CONTACTS_BACKUP,
                 errorMessage = { "Contacts backup exception: ${it.message}" },
             )
@@ -132,7 +130,7 @@ class BackupService : LifecycleService() {
             val callLogBackupFile = JavaFile("${directory.directoryFullPath}/$BACKUP_FILE_NAME_CALL_LOGS")
             serviceUtils.runStage(
                 shouldRun = repository::shouldBackupCallLogs,
-                stageBody = { REWRITE_backupCallLogUseCase.invoke(directory, callLogBackupFile) },
+                stageBody = { backupCallLogUseCase.invoke(directory, callLogBackupFile) },
                 progressType = Progress.ProgressType.CALL_LOG_BACKUP,
                 errorMessage = { "Call log backup exception: ${it.message}" },
             )
@@ -144,7 +142,7 @@ class BackupService : LifecycleService() {
             val smsBackupFile = JavaFile("${directory.directoryFullPath}/$BACKUP_FILE_NAME_SMS")
             serviceUtils.runStage(
                 shouldRun = repository::shouldBackupSms,
-                stageBody = { REWRITE_backupSmsUseCase.invoke(directory, smsBackupFile) },
+                stageBody = { backupSmsUseCase.invoke(directory, smsBackupFile) },
                 progressType = Progress.ProgressType.SMS_BACKUP,
                 errorMessage = { "SMS backup exception: ${it.message}" },
             )
