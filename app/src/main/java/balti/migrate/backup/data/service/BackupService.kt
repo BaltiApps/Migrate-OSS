@@ -20,9 +20,6 @@ import baltiapps.migrate.domain.EXTRA_BACKUP_LOCATION
 import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
 import baltiapps.migrate.domain.EXTRA_BACKUP_ROOT
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
-import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
-import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
-import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
 import baltiapps.migrate.domain.backup.usecase.REWRITE_BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.REWRITE_BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.REWRITE_BackupSmsUseCase
@@ -49,10 +46,6 @@ class BackupService : LifecycleService() {
     private val progressLogRepository: ProgressLogRepository by inject(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP))
     private val notificationHandler:
             NotificationHandler<NotificationInfo> by inject(named(Names.NOTIFICATION_HANDLER_BACKUP))
-
-    private val backupContactsUseCase: BackupContactsUseCase by inject()
-    private val backupCallLogUseCase: BackupCallLogUseCase by inject()
-    private val backupSmsUseCase: BackupSmsUseCase by inject()
 
     private val REWRITE_backupContactsUseCase: REWRITE_BackupContactsUseCase by inject()
     private val REWRITE_backupCallLogUseCase: REWRITE_BackupCallLogUseCase by inject()
@@ -152,59 +145,6 @@ class BackupService : LifecycleService() {
             serviceUtils.runStage(
                 shouldRun = repository::shouldBackupSms,
                 stageBody = { REWRITE_backupSmsUseCase.invoke(directory, smsBackupFile) },
-                progressType = Progress.ProgressType.SMS_BACKUP,
-                errorMessage = { "SMS backup exception: ${it.message}" },
-            )
-
-            Timber.i("backup - finished - sms")
-
-            serviceUtils.emitHeadingLog(Progress.ProgressType.BACKUP_FINISHED)
-
-            Timber.i("backup - finished")
-
-            notificationHandler.stopListening()
-            Timber.i("restore - notification handler stopped listening")
-            cleanup()
-            Timber.i("restore - cleanup done")
-        }
-    }
-
-    private fun startBackup(
-        backupRoot: String,
-    ): Job {
-        return lifecycleScope.launch(Dispatchers.IO) {
-            Timber.i("backup - setup")
-            setup()
-
-            notificationHandler.listenAtSafeIntervals()
-
-            Timber.i("backup - start - contacts")
-
-            serviceUtils.runStage(
-                shouldRun = repository::shouldBackupContacts,
-                stageBody = { backupContactsUseCase.invoke(backupRoot, repository.stagedContacts) },
-                progressType = Progress.ProgressType.CONTACTS_BACKUP,
-                errorMessage = { "Contacts backup exception: ${it.message}" },
-            )
-
-            Timber.i("backup - finished - contacts")
-
-            Timber.i("backup - start - call logs")
-
-            serviceUtils.runStage(
-                shouldRun = repository::shouldBackupCallLogs,
-                stageBody = { backupCallLogUseCase.invoke(backupRoot, repository.stagedCallLogs) },
-                progressType = Progress.ProgressType.CALL_LOG_BACKUP,
-                errorMessage = { "Call log backup exception: ${it.message}" },
-            )
-
-            Timber.i("backup - finished - call logs")
-
-            Timber.i("backup - start - sms")
-
-            serviceUtils.runStage(
-                shouldRun = repository::shouldBackupSms,
-                stageBody = { backupSmsUseCase.invoke(backupRoot, repository.stagedSms) },
                 progressType = Progress.ProgressType.SMS_BACKUP,
                 errorMessage = { "SMS backup exception: ${it.message}" },
             )

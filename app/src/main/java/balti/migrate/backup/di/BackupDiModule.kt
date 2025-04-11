@@ -20,9 +20,6 @@ import balti.migrate.common.data.model.SmsData
 import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.sources.DataSource
-import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
-import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
-import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
 import baltiapps.migrate.domain.backup.usecase.REWRITE_BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.REWRITE_BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.REWRITE_BackupSmsUseCase
@@ -122,24 +119,6 @@ val backupDiModule = module {
         )
     }
     singleOf(::StageSelectedContacts)
-    single {
-        BackupContactsUseCase(
-            fileSystemSource = get(),
-            contactsWriter = get(named(Names.CONTACTS_WRITER))
-        )
-    }
-    single {
-        BackupCallLogUseCase(
-            fileSystemSource = get(),
-            callLogDBWriter = get(named(Names.DB_WRITER_CALL_LOG)),
-        )
-    }
-    single {
-        BackupSmsUseCase(
-            fileSystemSource = get(),
-            smsDBWriter = get(named(Names.DB_WRITER_SMS))
-        )
-    }
     single {
         REWRITE_BackupContactsUseCase(
             fileSystemSource = get(),
