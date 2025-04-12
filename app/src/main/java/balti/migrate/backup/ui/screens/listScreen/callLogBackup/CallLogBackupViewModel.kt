@@ -1,71 +1,63 @@
 package balti.migrate.backup.ui.screens.listScreen.callLogBackup
 
-import balti.migrate.backup.ui.screens.listScreen.ListScreenGenericViewModel
-import baltiapps.migrate.domain.common.model.CallLogListItem
-import baltiapps.migrate.domain.common.model.Progress
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import balti.migrate.common.utils.ListItemUtils
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.ReadCallLogForBackupUseCase
 import baltiapps.migrate.domain.common.usecase.StageSelectedCallLogs
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class CallLogBackupViewModel(
+    private val listItemUtils: ListItemUtils,
     private val readCallLogForBackupUseCase: ReadCallLogForBackupUseCase,
     private val stageSelectedCallLogs: StageSelectedCallLogs,
     private val backupDataRepository: BackupDataRepository,
-): ListScreenGenericViewModel<CallLogListItem>() {
+): ViewModel() {
 
     private val _state = MutableStateFlow(CallLogBackupState())
     val state = _state.asStateFlow()
 
-    override fun getListFromState(): List<CallLogListItem> {
-        return _state.value.callLogList
-    }
-
-    override fun updateStateWithProgress(progress: Progress) {
-        _state.update {
-            it.copy(progress = progress)
-        }
-    }
-
-    override fun updateStateStaging(isStaging: Boolean) {
-        _state.update {
-            it.copy(isStaging = isStaging)
-        }
-    }
-
-    override fun updateStateWithItems(list: List<CallLogListItem>) {
-        _state.update {
-            it.copy(callLogList = list)
-        }
-    }
-
     init {
-        super.readItems(
-            reader = readCallLogForBackupUseCase::invoke,
-            getReadItems = backupDataRepository::callLogListItems
-        )
+        viewModelScope.launch {
+            readCallLogForBackupUseCase.invoke().onCompletion {
+                _state.update {
+                    it.copy(
+                        callLogList = backupDataRepository.callLogListItems
+                    )
+                }
+            }.collect {
+                _state.update { state ->
+                    state.copy(
+                        progress = it
+                    )
+                }
+            }
+        }
     }
 
     fun performAction(action: CallLogBackupAction) {
         when(action) {
             is CallLogBackupAction.ToggleCallLogItem -> {
-                super.toggleItem(action.item)
+                val result = listItemUtils.toggleSingleItem(_state.value.callLogList, action.item)
+                _state.update { it.copy(callLogList = result) }
             }
             is CallLogBackupAction.ToggleAllCallLog -> {
-                super.toggleAll(action.isChecked)
+                val result = listItemUtils.toggleAllItems(_state.value.callLogList, action.isChecked)
+                _state.update { it.copy(callLogList = result) }
             }
             is CallLogBackupAction.StageCallLogs -> {
-                super.stageItems(
-                    stagingBlock = {
-                        stageSelectedCallLogs.invoke(
-                            allListItems = it,
-                            dataRepository = backupDataRepository,
-                        )
-                    },
-                    onStagingDone = { action.onStagingDone() }
+                _state.update { it.copy(isStaging = true) }
+                stageSelectedCallLogs.invoke(
+                    allListItems = _state.value.callLogList,
+                    dataRepository = backupDataRepository,
                 )
+                _state.update { it.copy(isStaging = false) }
+                action.onStagingDone()
             }
         }
     }

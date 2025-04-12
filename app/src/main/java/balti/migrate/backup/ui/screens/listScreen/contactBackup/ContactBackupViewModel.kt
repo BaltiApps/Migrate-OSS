@@ -1,71 +1,63 @@
 package balti.migrate.backup.ui.screens.listScreen.contactBackup
 
-import balti.migrate.backup.ui.screens.listScreen.ListScreenGenericViewModel
-import baltiapps.migrate.domain.common.model.ContactListItem
-import baltiapps.migrate.domain.common.model.Progress
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import balti.migrate.common.utils.ListItemUtils
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.ReadContactsForBackupUseCase
 import baltiapps.migrate.domain.common.usecase.StageSelectedContacts
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class ContactBackupViewModel(
+    private val listItemUtils: ListItemUtils,
     private val readContactsForBackupUseCase: ReadContactsForBackupUseCase,
     private val stageSelectedContacts: StageSelectedContacts,
     private val backupDataRepository: BackupDataRepository,
-) : ListScreenGenericViewModel<ContactListItem>() {
+) : ViewModel() {
 
     private val _state = MutableStateFlow(ContactBackupState())
     val state = _state.asStateFlow()
 
-    override fun getListFromState(): List<ContactListItem> {
-        return _state.value.contactList
-    }
-
-    override fun updateStateWithProgress(progress: Progress) {
-        _state.update {
-            it.copy(progress = progress)
-        }
-    }
-
-    override fun updateStateStaging(isStaging: Boolean) {
-        _state.update {
-            it.copy(isStaging = isStaging)
-        }
-    }
-
-    override fun updateStateWithItems(list: List<ContactListItem>) {
-        _state.update {
-            it.copy(contactList = list)
-        }
-    }
-
     init {
-        super.readItems(
-            reader = readContactsForBackupUseCase::invoke,
-            getReadItems = backupDataRepository::contactsListItems,
-        )
+        viewModelScope.launch {
+            readContactsForBackupUseCase.invoke().onCompletion {
+                _state.update {
+                    it.copy(
+                        contactList = backupDataRepository.contactsListItems
+                    )
+                }
+            }.collect {
+                _state.update { state ->
+                    state.copy(
+                        progress = it
+                    )
+                }
+            }
+        }
     }
 
     fun performAction(action: ContactBackupAction) {
         when (action) {
             is ContactBackupAction.ToggleContactItem -> {
-                super.toggleItem(action.item)
+                val result = listItemUtils.toggleSingleItem(_state.value.contactList, action.item)
+                _state.update { it.copy(contactList = result) }
             }
             is ContactBackupAction.ToggleAllContacts -> {
-                super.toggleAll(action.isChecked)
+                val result = listItemUtils.toggleAllItems(_state.value.contactList, action.isChecked)
+                _state.update { it.copy(contactList = result) }
             }
             is ContactBackupAction.StageContacts -> {
-                super.stageItems(
-                    stagingBlock = {
-                        stageSelectedContacts.invoke(
-                            allListItems = it,
-                            dataRepository = backupDataRepository,
-                        )
-                    },
-                    onStagingDone = { action.onStagingDone() }
+                _state.update { it.copy(isStaging = true) }
+                stageSelectedContacts.invoke(
+                    allListItems = _state.value.contactList,
+                    dataRepository = backupDataRepository,
                 )
+                _state.update { it.copy(isStaging = false) }
+                action.onStagingDone()
             }
         }
     }
