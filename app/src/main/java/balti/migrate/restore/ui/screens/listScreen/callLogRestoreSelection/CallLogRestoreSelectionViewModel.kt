@@ -1,4 +1,4 @@
-package balti.migrate.restore.ui.screens.listScreen.callLogRestore
+package balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

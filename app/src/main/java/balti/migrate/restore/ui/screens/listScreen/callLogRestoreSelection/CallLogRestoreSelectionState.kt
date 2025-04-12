@@ -1,4 +1,4 @@
-package balti.migrate.restore.ui.screens.listScreen.callLogRestore
+package balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection
 
 import baltiapps.migrate.domain.common.model.CallLogListItem
 import baltiapps.migrate.domain.common.model.Progress

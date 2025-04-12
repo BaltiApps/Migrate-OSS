@@ -5,7 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDirectory
-import balti.migrate.restore.ui.screens.listScreen.callLogRestore.CallLogRestoreSelection
+import balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection.CallLogRestoreSelection
 import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestoreSelection
 import baltiapps.migrate.domain.common.model.Directory
 import kotlinx.serialization.Serializable
