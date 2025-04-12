@@ -6,6 +6,7 @@ import balti.migrate.common.data.model.SmsData
 import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.SmsDBConstant
 import baltiapps.migrate.domain.common.getPercentage
+import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
 import baltiapps.migrate.domain.exceptions.ContentReadException
@@ -21,9 +22,9 @@ class SmsDBReader(
 
     private lateinit var sqLiteDatabase: SQLiteDatabase
 
-    override fun setup(fileLocation: String) {
-        val dbFile = File(fileLocation).apply {
-            if (!canRead()) throw ContentReadException("Cannot read SMS DB file - $fileLocation")
+    override fun setup(file: GenericFile) {
+        val dbFile = File(file.path).apply {
+            if (!canRead()) throw ContentReadException("Cannot read SMS DB file - ${file.path}")
         }
 
         sqLiteDatabase = dbUtils.getDataBase(dbFile)

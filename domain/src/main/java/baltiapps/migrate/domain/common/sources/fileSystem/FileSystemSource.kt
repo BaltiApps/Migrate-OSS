@@ -53,7 +53,7 @@ abstract class FileSystemSource() {
         dbReader: T,
         readerBlock: (dbReader: T) -> Flow<Progress>,
     ): Flow<Progress> {
-        dbReader.setup(file.path)
+        dbReader.setup(file)
         return readerBlock(dbReader).apply {
             onCompletion { dbReader.close() }
         }
@@ -74,7 +74,7 @@ interface DBWriter<T: DataItem<*>> {
 }
 
 interface DBReader<T: DataItem<*>> {
-    fun setup(fileLocation: String)
+    fun setup(file: GenericFile)
     fun readRows(onFinished: (List<T>) -> Unit): Flow<Progress>
     fun close()
 }
