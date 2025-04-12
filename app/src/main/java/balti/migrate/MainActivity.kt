@@ -1,7 +1,6 @@
 package balti.migrate
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,8 +14,8 @@ import balti.migrate.backup.ui.screens.ScreenBackup
 import balti.migrate.restore.ui.ScreenRestore
 import balti.migrate.ui.screens.ScreenHome
 import balti.migrate.ui.theme.MigrateTheme
-import baltiapps.migrate.domain.ACTION_START_BACKUP
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
+import baltiapps.migrate.domain.ACTION_START_BACKUP
 import baltiapps.migrate.domain.EXTRA_BACKUP_LOCATION
 import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
 import baltiapps.migrate.domain.backup.model.BackupLocation
@@ -42,11 +41,7 @@ class MainActivity : ComponentActivity() {
             putExtra(EXTRA_BACKUP_LOCATION, backupLocation.backupLocation)
             putExtra(EXTRA_BACKUP_NAME, backupLocation.backupName)
         }.run {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(this)
-            } else {
-                startService(this)
-            }
+            startForegroundService(this)
         }
     }
 
