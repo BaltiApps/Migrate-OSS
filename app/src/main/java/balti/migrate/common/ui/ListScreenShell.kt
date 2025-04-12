@@ -1,6 +1,8 @@
 package balti.migrate.common.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -16,13 +18,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import balti.migrate.R
 import balti.migrate.common.ui.components.ButtonStatus
+import balti.migrate.common.ui.components.LoadingProgressBar
 import balti.migrate.common.ui.components.NextFab
+import baltiapps.migrate.domain.common.model.Progress
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,11 +36,12 @@ fun ListScreenShell(
     navigateUp: () -> Unit,
     onSelectAll: () -> Unit,
     onDeselectAll: () -> Unit,
-    isLoading: Boolean,
     isStaging: Boolean,
+    loadingProgress: Progress,
     onNext: () -> Unit,
     content: @Composable (paddingValues: PaddingValues) -> Unit,
 ) {
+    val isLoading = loadingProgress.percentage < 1.0
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
         modifier = Modifier
@@ -53,7 +59,18 @@ fun ListScreenShell(
             )
         }
     ) { values ->
-        content(values)
+        if (isLoading) {
+            Box(
+                modifier = Modifier.padding(values).fillMaxSize(),
+            ) {
+                LoadingProgressBar(
+                    modifier = Modifier.align(Alignment.Center),
+                    progress = loadingProgress
+                )
+            }
+        } else {
+            content(values)
+        }
     }
 }
 

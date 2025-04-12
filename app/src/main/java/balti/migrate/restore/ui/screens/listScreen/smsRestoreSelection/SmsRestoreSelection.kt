@@ -53,34 +53,26 @@ private fun Content(
     onItemToggled: (SmsListItem) -> Unit,
     onNext: () -> Unit,
 ) {
-    val isLoading = state().progress.percentage < 1.0
     ListScreenShell(
         backupTitle = stringResource(R.string.label_sms_restore),
         navigateUp = navigateUp,
         onSelectAll = onSelectAll,
         onDeselectAll = onDeselectAll,
-        isLoading = isLoading,
         isStaging = state().isStaging,
+        loadingProgress = state().progress,
         onNext = onNext,
     ) { paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {
-            if (isLoading) {
-                LoadingProgressBar(
-                    modifier = Modifier.align(Alignment.TopCenter),
-                    progress = state().progress
-                )
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(
-                        items = state().smsList,
-                        key = { it._id }
-                    ) { item ->
-                        RenderSmsItem(item, onItemToggled)
-                    }
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(
+                    items = state().smsList,
+                    key = { it._id }
+                ) { item ->
+                    RenderSmsItem(item, onItemToggled)
                 }
             }
         }
