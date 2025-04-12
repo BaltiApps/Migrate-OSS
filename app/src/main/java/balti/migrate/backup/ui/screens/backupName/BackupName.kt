@@ -31,7 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import balti.migrate.R
-import balti.migrate.backup.ui.screens.listScreen.getDefaultBackupName
+import balti.migrate.common.utils.getDefaultBackupName
 import baltiapps.migrate.domain.DEFAULT_BACKUP_ROOT
 import baltiapps.migrate.domain.backup.model.BackupLocation
 

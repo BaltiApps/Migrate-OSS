@@ -1,6 +1,6 @@
 package balti.migrate.common.data.model
 
-import balti.migrate.backup.data.utils.convertToDisplayDate
+import balti.migrate.common.utils.convertToDisplayDate
 import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.model.ItemCreationDate
 import baltiapps.migrate.domain.common.model.SmsListItem
