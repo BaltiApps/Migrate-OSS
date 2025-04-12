@@ -56,12 +56,13 @@ private fun Content(
     onItemToggled: (SmsListItem) -> Unit,
     onNext: () -> Unit,
 ) {
+    val isStaging = state().isStaging
     ListScreenShell(
         backupTitle = stringResource(R.string.label_sms_backup),
         navigateUp = navigateUp,
         onSelectAll = onSelectAll,
         onDeselectAll = onDeselectAll,
-        isStaging = state().isStaging,
+        isStaging = isStaging,
         loadingProgress = state().progress,
         onNext = onNext,
     ) { paddingValues ->
@@ -75,7 +76,11 @@ private fun Content(
                     items = state().smsList,
                     key = { it._id }
                 ) { item ->
-                    RenderSmsItem(item, onItemToggled)
+                    RenderSmsItem(
+                        item = item,
+                        enabled = !isStaging,
+                        onItemToggled = onItemToggled,
+                    )
                 }
             }
         }

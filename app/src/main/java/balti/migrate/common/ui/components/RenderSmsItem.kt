@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,17 +32,27 @@ import baltiapps.migrate.domain.common.model.SmsListItem
 @Composable
 fun RenderSmsItem(
     item: SmsListItem,
+    enabled: Boolean = true,
     onItemToggled: (SmsListItem) -> Unit
 ) {
+    val alphaModifier = Modifier.alpha(
+        if (enabled) 1f else 0.38f
+    )
     ListItem(
-        modifier = Modifier.clickable {
+        modifier = Modifier.clickable(enabled = enabled) {
             onItemToggled(item)
         },
         leadingContent = {
-            SmsListItemIcon(item)
+            SmsListItemIcon(
+                item = item,
+                modifier = alphaModifier,
+            )
         },
         headlineContent = {
-            Text(text = item.smsAddress)
+            Text(
+                text = item.smsAddress,
+                modifier = alphaModifier,
+            )
         },
         supportingContent = {
             Column {
@@ -49,6 +60,7 @@ fun RenderSmsItem(
                     text = item.smsBody,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = alphaModifier,
                 )
                 Text(
                     text = item.creationDate.displayDate,
@@ -61,14 +73,19 @@ fun RenderSmsItem(
             Checkbox(
                 checked = item.isChecked,
                 onCheckedChange = null,
+                enabled = enabled,
             )
         }
     )
 }
 
 @Composable
-private fun SmsListItemIcon(item: SmsListItem) {
+private fun SmsListItemIcon(
+    item: SmsListItem,
+    modifier: Modifier = Modifier,
+) {
     Image(
+        modifier = modifier,
         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
         imageVector = when(item.smsType) {
             Telephony.Sms.MESSAGE_TYPE_INBOX -> Icons.Default.Inbox
@@ -105,7 +122,19 @@ private fun SmsDisplayItemPreview() {
         smsType = Telephony.Sms.MESSAGE_TYPE_INBOX,
         isChecked = true,
     )
+    val item2 = SmsListItem(
+        _id = "",
+        smsAddress = "44678",
+        smsBody = "Johnny!!",
+        creationDate = ItemCreationDate(
+            dateInLong = 1L,
+            displayDate = "Oct 06, 2024 - 14:00 PM",
+        ),
+        smsType = Telephony.Sms.MESSAGE_TYPE_INBOX,
+        isChecked = false,
+    )
     Column {
         RenderSmsItem(item1) {}
+        RenderSmsItem(item2, false) {}
     }
 }

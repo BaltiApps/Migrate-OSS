@@ -56,12 +56,13 @@ private fun Content(
     onItemToggled: (item: ContactListItem) -> Unit,
     onNext: () -> Unit,
 ) {
+    val isStaging = state().isStaging
     ListScreenShell(
         backupTitle = stringResource(R.string.label_contacts_backup),
         navigateUp = navigateUp,
         onSelectAll = onSelectAll,
         onDeselectAll = onDeselectAll,
-        isStaging = state().isStaging,
+        isStaging = isStaging,
         loadingProgress = state().progress,
         onNext = onNext,
     ) { paddingValues ->
@@ -77,7 +78,11 @@ private fun Content(
                         it._id
                     }
                 ) { item ->
-                    RenderContactItem(item, onItemToggled)
+                    RenderContactItem(
+                        item = item,
+                        enabled = !isStaging,
+                        onItemToggled = onItemToggled,
+                    )
                 }
             }
         }

@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -31,25 +32,36 @@ import baltiapps.migrate.domain.common.model.ItemCreationDate
 @Composable
 fun RenderCallLogItem(
     item: CallLogListItem,
+    enabled: Boolean = true,
     onItemToggled: (CallLogListItem) -> Unit,
 ) {
+    val alphaModifier = Modifier.alpha(
+        if (enabled) 1f else 0.38f
+    )
     ListItem(
-        modifier = Modifier.clickable {
+        modifier = Modifier.clickable(enabled = enabled) {
             onItemToggled(item)
         },
         leadingContent = {
-            CallLogIcon(item)
+            CallLogIcon(
+                item = item,
+                modifier = alphaModifier,
+            )
         },
         headlineContent = {
             Text(
                 text = item.displayName.takeIf { it.isNotBlank() }
-                    ?: item.displayNumber
+                    ?: item.displayNumber,
+                modifier = alphaModifier,
             )
         },
         supportingContent = {
             Column {
                 if (item.displayName.isNotBlank() && item.displayNumber.isNotBlank()) {
-                    Text(item.displayNumber)
+                    Text(
+                        text = item.displayNumber,
+                        modifier = alphaModifier,
+                    )
                 }
                 Text(
                     text = item.creationDate.displayDate,
@@ -62,6 +74,7 @@ fun RenderCallLogItem(
             Checkbox(
                 checked = item.isChecked,
                 onCheckedChange = null,
+                enabled = enabled,
             )
         }
     )
@@ -69,9 +82,11 @@ fun RenderCallLogItem(
 
 @Composable
 private fun CallLogIcon(
-    item: CallLogListItem
+    item: CallLogListItem,
+    modifier: Modifier = Modifier,
 ) {
     Image(
+        modifier = modifier,
         imageVector = when (item.callStatus) {
             CallLog.Calls.MISSED_TYPE -> Icons.AutoMirrored.Filled.PhoneMissed
             CallLog.Calls.INCOMING_TYPE -> Icons.AutoMirrored.Filled.CallReceived
@@ -143,7 +158,7 @@ private fun CallLogDisplayItemPreview() {
     )
     Column {
         RenderCallLogItem(item1) {}
-        RenderCallLogItem(item2) {}
+        RenderCallLogItem(item2, false) {}
         RenderCallLogItem(item3) {}
         RenderCallLogItem(item4) {}
     }

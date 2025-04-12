@@ -7,33 +7,43 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
 import baltiapps.migrate.domain.common.model.ContactListItem
 
 @Composable
 fun RenderContactItem(
     item: ContactListItem,
-    onItemToggled: (ContactListItem) -> Unit
+    enabled: Boolean = true,
+    onItemToggled: (ContactListItem) -> Unit,
 ) {
+    val alphaModifier = Modifier.alpha(
+        if (enabled) 1f else 0.38f
+    )
     ListItem(
-        modifier = Modifier.clickable {
+        modifier = Modifier.clickable(enabled = enabled) {
             onItemToggled(item)
         },
         headlineContent = {
             Text(
                 text = item.displayName.takeIf { it.isNotBlank() }
-                    ?: item.displayNumber
+                    ?: item.displayNumber,
+                modifier = alphaModifier,
             )
         },
         supportingContent = {
             if (item.displayName.isNotBlank()) {
-                Text(item.displayNumber)
+                Text(
+                    text = item.displayNumber,
+                    modifier = alphaModifier,
+                )
             }
         },
         trailingContent = {
             Checkbox(
                 checked = item.isChecked,
                 onCheckedChange = null,
+                enabled = enabled,
             )
         }
     )
@@ -68,7 +78,7 @@ private fun ContactDisplayItemPreview() {
     )
     Column {
         RenderContactItem(item1) {}
-        RenderContactItem(item2) {}
+        RenderContactItem(item2, false) {}
         RenderContactItem(item3) {}
         RenderContactItem(item4) {}
     }
