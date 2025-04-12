@@ -40,7 +40,7 @@ class CallLogRestoreSelectionViewModel(
         }
     }
 
-    fun onAction(action: CallLogRestoreSelectionAction) {
+    fun onAction(action: CallLogRestoreSelectionAction) = viewModelScope.launch {
         when(action) {
             is CallLogRestoreSelectionAction.ToggleCallLogItem -> {
                 val result = listItemUtils.toggleSingleItem(_state.value.callLogList, action.item)

@@ -40,7 +40,7 @@ class CallLogBackupViewModel(
         }
     }
 
-    fun performAction(action: CallLogBackupAction) {
+    fun performAction(action: CallLogBackupAction) = viewModelScope.launch {
         when(action) {
             is CallLogBackupAction.ToggleCallLogItem -> {
                 val result = listItemUtils.toggleSingleItem(_state.value.callLogList, action.item)

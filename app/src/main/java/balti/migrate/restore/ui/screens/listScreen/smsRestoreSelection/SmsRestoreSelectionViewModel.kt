@@ -40,7 +40,7 @@ class SmsRestoreSelectionViewModel(
         }
     }
 
-    fun onAction(action: SmsRestoreSelectionAction) {
+    fun onAction(action: SmsRestoreSelectionAction) = viewModelScope.launch {
         when(action) {
             is SmsRestoreSelectionAction.ToggleSmsItem -> {
                 val result = listItemUtils.toggleSingleItem(_state.value.smsList, action.item)

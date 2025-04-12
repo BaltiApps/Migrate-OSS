@@ -38,7 +38,7 @@ class SmsBackupViewModel(
         }
     }
 
-    fun performAction(action: SmsBackupAction) {
+    fun performAction(action: SmsBackupAction) = viewModelScope.launch {
         when(action) {
             is SmsBackupAction.ToggleSmsItem -> {
                 val result = listItemUtils.toggleSingleItem(_state.value.smsList, action.item)

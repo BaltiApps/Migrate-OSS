@@ -40,7 +40,7 @@ class ContactBackupViewModel(
         }
     }
 
-    fun performAction(action: ContactBackupAction) {
+    fun performAction(action: ContactBackupAction) = viewModelScope.launch {
         when (action) {
             is ContactBackupAction.ToggleContactItem -> {
                 val result = listItemUtils.toggleSingleItem(_state.value.contactList, action.item)
