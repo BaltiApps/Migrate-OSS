@@ -1,14 +1,10 @@
 package balti.migrate.backup.ui.screens.listScreen.contactBackup
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -19,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.common.ui.ListScreenShell
 import balti.migrate.common.ui.components.LoadingProgressBar
+import balti.migrate.common.ui.components.RenderContactItem
 import baltiapps.migrate.domain.common.model.ContactListItem
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -89,29 +86,7 @@ private fun Content(
                             it._id
                         }
                     ) { item ->
-                        ListItem(
-                            modifier = Modifier.clickable {
-                                onItemToggled(item)
-                            },
-                            headlineContent = {
-                                Text(
-                                    text = item.displayName.takeIf { it.isNotBlank() }
-                                        ?: item.displayNumber
-                                )
-                            },
-                            supportingContent = {
-                                if (item.displayName.isNotBlank()) {
-                                    Text(item.displayNumber)
-                                }
-                            },
-                            trailingContent = {
-                                Checkbox(
-                                    checked = item.isChecked,
-                                    onCheckedChange = null,
-                                    enabled = !state().isStaging
-                                )
-                            }
-                        )
+                        RenderContactItem(item, onItemToggled)
                     }
                 }
             }
