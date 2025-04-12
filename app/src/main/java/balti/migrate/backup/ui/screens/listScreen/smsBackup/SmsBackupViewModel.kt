@@ -4,14 +4,14 @@ import balti.migrate.backup.ui.screens.listScreen.ListScreenGenericViewModel
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.model.SmsListItem
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
-import baltiapps.migrate.domain.backup.usecase.ReadSmsUseCase
+import baltiapps.migrate.domain.backup.usecase.ReadSmsForBackupUseCase
 import baltiapps.migrate.domain.common.usecase.StageSelectedSms
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class SmsBackupViewModel(
-    private val readSmsUseCase: ReadSmsUseCase,
+    private val readSmsForBackupUseCase: ReadSmsForBackupUseCase,
     private val stageSelectedSms: StageSelectedSms,
     private val backupDataRepository: BackupDataRepository,
 ) : ListScreenGenericViewModel<SmsListItem>() {
@@ -43,7 +43,7 @@ class SmsBackupViewModel(
 
     init {
         super.readItems(
-            reader = readSmsUseCase::invoke,
+            reader = readSmsForBackupUseCase::invoke,
             getReadItems = backupDataRepository::smsListItems
         )
     }

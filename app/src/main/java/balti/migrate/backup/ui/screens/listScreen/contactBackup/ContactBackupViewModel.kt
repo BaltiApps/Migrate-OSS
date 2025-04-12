@@ -4,14 +4,14 @@ import balti.migrate.backup.ui.screens.listScreen.ListScreenGenericViewModel
 import baltiapps.migrate.domain.common.model.ContactListItem
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
-import baltiapps.migrate.domain.backup.usecase.ReadContactsUseCase
+import baltiapps.migrate.domain.backup.usecase.ReadContactsForBackupUseCase
 import baltiapps.migrate.domain.common.usecase.StageSelectedContacts
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class ContactBackupViewModel(
-    private val readContactsUseCase: ReadContactsUseCase,
+    private val readContactsForBackupUseCase: ReadContactsForBackupUseCase,
     private val stageSelectedContacts: StageSelectedContacts,
     private val backupDataRepository: BackupDataRepository,
 ) : ListScreenGenericViewModel<ContactListItem>() {
@@ -43,7 +43,7 @@ class ContactBackupViewModel(
 
     init {
         super.readItems(
-            reader = readContactsUseCase::invoke,
+            reader = readContactsForBackupUseCase::invoke,
             getReadItems = backupDataRepository::contactsListItems,
         )
     }

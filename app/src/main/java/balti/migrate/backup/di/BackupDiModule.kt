@@ -20,9 +20,9 @@ import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
-import baltiapps.migrate.domain.backup.usecase.ReadCallLogUseCase
-import baltiapps.migrate.domain.backup.usecase.ReadContactsUseCase
-import baltiapps.migrate.domain.backup.usecase.ReadSmsUseCase
+import baltiapps.migrate.domain.backup.usecase.ReadCallLogForBackupUseCase
+import baltiapps.migrate.domain.backup.usecase.ReadContactsForBackupUseCase
+import baltiapps.migrate.domain.backup.usecase.ReadSmsForBackupUseCase
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
@@ -83,19 +83,19 @@ val backupDiModule = module {
     /* Use cases */
 
     single {
-        ReadContactsUseCase(
+        ReadContactsForBackupUseCase(
             contactsSource = get(named(Names.CONTACTS_SOURCE)),
             backupDataRepository = get(),
         )
     }
     single {
-        ReadCallLogUseCase(
+        ReadCallLogForBackupUseCase(
             callLogSource = get(named(Names.CALL_LOG_SOURCE)),
             backupDataRepository = get(),
         )
     }
     single {
-        ReadSmsUseCase(
+        ReadSmsForBackupUseCase(
             smsSource = get(named(Names.SMS_SOURCE)),
             backupDataRepository = get(),
         )
