@@ -5,13 +5,13 @@
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
 
-    <!--ContactBackup.kt-->
+    <!--ContactBackupSelection.kt-->
     <string name="label_contacts_backup">Contacts backup</string>
 
-    <!--CallLogBackup.kt-->
+    <!--CallLogBackupSelection.kt-->
     <string name="label_call_log_backup">Call log backup</string>
 
-    <!--SmsBackup.kt-->
+    <!--SmsBackupSelection.kt-->
     <string name="label_sms_backup">SMS backup</string>
 
     <!--ScreenBackup-->

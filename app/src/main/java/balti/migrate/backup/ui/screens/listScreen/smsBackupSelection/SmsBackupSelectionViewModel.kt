@@ -1,4 +1,4 @@
-package balti.migrate.backup.ui.screens.listScreen.smsBackup
+package balti.migrate.backup.ui.screens.listScreen.smsBackupSelection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,14 +12,14 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SmsBackupViewModel(
+class SmsBackupSelectionViewModel(
     private val listItemUtils: ListItemUtils,
     private val readSmsForBackupUseCase: ReadSmsForBackupUseCase,
     private val stageSelectedSms: StageSelectedSms,
     private val backupDataRepository: BackupDataRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(SmsBackupState())
+    private val _state = MutableStateFlow(SmsBackupSelectionState())
     val state = _state.asStateFlow()
 
     init {
@@ -38,17 +38,17 @@ class SmsBackupViewModel(
         }
     }
 
-    fun performAction(action: SmsBackupAction) = viewModelScope.launch {
+    fun performAction(action: SmsBackupSelectionAction) = viewModelScope.launch {
         when(action) {
-            is SmsBackupAction.ToggleSmsItem -> {
+            is SmsBackupSelectionAction.ToggleSmsItem -> {
                 val result = listItemUtils.toggleSingleItem(_state.value.smsList, action.item)
                 _state.update { it.copy(smsList = result) }
             }
-            is SmsBackupAction.ToggleAllSms -> {
+            is SmsBackupSelectionAction.ToggleAllSms -> {
                 val result = listItemUtils.toggleAllItems(_state.value.smsList, action.isChecked)
                 _state.update { it.copy(smsList = result) }
             }
-            is SmsBackupAction.StageSms -> {
+            is SmsBackupSelectionAction.StageSms -> {
                 _state.update { it.copy(isStaging = true) }
                 stageSelectedSms.invoke(
                     allListItems = _state.value.smsList,

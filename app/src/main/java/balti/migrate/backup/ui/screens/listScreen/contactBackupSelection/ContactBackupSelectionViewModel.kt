@@ -1,4 +1,4 @@
-package balti.migrate.backup.ui.screens.listScreen.contactBackup
+package balti.migrate.backup.ui.screens.listScreen.contactBackupSelection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,14 +12,14 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ContactBackupViewModel(
+class ContactBackupSelectionViewModel(
     private val listItemUtils: ListItemUtils,
     private val readContactsForBackupUseCase: ReadContactsForBackupUseCase,
     private val stageSelectedContacts: StageSelectedContacts,
     private val backupDataRepository: BackupDataRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ContactBackupState())
+    private val _state = MutableStateFlow(ContactBackupSelectionState())
     val state = _state.asStateFlow()
 
     init {
@@ -40,17 +40,17 @@ class ContactBackupViewModel(
         }
     }
 
-    fun performAction(action: ContactBackupAction) = viewModelScope.launch {
+    fun performAction(action: ContactBackupSelectionAction) = viewModelScope.launch {
         when (action) {
-            is ContactBackupAction.ToggleContactItem -> {
+            is ContactBackupSelectionAction.ToggleContactItem -> {
                 val result = listItemUtils.toggleSingleItem(_state.value.contactList, action.item)
                 _state.update { it.copy(contactList = result) }
             }
-            is ContactBackupAction.ToggleAllContacts -> {
+            is ContactBackupSelectionAction.ToggleAllContacts -> {
                 val result = listItemUtils.toggleAllItems(_state.value.contactList, action.isChecked)
                 _state.update { it.copy(contactList = result) }
             }
-            is ContactBackupAction.StageContacts -> {
+            is ContactBackupSelectionAction.StageContacts -> {
                 _state.update { it.copy(isStaging = true) }
                 stageSelectedContacts.invoke(
                     allListItems = _state.value.contactList,

@@ -1,4 +1,4 @@
-package balti.migrate.backup.ui.screens.listScreen.callLogBackup
+package balti.migrate.backup.ui.screens.listScreen.callLogBackupSelection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,14 +12,14 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class CallLogBackupViewModel(
+class CallLogBackupSelectionViewModel(
     private val listItemUtils: ListItemUtils,
     private val readCallLogForBackupUseCase: ReadCallLogForBackupUseCase,
     private val stageSelectedCallLogs: StageSelectedCallLogs,
     private val backupDataRepository: BackupDataRepository,
 ): ViewModel() {
 
-    private val _state = MutableStateFlow(CallLogBackupState())
+    private val _state = MutableStateFlow(CallLogBackupSelectionState())
     val state = _state.asStateFlow()
 
     init {
@@ -40,17 +40,17 @@ class CallLogBackupViewModel(
         }
     }
 
-    fun performAction(action: CallLogBackupAction) = viewModelScope.launch {
+    fun performAction(action: CallLogBackupSelectionAction) = viewModelScope.launch {
         when(action) {
-            is CallLogBackupAction.ToggleCallLogItem -> {
+            is CallLogBackupSelectionAction.ToggleCallLogItem -> {
                 val result = listItemUtils.toggleSingleItem(_state.value.callLogList, action.item)
                 _state.update { it.copy(callLogList = result) }
             }
-            is CallLogBackupAction.ToggleAllCallLog -> {
+            is CallLogBackupSelectionAction.ToggleAllCallLog -> {
                 val result = listItemUtils.toggleAllItems(_state.value.callLogList, action.isChecked)
                 _state.update { it.copy(callLogList = result) }
             }
-            is CallLogBackupAction.StageCallLogs -> {
+            is CallLogBackupSelectionAction.StageCallLogs -> {
                 _state.update { it.copy(isStaging = true) }
                 stageSelectedCallLogs.invoke(
                     allListItems = _state.value.callLogList,

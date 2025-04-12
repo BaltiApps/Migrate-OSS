@@ -7,9 +7,9 @@ import balti.migrate.backup.data.sources.contacts.ContactsSource
 import balti.migrate.backup.data.sources.contacts.ContactsDBWriter
 import balti.migrate.backup.data.sources.sms.SmsDBWriter
 import balti.migrate.backup.data.sources.sms.SmsSource
-import balti.migrate.backup.ui.screens.listScreen.callLogBackup.CallLogBackupViewModel
-import balti.migrate.backup.ui.screens.listScreen.contactBackup.ContactBackupViewModel
-import balti.migrate.backup.ui.screens.listScreen.smsBackup.SmsBackupViewModel
+import balti.migrate.backup.ui.screens.listScreen.callLogBackupSelection.CallLogBackupSelectionViewModel
+import balti.migrate.backup.ui.screens.listScreen.contactBackupSelection.ContactBackupSelectionViewModel
+import balti.migrate.backup.ui.screens.listScreen.smsBackupSelection.SmsBackupSelectionViewModel
 import balti.migrate.backup.ui.screens.progressScreen.ProgressScreenViewModel
 import balti.migrate.common.data.model.CallLogData
 import balti.migrate.common.data.model.ContactData
@@ -124,9 +124,9 @@ val backupDiModule = module {
 
     /* ViewModels */
 
-    viewModelOf(::ContactBackupViewModel)
-    viewModelOf(::CallLogBackupViewModel)
-    viewModelOf(::SmsBackupViewModel)
+    viewModelOf(::ContactBackupSelectionViewModel)
+    viewModelOf(::CallLogBackupSelectionViewModel)
+    viewModelOf(::SmsBackupSelectionViewModel)
     viewModel {
         ProgressScreenViewModel(
             contextSource = get(),

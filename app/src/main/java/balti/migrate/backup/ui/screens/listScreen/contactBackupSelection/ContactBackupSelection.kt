@@ -1,4 +1,4 @@
-package balti.migrate.backup.ui.screens.listScreen.callLogBackup
+package balti.migrate.backup.ui.screens.listScreen.contactBackupSelection
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,15 +13,15 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.common.ui.ListScreenShell
-import balti.migrate.common.ui.components.RenderCallLogItem
-import baltiapps.migrate.domain.common.model.CallLogListItem
+import balti.migrate.common.ui.components.RenderContactItem
+import baltiapps.migrate.domain.common.model.ContactListItem
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun CallLogBackup(
+fun ContactBackupSelection(
     navigateUp: () -> Unit,
     goToNextScreen: () -> Unit,
-    viewModel: CallLogBackupViewModel = koinViewModel(),
+    viewModel: ContactBackupSelectionViewModel = koinViewModel(),
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -33,32 +33,32 @@ fun CallLogBackup(
         state = { state },
         navigateUp = navigateUp,
         onSelectAll = {
-            viewModel.performAction(CallLogBackupAction.ToggleAllCallLog(true))
+            viewModel.performAction(ContactBackupSelectionAction.ToggleAllContacts(true))
         },
         onDeselectAll = {
-            viewModel.performAction(CallLogBackupAction.ToggleAllCallLog(false))
+            viewModel.performAction(ContactBackupSelectionAction.ToggleAllContacts(false))
         },
         onItemToggled = {
-            viewModel.performAction(CallLogBackupAction.ToggleCallLogItem(it))
+            viewModel.performAction(ContactBackupSelectionAction.ToggleContactItem(it))
         },
         onNext = {
-            viewModel.performAction(CallLogBackupAction.StageCallLogs(goToNextScreen))
+            viewModel.performAction(ContactBackupSelectionAction.StageContacts(goToNextScreen))
         }
     )
 }
 
 @Composable
 private fun Content(
-    state: () -> CallLogBackupState,
+    state: () -> ContactBackupSelectionState,
     navigateUp: () -> Unit,
     onSelectAll: () -> Unit,
     onDeselectAll: () -> Unit,
-    onItemToggled: (CallLogListItem) -> Unit,
+    onItemToggled: (item: ContactListItem) -> Unit,
     onNext: () -> Unit,
 ) {
     val isStaging = state().isStaging
     ListScreenShell(
-        backupTitle = stringResource(R.string.label_call_log_backup),
+        backupTitle = stringResource(R.string.label_contacts_backup),
         navigateUp = navigateUp,
         onSelectAll = onSelectAll,
         onDeselectAll = onDeselectAll,
@@ -73,10 +73,12 @@ private fun Content(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(
-                    items = state().callLogList,
-                    key = { it._id }
+                    items = state().contactList,
+                    key = {
+                        it._id
+                    }
                 ) { item ->
-                    RenderCallLogItem(
+                    RenderContactItem(
                         item = item,
                         enabled = !isStaging,
                         onItemToggled = onItemToggled,

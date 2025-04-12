@@ -1,4 +1,4 @@
-package balti.migrate.backup.ui.screens.listScreen.contactBackup
+package balti.migrate.backup.ui.screens.listScreen.smsBackupSelection
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,52 +13,52 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.common.ui.ListScreenShell
-import balti.migrate.common.ui.components.RenderContactItem
-import baltiapps.migrate.domain.common.model.ContactListItem
+import balti.migrate.common.ui.components.RenderSmsItem
+import baltiapps.migrate.domain.common.model.SmsListItem
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ContactBackup(
+fun SmsBackupSelection(
     navigateUp: () -> Unit,
     goToNextScreen: () -> Unit,
-    viewModel: ContactBackupViewModel = koinViewModel(),
+    viewModel: SmsBackupSelectionViewModel = koinViewModel()
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
     val state by viewModel.state.collectAsStateWithLifecycle(
-        lifecycleOwner = lifecycleOwner,
+        lifecycleOwner = lifecycleOwner
     )
 
     Content(
         state = { state },
         navigateUp = navigateUp,
         onSelectAll = {
-            viewModel.performAction(ContactBackupAction.ToggleAllContacts(true))
+            viewModel.performAction(SmsBackupSelectionAction.ToggleAllSms(true))
         },
         onDeselectAll = {
-            viewModel.performAction(ContactBackupAction.ToggleAllContacts(false))
+            viewModel.performAction(SmsBackupSelectionAction.ToggleAllSms(false))
         },
-        onItemToggled = {
-            viewModel.performAction(ContactBackupAction.ToggleContactItem(it))
+        onItemToggled = { item ->
+            viewModel.performAction(SmsBackupSelectionAction.ToggleSmsItem(item))
         },
         onNext = {
-            viewModel.performAction(ContactBackupAction.StageContacts(goToNextScreen))
+            viewModel.performAction(SmsBackupSelectionAction.StageSms(goToNextScreen))
         }
     )
 }
 
 @Composable
 private fun Content(
-    state: () -> ContactBackupState,
+    state: () -> SmsBackupSelectionState,
     navigateUp: () -> Unit,
     onSelectAll: () -> Unit,
     onDeselectAll: () -> Unit,
-    onItemToggled: (item: ContactListItem) -> Unit,
+    onItemToggled: (SmsListItem) -> Unit,
     onNext: () -> Unit,
 ) {
     val isStaging = state().isStaging
     ListScreenShell(
-        backupTitle = stringResource(R.string.label_contacts_backup),
+        backupTitle = stringResource(R.string.label_sms_backup),
         navigateUp = navigateUp,
         onSelectAll = onSelectAll,
         onDeselectAll = onDeselectAll,
@@ -73,12 +73,10 @@ private fun Content(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(
-                    items = state().contactList,
-                    key = {
-                        it._id
-                    }
+                    items = state().smsList,
+                    key = { it._id }
                 ) { item ->
-                    RenderContactItem(
+                    RenderSmsItem(
                         item = item,
                         enabled = !isStaging,
                         onItemToggled = onItemToggled,

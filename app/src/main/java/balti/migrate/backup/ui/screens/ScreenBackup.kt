@@ -3,14 +3,13 @@ package balti.migrate.backup.ui.screens
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import balti.migrate.backup.ui.screens.backupName.BackupName
-import balti.migrate.backup.ui.screens.listScreen.callLogBackup.CallLogBackup
-import balti.migrate.backup.ui.screens.listScreen.contactBackup.ContactBackup
-import balti.migrate.backup.ui.screens.listScreen.smsBackup.SmsBackup
+import balti.migrate.backup.ui.screens.listScreen.callLogBackupSelection.CallLogBackupSelection
+import balti.migrate.backup.ui.screens.listScreen.contactBackupSelection.ContactBackupSelection
+import balti.migrate.backup.ui.screens.listScreen.smsBackupSelection.SmsBackupSelection
 import balti.migrate.backup.ui.screens.progressScreen.ProgressScreen
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import kotlinx.serialization.Serializable
@@ -30,7 +29,7 @@ fun ScreenBackup(
         composable<RouteContactBackup>(
             exitTransition = { ExitTransition.None },
         ) {
-            ContactBackup(
+            ContactBackupSelection(
                 navigateUp = navController::navigateUp,
                 goToNextScreen = {
                     navController.navigate(RouteCallLogBackup)
@@ -41,7 +40,7 @@ fun ScreenBackup(
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
         ) {
-            CallLogBackup(
+            CallLogBackupSelection(
                 navigateUp = navController::navigateUp,
                 goToNextScreen = {
                     navController.navigate(RouteSmsBackup)
@@ -51,7 +50,7 @@ fun ScreenBackup(
         composable<RouteSmsBackup>(
             enterTransition = { EnterTransition.None },
         ) {
-            SmsBackup(
+            SmsBackupSelection(
                 navigateUp = navController::navigateUp,
                 goToNextScreen = {
                     navController.navigate(RouteBackupName)
