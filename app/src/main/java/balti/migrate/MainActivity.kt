@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,6 +21,7 @@ import baltiapps.migrate.domain.EXTRA_BACKUP_LOCATION
 import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import kotlinx.serialization.Serializable
+import java.lang.ref.WeakReference
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +35,20 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    private var onUserPermissionConfirmation: WeakReference<((Boolean) -> Unit)>? = null
+
+    private val permissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantMap ->
+            val isGranted = grantMap.values.all { it }
+            onUserPermissionConfirmation?.get()?.invoke(isGranted)
+            onUserPermissionConfirmation = null
+        }
+
+    fun requestPermissions(permissions: List<String>, onUserConfirmation: (Boolean) -> Unit) {
+        onUserPermissionConfirmation = WeakReference(onUserConfirmation)
+        permissionLauncher.launch(permissions.toTypedArray())
     }
 
     private fun startBackupService(backupLocation: BackupLocation) {
