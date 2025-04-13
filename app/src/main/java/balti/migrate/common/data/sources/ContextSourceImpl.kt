@@ -1,6 +1,8 @@
 package balti.migrate.common.data.sources
 
 import android.content.Context
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
 import balti.migrate.R
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.sources.ContextSource
@@ -18,5 +20,14 @@ class ContextSourceImpl(private val context: Context): ContextSource {
             Progress.ProgressType.SMS_RESTORE -> context.getString(R.string.label_sms_restore)
             else -> context.getString(R.string.loading)
         }
+    }
+
+    override fun checkPermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+    }
+
+    override fun checkPermissions(permissions: List<String>): Boolean {
+        return permissions.map { ContextCompat.checkSelfPermission(context, it) }
+            .all { it == PackageManager.PERMISSION_GRANTED }
     }
 }
