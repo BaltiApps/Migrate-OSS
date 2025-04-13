@@ -1,8 +1,11 @@
 package balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection
 
+import android.Manifest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import balti.migrate.MainActivity
 import balti.migrate.common.utils.ListItemUtils
+import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.usecase.StageSelectedCallLogs
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import baltiapps.migrate.domain.restore.usecase.ReadCallLogForRestoreUseCase
@@ -17,22 +20,38 @@ class CallLogRestoreSelectionViewModel(
     private val dataRepository: RestoreDataRepository,
     private val readCallLogForRestoreUseCase: ReadCallLogForRestoreUseCase,
     private val stageSelectedCallLogs: StageSelectedCallLogs,
+    private val contextSource: ContextSource,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CallLogRestoreSelectionState())
     val state = _state.asStateFlow()
 
+    private val permissionList = listOf(
+        Manifest.permission.READ_CALL_LOG,
+        Manifest.permission.WRITE_CALL_LOG,
+    )
+
     init {
+        loadData()
+    }
+
+    private fun loadData() {
+        if (!contextSource.checkPermissions(permissionList)) {
+            _state.update { it.copy(hasPermission = false) }
+            return
+        }
         viewModelScope.launch {
             readCallLogForRestoreUseCase.invoke().onCompletion {
                 _state.update {
                     it.copy(
+                        hasPermission = true,
                         callLogList = dataRepository.callLogListItems
                     )
                 }
             }.collect {
                 _state.update { state ->
                     state.copy(
+                        hasPermission = true,
                         progress = it
                     )
                 }
@@ -42,6 +61,12 @@ class CallLogRestoreSelectionViewModel(
 
     fun onAction(action: CallLogRestoreSelectionAction) = viewModelScope.launch {
         when(action) {
+            is CallLogRestoreSelectionAction.RequestPermission -> {
+                if (action.activity !is MainActivity) return@launch
+                action.activity.requestPermissions(permissionList) {
+                    if (it) loadData()
+                }
+            }
             is CallLogRestoreSelectionAction.ToggleCallLogItem -> {
                 val result = listItemUtils.toggleSingleItem(_state.value.callLogList, action.item)
                 _state.update { it.copy(callLogList = result) }

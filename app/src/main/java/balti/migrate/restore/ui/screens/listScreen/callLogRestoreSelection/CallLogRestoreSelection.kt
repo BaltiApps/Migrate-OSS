@@ -1,5 +1,6 @@
 package balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -24,6 +25,8 @@ fun CallLogRestoreSelection(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val activity = LocalActivity.current
+
     Content(
         state = { state },
         navigateUp = navigateUp,
@@ -35,6 +38,9 @@ fun CallLogRestoreSelection(
         },
         onItemToggled = {
             viewModel.onAction(CallLogRestoreSelectionAction.ToggleCallLogItem(it))
+        },
+        requestPermission = {
+            viewModel.onAction(CallLogRestoreSelectionAction.RequestPermission(activity))
         },
         onNext = {
             viewModel.onAction(CallLogRestoreSelectionAction.StageCallLogs(goToNextScreen))
@@ -49,6 +55,7 @@ private fun Content(
     onSelectAll: () -> Unit,
     onDeselectAll: () -> Unit,
     onItemToggled: (CallLogListItem) -> Unit,
+    requestPermission: () -> Unit,
     onNext: () -> Unit,
 ) {
     val isStaging = state().isStaging
@@ -59,6 +66,8 @@ private fun Content(
         onDeselectAll = onDeselectAll,
         isStaging = isStaging,
         loadingProgress = state().progress,
+        isPermissionGranted = state().hasPermission,
+        requestPermission = requestPermission,
         onNext = onNext,
     ) { paddingValues ->
         Box(
