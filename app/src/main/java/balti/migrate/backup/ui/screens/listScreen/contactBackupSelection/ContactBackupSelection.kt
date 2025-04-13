@@ -1,5 +1,6 @@
 package balti.migrate.backup.ui.screens.listScreen.contactBackupSelection
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -29,6 +30,8 @@ fun ContactBackupSelection(
         lifecycleOwner = lifecycleOwner,
     )
 
+    val activity = LocalActivity.current
+
     Content(
         state = { state },
         navigateUp = navigateUp,
@@ -37,6 +40,9 @@ fun ContactBackupSelection(
         },
         onDeselectAll = {
             viewModel.performAction(ContactBackupSelectionAction.ToggleAllContacts(false))
+        },
+        requestPermission = {
+            viewModel.performAction(ContactBackupSelectionAction.RequestPermission(activity))
         },
         onItemToggled = {
             viewModel.performAction(ContactBackupSelectionAction.ToggleContactItem(it))
@@ -53,6 +59,7 @@ private fun Content(
     navigateUp: () -> Unit,
     onSelectAll: () -> Unit,
     onDeselectAll: () -> Unit,
+    requestPermission: () -> Unit,
     onItemToggled: (item: ContactListItem) -> Unit,
     onNext: () -> Unit,
 ) {
@@ -64,10 +71,14 @@ private fun Content(
         onDeselectAll = onDeselectAll,
         isStaging = isStaging,
         loadingProgress = state().progress,
+        isPermissionGranted = state().hasPermission,
+        requestPermission = requestPermission,
         onNext = onNext,
     ) { paddingValues ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(paddingValues)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize()

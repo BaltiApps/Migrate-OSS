@@ -1,10 +1,13 @@
 package balti.migrate.backup.ui.screens.listScreen.contactBackupSelection
 
+import android.Manifest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import balti.migrate.MainActivity
 import balti.migrate.common.utils.ListItemUtils
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.ReadContactsForBackupUseCase
+import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.usecase.StageSelectedContacts
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,22 +20,37 @@ class ContactBackupSelectionViewModel(
     private val readContactsForBackupUseCase: ReadContactsForBackupUseCase,
     private val stageSelectedContacts: StageSelectedContacts,
     private val backupDataRepository: BackupDataRepository,
+    private val contextSource: ContextSource,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ContactBackupSelectionState())
     val state = _state.asStateFlow()
 
+    private val permissionList = listOf(
+        Manifest.permission.READ_CONTACTS,
+    )
+
     init {
+        loadData()
+    }
+
+    private fun loadData() {
+        if (!contextSource.checkPermissions(permissionList)) {
+            _state.update { it.copy(hasPermission = false) }
+            return
+        }
         viewModelScope.launch {
             readContactsForBackupUseCase.invoke().onCompletion {
                 _state.update {
                     it.copy(
+                        hasPermission = true,
                         contactList = backupDataRepository.contactsListItems
                     )
                 }
             }.collect {
                 _state.update { state ->
                     state.copy(
+                        hasPermission = true,
                         progress = it
                     )
                 }
@@ -42,6 +60,12 @@ class ContactBackupSelectionViewModel(
 
     fun performAction(action: ContactBackupSelectionAction) = viewModelScope.launch {
         when (action) {
+            is ContactBackupSelectionAction.RequestPermission -> {
+                if (action.activity !is MainActivity) return@launch
+                action.activity.requestPermissions(permissionList) {
+                    if (it) loadData()
+                }
+            }
             is ContactBackupSelectionAction.ToggleContactItem -> {
                 val result = listItemUtils.toggleSingleItem(_state.value.contactList, action.item)
                 _state.update { it.copy(contactList = result) }

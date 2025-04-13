@@ -7,4 +7,5 @@ data class ContactBackupSelectionState(
     val progress: Progress = Progress.Empty,
     val contactList: List<ContactListItem> = emptyList(),
     val isStaging: Boolean = false,
+    val hasPermission: Boolean = true,
 )
