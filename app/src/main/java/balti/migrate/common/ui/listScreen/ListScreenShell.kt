@@ -1,4 +1,4 @@
-package balti.migrate.common.ui
+package balti.migrate.common.ui.listScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
-import balti.migrate.common.ui.ListScreenShell
+import balti.migrate.common.ui.listScreen.ListScreenShell
 import balti.migrate.common.ui.components.RenderContactItem
 import baltiapps.migrate.domain.common.model.ContactListItem
 import org.koin.compose.viewmodel.koinViewModel

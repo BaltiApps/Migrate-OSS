@@ -7,13 +7,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
-import balti.migrate.common.ui.ListScreenShell
-import balti.migrate.common.ui.components.LoadingProgressBar
+import balti.migrate.common.ui.listScreen.ListScreenShell
 import balti.migrate.common.ui.components.RenderSmsItem
 import baltiapps.migrate.domain.common.model.SmsListItem
 import org.koin.compose.viewmodel.koinViewModel
