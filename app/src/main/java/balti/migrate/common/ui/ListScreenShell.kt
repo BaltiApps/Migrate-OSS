@@ -1,6 +1,8 @@
 package balti.migrate.common.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,6 +11,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.ClearAll
 import androidx.compose.material.icons.outlined.DoneAll
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,10 +41,12 @@ fun ListScreenShell(
     onDeselectAll: () -> Unit,
     isStaging: Boolean,
     loadingProgress: Progress,
+    isPermissionGranted: Boolean = true,
+    requestPermission: (() -> Unit)? = null,
     onNext: () -> Unit,
     content: @Composable (paddingValues: PaddingValues) -> Unit,
 ) {
-    val isLoading = loadingProgress.percentage < 1.0
+    val isLoading = loadingProgress.percentage < 1.0 && loadingProgress.percentage > 0.0
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
         modifier = Modifier
@@ -58,18 +63,42 @@ fun ListScreenShell(
                 onNext = onNext,
             )
         }
-    ) { values ->
-        if (isLoading) {
-            Box(
-                modifier = Modifier.padding(values).fillMaxSize(),
-            ) {
-                LoadingProgressBar(
-                    modifier = Modifier.align(Alignment.Center),
-                    progress = loadingProgress
-                )
-            }
-        } else {
-            content(values)
+    ) { paddingValues ->
+        when {
+            !isPermissionGranted -> requestPermission?.let { ShowPermissionRequest(it, paddingValues) }
+            isLoading -> ShowLoading(loadingProgress, paddingValues)
+            else -> content(paddingValues)
+        }
+    }
+}
+
+@Composable
+private fun ShowLoading(loadingProgress: Progress, paddingValues: PaddingValues) {
+    Box(
+        modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize(),
+    ) {
+        LoadingProgressBar(
+            modifier = Modifier.align(Alignment.Center),
+            progress = loadingProgress
+        )
+    }
+}
+
+@Composable
+private fun ShowPermissionRequest(requestPermission: () -> Unit, paddingValues: PaddingValues) {
+    Column(
+        modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Button(
+            onClick = requestPermission
+        ) {
+            Text(text = "Request Permission")
         }
     }
 }
