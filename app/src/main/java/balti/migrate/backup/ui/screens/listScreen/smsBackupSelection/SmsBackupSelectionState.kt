@@ -7,4 +7,5 @@ data class SmsBackupSelectionState(
     val progress: Progress = Progress.Empty,
     val smsList: List<SmsListItem> = emptyList(),
     val isStaging: Boolean = false,
+    val hasPermission: Boolean = false,
 )

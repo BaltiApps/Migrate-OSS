@@ -1,10 +1,13 @@
 package balti.migrate.backup.ui.screens.listScreen.smsBackupSelection
 
+import android.Manifest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import balti.migrate.MainActivity
 import balti.migrate.common.utils.ListItemUtils
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.ReadSmsForBackupUseCase
+import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.usecase.StageSelectedSms
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,20 +20,37 @@ class SmsBackupSelectionViewModel(
     private val readSmsForBackupUseCase: ReadSmsForBackupUseCase,
     private val stageSelectedSms: StageSelectedSms,
     private val backupDataRepository: BackupDataRepository,
+    private val contextSource: ContextSource,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SmsBackupSelectionState())
     val state = _state.asStateFlow()
 
+    private val permissionList = listOf(
+        Manifest.permission.READ_SMS,
+    )
+
     init {
+        loadData()
+    }
+
+    private fun loadData() {
+        if (!contextSource.checkPermissions(permissionList)) {
+            _state.update { it.copy(hasPermission = false) }
+            return
+        }
         viewModelScope.launch {
             readSmsForBackupUseCase.invoke().onCompletion {
                 _state.update {
-                    it.copy(smsList = backupDataRepository.smsListItems)
+                    it.copy(
+                        hasPermission = true,
+                        smsList = backupDataRepository.smsListItems,
+                    )
                 }
             }.collect {
                 _state.update { state ->
                     state.copy(
+                        hasPermission = true,
                         progress = it
                     )
                 }
@@ -40,6 +60,12 @@ class SmsBackupSelectionViewModel(
 
     fun performAction(action: SmsBackupSelectionAction) = viewModelScope.launch {
         when(action) {
+            is SmsBackupSelectionAction.RequestPermission -> {
+                if (action.activity !is MainActivity) return@launch
+                action.activity.requestPermissions(permissionList) {
+                    if (it) loadData()
+                }
+            }
             is SmsBackupSelectionAction.ToggleSmsItem -> {
                 val result = listItemUtils.toggleSingleItem(_state.value.smsList, action.item)
                 _state.update { it.copy(smsList = result) }

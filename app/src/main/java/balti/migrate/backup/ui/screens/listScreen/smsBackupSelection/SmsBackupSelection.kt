@@ -1,5 +1,6 @@
 package balti.migrate.backup.ui.screens.listScreen.smsBackupSelection
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -29,6 +30,8 @@ fun SmsBackupSelection(
         lifecycleOwner = lifecycleOwner
     )
 
+    val activity = LocalActivity.current
+
     Content(
         state = { state },
         navigateUp = navigateUp,
@@ -40,6 +43,9 @@ fun SmsBackupSelection(
         },
         onItemToggled = { item ->
             viewModel.performAction(SmsBackupSelectionAction.ToggleSmsItem(item))
+        },
+        requestPermission = {
+            viewModel.performAction(SmsBackupSelectionAction.RequestPermission(activity))
         },
         onNext = {
             viewModel.performAction(SmsBackupSelectionAction.StageSms(goToNextScreen))
@@ -54,6 +60,7 @@ private fun Content(
     onSelectAll: () -> Unit,
     onDeselectAll: () -> Unit,
     onItemToggled: (SmsListItem) -> Unit,
+    requestPermission: () -> Unit,
     onNext: () -> Unit,
 ) {
     val isStaging = state().isStaging
@@ -64,6 +71,8 @@ private fun Content(
         onDeselectAll = onDeselectAll,
         isStaging = isStaging,
         loadingProgress = state().progress,
+        isPermissionGranted = state().hasPermission,
+        requestPermission = requestPermission,
         onNext = onNext,
     ) { paddingValues ->
         Box(
