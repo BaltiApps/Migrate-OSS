@@ -1,5 +1,6 @@
 package balti.migrate.backup.ui.screens.listScreen.callLogBackupSelection
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -29,6 +30,8 @@ fun CallLogBackupSelection(
         lifecycleOwner = lifecycleOwner,
     )
 
+    val activity = LocalActivity.current
+
     Content(
         state = { state },
         navigateUp = navigateUp,
@@ -37,6 +40,9 @@ fun CallLogBackupSelection(
         },
         onDeselectAll = {
             viewModel.performAction(CallLogBackupSelectionAction.ToggleAllCallLog(false))
+        },
+        requestPermission = {
+            viewModel.performAction(CallLogBackupSelectionAction.RequestPermission(activity))
         },
         onItemToggled = {
             viewModel.performAction(CallLogBackupSelectionAction.ToggleCallLogItem(it))
@@ -53,6 +59,7 @@ private fun Content(
     navigateUp: () -> Unit,
     onSelectAll: () -> Unit,
     onDeselectAll: () -> Unit,
+    requestPermission: () -> Unit,
     onItemToggled: (CallLogListItem) -> Unit,
     onNext: () -> Unit,
 ) {
@@ -64,6 +71,8 @@ private fun Content(
         onDeselectAll = onDeselectAll,
         isStaging = isStaging,
         loadingProgress = state().progress,
+        isPermissionGranted = state().hasPermission,
+        requestPermission = requestPermission,
         onNext = onNext,
     ) { paddingValues ->
         Box(
