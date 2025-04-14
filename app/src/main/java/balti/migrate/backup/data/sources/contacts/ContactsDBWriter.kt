@@ -6,6 +6,7 @@ import balti.migrate.common.data.model.ContactData
 import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.ContactsDBConstants.Companion.CONTACTS_TABLE_NAME
 import baltiapps.migrate.domain.ContactsDBConstants.Companion.DISPLAY_NAME
+import baltiapps.migrate.domain.ContactsDBConstants.Companion.DISPLAY_NUMBER
 import baltiapps.migrate.domain.ContactsDBConstants.Companion.VCF_CONTENT
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.GenericFile
@@ -34,6 +35,7 @@ class ContactsDBWriter(
             val sqlCreateTable = "CREATE TABLE $CONTACTS_TABLE_NAME ( " +
                     "id INTEGER PRIMARY KEY" +
                     ", $DISPLAY_NAME TEXT" +
+                    ", $DISPLAY_NUMBER TEXT" +
                     ", $VCF_CONTENT TEXT" +
                     ")"
             sqLiteDatabase = this
@@ -62,6 +64,7 @@ class ContactsDBWriter(
         Pair(contentValues, dataItem).let { (c, d) ->
             c.put("id", d._id)
             c.put(DISPLAY_NAME, d.displayName)
+            c.put(DISPLAY_NUMBER, d.displayNumber)
             c.put(VCF_CONTENT, d.vcfContent)
         }
         sqLiteDatabase.insert(CONTACTS_TABLE_NAME, null, contentValues)
