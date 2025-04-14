@@ -1,5 +1,6 @@
 package balti.migrate.restore.ui.screens.browseRestoreDirectory
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
+import balti.migrate.common.ui.listScreen.ListPermissionRequestLayout
 import baltiapps.migrate.domain.common.model.Directory
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -39,6 +41,9 @@ fun BrowseRestoreDirectory(
     viewModel: BrowseRestoreDirectoryViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    val activity = LocalActivity.current
+
     Content(
         state = state,
         onBackupSelected = {
@@ -54,6 +59,9 @@ fun BrowseRestoreDirectory(
         onReloadDirectoryContents = {
             viewModel.onAction(BrowseRestoreDirectoryActions.OnReloadDirectoryContents)
         },
+        requestPermission = {
+            viewModel.onAction(BrowseRestoreDirectoryActions.RequestPermission(activity))
+        },
         onDirectoryUp = {
             viewModel.onAction(BrowseRestoreDirectoryActions.OnDirectoryUp)
         },
@@ -68,6 +76,7 @@ fun Content(
     onBackupSelected: (Directory) -> Unit,
     onReloadDirectoryContents: () -> Unit,
     onDirectoryOpen: (Directory) -> Unit,
+    requestPermission: () -> Unit,
     onDirectoryUp: () -> Unit,
     navigateUp: () -> Unit,
 ) {
@@ -96,6 +105,14 @@ fun Content(
                 .padding(innerPadding)
                 .padding(16.dp),
         ) {
+            if (!state.hasPermission) {
+                ListPermissionRequestLayout(
+                    description = stringResource(R.string.select_directory_permission_description),
+                    onRequestPermission = requestPermission,
+                    onSkip = null,
+                )
+                return@Column
+            }
             PullToRefreshBox(
                 modifier = Modifier.fillMaxSize(),
                 isRefreshing = state.isLoading,
