@@ -26,16 +26,14 @@ class ContactBackupSelectionViewModel(
     private val _state = MutableStateFlow(ContactBackupSelectionState())
     val state = _state.asStateFlow()
 
-    private val permissionList = listOf(
-        Manifest.permission.READ_CONTACTS,
-    )
+    private val permission = Manifest.permission.READ_CONTACTS
 
     init {
         loadData()
     }
 
     private fun loadData() {
-        if (!contextSource.checkPermissions(permissionList)) {
+        if (!contextSource.checkPermission(permission)) {
             _state.update { it.copy(hasPermission = false) }
             return
         }
@@ -62,7 +60,7 @@ class ContactBackupSelectionViewModel(
         when (action) {
             is ContactBackupSelectionAction.RequestPermission -> {
                 if (action.activity !is MainActivity) return@launch
-                action.activity.requestPermissions(permissionList) {
+                action.activity.requestPermission(permission) {
                     if (it) loadData()
                 }
             }

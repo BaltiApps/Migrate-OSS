@@ -26,16 +26,14 @@ class SmsBackupSelectionViewModel(
     private val _state = MutableStateFlow(SmsBackupSelectionState())
     val state = _state.asStateFlow()
 
-    private val permissionList = listOf(
-        Manifest.permission.READ_SMS,
-    )
+    private val permission = Manifest.permission.READ_SMS
 
     init {
         loadData()
     }
 
     private fun loadData() {
-        if (!contextSource.checkPermissions(permissionList)) {
+        if (!contextSource.checkPermission(permission)) {
             _state.update { it.copy(hasPermission = false) }
             return
         }
@@ -62,7 +60,7 @@ class SmsBackupSelectionViewModel(
         when(action) {
             is SmsBackupSelectionAction.RequestPermission -> {
                 if (action.activity !is MainActivity) return@launch
-                action.activity.requestPermissions(permissionList) {
+                action.activity.requestPermission(permission) {
                     if (it) loadData()
                 }
             }
