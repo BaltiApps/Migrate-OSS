@@ -39,16 +39,27 @@ class MainActivity : ComponentActivity() {
 
     private var onUserPermissionConfirmation: WeakReference<((Boolean) -> Unit)>? = null
 
-    private val permissionLauncher =
+    private val permissionLauncherMultiple =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantMap ->
             val isGranted = grantMap.values.all { it }
             onUserPermissionConfirmation?.get()?.invoke(isGranted)
             onUserPermissionConfirmation = null
         }
 
+    private val permissionLauncherSingle =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            onUserPermissionConfirmation?.get()?.invoke(isGranted)
+            onUserPermissionConfirmation = null
+        }
+
     fun requestPermissions(permissions: List<String>, onUserConfirmation: (Boolean) -> Unit) {
         onUserPermissionConfirmation = WeakReference(onUserConfirmation)
-        permissionLauncher.launch(permissions.toTypedArray())
+        permissionLauncherMultiple.launch(permissions.toTypedArray())
+    }
+
+    fun requestPermission(permission: String, onUserConfirmation: (Boolean) -> Unit) {
+        onUserPermissionConfirmation = WeakReference(onUserConfirmation)
+        permissionLauncherSingle.launch(permission)
     }
 
     private fun startBackupService(backupLocation: BackupLocation) {
