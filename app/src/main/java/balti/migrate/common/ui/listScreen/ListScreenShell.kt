@@ -71,6 +71,68 @@ fun ListScreenShell(
         }
     }
 }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ListScreenShell(
+    listState: ListState,
+    navigateUp: () -> Unit,
+    onSelectAll: () -> Unit,
+    onDeselectAll: () -> Unit,
+    onPermissionRequest: () -> Unit,
+    onNext: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    Scaffold(
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            TopBar(listState.listTitle, scrollBehavior, navigateUp)
+        },
+        bottomBar = {
+            BottomBar(
+                onSelectAll = onSelectAll,
+                onDeselectAll = onDeselectAll,
+                isLoading = listState.isLoading,
+                isStaging = listState.isStaging,
+                onNext = onNext,
+                nextButtonLabel = if (listState.hasPermission) {
+                    stringResource(R.string.next)
+                } else stringResource(R.string.skip),
+            )
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            when {
+                !listState.hasPermission -> ListPermissionRequestLayout(
+                    listState.permissionDescription,
+                    onPermissionRequest,
+                    onNext
+                )
+
+                listState.isLoading -> ListLoadingLayout(listState.progress)
+                else -> content()
+            }
+        }
+    }
+}
+
+data class ListState(
+    val listTitle: String,
+    val isStaging: Boolean,
+    val hasPermission: Boolean,
+    val permissionDescription: String,
+    val progress: Progress,
+) {
+    val loadingProgress: Double
+        get() = progress.percentage
+    val isLoading: Boolean
+        get() = hasPermission && loadingProgress < 1.0
+}
 
 @Composable
 private fun ShowLoading(loadingProgress: Progress, paddingValues: PaddingValues) {
@@ -136,6 +198,7 @@ private fun BottomBar(
     isLoading: Boolean,
     isStaging: Boolean,
     onNext: () -> Unit,
+    nextButtonLabel: String = stringResource(R.string.next),
 ) {
     BottomAppBar(
         actions = {
@@ -167,10 +230,9 @@ private fun BottomBar(
             }
         },
         floatingActionButton = {
-            val label = stringResource(R.string.next)
             val buttonStatus = if (isStaging) {
-                ButtonStatus.Loading(label) {}
-            } else ButtonStatus.Unspecified(label, onNext)
+                ButtonStatus.Loading(nextButtonLabel) {}
+            } else ButtonStatus.Unspecified(nextButtonLabel, onNext)
             NextFab(
                 buttonStatus = buttonStatus
             )

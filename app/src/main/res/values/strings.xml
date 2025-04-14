@@ -31,6 +31,9 @@
     <string name="sms_queued">SMS Queued</string>
     <string name="next">Next</string>
 
+    <!--ListPermissionRequestLayout.kt-->
+    <string name="request_permission">Request permission</string>
+
     <!--BackupName.kt-->
     <string name="backup_info">Backup info</string>
     <string name="enter_backup_name">Enter backup name</string>
@@ -68,4 +71,5 @@
     <string name="select_all">Select all</string>
     <string name="deselect_all">Deselect all</string>
     <string name="reload">Reload</string>
+    <string name="skip">Skip</string>
 </resources>
