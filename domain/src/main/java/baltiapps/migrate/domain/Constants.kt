@@ -76,3 +76,9 @@ class ContactsDBConstants {
         const val VCF_CONTENT = "vcfContent"
     }
 }
+
+class PermissionConstants {
+    companion object {
+        const val MANAGE_EXTERNAL_STORAGE = "android.permission.MANAGE_EXTERNAL_STORAGE"
+    }
+}

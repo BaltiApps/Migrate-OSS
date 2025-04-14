@@ -2,6 +2,7 @@ package balti.migrate
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,6 +20,7 @@ import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
 import baltiapps.migrate.domain.ACTION_START_BACKUP
 import baltiapps.migrate.domain.EXTRA_BACKUP_LOCATION
 import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
+import baltiapps.migrate.domain.PermissionConstants
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import kotlinx.serialization.Serializable
 import java.lang.ref.WeakReference
@@ -52,6 +54,13 @@ class MainActivity : ComponentActivity() {
             onUserPermissionConfirmation = null
         }
 
+    private val specialPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { it ->
+            val isGranted = it.resultCode == RESULT_OK
+            onUserPermissionConfirmation?.get()?.invoke(isGranted)
+            onUserPermissionConfirmation = null
+        }
+
     fun requestPermissions(permissions: List<String>, onUserConfirmation: (Boolean) -> Unit) {
         onUserPermissionConfirmation = WeakReference(onUserConfirmation)
         permissionLauncherMultiple.launch(permissions.toTypedArray())
@@ -59,7 +68,16 @@ class MainActivity : ComponentActivity() {
 
     fun requestPermission(permission: String, onUserConfirmation: (Boolean) -> Unit) {
         onUserPermissionConfirmation = WeakReference(onUserConfirmation)
-        permissionLauncherSingle.launch(permission)
+        when (permission) {
+            PermissionConstants.MANAGE_EXTERNAL_STORAGE -> {
+                specialPermissionLauncher.launch(
+                    Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                )
+            }
+            else -> {
+                permissionLauncherSingle.launch(permission)
+            }
+        }
     }
 
     private fun startBackupService(backupLocation: BackupLocation) {
