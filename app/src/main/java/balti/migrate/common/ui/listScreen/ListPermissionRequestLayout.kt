@@ -22,7 +22,7 @@ import balti.migrate.R
 fun ListPermissionRequestLayout(
     description: String,
     onRequestPermission: () -> Unit,
-    onSkip: () -> Unit,
+    onSkip: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -41,8 +41,9 @@ fun ListPermissionRequestLayout(
         ) {
             Text(text = stringResource(R.string.request_permission))
         }
+        if (onSkip == null) return@Column
         TextButton(
-            onClick =  onSkip
+            onClick = onSkip
         ) {
             Text(stringResource(R.string.skip))
         }
