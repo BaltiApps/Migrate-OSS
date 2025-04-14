@@ -1,11 +1,13 @@
 package balti.migrate.restore.di
 
 import balti.migrate.common.data.model.CallLogData
+import balti.migrate.common.data.model.ContactData
 import balti.migrate.common.data.model.SmsData
 import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
 import balti.migrate.restore.data.sources.RestoreNotificationHandlerImpl
 import balti.migrate.restore.data.sources.callLog.CallLogDBReader
 import balti.migrate.restore.data.sources.callLog.CallLogRestore
+import balti.migrate.restore.data.sources.contacts.ContactsDBReader
 import balti.migrate.restore.data.sources.sms.SmsDBReader
 import balti.migrate.restore.data.sources.sms.SmsRestore
 import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDirectoryViewModel
@@ -17,6 +19,7 @@ import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import baltiapps.migrate.domain.restore.sources.DataRestore
 import baltiapps.migrate.domain.restore.usecase.ReadCallLogForRestoreUseCase
+import baltiapps.migrate.domain.restore.usecase.ReadContactsForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadFilesFromBackupUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadSmsForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreCallLogUseCase
@@ -27,6 +30,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 enum class Names {
+    CONTACTS_DB_READER,
     CALL_LOG_DB_READER,
     CALL_LOG_RESTORE_SOURCE,
     SMS_DB_READER,
@@ -39,6 +43,9 @@ val restoreDiModule = module {
 
     /* Sources */
 
+    single<DBReader<ContactData>>(named(Names.CONTACTS_DB_READER)) {
+        ContactsDBReader(get())
+    }
     single<DBReader<CallLogData>>(named(Names.CALL_LOG_DB_READER)) {
         CallLogDBReader(get())
     }
@@ -69,6 +76,13 @@ val restoreDiModule = module {
     /* Use cases */
 
     singleOf(::ReadFilesFromBackupUseCase)
+    single {
+        ReadContactsForRestoreUseCase(
+            fileSystemSource = get(),
+            contactsDbReader = get(named(Names.CONTACTS_DB_READER)),
+            restoreDataRepository = get()
+        )
+    }
     single {
         ReadCallLogForRestoreUseCase(
             fileSystemSource = get(),
