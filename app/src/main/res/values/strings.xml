@@ -63,6 +63,9 @@
     <!--BrowseRestoreDirectory.kt-->
     <string name="select_directory">Select directory</string>"
 
+    <!--ContactRestoreSelection.kt-->
+    <string name="label_contacts_restore">Contacts restore</string>
+
     <!--CallLogRestoreSelection.kt-->
     <string name="label_call_log_restore">Call log restore</string>
     <string name="call_log_restore_permission_description">
