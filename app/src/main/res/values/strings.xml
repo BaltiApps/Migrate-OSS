@@ -7,12 +7,24 @@
 
     <!--ContactBackupSelection.kt-->
     <string name="label_contacts_backup">Contacts backup</string>
+    <string name="contacts_backup_permission_description">
+        Please grant permission to read the contacts.\n
+        Click Skip to not backup contacts.
+    </string>
 
     <!--CallLogBackupSelection.kt-->
     <string name="label_call_log_backup">Call log backup</string>
+    <string name="call_log_backup_permission_description">
+        Please grant permission to read and write call logs.\n
+        Click Skip to not backup call logs.
+    </string>
 
     <!--SmsBackupSelection.kt-->
     <string name="label_sms_backup">SMS backup</string>
+    <string name="sms_backup_permission_description">
+        Please grant permission to read SMS.\n
+        Click Skip to not backup SMS.
+    </string>
 
     <!--ScreenBackup-->
     <string name="call">Call</string>
@@ -53,9 +65,18 @@
 
     <!--CallLogRestoreSelection.kt-->
     <string name="label_call_log_restore">Call log restore</string>
+    <string name="call_log_restore_permission_description">
+        Please grant permission to read and write call logs.\n
+        Click Skip to not restore call logs.
+    </string>
 
     <!--SmsRestoreSelection.kt-->
     <string name="label_sms_restore">SMS restore</string>
+    <string name="sms_restore_permission_description">
+        Please temporarily set Migrate as the default SMS app to restore SMS.\n
+        You will be prompted to change the SMS app after the whole restore process is finished.\n
+        Click Skip to not restore SMS.
+    </string>
 
     <!--sms dummies-->
     <string name="new_sms_received">New SMS received</string>

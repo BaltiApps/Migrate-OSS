@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.common.ui.listScreen.ListScreenShell
 import balti.migrate.common.ui.components.RenderSmsItem
+import balti.migrate.common.ui.listScreen.ListState
 import baltiapps.migrate.domain.common.model.SmsListItem
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -51,32 +52,33 @@ private fun Content(
     onItemToggled: (SmsListItem) -> Unit,
     onNext: () -> Unit,
 ) {
-    val isStaging = state().isStaging
+    val listState = ListState(
+        listTitle = stringResource(R.string.label_sms_restore),
+        isStaging = state().isStaging,
+        hasPermission = true,
+        permissionDescription = "",
+        progress = state().progress,
+    )
     ListScreenShell(
-        backupTitle = stringResource(R.string.label_sms_restore),
+        listState = listState,
         navigateUp = navigateUp,
         onSelectAll = onSelectAll,
         onDeselectAll = onDeselectAll,
-        isStaging = isStaging,
-        loadingProgress = state().progress,
+        onPermissionRequest = {},
         onNext = onNext,
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier.fillMaxSize().padding(paddingValues)
+    ) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(
-                    items = state().smsList,
-                    key = { it._id }
-                ) { item ->
-                    RenderSmsItem(
-                        item = item,
-                        enabled = !isStaging,
-                        onItemToggled = onItemToggled,
-                    )
-                }
+            items(
+                items = state().smsList,
+                key = { it._id }
+            ) { item ->
+                RenderSmsItem(
+                    item = item,
+                    enabled = !listState.isStaging,
+                    onItemToggled = onItemToggled,
+                )
             }
         }
     }
