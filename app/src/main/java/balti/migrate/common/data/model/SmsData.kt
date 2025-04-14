@@ -36,6 +36,7 @@ data class SmsData(
                 dateInLong = smsDate,
                 displayDate = convertToDisplayDate(smsDate)
             ),
+            isChecked = true,
         )
     }
 }

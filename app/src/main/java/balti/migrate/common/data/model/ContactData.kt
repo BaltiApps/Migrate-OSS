@@ -15,7 +15,7 @@ data class ContactData(
             _id = _id,
             displayName = displayName,
             displayNumber = displayNumber,
-            isChecked = false,
+            isChecked = true,
         )
     }
 }

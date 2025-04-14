@@ -36,7 +36,7 @@ data class CallLogData(
                 dateInLong = callsDate,
                 displayDate = convertToDisplayDate(callsDate)
             ),
-            isChecked = false,
+            isChecked = true,
         )
     }
 }
