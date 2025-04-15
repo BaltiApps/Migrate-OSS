@@ -67,11 +67,11 @@ class ContactsDBReader(
             val displayNumber = getCursorData<String>(cursor, ContactsDBConstants.DISPLAY_NUMBER)
 
             return ContactData(
-
                 _id = getCursorData<String>(cursor, "id"),
                 displayName = displayName,
                 displayNumber = displayNumber,
                 vcfContent = getCursorData(cursor, ContactsDBConstants.VCF_CONTENT),
+                isLocalContact = true,
                 logInfo = displayName.ifBlank { displayNumber },
             )
         }

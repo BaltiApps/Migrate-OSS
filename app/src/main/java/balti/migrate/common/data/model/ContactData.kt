@@ -8,6 +8,7 @@ data class ContactData(
     val displayName: String,
     val displayNumber: String,
     val vcfContent: String,
+    val isLocalContact : Boolean,
     override val logInfo: String,
 ) : DataItem<ContactListItem> {
     override fun toListItem(): ContactListItem {
@@ -15,6 +16,7 @@ data class ContactData(
             _id = _id,
             displayName = displayName,
             displayNumber = displayNumber,
+            isLocalContact = isLocalContact,
             isChecked = true,
         )
     }

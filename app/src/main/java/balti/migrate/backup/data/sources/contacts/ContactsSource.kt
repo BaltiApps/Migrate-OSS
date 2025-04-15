@@ -89,11 +89,14 @@ class ContactsSource(
             }
             val vcardString = String(byteArray)
 
+            val accountType = getCursorData<String>(cursor, ContactsContract.RawContacts.ACCOUNT_TYPE)
+
             return ContactData(
                 _id = getCursorData<String>(cursor, ContactsContract.Contacts._ID),
                 displayName = fullName,
                 displayNumber = primaryContact,
                 vcfContent = vcardString,
+                isLocalContact = accountType.isBlank(),
                 logInfo = fullName.ifBlank { primaryContact },
             )
         }
