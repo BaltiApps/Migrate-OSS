@@ -1,12 +1,16 @@
 <resources>
     <string name="app_name">Migrate</string>
-    
+
     <!--ScreenHome-->
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
 
     <!--ContactBackupSelection.kt-->
     <string name="label_contacts_backup">Contacts backup</string>
+    <string name="expand_list">Expand list</string>
+    <string name="collapse_list">Collapse list</string>
+    <string name="synced_contacts">Synced contacts - backup not recommended</string>
+    <string name="local_contacts">Local contacts</string>"
     <string name="contacts_backup_permission_description">
         Please grant permission to read the contacts.\n
         Click Skip to not backup contacts.

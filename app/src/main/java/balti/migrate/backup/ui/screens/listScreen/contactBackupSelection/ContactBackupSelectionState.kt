@@ -8,4 +8,9 @@ data class ContactBackupSelectionState(
     val contactList: List<ContactListItem> = emptyList(),
     val isStaging: Boolean = false,
     val hasPermission: Boolean = true,
-)
+    val syncedContactsExpanded: Boolean = false,
+    val localContactsExpanded: Boolean = true,
+) {
+    val syncedContacts = contactList.filter { !it.isLocalContact }
+    val localContacts = contactList.filter { it.isLocalContact }
+}

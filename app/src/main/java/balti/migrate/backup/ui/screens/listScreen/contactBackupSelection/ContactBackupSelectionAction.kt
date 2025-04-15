@@ -8,4 +8,6 @@ sealed class ContactBackupSelectionAction {
     class ToggleContactItem(val item: ContactListItem): ContactBackupSelectionAction()
     class ToggleAllContacts(val isChecked: Boolean): ContactBackupSelectionAction()
     class StageContacts(val onStagingDone: () -> Unit): ContactBackupSelectionAction()
+    class ToggleSyncedContactsVisibility(val isVisible: Boolean): ContactBackupSelectionAction()
+    class ToggleLocalContactsVisibility(val isVisible: Boolean): ContactBackupSelectionAction()
 }

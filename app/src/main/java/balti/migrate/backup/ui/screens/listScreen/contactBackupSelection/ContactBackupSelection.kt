@@ -1,13 +1,28 @@
 package balti.migrate.backup.ui.screens.listScreen.contactBackupSelection
 
 import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
@@ -40,6 +55,12 @@ fun ContactBackupSelection(
         onDeselectAll = {
             viewModel.performAction(ContactBackupSelectionAction.ToggleAllContacts(false))
         },
+        onToggleSyncedContactsVisibility = {
+            viewModel.performAction(ContactBackupSelectionAction.ToggleSyncedContactsVisibility(it))
+        },
+        onToggleLocalContactsVisibility = {
+            viewModel.performAction(ContactBackupSelectionAction.ToggleLocalContactsVisibility(it))
+        },
         requestPermission = {
             viewModel.performAction(ContactBackupSelectionAction.RequestPermission(activity))
         },
@@ -58,6 +79,8 @@ private fun Content(
     navigateUp: () -> Unit,
     onSelectAll: () -> Unit,
     onDeselectAll: () -> Unit,
+    onToggleSyncedContactsVisibility: (isVisible: Boolean) -> Unit,
+    onToggleLocalContactsVisibility: (isVisible: Boolean) -> Unit,
     requestPermission: () -> Unit,
     onItemToggled: (item: ContactListItem) -> Unit,
     onNext: () -> Unit,
@@ -77,21 +100,96 @@ private fun Content(
         onPermissionRequest = requestPermission,
         onNext = onNext,
     ) {
+        val syncedContactsExpanded = state().syncedContactsExpanded
+        val localContactsExpanded = state().localContactsExpanded
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            items(
-                items = state().contactList,
-                key = {
-                    it._id
-                }
-            ) { item ->
-                RenderContactItem(
-                    item = item,
-                    enabled = !listState.isStaging,
+            item {
+                ContactHeader(
+                    header = stringResource(R.string.synced_contacts),
+                    isExpanded = syncedContactsExpanded,
+                    onClick = {
+                        onToggleSyncedContactsVisibility(!syncedContactsExpanded)
+                    },
+                )
+            }
+            if (syncedContactsExpanded) {
+                showContactList(
+                    contactList = state().syncedContacts,
+                    isStaging = listState.isStaging,
+                    onItemToggled = onItemToggled,
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.padding(4.dp))
+            }
+            item {
+                ContactHeader(
+                    header = stringResource(R.string.local_contacts),
+                    isExpanded = localContactsExpanded,
+                    onClick = {
+                        onToggleLocalContactsVisibility(!localContactsExpanded)
+                    }
+                )
+            }
+            if (localContactsExpanded) {
+                showContactList(
+                    contactList = state().localContacts,
+                    isStaging = listState.isStaging,
                     onItemToggled = onItemToggled,
                 )
             }
         }
+    }
+}
+
+@Composable
+fun ContactHeader(
+    header: String,
+    isExpanded: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = header,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.labelLarge,
+        )
+        Image(
+            imageVector = if (isExpanded) {
+                Icons.Default.KeyboardArrowUp
+            } else Icons.Default.KeyboardArrowDown,
+            contentDescription = if (isExpanded) {
+                stringResource(R.string.collapse_list)
+            } else stringResource(R.string.expand_list),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
+        )
+    }
+}
+
+private fun LazyListScope.showContactList(
+    contactList: List<ContactListItem>,
+    isStaging: Boolean,
+    onItemToggled: (item: ContactListItem) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    items(
+        items = contactList,
+        key = { it._id }
+    ) { item ->
+        RenderContactItem(
+            item = item,
+            enabled = !isStaging,
+            onItemToggled = onItemToggled,
+        )
     }
 }

@@ -69,7 +69,17 @@ class ContactBackupSelectionViewModel(
                 _state.update { it.copy(contactList = result) }
             }
             is ContactBackupSelectionAction.ToggleAllContacts -> {
-                val result = listItemUtils.toggleAllItems(_state.value.contactList, action.isChecked)
+                val result = listItemUtils.toggleAllItems(
+                    list = _state.value.contactList,
+                    isChecked = action.isChecked,
+                    filter = {
+                        if (_state.value.syncedContactsExpanded) {
+                            !it.isLocalContact
+                        } else if (_state.value.localContactsExpanded) {
+                            it.isLocalContact
+                        } else false
+                    }
+                )
                 _state.update { it.copy(contactList = result) }
             }
             is ContactBackupSelectionAction.StageContacts -> {
@@ -80,6 +90,12 @@ class ContactBackupSelectionViewModel(
                 )
                 _state.update { it.copy(isStaging = false) }
                 action.onStagingDone()
+            }
+            is ContactBackupSelectionAction.ToggleSyncedContactsVisibility -> {
+                _state.update { it.copy(syncedContactsExpanded = action.isVisible) }
+            }
+            is ContactBackupSelectionAction.ToggleLocalContactsVisibility -> {
+                _state.update { it.copy(localContactsExpanded = action.isVisible) }
             }
         }
     }
