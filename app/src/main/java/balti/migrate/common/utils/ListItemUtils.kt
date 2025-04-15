@@ -8,8 +8,12 @@ import baltiapps.migrate.domain.common.model.SmsListItem
 class ListItemUtils {
 
     @Suppress("UNCHECKED_CAST")
-    fun <T: ListItem> toggleAllItems(list: List<T>, isChecked: Boolean): List<T> {
-        return list.mapNotNull {
+    fun <T: ListItem> toggleAllItems(
+        list: List<T>,
+        isChecked: Boolean,
+        filter: (T) -> Boolean = { true },
+    ): List<T> {
+        return list.filter { filter(it) }.mapNotNull {
             when (it) {
                 is ContactListItem -> it.copy(isChecked = isChecked)
                 is CallLogListItem -> it.copy(isChecked = isChecked)
