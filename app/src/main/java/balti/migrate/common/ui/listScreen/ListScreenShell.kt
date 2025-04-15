@@ -76,8 +76,8 @@ fun ListScreenShell(
 fun ListScreenShell(
     listState: ListState,
     navigateUp: () -> Unit,
-    onSelectAll: () -> Unit,
-    onDeselectAll: () -> Unit,
+    onSelectAll: (() -> Unit)?,
+    onDeselectAll: (() -> Unit)?,
     onPermissionRequest: () -> Unit,
     onNext: () -> Unit,
     content: @Composable () -> Unit,
@@ -193,8 +193,8 @@ private fun TopBar(
 
 @Composable
 private fun BottomBar(
-    onSelectAll: () -> Unit,
-    onDeselectAll: () -> Unit,
+    onSelectAll: (() -> Unit)?,
+    onDeselectAll: (() -> Unit)?,
     isLoading: Boolean,
     isStaging: Boolean,
     onNext: () -> Unit,
@@ -202,31 +202,35 @@ private fun BottomBar(
 ) {
     BottomAppBar(
         actions = {
-            IconButton(
-                modifier = Modifier
-                    .padding(4.dp)
-                    .padding(bottom = 6.dp),
-                onClick = {
-                    if (!isLoading) onSelectAll()
+            onSelectAll?.run {
+                IconButton(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .padding(bottom = 6.dp),
+                    onClick = {
+                        if (!isLoading) this.invoke()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.DoneAll,
+                        contentDescription = stringResource(R.string.select_all)
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.DoneAll,
-                    contentDescription = stringResource(R.string.select_all)
-                )
             }
-            IconButton(
-                modifier = Modifier
-                    .padding(4.dp)
-                    .padding(bottom = 6.dp),
-                onClick = {
-                    if (!isLoading) onDeselectAll()
+            onDeselectAll?.run {
+                IconButton(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .padding(bottom = 6.dp),
+                    onClick = {
+                        if (!isLoading) this.invoke()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.ClearAll,
+                        contentDescription = stringResource(R.string.deselect_all)
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.ClearAll,
-                    contentDescription = stringResource(R.string.deselect_all)
-                )
             }
         },
         floatingActionButton = {
