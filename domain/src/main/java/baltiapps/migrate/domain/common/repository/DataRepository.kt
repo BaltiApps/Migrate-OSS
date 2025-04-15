@@ -15,12 +15,12 @@ abstract class DataRepository {
     val stagedCallLogs = mutableListOf<DataItem<CallLogListItem>>()
     val stagedSms = mutableListOf<DataItem<SmsListItem>>()
 
-    val contactsListItems: List<ContactListItem>
+    open val contactsListItems: List<ContactListItem>
         get() = contactsDataItems.toListItems().sortedBy { it.displayName }
 
-    val callLogListItems: List<CallLogListItem>
+    open val callLogListItems: List<CallLogListItem>
         get() = callLogDataItems.toListItems().sortedByDescending { it.creationDate.dateInLong }
 
-    val smsListItems: List<SmsListItem>
+    open val smsListItems: List<SmsListItem>
         get() = smsDataItems.toListItems().sortedByDescending { it.creationDate.dateInLong }
 }
