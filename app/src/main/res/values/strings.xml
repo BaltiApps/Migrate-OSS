@@ -5,6 +5,10 @@
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
 
+    <!--ListNoData.kt-->
+    <string name="no_data_title_default">No data on device.</string>
+    <string name="no_data_desc">Please skip to the next screen.</string>
+
     <!--ContactBackupSelection.kt-->
     <string name="label_contacts_backup">Contacts backup</string>
     <string name="expand_list">Expand list</string>

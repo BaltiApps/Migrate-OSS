@@ -58,6 +58,7 @@ fun ListScreenShell(
                 isLoading = listState.isLoading,
                 isStaging = listState.isStaging,
                 hasPermission = listState.hasPermission,
+                hasNoData = listState.hasNoData,
                 onNext = onNext,
                 nextButtonCustomLabel = nextButtonCustomLabel,
             )
@@ -76,6 +77,9 @@ fun ListScreenShell(
                 )
 
                 listState.isLoading -> ListLoadingLayout(listState.progress)
+                listState.hasNoData -> ListNoDataLayout(
+                    title = listState.customNoDataMessage
+                )
                 else -> content()
             }
         }
@@ -161,10 +165,11 @@ private fun BottomBar(
     isLoading: Boolean,
     isStaging: Boolean,
     hasPermission: Boolean,
+    hasNoData: Boolean,
     onNext: () -> Unit,
     nextButtonCustomLabel: String? = null,
 ) {
-    val shouldShowSkip = !hasPermission || isLoading
+    val shouldShowSkip = !hasPermission || isLoading || hasNoData
     val nextButtonLabel = when {
         nextButtonCustomLabel != null -> nextButtonCustomLabel
         shouldShowSkip -> stringResource(R.string.skip)
