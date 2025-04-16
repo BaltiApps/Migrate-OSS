@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -50,6 +51,8 @@ fun ContactBackupSelection(
     val state by viewModel.state.collectAsStateWithLifecycle(
         lifecycleOwner = lifecycleOwner,
     )
+
+    SyncedWarningDialog()
 
     val activity = LocalActivity.current
 
@@ -185,11 +188,16 @@ private fun OnlySyncedContacts(
             )
             Spacer(Modifier.size(12.dp))
             Text(
-                text = stringResource(R.string.synced_contacts_backup_is_not_recommended),
+                text = stringResource(R.string.synced_contacts_backup_is_not_recommended_expanded),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.size(12.dp))
+            TextButton(
+                onClick = { showSyncedContactsWarningDialog() }
+            ) {
+                Text(stringResource(R.string.why))
+            }
             OutlinedButton(
                 onClick = onShowContactsConfirmation,
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)

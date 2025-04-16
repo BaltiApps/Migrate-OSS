@@ -23,11 +23,14 @@
         It seems all your contacts are synced\n(with Google, Whatsapp, etc.)
     </string>
     <string name="synced_contacts_backup_is_not_recommended">
+        Synced contacts backup is not recommended
+    </string>
+    <string name="synced_contacts_backup_is_not_recommended_expanded">
         Synced contacts backup is not recommended.\nYou may choose to click Skip at the bottom.
     </string>
     <string name="synced_contacts_not_recommended_justification">
-        It is recommended to use the specific service (e.g. Google account sync) to sync your contacts across devices or after a factory reset.\n
-        Using Migrate may result in duplicates.\n
+        It is recommended to use the specific service (e.g. Google account sync) to sync your contacts.\n\n
+        Using Migrate may result in duplicates.\n\n
         Backup contacts if you know you would not have access to your accounts when restoring the backup.
     </string>
     <string name="show_synced_contacts_anyway">Show synced contacts anyway</string>
@@ -119,4 +122,6 @@
     <string name="deselect_all">Deselect all</string>
     <string name="reload">Reload</string>
     <string name="skip">Skip</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="why">Why?</string>
 </resources>
