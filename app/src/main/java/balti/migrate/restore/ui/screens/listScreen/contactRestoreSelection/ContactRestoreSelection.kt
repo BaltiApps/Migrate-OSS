@@ -56,6 +56,7 @@ private fun Content(
         hasPermission = true,
         permissionDescription = "",
         progress = state().progress,
+        hasNoData = state().contactListItems.isEmpty(),
     )
     ListScreenShell(
         listState = listState,

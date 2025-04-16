@@ -63,6 +63,7 @@ private fun Content(
         hasPermission = state().hasPermission,
         permissionDescription = stringResource(R.string.call_log_restore_permission_description),
         progress = state().progress,
+        hasNoData = state().callLogList.isEmpty(),
     )
     ListScreenShell(
         listState = listState,

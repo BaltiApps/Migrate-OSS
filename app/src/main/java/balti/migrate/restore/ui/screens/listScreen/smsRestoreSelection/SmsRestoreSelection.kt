@@ -58,6 +58,7 @@ private fun Content(
         hasPermission = true,
         permissionDescription = "",
         progress = state().progress,
+        hasNoData = state().smsList.isEmpty(),
     )
     ListScreenShell(
         listState = listState,

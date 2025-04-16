@@ -91,6 +91,7 @@ private fun Content(
         hasPermission = state().hasPermission,
         permissionDescription = stringResource(R.string.contacts_backup_permission_description),
         progress = state().progress,
+        hasNoData = state().contactList.isEmpty(),
     )
     ListScreenShell(
         listState = listState,

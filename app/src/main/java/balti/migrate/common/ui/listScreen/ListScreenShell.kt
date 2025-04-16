@@ -88,6 +88,8 @@ data class ListState(
     val hasPermission: Boolean,
     val permissionDescription: String,
     val progress: Progress,
+    val hasNoData: Boolean,
+    val customNoDataMessage: String? = null,
 ) {
     val loadingProgress: Double
         get() = progress.percentage

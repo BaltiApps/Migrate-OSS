@@ -68,6 +68,7 @@ private fun Content(
         hasPermission = state().hasPermission,
         permissionDescription = stringResource(R.string.sms_backup_permission_description),
         progress = state().progress,
+        hasNoData = state().smsList.isEmpty(),
     )
     ListScreenShell(
         listState = listState,
