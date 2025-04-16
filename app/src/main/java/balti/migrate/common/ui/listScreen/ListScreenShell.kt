@@ -35,46 +35,6 @@ import baltiapps.migrate.domain.common.model.Progress
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListScreenShell(
-    backupTitle: String,
-    navigateUp: () -> Unit,
-    onSelectAll: () -> Unit,
-    onDeselectAll: () -> Unit,
-    isStaging: Boolean,
-    loadingProgress: Progress,
-    isPermissionGranted: Boolean = true,
-    requestPermission: (() -> Unit)? = null,
-    onNext: () -> Unit,
-    content: @Composable (paddingValues: PaddingValues) -> Unit,
-) {
-    val isLoading = loadingProgress.percentage < 1.0 && loadingProgress.percentage > 0.0
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    Scaffold(
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            TopBar(backupTitle, scrollBehavior, navigateUp)
-        },
-        bottomBar = {
-            BottomBar(
-                onSelectAll = onSelectAll,
-                onDeselectAll = onDeselectAll,
-                isLoading = isLoading,
-                isStaging = isStaging,
-                hasPermission = isPermissionGranted,
-                onNext = onNext,
-            )
-        }
-    ) { paddingValues ->
-        when {
-            !isPermissionGranted -> requestPermission?.let { ShowPermissionRequest(it, paddingValues) }
-            isLoading -> ShowLoading(loadingProgress, paddingValues)
-            else -> content(paddingValues)
-        }
-    }
-}
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ListScreenShell(
     listState: ListState,
     navigateUp: () -> Unit,
     onSelectAll: (() -> Unit)?,
