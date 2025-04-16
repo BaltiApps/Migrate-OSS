@@ -27,6 +27,7 @@ class SmsRestoreSelectionViewModel(
             readSmsForRestoreUseCase.invoke().onCompletion {
                 _state.update {
                     it.copy(
+                        progress = it.progress.copy(percentage = 1.0),
                         smsList = dataRepository.smsListItems
                     )
                 }

@@ -41,6 +41,7 @@ class ContactBackupSelectionViewModel(
             readContactsForBackupUseCase.invoke().onCompletion {
                 _state.update {
                     it.copy(
+                        progress = it.progress.copy(percentage = 1.0),
                         hasPermission = true,
                         contactList = backupDataRepository.contactsListItems
                     )

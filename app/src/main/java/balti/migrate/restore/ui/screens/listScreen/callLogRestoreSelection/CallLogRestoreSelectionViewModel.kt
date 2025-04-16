@@ -44,6 +44,7 @@ class CallLogRestoreSelectionViewModel(
             readCallLogForRestoreUseCase.invoke().onCompletion {
                 _state.update {
                     it.copy(
+                        progress = it.progress.copy(percentage = 1.0),
                         hasPermission = true,
                         callLogList = dataRepository.callLogListItems
                     )

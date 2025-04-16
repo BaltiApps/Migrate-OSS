@@ -41,6 +41,7 @@ class SmsBackupSelectionViewModel(
             readSmsForBackupUseCase.invoke().onCompletion {
                 _state.update {
                     it.copy(
+                        progress = it.progress.copy(percentage = 1.0),
                         hasPermission = true,
                         smsList = backupDataRepository.smsListItems,
                     )

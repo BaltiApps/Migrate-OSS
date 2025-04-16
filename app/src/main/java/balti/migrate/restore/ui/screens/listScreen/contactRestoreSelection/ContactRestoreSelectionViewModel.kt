@@ -28,6 +28,7 @@ class ContactRestoreSelectionViewModel(
             readContactsForRestoreUseCase.invoke().onCompletion {
                 _state.update {
                     it.copy(
+                        progress = it.progress.copy(percentage = 1.0),
                         hasPermission = true,
                         contactListItems = dataRepository.contactsListItems
                     )
