@@ -19,6 +19,18 @@
         Please grant permission to read the contacts.\n
         Click Skip to not backup contacts.
     </string>
+    <string name="all_contacts_are_synced_contacts">
+        It seems all your contacts are synced\n(with Google, Whatsapp, etc.)
+    </string>
+    <string name="synced_contacts_backup_is_not_recommended">
+        Synced contacts backup is not recommended.\nYou may choose to click Skip at the bottom.
+    </string>
+    <string name="synced_contacts_not_recommended_justification">
+        It is recommended to use the specific service (e.g. Google account sync) to sync your contacts across devices or after a factory reset.\n
+        Using Migrate may result in duplicates.\n
+        Backup contacts if you know you would not have access to your accounts when restoring the backup.
+    </string>
+    <string name="show_synced_contacts_anyway">Show synced contacts anyway</string>
 
     <!--CallLogBackupSelection.kt-->
     <string name="label_call_log_backup">Call log backup</string>
