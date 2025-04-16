@@ -60,6 +60,7 @@ fun ListScreenShell(
                 onDeselectAll = onDeselectAll,
                 isLoading = isLoading,
                 isStaging = isStaging,
+                hasPermission = isPermissionGranted,
                 onNext = onNext,
             )
         }
@@ -80,6 +81,7 @@ fun ListScreenShell(
     onDeselectAll: (() -> Unit)?,
     onPermissionRequest: () -> Unit,
     onNext: () -> Unit,
+    nextButtonCustomLabel: String? = null,
     content: @Composable () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -95,10 +97,9 @@ fun ListScreenShell(
                 onDeselectAll = onDeselectAll,
                 isLoading = listState.isLoading,
                 isStaging = listState.isStaging,
+                hasPermission = listState.hasPermission,
                 onNext = onNext,
-                nextButtonLabel = if (listState.hasPermission) {
-                    stringResource(R.string.next)
-                } else stringResource(R.string.skip),
+                nextButtonCustomLabel = nextButtonCustomLabel,
             )
         }
     ) { paddingValues ->
@@ -197,19 +198,24 @@ private fun BottomBar(
     onDeselectAll: (() -> Unit)?,
     isLoading: Boolean,
     isStaging: Boolean,
+    hasPermission: Boolean,
     onNext: () -> Unit,
-    nextButtonLabel: String = stringResource(R.string.next),
+    nextButtonCustomLabel: String? = null,
 ) {
+    val shouldShowSkip = !hasPermission || isLoading
+    val nextButtonLabel = when {
+        nextButtonCustomLabel != null -> nextButtonCustomLabel
+        shouldShowSkip -> stringResource(R.string.skip)
+        else -> stringResource(R.string.next)
+    }
     BottomAppBar(
         actions = {
-            onSelectAll?.run {
+            if (!shouldShowSkip && onSelectAll != null) {
                 IconButton(
                     modifier = Modifier
                         .padding(4.dp)
                         .padding(bottom = 6.dp),
-                    onClick = {
-                        if (!isLoading) this.invoke()
-                    }
+                    onClick = onSelectAll
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.DoneAll,
@@ -217,14 +223,12 @@ private fun BottomBar(
                     )
                 }
             }
-            onDeselectAll?.run {
+            if (!shouldShowSkip && onDeselectAll != null) {
                 IconButton(
                     modifier = Modifier
                         .padding(4.dp)
                         .padding(bottom = 6.dp),
-                    onClick = {
-                        if (!isLoading) this.invoke()
-                    }
+                    onClick = onDeselectAll
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.ClearAll,
