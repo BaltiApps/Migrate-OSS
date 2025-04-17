@@ -45,9 +45,9 @@ fun NextFab(
     buttonStatus: ButtonStatus,
 ) {
     val onFabColor = when(buttonStatus) {
-        is ButtonStatus.Loading -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+        is ButtonStatus.Loading -> MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.38f)
         is ButtonStatus.Error -> MaterialTheme.colorScheme.onErrorContainer
-        else -> MaterialTheme.colorScheme.onSurface
+        else -> MaterialTheme.colorScheme.onPrimaryContainer
     }
     val fabBackgroundColor = when(buttonStatus) {
         is ButtonStatus.Error -> MaterialTheme.colorScheme.errorContainer
