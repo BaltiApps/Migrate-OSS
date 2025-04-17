@@ -1,17 +1,15 @@
 package balti.migrate.backup.ui.screens.backupName
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -19,99 +17,160 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
+import balti.migrate.common.ui.components.ButtonStatus
+import balti.migrate.common.ui.components.NextFab
+import balti.migrate.common.ui.listScreen.ListPermissionRequestLayout
 import balti.migrate.common.utils.getDefaultBackupName
 import baltiapps.migrate.domain.DEFAULT_BACKUP_ROOT
 import baltiapps.migrate.domain.backup.model.BackupLocation
+import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BackupName(
     navigateUp: () -> Unit,
-    goToNextScreen: (BackupLocation) -> Unit
+    goToNextScreen: (BackupLocation) -> Unit,
+    viewModel: BackupNameViewModel = koinViewModel(),
 ) {
-    var backupName by rememberSaveable { mutableStateOf(getDefaultBackupName()) }
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val activity = LocalActivity.current
+
+    Content(
+        state = { state },
+        navigateUp = navigateUp,
+        goToNextScreen = goToNextScreen,
+        onBackupNameChanged = {
+            viewModel.onAction(BackupNameAction.NameChanged(it))
+        },
+        requestPermission = {
+            viewModel.onAction(BackupNameAction.RequestPermission(activity))
+        },
+    )
+}
+
+@Composable
+private fun Content(
+    state: () -> BackupNameState,
+    navigateUp: () -> Unit,
+    goToNextScreen: (BackupLocation) -> Unit,
+    onBackupNameChanged: (String) -> Unit,
+    requestPermission: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Scaffold(
+        modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(stringResource(R.string.backup_info))
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = navigateUp
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = stringResource(R.string.go_back)
-                        )
-                    }
-                }
+            TopBar(
+                navigateUp = navigateUp,
             )
         },
         bottomBar = {
-            BottomAppBar(
-                actions = {},
-                floatingActionButton = {
-                    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                        ExtendedFloatingActionButton(
-                            onClick = {
-                                goToNextScreen(
-                                    BackupLocation(
-                                        backupName = backupName,
-                                        backupLocation = DEFAULT_BACKUP_ROOT
-                                    )
-                                )
-                            },
-                            text = {
-                                Text(stringResource(R.string.next))
-                            },
-                            icon = {
-                                Icon(
-                                    imageVector = Icons.Default.ChevronRight,
-                                    contentDescription = null
-                                )
-                            }
-                        )
-                    }
-                }
+            BottomBar(
+                hasPermission = state().hasPermission,
+                backupName = state().backupName,
+                goToNextScreen = goToNextScreen,
             )
         }
     ) { paddingValues ->
-        Box(
-            modifier = Modifier.fillMaxSize().padding(paddingValues),
-            contentAlignment = Alignment.Center
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(
+                space = 8.dp,
+                alignment = Alignment.CenterVertically,
+            ),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+            if (!state().hasPermission) {
+                ListPermissionRequestLayout(
+                    description = stringResource(R.string.directory_permission_description),
+                    onRequestPermission = requestPermission,
+                    onSkip = null,
+                )
+                return@Column
+            }
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = state().backupName,
+                onValueChange = {
+                    onBackupNameChanged(it)
+                },
+                label = {
+                    Text(stringResource(R.string.enter_backup_name))
+                },
+                placeholder = {
+                    Text(getDefaultBackupName())
+                }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TopBar(
+    navigateUp: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    TopAppBar(
+        modifier = modifier,
+        title = {
+            Text(stringResource(R.string.backup_info))
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = navigateUp
             ) {
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = backupName,
-                    onValueChange = {
-                        backupName = it
-                    },
-                    label = {
-                        Text(stringResource(R.string.enter_backup_name))
-                    },
-                    placeholder = {
-                        Text(backupName)
-                    }
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.go_back)
                 )
             }
         }
-    }
+    )
+}
+
+@Composable
+private fun BottomBar(
+    hasPermission: Boolean,
+    backupName: String,
+    goToNextScreen: (BackupLocation) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BottomAppBar(
+        modifier = modifier,
+        actions = {},
+        floatingActionButton = {
+            val buttonStatus = if (hasPermission) {
+                ButtonStatus.Unspecified(
+                    label = stringResource(R.string.next),
+                    onPressed = {
+                        goToNextScreen(
+                            BackupLocation(
+                                backupName = backupName,
+                                backupLocation = DEFAULT_BACKUP_ROOT
+                            )
+                        )
+                    }
+                )
+            } else {
+                ButtonStatus.Loading(
+                    label = stringResource(R.string.waiting),
+                    onPressed = {},
+                )
+            }
+            NextFab(
+                buttonStatus = buttonStatus
+            )
+        }
+    )
 }

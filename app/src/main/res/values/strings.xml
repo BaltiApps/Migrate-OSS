@@ -72,6 +72,9 @@
     <!--BackupName.kt-->
     <string name="backup_info">Backup info</string>
     <string name="enter_backup_name">Enter backup name</string>
+    <string name="directory_permission_description">
+        Please grant permission to read / write files on the device.
+    </string>
 
     <!--BackupService.kt-->
     <string name="loading">Loading…</string>
@@ -124,4 +127,5 @@
     <string name="skip">Skip</string>
     <string name="dismiss">Dismiss</string>
     <string name="why">Why?</string>
+    <string name="waiting">Waiting</string>
 </resources>
