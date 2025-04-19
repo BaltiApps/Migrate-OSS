@@ -8,6 +8,7 @@ import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDire
 import balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection.CallLogRestoreSelection
 import balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection.ContactRestoreSelection
 import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestoreSelection
+import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummary
 import baltiapps.migrate.domain.common.model.Directory
 import kotlinx.serialization.Serializable
 
@@ -49,7 +50,15 @@ fun ScreenRestore(
         composable<RouteSmsRestoreSelection> {
             SmsRestoreSelection(
                 navigateUp = navController::navigateUp,
-                goToNextScreen = {}
+                goToNextScreen = {
+                    navController.navigate(RouteRestoreSummary)
+                }
+            )
+        }
+        composable<RouteRestoreSummary> {
+            RestoreSummary(
+                navigateUp = navController::navigateUp,
+                startRestoreService = {},
             )
         }
     }
@@ -66,3 +75,6 @@ object RouteCallLogRestoreSelection
 
 @Serializable
 object RouteSmsRestoreSelection
+
+@Serializable
+object RouteRestoreSummary
