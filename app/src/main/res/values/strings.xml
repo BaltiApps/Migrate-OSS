@@ -121,6 +121,9 @@
         You will be prompted to change the SMS app after the whole restore process is finished.\n
     </string>
 
+    <!--MainActivity.kt-->
+    <string name="no_application_available_to_restore_contacts">No applications found to restore contacts, please install Google contacts / Fossify contacts.</string>
+
     <!--sms dummies-->
     <string name="new_sms_received">New SMS received</string>
     <string name="new_mms_received">New MMS received</string>

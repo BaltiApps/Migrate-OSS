@@ -67,6 +67,7 @@ class RestoreSummaryViewModel(
                     val directory = File(applicationContext.filesDir, INTERNAL_ROUGH_WORK_DIRECTORY)
                     directory.mkdirs()
                     val vcfFile = JavaFile(File(directory, VCF_FILE_NAME))
+                    this@RestoreSummaryViewModel.vcfFile = vcfFile
                     val textWriter = TextWriterImpl()
                     exportContactsForRestoreUseCase.invoke(
                         file = vcfFile,

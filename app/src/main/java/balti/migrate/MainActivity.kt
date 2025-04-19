@@ -1,14 +1,17 @@
 package balti.migrate
 
 import android.app.role.RoleManager
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -100,9 +103,34 @@ class MainActivity : ComponentActivity() {
         onUserConfirmation: (Boolean) -> Unit,
     ) {
         if (vcfFile is JavaFile) {
-
+            onUserPermissionConfirmation = WeakReference(onUserConfirmation)
+            val uri = FileProvider.getUriForFile(
+                this,
+                BuildConfig.contentProviderAuthority,
+                vcfFile.file,
+            )
+            try {
+                specialPermissionLauncher.launch(
+                    Intent(Intent.ACTION_VIEW).apply {
+                        setDataAndType(uri, "text/x-vcard")
+                        putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("text/x-vcard"))
+                        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    }
+                )
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(
+                    this,
+                    R.string.no_application_available_to_restore_contacts,
+                    Toast.LENGTH_LONG
+                ).show()
+                onUserConfirmation(false)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onUserConfirmation(false)
+            }
+        } else {
+            onUserConfirmation(false)
         }
-        onUserConfirmation(false)
     }
 
     private fun startBackupService(backupLocation: BackupLocation) {
