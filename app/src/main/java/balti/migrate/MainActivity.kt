@@ -1,5 +1,6 @@
 package balti.migrate
 
+import android.app.role.RoleManager
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -14,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import balti.migrate.backup.data.service.BackupService
 import balti.migrate.backup.ui.screens.ScreenBackup
+import balti.migrate.common.data.model.JavaFile
 import balti.migrate.restore.ui.ScreenRestore
 import balti.migrate.ui.screens.ScreenHome
 import balti.migrate.ui.theme.MigrateTheme
@@ -23,6 +25,7 @@ import baltiapps.migrate.domain.EXTRA_BACKUP_LOCATION
 import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
 import baltiapps.migrate.domain.PermissionConstants
 import baltiapps.migrate.domain.backup.model.BackupLocation
+import baltiapps.migrate.domain.common.model.GenericFile
 import kotlinx.serialization.Serializable
 import java.lang.ref.WeakReference
 
@@ -62,6 +65,10 @@ class MainActivity : ComponentActivity() {
             onUserPermissionConfirmation = null
         }
 
+    private val roleManager by lazy {
+        getSystemService(RoleManager::class.java)
+    }
+
     fun requestPermissions(permissions: List<String>, onUserConfirmation: (Boolean) -> Unit) {
         onUserPermissionConfirmation = WeakReference(onUserConfirmation)
         permissionLauncherMultiple.launch(permissions.toTypedArray())
@@ -77,10 +84,25 @@ class MainActivity : ComponentActivity() {
                     }
                 )
             }
+            PermissionConstants.DEFAULT_SMS_APP -> {
+                specialPermissionLauncher.launch(
+                    roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
+                )
+            }
             else -> {
                 permissionLauncherSingle.launch(permission)
             }
         }
+    }
+
+    fun launchContactChooser(
+        vcfFile: GenericFile?,
+        onUserConfirmation: (Boolean) -> Unit,
+    ) {
+        if (vcfFile is JavaFile) {
+
+        }
+        onUserConfirmation(false)
     }
 
     private fun startBackupService(backupLocation: BackupLocation) {

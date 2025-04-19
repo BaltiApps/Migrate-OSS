@@ -14,11 +14,13 @@ import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDire
 import balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection.CallLogRestoreSelectionViewModel
 import balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection.ContactRestoreSelectionViewModel
 import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestoreSelectionViewModel
+import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummaryViewModel
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import baltiapps.migrate.domain.restore.sources.DataRestore
+import baltiapps.migrate.domain.restore.usecase.ExportContactsForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadCallLogForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadContactsForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadFilesFromBackupUseCase
@@ -110,6 +112,7 @@ val restoreDiModule = module {
             restoreDataRepository = get()
         )
     }
+    singleOf(::ExportContactsForRestoreUseCase)
 
     /* View models*/
 
@@ -117,4 +120,5 @@ val restoreDiModule = module {
     viewModelOf(::ContactRestoreSelectionViewModel)
     viewModelOf(::CallLogRestoreSelectionViewModel)
     viewModelOf(::SmsRestoreSelectionViewModel)
+    viewModelOf(::RestoreSummaryViewModel)
 }
