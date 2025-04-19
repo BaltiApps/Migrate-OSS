@@ -3,6 +3,7 @@ package balti.migrate.common.data.sources
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Environment
+import android.provider.Telephony
 import androidx.core.content.ContextCompat
 import balti.migrate.R
 import baltiapps.migrate.domain.PermissionConstants
@@ -27,6 +28,7 @@ class ContextSourceImpl(private val context: Context): ContextSource {
     override fun checkPermission(permission: String): Boolean {
         return when (permission) {
             PermissionConstants.MANAGE_EXTERNAL_STORAGE -> checkAllFilesAccess()
+            PermissionConstants.DEFAULT_SMS_APP -> checkDefaultSmsApp()
             else -> ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
         }
     }
@@ -38,5 +40,9 @@ class ContextSourceImpl(private val context: Context): ContextSource {
 
     private fun checkAllFilesAccess(): Boolean {
         return Environment.isExternalStorageManager()
+    }
+
+    private fun checkDefaultSmsApp(): Boolean {
+        return Telephony.Sms.getDefaultSmsPackage(context) == context.packageName
     }
 }

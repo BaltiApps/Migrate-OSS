@@ -80,5 +80,6 @@ class ContactsDBConstants {
 class PermissionConstants {
     companion object {
         const val MANAGE_EXTERNAL_STORAGE = "android.permission.MANAGE_EXTERNAL_STORAGE"
+        const val DEFAULT_SMS_APP = "android.provider.Telephony.ACTION_CHANGE_DEFAULT"
     }
 }
