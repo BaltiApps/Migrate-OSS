@@ -104,10 +104,21 @@
 
     <!--SmsRestoreSelection.kt-->
     <string name="label_sms_restore">SMS restore</string>
-    <string name="sms_restore_permission_description">
-        Please temporarily set Migrate as the default SMS app to restore SMS.\n
+
+    <!--RestoreSummary.kt-->
+    <string name="restore_summary">Restore summary</string>
+    <string name="delegated_restore">Delegated restore</string>
+    <string name="contacts_to_restore">Contacts to restore - %d</string>
+    <string name="special_permissions_required">Special permissions required</string>
+    <string name="set_as_default_sms_app">Set as default SMS app</string>
+    <string name="migrate_restore">Data to be restored by Migrate</string>
+    <string name="call_logs_to_restore">Call logs to restore - %d</string>
+    <string name="sms_to_restore">SMS to restore - %d</string>
+    <string name="exporting_percentage">Exporting - %d%%</string>
+    <string name="contacts_delegate_description">Select an app to import contacts, this can be the default contacts app in most devices.</string>
+    <string name="default_sms_app_description">
+        Migrate needs to be temporarily set as the default SMS app to restore SMS.\n
         You will be prompted to change the SMS app after the whole restore process is finished.\n
-        Click Skip to not restore SMS.
     </string>
 
     <!--sms dummies-->
@@ -128,4 +139,6 @@
     <string name="dismiss">Dismiss</string>
     <string name="why">Why?</string>
     <string name="waiting">Waiting</string>
+    <string name="start">Start</string>
+    <string name="proceed">Proceed</string>
 </resources>
