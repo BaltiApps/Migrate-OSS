@@ -62,6 +62,7 @@ fun SummaryItem(
                     UserActionState.ACTION_PROMPT -> Icons.Outlined.HourglassEmpty
                     UserActionState.ACTION_PROCEED -> Icons.Outlined.Done
                     UserActionState.ACTION_CANCELLED -> Icons.Outlined.Close
+                    UserActionState.ACTION_NO_ACTION_NEEDED -> Icons.Outlined.Done
                     else -> EmptyImageVector
                 },
                 contentDescription = null,
