@@ -1,9 +1,9 @@
 package balti.migrate.common.data.sources
 
+import android.app.role.RoleManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Environment
-import android.provider.Telephony
 import androidx.core.content.ContextCompat
 import balti.migrate.R
 import baltiapps.migrate.domain.PermissionConstants
@@ -43,6 +43,7 @@ class ContextSourceImpl(private val context: Context): ContextSource {
     }
 
     private fun checkDefaultSmsApp(): Boolean {
-        return Telephony.Sms.getDefaultSmsPackage(context) == context.packageName
+        val roleManager = context.getSystemService(RoleManager::class.java)
+        return roleManager.isRoleHeld(RoleManager.ROLE_SMS)
     }
 }
