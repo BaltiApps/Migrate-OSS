@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
         }
 
     private val specialPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { it ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val isGranted = it.resultCode == RESULT_OK
             onUserPermissionConfirmation?.get()?.invoke(isGranted)
             onUserPermissionConfirmation = null
@@ -103,7 +103,9 @@ class MainActivity : ComponentActivity() {
         onUserConfirmation: (Boolean) -> Unit,
     ) {
         if (vcfFile is JavaFile) {
-            onUserPermissionConfirmation = WeakReference(onUserConfirmation)
+            onUserPermissionConfirmation = WeakReference{
+                WeakReference(onUserConfirmation).get()?.invoke(true)
+            }
             val uri = FileProvider.getUriForFile(
                 this,
                 BuildConfig.contentProviderAuthority,
