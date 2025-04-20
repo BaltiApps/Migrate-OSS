@@ -64,6 +64,7 @@ fun determineNextTask(
             when (state.smsUserActionState) {
                 UserActionState.ACTION_PROCEED -> SetAsDefaultSmsAppTask::class.simpleName
                 UserActionState.ACTION_CANCELLED -> StartRestoreServiceTask::class.simpleName
+                UserActionState.ACTION_NO_ACTION_NEEDED -> StartRestoreServiceTask::class.simpleName
                 else -> null
             }
         }

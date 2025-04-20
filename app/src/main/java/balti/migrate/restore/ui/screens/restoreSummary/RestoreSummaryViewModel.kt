@@ -61,6 +61,8 @@ class RestoreSummaryViewModel(
     private var taskMap: Map<String, RestoreTask> = emptyMap()
 
     private fun runTask(task: RestoreTask, onTaskComplete: () -> Unit) {
+        val smsPermission = PermissionConstants.DEFAULT_SMS_APP
+
         viewModelScope.launch {
             when (task) {
                 is ExportContactsTask -> {
@@ -115,7 +117,9 @@ class RestoreSummaryViewModel(
                 is ShowDialogForSms -> {
                     _state.update {
                         it.copy(
-                            smsUserActionState = UserActionState.ACTION_PROMPT,
+                            smsUserActionState = if (contextSource.checkPermission(smsPermission)) {
+                                UserActionState.ACTION_NO_ACTION_NEEDED
+                            } else UserActionState.ACTION_PROMPT,
                         )
                     }
                     onTaskComplete()
@@ -123,9 +127,9 @@ class RestoreSummaryViewModel(
 
                 is SetAsDefaultSmsAppTask -> withContext(Dispatchers.Main) {
                     (task.getActivity() as? MainActivity)?.requestPermission(
-                        permission = PermissionConstants.DEFAULT_SMS_APP,
+                        permission = smsPermission,
                         onUserConfirmation = {
-                            if (!contextSource.checkPermission(PermissionConstants.DEFAULT_SMS_APP)) {
+                            if (!contextSource.checkPermission(smsPermission)) {
                                 _state.update {
                                     it.copy(
                                         smsUserActionState = UserActionState.ACTION_CANCELLED
