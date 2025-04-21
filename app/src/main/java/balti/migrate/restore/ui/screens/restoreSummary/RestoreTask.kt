@@ -56,6 +56,7 @@ fun determineNextTask(
             when (state.contactsUserActionState) {
                 UserActionState.ACTION_PROCEED -> LaunchContactAppTask::class.simpleName
                 UserActionState.ACTION_CANCELLED -> ShowDialogForSms::class.simpleName
+                UserActionState.NOT_APPLICABLE -> ShowDialogForSms::class.simpleName
                 else -> null
             }
         }
@@ -65,6 +66,7 @@ fun determineNextTask(
                 UserActionState.ACTION_PROCEED -> SetAsDefaultSmsAppTask::class.simpleName
                 UserActionState.ACTION_CANCELLED -> StartRestoreServiceTask::class.simpleName
                 UserActionState.ACTION_NO_ACTION_NEEDED -> StartRestoreServiceTask::class.simpleName
+                UserActionState.NOT_APPLICABLE -> StartRestoreServiceTask::class.simpleName
                 else -> null
             }
         }
