@@ -2,7 +2,7 @@ package balti.migrate.backup.ui.screens.progressScreen
 
 import baltiapps.migrate.domain.common.model.Progress
 
-data class ProgressScreenState(
+data class BackupProgressScreenState(
     val progressList: List<Progress>,
     val headingText: String,
     val errorOnly: Boolean,
@@ -10,7 +10,7 @@ data class ProgressScreenState(
     val isBackupFinished: Boolean,
 ) {
     companion object {
-        val Empty = ProgressScreenState(
+        val Empty = BackupProgressScreenState(
             progressList = emptyList(),
             headingText = "",
             errorOnly = false,

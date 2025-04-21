@@ -10,7 +10,7 @@ import balti.migrate.backup.ui.screens.backupName.BackupName
 import balti.migrate.backup.ui.screens.listScreen.callLogBackupSelection.CallLogBackupSelection
 import balti.migrate.backup.ui.screens.listScreen.contactBackupSelection.ContactBackupSelection
 import balti.migrate.backup.ui.screens.listScreen.smsBackupSelection.SmsBackupSelection
-import balti.migrate.backup.ui.screens.progressScreen.ProgressScreen
+import balti.migrate.backup.ui.screens.progressScreen.BackupProgressScreen
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import kotlinx.serialization.Serializable
 
@@ -71,7 +71,7 @@ fun ScreenBackup(
             )
         }
         composable<RouteBackupProgressScreen> {
-            ProgressScreen(
+            BackupProgressScreen(
                 cancelBackup = cancelBackup,
                 closeProgressScreen = parentNavControllerNavigateUp,
             )

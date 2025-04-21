@@ -9,12 +9,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ProgressScreenViewModel(
+class BackupProgressScreenViewModel(
     private val contextSource: ContextSource,
     private val progressLogRepository: ProgressLogRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ProgressScreenState.Empty)
+    private val _state = MutableStateFlow(BackupProgressScreenState.Empty)
     val state = _state.asStateFlow()
 
     private var observeErrorsOnly: Boolean = false
@@ -46,20 +46,20 @@ class ProgressScreenViewModel(
         startObserving()
     }
 
-    fun performAction(action: ProgressScreenAction) {
+    fun performAction(action: BackupProgressScreenAction) {
         when (action) {
-            is ProgressScreenAction.ToggleErrorOnly -> {
+            is BackupProgressScreenAction.ToggleErrorOnly -> {
                 observeErrorsOnly = action.enabled
                 progressLogRepository.dispatchLatestObservedProgress()
             }
-            is ProgressScreenAction.CancelBackup -> {
+            is BackupProgressScreenAction.CancelBackup -> {
                 _state.update {
                     isCancelling = true
                     it.copy(isCancelling = true)
                 }
             }
-            is ProgressScreenAction.PauseProgressLogs -> { isLogsPaused = true }
-            is ProgressScreenAction.ResumeProgressLogs -> {
+            is BackupProgressScreenAction.PauseProgressLogs -> { isLogsPaused = true }
+            is BackupProgressScreenAction.ResumeProgressLogs -> {
                 isLogsPaused = false
                 progressLogRepository.dispatchLatestObservedProgress()
             }

@@ -32,8 +32,8 @@ import balti.migrate.common.ui.progressScreen.ProgressScreenBottomBar
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ProgressScreen(
-    viewModel: ProgressScreenViewModel = koinViewModel(),
+fun BackupProgressScreen(
+    viewModel: BackupProgressScreenViewModel = koinViewModel(),
     cancelBackup: () -> Unit,
     closeProgressScreen: () -> Unit,
 ) {
@@ -42,17 +42,17 @@ fun ProgressScreen(
     Content(
         state = { state },
         onToggleErrorOnly = {
-            viewModel.performAction(ProgressScreenAction.ToggleErrorOnly(it))
+            viewModel.performAction(BackupProgressScreenAction.ToggleErrorOnly(it))
         },
         cancelBackup = {
-            viewModel.performAction(ProgressScreenAction.CancelBackup)
+            viewModel.performAction(BackupProgressScreenAction.CancelBackup)
             cancelBackup()
         },
         pauseLogs = {
-            viewModel.performAction(ProgressScreenAction.PauseProgressLogs)
+            viewModel.performAction(BackupProgressScreenAction.PauseProgressLogs)
         },
         resumeLogs = {
-            viewModel.performAction(ProgressScreenAction.ResumeProgressLogs)
+            viewModel.performAction(BackupProgressScreenAction.ResumeProgressLogs)
         },
         closeProgressScreen = closeProgressScreen,
     )
@@ -61,7 +61,7 @@ fun ProgressScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Content(
-    state: () -> ProgressScreenState,
+    state: () -> BackupProgressScreenState,
     onToggleErrorOnly: (Boolean) -> Unit,
     cancelBackup: () -> Unit,
     pauseLogs: () -> Unit,

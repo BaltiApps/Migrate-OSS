@@ -11,7 +11,7 @@ import balti.migrate.backup.ui.screens.backupName.BackupNameViewModel
 import balti.migrate.backup.ui.screens.listScreen.callLogBackupSelection.CallLogBackupSelectionViewModel
 import balti.migrate.backup.ui.screens.listScreen.contactBackupSelection.ContactBackupSelectionViewModel
 import balti.migrate.backup.ui.screens.listScreen.smsBackupSelection.SmsBackupSelectionViewModel
-import balti.migrate.backup.ui.screens.progressScreen.ProgressScreenViewModel
+import balti.migrate.backup.ui.screens.progressScreen.BackupProgressScreenViewModel
 import balti.migrate.common.data.model.CallLogData
 import balti.migrate.common.data.model.ContactData
 import balti.migrate.common.data.model.SmsData
@@ -130,7 +130,7 @@ val backupDiModule = module {
     viewModelOf(::SmsBackupSelectionViewModel)
     viewModelOf(::BackupNameViewModel)
     viewModel {
-        ProgressScreenViewModel(
+        BackupProgressScreenViewModel(
             contextSource = get(),
             progressLogRepository = get(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP))
         )
