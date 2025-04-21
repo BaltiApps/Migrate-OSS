@@ -59,7 +59,7 @@ val restoreDiModule = module {
         SmsDBReader(get())
     }
     single<DataRestore<SmsData>>(named(Names.SMS_RESTORE_SOURCE)) {
-        SmsRestore(get(), get())
+        SmsRestore(get(), get(), get())
     }
     single<NotificationHandler<*>>(named(Names.NOTIFICATION_HANDLER_RESTORE)) {
         RestoreNotificationHandlerImpl(

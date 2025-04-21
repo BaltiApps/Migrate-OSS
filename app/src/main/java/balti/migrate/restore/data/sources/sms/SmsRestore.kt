@@ -5,8 +5,10 @@ import android.content.Context
 import android.provider.Telephony
 import balti.migrate.common.data.model.SmsData
 import balti.migrate.common.utils.DBUtils
+import baltiapps.migrate.domain.PermissionConstants
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
+import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.restore.sources.DataRestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -16,9 +18,10 @@ import kotlinx.coroutines.flow.flowOn
 class SmsRestore(
     private val context: Context,
     private val dbUtils: DBUtils,
+    private val contextSource: ContextSource,
 ): DataRestore<SmsData> {
     override fun checkPermission(): Boolean {
-        return Telephony.Sms.getDefaultSmsPackage(context) == context.packageName
+        return contextSource.checkPermission(PermissionConstants.DEFAULT_SMS_APP)
     }
 
     override fun restoreDataItems(items: List<SmsData>): Flow<Progress> {
