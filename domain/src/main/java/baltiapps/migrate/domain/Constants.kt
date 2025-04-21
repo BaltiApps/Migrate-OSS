@@ -74,7 +74,6 @@ class ContactsDBConstants {
         const val CONTACTS_TABLE_NAME = "contacts"
 
         const val DISPLAY_NAME = "displayName"
-        const val DISPLAY_NUMBER = "displayNumber"
         const val VCF_CONTENT = "vcfContent"
     }
 }

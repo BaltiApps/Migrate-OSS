@@ -75,8 +75,6 @@ class ContactsSource(
 
             val fullName =
                 getCursorData<String>(cursor, ContactsContract.Contacts.DISPLAY_NAME)
-            val primaryContact =
-                getCursorData<String>(cursor, ContactsContract.CommonDataKinds.Phone.NUMBER)
 
             val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey)
             val fd: AssetFileDescriptor = context.contentResolver.openAssetFileDescriptor(uri, "r")
@@ -94,10 +92,9 @@ class ContactsSource(
             return ContactData(
                 _id = getCursorData<String>(cursor, ContactsContract.Contacts._ID),
                 displayName = fullName,
-                displayNumber = primaryContact,
                 vcfContent = vcardString,
                 isLocalContact = accountType.isBlank(),
-                logInfo = fullName.ifBlank { primaryContact },
+                logInfo = fullName,
             )
         }
     }

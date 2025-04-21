@@ -26,18 +26,9 @@ fun RenderContactItem(
         },
         headlineContent = {
             Text(
-                text = item.displayName.takeIf { it.isNotBlank() }
-                    ?: item.displayNumber,
+                text = item.displayName,
                 modifier = alphaModifier,
             )
-        },
-        supportingContent = {
-            if (item.displayName.isNotBlank()) {
-                Text(
-                    text = item.displayNumber,
-                    modifier = alphaModifier,
-                )
-            }
         },
         trailingContent = {
             Checkbox(
@@ -55,28 +46,24 @@ private fun ContactDisplayItemPreview() {
     val item1 = ContactListItem(
         _id = "",
         displayName = "John Price",
-        displayNumber = "5563758676",
         isLocalContact = false,
         isChecked = true,
     )
     val item2 = ContactListItem(
         _id = "",
         displayName = "Soap McTavish",
-        displayNumber = "5513458656",
         isLocalContact = false,
         isChecked = true,
     )
     val item3 = ContactListItem(
         _id = "",
         displayName = "Kyle Garrick",
-        displayNumber = "5523458656",
         isLocalContact = false,
         isChecked = false,
     )
     val item4 = ContactListItem(
         _id = "",
         displayName = "",
-        displayNumber = "44678",
         isLocalContact = true,
         isChecked = false
     )
