@@ -14,6 +14,7 @@ import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDire
 import balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection.CallLogRestoreSelectionViewModel
 import balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection.ContactRestoreSelectionViewModel
 import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestoreSelectionViewModel
+import balti.migrate.restore.ui.screens.progressScreen.RestoreProgressScreenViewModel
 import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummaryViewModel
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
@@ -28,6 +29,7 @@ import baltiapps.migrate.domain.restore.usecase.ReadSmsForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreCallLogUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreSmsUseCase
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -121,4 +123,10 @@ val restoreDiModule = module {
     viewModelOf(::CallLogRestoreSelectionViewModel)
     viewModelOf(::SmsRestoreSelectionViewModel)
     viewModelOf(::RestoreSummaryViewModel)
+    viewModel {
+        RestoreProgressScreenViewModel(
+            contextSource = get(),
+            progressLogRepository = get(named(Names.PROGRESS_LOG_REPOSITORY_RESTORE))
+        )
+    }
 }

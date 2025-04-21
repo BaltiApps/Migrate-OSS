@@ -8,6 +8,7 @@ import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDire
 import balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection.CallLogRestoreSelection
 import balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection.ContactRestoreSelection
 import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestoreSelection
+import balti.migrate.restore.ui.screens.progressScreen.RestoreProgressScreen
 import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummary
 import kotlinx.serialization.Serializable
 
@@ -17,10 +18,11 @@ fun ScreenRestore(
     startRestoreService: () -> Unit,
     cancelRestore: () -> Unit,
 ) {
+    val startDestination = RouteDirectorySelection
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = RouteDirectorySelection,
+        startDestination = startDestination,
     ) {
         composable<RouteDirectorySelection> {
             BrowseRestoreDirectory(
@@ -57,7 +59,20 @@ fun ScreenRestore(
         composable<RouteRestoreSummary> {
             RestoreSummary(
                 navigateUp = navController::navigateUp,
-                startRestoreServiceAndGoToNextScreen = startRestoreService,
+                startRestoreServiceAndGoToNextScreen = {
+                    startRestoreService()
+                    navController.navigate(RouteRestoreProgressScreen){
+                        popUpTo(startDestination) {
+                            inclusive = true
+                        }
+                    }
+                },
+            )
+        }
+        composable<RouteRestoreProgressScreen> {
+            RestoreProgressScreen(
+                cancelRestore = cancelRestore,
+                closeProgressScreen = parentNavControllerNavigateUp,
             )
         }
     }
@@ -77,3 +92,6 @@ object RouteSmsRestoreSelection
 
 @Serializable
 object RouteRestoreSummary
+
+@Serializable
+object RouteRestoreProgressScreen
