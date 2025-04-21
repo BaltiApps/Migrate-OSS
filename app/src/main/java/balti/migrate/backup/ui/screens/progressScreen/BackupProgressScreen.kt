@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,7 +16,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,6 +28,7 @@ import balti.migrate.common.ui.components.NextFab
 import balti.migrate.common.ui.progressScreen.ErrorLayoutToggle
 import balti.migrate.common.ui.progressScreen.ProgressLogLayout
 import balti.migrate.common.ui.progressScreen.ProgressScreenBottomBar
+import balti.migrate.common.ui.progressScreen.ScrollAnchor
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -68,8 +68,7 @@ private fun Content(
     resumeLogs: () -> Unit,
     closeProgressScreen: () -> Unit,
 ) {
-    var shouldAutoScroll by rememberSaveable { mutableStateOf(true) }
-    val listState = rememberLazyListState()
+    var scrollAnchor by remember { mutableStateOf(ScrollAnchor.BOTTOM) }
     val items = state().progressList
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -92,8 +91,12 @@ private fun Content(
         },
         bottomBar = {
             ProgressScreenBottomBar(
-                items = items,
-                listState = listState,
+                onScrollToTop = {
+                    scrollAnchor = ScrollAnchor.TOP
+                },
+                onScrollToBottom = {
+                    scrollAnchor = ScrollAnchor.BOTTOM
+                },
                 fabContent = {
                     val buttonStatus = when {
                         state().isBackupFinished ->
@@ -124,12 +127,12 @@ private fun Content(
                     .fillMaxWidth()
                     .weight(1F),
                 items = items,
-                shouldAutoScroll = shouldAutoScroll,
-                onSetAutoScroll = {
-                    shouldAutoScroll = it
+                pauseLogs = {
+                    pauseLogs()
+                    scrollAnchor = ScrollAnchor.INDETERMINATE
                 },
-                pauseLogs = pauseLogs,
                 resumeLogs = resumeLogs,
+                scrollAnchor = scrollAnchor,
             )
         }
     }
