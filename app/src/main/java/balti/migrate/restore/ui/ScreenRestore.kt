@@ -11,12 +11,14 @@ import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestor
 import balti.migrate.restore.ui.screens.progressScreen.RestoreProgressScreen
 import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummary
 import kotlinx.serialization.Serializable
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ScreenRestore(
     parentNavControllerNavigateUp: () -> Unit,
     startRestoreService: () -> Unit,
     cancelRestore: () -> Unit,
+    viewModel: ScreenRestoreViewModel = koinViewModel()
 ) {
     val startDestination = RouteDirectorySelection
     val navController = rememberNavController()
@@ -28,7 +30,7 @@ fun ScreenRestore(
             BrowseRestoreDirectory(
                 navigateUp = parentNavControllerNavigateUp,
                 onBackupSelected = {
-                    navController.navigate(RouteContactRestoreSelection)
+                    navController.navigate(viewModel.findNextRoute())
                 }
             )
         }
@@ -36,7 +38,7 @@ fun ScreenRestore(
             ContactRestoreSelection(
                 navigateUp = navController::navigateUp,
                 goToNextScreen = {
-                    navController.navigate(RouteCallLogRestoreSelection)
+                    navController.navigate(viewModel.findNextRoute())
                 }
             )
         }
@@ -44,7 +46,7 @@ fun ScreenRestore(
             CallLogRestoreSelection(
                 navigateUp = navController::navigateUp,
                 goToNextScreen = {
-                    navController.navigate(RouteSmsRestoreSelection)
+                    navController.navigate(viewModel.findNextRoute())
                 }
             )
         }
@@ -52,7 +54,7 @@ fun ScreenRestore(
             SmsRestoreSelection(
                 navigateUp = navController::navigateUp,
                 goToNextScreen = {
-                    navController.navigate(RouteRestoreSummary)
+                    navController.navigate(viewModel.findNextRoute())
                 }
             )
         }

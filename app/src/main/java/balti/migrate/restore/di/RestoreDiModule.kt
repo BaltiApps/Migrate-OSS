@@ -10,6 +10,7 @@ import balti.migrate.restore.data.sources.callLog.CallLogRestore
 import balti.migrate.restore.data.sources.contacts.ContactsDBReader
 import balti.migrate.restore.data.sources.sms.SmsDBReader
 import balti.migrate.restore.data.sources.sms.SmsRestore
+import balti.migrate.restore.ui.ScreenRestoreViewModel
 import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDirectoryViewModel
 import balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection.CallLogRestoreSelectionViewModel
 import balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection.ContactRestoreSelectionViewModel
@@ -129,4 +130,5 @@ val restoreDiModule = module {
             progressLogRepository = get(named(Names.PROGRESS_LOG_REPOSITORY_RESTORE))
         )
     }
+    viewModelOf(::ScreenRestoreViewModel)
 }
