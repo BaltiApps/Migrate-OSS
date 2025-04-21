@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.File
 
 class RestoreSummaryViewModel(
@@ -149,23 +150,30 @@ class RestoreSummaryViewModel(
     }
 
     private fun runTasksSequentially(taskClassName: String = taskMap.keys.first()) {
+        Timber.d("attempt run task - $taskClassName")
         val taskToRun = taskMap[taskClassName] ?: return
-        if (!taskToRun.shouldRunTask(_state.value)) return
+        if (!taskToRun.shouldRunTask(_state.value)) {
+            Timber.d("task should not run! - $taskClassName")
+            return
+        }
         runTask(taskToRun) {
             determineNextTask(
                 currentTaskClassName = taskClassName,
                 state = _state.value,
             )?.run {
+                Timber.d("next task for runTasksSequentially - $this")
                 runTasksSequentially(this)
             }
         }
     }
 
     private fun resumeTasks(lastTaskClassName: String) {
+        Timber.d("resume tasks after - $lastTaskClassName")
         determineNextTask(
             currentTaskClassName = lastTaskClassName,
             state = _state.value,
         )?.run {
+            Timber.d("next task for resumeTasks - $this")
             runTasksSequentially(this)
         }
     }
