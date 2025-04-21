@@ -4,6 +4,7 @@ data class Progress(
     val progressType: ProgressType,
     val percentage: Double,
     val logs: String = "",
+    val logsForStorage: String = logs,
     val isFailure: Boolean = false,
     val isLogHeading: Boolean = false,
 ) {

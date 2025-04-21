@@ -19,10 +19,10 @@ class ServiceUtils(
     ) {
         if (progress.isFailure || progress.isFinished()) {
             progressLogRepository.pushError(progress)
-            errorWriter.writeLine(progress.logs)
+            errorWriter.writeLine(progress.logsForStorage)
         }
         progressLogRepository.pushProgress(progress)
-        logWriter.writeLine(progress.logs)
+        logWriter.writeLine(progress.logsForStorage)
     }
 
     suspend fun emitHeadingLog(
