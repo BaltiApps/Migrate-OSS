@@ -42,7 +42,7 @@ class ContactsSource(
                 )
             }
 
-            val cursor = dbUtils.getCursor(context, ContactsContract.CommonDataKinds.Phone.CONTENT_URI)
+            val cursor = dbUtils.getCursor(context, ContactsContract.Contacts.CONTENT_URI)
 
             val contactCount = cursor.count
             if (contactCount == 0) return@flow
@@ -71,6 +71,7 @@ class ContactsSource(
         cursor: Cursor
     ): ContactData {
         dbUtils.run {
+            val contactId = getCursorData<String>(cursor, ContactsContract.Contacts._ID)
             val lookupKey = getCursorData<String>(cursor, ContactsContract.Contacts.LOOKUP_KEY)
 
             val fullName =
@@ -87,10 +88,10 @@ class ContactsSource(
             }
             val vcardString = String(byteArray)
 
-            val accountType = getCursorData<String>(cursor, ContactsContract.RawContacts.ACCOUNT_TYPE)
+            val accountType = getContactAccountType(contactId)
 
             return ContactData(
-                _id = getCursorData<String>(cursor, ContactsContract.Contacts._ID),
+                _id = contactId,
                 displayName = fullName,
                 vcfContent = vcardString,
                 isLocalContact = accountType.isBlank(),
@@ -98,4 +99,21 @@ class ContactsSource(
             )
         }
     }
+
+    private fun getContactAccountType(contactId: String): String {
+        val cursor = context.contentResolver.query(
+            ContactsContract.RawContacts.CONTENT_URI,
+            arrayOf(ContactsContract.RawContacts.ACCOUNT_TYPE),
+            "${ContactsContract.RawContacts.CONTACT_ID} = ?",
+            arrayOf(contactId),
+            null
+        )
+
+        cursor.use { c ->
+            return if (c?.moveToFirst() == true) {
+                dbUtils.getCursorData<String>(c, ContactsContract.RawContacts.ACCOUNT_TYPE)
+            } else ""
+        }
+    }
+
 }
