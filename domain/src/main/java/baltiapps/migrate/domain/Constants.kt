@@ -22,6 +22,7 @@ const val DEFAULT_BACKUP_ROOT = "/storage/emulated/0/Migrate"
 const val INTERNAL_ROUGH_WORK_DIRECTORY = "rough_work"
 
 const val BREAK_LINE = "===================================="
+const val REDACTED = "[REDACTED]"
 
 class CallLogDBConstants {
     companion object{

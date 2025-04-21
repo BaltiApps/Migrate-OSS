@@ -6,6 +6,7 @@ import android.provider.Telephony
 import balti.migrate.common.data.model.SmsData
 import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.PermissionConstants
+import baltiapps.migrate.domain.REDACTED
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.sources.ContextSource
@@ -33,7 +34,8 @@ class SmsRestore(
                     Progress(
                         progressType = Progress.ProgressType.SMS_RESTORE,
                         percentage = getPercentage(index + 1, items.size),
-                        logs = "(${index + 1}/${items.size}) ${item.logInfo}"
+                        logs = "(${index + 1}/${items.size}) ${item.logInfo}",
+                        logsForStorage = "(${index + 1}/${items.size}) $REDACTED",
                     )
                 )
             }

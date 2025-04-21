@@ -8,6 +8,7 @@ import android.provider.CallLog
 import androidx.core.content.ContextCompat
 import balti.migrate.common.data.model.CallLogData
 import balti.migrate.common.utils.DBUtils
+import baltiapps.migrate.domain.REDACTED
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.restore.sources.DataRestore
@@ -36,7 +37,8 @@ class CallLogRestore(
                     Progress(
                         progressType = Progress.ProgressType.CALL_LOG_RESTORE,
                         percentage = getPercentage(index + 1, items.size),
-                        logs = "(${index + 1}/${items.size}) ${item.logInfo}"
+                        logs = "(${index + 1}/${items.size}) ${item.logInfo}",
+                        logsForStorage = "(${index + 1}/${items.size}) $REDACTED",
                     )
                 )
             }

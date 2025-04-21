@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import balti.migrate.common.data.model.SmsData
 import balti.migrate.common.utils.DBUtils
+import baltiapps.migrate.domain.REDACTED
 import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_ADDRESS
 import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_BODY
 import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_DATE
@@ -76,7 +77,8 @@ class SmsDBWriter(
                 val progress = Progress(
                     progressType = Progress.ProgressType.SMS_BACKUP,
                     percentage = getPercentage(index + 1, dataItems.size),
-                    logs = "(${index + 1}/${dataItems.size}) ${item.logInfo}"
+                    logs = "(${index + 1}/${dataItems.size}) ${item.logInfo}",
+                    logsForStorage = "(${index + 1}/${dataItems.size}) $REDACTED",
                 )
                 runCatchingWithProgress(progress) {
                     writeRow(item)

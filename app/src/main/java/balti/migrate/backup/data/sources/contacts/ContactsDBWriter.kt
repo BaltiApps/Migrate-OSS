@@ -7,6 +7,7 @@ import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.ContactsDBConstants.Companion.CONTACTS_TABLE_NAME
 import baltiapps.migrate.domain.ContactsDBConstants.Companion.DISPLAY_NAME
 import baltiapps.migrate.domain.ContactsDBConstants.Companion.VCF_CONTENT
+import baltiapps.migrate.domain.REDACTED
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
@@ -48,7 +49,8 @@ class ContactsDBWriter(
                 val progress = Progress(
                     progressType = Progress.ProgressType.CONTACTS_BACKUP,
                     percentage = getPercentage(index + 1, dataItems.size),
-                    logs = "(${index + 1}/${dataItems.size}) ${item.logInfo}"
+                    logs = "(${index + 1}/${dataItems.size}) ${item.logInfo}",
+                    logsForStorage = "(${index + 1}/${dataItems.size}) $REDACTED",
                 )
                 runCatchingWithProgress(progress) {
                     writeRow(item)

@@ -21,6 +21,7 @@ import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_TABLE_NAME
 import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_TRANSCRIPTION
 import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_TYPE
 import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_VOICEMAIL_URI
+import baltiapps.migrate.domain.REDACTED
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
@@ -76,7 +77,8 @@ class CallLogDBWriter(
                 val progress = Progress(
                     progressType = Progress.ProgressType.CALL_LOG_BACKUP,
                     percentage = getPercentage(index + 1, dataItems.size),
-                    logs = "(${index + 1}/${dataItems.size}) ${item.logInfo}"
+                    logs = "(${index + 1}/${dataItems.size}) ${item.logInfo}",
+                    logsForStorage = "(${index + 1}/${dataItems.size}) $REDACTED",
                 )
                 runCatchingWithProgress(progress) {
                     writeRow(item)
