@@ -50,6 +50,7 @@
         </activity>
 
         <service android:name=".backup.data.service.BackupService" android:foregroundServiceType="dataSync"/>
+        <service android:name=".restore.data.service.RestoreService" android:foregroundServiceType="dataSync"/>
 
         <receiver android:name=".restore.data.sources.sms.dummies.DummySmsBroadcastReceiver"
             android:exported="true"
