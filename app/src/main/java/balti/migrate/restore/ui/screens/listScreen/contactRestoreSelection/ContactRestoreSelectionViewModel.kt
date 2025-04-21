@@ -3,7 +3,6 @@ package balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import balti.migrate.common.utils.ListItemUtils
-import baltiapps.migrate.domain.common.usecase.StageSelectedCallLogs
 import baltiapps.migrate.domain.common.usecase.StageSelectedContacts
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import baltiapps.migrate.domain.restore.usecase.ReadContactsForRestoreUseCase
