@@ -133,6 +133,7 @@ private fun Content(
                 },
                 resumeLogs = resumeLogs,
                 scrollAnchor = scrollAnchor,
+                isFinished = state().isBackupFinished
             )
         }
     }

@@ -24,10 +24,10 @@ class BackupProgressScreenViewModel(
     private fun startObserving() {
         viewModelScope.launch {
             progressLogRepository.setProgressObserver { p, e ->
-                if (isLogsPaused) return@setProgressObserver
-                val progressList = if (observeErrorsOnly) e else p
                 if (p.isEmpty()) return@setProgressObserver
                 val latestProgress = p.last()
+                if (isLogsPaused && !latestProgress.isBackupFinished()) return@setProgressObserver
+                val progressList = if (observeErrorsOnly) e else p
                 val headingText = contextSource.getProgressTitle(latestProgress.progressType)
                 _state.update {
                     it.copy(

@@ -30,20 +30,20 @@ fun ProgressLogLayout(
     resumeLogs: () -> Unit,
     modifier: Modifier = Modifier,
     scrollAnchor: ScrollAnchor = ScrollAnchor.BOTTOM,
+    isFinished: Boolean = false,
 ) {
     val listState = rememberLazyListState()
     var shouldAutoScroll by rememberSaveable { mutableStateOf(true) }
-    LaunchedEffect(scrollAnchor) {
-        when (scrollAnchor) {
-            ScrollAnchor.TOP -> {
+    LaunchedEffect(scrollAnchor, isFinished) {
+        when {
+            scrollAnchor == ScrollAnchor.TOP -> {
                 shouldAutoScroll = false
                 scrollToTopLazyColumn(listState)
             }
-            ScrollAnchor.BOTTOM -> {
+            scrollAnchor == ScrollAnchor.BOTTOM || isFinished -> {
                 shouldAutoScroll = true
                 scrollToBottomLazyColumn(listState, items)
             }
-            else -> {}
         }
     }
     Column(
