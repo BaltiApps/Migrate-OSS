@@ -34,14 +34,6 @@ fun ScreenRestore(
                 }
             )
         }
-        composable<RouteContactRestoreSelection> {
-            ContactRestoreSelection(
-                navigateUp = navController::navigateUp,
-                goToNextScreen = {
-                    navController.navigate(viewModel.findNextRoute())
-                }
-            )
-        }
         composable<RouteCallLogRestoreSelection> {
             CallLogRestoreSelection(
                 navigateUp = navController::navigateUp,
@@ -52,6 +44,14 @@ fun ScreenRestore(
         }
         composable<RouteSmsRestoreSelection> {
             SmsRestoreSelection(
+                navigateUp = navController::navigateUp,
+                goToNextScreen = {
+                    navController.navigate(viewModel.findNextRoute())
+                }
+            )
+        }
+        composable<RouteContactRestoreSelection> {
+            ContactRestoreSelection(
                 navigateUp = navController::navigateUp,
                 goToNextScreen = {
                     navController.navigate(viewModel.findNextRoute())

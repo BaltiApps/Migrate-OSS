@@ -8,9 +8,9 @@ class ScreenRestoreViewModel(
 ) : ViewModel() {
 
     private val routeMap = mapOf(
-        RouteContactRestoreSelection to { dataRepository.getContactBackupFile() != null },
         RouteCallLogRestoreSelection to { dataRepository.getCallLogBackupFile() != null },
         RouteSmsRestoreSelection to { dataRepository.getSmsBackupFile() != null },
+        RouteContactRestoreSelection to { dataRepository.getContactBackupFile() != null },
         RouteRestoreSummary to { true },
     )
 
