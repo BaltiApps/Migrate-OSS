@@ -19,11 +19,14 @@ import androidx.navigation.compose.rememberNavController
 import balti.migrate.backup.data.service.BackupService
 import balti.migrate.backup.ui.screens.ScreenBackup
 import balti.migrate.common.data.model.JavaFile
+import balti.migrate.restore.data.service.RestoreService
 import balti.migrate.restore.ui.ScreenRestore
 import balti.migrate.ui.screens.ScreenHome
 import balti.migrate.ui.theme.MigrateTheme
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
+import baltiapps.migrate.domain.ACTION_CANCEL_RESTORE
 import baltiapps.migrate.domain.ACTION_START_BACKUP
+import baltiapps.migrate.domain.ACTION_START_RESTORE
 import baltiapps.migrate.domain.EXTRA_BACKUP_LOCATION
 import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
 import baltiapps.migrate.domain.PermissionConstants
@@ -40,7 +43,9 @@ class MainActivity : ComponentActivity() {
             MigrateTheme {
                 AppNavigation(
                     startBackupService = ::startBackupService,
-                    cancelBackup = ::cancelBackup
+                    cancelBackup = ::cancelBackup,
+                    startRestoreService = ::startRestoreService,
+                    cancelRestore = ::cancelRestore,
                 )
             }
         }
@@ -152,12 +157,30 @@ class MainActivity : ComponentActivity() {
             startService(this)
         }
     }
+
+    private fun startRestoreService() {
+        Intent(this, RestoreService::class.java).apply {
+            action = ACTION_START_RESTORE
+        }.run {
+            startForegroundService(this)
+        }
+    }
+
+    private fun cancelRestore() {
+        Intent(this, RestoreService::class.java).apply {
+            action = ACTION_CANCEL_RESTORE
+        }.run {
+            startService(this)
+        }
+    }
 }
 
 @Composable
 fun AppNavigation(
     startBackupService: (BackupLocation) -> Unit,
     cancelBackup: () -> Unit,
+    startRestoreService: () -> Unit,
+    cancelRestore: () -> Unit,
 ) {
     val navController = rememberNavController()
     NavHost(
@@ -177,8 +200,8 @@ fun AppNavigation(
         composable<RouteRestore> {
             ScreenRestore(
                 parentNavControllerNavigateUp = navController::navigateUp,
-                startRestoreService = {},
-                cancelRestore = {},
+                startRestoreService = startRestoreService,
+                cancelRestore = cancelRestore,
             )
         }
     }

@@ -9,13 +9,12 @@ import balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection.CallL
 import balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection.ContactRestoreSelection
 import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestoreSelection
 import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummary
-import baltiapps.migrate.domain.common.model.Directory
 import kotlinx.serialization.Serializable
 
 @Composable
 fun ScreenRestore(
     parentNavControllerNavigateUp: () -> Unit,
-    startRestoreService: (Directory) -> Unit,
+    startRestoreService: () -> Unit,
     cancelRestore: () -> Unit,
 ) {
     val navController = rememberNavController()
@@ -58,7 +57,7 @@ fun ScreenRestore(
         composable<RouteRestoreSummary> {
             RestoreSummary(
                 navigateUp = navController::navigateUp,
-                startRestoreService = {},
+                startRestoreService = startRestoreService,
             )
         }
     }
