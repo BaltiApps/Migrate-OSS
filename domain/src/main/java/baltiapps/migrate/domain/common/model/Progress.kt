@@ -45,6 +45,10 @@ data class Progress(
         return progressType in backupFinishedTypes
     }
 
+    fun isRestoreFinished(): Boolean {
+        return progressType in restoreFinishedTypes
+    }
+
     fun isFinished(): Boolean {
         return progressType in (backupFinishedTypes + restoreFinishedTypes)
     }
