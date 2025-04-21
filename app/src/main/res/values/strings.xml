@@ -76,11 +76,16 @@
         Please grant permission to read / write files on the device.
     </string>
 
-    <!--BackupService.kt-->
+    <!--ContextSourceImpl.kt-->
     <string name="loading">Loading…</string>
     <string name="backup_finished">Backup finished!</string>
     <string name="backup_finished_with_errors">Backup finished with errors</string>
     <string name="backup_cancelled">Backup cancelled</string>
+    <string name="restore_finished">Restore finished!</string>
+    <string name="restore_finished_with_errors">Restore finished with errors</string>
+    <string name="restore_cancelled">Restore cancelled</string>
+
+    <!--ProgressRepositoryImpl.kt-->
     <string name="older_logs_truncated">Older logs are truncated</string>
 
     <!--ProgressScreen.kt-->
