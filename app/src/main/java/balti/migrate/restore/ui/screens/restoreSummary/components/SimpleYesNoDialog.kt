@@ -1,10 +1,12 @@
 package balti.migrate.restore.ui.screens.restoreSummary.components
 
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
 import balti.migrate.R
@@ -14,7 +16,8 @@ fun SimpleYesNoDialog(
     dialogText: String,
     onProceed: () -> Unit,
     onSkip: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
 ) {
     AlertDialog(
         onDismissRequest = {},
@@ -32,6 +35,14 @@ fun SimpleYesNoDialog(
                 Text(stringResource(R.string.skip))
             }
         },
+        icon = if (icon != null) {
+            {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null
+                )
+            }
+        } else null,
         properties = DialogProperties(
             dismissOnClickOutside = false,
             dismissOnBackPress = false,

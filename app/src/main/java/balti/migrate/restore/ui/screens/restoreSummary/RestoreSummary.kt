@@ -10,6 +10,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Contacts
+import androidx.compose.material.icons.outlined.Sms
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -90,6 +92,7 @@ fun RestoreSummary(
             onSkip = {
                 viewModel.onAction(RestoreSummaryAction.SkipContacts)
             },
+            icon = Icons.Outlined.Contacts,
         )
     } else if (state.smsUserActionState == UserActionState.ACTION_PROMPT) {
         SimpleYesNoDialog(
@@ -100,6 +103,7 @@ fun RestoreSummary(
             onSkip = {
                 viewModel.onAction(RestoreSummaryAction.SkipSms)
             },
+            icon = Icons.Outlined.Sms,
         )
     }
 }
