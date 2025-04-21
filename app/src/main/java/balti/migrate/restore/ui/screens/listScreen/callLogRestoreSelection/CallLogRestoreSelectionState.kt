@@ -7,5 +7,5 @@ data class CallLogRestoreSelectionState(
     val progress: Progress = Progress.Empty,
     val callLogList: List<CallLogListItem> = emptyList(),
     val isStaging: Boolean = false,
-    val hasPermission: Boolean = false,
+    val hasPermission: Boolean = true,
 )
