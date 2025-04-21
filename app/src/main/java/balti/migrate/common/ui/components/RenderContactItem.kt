@@ -8,7 +8,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import balti.migrate.R
 import baltiapps.migrate.domain.common.model.ContactListItem
 
 @Composable
@@ -26,7 +28,7 @@ fun RenderContactItem(
         },
         headlineContent = {
             Text(
-                text = item.displayName,
+                text = item.displayName.ifBlank { stringResource(R.string.no_name_contact) },
                 modifier = alphaModifier,
             )
         },

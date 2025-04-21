@@ -50,6 +50,7 @@
     </string>
 
     <!--ScreenBackup-->
+    <string name="no_name_contact">(No name)</string>
     <string name="call">Call</string>
     <string name="missed_call">Missed call</string>
     <string name="incoming_call">Incoming call</string>
