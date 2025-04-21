@@ -13,8 +13,9 @@ class ListItemUtils {
         isChecked: Boolean,
         filter: (T) -> Boolean = { true },
     ): List<T> {
-        return list.filter { filter(it) }.mapNotNull {
-            when (it) {
+        return list.mapNotNull {
+            if (!filter(it)) it
+            else when (it) {
                 is ContactListItem -> it.copy(isChecked = isChecked)
                 is CallLogListItem -> it.copy(isChecked = isChecked)
                 is SmsListItem -> it.copy(isChecked = isChecked)
