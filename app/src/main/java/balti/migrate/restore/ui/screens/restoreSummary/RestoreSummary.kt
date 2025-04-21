@@ -39,7 +39,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun RestoreSummary(
     navigateUp: () -> Unit,
-    startRestoreService: () -> Unit,
+    startRestoreServiceAndGoToNextScreen: () -> Unit,
     viewModel: RestoreSummaryViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -60,7 +60,7 @@ fun RestoreSummary(
                 getActivity = { activity },
             ),
             StartRestoreServiceTask::class.simpleName to StartRestoreServiceTask(
-                runService = startRestoreService,
+                runService = startRestoreServiceAndGoToNextScreen,
             ),
         )
         viewModel.onAction(RestoreSummaryAction.SetTaskMap(taskMap))

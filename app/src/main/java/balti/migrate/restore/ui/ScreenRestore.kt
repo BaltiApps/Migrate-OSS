@@ -57,7 +57,7 @@ fun ScreenRestore(
         composable<RouteRestoreSummary> {
             RestoreSummary(
                 navigateUp = navController::navigateUp,
-                startRestoreService = startRestoreService,
+                startRestoreServiceAndGoToNextScreen = startRestoreService,
             )
         }
     }
