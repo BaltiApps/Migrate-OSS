@@ -7,5 +7,4 @@ data class ContactRestoreSelectionState(
     val progress: Progress = Progress.Empty,
     val contactListItems: List<ContactListItem> = emptyList(),
     val isStaging: Boolean = false,
-    val hasPermission: Boolean = false,
 )
