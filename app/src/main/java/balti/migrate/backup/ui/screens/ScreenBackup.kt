@@ -62,7 +62,7 @@ fun ScreenBackup(
                 navigateUp = navController::navigateUp,
                 goToNextScreen = {
                     startBackupService(it)
-                    navController.navigate(RouteProgressScreen) {
+                    navController.navigate(RouteBackupProgressScreen) {
                         popUpTo(startDestination) {
                             inclusive = true
                         }
@@ -70,7 +70,7 @@ fun ScreenBackup(
                 }
             )
         }
-        composable<RouteProgressScreen> {
+        composable<RouteBackupProgressScreen> {
             ProgressScreen(
                 cancelBackup = cancelBackup,
                 closeProgressScreen = parentNavControllerNavigateUp,
@@ -83,7 +83,7 @@ fun ScreenBackup(
 object RouteBackupName
 
 @Serializable
-object RouteProgressScreen
+object RouteBackupProgressScreen
 
 @Serializable
 object RouteContactBackup
