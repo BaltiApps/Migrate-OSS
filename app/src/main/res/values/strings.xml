@@ -49,8 +49,10 @@
         Click Skip to not backup SMS.
     </string>
 
-    <!--ScreenBackup-->
+    <!--RenderContactName.kt-->
     <string name="no_name_contact">(No name)</string>
+
+    <!--RenderCallLogItem.kt-->
     <string name="call">Call</string>
     <string name="missed_call">Missed call</string>
     <string name="incoming_call">Incoming call</string>
@@ -58,6 +60,8 @@
     <string name="blocked_call">Blocked call</string>
     <string name="rejected_call">Rejected call</string>
     <string name="voicemail">Voicemail</string>
+
+    <!--RenderSmsItem.kt-->
     <string name="sms">SMS</string>
     <string name="sms_inbox">SMS Inbox</string>
     <string name="sms_outbox">SMS Outbox</string>
@@ -65,7 +69,6 @@
     <string name="sms_draft">SMS Draft</string>
     <string name="sms_failed">SMS Failed</string>
     <string name="sms_queued">SMS Queued</string>
-    <string name="next">Next</string>
 
     <!--ListPermissionRequestLayout.kt-->
     <string name="request_permission">Request permission</string>
@@ -136,6 +139,7 @@
     <string name="please_change_sms_app">Please change SMS app</string>
 
     <!--misc-->
+    <string name="next">Next</string>
     <string name="go_back">Go back</string>
     <string name="scroll_up">Scroll up</string>
     <string name="scroll_down">Scroll down</string>
