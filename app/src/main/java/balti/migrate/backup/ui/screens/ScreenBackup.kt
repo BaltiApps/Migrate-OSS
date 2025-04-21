@@ -26,9 +26,7 @@ fun ScreenBackup(
         navController = navController,
         startDestination = startDestination,
     ) {
-        composable<RouteContactBackup>(
-            exitTransition = { ExitTransition.None },
-        ) {
+        composable<RouteContactBackup> {
             ContactBackupSelection(
                 navigateUp = navController::navigateUp,
                 goToNextScreen = {
@@ -36,10 +34,7 @@ fun ScreenBackup(
                 },
             )
         }
-        composable<RouteCallLogBackup>(
-            enterTransition = { EnterTransition.None },
-            exitTransition = { ExitTransition.None },
-        ) {
+        composable<RouteCallLogBackup> {
             CallLogBackupSelection(
                 navigateUp = navController::navigateUp,
                 goToNextScreen = {
@@ -47,9 +42,7 @@ fun ScreenBackup(
                 },
             )
         }
-        composable<RouteSmsBackup>(
-            enterTransition = { EnterTransition.None },
-        ) {
+        composable<RouteSmsBackup> {
             SmsBackupSelection(
                 navigateUp = navController::navigateUp,
                 goToNextScreen = {
