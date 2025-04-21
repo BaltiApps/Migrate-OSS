@@ -20,20 +20,12 @@ fun ScreenBackup(
     startBackupService: (BackupLocation) -> Unit,
     cancelBackup: () -> Unit,
 ) {
-    val startDestination = RouteContactBackup
+    val startDestination = RouteCallLogBackup
     val navController = rememberNavController()
     NavHost(
         navController = navController,
         startDestination = startDestination,
     ) {
-        composable<RouteContactBackup> {
-            ContactBackupSelection(
-                navigateUp = navController::navigateUp,
-                goToNextScreen = {
-                    navController.navigate(RouteCallLogBackup)
-                },
-            )
-        }
         composable<RouteCallLogBackup> {
             CallLogBackupSelection(
                 navigateUp = navController::navigateUp,
@@ -46,8 +38,16 @@ fun ScreenBackup(
             SmsBackupSelection(
                 navigateUp = navController::navigateUp,
                 goToNextScreen = {
-                    navController.navigate(RouteBackupName)
+                    navController.navigate(RouteContactBackup)
                 }
+            )
+        }
+        composable<RouteContactBackup> {
+            ContactBackupSelection(
+                navigateUp = navController::navigateUp,
+                goToNextScreen = {
+                    navController.navigate(RouteBackupName)
+                },
             )
         }
         composable<RouteBackupName> {
