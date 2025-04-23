@@ -2,7 +2,6 @@ package balti.migrate.backup.data.sources
 
 import android.app.NotificationManager
 import android.content.Context
-import androidx.core.app.NotificationCompat
 import balti.migrate.R
 import balti.migrate.common.data.model.NotificationInfo
 import balti.migrate.common.utils.NotificationUtils
@@ -37,9 +36,6 @@ class BackupNotificationHandlerImpl(
         context.getSystemService(NotificationManager::class.java)
     }
 
-    private var currentNotificationInfo: NotificationInfo? = null
-    private var currentNotificationBuilder: NotificationCompat.Builder? = null
-
     private val notificationUtils = NotificationUtils()
 
     override fun setup() {
@@ -63,12 +59,10 @@ class BackupNotificationHandlerImpl(
                 importance = NotificationManager.IMPORTANCE_MIN
             )
         }
-
-        getInitialNotification()
     }
 
     override fun getInitialNotification(): NotificationInfo {
-        val initialNotification = NotificationInfo(
+        return NotificationInfo(
             notificationId = NOTIFICATION_ID_BACKUP_ONGOING,
             notificationChannelId = CHANNEL_BACKUP_RUNNING_ID,
             icon = R.drawable.notification_rotating_icon,
@@ -76,9 +70,6 @@ class BackupNotificationHandlerImpl(
             shouldShowProgress = true,
             isIndeterminate = true,
         )
-        currentNotificationInfo = initialNotification
-        currentNotificationBuilder = initialNotification.convertToNotificationBuilder(context)
-        return initialNotification
     }
 
     override suspend fun getLatestProgress(): Progress {
@@ -89,7 +80,7 @@ class BackupNotificationHandlerImpl(
         val progressInt = (progress.percentage*100).roundToInt()
         val title = contextSource.getProgressTitle(progress.progressType)
 
-        return (currentNotificationInfo ?: getInitialNotification()).copy(
+        return (getInitialNotification()).copy(
             title = title,
             text = progress.logs,
             progress = progressInt,
@@ -101,8 +92,10 @@ class BackupNotificationHandlerImpl(
 
     override fun displayNotification(notification: NotificationInfo) {
         notificationUtils.run {
-            currentNotificationBuilder?.modifyNotificationWithProgress(notification)
-            currentNotificationBuilder?.run { notificationManager.notify(notification.notificationId, this.build()) }
+            notificationManager.notify(
+                notification.notificationId,
+                notification.convertToNotificationBuilder(context).build(),
+            )
         }
     }
 }
