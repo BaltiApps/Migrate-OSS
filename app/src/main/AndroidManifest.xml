@@ -47,6 +47,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <data android:scheme="${schema}" />
+                <data android:host="${hostProgressBackup}" />
+                <data android:host="${hostProgressRestore}" />
+            </intent-filter>
         </activity>
 
         <service android:name=".backup.data.service.BackupService" android:foregroundServiceType="dataSync"/>
