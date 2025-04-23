@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -187,6 +188,7 @@ fun AppNavigation(
     cancelRestore: () -> Unit,
 ) {
     val navController = rememberNavController()
+    val activity = LocalActivity.current
     NavHost(
         navController = navController,
         startDestination = RouteHome,
@@ -215,7 +217,7 @@ fun AppNavigation(
         ) {
             BackupProgressScreen(
                 cancelBackup = cancelBackup,
-                closeProgressScreen = navController::navigateUp,
+                closeProgressScreen = { (activity as? MainActivity)?.finish() },
             )
         }
         composable<DeepLinkRouteRestoreProgress>(
@@ -225,7 +227,7 @@ fun AppNavigation(
         ) {
             RestoreProgressScreen(
                 cancelRestore = cancelRestore,
-                closeProgressScreen = navController::navigateUp,
+                closeProgressScreen = { (activity as? MainActivity)?.finish() },
             )
         }
     }

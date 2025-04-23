@@ -1,5 +1,6 @@
 package balti.migrate.restore.ui.screens.progressScreen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -56,6 +57,8 @@ fun RestoreProgressScreen(
         },
         closeProgressScreen = closeProgressScreen,
     )
+
+    BackHandler { closeProgressScreen() }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
