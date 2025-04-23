@@ -16,11 +16,15 @@ import androidx.core.net.toUri
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import balti.migrate.backup.data.service.BackupService
 import balti.migrate.backup.ui.screens.ScreenBackup
+import balti.migrate.backup.ui.screens.progressScreen.BackupProgressScreen
 import balti.migrate.common.data.model.JavaFile
+import balti.migrate.common.utils.DeepLinkUtils
 import balti.migrate.restore.data.service.RestoreService
 import balti.migrate.restore.ui.ScreenRestore
+import balti.migrate.restore.ui.screens.progressScreen.RestoreProgressScreen
 import balti.migrate.ui.screens.ScreenHome
 import balti.migrate.ui.theme.MigrateTheme
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
@@ -204,6 +208,26 @@ fun AppNavigation(
                 cancelRestore = cancelRestore,
             )
         }
+        composable<DeepLinkRouteBackupProgress>(
+            deepLinks = listOf(
+                navDeepLink { uriPattern = DeepLinkUtils.MigrateUri.UriProgressBackup.uriString }
+            )
+        ) {
+            BackupProgressScreen(
+                cancelBackup = cancelBackup,
+                closeProgressScreen = navController::navigateUp,
+            )
+        }
+        composable<DeepLinkRouteRestoreProgress>(
+            deepLinks = listOf(
+                navDeepLink { uriPattern = DeepLinkUtils.MigrateUri.UriProgressRestore.uriString }
+            )
+        ) {
+            RestoreProgressScreen(
+                cancelRestore = cancelRestore,
+                closeProgressScreen = navController::navigateUp,
+            )
+        }
     }
 }
 
@@ -215,3 +239,9 @@ object RouteBackup
 
 @Serializable
 object RouteRestore
+
+@Serializable
+object DeepLinkRouteBackupProgress
+
+@Serializable
+object DeepLinkRouteRestoreProgress
