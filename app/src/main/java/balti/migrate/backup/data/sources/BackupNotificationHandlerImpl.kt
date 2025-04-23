@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.content.Context
 import balti.migrate.R
 import balti.migrate.common.data.model.NotificationInfo
+import balti.migrate.common.utils.DeepLinkUtils
 import balti.migrate.common.utils.NotificationUtils
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
@@ -37,6 +38,11 @@ class BackupNotificationHandlerImpl(
     }
 
     private val notificationUtils = NotificationUtils()
+    private val deepLinkUtils = DeepLinkUtils()
+
+    private val pendingIntent by lazy {
+        deepLinkUtils.getPendingIntent(DeepLinkUtils.MigrateUri.UriProgressBackup, context)
+    }
 
     override fun setup() {
         Timber.i("Creating progress sample job")
@@ -94,7 +100,9 @@ class BackupNotificationHandlerImpl(
         notificationUtils.run {
             notificationManager.notify(
                 notification.notificationId,
-                notification.convertToNotificationBuilder(context).build(),
+                notification.convertToNotificationBuilder(context).apply {
+                    setContentIntent(pendingIntent)
+                }.build(),
             )
         }
     }
