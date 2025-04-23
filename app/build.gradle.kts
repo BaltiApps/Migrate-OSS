@@ -24,6 +24,18 @@ android {
         val contentProviderAuthority = "$applicationId.fileProviderAuthority"
         manifestPlaceholders["contentProviderAuthority"] = contentProviderAuthority
         buildConfigField("String", "contentProviderAuthority", "\"${contentProviderAuthority}\"")
+
+        val schema = "migrate"
+        val hostProgressBackup = "backup_progress"
+        val hostProgressRestore = "restore_progress"
+
+        manifestPlaceholders["schema"] = schema
+        manifestPlaceholders["hostProgressBackup"] = hostProgressBackup
+        manifestPlaceholders["hostProgressRestore"] = hostProgressRestore
+
+        buildConfigField("String", "SCHEMA", "\"${schema}\"")
+        buildConfigField("String", "HOST_PROGRESS_BACKUP", "\"${hostProgressBackup}\"")
+        buildConfigField("String", "HOST_PROGRESS_RESTORE", "\"${hostProgressRestore}\"")
     }
 
     buildTypes {
