@@ -4,6 +4,7 @@ import balti.migrate.common.data.sources.ContextSourceImpl
 import balti.migrate.common.data.sources.fileSystem.DirectoryBrowserImpl
 import balti.migrate.common.data.sources.fileSystem.FileSystemSourceImpl
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
+import balti.migrate.common.ui.navigation.RestoreRouteChoicesViewModel
 import balti.migrate.common.utils.DBUtils
 import balti.migrate.common.utils.ListItemUtils
 import baltiapps.migrate.domain.common.sources.ContextSource
@@ -14,6 +15,7 @@ import baltiapps.migrate.domain.common.usecase.StageSelectedCallLogs
 import baltiapps.migrate.domain.common.usecase.StageSelectedContacts
 import baltiapps.migrate.domain.common.usecase.StageSelectedSms
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -46,4 +48,8 @@ val commonDiModule = module {
     singleOf(::StageSelectedContacts)
     singleOf(::StageSelectedCallLogs)
     singleOf(::StageSelectedSms)
+
+    /* ViewModel */
+
+    viewModelOf(::RestoreRouteChoicesViewModel)
 }
