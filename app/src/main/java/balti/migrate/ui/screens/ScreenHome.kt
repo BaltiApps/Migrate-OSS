@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -17,15 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import balti.migrate.R
-import balti.migrate.RouteBackup
-import balti.migrate.RouteRestore
 
 @Composable
 fun ScreenHome(
-    navController: NavController,
+    onBackupSelected: () -> Unit,
+    onRestoreSelected: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -41,8 +36,12 @@ fun ScreenHome(
                     Alignment.CenterVertically
                 ),
         ) {
-            ButtonBackup(navController)
-            ButtonRestore(navController)
+            ButtonBackup(
+                onClick = onBackupSelected,
+            )
+            ButtonRestore(
+                onClick = onRestoreSelected,
+            )
         }
     }
 }
@@ -50,17 +49,16 @@ fun ScreenHome(
 @Preview
 @Composable
 fun ScreenHomePreview() {
-    val navController = rememberNavController()
-    ScreenHome(navController)
+    ScreenHome({}, {})
 }
 
 @Composable
 fun ButtonBackup(
-    navController: NavController,
+    onClick: () -> Unit
 ) {
-    Button (
+    Button(
         modifier = Modifier.fillMaxWidth(),
-        onClick = { navController.navigate(RouteBackup) }
+        onClick = onClick,
     ) {
         Text(stringResource(R.string.backup))
     }
@@ -68,11 +66,11 @@ fun ButtonBackup(
 
 @Composable
 fun ButtonRestore(
-    navController: NavController,
+    onClick: () -> Unit,
 ) {
-    OutlinedButton (
+    OutlinedButton(
         modifier = Modifier.fillMaxWidth(),
-        onClick = { navController.navigate(RouteRestore) }
+        onClick = onClick,
     ) {
         Text(stringResource(R.string.restore))
     }

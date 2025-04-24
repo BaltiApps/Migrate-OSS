@@ -194,7 +194,10 @@ fun AppNavigation(
         startDestination = RouteHome,
     ) {
         composable<RouteHome> {
-            ScreenHome(navController)
+            ScreenHome(
+                onBackupSelected = { navController.navigate(RouteBackup) },
+                onRestoreSelected = { navController.navigate(RouteRestore) },
+            )
         }
         composable<RouteBackup> {
             ScreenBackup(
