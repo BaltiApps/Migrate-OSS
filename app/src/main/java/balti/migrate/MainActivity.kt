@@ -7,26 +7,15 @@ import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.Composable
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navDeepLink
 import balti.migrate.backup.data.service.BackupService
-import balti.migrate.backup.ui.screens.ScreenBackup
-import balti.migrate.backup.ui.screens.progressScreen.BackupProgressScreen
 import balti.migrate.common.data.model.JavaFile
-import balti.migrate.common.utils.DeepLinkUtils
+import balti.migrate.common.ui.navigation.Graph
 import balti.migrate.restore.data.service.RestoreService
-import balti.migrate.restore.ui.ScreenRestore
-import balti.migrate.restore.ui.screens.progressScreen.RestoreProgressScreen
-import balti.migrate.ui.screens.ScreenHome
 import balti.migrate.ui.theme.MigrateTheme
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
 import baltiapps.migrate.domain.ACTION_CANCEL_RESTORE
@@ -37,7 +26,6 @@ import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
 import baltiapps.migrate.domain.PermissionConstants
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import baltiapps.migrate.domain.common.model.GenericFile
-import kotlinx.serialization.Serializable
 import java.lang.ref.WeakReference
 
 class MainActivity : ComponentActivity() {
@@ -46,7 +34,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MigrateTheme {
-                AppNavigation(
+                Graph(
                     startBackupService = ::startBackupService,
                     cancelBackup = ::cancelBackup,
                     startRestoreService = ::startRestoreService,
@@ -179,74 +167,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-@Composable
-fun AppNavigation(
-    startBackupService: (BackupLocation) -> Unit,
-    cancelBackup: () -> Unit,
-    startRestoreService: () -> Unit,
-    cancelRestore: () -> Unit,
-) {
-    val navController = rememberNavController()
-    val activity = LocalActivity.current
-    NavHost(
-        navController = navController,
-        startDestination = RouteHome,
-    ) {
-        composable<RouteHome> {
-            ScreenHome(
-                onBackupSelected = { navController.navigate(RouteBackup) },
-                onRestoreSelected = { navController.navigate(RouteRestore) },
-            )
-        }
-        composable<RouteBackup> {
-            ScreenBackup(
-                parentNavControllerNavigateUp = navController::navigateUp,
-                startBackupService = { startBackupService(it) },
-                cancelBackup = cancelBackup,
-            )
-        }
-        composable<RouteRestore> {
-            ScreenRestore(
-                parentNavControllerNavigateUp = navController::navigateUp,
-                startRestoreService = startRestoreService,
-                cancelRestore = cancelRestore,
-            )
-        }
-        composable<DeepLinkRouteBackupProgress>(
-            deepLinks = listOf(
-                navDeepLink { uriPattern = DeepLinkUtils.MigrateUri.UriProgressBackup.uriString }
-            )
-        ) {
-            BackupProgressScreen(
-                cancelBackup = cancelBackup,
-                closeProgressScreen = { (activity as? MainActivity)?.finish() },
-            )
-        }
-        composable<DeepLinkRouteRestoreProgress>(
-            deepLinks = listOf(
-                navDeepLink { uriPattern = DeepLinkUtils.MigrateUri.UriProgressRestore.uriString }
-            )
-        ) {
-            RestoreProgressScreen(
-                cancelRestore = cancelRestore,
-                closeProgressScreen = { (activity as? MainActivity)?.finish() },
-            )
-        }
-    }
-}
-
-@Serializable
-object RouteHome
-
-@Serializable
-object RouteBackup
-
-@Serializable
-object RouteRestore
-
-@Serializable
-object DeepLinkRouteBackupProgress
-
-@Serializable
-object DeepLinkRouteRestoreProgress
