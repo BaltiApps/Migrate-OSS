@@ -182,6 +182,12 @@ class BackupService : LifecycleService() {
 
     private fun endNotifications() {
         notificationHandler.stopListening()
+        val notificationInfo = when {
+            backupJob?.isCancelled == true -> notificationHandler.getCancelledNotification()
+            progressLogRepository.isAnyErrorPresent -> notificationHandler.getFinishedWithErrorNotification()
+            else -> notificationHandler.getFinishedNotification()
+        }
+        notificationHandler.displayNotification(notificationInfo)
     }
 
     private fun isSetup(): Boolean {

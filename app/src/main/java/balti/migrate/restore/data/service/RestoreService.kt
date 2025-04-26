@@ -143,6 +143,12 @@ class RestoreService: LifecycleService() {
 
     private fun endNotifications() {
         notificationHandler.stopListening()
+        val notificationInfo = when {
+            restoreJob?.isCancelled == true -> notificationHandler.getCancelledNotification()
+            progressLogRepository.isAnyErrorPresent -> notificationHandler.getFinishedWithErrorNotification()
+            else -> notificationHandler.getFinishedNotification()
+        }
+        notificationHandler.displayNotification(notificationInfo)
     }
 
     private fun isSetup(): Boolean {
