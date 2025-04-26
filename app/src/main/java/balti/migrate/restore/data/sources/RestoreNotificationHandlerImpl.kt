@@ -2,11 +2,15 @@ package balti.migrate.restore.data.sources
 
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import balti.migrate.R
 import balti.migrate.common.data.model.NotificationInfo
 import balti.migrate.common.utils.DeepLinkUtils
 import balti.migrate.common.utils.makeNotificationChannel
 import balti.migrate.common.utils.convertToNotificationBuilder
+import balti.migrate.common.utils.getCancelAction
+import balti.migrate.restore.data.service.RestoreService
+import baltiapps.migrate.domain.ACTION_CANCEL_RESTORE
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.ContextSource
@@ -116,11 +120,24 @@ class RestoreNotificationHandlerImpl(
     }
 
     override fun displayNotification(notification: NotificationInfo) {
+        val notificationBuilder = notification.convertToNotificationBuilder(context).apply {
+            setContentIntent(pendingIntent)
+
+            if (notification.notificationId != NOTIFICATION_ID_RESTORE_ONGOING) return@apply
+
+            setOngoing(true)
+            addAction(
+                notification.getCancelAction(context) {
+                    Intent(context, RestoreService::class.java).apply {
+                        action = ACTION_CANCEL_RESTORE
+                    }
+                }
+            )
+        }
+
         notificationManager.notify(
             notification.notificationId,
-            notification.convertToNotificationBuilder(context).apply {
-                setContentIntent(pendingIntent)
-            }.build()
+            notificationBuilder.build()
         )
     }
 }
