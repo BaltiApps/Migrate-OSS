@@ -18,37 +18,37 @@ class PreferencesImpl(
         sharedPreferences.edit()
     }
 
-    override fun saveProgressList(list: List<Progress>) {
-        editor.putString(Preferences.KEY_SAVED_PROGRESS_LIST, Json.encodeToString(list))
+    override fun saveBackupProgressList(list: List<Progress>) {
+        editor.putString(Preferences.KEY_SAVED_BACKUP_PROGRESS_LIST, Json.encodeToString(list))
         editor.apply()
     }
 
-    override fun getLastSavedProgressList(): List<Progress> {
+    override fun getLastSavedBackupProgressList(): List<Progress> {
         val stringProgressList = sharedPreferences.getString(
-            Preferences.KEY_SAVED_PROGRESS_LIST,
+            Preferences.KEY_SAVED_BACKUP_PROGRESS_LIST,
             ""
         ) ?: ""
         return Json.decodeFromString(stringProgressList)
     }
 
-    override fun saveErrorList(list: List<Progress>) {
-        editor.putString(Preferences.KEY_SAVED_ERROR_LIST, Json.encodeToString(list))
+    override fun saveBackupErrorList(list: List<Progress>) {
+        editor.putString(Preferences.KEY_SAVED_BACKUP_ERROR_LIST, Json.encodeToString(list))
         editor.apply()
     }
 
-    override fun getLastSavedErrorList(): List<Progress> {
+    override fun getLastSavedBackupErrorList(): List<Progress> {
         val stringErrorList = sharedPreferences.getString(
-            Preferences.KEY_SAVED_ERROR_LIST,
+            Preferences.KEY_SAVED_BACKUP_ERROR_LIST,
             ""
         ) ?: ""
         return Json.decodeFromString(stringErrorList)
     }
 
-    override fun resetSavedProgressList() {
-        saveProgressList(emptyList())
+    override fun resetSavedBackupProgressList() {
+        saveBackupProgressList(emptyList())
     }
 
-    override fun resetSavedErrorList() {
-        saveErrorList(emptyList())
+    override fun resetSavedBackupErrorList() {
+        saveBackupErrorList(emptyList())
     }
 }
