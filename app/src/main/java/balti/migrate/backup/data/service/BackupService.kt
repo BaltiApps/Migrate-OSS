@@ -28,6 +28,7 @@ import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.NotificationHandler
+import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -49,6 +50,8 @@ class BackupService : LifecycleService() {
     private val backupContactsUseCase: BackupContactsUseCase by inject()
     private val backupCallLogUseCase: BackupCallLogUseCase by inject()
     private val backupSmsUseCase: BackupSmsUseCase by inject()
+
+    private val preferences: Preferences by inject()
 
     private val backupLog by lazy { File(this.cacheDir, BACKUP_LOG) }
     private val backupErrorLog by lazy { File(this.cacheDir, BACKUP_ERROR_LOG) }
@@ -157,6 +160,7 @@ class BackupService : LifecycleService() {
             Timber.i("backup - finished")
 
             endNotifications()
+            storeProgressAndErrorsOnFinish()
             Timber.i("restore - notification handler stopped listening")
             cleanup()
             Timber.i("restore - cleanup done")
@@ -170,6 +174,8 @@ class BackupService : LifecycleService() {
         errorWriter.setup(backupErrorLog.canonicalPath, append = true)
 
         progressLogRepository.reset()
+        preferences.resetSavedBackupProgressList()
+        preferences.resetSavedBackupErrorList()
 
         serviceUtils = ServiceUtils(
             contextSource = contextSource,
@@ -197,6 +203,13 @@ class BackupService : LifecycleService() {
         notificationHandler.displayNotification(notificationInfo)
     }
 
+    private fun storeProgressAndErrorsOnFinish() {
+        val progressList = progressLogRepository.getDisplayedProgressList()
+        preferences.saveBackupProgressList(progressList)
+        val errorList = progressLogRepository.getDisplayedErrorList()
+        preferences.saveBackupErrorList(errorList)
+    }
+
     private fun isSetup(): Boolean {
         return ::logWriter.isInitialized && ::errorWriter.isInitialized
     }
@@ -209,6 +222,7 @@ class BackupService : LifecycleService() {
                 serviceUtils.emitHeadingLog(Progress.ProgressType.BACKUP_CANCELLED)
             }
             endNotifications()
+            storeProgressAndErrorsOnFinish()
             delay(1000)
             cleanup()
         }
