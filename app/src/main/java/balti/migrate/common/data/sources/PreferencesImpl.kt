@@ -51,4 +51,38 @@ class PreferencesImpl(
     override fun resetSavedBackupErrorList() {
         saveBackupErrorList(emptyList())
     }
+
+    override fun saveRestoreProgressList(list: List<Progress>) {
+        editor.putString(Preferences.KEY_SAVED_RESTORE_PROGRESS_LIST, Json.encodeToString(list))
+        editor.apply()
+    }
+
+    override fun getLastSavedRestoreProgressList(): List<Progress> {
+        val stringProgressList = sharedPreferences.getString(
+            Preferences.KEY_SAVED_RESTORE_PROGRESS_LIST,
+            ""
+        ) ?: ""
+        return Json.decodeFromString(stringProgressList)
+    }
+
+    override fun saveRestoreErrorList(list: List<Progress>) {
+        editor.putString(Preferences.KEY_SAVED_RESTORE_ERROR_LIST, Json.encodeToString(list))
+        editor.apply()
+    }
+
+    override fun getLastSavedRestoreErrorList(): List<Progress> {
+        val stringErrorList = sharedPreferences.getString(
+            Preferences.KEY_SAVED_RESTORE_ERROR_LIST,
+            ""
+        ) ?: ""
+        return Json.decodeFromString(stringErrorList)
+    }
+
+    override fun resetSavedRestoreProgressList() {
+        saveRestoreProgressList(emptyList())
+    }
+
+    override fun resetSavedRestoreErrorList() {
+        saveRestoreErrorList(emptyList())
+    }
 }
