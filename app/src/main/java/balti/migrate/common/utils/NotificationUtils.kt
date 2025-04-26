@@ -5,6 +5,9 @@ import android.app.NotificationManager
 import android.content.Context
 import androidx.core.app.NotificationCompat
 import balti.migrate.common.data.model.NotificationInfo
+import balti.migrate.R
+import android.app.PendingIntent
+import android.content.Intent
 
 fun NotificationManager.makeNotificationChannel(
     channelId: String,
@@ -27,4 +30,20 @@ fun NotificationInfo.convertToNotificationBuilder(
             setProgress(maxProgress, progress, isIndeterminate)
         }
     }
+}
+
+fun NotificationInfo.getCancelAction(
+    context: Context,
+    intent: () -> Intent
+): NotificationCompat.Action {
+    return NotificationCompat.Action(
+        R.drawable.outline_close_24,
+        context.getString(R.string.cancel),
+        PendingIntent.getService(
+            context,
+            notificationId,
+            intent(),
+            PendingIntent.FLAG_IMMUTABLE,
+        ),
+    )
 }
