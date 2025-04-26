@@ -60,8 +60,14 @@ class BackupService : LifecycleService() {
 
     private var backupJob: Job? = null
 
+    companion object {
+        var isRunning: Boolean = false
+        private set
+    }
+
     override fun onCreate() {
         super.onCreate()
+        isRunning = true
         Timber.i("Start foreground restore service")
         notificationHandler.setup()
         val initialNotification = notificationHandler.getInitialNotification()
@@ -206,5 +212,10 @@ class BackupService : LifecycleService() {
             delay(1000)
             cleanup()
         }
+    }
+
+    override fun onDestroy() {
+        isRunning = false
+        super.onDestroy()
     }
 }
