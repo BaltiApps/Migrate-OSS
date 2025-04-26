@@ -2,8 +2,11 @@ package balti.migrate.restore.ui.screens.progressScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import balti.migrate.restore.data.service.RestoreService
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.ContextSource
+import baltiapps.migrate.domain.common.sources.Preferences
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -11,6 +14,7 @@ import kotlinx.coroutines.launch
 
 class RestoreProgressScreenViewModel(
     private val contextSource: ContextSource,
+    private val preferences: Preferences,
     private val progressLogRepository: ProgressLogRepository,
 ) : ViewModel() {
 
@@ -43,6 +47,14 @@ class RestoreProgressScreenViewModel(
 
     init {
         startObserving()
+        if (!RestoreService.isRunning) {
+            viewModelScope.launch(Dispatchers.IO) {
+                progressLogRepository.populateWithValues(
+                    progressList = preferences.getLastSavedRestoreProgressList(),
+                    errorList = preferences.getLastSavedRestoreErrorList(),
+                )
+            }
+        }
     }
 
     fun performAction(action: RestoreProgressScreenAction) {

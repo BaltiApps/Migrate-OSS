@@ -126,6 +126,7 @@ val restoreDiModule = module {
     viewModel {
         RestoreProgressScreenViewModel(
             contextSource = get(),
+            preferences = get(),
             progressLogRepository = get(named(Names.PROGRESS_LOG_REPOSITORY_RESTORE))
         )
     }
