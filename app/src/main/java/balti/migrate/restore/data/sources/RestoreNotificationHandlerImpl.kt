@@ -25,8 +25,6 @@ class RestoreNotificationHandlerImpl(
         private const val CHANNEL_RESTORE_END_DESC = "Restore finished notification"
         private const val CHANNEL_RESTORE_RUNNING_ID = "restore_running"
         private const val CHANNEL_RESTORE_RUNNING_DESC = "Restore running notification"
-        private const val CHANNEL_RESTORE_CANCELLING_ID = "restore_cancelling"
-        private const val CHANNEL_RESTORE_CANCELLING_DESC = "Cancelling current restore"
 
         private const val NOTIFICATION_ID_RESTORE_ONGOING = 230
         private const val NOTIFICATION_ID_RESTORE_COMPLETE = 231
@@ -58,11 +56,6 @@ class RestoreNotificationHandlerImpl(
                 channelId = CHANNEL_RESTORE_END_ID,
                 channelDesc = CHANNEL_RESTORE_END_DESC,
                 importance = NotificationManager.IMPORTANCE_HIGH
-            )
-            notificationManager.makeNotificationChannel(
-                channelId = CHANNEL_RESTORE_CANCELLING_ID,
-                channelDesc = CHANNEL_RESTORE_CANCELLING_DESC,
-                importance = NotificationManager.IMPORTANCE_MIN
             )
         }
     }

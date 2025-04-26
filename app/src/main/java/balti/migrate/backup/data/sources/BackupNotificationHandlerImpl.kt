@@ -25,8 +25,6 @@ class BackupNotificationHandlerImpl(
         private const val CHANNEL_BACKUP_END_DESC = "Backup finished notification"
         private const val CHANNEL_BACKUP_RUNNING_ID = "backup_running"
         private const val CHANNEL_BACKUP_RUNNING_DESC = "Backup running notification"
-        private const val CHANNEL_BACKUP_CANCELLING_ID = "backup_cancelling"
-        private const val CHANNEL_BACKUP_CANCELLING_DESC = "Cancelling current backup"
 
         private const val NOTIFICATION_ID_BACKUP_ONGOING = 130
         private const val NOTIFICATION_ID_BACKUP_COMPLETE = 131
@@ -58,11 +56,6 @@ class BackupNotificationHandlerImpl(
                 channelId = CHANNEL_BACKUP_END_ID,
                 channelDesc = CHANNEL_BACKUP_END_DESC,
                 importance = NotificationManager.IMPORTANCE_HIGH
-            )
-            notificationManager.makeNotificationChannel(
-                channelId = CHANNEL_BACKUP_CANCELLING_ID,
-                channelDesc = CHANNEL_BACKUP_CANCELLING_DESC,
-                importance = NotificationManager.IMPORTANCE_MIN
             )
         }
     }
