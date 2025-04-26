@@ -7,9 +7,15 @@ import baltiapps.migrate.domain.common.model.Progress
 
 @Composable
 fun LoadingProgressBar(
+    progress: Progress?,
     modifier: Modifier = Modifier,
-    progress: Progress,
 ) {
+    if (progress == null) {
+        CircularProgressIndicator(
+            modifier = modifier,
+        )
+        return
+    }
     CircularProgressIndicator(
         modifier = modifier,
         progress = {
