@@ -2,6 +2,7 @@ package balti.migrate.restore.ui.screens.progressScreen
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,12 +20,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.common.ui.components.ButtonStatus
+import balti.migrate.common.ui.components.LoadingProgressBar
 import balti.migrate.common.ui.components.NextFab
 import balti.migrate.common.ui.progressScreen.ErrorLayoutToggle
 import balti.migrate.common.ui.progressScreen.ProgressLogLayout
@@ -72,7 +75,7 @@ private fun Content(
     closeProgressScreen: () -> Unit,
 ) {
     var scrollAnchor by remember { mutableStateOf(ScrollAnchor.BOTTOM) }
-    val items = state().progressList
+    val items = if (state().errorOnly) state().errorList else state().progressList
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -125,6 +128,15 @@ private fun Content(
                 onToggleErrorOnly = onToggleErrorOnly,
                 modifier = Modifier.fillMaxWidth()
             )
+            if (state().isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    LoadingProgressBar(progress = null)
+                }
+                return@Column
+            }
             ProgressLogLayout(
                 modifier = Modifier
                     .fillMaxWidth()

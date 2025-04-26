@@ -17,8 +17,6 @@ class RestoreProgressScreenViewModel(
     private val _state = MutableStateFlow(RestoreProgressScreenState.Empty)
     val state = _state.asStateFlow()
 
-    private var observeErrorsOnly: Boolean = false
-    private var isCancelling: Boolean = false
     private var isLogsPaused: Boolean = false
 
     private fun startObserving() {
@@ -26,16 +24,17 @@ class RestoreProgressScreenViewModel(
             progressLogRepository.setProgressObserver { p, e ->
                 if (p.isEmpty()) return@setProgressObserver
                 val latestProgress = p.last()
-                if (isLogsPaused && !latestProgress.isRestoreFinished()) return@setProgressObserver
-                val progressList = if (observeErrorsOnly) e else p
+                val isFinished = latestProgress.isRestoreFinished()
+                val isCancelling = if (isFinished) false else _state.value.isCancelling
+                if (isLogsPaused && !isFinished) return@setProgressObserver
                 val headingText = contextSource.getProgressTitle(latestProgress.progressType)
                 _state.update {
                     it.copy(
-                        progressList = progressList,
+                        progressList = p,
+                        errorList = e,
                         headingText = headingText,
                         isRestoreFinished = latestProgress.isRestoreFinished(),
                         isCancelling = isCancelling,
-                        errorOnly = observeErrorsOnly,
                     )
                 }
             }
@@ -49,12 +48,10 @@ class RestoreProgressScreenViewModel(
     fun performAction(action: RestoreProgressScreenAction) {
         when (action) {
             is RestoreProgressScreenAction.ToggleErrorOnly -> {
-                observeErrorsOnly = action.enabled
-                progressLogRepository.dispatchLatestObservedProgress()
+                _state.update { it.copy(isCancelling = action.enabled) }
             }
             is RestoreProgressScreenAction.CancelRestore -> {
                 _state.update {
-                    isCancelling = true
                     it.copy(isCancelling = true)
                 }
             }
