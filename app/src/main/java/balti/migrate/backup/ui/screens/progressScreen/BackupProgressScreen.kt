@@ -128,7 +128,7 @@ private fun Content(
                 onToggleErrorOnly = onToggleErrorOnly,
                 modifier = Modifier.fillMaxWidth()
             )
-            if (items.isEmpty()) {
+            if (state().isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,

@@ -9,8 +9,8 @@ data class BackupProgressScreenState(
     val errorOnly: Boolean,
     val isCancelling: Boolean,
     val isBackupFinished: Boolean,
-    val isLoading: Boolean = progressList.isEmpty() && errorList.isEmpty(),
 ) {
+    val isLoading: Boolean = progressList.isEmpty() && errorList.isEmpty()
     companion object {
         val Empty = BackupProgressScreenState(
             progressList = emptyList(),
