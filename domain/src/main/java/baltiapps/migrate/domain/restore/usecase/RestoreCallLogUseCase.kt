@@ -12,6 +12,6 @@ class RestoreCallLogUseCase(
     private val restoreDataRepository: RestoreDataRepository,
 ) {
     operator fun invoke(): Flow<Progress> {
-        return dataRestore.restoreDataItems(restoreDataRepository.callLogDataItems)
+        return dataRestore.restoreDataItems(restoreDataRepository.stagedCallLogs)
     }
 }

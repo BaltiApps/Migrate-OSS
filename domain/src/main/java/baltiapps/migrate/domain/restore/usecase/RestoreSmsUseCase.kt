@@ -12,6 +12,6 @@ class RestoreSmsUseCase(
     private val restoreDataRepository: RestoreDataRepository,
 ) {
     operator fun invoke(): Flow<Progress> {
-        return dataRestore.restoreDataItems(restoreDataRepository.smsDataItems)
+        return dataRestore.restoreDataItems(restoreDataRepository.stagedSms)
     }
 }
