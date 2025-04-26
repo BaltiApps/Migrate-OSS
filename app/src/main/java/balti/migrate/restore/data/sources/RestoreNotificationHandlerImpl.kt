@@ -5,7 +5,8 @@ import android.content.Context
 import balti.migrate.R
 import balti.migrate.common.data.model.NotificationInfo
 import balti.migrate.common.utils.DeepLinkUtils
-import balti.migrate.common.utils.NotificationUtils
+import balti.migrate.common.utils.makeNotificationChannel
+import balti.migrate.common.utils.convertToNotificationBuilder
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.ContextSource
@@ -36,7 +37,6 @@ class RestoreNotificationHandlerImpl(
         context.getSystemService(NotificationManager::class.java)
     }
 
-    private val notificationUtils = NotificationUtils()
     private val deepLinkUtils = DeepLinkUtils()
 
     private val pendingIntent by lazy {
@@ -47,18 +47,16 @@ class RestoreNotificationHandlerImpl(
         Timber.i("Creating progress sample job")
         progressSamplerJob = Job()
 
-        notificationUtils.run {
-            notificationManager.makeNotificationChannel(
-                channelId = CHANNEL_RESTORE_RUNNING_ID,
-                channelDesc = CHANNEL_RESTORE_RUNNING_DESC,
-                importance = NotificationManager.IMPORTANCE_LOW
-            )
-            notificationManager.makeNotificationChannel(
-                channelId = CHANNEL_RESTORE_END_ID,
-                channelDesc = CHANNEL_RESTORE_END_DESC,
-                importance = NotificationManager.IMPORTANCE_HIGH
-            )
-        }
+        notificationManager.makeNotificationChannel(
+            channelId = CHANNEL_RESTORE_RUNNING_ID,
+            channelDesc = CHANNEL_RESTORE_RUNNING_DESC,
+            importance = NotificationManager.IMPORTANCE_LOW
+        )
+        notificationManager.makeNotificationChannel(
+            channelId = CHANNEL_RESTORE_END_ID,
+            channelDesc = CHANNEL_RESTORE_END_DESC,
+            importance = NotificationManager.IMPORTANCE_HIGH
+        )
     }
 
     override fun getInitialNotification(): NotificationInfo {
@@ -118,13 +116,11 @@ class RestoreNotificationHandlerImpl(
     }
 
     override fun displayNotification(notification: NotificationInfo) {
-        notificationUtils.run {
-            notificationManager.notify(
-                notification.notificationId,
-                notification.convertToNotificationBuilder(context).apply {
-                    setContentIntent(pendingIntent)
-                }.build()
-            )
-        }
+        notificationManager.notify(
+            notification.notificationId,
+            notification.convertToNotificationBuilder(context).apply {
+                setContentIntent(pendingIntent)
+            }.build()
+        )
     }
 }

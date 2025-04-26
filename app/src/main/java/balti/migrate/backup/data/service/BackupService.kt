@@ -9,6 +9,7 @@ import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.NotificationInfo
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import balti.migrate.common.utils.ServiceUtils
+import balti.migrate.common.utils.convertToNotificationBuilder
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
 import baltiapps.migrate.domain.ACTION_START_BACKUP
 import baltiapps.migrate.domain.BACKUP_ERROR_LOG
