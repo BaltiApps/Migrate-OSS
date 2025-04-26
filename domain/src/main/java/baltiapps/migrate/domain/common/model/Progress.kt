@@ -1,5 +1,8 @@
 package baltiapps.migrate.domain.common.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Progress(
     val progressType: ProgressType,
     val percentage: Double,
