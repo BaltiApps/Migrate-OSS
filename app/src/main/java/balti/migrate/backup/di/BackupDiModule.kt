@@ -132,6 +132,7 @@ val backupDiModule = module {
     viewModel {
         BackupProgressScreenViewModel(
             contextSource = get(),
+            preferences = get(),
             progressLogRepository = get(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP))
         )
     }
