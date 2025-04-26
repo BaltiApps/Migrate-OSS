@@ -29,6 +29,7 @@ class RestoreNotificationHandlerImpl(
         private const val NOTIFICATION_ID_RESTORE_ONGOING = 230
         private const val NOTIFICATION_ID_RESTORE_COMPLETE = 231
         private const val NOTIFICATION_ID_RESTORE_CANCELLED = 232
+        private const val NOTIFICATION_ID_RESTORE_FINISHED_WITH_ERRORS = 233
     }
 
     private val notificationManager by lazy {
@@ -68,6 +69,33 @@ class RestoreNotificationHandlerImpl(
             title = context.getString(R.string.loading),
             shouldShowProgress = true,
             isIndeterminate = true,
+        )
+    }
+
+    override fun getFinishedNotification(): NotificationInfo {
+        return NotificationInfo(
+            notificationId = NOTIFICATION_ID_RESTORE_COMPLETE,
+            notificationChannelId = CHANNEL_RESTORE_END_ID,
+            icon = R.drawable.notification_icon_00,
+            title = context.getString(R.string.restore_finished),
+        )
+    }
+
+    override fun getCancelledNotification(): NotificationInfo {
+        return NotificationInfo(
+            notificationId = NOTIFICATION_ID_RESTORE_CANCELLED,
+            notificationChannelId = CHANNEL_RESTORE_END_ID,
+            icon = R.drawable.notification_icon_00,
+            title = context.getString(R.string.restore_cancelled),
+        )
+    }
+
+    override fun getFinishedWithErrorNotification(): NotificationInfo {
+        return NotificationInfo(
+            notificationId = NOTIFICATION_ID_RESTORE_FINISHED_WITH_ERRORS,
+            notificationChannelId = CHANNEL_RESTORE_END_ID,
+            icon = R.drawable.notification_icon_00,
+            title = context.getString(R.string.restore_finished_with_errors),
         )
     }
 

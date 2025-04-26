@@ -19,6 +19,9 @@ abstract class NotificationHandler<T> {
 
     abstract fun setup()
     abstract fun getInitialNotification(): T
+    abstract fun getFinishedNotification(): T
+    abstract fun getCancelledNotification(): T
+    abstract fun getFinishedWithErrorNotification(): T
     abstract fun getProgressNotification(progress: Progress): T
     abstract fun displayNotification(notification: T)
     protected abstract suspend fun getLatestProgress(): Progress

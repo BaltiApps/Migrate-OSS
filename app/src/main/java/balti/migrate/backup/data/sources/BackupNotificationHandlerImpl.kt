@@ -27,8 +27,9 @@ class BackupNotificationHandlerImpl(
         private const val CHANNEL_BACKUP_RUNNING_DESC = "Backup running notification"
 
         private const val NOTIFICATION_ID_BACKUP_ONGOING = 130
-        private const val NOTIFICATION_ID_BACKUP_COMPLETE = 131
+        private const val NOTIFICATION_ID_BACKUP_FINISHED = 131
         private const val NOTIFICATION_ID_BACKUP_CANCELLED = 132
+        private const val NOTIFICATION_ID_BACKUP_FINISHED_WITH_ERRORS = 133
     }
 
     private val notificationManager by lazy {
@@ -68,6 +69,33 @@ class BackupNotificationHandlerImpl(
             title = context.getString(R.string.loading),
             shouldShowProgress = true,
             isIndeterminate = true,
+        )
+    }
+
+    override fun getFinishedNotification(): NotificationInfo {
+        return NotificationInfo(
+            notificationId = NOTIFICATION_ID_BACKUP_FINISHED,
+            notificationChannelId = CHANNEL_BACKUP_END_ID,
+            icon = R.drawable.notification_icon_00,
+            title = context.getString(R.string.backup_finished),
+        )
+    }
+
+    override fun getCancelledNotification(): NotificationInfo {
+        return NotificationInfo(
+            notificationId = NOTIFICATION_ID_BACKUP_CANCELLED,
+            notificationChannelId = CHANNEL_BACKUP_END_ID,
+            icon = R.drawable.notification_icon_00,
+            title = context.getString(R.string.backup_cancelled),
+        )
+    }
+
+    override fun getFinishedWithErrorNotification(): NotificationInfo {
+        return NotificationInfo(
+            notificationId = NOTIFICATION_ID_BACKUP_FINISHED_WITH_ERRORS,
+            notificationChannelId = CHANNEL_BACKUP_END_ID,
+            icon = R.drawable.notification_icon_00,
+            title = context.getString(R.string.backup_finished_with_errors),
         )
     }
 
