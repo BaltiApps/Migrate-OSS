@@ -149,7 +149,7 @@ class BackupService : LifecycleService() {
 
             Timber.i("backup - finished")
 
-            notificationHandler.stopListening()
+            endNotifications()
             Timber.i("restore - notification handler stopped listening")
             cleanup()
             Timber.i("restore - cleanup done")
@@ -180,6 +180,10 @@ class BackupService : LifecycleService() {
         stopSelf()
     }
 
+    private fun endNotifications() {
+        notificationHandler.stopListening()
+    }
+
     private fun isSetup(): Boolean {
         return ::logWriter.isInitialized && ::errorWriter.isInitialized
     }
@@ -191,6 +195,7 @@ class BackupService : LifecycleService() {
                 delay(1000)
                 serviceUtils.emitHeadingLog(Progress.ProgressType.BACKUP_CANCELLED)
             }
+            endNotifications()
             delay(1000)
             cleanup()
         }

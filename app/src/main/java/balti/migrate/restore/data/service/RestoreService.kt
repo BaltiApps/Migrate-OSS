@@ -110,7 +110,7 @@ class RestoreService: LifecycleService() {
 
             Timber.i("restore - finished")
 
-            notificationHandler.stopListening()
+            endNotifications()
             Timber.i("restore - notification handler stopped listening")
             cleanup()
             Timber.i("restore - cleanup done")
@@ -141,6 +141,10 @@ class RestoreService: LifecycleService() {
         stopSelf()
     }
 
+    private fun endNotifications() {
+        notificationHandler.stopListening()
+    }
+
     private fun isSetup(): Boolean {
         return ::logWriter.isInitialized && ::errorWriter.isInitialized
     }
@@ -152,6 +156,7 @@ class RestoreService: LifecycleService() {
                 delay(1000)
                 serviceUtils.emitHeadingLog(Progress.ProgressType.RESTORE_CANCELLED)
             }
+            endNotifications()
             delay(1000)
             cleanup()
         }
