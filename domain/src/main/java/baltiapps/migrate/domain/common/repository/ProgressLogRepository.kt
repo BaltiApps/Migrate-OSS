@@ -74,6 +74,18 @@ abstract class ProgressLogRepository {
         }
     }
 
+    fun populateWithValues(
+        progressList: List<Progress>,
+        errorList: List<Progress>,
+    ) {
+        progressLogQueue.clear()
+        progressLogQueue.addAll(progressList)
+        progressFlow.value = progressLogQueue.toList()
+        errorLogQueue.clear()
+        errorLogQueue.addAll(errorList)
+        errorFlow.value = errorLogQueue.toList()
+    }
+
     fun dispatchLatestObservedProgress() {
         observer?.invoke(progressFlow.value, errorFlow.value)
     }
@@ -88,5 +100,13 @@ abstract class ProgressLogRepository {
         errorLogQueue.clear()
         progressFlow.emit(listOf())
         errorFlow.emit(listOf())
+    }
+
+    fun getDisplayedProgressList(): List<Progress> {
+        return progressLogQueue
+    }
+
+    fun getDisplayedErrorList(): List<Progress> {
+        return errorLogQueue
     }
 }
