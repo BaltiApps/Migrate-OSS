@@ -17,8 +17,6 @@ class BackupProgressScreenViewModel(
     private val _state = MutableStateFlow(BackupProgressScreenState.Empty)
     val state = _state.asStateFlow()
 
-    private var observeErrorsOnly: Boolean = false
-    private var isCancelling: Boolean = false
     private var isLogsPaused: Boolean = false
 
     private fun startObserving() {
@@ -26,16 +24,17 @@ class BackupProgressScreenViewModel(
             progressLogRepository.setProgressObserver { p, e ->
                 if (p.isEmpty()) return@setProgressObserver
                 val latestProgress = p.last()
+                val isFinished = latestProgress.isBackupFinished()
+                val cancelling = if (isFinished) false else _state.value.isCancelling
                 if (isLogsPaused && !latestProgress.isBackupFinished()) return@setProgressObserver
-                val progressList = if (observeErrorsOnly) e else p
                 val headingText = contextSource.getProgressTitle(latestProgress.progressType)
                 _state.update {
                     it.copy(
-                        progressList = progressList,
+                        progressList = p,
+                        errorList = e,
                         headingText = headingText,
                         isBackupFinished = latestProgress.isBackupFinished(),
-                        isCancelling = isCancelling,
-                        errorOnly = observeErrorsOnly,
+                        isCancelling = cancelling
                     )
                 }
             }
@@ -49,12 +48,10 @@ class BackupProgressScreenViewModel(
     fun performAction(action: BackupProgressScreenAction) {
         when (action) {
             is BackupProgressScreenAction.ToggleErrorOnly -> {
-                observeErrorsOnly = action.enabled
-                progressLogRepository.dispatchLatestObservedProgress()
+                _state.update { it.copy(errorOnly = action.enabled) }
             }
             is BackupProgressScreenAction.CancelBackup -> {
                 _state.update {
-                    isCancelling = true
                     it.copy(isCancelling = true)
                 }
             }
