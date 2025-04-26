@@ -19,6 +19,9 @@ abstract class ProgressLogRepository {
 
     private val mutex = Mutex()
 
+    var isAnyErrorPresent = false
+    private set
+
     companion object {
         private const val LOG_CACHE = 1000
     }
@@ -51,6 +54,7 @@ abstract class ProgressLogRepository {
     }
 
     suspend fun pushError(progress: Progress) {
+        isAnyErrorPresent = progress.isFailure
         push(
             progress = progress,
             queue = errorLogQueue,
@@ -79,6 +83,7 @@ abstract class ProgressLogRepository {
     }
 
     suspend fun reset() {
+        isAnyErrorPresent = false
         progressLogQueue.clear()
         errorLogQueue.clear()
         progressFlow.emit(listOf())
