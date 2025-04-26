@@ -17,6 +17,7 @@ import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.NotificationHandler
+import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import baltiapps.migrate.domain.restore.usecase.RestoreCallLogUseCase
@@ -40,6 +41,8 @@ class RestoreService: LifecycleService() {
 
     private val restoreCallLogUseCase: RestoreCallLogUseCase by inject()
     private val restoreSmsUseCase: RestoreSmsUseCase by inject()
+
+    private val preferences: Preferences by inject()
 
     private val restoreLog by lazy { File(this.cacheDir, RESTORE_LOG) }
     private val restoreErrorLog by lazy { File(this.cacheDir, RESTORE_ERROR_LOG) }
@@ -119,6 +122,7 @@ class RestoreService: LifecycleService() {
 
             endNotifications()
             Timber.i("restore - notification handler stopped listening")
+            storeProgressAndErrorsOnFinish()
             cleanup()
             Timber.i("restore - cleanup done")
         }
@@ -131,6 +135,8 @@ class RestoreService: LifecycleService() {
         errorWriter.setup(restoreErrorLog.canonicalPath, append = true)
 
         progressLogRepository.reset()
+        preferences.resetSavedRestoreProgressList()
+        preferences.resetSavedRestoreErrorList()
 
         serviceUtils = ServiceUtils(
             contextSource = contextSource,
@@ -158,6 +164,13 @@ class RestoreService: LifecycleService() {
         notificationHandler.displayNotification(notificationInfo)
     }
 
+    private fun storeProgressAndErrorsOnFinish() {
+        val progressList = progressLogRepository.getDisplayedProgressList()
+        preferences.saveRestoreProgressList(progressList)
+        val errorList = progressLogRepository.getDisplayedErrorList()
+        preferences.saveRestoreErrorList(errorList)
+    }
+
     private fun isSetup(): Boolean {
         return ::logWriter.isInitialized && ::errorWriter.isInitialized
     }
@@ -170,6 +183,7 @@ class RestoreService: LifecycleService() {
                 serviceUtils.emitHeadingLog(Progress.ProgressType.RESTORE_CANCELLED)
             }
             endNotifications()
+            storeProgressAndErrorsOnFinish()
             delay(1000)
             cleanup()
         }
