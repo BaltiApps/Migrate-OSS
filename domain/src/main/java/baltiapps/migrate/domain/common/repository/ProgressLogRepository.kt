@@ -54,7 +54,8 @@ abstract class ProgressLogRepository {
     }
 
     suspend fun pushError(progress: Progress) {
-        isAnyErrorPresent = progress.isFailure
+        isAnyErrorPresent =
+            isAnyErrorPresent || progress.isFailure     // don't be false if once turned true
         push(
             progress = progress,
             queue = errorLogQueue,
