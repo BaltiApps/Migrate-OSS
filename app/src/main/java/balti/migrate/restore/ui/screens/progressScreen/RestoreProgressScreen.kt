@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.common.ui.components.ButtonStatus
+import balti.migrate.common.ui.components.KeepScreenOn
 import balti.migrate.common.ui.components.LoadingProgressBar
 import balti.migrate.common.ui.components.NextFab
 import balti.migrate.common.ui.progressScreen.ErrorLayoutToggle
@@ -76,6 +77,11 @@ private fun Content(
 ) {
     var scrollAnchor by remember { mutableStateOf(ScrollAnchor.BOTTOM) }
     val items = if (state().errorOnly) state().errorList else state().progressList
+
+    KeepScreenOn(
+        shouldKeepScreenOn = !state().isRestoreFinished,
+    )
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
