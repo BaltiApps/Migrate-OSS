@@ -134,6 +134,14 @@
         You will be prompted to change the SMS app after the whole restore process is finished.\n
     </string>
 
+    <!--SmsAppChangeDialog.kt-->
+    <string name="sms_app_change_dialog_title">Change SMS app</string>
+    <string name="sms_app_change_dialog_message">
+        You need to change the default SMS app to be able to receive any SMS / MMS.
+    </string>
+    <string name="this_is_mandatory">This is mandatory and cannot be skipped.</string>
+    <string name="force_close_message">Migrate may be force closed by the system. This is normal.</string>
+
     <!--MainActivity.kt-->
     <string name="no_application_available_to_restore_contacts">No applications found to restore contacts, please install Google contacts / Fossify contacts.</string>
 
