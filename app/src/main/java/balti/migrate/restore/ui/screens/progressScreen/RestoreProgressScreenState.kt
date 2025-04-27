@@ -9,6 +9,7 @@ data class RestoreProgressScreenState(
     val errorOnly: Boolean,
     val isCancelling: Boolean,
     val isRestoreFinished: Boolean,
+    val shouldChangeSmsApp: Boolean,
 ) {
     val isLoading: Boolean get() = progressList.isEmpty() && errorList.isEmpty()
     companion object {
@@ -19,6 +20,7 @@ data class RestoreProgressScreenState(
             errorOnly = false,
             isCancelling = false,
             isRestoreFinished = false,
+            shouldChangeSmsApp = false,
         )
     }
 }

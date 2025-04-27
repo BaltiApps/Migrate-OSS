@@ -134,6 +134,9 @@
         You will be prompted to change the SMS app after the whole restore process is finished.\n
     </string>
 
+    <!--RestoreProgressScreenViewModel.kt-->
+    <string name="toast_text_change_sms_app">Open \"SMS app\" and change it.</string>
+
     <!--SmsAppChangeDialog.kt-->
     <string name="sms_app_change_dialog_title">Change SMS app</string>
     <string name="sms_app_change_dialog_message">

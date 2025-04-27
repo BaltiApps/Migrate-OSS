@@ -2,7 +2,9 @@ package balti.migrate.restore.ui.screens.progressScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import balti.migrate.MainActivity
 import balti.migrate.restore.data.service.RestoreService
+import baltiapps.migrate.domain.PermissionConstants
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.Preferences
@@ -23,6 +25,9 @@ class RestoreProgressScreenViewModel(
 
     private var isLogsPaused: Boolean = false
 
+    private val smsPermissionConstant = PermissionConstants.DEFAULT_SMS_APP
+    private val defaultAppsIntent = PermissionConstants.SETTINGS_DEFAULT_APPS
+
     private fun startObserving() {
         viewModelScope.launch {
             progressLogRepository.setProgressObserver { p, e ->
@@ -30,6 +35,9 @@ class RestoreProgressScreenViewModel(
                 val latestProgress = p.last()
                 val isFinished = latestProgress.isRestoreFinished()
                 val isCancelling = if (isFinished) false else _state.value.isCancelling
+                val shouldChangeSmsApp = if (isFinished) {
+                    contextSource.checkPermission(smsPermissionConstant)
+                } else _state.value.shouldChangeSmsApp
                 if (isLogsPaused && !isFinished) return@setProgressObserver
                 val headingText = contextSource.getProgressTitle(latestProgress.progressType)
                 _state.update {
@@ -39,6 +47,7 @@ class RestoreProgressScreenViewModel(
                         headingText = headingText,
                         isRestoreFinished = latestProgress.isRestoreFinished(),
                         isCancelling = isCancelling,
+                        shouldChangeSmsApp = shouldChangeSmsApp,
                     )
                 }
             }
@@ -71,6 +80,16 @@ class RestoreProgressScreenViewModel(
             is RestoreProgressScreenAction.ResumeProgressLogs -> {
                 isLogsPaused = false
                 progressLogRepository.dispatchLatestObservedProgress()
+            }
+            is RestoreProgressScreenAction.ChangeSmsApp -> {
+                if (action.activity !is MainActivity) return
+                action.activity.requestPermission(defaultAppsIntent) {
+                    if (contextSource.checkPermission(smsPermissionConstant)) return@requestPermission
+                    // If we don't have permission, it means user changed the default app.
+                    _state.update {
+                        it.copy(shouldChangeSmsApp = false)
+                    }
+                }
             }
         }
     }

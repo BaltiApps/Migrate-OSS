@@ -1,6 +1,8 @@
 package balti.migrate.restore.ui.screens.progressScreen
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +46,8 @@ fun RestoreProgressScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val activity = LocalActivity.current
+
     Content(
         state = { state },
         onToggleErrorOnly = {
@@ -59,6 +63,10 @@ fun RestoreProgressScreen(
         resumeLogs = {
             viewModel.performAction(RestoreProgressScreenAction.ResumeProgressLogs)
         },
+        changeSmsApp = {
+            Toast.makeText(activity, R.string.toast_text_change_sms_app, Toast.LENGTH_SHORT).show()
+            viewModel.performAction(RestoreProgressScreenAction.ChangeSmsApp(activity))
+        },
         closeProgressScreen = closeProgressScreen,
     )
 
@@ -73,6 +81,7 @@ private fun Content(
     cancelRestore: () -> Unit,
     pauseLogs: () -> Unit,
     resumeLogs: () -> Unit,
+    changeSmsApp: () -> Unit,
     closeProgressScreen: () -> Unit,
 ) {
     var scrollAnchor by remember { mutableStateOf(ScrollAnchor.BOTTOM) }
@@ -80,6 +89,11 @@ private fun Content(
 
     KeepScreenOn(
         shouldKeepScreenOn = !state().isRestoreFinished,
+    )
+
+    SmsAppChangeDialog(
+        shouldShow = state().shouldChangeSmsApp,
+        onAgree = changeSmsApp
     )
 
     Scaffold(
