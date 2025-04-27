@@ -60,7 +60,7 @@ class RestoreProgressScreenViewModel(
     fun performAction(action: RestoreProgressScreenAction) {
         when (action) {
             is RestoreProgressScreenAction.ToggleErrorOnly -> {
-                _state.update { it.copy(isCancelling = action.enabled) }
+                _state.update { it.copy(errorOnly = action.enabled) }
             }
             is RestoreProgressScreenAction.CancelRestore -> {
                 _state.update {
