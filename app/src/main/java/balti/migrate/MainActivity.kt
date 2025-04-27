@@ -90,6 +90,11 @@ class MainActivity : ComponentActivity() {
                     roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
                 )
             }
+            PermissionConstants.SETTINGS_DEFAULT_APPS -> {
+                specialPermissionLauncher.launch(
+                    Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
+                )
+            }
             else -> {
                 permissionLauncherSingle.launch(permission)
             }
