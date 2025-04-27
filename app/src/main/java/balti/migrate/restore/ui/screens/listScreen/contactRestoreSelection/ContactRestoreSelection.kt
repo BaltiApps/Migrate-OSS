@@ -1,5 +1,6 @@
 package balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -39,6 +40,8 @@ fun ContactRestoreSelection(
             viewModel.onAction(ContactRestoreSelectionAction.StageContacts(goToNextScreen))
         }
     )
+
+    BackHandler { navigateUp() }
 }
 
 @Composable

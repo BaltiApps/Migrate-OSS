@@ -1,5 +1,6 @@
 package balti.migrate.restore.ui.screens.restoreSummary
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -75,6 +76,8 @@ fun RestoreSummary(
     )
 
     val contactsExportingPercentage = state.contactsExportProgress.percentage
+
+    BackHandler { navigateUp() }
 
     if (state.countContacts > 0
         && contactsExportingPercentage > 0

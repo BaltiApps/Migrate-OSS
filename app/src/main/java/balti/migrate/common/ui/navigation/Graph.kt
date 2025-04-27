@@ -126,7 +126,10 @@ fun Graph(
                 composable<RouteCallLogRestoreSelection> {
                     val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
                     CallLogRestoreSelection(
-                        navigateUp = navController::navigateUp,
+                        navigateUp = {
+                            viewModel.onBackFromRoute()
+                            navController.navigateUp()
+                        },
                         goToNextScreen = {
                             navController.navigate(viewModel.findNextRoute())
                         }
@@ -135,7 +138,10 @@ fun Graph(
                 composable<RouteSmsRestoreSelection> {
                     val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
                     SmsRestoreSelection(
-                        navigateUp = navController::navigateUp,
+                        navigateUp = {
+                            viewModel.onBackFromRoute()
+                            navController.navigateUp()
+                        },
                         goToNextScreen = {
                             navController.navigate(viewModel.findNextRoute())
                         }
@@ -144,15 +150,22 @@ fun Graph(
                 composable<RouteContactRestoreSelection> {
                     val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
                     ContactRestoreSelection(
-                        navigateUp = navController::navigateUp,
+                        navigateUp = {
+                            viewModel.onBackFromRoute()
+                            navController.navigateUp()
+                        },
                         goToNextScreen = {
                             navController.navigate(viewModel.findNextRoute())
                         }
                     )
                 }
                 composable<RouteRestoreSummary> {
+                    val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
                     RestoreSummary(
-                        navigateUp = navController::navigateUp,
+                        navigateUp = {
+                            viewModel.onBackFromRoute()
+                            navController.navigateUp()
+                        },
                         startRestoreServiceAndGoToNextScreen = {
                             startRestoreService()
                             navController.navigate(RouteRestoreProgressScreen)

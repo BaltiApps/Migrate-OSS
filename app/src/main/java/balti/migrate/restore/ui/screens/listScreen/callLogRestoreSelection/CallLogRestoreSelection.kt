@@ -1,5 +1,6 @@
 package balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -45,6 +46,8 @@ fun CallLogRestoreSelection(
             viewModel.onAction(CallLogRestoreSelectionAction.StageCallLogs(goToNextScreen))
         }
     )
+
+    BackHandler { navigateUp() }
 }
 
 @Composable

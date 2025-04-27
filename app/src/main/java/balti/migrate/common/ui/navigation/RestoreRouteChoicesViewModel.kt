@@ -19,11 +19,15 @@ class RestoreRouteChoicesViewModel(
     fun findNextRoute(): Any {
         while (pointerIndex < routeMap.size) {
             pointerIndex++
-            val route = routeMap.keys.elementAt(pointerIndex)
-            if (routeMap[route]?.invoke() == true) {
+            val route = routeMap.keys.elementAtOrNull(pointerIndex)
+            if (route != null && routeMap[route]?.invoke() == true) {
                 return route
             }
         }
         return routeMap.keys.last()
+    }
+
+    fun onBackFromRoute() {
+        pointerIndex--
     }
 }
