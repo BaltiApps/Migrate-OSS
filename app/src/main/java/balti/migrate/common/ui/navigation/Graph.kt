@@ -1,5 +1,6 @@
 package balti.migrate.common.ui.navigation
 
+import android.widget.Toast
 import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -12,12 +13,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
+import balti.migrate.R
+import balti.migrate.backup.data.service.BackupService
 import balti.migrate.backup.ui.screens.backupName.BackupName
 import balti.migrate.backup.ui.screens.listScreen.callLogBackupSelection.CallLogBackupSelection
 import balti.migrate.backup.ui.screens.listScreen.contactBackupSelection.ContactBackupSelection
 import balti.migrate.backup.ui.screens.listScreen.smsBackupSelection.SmsBackupSelection
 import balti.migrate.backup.ui.screens.progressScreen.BackupProgressScreen
 import balti.migrate.common.utils.DeepLinkUtils
+import balti.migrate.restore.data.service.RestoreService
 import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDirectory
 import balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection.CallLogRestoreSelection
 import balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection.ContactRestoreSelection
@@ -46,8 +50,32 @@ fun Graph(
     ) {
         composable<RouteHome> {
             ScreenHome(
-                onBackupSelected = { navController.navigate(RouteBackup) },
-                onRestoreSelected = { navController.navigate(RouteRestore) },
+                onBackupSelected = {
+                    when {
+                        BackupService.isRunning -> navController.navigate(RouteBackupProgressScreen)
+                        RestoreService.isRunning -> {
+                            Toast.makeText(
+                                activity,
+                                R.string.cannot_backup_when_restore_is_running,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        else -> navController.navigate(RouteBackup)
+                    }
+                },
+                onRestoreSelected = {
+                    when {
+                        RestoreService.isRunning -> navController.navigate(RouteRestoreProgressScreen)
+                        BackupService.isRunning -> {
+                            Toast.makeText(
+                                activity,
+                                R.string.cannot_restore_when_backup_is_running,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        else -> navController.navigate(RouteRestore)
+                    }
+                },
             )
         }
         navigation<RouteBackup>(
