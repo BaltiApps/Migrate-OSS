@@ -1,4 +1,4 @@
-package balti.migrate.common.ui.navigation
+package balti.migrate.app.ui.navigation
 
 import androidx.lifecycle.ViewModel
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository

@@ -1,4 +1,4 @@
-package balti.migrate.common.ui.navigation
+package balti.migrate.app.ui.navigation
 
 import android.widget.Toast
 import androidx.activity.compose.LocalActivity

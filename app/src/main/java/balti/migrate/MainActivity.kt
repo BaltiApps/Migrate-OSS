@@ -14,7 +14,7 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import balti.migrate.backup.data.service.BackupService
 import balti.migrate.common.data.model.JavaFile
-import balti.migrate.common.ui.navigation.Graph
+import balti.migrate.app.ui.navigation.Graph
 import balti.migrate.restore.data.service.RestoreService
 import balti.migrate.ui.theme.MigrateTheme
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
