@@ -1,16 +1,17 @@
 package balti.migrate.ui.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,7 +22,6 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
@@ -33,7 +33,7 @@ import balti.migrate.R
 import baltiapps.migrate.domain.PRIVACY_POLICY_URL
 import baltiapps.migrate.domain.RELEASE_URL
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutDialog(
     onDismissRequest: () -> Unit,
@@ -90,6 +90,10 @@ fun AboutDialog(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Icon(
+                    modifier = Modifier
+                        .size(96.dp)
+                        .padding(16.dp)
+                    ,
                     painter = painterResource(R.drawable.notification_icon_00),
                     tint = MaterialTheme.colorScheme.primary,
                     contentDescription = null,
@@ -97,28 +101,31 @@ fun AboutDialog(
                 Text(
                     text = stringResource(R.string.app_name),
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMediumEmphasized,
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
                     text = version,
                     textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
                     text = links,
                     textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
                     text = stringResource(R.string.copyright),
                     textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
-                Text(
-                    text = stringResource(android.R.string.ok),
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable {
+                OutlinedButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
                         onDismissRequest()
                     }
-                )
+                ) {
+                    Text(stringResource(android.R.string.ok))
+                }
             }
         }
     }
