@@ -13,8 +13,8 @@ android {
         applicationId = "balti.migrate"
         minSdk = 30
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 60
+        versionName = "6.0-beta"
         buildConfigField("String", "VERSION_CODENAME", "\"Artemis\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
