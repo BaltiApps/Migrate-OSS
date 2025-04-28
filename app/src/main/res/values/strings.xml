@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Migrate - Data Backup and Restore</string>
+    <string name="app_name">Migrate - Data Backup</string>
 
     <!--Graph.kt-->
     <string name="cannot_backup_when_restore_is_running">Restore is already running. Cannot backup.</string>
