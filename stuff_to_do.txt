@@ -1,0 +1,43 @@
+✅ icons on restore task explainer dialogs
+
+notifications
+- ✅ after backup / restore is completed - 26 Apr 2025
+- ✅ when backup / restore is cancelled - 26 Apr 2025
+- ✅ when backup / restore errors out - 26 Apr 2025
+- ✅ cancel action - 26 Apr 2025
+- ✅ click on notification to show progress screen - 26 Apr 2025
+- description to prompt user to reset the SMS app after restore.
+
+✅ proper progress on backup / restore cancellation - 26 Apr 2025
+
+✅ back button not working in first backup selection screen - not reproducible anymore
+
+contacts selection - for combination of local and synced contacts:
+- make header stick while scrolling
+- show the "Why" button for synced contacts header
+- synced and local contact count
+
+show count of (items_selected / total_items) for each backup and restore selection screen
+
+✅ redact names when writing logs in file
+
+✅ wakelock in backup / restore progress screen - 27 Apr 2025
+
+✅ prevent showing backup or restore screen if an operation is already running - 27 Apr 2025
+
+✅ prompt to change SMS app after restore - 27 Apr 2025
+
+show "Start" instead of "Next" before starting or restoring a backup
+
+permission screen
+
+info dialog.
+
+change log
+
+share progress and error logs
+
+modify logs to report which stage of backup is running.
+Example - instead of showing "(100/1000) 9999999999", show "(100/1000) CALL LOG 9999999999"
+
+prompt for notification permission before starting backup / restore
