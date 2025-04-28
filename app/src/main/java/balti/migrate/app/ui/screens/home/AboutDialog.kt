@@ -1,4 +1,4 @@
-package balti.migrate.app.ui.screens
+package balti.migrate.app.ui.screens.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
