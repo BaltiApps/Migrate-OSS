@@ -11,6 +11,7 @@ import balti.migrate.common.utils.convertToNotificationBuilder
 import balti.migrate.common.utils.getCancelAction
 import balti.migrate.restore.data.service.RestoreService
 import baltiapps.migrate.domain.ACTION_CANCEL_RESTORE
+import baltiapps.migrate.domain.PermissionConstants
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.ContextSource
@@ -63,6 +64,14 @@ class RestoreNotificationHandlerImpl(
         )
     }
 
+    private fun isDefaultSmsApp(): Boolean {
+        return contextSource.checkPermission(PermissionConstants.DEFAULT_SMS_APP)
+    }
+
+    private fun notificationContentTextOnFinish(): String? {
+        return if (isDefaultSmsApp()) context.getString(R.string.please_change_sms_app) else null
+    }
+
     override fun getInitialNotification(): NotificationInfo {
         return NotificationInfo(
             notificationId = NOTIFICATION_ID_RESTORE_ONGOING,
@@ -80,6 +89,7 @@ class RestoreNotificationHandlerImpl(
             notificationChannelId = CHANNEL_RESTORE_END_ID,
             icon = R.drawable.notification_icon_00,
             title = context.getString(R.string.restore_finished),
+            text = notificationContentTextOnFinish(),
         )
     }
 
@@ -89,6 +99,7 @@ class RestoreNotificationHandlerImpl(
             notificationChannelId = CHANNEL_RESTORE_END_ID,
             icon = R.drawable.notification_icon_00,
             title = context.getString(R.string.restore_cancelled),
+            text = notificationContentTextOnFinish(),
         )
     }
 
@@ -98,6 +109,7 @@ class RestoreNotificationHandlerImpl(
             notificationChannelId = CHANNEL_RESTORE_END_ID,
             icon = R.drawable.notification_icon_00,
             title = context.getString(R.string.restore_finished_with_errors),
+            text = notificationContentTextOnFinish(),
         )
     }
 
