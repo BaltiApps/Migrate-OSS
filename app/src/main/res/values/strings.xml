@@ -8,6 +8,13 @@
     <!--ScreenHome-->
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
+    <string name="about">About</string>
+
+    <!--AboutDialog.kt-->
+    <string name="app_version">Version: %s</string>
+    <string name="release_information">Release information</string>
+    <string name="privacy_policy">Privacy policy</string>
+    <string name="copyright">Copyright © BaltiApps</string>
 
     <!--ListNoData.kt-->
     <string name="no_data_title_default">No data on device.</string>

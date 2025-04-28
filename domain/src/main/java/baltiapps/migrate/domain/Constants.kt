@@ -21,6 +21,9 @@ const val DEFAULT_BACKUP_ROOT = "/storage/emulated/0/Migrate"
 
 const val INTERNAL_ROUGH_WORK_DIRECTORY = "rough_work"
 
+const val RELEASE_URL = "https://github.com/BaltiApps/Migrate-OSS/releases"
+const val PRIVACY_POLICY_URL = "https://github.com/BaltiApps/Migrate-OSS/blob/main/privacy_policy.md"
+
 const val BREAK_LINE = "===================================="
 const val REDACTED = "[REDACTED]"
 
