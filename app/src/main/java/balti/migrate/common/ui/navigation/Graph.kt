@@ -28,7 +28,7 @@ import balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection.Conta
 import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestoreSelection
 import balti.migrate.restore.ui.screens.progressScreen.RestoreProgressScreen
 import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummary
-import balti.migrate.ui.screens.ScreenHome
+import balti.migrate.app.ui.screens.ScreenHome
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
