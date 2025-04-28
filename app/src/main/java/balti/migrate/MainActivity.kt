@@ -16,7 +16,7 @@ import balti.migrate.backup.data.service.BackupService
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.app.ui.navigation.Graph
 import balti.migrate.restore.data.service.RestoreService
-import balti.migrate.ui.theme.MigrateTheme
+import balti.migrate.app.ui.theme.MigrateTheme
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
 import baltiapps.migrate.domain.ACTION_CANCEL_RESTORE
 import baltiapps.migrate.domain.ACTION_START_BACKUP

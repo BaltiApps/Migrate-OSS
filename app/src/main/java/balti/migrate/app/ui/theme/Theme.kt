@@ -1,4 +1,4 @@
-package balti.migrate.ui.theme
+package balti.migrate.app.ui.theme
 
 import android.app.Activity
 import android.os.Build
