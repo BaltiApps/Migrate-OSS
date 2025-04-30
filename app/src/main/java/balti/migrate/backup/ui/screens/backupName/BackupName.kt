@@ -152,7 +152,7 @@ private fun BottomBar(
         floatingActionButton = {
             val buttonStatus = if (hasPermission) {
                 ButtonStatus.Unspecified(
-                    label = stringResource(R.string.next),
+                    label = stringResource(R.string.start),
                     onPressed = {
                         goToNextScreen(
                             BackupLocation(
