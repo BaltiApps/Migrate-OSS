@@ -1,9 +1,9 @@
-# License for "Migrate - Data Backup and Restore"
+# License for "Migrate - Data Backup]"
 
 Copyright © BaltiApps
 
 ## 1. Definitions
-- **"Software"** refers to **Migrate - Data Backup and Restore** and any associated files distributed under this license.
+- **"Software"** refers to **Migrate - Data Backup** and any associated files distributed under this license.
 - **"You"** (or "Your") refers to any individual or entity using, modifying, or distributing the Software.
 
 ## 2. Grant of License
