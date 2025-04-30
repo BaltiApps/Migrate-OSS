@@ -9,6 +9,8 @@
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
     <string name="about">About</string>
+    <string name="app_backup_currently_unavailable">App backup is currently unavailable.</string>
+    <string name="app_backup_currently_unavailable_description">App backup (for rooted users) is being worked on and will be made available in a future release.</string>
 
     <!--AboutDialog.kt-->
     <string name="app_version">Version: %s</string>

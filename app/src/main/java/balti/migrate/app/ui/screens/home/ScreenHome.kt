@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -14,6 +15,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,6 +44,9 @@ fun ScreenHome(
         onAboutDialogDismissed = {
             viewModel.performAction(ScreenHomeAction.OnAboutDialogDismissed)
         },
+        onAppBackupUnavailableDialogDismissed = {
+            viewModel.performAction(ScreenHomeAction.OnAppBackupUnavailableDialogDismissed)
+        },
         onBackupSelected = onBackupSelected,
         onRestoreSelected = onRestoreSelected,
     )
@@ -52,6 +57,7 @@ private fun Content(
     state: ScreenHomeState,
     onAboutButtonClicked: () -> Unit,
     onAboutDialogDismissed: () -> Unit,
+    onAppBackupUnavailableDialogDismissed: () -> Unit,
     onBackupSelected: () -> Unit,
     onRestoreSelected: () -> Unit,
     modifier: Modifier = Modifier
@@ -59,6 +65,25 @@ private fun Content(
     if (state.shouldShowAboutDialog) {
         AboutDialog(
             onDismissRequest = onAboutDialogDismissed
+        )
+    }
+
+    if (state.shouldShowAppBackupUnavailableDialog) {
+        AlertDialog(
+            title = {
+                Text(stringResource(R.string.app_backup_currently_unavailable))
+            },
+            text = {
+                Text(stringResource(R.string.app_backup_currently_unavailable_description))
+            },
+            onDismissRequest = onAppBackupUnavailableDialogDismissed,
+            confirmButton = {
+                TextButton(
+                    onClick = onAppBackupUnavailableDialogDismissed
+                ) {
+                    Text(stringResource(android.R.string.ok))
+                }
+            }
         )
     }
 
