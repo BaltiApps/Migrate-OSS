@@ -8,6 +8,7 @@ interface Preferences {
         const val KEY_SAVED_BACKUP_ERROR_LIST = "last_saved_backup_errors"
         const val KEY_SAVED_RESTORE_PROGRESS_LIST = "last_saved_restore_progress"
         const val KEY_SAVED_RESTORE_ERROR_LIST = "last_saved_restore_errors"
+        const val KEY_SHOULD_SHOW_PERMISSION_SCREEN = "should_show_permission_screen"
     }
 
     fun saveBackupProgressList(list: List<Progress>)
@@ -27,4 +28,7 @@ interface Preferences {
 
     fun resetSavedRestoreProgressList()
     fun resetSavedRestoreErrorList()
+
+    fun shouldShowPermissionScreen(): Boolean
+    fun setShouldShowPermissionScreen(value: Boolean)
 }

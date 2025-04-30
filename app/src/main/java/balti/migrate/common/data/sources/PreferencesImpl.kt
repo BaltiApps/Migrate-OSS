@@ -85,4 +85,13 @@ class PreferencesImpl(
     override fun resetSavedRestoreErrorList() {
         saveRestoreErrorList(emptyList())
     }
+
+    override fun shouldShowPermissionScreen(): Boolean {
+        return sharedPreferences.getBoolean(Preferences.KEY_SHOULD_SHOW_PERMISSION_SCREEN, true)
+    }
+
+    override fun setShouldShowPermissionScreen(value: Boolean) {
+        editor.putBoolean(Preferences.KEY_SHOULD_SHOW_PERMISSION_SCREEN, value)
+        editor.apply()
+    }
 }
