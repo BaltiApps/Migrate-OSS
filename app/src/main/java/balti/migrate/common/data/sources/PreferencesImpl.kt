@@ -94,4 +94,13 @@ class PreferencesImpl(
         editor.putBoolean(Preferences.KEY_SHOULD_SHOW_PERMISSION_SCREEN, value)
         editor.apply()
     }
+
+    override fun shouldShowAppBackupUnavailable(): Boolean {
+        return sharedPreferences.getBoolean(Preferences.KEY_SHOULD_SHOW_APP_BACKUP_UNAVAILABLE, true)
+    }
+
+    override fun setShouldShowAppBackupUnavailable(value: Boolean) {
+        editor.putBoolean(Preferences.KEY_SHOULD_SHOW_APP_BACKUP_UNAVAILABLE, value)
+        editor.apply()
+    }
 }
