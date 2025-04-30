@@ -235,9 +235,7 @@ private fun PermissionItem(
         modifier = modifier
             .fillMaxWidth(),
         enabled = !isGranted,
-        colors = CardDefaults.elevatedCardColors(
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceDim,
-        ),
+        colors = CardDefaults.elevatedCardColors(),
         onClick = requestPermission,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
