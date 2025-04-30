@@ -49,8 +49,8 @@ class ContactsDBWriter(
                 val progress = Progress(
                     progressType = Progress.ProgressType.CONTACTS_BACKUP,
                     percentage = getPercentage(index + 1, dataItems.size),
-                    logs = "(${index + 1}/${dataItems.size}) ${item.logInfo}",
-                    logsForStorage = "(${index + 1}/${dataItems.size}) $REDACTED",
+                    logs = "CONTACT (${index + 1}/${dataItems.size}) ${item.logInfo}",
+                    logsForStorage = "CONTACT (${index + 1}/${dataItems.size}) $REDACTED",
                 )
                 runCatchingWithProgress(progress) {
                     writeRow(item)

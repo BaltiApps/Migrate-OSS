@@ -37,8 +37,8 @@ class CallLogRestore(
                     Progress(
                         progressType = Progress.ProgressType.CALL_LOG_RESTORE,
                         percentage = getPercentage(index + 1, items.size),
-                        logs = "(${index + 1}/${items.size}) ${item.logInfo}",
-                        logsForStorage = "(${index + 1}/${items.size}) $REDACTED",
+                        logs = "CALL LOG (${index + 1}/${items.size}) ${item.logInfo}",
+                        logsForStorage = "CALL LOG (${index + 1}/${items.size}) $REDACTED",
                     )
                 )
             }

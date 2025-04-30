@@ -77,8 +77,8 @@ class CallLogDBWriter(
                 val progress = Progress(
                     progressType = Progress.ProgressType.CALL_LOG_BACKUP,
                     percentage = getPercentage(index + 1, dataItems.size),
-                    logs = "(${index + 1}/${dataItems.size}) ${item.logInfo}",
-                    logsForStorage = "(${index + 1}/${dataItems.size}) $REDACTED",
+                    logs = "CALL LOG (${index + 1}/${dataItems.size}) ${item.logInfo}",
+                    logsForStorage = "CALL LOG (${index + 1}/${dataItems.size}) $REDACTED",
                 )
                 runCatchingWithProgress(progress) {
                     writeRow(item)

@@ -77,8 +77,8 @@ class SmsDBWriter(
                 val progress = Progress(
                     progressType = Progress.ProgressType.SMS_BACKUP,
                     percentage = getPercentage(index + 1, dataItems.size),
-                    logs = "(${index + 1}/${dataItems.size}) ${item.logInfo}",
-                    logsForStorage = "(${index + 1}/${dataItems.size}) $REDACTED",
+                    logs = "SMS (${index + 1}/${dataItems.size}) ${item.logInfo}",
+                    logsForStorage = "SMS (${index + 1}/${dataItems.size}) $REDACTED",
                 )
                 runCatchingWithProgress(progress) {
                     writeRow(item)

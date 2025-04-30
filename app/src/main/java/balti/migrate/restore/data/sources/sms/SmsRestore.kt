@@ -34,8 +34,8 @@ class SmsRestore(
                     Progress(
                         progressType = Progress.ProgressType.SMS_RESTORE,
                         percentage = getPercentage(index + 1, items.size),
-                        logs = "(${index + 1}/${items.size}) ${item.logInfo}",
-                        logsForStorage = "(${index + 1}/${items.size}) $REDACTED",
+                        logs = "SMS (${index + 1}/${items.size}) ${item.logInfo}",
+                        logsForStorage = "SMS (${index + 1}/${items.size}) $REDACTED",
                     )
                 )
             }
