@@ -92,6 +92,9 @@ fun SetupPermissionScreen(
         requestAllPermissions = PermissionUtils.requestPermissions(PermissionUtils.allRuntimePermissions) {
             viewModel.performAction(SetupPermissionScreenAction.OnAllRuntimePermissionsResult(it))
         },
+        onAllPermissionsGranted = {
+            viewModel.performAction(SetupPermissionScreenAction.OnAllPermissionsGranted)
+        },
         skip = { dontShowAgain ->
             viewModel.performAction(SetupPermissionScreenAction.OnSkipClicked(dontShowAgain))
             goToNextScreen()
@@ -110,12 +113,14 @@ private fun Content(
     requestNotificationPermission: () -> Unit,
     requestAllFilesAccessPermission: () -> Unit,
     requestAllPermissions: () -> Unit,
+    onAllPermissionsGranted: () -> Unit,
     skip: (dontShowAgain: Boolean) -> Unit,
     goToNextScreen: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LaunchedEffect(state.isAllPermissionsGranted) {
         if (state.isAllPermissionsGranted) {
+            onAllPermissionsGranted()
             goToNextScreen()
         }
     }
@@ -297,6 +302,7 @@ private fun ContentPreview() {
         requestAllFilesAccessPermission = {},
         requestNotificationPermission = {},
         requestAllPermissions = {},
+        onAllPermissionsGranted = {},
         skip = {},
         goToNextScreen = {},
     )

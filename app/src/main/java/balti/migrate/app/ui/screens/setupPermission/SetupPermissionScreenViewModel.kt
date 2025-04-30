@@ -63,6 +63,9 @@ class SetupPermissionScreenViewModel(
                 }
                 updateState()
             }
+            is SetupPermissionScreenAction.OnAllPermissionsGranted -> {
+                preferences.setShouldShowPermissionScreen(false)
+            }
             is SetupPermissionScreenAction.OnSkipClicked -> {
                 if (action.dontShowAgain) {
                     preferences.setShouldShowPermissionScreen(false)
