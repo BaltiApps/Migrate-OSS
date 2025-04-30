@@ -152,6 +152,22 @@
     <string name="this_is_mandatory">This is mandatory and cannot be skipped.</string>
     <string name="force_close_message">Migrate may be force closed by the system. This is normal.</string>
 
+    <!--SetupPermissionScreen.kt-->
+    <string name="please_grant_the_following_permissions">Please grant the following permissions</string>
+    <string name="call_log_permission">Call Log read / write</string>
+    <string name="call_log_permission_description">Required to backup and restore call logs.</string>
+    <string name="sms_permission">SMS read</string>
+    <string name="sms_permission_description">Required to backup SMS. Restoring SMS involves setting Migrate as the default SMS app temporarily, this will be prompted only right before restoring.</string>
+    <string name="contacts_permission">Contacts read</string>
+    <string name="contacts_permission_description">Required to backup contacts. Restoring contacts is handed over to the system contacts app.</string>
+    <string name="notification_permission">Show notifications</string>
+    <string name="notification_permission_description">Required to notify backup / restore progress.</string>
+    <string name="storage_permission">Storage permission</string>
+    <string name="storage_permission_description">By default backups are under [Internal Storage]/Migrate.</string>
+    <string name="allow_all">Allow all</string>
+    <string name="skip_for_now">Skip for now</string>
+    <string name="dont_show_again">Don\'t show again</string>
+
     <!--MainActivity.kt-->
     <string name="no_application_available_to_restore_contacts">No applications found to restore contacts, please install Google contacts / Fossify contacts.</string>
 
