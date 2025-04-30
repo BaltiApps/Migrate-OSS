@@ -5,6 +5,10 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
+val versionMajor = 6
+val versionMinor = 0
+val versionPatch = 0
+
 android {
     namespace = "balti.migrate"
     compileSdk = 36
@@ -13,8 +17,8 @@ android {
         applicationId = "balti.migrate"
         minSdk = 30
         targetSdk = 36
-        versionCode = 60
-        versionName = "6.0-beta"
+        versionCode = versionMajor * 10000 + versionMinor * 100 + versionPatch
+        versionName = "${versionMajor}.${versionMinor}.${versionPatch}-beta"
         buildConfigField("String", "VERSION_CODENAME", "\"Artemis\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
