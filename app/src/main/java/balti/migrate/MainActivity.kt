@@ -26,9 +26,14 @@ import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
 import baltiapps.migrate.domain.PermissionConstants
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import baltiapps.migrate.domain.common.model.GenericFile
+import baltiapps.migrate.domain.common.sources.Preferences
+import org.koin.android.ext.android.inject
 import java.lang.ref.WeakReference
 
 class MainActivity : ComponentActivity() {
+
+    val preferences: Preferences by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -39,6 +44,7 @@ class MainActivity : ComponentActivity() {
                     cancelBackup = ::cancelBackup,
                     startRestoreService = ::startRestoreService,
                     cancelRestore = ::cancelRestore,
+                    shouldShowPermissionScreen = preferences::shouldShowPermissionScreen
                 )
             }
         }

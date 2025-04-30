@@ -29,6 +29,7 @@ import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestor
 import balti.migrate.restore.ui.screens.progressScreen.RestoreProgressScreen
 import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummary
 import balti.migrate.app.ui.screens.home.ScreenHome
+import balti.migrate.app.ui.screens.setupPermission.SetupPermissionScreen
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
@@ -39,15 +40,24 @@ fun Graph(
     cancelBackup: () -> Unit,
     startRestoreService: () -> Unit,
     cancelRestore: () -> Unit,
+    shouldShowPermissionScreen: () -> Boolean,
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
     val activity = LocalActivity.current
     NavHost(
         navController = navController,
-        startDestination = RouteHome,
+        startDestination = if (shouldShowPermissionScreen()) RoutePermissionScreen else RouteHome,
         modifier = modifier,
     ) {
+        composable<RoutePermissionScreen> {
+            SetupPermissionScreen(
+                goToNextScreen = {
+                    navController.popBackStack()
+                    navController.navigate(RouteHome)
+                }
+            )
+        }
         composable<RouteHome> {
             ScreenHome(
                 onBackupSelected = {
@@ -221,6 +231,9 @@ fun Graph(
         }
     }
 }
+
+@Serializable
+object RoutePermissionScreen
 
 @Serializable
 object RouteHome
