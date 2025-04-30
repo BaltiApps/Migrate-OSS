@@ -17,39 +17,56 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ScreenHome(
     onBackupSelected: () -> Unit,
-    onRestoreSelected: () -> Unit
+    onRestoreSelected: () -> Unit,
+    viewModel: ScreenHomeViewModel = koinViewModel()
 ) {
 
-    var shouldShowAboutDialog by remember { mutableStateOf(false) }
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    Content(
+        state = state,
+        onAboutButtonClicked = {
+            viewModel.performAction(ScreenHomeAction.OnAboutButtonClicked)
+        },
+        onAboutDialogDismissed = {
+            viewModel.performAction(ScreenHomeAction.OnAboutDialogDismissed)
+        },
+        onBackupSelected = onBackupSelected,
+        onRestoreSelected = onRestoreSelected,
+    )
+}
 
-    if (shouldShowAboutDialog) {
+@Composable
+private fun Content(
+    state: ScreenHomeState,
+    onAboutButtonClicked: () -> Unit,
+    onAboutDialogDismissed: () -> Unit,
+    onBackupSelected: () -> Unit,
+    onRestoreSelected: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (state.shouldShowAboutDialog) {
         AboutDialog(
-            onDismissRequest = {
-                shouldShowAboutDialog = false
-            }
+            onDismissRequest = onAboutDialogDismissed
         )
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         topBar = {
             TopBar(
-                showAboutDialog = {
-                    shouldShowAboutDialog = true
-                }
+                showAboutDialog = onAboutButtonClicked,
             )
         }
     ) { values ->
