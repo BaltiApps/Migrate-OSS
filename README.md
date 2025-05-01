@@ -1,13 +1,14 @@
 # Migrate - Data Backup
 
-![Feature graphic](display_assets/migrate_oss_github.png)
+![Feature graphic](display_assets/feature_graphic.png)
 
 ## Branch version
 Version: 6.0.0 (Artemis)
 
 ## Screenshots
 
-<img src=display_assets/Screenshot_01.png width=250/> <img src=display_assets/Screenshot_02.png width=250/> <img src=display_assets/Screenshot_03.png width=250/> <img src=display_assets/Screenshot_04.png width=250/> 
+<img src=display_assets/Screenshot_01.png width=250/> <img src=display_assets/Screenshot_02.png width=250/>
+<img src=display_assets/Screenshot_03.png width=250/> <img src=display_assets/Screenshot_04.png width=250/> 
 
 ## Features
 
