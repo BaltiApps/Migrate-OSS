@@ -46,6 +46,17 @@ abstract class FileSystemSource() {
         }
     }
 
+    inline fun <T: DBWriter<*>> writeDB(
+        file: GenericFile,
+        dbWriter: T,
+        writerBlock: (dbWriter: T) -> Flow<Progress>,
+    ): Flow<Progress> {
+        dbWriter.setup(file)
+        return writerBlock(dbWriter).onCompletion {
+            dbWriter.close()
+        }
+    }
+
     inline fun <T: DBReader<*>> readDB(
         file: GenericFile,
         dbReader: T,
