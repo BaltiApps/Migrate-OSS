@@ -98,6 +98,7 @@
     <string name="backup_finished">Backup finished!</string>
     <string name="backup_finished_with_errors">Backup finished with errors</string>
     <string name="backup_cancelled">Backup cancelled</string>
+    <string name="exporting_backup">Exporting backup</string>
     <string name="restore_finished">Restore finished!</string>
     <string name="restore_finished_with_errors">Restore finished with errors</string>
     <string name="restore_cancelled">Restore cancelled</string>

@@ -19,6 +19,7 @@ data class Progress(
         CALL_LOG_BACKUP,
         SMS_READ,
         SMS_BACKUP,
+        EXPORTING_BACKUP,
         BACKUP_FINISHED,
         BACKUP_FINISHED_WITH_ERRORS,
         BACKUP_CANCELLED,
