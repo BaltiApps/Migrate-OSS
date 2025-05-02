@@ -30,11 +30,11 @@ class FileSystemSourceImpl(
                 source.file.renameTo(destination.file)
             }
             source is JavaFile && destination is MediaStoreDownloadFile -> {
-                copyJavaFileToMediaStoreDownloads(source, destination).also {
-                    if (it) {
-                        source.file.deleteRecursively()
-                    }
-                }
+                transferJavaFileToMediaStoreDownloads(
+                    source = source,
+                    destinationDirectory = destination,
+                    deleteSource = true
+                )
             }
             else -> throw UnknownFileTypeException(
                 message = "Unknown move - Source type - ${source::class.java} and destination type - ${destination::class.java}"
@@ -64,9 +64,10 @@ class FileSystemSourceImpl(
         }
     }
 
-    private fun copyJavaFileToMediaStoreDownloads(
+    private fun transferJavaFileToMediaStoreDownloads(
         source: JavaFile,
         destinationDirectory: MediaStoreDownloadFile,
+        deleteSource: Boolean,
     ): Boolean {
 
         val sourcePath = source.file.takeIf { it.exists() }?.absolutePath ?: return false
@@ -108,6 +109,11 @@ class FileSystemSourceImpl(
                 return false
             }
         }
+
+        if (deleteSource) {
+            source.file.deleteRecursively()
+        }
+
         return true
     }
 
