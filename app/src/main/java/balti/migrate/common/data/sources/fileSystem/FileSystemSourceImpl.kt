@@ -7,6 +7,7 @@ import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
+import baltiapps.migrate.domain.exceptions.UnknownFileTypeException
 
 class FileSystemSourceImpl(
     private val applicationContext: Context,
@@ -20,6 +21,20 @@ class FileSystemSourceImpl(
             }
             is MediaStoreDownloadFile -> createNoMediaFile(directory)
             else -> false
+        }
+    }
+
+    override fun moveDirectory(source: GenericFile, destination: GenericFile): Boolean {
+        return when {
+            source is JavaFile && destination is JavaFile -> {
+                source.file.renameTo(destination.file)
+            }
+            source is JavaFile && destination is MediaStoreDownloadFile -> {
+                moveJavaFileToMediaStoreDownloads(source, destination)
+            }
+            else -> throw UnknownFileTypeException(
+                message = "Source type - ${source::class.java} and destination type - ${destination::class.java}"
+            )
         }
     }
 
@@ -44,4 +59,53 @@ class FileSystemSourceImpl(
             false
         }
     }
+
+    private fun moveJavaFileToMediaStoreDownloads(
+        source: JavaFile,
+        destinationDirectory: MediaStoreDownloadFile,
+    ): Boolean {
+
+        val sourcePath = source.file.takeIf { it.exists() }?.absolutePath ?: return false
+        // Example - /root/dirA
+
+        source.file.walkTopDown().filter { it.isFile }.forEach { file ->
+
+            val filePath = file.absolutePath // Example - /root/dirA/dirB/file1
+
+            val fileRelativePath = filePath.removePrefix(sourcePath)
+            // Example - /dirB/file1
+
+            val targetRelativePath = destinationDirectory.path + // Example - Download/Migrate/02-May
+                    fileRelativePath                             // /dirB/file1
+                        .removeSuffix(file.name)                 // /dirB/
+                        .removeSuffix("/")                 // /dirB
+            // targetRelativePath - Download/Migrate/02-May/dirB
+
+            val contentValues = ContentValues().apply {
+                put(MediaStore.Downloads.DISPLAY_NAME, file.name)
+                put(MediaStore.Downloads.MIME_TYPE, "application/octet-stream")
+                put(MediaStore.Downloads.RELATIVE_PATH, targetRelativePath)
+            }
+
+            try {
+                val uri = applicationContext.contentResolver.insert(
+                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                    contentValues
+                )
+                uri?.let {
+                    applicationContext.contentResolver.openOutputStream(it)?.use { out ->
+                        file.inputStream().use { input -> input.copyTo(out) }
+                    }
+                    file.delete()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return false
+            }
+        }
+
+        source.file.deleteRecursively()
+        return true
+    }
+
 }
