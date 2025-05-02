@@ -9,9 +9,6 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.onCompletion
 
 abstract class FileSystemSource() {
-    abstract fun checkPermission(filePath: String = ""): Boolean
-    abstract fun checkPermission(file: GenericFile): Boolean
-    abstract fun checkPermission(directory: Directory): Boolean
     abstract fun createDirectory(dirPath: String): Boolean
     abstract fun createDirectory(directory: Directory): Boolean
 
