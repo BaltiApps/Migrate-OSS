@@ -63,3 +63,7 @@ change color of fab when showing loading status
 slide button to start backup / restore
 
 backup summary screen
+
+use worker rather than foreground service
+
+️⚠️⚠️⚠️⚠️⚠️ Get rid of external storage permission ⚠️⚠️⚠️⚠️⚠️
