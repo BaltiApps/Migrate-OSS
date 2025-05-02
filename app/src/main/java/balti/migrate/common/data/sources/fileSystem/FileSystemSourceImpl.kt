@@ -1,16 +1,20 @@
 package balti.migrate.common.data.sources.fileSystem
 
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.provider.MediaStore
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
+import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import baltiapps.migrate.domain.exceptions.UnknownFileTypeException
+import java.io.File
 
 class FileSystemSourceImpl(
     private val applicationContext: Context,
+    private val dbUtils: DBUtils,
 ) : FileSystemSource() {
 
     override fun createDirectory(directory: GenericFile): Boolean {
@@ -31,6 +35,13 @@ class FileSystemSourceImpl(
             }
             source is JavaFile && destination is MediaStoreDownloadFile -> {
                 transferJavaFileToMediaStoreDownloads(
+                    source = source,
+                    destinationDirectory = destination,
+                    deleteSource = true
+                )
+            }
+            source is MediaStoreDownloadFile && destination is JavaFile -> {
+                transferMediaStoreDownloadsToJavaFile(
                     source = source,
                     destinationDirectory = destination,
                     deleteSource = true
@@ -115,6 +126,58 @@ class FileSystemSourceImpl(
         }
 
         return true
+    }
+
+    private fun transferMediaStoreDownloadsToJavaFile(
+        source: MediaStoreDownloadFile,
+        destinationDirectory: JavaFile,
+        deleteSource: Boolean,
+    ): Boolean {
+        val projection = arrayOf(
+            MediaStore.Downloads._ID,
+            MediaStore.Downloads.DISPLAY_NAME
+        )
+        val selection = "${MediaStore.Downloads.RELATIVE_PATH} = ?"
+        val selectionArgs = arrayOf(source.path)
+
+        destinationDirectory.file.mkdirs()
+
+        val resolver = applicationContext.contentResolver
+
+        resolver.query(
+            MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+            projection,
+            selection,
+            selectionArgs,
+            null
+        )?.use { cursor ->
+
+            while (cursor.moveToNext()) {
+                val id = dbUtils.getCursorData<Long>(cursor, MediaStore.Downloads._ID)
+                val name = dbUtils.getCursorData<String>(cursor, MediaStore.Downloads.DISPLAY_NAME)
+
+                val uri = ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id)
+                val targetFile = File(destinationDirectory.file, sanitizeFilename(name))
+
+                try {
+                    resolver.openInputStream(uri)?.use { input ->
+                        targetFile.outputStream().use { output -> input.copyTo(output) }
+                    }
+                    if (deleteSource) {
+                        resolver.delete(uri, null, null)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    return false
+                }
+            }
+        }
+
+        return true
+    }
+
+    private fun sanitizeFilename(name: String): String {
+        return name.replace(Regex("[^a-zA-Z0-9._-]"), "_")
     }
 
 }
