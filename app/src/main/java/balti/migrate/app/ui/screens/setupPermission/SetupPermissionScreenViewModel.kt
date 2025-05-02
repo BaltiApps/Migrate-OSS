@@ -15,16 +15,22 @@ class SetupPermissionScreenViewModel(
     private val _state = MutableStateFlow(SetupPermissionScreenState())
     val state = _state.asStateFlow()
 
-    private fun updateState() {
+    private fun updateState(isGranted: Boolean? = null) {
         _state.update {
             it.copy(
-                isCallLogPermissionsGranted = contextSource.checkPermissions(PermissionUtils.callLogPermissions),
-                isSmsReadPermissionGranted = contextSource.checkPermission(PermissionUtils.smsReadPermission),
-                isContactsReadPermissionGranted = contextSource.checkPermission(PermissionUtils.contactsReadPermission),
-                isNotificationPermissionGranted = PermissionUtils.notificationsPermission?.run {
-                    contextSource.checkPermission(this)
-                } ?: true,
-                isAllFilesAccessGranted = contextSource.checkPermission(PermissionUtils.allFilesAccessPermissionConstant),
+                isCallLogPermissionsGranted = isGranted ?: contextSource.checkPermissions(
+                    PermissionUtils.callLogPermissions
+                ),
+                isSmsReadPermissionGranted = isGranted ?: contextSource.checkPermission(
+                    PermissionUtils.smsReadPermission
+                ),
+                isContactsReadPermissionGranted = isGranted ?: contextSource.checkPermission(
+                    PermissionUtils.contactsReadPermission
+                ),
+                isNotificationPermissionGranted = isGranted
+                    ?: PermissionUtils.notificationsPermission?.run {
+                        contextSource.checkPermission(this)
+                    } ?: true,
             )
         }
     }
@@ -47,21 +53,10 @@ class SetupPermissionScreenViewModel(
             is SetupPermissionScreenAction.OnNotificationPermissionResult -> {
                 _state.update { it.copy(isNotificationPermissionGranted = action.isGranted) }
             }
-            is SetupPermissionScreenAction.OnAllFilesAccessPermissionAction -> {
-                _state.update {
-                    it.copy(
-                        shouldAskAllFilesAccess = false,
-                        isAllFilesAccessGranted = contextSource.checkPermission(
-                            PermissionUtils.allFilesAccessPermissionConstant
-                        )
-                    )
-                }
-            }
-            is SetupPermissionScreenAction.OnAllRuntimePermissionsResult -> {
-                _state.update {
-                    it.copy(shouldAskAllFilesAccess = true)
-                }
-                updateState()
+            is SetupPermissionScreenAction.OnAllPermissionsResult -> {
+                if (action.isGranted) {
+                    updateState(isGranted = true)
+                } else updateState()
             }
             is SetupPermissionScreenAction.OnAllPermissionsGranted -> {
                 preferences.setShouldShowPermissionScreen(false)

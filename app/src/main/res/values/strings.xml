@@ -164,8 +164,6 @@
     <string name="contacts_permission_description">Required to backup contacts. Restoring contacts is handed over to the system contacts app.</string>
     <string name="notification_permission">Show notifications</string>
     <string name="notification_permission_description">Required to notify backup / restore progress.</string>
-    <string name="storage_permission">Storage permission</string>
-    <string name="storage_permission_description">By default backups are under [Internal Storage]/Migrate.</string>
     <string name="allow_all">Allow all</string>
     <string name="skip_for_now">Skip for now</string>
     <string name="dont_show_again">Don\'t show again</string>

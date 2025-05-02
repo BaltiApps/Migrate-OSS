@@ -1,7 +1,5 @@
 package balti.migrate.app.ui.screens.setupPermission
 
-import android.content.Intent
-import android.provider.Settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,7 +17,6 @@ import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.Contacts
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Sms
-import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -42,11 +39,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import org.koin.compose.viewmodel.koinViewModel
@@ -60,8 +55,6 @@ fun SetupPermissionScreen(
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val context = LocalContext.current
-
     Content(
         state = state,
         requestCallLogPermissions = PermissionUtils.requestPermissions(PermissionUtils.callLogPermissions) {
@@ -73,13 +66,6 @@ fun SetupPermissionScreen(
         requestContactsPermission = PermissionUtils.requestPermission(PermissionUtils.contactsReadPermission) {
             viewModel.performAction(SetupPermissionScreenAction.OnContactsPermissionResult(it))
         },
-        requestAllFilesAccessPermission = PermissionUtils.requestSpecialPermission(
-            intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
-                data = "package:${context.packageName}".toUri()
-            }
-        ) {
-            viewModel.performAction(SetupPermissionScreenAction.OnAllFilesAccessPermissionAction)
-        },
         requestNotificationPermission = PermissionUtils.notificationsPermission?.run {
             PermissionUtils.requestPermission(this) {
                 viewModel.performAction(SetupPermissionScreenAction.OnNotificationPermissionResult(it))
@@ -90,7 +76,7 @@ fun SetupPermissionScreen(
             viewModel.performAction(SetupPermissionScreenAction.OnNotificationPermissionResult(true))
         },
         requestAllPermissions = PermissionUtils.requestPermissions(PermissionUtils.allRuntimePermissions) {
-            viewModel.performAction(SetupPermissionScreenAction.OnAllRuntimePermissionsResult(it))
+            viewModel.performAction(SetupPermissionScreenAction.OnAllPermissionsResult(it))
         },
         onAllPermissionsGranted = {
             viewModel.performAction(SetupPermissionScreenAction.OnAllPermissionsGranted)
@@ -111,7 +97,6 @@ private fun Content(
     requestSmsPermission: () -> Unit,
     requestContactsPermission: () -> Unit,
     requestNotificationPermission: () -> Unit,
-    requestAllFilesAccessPermission: () -> Unit,
     requestAllPermissions: () -> Unit,
     onAllPermissionsGranted: () -> Unit,
     skip: (dontShowAgain: Boolean) -> Unit,
@@ -122,11 +107,6 @@ private fun Content(
         if (state.isAllPermissionsGranted) {
             onAllPermissionsGranted()
             goToNextScreen()
-        }
-    }
-    LaunchedEffect(state.shouldAskAllFilesAccess) {
-        if (state.shouldAskAllFilesAccess) {
-            requestAllFilesAccessPermission()
         }
     }
     Scaffold(
@@ -175,13 +155,6 @@ private fun Content(
                     icon = Icons.Outlined.Notifications,
                     isGranted = state.isNotificationPermissionGranted,
                     requestPermission = requestNotificationPermission,
-                )
-                PermissionItem(
-                    title = stringResource(R.string.storage_permission),
-                    description = stringResource(R.string.storage_permission_description),
-                    icon = Icons.Outlined.Storage,
-                    isGranted = state.isAllFilesAccessGranted,
-                    requestPermission = requestAllFilesAccessPermission,
                 )
             }
             Column(
@@ -296,7 +269,6 @@ private fun ContentPreview() {
         requestCallLogPermissions = {},
         requestSmsPermission = {},
         requestContactsPermission = {},
-        requestAllFilesAccessPermission = {},
         requestNotificationPermission = {},
         requestAllPermissions = {},
         onAllPermissionsGranted = {},

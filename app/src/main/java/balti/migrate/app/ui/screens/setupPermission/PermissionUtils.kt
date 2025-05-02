@@ -6,7 +6,6 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import baltiapps.migrate.domain.PermissionConstants
 
 object PermissionUtils {
 
@@ -21,8 +20,6 @@ object PermissionUtils {
     val notificationsPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         Manifest.permission.POST_NOTIFICATIONS
     } else null
-
-    val allFilesAccessPermissionConstant = PermissionConstants.MANAGE_EXTERNAL_STORAGE
 
     val allRuntimePermissions = (
             callLogPermissions +
