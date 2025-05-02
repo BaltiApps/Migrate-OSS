@@ -53,6 +53,31 @@ class FileSystemSourceImpl(
         }
     }
 
+    override fun copyDirectory(source: GenericFile, destination: GenericFile): Boolean {
+        return when {
+            source is JavaFile && destination is JavaFile -> {
+                source.file.copyRecursively(destination.file, overwrite = true)
+            }
+            source is JavaFile && destination is MediaStoreDownloadFile -> {
+                transferJavaFileToMediaStoreDownloads(
+                    source = source,
+                    destinationDirectory = destination,
+                    deleteSource = false
+                )
+            }
+            source is MediaStoreDownloadFile && destination is JavaFile -> {
+                transferMediaStoreDownloadsToJavaFile(
+                    source = source,
+                    destinationDirectory = destination,
+                    deleteSource = false
+                )
+            }
+            else -> throw UnknownFileTypeException(
+                message = "Unknown copy - Source type - ${source::class.java} and destination type - ${destination::class.java}"
+            )
+        }
+    }
+
     private fun createNoMediaFile(file: MediaStoreDownloadFile): Boolean {
 
         val contentValues = ContentValues().apply {
