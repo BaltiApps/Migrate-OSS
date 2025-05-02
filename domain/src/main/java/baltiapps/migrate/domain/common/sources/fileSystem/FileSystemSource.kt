@@ -1,15 +1,12 @@
 package baltiapps.migrate.domain.common.sources.fileSystem
 
 import baltiapps.migrate.domain.common.model.DataItem
-import baltiapps.migrate.domain.common.model.Directory
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onCompletion
 
 abstract class FileSystemSource() {
-    abstract fun createDirectory(dirPath: String): Boolean
-    abstract fun createDirectory(directory: Directory): Boolean
     abstract fun createDirectory(directory: GenericFile): Boolean
 
     inline fun <T: DBWriter<*>> writeDB(

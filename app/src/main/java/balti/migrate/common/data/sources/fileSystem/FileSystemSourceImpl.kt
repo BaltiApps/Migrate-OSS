@@ -5,10 +5,8 @@ import android.content.Context
 import android.provider.MediaStore
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
-import baltiapps.migrate.domain.common.model.Directory
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
-import java.io.File
 
 class FileSystemSourceImpl(
     private val applicationContext: Context,
@@ -23,18 +21,6 @@ class FileSystemSourceImpl(
             is MediaStoreDownloadFile -> createNoMediaFile(directory)
             else -> false
         }
-    }
-
-    override fun createDirectory(dirPath: String): Boolean {
-        val file = File(dirPath)
-        file.mkdirs()
-        return file.canWrite()
-    }
-
-    override fun createDirectory(directory: Directory): Boolean {
-        val javaDirectory = File(directory.directoryFullPath)
-        javaDirectory.mkdirs()
-        return javaDirectory.canWrite()
     }
 
     private fun createNoMediaFile(file: MediaStoreDownloadFile): Boolean {
