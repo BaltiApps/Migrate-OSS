@@ -24,12 +24,11 @@ class FileSystemSourceImpl(
     }
 
     private fun createNoMediaFile(file: MediaStoreDownloadFile): Boolean {
-        val relativePath = file.subDirectoryPath
 
         val contentValues = ContentValues().apply {
             put(MediaStore.Downloads.DISPLAY_NAME, ".nomedia")
             put(MediaStore.Downloads.MIME_TYPE, "application/octet-stream")
-            put(MediaStore.Downloads.RELATIVE_PATH, relativePath)
+            put(MediaStore.Downloads.RELATIVE_PATH, file.path)
         }
 
         return try {
