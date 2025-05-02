@@ -5,31 +5,12 @@ import baltiapps.migrate.domain.common.model.Directory
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.onCompletion
 
 abstract class FileSystemSource() {
     abstract fun createDirectory(dirPath: String): Boolean
     abstract fun createDirectory(directory: Directory): Boolean
     abstract fun createDirectory(directory: GenericFile): Boolean
-
-    inline fun <T, V: TextWriter<T>> writeText(
-        directory: String,
-        fileName: String,
-        append: Boolean,
-        textWriter: V,
-        writerBlock: (fileWriter: V) -> Unit,
-    ) {
-        try {
-            if (!createDirectory(directory)) {
-                throw Exception("NOT permitted to write at: $directory")
-            }
-            textWriter.setup("$directory/$fileName", append)
-            writerBlock(textWriter)
-        } finally {
-            textWriter.close()
-        }
-    }
 
     inline fun <T: DBWriter<*>> writeDB(
         file: GenericFile,
