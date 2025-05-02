@@ -32,21 +32,6 @@ abstract class FileSystemSource() {
     }
 
     inline fun <T: DBWriter<*>> writeDB(
-        directory: Directory,
-        file: GenericFile,
-        dbWriter: T,
-        writerBlock: (dbWriter: T) -> Flow<Progress>,
-    ): Flow<Progress> {
-        if (!createDirectory(directory)) {
-            return emptyFlow()
-        }
-        dbWriter.setup(file)
-        return writerBlock(dbWriter).onCompletion {
-            dbWriter.close()
-        }
-    }
-
-    inline fun <T: DBWriter<*>> writeDB(
         file: GenericFile,
         dbWriter: T,
         writerBlock: (dbWriter: T) -> Flow<Progress>,

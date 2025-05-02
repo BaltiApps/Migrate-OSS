@@ -19,6 +19,7 @@ import baltiapps.migrate.domain.BACKUP_FILE_NAME_SMS
 import baltiapps.migrate.domain.BACKUP_LOG
 import baltiapps.migrate.domain.EXTRA_BACKUP_LOCATION
 import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
+import baltiapps.migrate.domain.INTERNAL_ROUGH_WORK_DIRECTORY
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
@@ -29,6 +30,7 @@ import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.Preferences
+import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -46,6 +48,8 @@ class BackupService : LifecycleService() {
     private val progressLogRepository: ProgressLogRepository by inject(named(Names.PROGRESS_LOG_REPOSITORY_BACKUP))
     private val notificationHandler:
             NotificationHandler<NotificationInfo> by inject(named(Names.NOTIFICATION_HANDLER_BACKUP))
+
+    private val fileSystemSource: FileSystemSource by inject()
 
     private val backupContactsUseCase: BackupContactsUseCase by inject()
     private val backupCallLogUseCase: BackupCallLogUseCase by inject()
@@ -117,14 +121,17 @@ class BackupService : LifecycleService() {
             Timber.i("backup - setup")
             setup()
 
+            val internalDirPath = "${filesDir.path}/$INTERNAL_ROUGH_WORK_DIRECTORY/${directory.name}"
+            fileSystemSource.createDirectory(JavaFile(internalDirPath))
+
             notificationHandler.listenAtSafeIntervals()
 
             Timber.i("backup - start - contacts")
 
-            val contactsBackupFile = JavaFile("${directory.directoryFullPath}/$BACKUP_FILE_NAME_CONTACTS")
+            val contactsBackupFile = JavaFile("$internalDirPath/$BACKUP_FILE_NAME_CONTACTS")
             serviceUtils.runStage(
                 shouldRun = repository::shouldBackupContacts,
-                stageBody = { backupContactsUseCase.invoke(directory, contactsBackupFile) },
+                stageBody = { backupContactsUseCase.invoke(contactsBackupFile) },
                 progressType = Progress.ProgressType.CONTACTS_BACKUP,
                 errorMessage = { "Contacts backup exception: ${it.message}" },
             )
@@ -133,10 +140,10 @@ class BackupService : LifecycleService() {
 
             Timber.i("backup - start - call logs")
 
-            val callLogBackupFile = JavaFile("${directory.directoryFullPath}/$BACKUP_FILE_NAME_CALL_LOGS")
+            val callLogBackupFile = JavaFile("$internalDirPath/$BACKUP_FILE_NAME_CALL_LOGS")
             serviceUtils.runStage(
                 shouldRun = repository::shouldBackupCallLogs,
-                stageBody = { backupCallLogUseCase.invoke(directory, callLogBackupFile) },
+                stageBody = { backupCallLogUseCase.invoke(callLogBackupFile) },
                 progressType = Progress.ProgressType.CALL_LOG_BACKUP,
                 errorMessage = { "Call log backup exception: ${it.message}" },
             )
@@ -145,10 +152,10 @@ class BackupService : LifecycleService() {
 
             Timber.i("backup - start - sms")
 
-            val smsBackupFile = JavaFile("${directory.directoryFullPath}/$BACKUP_FILE_NAME_SMS")
+            val smsBackupFile = JavaFile("$internalDirPath/$BACKUP_FILE_NAME_SMS")
             serviceUtils.runStage(
                 shouldRun = repository::shouldBackupSms,
-                stageBody = { backupSmsUseCase.invoke(directory, smsBackupFile) },
+                stageBody = { backupSmsUseCase.invoke(smsBackupFile) },
                 progressType = Progress.ProgressType.SMS_BACKUP,
                 errorMessage = { "SMS backup exception: ${it.message}" },
             )
