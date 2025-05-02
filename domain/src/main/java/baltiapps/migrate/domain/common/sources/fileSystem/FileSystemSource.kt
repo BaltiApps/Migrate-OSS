@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.onCompletion
 abstract class FileSystemSource() {
     abstract fun createDirectory(dirPath: String): Boolean
     abstract fun createDirectory(directory: Directory): Boolean
+    abstract fun createDirectory(directory: GenericFile): Boolean
 
     inline fun <T, V: TextWriter<T>> writeText(
         directory: String,
