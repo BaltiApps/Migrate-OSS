@@ -37,7 +37,7 @@ class FileSystemSourceImpl(
                 }
             }
             else -> throw UnknownFileTypeException(
-                message = "Source type - ${source::class.java} and destination type - ${destination::class.java}"
+                message = "Unknown move - Source type - ${source::class.java} and destination type - ${destination::class.java}"
             )
         }
     }
@@ -91,13 +91,15 @@ class FileSystemSourceImpl(
                 put(MediaStore.Downloads.RELATIVE_PATH, targetRelativePath)
             }
 
+            val resolver = applicationContext.contentResolver
+
             try {
-                val uri = applicationContext.contentResolver.insert(
+                val uri = resolver.insert(
                     MediaStore.Downloads.EXTERNAL_CONTENT_URI,
                     contentValues
                 )
                 uri?.let {
-                    applicationContext.contentResolver.openOutputStream(it)?.use { out ->
+                    resolver.openOutputStream(it)?.use { out ->
                         file.inputStream().use { input -> input.copyTo(out) }
                     }
                 }
