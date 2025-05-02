@@ -30,7 +30,11 @@ class FileSystemSourceImpl(
                 source.file.renameTo(destination.file)
             }
             source is JavaFile && destination is MediaStoreDownloadFile -> {
-                moveJavaFileToMediaStoreDownloads(source, destination)
+                copyJavaFileToMediaStoreDownloads(source, destination).also {
+                    if (it) {
+                        source.file.deleteRecursively()
+                    }
+                }
             }
             else -> throw UnknownFileTypeException(
                 message = "Source type - ${source::class.java} and destination type - ${destination::class.java}"
@@ -60,7 +64,7 @@ class FileSystemSourceImpl(
         }
     }
 
-    private fun moveJavaFileToMediaStoreDownloads(
+    private fun copyJavaFileToMediaStoreDownloads(
         source: JavaFile,
         destinationDirectory: MediaStoreDownloadFile,
     ): Boolean {
@@ -96,15 +100,12 @@ class FileSystemSourceImpl(
                     applicationContext.contentResolver.openOutputStream(it)?.use { out ->
                         file.inputStream().use { input -> input.copyTo(out) }
                     }
-                    file.delete()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 return false
             }
         }
-
-        source.file.deleteRecursively()
         return true
     }
 
