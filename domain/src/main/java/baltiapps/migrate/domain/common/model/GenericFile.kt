@@ -1,10 +1,9 @@
 package baltiapps.migrate.domain.common.model
 
 interface GenericFile {
-    val path: String
+    val path: String  // includes name
     val name: String
-    val exists: Boolean
-    val canRead: Boolean
-    val canWrite: Boolean
-    val isFile: Boolean
+        get() = path.removeSuffix("/").substringAfterLast("/")
+    val subDirectoryPath: String
+        get() = path.removeSuffix(name).removeSuffix("/")
 }

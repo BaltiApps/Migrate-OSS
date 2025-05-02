@@ -1,5 +1,6 @@
 package balti.migrate.common.data.sources.fileSystem
 
+import balti.migrate.common.data.model.JavaFile
 import baltiapps.migrate.domain.common.model.Directory
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
@@ -11,7 +12,7 @@ class FileSystemSourceImpl : FileSystemSource() {
     }
 
     override fun checkPermission(file: GenericFile): Boolean {
-        return file.canWrite
+        return if (file is JavaFile) file.file.canWrite() else false
     }
 
     override fun checkPermission(directory: Directory): Boolean {
