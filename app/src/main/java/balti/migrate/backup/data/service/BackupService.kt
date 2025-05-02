@@ -6,6 +6,7 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import balti.migrate.backup.di.Names
 import balti.migrate.common.data.model.JavaFile
+import balti.migrate.common.data.model.MediaStoreDownloadFile
 import balti.migrate.common.data.model.NotificationInfo
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import balti.migrate.common.utils.ServiceUtils
@@ -116,13 +117,17 @@ class BackupService : LifecycleService() {
 
     private fun startBackup(
         directory: Directory,
+        destination: String = "Download/Migrate/${directory.name}"
     ): Job {
         return lifecycleScope.launch(Dispatchers.IO) {
             Timber.i("backup - setup")
             setup()
 
             val internalDirPath = "${filesDir.path}/$INTERNAL_ROUGH_WORK_DIRECTORY/${directory.name}"
-            fileSystemSource.createDirectory(JavaFile(internalDirPath))
+            val internalDir = JavaFile(internalDirPath)
+            val backupDestination = MediaStoreDownloadFile(destination)
+            fileSystemSource.createDirectory(internalDir)
+            fileSystemSource.createDirectory(backupDestination)
 
             notificationHandler.listenAtSafeIntervals()
 
@@ -162,6 +167,15 @@ class BackupService : LifecycleService() {
 
             Timber.i("backup - finished - sms")
 
+            Timber.i("backup - exporting backup")
+
+            exportBackup(
+                source = internalDir,
+                destination = backupDestination,
+            )
+
+            Timber.i("backup - finished exporting backup")
+
             serviceUtils.emitHeadingLog(Progress.ProgressType.BACKUP_FINISHED)
 
             Timber.i("backup - finished")
@@ -190,6 +204,37 @@ class BackupService : LifecycleService() {
             logWriter = logWriter,
             errorWriter = errorWriter,
         )
+    }
+
+    private suspend fun exportBackup(
+        source: JavaFile,
+        destination: MediaStoreDownloadFile,
+    ) {
+        try {
+            serviceUtils.emitHeadingLog(Progress.ProgressType.EXPORTING_BACKUP)
+            fileSystemSource.moveDirectory(
+                source = source,
+                destination = destination,
+            )
+            serviceUtils.collectLogs(
+                Progress(
+                    progressType = Progress.ProgressType.EXPORTING_BACKUP,
+                    percentage = 1.0,
+                    logs = destination.path,
+                    isFailure = false,
+                )
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            serviceUtils.collectLogs(
+                progress = Progress(
+                    progressType = Progress.ProgressType.EXPORTING_BACKUP,
+                    percentage = 1.0,
+                    logs = "Error exporting backup to ${destination.path}: ${e.message}",
+                    isFailure = true,
+                )
+            )
+        }
     }
 
     private fun cleanup() {
