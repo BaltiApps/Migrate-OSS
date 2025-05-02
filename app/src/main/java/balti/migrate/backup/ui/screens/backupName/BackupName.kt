@@ -1,6 +1,5 @@
 package balti.migrate.backup.ui.screens.backupName
 
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +25,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.common.ui.components.ButtonStatus
 import balti.migrate.common.ui.components.NextFab
-import balti.migrate.common.ui.listScreen.ListPermissionRequestLayout
 import balti.migrate.common.utils.getDefaultBackupName
 import baltiapps.migrate.domain.DEFAULT_BACKUP_ROOT
 import baltiapps.migrate.domain.backup.model.BackupLocation
@@ -40,17 +38,12 @@ fun BackupName(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val activity = LocalActivity.current
-
     Content(
         state = { state },
         navigateUp = navigateUp,
         goToNextScreen = goToNextScreen,
         onBackupNameChanged = {
             viewModel.onAction(BackupNameAction.NameChanged(it))
-        },
-        requestPermission = {
-            viewModel.onAction(BackupNameAction.RequestPermission(activity))
         },
     )
 }
@@ -61,7 +54,6 @@ private fun Content(
     navigateUp: () -> Unit,
     goToNextScreen: (BackupLocation) -> Unit,
     onBackupNameChanged: (String) -> Unit,
-    requestPermission: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -73,7 +65,6 @@ private fun Content(
         },
         bottomBar = {
             BottomBar(
-                hasPermission = state().hasPermission,
                 backupName = state().backupName,
                 goToNextScreen = goToNextScreen,
             )
@@ -90,14 +81,6 @@ private fun Content(
             ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (!state().hasPermission) {
-                ListPermissionRequestLayout(
-                    description = stringResource(R.string.directory_permission_description),
-                    onRequestPermission = requestPermission,
-                    onSkip = null,
-                )
-                return@Column
-            }
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = state().backupName,
@@ -141,7 +124,6 @@ private fun TopBar(
 
 @Composable
 private fun BottomBar(
-    hasPermission: Boolean,
     backupName: String,
     goToNextScreen: (BackupLocation) -> Unit,
     modifier: Modifier = Modifier,
@@ -150,24 +132,17 @@ private fun BottomBar(
         modifier = modifier,
         actions = {},
         floatingActionButton = {
-            val buttonStatus = if (hasPermission) {
-                ButtonStatus.Unspecified(
-                    label = stringResource(R.string.start),
-                    onPressed = {
-                        goToNextScreen(
-                            BackupLocation(
-                                backupName = backupName,
-                                backupLocation = DEFAULT_BACKUP_ROOT
-                            )
+            val buttonStatus = ButtonStatus.Unspecified(
+                label = stringResource(R.string.start),
+                onPressed = {
+                    goToNextScreen(
+                        BackupLocation(
+                            backupName = backupName,
+                            backupLocation = DEFAULT_BACKUP_ROOT
                         )
-                    }
-                )
-            } else {
-                ButtonStatus.Loading(
-                    label = stringResource(R.string.waiting),
-                    onPressed = {},
-                )
-            }
+                    )
+                }
+            )
             NextFab(
                 buttonStatus = buttonStatus
             )

@@ -89,9 +89,6 @@
     <!--BackupName.kt-->
     <string name="backup_info">Backup info</string>
     <string name="enter_backup_name">Enter backup name</string>
-    <string name="directory_permission_description">
-        Please grant permission to read / write files on the device.
-    </string>
 
     <!--ContextSourceImpl.kt-->
     <string name="loading">Loading…</string>
