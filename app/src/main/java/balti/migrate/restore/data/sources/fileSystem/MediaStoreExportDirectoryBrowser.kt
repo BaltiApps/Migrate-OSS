@@ -8,6 +8,8 @@ import baltiapps.migrate.domain.BACKUP_FILE_NAME_CALL_LOGS
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_CONTACTS
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_SMS
 import baltiapps.migrate.domain.restore.sources.ExportDirectoryBrowser
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class MediaStoreExportDirectoryBrowser(
@@ -15,7 +17,7 @@ class MediaStoreExportDirectoryBrowser(
     private val dbUtils: DBUtils,
 ): ExportDirectoryBrowser<MediaStoreDownloadFile> {
 
-    override fun getDirectories(root: MediaStoreDownloadFile): List<MediaStoreDownloadFile> {
+    override suspend fun getDirectories(root: MediaStoreDownloadFile): List<MediaStoreDownloadFile> {
         val directoryPath = getTrimmedDirectoryPath(root)
         val allFilePaths = getAllPaths(directoryPath)
 
@@ -86,7 +88,7 @@ class MediaStoreExportDirectoryBrowser(
         return (validBackupDirectories + invalidBackupDirectories).sortedByDescending { it.name }
     }
 
-    override fun getFilesUnder(directory: MediaStoreDownloadFile): List<MediaStoreDownloadFile> {
+    override suspend fun getFilesUnder(directory: MediaStoreDownloadFile): List<MediaStoreDownloadFile> {
         val directoryPath = getTrimmedDirectoryPath(directory)
         val allFilePaths = getAllPaths(directoryPath)
 
@@ -110,26 +112,27 @@ class MediaStoreExportDirectoryBrowser(
             }
     }
 
-    private fun getAllPaths(directoryPath: String): List<String> {
-        val allFilePaths = mutableListOf<String>()
-        val resolver = applicationContext.contentResolver
+    private suspend fun getAllPaths(directoryPath: String): List<String> {
+        return withContext(Dispatchers.IO) {
+            val allFilePaths = mutableListOf<String>()
+            val resolver = applicationContext.contentResolver
 
-        resolver.query(
-            MediaStore.Downloads.EXTERNAL_CONTENT_URI,
-            null,
-            null,
-            null,
-            null,
-        )?.use { cursor ->
-            while (cursor.moveToNext()) {
-                val fullPath = dbUtils.getCursorData<String>(cursor, MediaStore.Downloads.DATA)
-                val subPath = fullPath.substringAfter("$directoryPath/").trimEnd('/')
-                Timber.i("Path - $subPath")
-                allFilePaths.add(subPath)
+            resolver.query(
+                MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                null,
+                null,
+                null,
+                null,
+            )?.use { cursor ->
+                while (cursor.moveToNext()) {
+                    val fullPath = dbUtils.getCursorData<String>(cursor, MediaStore.Downloads.DATA)
+                    val subPath = fullPath.substringAfter("$directoryPath/").trimEnd('/')
+                    Timber.i("Path - $subPath")
+                    allFilePaths.add(subPath)
+                }
             }
+            allFilePaths
         }
-
-        return allFilePaths
     }
 
     private fun getTrimmedDirectoryPath(directory: MediaStoreDownloadFile): String {
