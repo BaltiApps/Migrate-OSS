@@ -127,7 +127,12 @@ val restoreDiModule = module {
 
     /* View models*/
 
-    viewModelOf(::BrowseRestoreDirectoryViewModel)
+    viewModel {
+        BrowseRestoreDirectoryViewModel(
+            exportDirectoryBrowser = get(named(Names.MEDIA_STORE_RESTORE_DIRECTORY_BROWSER)),
+            readFilesFromBackupUseCase = get(),
+        )
+    }
     viewModelOf(::ContactRestoreSelectionViewModel)
     viewModelOf(::CallLogRestoreSelectionViewModel)
     viewModelOf(::SmsRestoreSelectionViewModel)

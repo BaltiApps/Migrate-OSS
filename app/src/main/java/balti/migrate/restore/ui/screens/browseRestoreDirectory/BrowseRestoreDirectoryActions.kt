@@ -1,15 +1,13 @@
 package balti.migrate.restore.ui.screens.browseRestoreDirectory
 
-import android.app.Activity
-import baltiapps.migrate.domain.common.model.Directory
+import baltiapps.migrate.domain.common.model.GenericFile
 
 sealed class BrowseRestoreDirectoryActions {
-    data class RequestPermission(val activity: Activity?): BrowseRestoreDirectoryActions()
-    data object OnReloadDirectoryContents: BrowseRestoreDirectoryActions()
-    data class OnDirectoryOpen(val directory: Directory): BrowseRestoreDirectoryActions()
-    data object OnDirectoryUp: BrowseRestoreDirectoryActions()
-    data class OnBackupSelected(
-        val directory: Directory,
-        val onLoadingFinished: () -> Unit,
+    data object OnReloadExportDirectory: BrowseRestoreDirectoryActions()
+    data class OnExportDirectoryOpen(val directory: GenericFile): BrowseRestoreDirectoryActions()
+    data object OnExportDirectoryUp: BrowseRestoreDirectoryActions()
+    data class OnExportDirectorySelected(
+        val directory: GenericFile,
+        val onImportFinished: () -> Unit,
     ): BrowseRestoreDirectoryActions()
 }

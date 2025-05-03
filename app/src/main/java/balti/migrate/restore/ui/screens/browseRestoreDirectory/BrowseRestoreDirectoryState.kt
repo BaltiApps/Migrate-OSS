@@ -1,13 +1,12 @@
 package balti.migrate.restore.ui.screens.browseRestoreDirectory
 
-import baltiapps.migrate.domain.common.model.Directory
+import baltiapps.migrate.domain.common.model.GenericFile
 
 data class BrowseRestoreDirectoryState(
-    val hasPermission: Boolean,
     val isLoading: Boolean,
-    val directoriesToShow: List<Directory>,
-    val currentDirectory: Directory,
+    val exportDirectoriesToShow: List<GenericFile>,
+    val currentExportDirectory: GenericFile,
+    val isImporting: Boolean,
+    val isBackAllowed: Boolean,
 ) {
-    val isBackAllowed: Boolean
-        get() = currentDirectory.parent != null
 }

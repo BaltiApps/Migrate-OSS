@@ -1,6 +1,5 @@
 package balti.migrate.restore.ui.screens.browseRestoreDirectory
 
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,40 +29,34 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
-import balti.migrate.common.ui.listScreen.ListPermissionRequestLayout
-import baltiapps.migrate.domain.common.model.Directory
+import baltiapps.migrate.domain.common.model.GenericFile
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun BrowseRestoreDirectory(
     navigateUp: () -> Unit,
-    onBackupSelected: (Directory) -> Unit,
+    onBackupSelected: () -> Unit,
     viewModel: BrowseRestoreDirectoryViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val activity = LocalActivity.current
-
     Content(
         state = state,
-        onBackupSelected = {
+        onExportDirectorySelected = {
             viewModel.onAction(
-                BrowseRestoreDirectoryActions.OnBackupSelected(it) {
-                    onBackupSelected(it)
+                BrowseRestoreDirectoryActions.OnExportDirectorySelected(it) {
+                    onBackupSelected()
                 }
             )
         },
-        onDirectoryOpen = {
-            viewModel.onAction(BrowseRestoreDirectoryActions.OnDirectoryOpen(it))
+        onExportDirectoryOpen = {
+            viewModel.onAction(BrowseRestoreDirectoryActions.OnExportDirectoryOpen(it))
         },
-        onReloadDirectoryContents = {
-            viewModel.onAction(BrowseRestoreDirectoryActions.OnReloadDirectoryContents)
+        onReloadExportDirectory = {
+            viewModel.onAction(BrowseRestoreDirectoryActions.OnReloadExportDirectory)
         },
-        requestPermission = {
-            viewModel.onAction(BrowseRestoreDirectoryActions.RequestPermission(activity))
-        },
-        onDirectoryUp = {
-            viewModel.onAction(BrowseRestoreDirectoryActions.OnDirectoryUp)
+        onExportDirectoryUp = {
+            viewModel.onAction(BrowseRestoreDirectoryActions.OnExportDirectoryUp)
         },
         navigateUp = navigateUp,
     )
@@ -73,11 +66,10 @@ fun BrowseRestoreDirectory(
 @Composable
 fun Content(
     state: BrowseRestoreDirectoryState,
-    onBackupSelected: (Directory) -> Unit,
-    onReloadDirectoryContents: () -> Unit,
-    onDirectoryOpen: (Directory) -> Unit,
-    requestPermission: () -> Unit,
-    onDirectoryUp: () -> Unit,
+    onExportDirectorySelected: (GenericFile) -> Unit,
+    onReloadExportDirectory: () -> Unit,
+    onExportDirectoryOpen: (GenericFile) -> Unit,
+    onExportDirectoryUp: () -> Unit,
     navigateUp: () -> Unit,
 ) {
     Scaffold(
@@ -105,43 +97,31 @@ fun Content(
                 .padding(innerPadding)
                 .padding(16.dp),
         ) {
-            if (!state.hasPermission) {
-                ListPermissionRequestLayout(
-                    description = stringResource(R.string.select_directory_permission_description),
-                    onRequestPermission = requestPermission,
-                    onSkip = null,
-                )
-                return@Column
-            }
             PullToRefreshBox(
                 modifier = Modifier.fillMaxSize(),
                 isRefreshing = state.isLoading,
-                onRefresh = onReloadDirectoryContents
+                onRefresh = onReloadExportDirectory
             ) {
                 LazyColumn {
                     if (state.isBackAllowed) {
                         item {
                             DirectoryItem(
-                                directory = Directory(
-                                    directoryFullPath = "",
-                                    basePath = state.currentDirectory.basePath,
-                                    name = "..",
-                                    parent = state.currentDirectory.parent,
-                                    creationTime = 0,
-                                    isValidBackupDirectory = false,
-                                ),
-                                onDirectoryClick = onDirectoryUp
+                                directory = object : GenericFile {
+                                    override val path: String = ""
+                                    override val name: String = ".."
+                                },
+                                onDirectoryClick = onExportDirectoryUp
                             )
                         }
                     }
-                    items(state.directoriesToShow) {
+                    items(state.exportDirectoriesToShow) {
                         DirectoryItem(
                             directory = it,
                             onDirectoryClick = {
                                 if (it.isValidBackupDirectory) {
-                                    onBackupSelected(it)
+                                    onExportDirectorySelected(it)
                                 } else {
-                                    onDirectoryOpen(it)
+                                    onExportDirectoryOpen(it)
                                 }
                             }
                         )
@@ -154,7 +134,7 @@ fun Content(
 
 @Composable
 fun DirectoryItem(
-    directory: Directory,
+    directory: GenericFile,
     onDirectoryClick: () -> Unit,
 ) {
     Row(

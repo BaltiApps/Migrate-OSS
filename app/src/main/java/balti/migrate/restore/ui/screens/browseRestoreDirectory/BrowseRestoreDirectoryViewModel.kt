@@ -2,69 +2,53 @@ package balti.migrate.restore.ui.screens.browseRestoreDirectory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import balti.migrate.MainActivity
-import baltiapps.migrate.domain.DEFAULT_BACKUP_ROOT
-import baltiapps.migrate.domain.PermissionConstants
-import baltiapps.migrate.domain.common.model.Directory
-import baltiapps.migrate.domain.common.sources.ContextSource
-import baltiapps.migrate.domain.common.sources.fileSystem.DirectoryBrowser
+import balti.migrate.common.data.model.MediaStoreDownloadFile
+import baltiapps.migrate.domain.common.model.GenericFile
+import baltiapps.migrate.domain.restore.sources.ExportDirectoryBrowser
 import baltiapps.migrate.domain.restore.usecase.ReadFilesFromBackupUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class BrowseRestoreDirectoryViewModel(
-    private val directoryBrowser: DirectoryBrowser,
+    private val exportDirectoryBrowser: ExportDirectoryBrowser<GenericFile>,
     private val readFilesFromBackupUseCase: ReadFilesFromBackupUseCase,
-    private val contextSource: ContextSource,
 ): ViewModel() {
+
+    private val basePath = MediaStoreDownloadFile.EXPORT_PATH_PREFIX
 
     private val _state = MutableStateFlow(
         BrowseRestoreDirectoryState(
-            hasPermission = false,
             isLoading = false,
-            directoriesToShow = listOf(),
-            currentDirectory = Directory(
-                directoryFullPath = DEFAULT_BACKUP_ROOT,
-                basePath = DEFAULT_BACKUP_ROOT,
-                name = "",
-                parent = null,
-                creationTime = 0,
-                isValidBackupDirectory = false,
-            )
+            exportDirectoriesToShow = listOf(),
+            currentExportDirectory = MediaStoreDownloadFile(
+                path = basePath
+            ),
+            isImporting = false,
+            isBackAllowed = false,
         )
     )
     val state = _state.asStateFlow()
 
-    private val permission = PermissionConstants.MANAGE_EXTERNAL_STORAGE
-
     init {
-        onAction(BrowseRestoreDirectoryActions.OnReloadDirectoryContents)
+        onAction(BrowseRestoreDirectoryActions.OnReloadExportDirectory)
     }
 
-    private fun loadDirectory(directory: Directory) {
+    private fun loadDirectory(directory: GenericFile) {
         viewModelScope.launch(Dispatchers.IO) {
-            if (!contextSource.checkPermission(permission)) {
-                _state.update { it.copy(hasPermission = false) }
-                return@launch
+            _state.update {
+                it.copy(isLoading = true)
             }
+            val subDirectoryList = exportDirectoryBrowser.getDirectories(directory)
             _state.update {
                 it.copy(
-                    hasPermission = true,
-                    isLoading = true,
-                )
-            }
-            val contents = directoryBrowser.getDirectoriesUnder(directory).run {
-                this.sortedByDescending { it.creationTime }
-            }
-            _state.update {
-                it.copy(
-                    hasPermission = true,
                     isLoading = false,
-                    directoriesToShow = contents,
-                    currentDirectory = directory,
+                    exportDirectoriesToShow = subDirectoryList,
+                    currentExportDirectory = directory,
+                    isBackAllowed = directory.path.startsWith(basePath) && directory.path != basePath,
                 )
             }
         }
@@ -74,26 +58,28 @@ class BrowseRestoreDirectoryViewModel(
         if (_state.value.isLoading) return
         viewModelScope.launch {
             when(action) {
-                is BrowseRestoreDirectoryActions.RequestPermission -> {
-                    if (action.activity !is MainActivity) return@launch
-                    action.activity.requestPermission(permission) {
-                        loadDirectory(_state.value.currentDirectory)
-                    }
+                is BrowseRestoreDirectoryActions.OnReloadExportDirectory -> {
+                    loadDirectory(_state.value.currentExportDirectory)
                 }
-                is BrowseRestoreDirectoryActions.OnReloadDirectoryContents -> {
-                    loadDirectory(_state.value.currentDirectory)
-                }
-                is BrowseRestoreDirectoryActions.OnDirectoryOpen -> {
+                is BrowseRestoreDirectoryActions.OnExportDirectoryOpen -> {
                     loadDirectory(action.directory)
                 }
-                is BrowseRestoreDirectoryActions.OnDirectoryUp -> {
-                    _state.value.currentDirectory.parent?.let { loadDirectory(it) }
+                is BrowseRestoreDirectoryActions.OnExportDirectoryUp -> {
+                    val currentDirectoryPath = _state.value.currentExportDirectory.path
+                    val parentPath = currentDirectoryPath.substringBeforeLast("/")
+                    loadDirectory(
+                        MediaStoreDownloadFile(
+                            path = parentPath,
+                        )
+                    )
                 }
-                is BrowseRestoreDirectoryActions.OnBackupSelected -> {
-                    _state.update { it.copy(isLoading = true) }
-                    readFilesFromBackupUseCase.invoke(action.directory)
-                    action.onLoadingFinished()
-                    _state.update { it.copy(isLoading = false) }
+                is BrowseRestoreDirectoryActions.OnExportDirectorySelected -> {
+                    _state.update { it.copy(isImporting = true) }
+                    withContext(Dispatchers.IO) {
+                        readFilesFromBackupUseCase.invoke(action.directory)
+                    }
+                    action.onImportFinished()
+                    _state.update { it.copy(isImporting = false) }
                 }
             }
         }
