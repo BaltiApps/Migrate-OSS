@@ -119,7 +119,7 @@ class FileSystemSourceImpl(
             val targetRelativePath = destinationDirectory.path + // Example - Download/Migrate/02-May
                     fileRelativePath                             // /dirB/file1
                         .removeSuffix(file.name)                 // /dirB/
-                        .removeSuffix("/")                 // /dirB
+                        .trimEnd('/')                     // /dirB
             // targetRelativePath - Download/Migrate/02-May/dirB
 
             val contentValues = ContentValues().apply {
