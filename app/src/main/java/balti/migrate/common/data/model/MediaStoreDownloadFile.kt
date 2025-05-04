@@ -8,7 +8,7 @@ class MediaStoreDownloadFile(
 ) : GenericFile {
 
     companion object {
-        const val EXPORT_PATH_PREFIX = "Download/Migrate/"
+        const val EXPORT_PATH_PREFIX = "Download/Migrate"
     }
 
 }
