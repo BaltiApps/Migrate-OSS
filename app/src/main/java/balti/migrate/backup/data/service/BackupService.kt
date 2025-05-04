@@ -25,7 +25,6 @@ import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
-import baltiapps.migrate.domain.common.model.Directory
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.ContextSource
@@ -95,18 +94,11 @@ class BackupService : LifecycleService() {
                 val location = intent.getStringExtra(EXTRA_BACKUP_LOCATION)
                 val name = intent.getStringExtra(EXTRA_BACKUP_NAME)
 
-                if (location == null || name == null) return super.onStartCommand(intent, flags, startId)
+                if (name == null) return super.onStartCommand(intent, flags, startId)
 
-                val directory = Directory(
-                    directoryFullPath = "$location/$name",
-                    basePath = location,
-                    name = name,
-                    creationTime = 0L,
-                    parent = null,
-                    isValidBackupDirectory = true,
+                backupJob = startBackup(
+                    backupName = name
                 )
-
-                backupJob = startBackup(directory)
             }
             ACTION_CANCEL_BACKUP -> {
                 cancelBackup()
@@ -116,15 +108,16 @@ class BackupService : LifecycleService() {
     }
 
     private fun startBackup(
-        directory: Directory,
-        destination: String = "Download/Migrate/${directory.name}"
+        backupName: String,
     ): Job {
         return lifecycleScope.launch(Dispatchers.IO) {
             Timber.i("backup - setup")
             setup()
 
+            val destination = "${MediaStoreDownloadFile.EXPORT_PATH_PREFIX}/$backupName"
+
             val roughWorkDir = JavaFile("$filesDir/$INTERNAL_ROUGH_WORK_BACKUP_DIRECTORY")
-            val internalDir = JavaFile(roughWorkDir, directory.name)
+            val internalDir = JavaFile(roughWorkDir, backupName)
             val internalDirPath = internalDir.path
             val backupDestination = MediaStoreDownloadFile(destination)
 
