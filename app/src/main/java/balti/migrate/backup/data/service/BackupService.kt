@@ -20,7 +20,7 @@ import baltiapps.migrate.domain.BACKUP_FILE_NAME_SMS
 import baltiapps.migrate.domain.BACKUP_LOG
 import baltiapps.migrate.domain.EXTRA_BACKUP_LOCATION
 import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
-import baltiapps.migrate.domain.INTERNAL_ROUGH_WORK_DIRECTORY
+import baltiapps.migrate.domain.INTERNAL_ROUGH_WORK_BACKUP_DIRECTORY
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
@@ -123,9 +123,12 @@ class BackupService : LifecycleService() {
             Timber.i("backup - setup")
             setup()
 
-            val internalDirPath = "${filesDir.path}/$INTERNAL_ROUGH_WORK_DIRECTORY/${directory.name}"
-            val internalDir = JavaFile(internalDirPath)
+            val roughWorkDir = JavaFile("$filesDir/$INTERNAL_ROUGH_WORK_BACKUP_DIRECTORY")
+            val internalDir = JavaFile(roughWorkDir, directory.name)
+            val internalDirPath = internalDir.path
             val backupDestination = MediaStoreDownloadFile(destination)
+
+            roughWorkDir.file.deleteRecursively()
             fileSystemSource.createDirectory(internalDir)
             fileSystemSource.createDirectory(backupDestination)
 
