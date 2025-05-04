@@ -20,6 +20,8 @@ const val EXTRA_BACKUP_NAME = "backup_name"
 const val DEFAULT_BACKUP_ROOT = "/storage/emulated/0/Migrate"
 
 const val INTERNAL_ROUGH_WORK_DIRECTORY = "rough_work"
+const val INTERNAL_ROUGH_WORK_BACKUP_DIRECTORY = "$INTERNAL_ROUGH_WORK_DIRECTORY/backup"
+const val INTERNAL_ROUGH_WORK_RESTORE_DIRECTORY = "$INTERNAL_ROUGH_WORK_DIRECTORY/restore"
 
 const val RELEASE_URL = "https://github.com/BaltiApps/Migrate-OSS/releases"
 const val PRIVACY_POLICY_URL = "https://github.com/BaltiApps/Migrate-OSS/blob/v6/privacy_policy.md"
