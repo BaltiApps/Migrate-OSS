@@ -3,6 +3,7 @@ package balti.migrate.common.data.sources.fileSystem
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.provider.MediaStore
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
@@ -28,7 +29,11 @@ class FileSystemSourceImpl(
         }
     }
 
-    override fun moveDirectory(source: GenericFile, destination: GenericFile): Boolean {
+    override fun moveDirectory(
+        source: GenericFile,
+        destination: GenericFile,
+        relativeFilePathFilter: (String) -> Boolean,
+    ): Boolean {
         return when {
             source is JavaFile && destination is JavaFile -> {
                 source.file.renameTo(destination.file)
@@ -37,14 +42,16 @@ class FileSystemSourceImpl(
                 transferJavaFileToMediaStoreDownloads(
                     source = source,
                     destinationDirectory = destination,
-                    deleteSource = true
+                    deleteSource = true,
+                    relativeFilePathFilter = relativeFilePathFilter,
                 )
             }
             source is MediaStoreDownloadFile && destination is JavaFile -> {
                 transferMediaStoreDownloadsToJavaFile(
                     source = source,
                     destinationDirectory = destination,
-                    deleteSource = true
+                    deleteSource = true,
+                    relativeFilePathFilter = relativeFilePathFilter,
                 )
             }
             else -> throw UnknownFileTypeException(
@@ -53,7 +60,11 @@ class FileSystemSourceImpl(
         }
     }
 
-    override fun copyDirectory(source: GenericFile, destination: GenericFile): Boolean {
+    override fun copyDirectory(
+        source: GenericFile,
+        destination: GenericFile,
+        relativeFilePathFilter: (String) -> Boolean,
+    ): Boolean {
         return when {
             source is JavaFile && destination is JavaFile -> {
                 source.file.copyRecursively(destination.file, overwrite = true)
@@ -62,14 +73,16 @@ class FileSystemSourceImpl(
                 transferJavaFileToMediaStoreDownloads(
                     source = source,
                     destinationDirectory = destination,
-                    deleteSource = false
+                    deleteSource = false,
+                    relativeFilePathFilter = relativeFilePathFilter,
                 )
             }
             source is MediaStoreDownloadFile && destination is JavaFile -> {
                 transferMediaStoreDownloadsToJavaFile(
                     source = source,
                     destinationDirectory = destination,
-                    deleteSource = false
+                    deleteSource = false,
+                    relativeFilePathFilter = relativeFilePathFilter,
                 )
             }
             else -> throw UnknownFileTypeException(
@@ -104,40 +117,38 @@ class FileSystemSourceImpl(
         source: JavaFile,
         destinationDirectory: MediaStoreDownloadFile,
         deleteSource: Boolean,
+        relativeFilePathFilter: (String) -> Boolean = { true },
     ): Boolean {
-
-        val sourcePath = source.file.takeIf { it.exists() }?.absolutePath ?: return false
-        // Example - /root/dirA
+        val resolver = applicationContext.contentResolver
 
         source.file.walkTopDown().filter { it.isFile }.forEach { file ->
 
-            val filePath = file.absolutePath // Example - /root/dirA/dirB/file1
+            val relDirPath = relativeDirectoryPath(
+                source = source,
+                currentFile = file,
+            )
 
-            val fileRelativePath = filePath.removePrefix(sourcePath)
-            // Example - /dirB/file1
-
-            val targetRelativePath = destinationDirectory.path + // Example - Download/Migrate/02-May
-                    fileRelativePath                             // /dirB/file1
-                        .removeSuffix(file.name)                 // /dirB/
-                        .trimEnd('/')                     // /dirB
-            // targetRelativePath - Download/Migrate/02-May/dirB
-
-            val contentValues = ContentValues().apply {
-                put(MediaStore.Downloads.DISPLAY_NAME, file.name)
-                put(MediaStore.Downloads.MIME_TYPE, "application/octet-stream")
-                put(MediaStore.Downloads.RELATIVE_PATH, targetRelativePath)
-            }
-
-            val resolver = applicationContext.contentResolver
+            val relativeFilePath = "$relDirPath/${file.name}"
 
             try {
-                val uri = resolver.insert(
-                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
-                    contentValues
-                )
-                uri?.let {
-                    resolver.openOutputStream(it)?.use { out ->
-                        file.inputStream().use { input -> input.copyTo(out) }
+                if (relativeFilePathFilter(relativeFilePath)) {
+                    val contentValues = ContentValues().apply {
+                        put(MediaStore.Downloads.DISPLAY_NAME, file.name)
+                        put(MediaStore.Downloads.MIME_TYPE, "application/octet-stream")
+                        put(MediaStore.Downloads.RELATIVE_PATH, destinationDirectory.path + relDirPath)
+                    }
+
+                    val uri = resolver.insert(
+                        MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                        contentValues
+                    )
+                    uri?.let {
+                        resolver.openOutputStream(it)?.use { out ->
+                            file.inputStream().use { input -> input.copyTo(out) }
+                        }
+                    }
+                    if (deleteSource) {
+                        file.delete()
                     }
                 }
             } catch (e: Exception) {
@@ -147,7 +158,7 @@ class FileSystemSourceImpl(
         }
 
         if (deleteSource) {
-            source.file.deleteRecursively()
+            source.file.delete()
         }
 
         return true
@@ -157,21 +168,20 @@ class FileSystemSourceImpl(
         source: MediaStoreDownloadFile,
         destinationDirectory: JavaFile,
         deleteSource: Boolean,
+        relativeFilePathFilter: (String) -> Boolean = { true },
     ): Boolean {
-        val projection = arrayOf(
-            MediaStore.Downloads._ID,
-            MediaStore.Downloads.DISPLAY_NAME
-        )
-        val selection = "${MediaStore.Downloads.RELATIVE_PATH} = ?"
-        val selectionArgs = arrayOf(source.path)
+        val resolver = applicationContext.contentResolver
+
+        val sourcePath = source.path.trimEnd('/')
+
+        val selection = "${MediaStore.Downloads.RELATIVE_PATH} LIKE ?"
+        val selectionArgs = arrayOf("$sourcePath/%")
 
         destinationDirectory.file.mkdirs()
 
-        val resolver = applicationContext.contentResolver
-
         resolver.query(
             MediaStore.Downloads.EXTERNAL_CONTENT_URI,
-            projection,
+            null,
             selection,
             selectionArgs,
             null
@@ -181,15 +191,27 @@ class FileSystemSourceImpl(
                 val id = dbUtils.getCursorData<Long>(cursor, MediaStore.Downloads._ID)
                 val name = dbUtils.getCursorData<String>(cursor, MediaStore.Downloads.DISPLAY_NAME)
 
-                val uri = ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id)
-                val targetFile = File(destinationDirectory.file, sanitizeFilename(name))
+                val relDirPath = relativeDirectoryPath(
+                    source = source,
+                    cursor = cursor,
+                )
+
+                val relativeFilePath = "$relDirPath/$name"
 
                 try {
-                    resolver.openInputStream(uri)?.use { input ->
-                        targetFile.outputStream().use { output -> input.copyTo(output) }
-                    }
-                    if (deleteSource) {
-                        resolver.delete(uri, null, null)
+                    if (relativeFilePathFilter(relativeFilePath)) {
+                        val targetFileParent = File(destinationDirectory.file, relDirPath)
+                        targetFileParent.mkdirs()
+
+                        val uri = ContentUris.withAppendedId(MediaStore.Downloads.EXTERNAL_CONTENT_URI, id)
+                        val targetFile = File(targetFileParent, sanitizeFilename(name))
+
+                        resolver.openInputStream(uri)?.use { input ->
+                            targetFile.outputStream().use { output -> input.copyTo(output) }
+                        }
+                        if (deleteSource) {
+                            resolver.delete(uri, null, null)
+                        }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -203,6 +225,54 @@ class FileSystemSourceImpl(
 
     private fun sanitizeFilename(name: String): String {
         return name.replace(Regex("[^a-zA-Z0-9._-]"), "_")
+    }
+
+    /**
+     * Example 1:
+     *
+     * Source - /root/dirA
+     * currentFile - /root/dirA/dirB/f1.txt
+     *
+     * Output - /dirB
+     *
+     * Example 2:
+     *
+     * Source - /root/dirA
+     * currentFile - /root/dirA/f1.txt
+     *
+     * Output - (blank)
+     */
+    private fun relativeDirectoryPath(source: JavaFile, currentFile: File): String {
+        return currentFile.absolutePath
+            .substringAfter(source.file.absolutePath)
+            .removeSuffix(currentFile.name)
+            .trimEnd('/')
+    }
+
+    /**
+     * Example 1:
+     *
+     * source - Download/Migrate/03-May
+     * cursor - Download/Migrate/03-May/dirB/f1.txt
+     *   relative path - Download/Migrate/03-May/dirB/
+     *   name - f1.txt (not used here)
+     *
+     * Example 2:
+     *
+     * source - Download/Migrate/03-May
+     * cursor - Download/Migrate/03-May/f1.txt
+     *   relative path - Download/Migrate/03-May/
+     *   name - f1.txt (not used here)
+     *
+     * Output - (blank)
+     */
+    private fun relativeDirectoryPath(source: MediaStoreDownloadFile, cursor: Cursor): String {
+        val relPath = kotlin.runCatching {
+            dbUtils.getCursorData<String>(cursor, MediaStore.Downloads.RELATIVE_PATH)
+        }.getOrNull() ?: return ""
+        return relPath
+            .substringAfter(source.path)
+            .trimEnd('/')
     }
 
 }

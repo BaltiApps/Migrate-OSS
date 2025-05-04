@@ -8,8 +8,16 @@ import kotlinx.coroutines.flow.onCompletion
 
 abstract class FileSystemSource() {
     abstract fun createDirectory(directory: GenericFile): Boolean
-    abstract fun moveDirectory(source: GenericFile, destination: GenericFile): Boolean
-    abstract fun copyDirectory(source: GenericFile, destination: GenericFile): Boolean
+    abstract fun moveDirectory(
+        source: GenericFile,
+        destination: GenericFile,
+        relativeFilePathFilter: (String) -> Boolean = { true },
+    ): Boolean
+    abstract fun copyDirectory(
+        source: GenericFile,
+        destination: GenericFile,
+        relativeFilePathFilter: (relativeFilePath: String) -> Boolean = { true },
+    ): Boolean
 
     inline fun <T: DBWriter<*>> writeDB(
         file: GenericFile,
