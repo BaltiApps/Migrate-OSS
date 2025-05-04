@@ -8,6 +8,12 @@ import baltiapps.migrate.domain.common.repository.DataRepository
 
 class RestoreDataRepository: DataRepository() {
     val backupFiles = mutableListOf<GenericFile>()
+    var exportDirectory: GenericFile? = null
+    private set
+
+    fun setExportDirectory(exportDirectory: GenericFile) {
+        this.exportDirectory = exportDirectory
+    }
 
     fun shouldRestoreContacts(): Boolean {
         return stagedContacts.isNotEmpty()

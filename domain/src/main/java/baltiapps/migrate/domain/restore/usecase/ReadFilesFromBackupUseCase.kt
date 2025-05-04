@@ -18,6 +18,7 @@ class ReadFilesFromBackupUseCase(
     ) {
         withContext(Dispatchers.IO) {
             restoreDataRepository.backupFiles.clear()
+            restoreDataRepository.setExportDirectory(exportDirectory)
 
             fileSystemSource.copyDirectory(
                 source = exportDirectory,
