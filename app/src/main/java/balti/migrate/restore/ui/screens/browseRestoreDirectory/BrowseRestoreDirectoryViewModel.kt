@@ -1,8 +1,11 @@
 package balti.migrate.restore.ui.screens.browseRestoreDirectory
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
+import baltiapps.migrate.domain.INTERNAL_ROUGH_WORK_RESTORE_DIRECTORY
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.restore.sources.ExportDirectoryBrowser
 import baltiapps.migrate.domain.restore.usecase.ReadFilesFromBackupUseCase
@@ -11,11 +14,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class BrowseRestoreDirectoryViewModel(
     private val exportDirectoryBrowser: ExportDirectoryBrowser<GenericFile>,
     private val readFilesFromBackupUseCase: ReadFilesFromBackupUseCase,
+    private val applicationContext: Context,
 ): ViewModel() {
 
     private val basePath = MediaStoreDownloadFile.EXPORT_PATH_PREFIX
@@ -75,9 +78,27 @@ class BrowseRestoreDirectoryViewModel(
                 }
                 is BrowseRestoreDirectoryActions.OnExportDirectorySelected -> {
                     _state.update { it.copy(isImporting = true) }
-                    withContext(Dispatchers.IO) {
-                        readFilesFromBackupUseCase.invoke(action.directory)
-                    }
+
+                    val roughWorkDir = JavaFile("${applicationContext.filesDir}/" +
+                            "$INTERNAL_ROUGH_WORK_RESTORE_DIRECTORY/")
+
+                    val importDirectory = JavaFile(
+                        parentFile = roughWorkDir,
+                        child = action.directory.name,
+                    )
+
+                    roughWorkDir.file.deleteRecursively()
+
+                    readFilesFromBackupUseCase.invoke(
+                        exportDirectory = action.directory,
+                        importDirectory = importDirectory,
+                        getGenericFileForRepository = { relativePath ->
+                            JavaFile(
+                                parentFile = importDirectory,
+                                child = relativePath,
+                            )
+                        }
+                    )
                     action.onImportFinished()
                     _state.update { it.copy(isImporting = false) }
                 }

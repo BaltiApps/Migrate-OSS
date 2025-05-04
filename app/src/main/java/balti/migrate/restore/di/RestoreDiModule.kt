@@ -89,7 +89,12 @@ val restoreDiModule = module {
 
     /* Use cases */
 
-    singleOf(::ReadFilesFromBackupUseCase)
+    single {
+        ReadFilesFromBackupUseCase(
+            restoreDataRepository = get(),
+            fileSystemSource = get(),
+        )
+    }
     single {
         ReadContactsForRestoreUseCase(
             fileSystemSource = get(),
@@ -131,6 +136,7 @@ val restoreDiModule = module {
         BrowseRestoreDirectoryViewModel(
             exportDirectoryBrowser = get(named(Names.MEDIA_STORE_RESTORE_DIRECTORY_BROWSER)),
             readFilesFromBackupUseCase = get(),
+            applicationContext = get(),
         )
     }
     viewModelOf(::ContactRestoreSelectionViewModel)
