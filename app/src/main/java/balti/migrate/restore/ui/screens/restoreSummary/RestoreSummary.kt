@@ -31,9 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.common.ui.components.ButtonStatus
+import balti.migrate.common.ui.components.LoadingDialog
 import balti.migrate.common.ui.components.NextFab
 import balti.migrate.restore.ui.screens.restoreSummary.components.DelegatedRestore
-import balti.migrate.restore.ui.screens.restoreSummary.components.LoadingDialog
 import balti.migrate.restore.ui.screens.restoreSummary.components.SpecialPermissions
 import balti.migrate.restore.ui.screens.restoreSummary.components.MigrateRestore
 import balti.migrate.restore.ui.screens.restoreSummary.components.SimpleYesNoDialog
