@@ -111,6 +111,7 @@
     <string name="select_directory_permission_description">
         Please grant permission to read files on the device.
     </string>
+    <string name="importing_directory">Importing directory</string>
 
     <!--ContactRestoreSelection.kt-->
     <string name="label_contacts_restore">Contacts restore</string>

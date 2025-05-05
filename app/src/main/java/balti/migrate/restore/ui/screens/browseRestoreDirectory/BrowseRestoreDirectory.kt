@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
+import balti.migrate.common.ui.components.LoadingDialog
 import baltiapps.migrate.domain.common.model.GenericFile
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -60,6 +61,13 @@ fun BrowseRestoreDirectory(
         },
         navigateUp = navigateUp,
     )
+    
+    if (state.isImporting) {
+        LoadingDialog(
+            text = stringResource(R.string.importing_directory),
+            progress = null,
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
