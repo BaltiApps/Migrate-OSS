@@ -14,7 +14,6 @@ The App requests the following permissions to function correctly:
 - **READ_CALL_LOG / WRITE_CALL_LOG**: To back up and restore call history.
 - **READ_SMS**: To back up and restore text messages.
 - **POST_NOTIFICATIONS**: To notify about backup or restore progress and results.
-- **MANAGE_EXTERNAL_STORAGE / READ_EXTERNAL_STORAGE / WRITE_EXTERNAL_STORAGE**: To access, create, and store backup files on the device.
 
 During SMS restore, Android requires the app to be temporarily set as the default SMS app. This is necessary to write restored messages into the system. Once the restore process is complete, the App will prompt to switch back to the previous SMS app.
 

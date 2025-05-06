@@ -31,7 +31,6 @@ class ContextSourceImpl(private val context: Context): ContextSource {
 
     override fun checkPermission(permission: String): Boolean {
         return when (permission) {
-            PermissionConstants.MANAGE_EXTERNAL_STORAGE -> checkAllFilesAccess()
             PermissionConstants.DEFAULT_SMS_APP -> checkDefaultSmsApp()
             else -> ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
         }
@@ -40,10 +39,6 @@ class ContextSourceImpl(private val context: Context): ContextSource {
     override fun checkPermissions(permissions: List<String>): Boolean {
         return permissions.map { ContextCompat.checkSelfPermission(context, it) }
             .all { it == PackageManager.PERMISSION_GRANTED }
-    }
-
-    private fun checkAllFilesAccess(): Boolean {
-        return Environment.isExternalStorageManager()
     }
 
     private fun checkDefaultSmsApp(): Boolean {

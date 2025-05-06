@@ -84,13 +84,6 @@ class MainActivity : ComponentActivity() {
     fun requestPermission(permission: String, onUserConfirmation: (Boolean) -> Unit) {
         onUserPermissionConfirmation = WeakReference(onUserConfirmation)
         when (permission) {
-            PermissionConstants.MANAGE_EXTERNAL_STORAGE -> {
-                specialPermissionLauncher.launch(
-                    Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
-                        data = "package:$packageName".toUri()
-                    }
-                )
-            }
             PermissionConstants.DEFAULT_SMS_APP -> {
                 specialPermissionLauncher.launch(
                     roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
