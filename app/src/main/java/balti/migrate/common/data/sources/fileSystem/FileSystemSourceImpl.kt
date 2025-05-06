@@ -39,7 +39,12 @@ class FileSystemSourceImpl(
     ): Boolean {
         return when {
             source is JavaFile && destination is JavaFile -> {
-                source.file.renameTo(destination.file)
+                javaFileUtils.transferJavaFileToJavaFile(
+                    source = source,
+                    destinationDirectory = destination,
+                    deleteSource = true,
+                    relativeFilePathFilter = relativeFilePathFilter,
+                )
             }
             source is JavaFile && destination is MediaStoreDownloadFile -> {
                 javaFileUtils.transferJavaFileToMediaStoreDownloads(
@@ -70,7 +75,12 @@ class FileSystemSourceImpl(
     ): Boolean {
         return when {
             source is JavaFile && destination is JavaFile -> {
-                source.file.copyRecursively(destination.file, overwrite = true)
+                javaFileUtils.transferJavaFileToJavaFile(
+                    source = source,
+                    destinationDirectory = destination,
+                    deleteSource = false,
+                    relativeFilePathFilter = relativeFilePathFilter,
+                )
             }
             source is JavaFile && destination is MediaStoreDownloadFile -> {
                 javaFileUtils.transferJavaFileToMediaStoreDownloads(
