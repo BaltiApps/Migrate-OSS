@@ -1,4 +1,4 @@
-package baltiapps.migrate.domain.restore.sources
+package baltiapps.migrate.domain.common.sources.fileSystem
 
 import baltiapps.migrate.domain.common.model.GenericFile
 

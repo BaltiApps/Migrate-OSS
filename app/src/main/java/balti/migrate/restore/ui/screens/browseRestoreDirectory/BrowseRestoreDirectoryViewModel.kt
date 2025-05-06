@@ -7,7 +7,7 @@ import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
 import baltiapps.migrate.domain.INTERNAL_ROUGH_WORK_RESTORE_DIRECTORY
 import baltiapps.migrate.domain.common.model.GenericFile
-import baltiapps.migrate.domain.restore.sources.ExportDirectoryBrowser
+import baltiapps.migrate.domain.common.sources.fileSystem.ExportDirectoryBrowser
 import baltiapps.migrate.domain.restore.usecase.ReadFilesFromBackupUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

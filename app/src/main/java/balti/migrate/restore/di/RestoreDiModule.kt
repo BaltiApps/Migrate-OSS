@@ -4,11 +4,11 @@ import balti.migrate.common.data.model.CallLogData
 import balti.migrate.common.data.model.ContactData
 import balti.migrate.common.data.model.SmsData
 import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
+import balti.migrate.common.di.Names.MEDIA_STORE_EXPORT_DIRECTORY_BROWSER
 import balti.migrate.restore.data.sources.RestoreNotificationHandlerImpl
 import balti.migrate.restore.data.sources.callLog.CallLogDBReader
 import balti.migrate.restore.data.sources.callLog.CallLogRestore
 import balti.migrate.restore.data.sources.contacts.ContactsDBReader
-import balti.migrate.restore.data.sources.fileSystem.MediaStoreExportDirectoryBrowser
 import balti.migrate.restore.data.sources.sms.SmsDBReader
 import balti.migrate.restore.data.sources.sms.SmsRestore
 import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDirectoryViewModel
@@ -22,7 +22,6 @@ import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import baltiapps.migrate.domain.restore.sources.DataRestore
-import baltiapps.migrate.domain.restore.sources.ExportDirectoryBrowser
 import baltiapps.migrate.domain.restore.usecase.ExportContactsForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadCallLogForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadContactsForRestoreUseCase
@@ -44,7 +43,6 @@ enum class Names {
     SMS_RESTORE_SOURCE,
     PROGRESS_LOG_REPOSITORY_RESTORE,
     NOTIFICATION_HANDLER_RESTORE,
-    MEDIA_STORE_RESTORE_DIRECTORY_BROWSER,
 }
 
 val restoreDiModule = module {
@@ -71,12 +69,6 @@ val restoreDiModule = module {
             context = get(),
             contextSource = get(),
             progressLogRepository = get(named(Names.PROGRESS_LOG_REPOSITORY_RESTORE))
-        )
-    }
-    single<ExportDirectoryBrowser<*>>(named(Names.MEDIA_STORE_RESTORE_DIRECTORY_BROWSER)) {
-        MediaStoreExportDirectoryBrowser(
-            applicationContext = get(),
-            dbUtils = get(),
         )
     }
 
@@ -134,7 +126,7 @@ val restoreDiModule = module {
 
     viewModel {
         BrowseRestoreDirectoryViewModel(
-            exportDirectoryBrowser = get(named(Names.MEDIA_STORE_RESTORE_DIRECTORY_BROWSER)),
+            exportDirectoryBrowser = get(named(MEDIA_STORE_EXPORT_DIRECTORY_BROWSER)),
             readFilesFromBackupUseCase = get(),
             applicationContext = get(),
         )

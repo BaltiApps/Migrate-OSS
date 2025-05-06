@@ -1,4 +1,4 @@
-package balti.migrate.restore.data.sources.fileSystem
+package balti.migrate.common.data.sources.fileSystem
 
 import android.content.Context
 import android.provider.MediaStore
@@ -7,7 +7,7 @@ import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_CALL_LOGS
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_CONTACTS
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_SMS
-import baltiapps.migrate.domain.restore.sources.ExportDirectoryBrowser
+import baltiapps.migrate.domain.common.sources.fileSystem.ExportDirectoryBrowser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber

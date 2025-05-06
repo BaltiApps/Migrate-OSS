@@ -3,11 +3,13 @@ package balti.migrate.common.di
 import balti.migrate.common.data.sources.ContextSourceImpl
 import balti.migrate.common.data.sources.PreferencesImpl
 import balti.migrate.common.data.sources.fileSystem.FileSystemSourceImpl
+import balti.migrate.common.data.sources.fileSystem.MediaStoreExportDirectoryBrowser
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import balti.migrate.common.utils.DBUtils
 import balti.migrate.common.utils.ListItemUtils
 import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.Preferences
+import baltiapps.migrate.domain.common.sources.fileSystem.ExportDirectoryBrowser
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import baltiapps.migrate.domain.common.usecase.StageSelectedCallLogs
@@ -20,6 +22,7 @@ import org.koin.dsl.module
 
 enum class Names {
     TEXT_WRITER,
+    MEDIA_STORE_EXPORT_DIRECTORY_BROWSER,
 }
 
 val commonDiModule = module {
@@ -40,6 +43,13 @@ val commonDiModule = module {
     singleOf(::ContextSourceImpl) bind ContextSource::class
 
     singleOf(::PreferencesImpl) bind Preferences::class
+
+    single<ExportDirectoryBrowser<*>>(named(Names.MEDIA_STORE_EXPORT_DIRECTORY_BROWSER)) {
+        MediaStoreExportDirectoryBrowser(
+            applicationContext = get(),
+            dbUtils = get(),
+        )
+    }
 
     /* Use cases */
 
