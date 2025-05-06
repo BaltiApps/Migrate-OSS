@@ -86,6 +86,7 @@ class MediaStoreDownloadUtils(
                 Timber.i("TMJ - relative file path - $relativeFilePath")
 
                 try {
+                    Timber.i("TMJ - attempt transfer")
                     if (relativeFilePathFilter(relativeFilePath)) {
                         val targetFileParent = File(destinationDirectory.file, relDirPath)
                         targetFileParent.mkdirs()
@@ -116,6 +117,7 @@ class MediaStoreDownloadUtils(
             }
         }
 
+        Timber.i("TMJ - finished all transfers")
         return true
     }
 

@@ -35,6 +35,7 @@ class JavaFileUtils(
             Timber.i("TJJ - relative file path - $relativeFilePath")
 
             try {
+                Timber.i("TJJ - attempt transfer")
                 if (relativeFilePathFilter(relativeFilePath)) {
                     val targetDir = File(destinationDirectory.file, relDirPath)
                     targetDir.mkdirs()
@@ -62,6 +63,7 @@ class JavaFileUtils(
             }
         }
 
+        Timber.i("TJJ - finished all transfers")
         return true
     }
 
@@ -92,6 +94,7 @@ class JavaFileUtils(
             Timber.i("TJM - relative file path - $relativeFilePath")
 
             try {
+                Timber.i("TJM - attempt transfer")
                 if (relativeFilePathFilter(relativeFilePath)) {
                     val contentValues = ContentValues().apply {
                         put(MediaStore.Downloads.DISPLAY_NAME, file.name)
@@ -133,6 +136,7 @@ class JavaFileUtils(
             source.file.delete()
         }
 
+        Timber.i("TJM - finished all transfers")
         return true
     }
 
