@@ -3,6 +3,7 @@ package balti.migrate.common.data.sources.fileSystem
 import android.content.Context
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
+import balti.migrate.common.data.model.SafFile
 import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
@@ -21,6 +22,10 @@ class FileSystemSourceImpl(
         TransferUtilsMediaStoreDownload(applicationContext, dbUtils)
     }
 
+    private val transferUtilsSafFile by lazy {
+        TransferUtilsSafFile(applicationContext)
+    }
+
     override fun createDirectory(directory: GenericFile): Boolean {
         return when(directory) {
             is JavaFile -> {
@@ -28,6 +33,7 @@ class FileSystemSourceImpl(
                 directory.file.canWrite()
             }
             is MediaStoreDownloadFile -> transferUtilsMediaStoreDownload.createNoMediaFile(directory)
+            is SafFile -> transferUtilsSafFile.createDirectory(directory)
             else -> false
         }
     }
@@ -48,6 +54,14 @@ class FileSystemSourceImpl(
             }
             source is JavaFile && destination is MediaStoreDownloadFile -> {
                 transferUtilsMediaStoreDownload.transferJavaFileToMediaStoreDownloads(
+                    source = source,
+                    destinationDirectory = destination,
+                    deleteSource = true,
+                    relativeFilePathFilter = relativeFilePathFilter,
+                )
+            }
+            source is JavaFile && destination is SafFile -> {
+                transferUtilsSafFile.transferJavaFileToSafFile(
                     source = source,
                     destinationDirectory = destination,
                     deleteSource = true,
