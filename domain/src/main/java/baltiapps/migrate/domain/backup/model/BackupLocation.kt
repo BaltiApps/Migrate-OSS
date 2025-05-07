@@ -2,9 +2,6 @@ package baltiapps.migrate.domain.backup.model
 
 data class BackupLocation(
     val backupName: String,
-    val backupLocation: String
+    val backupUriString: String? = null,
 ) {
-    fun getFullPath(): String {
-        return "$backupLocation/$backupName"
-    }
 }

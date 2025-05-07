@@ -77,6 +77,7 @@ private fun Content(
         bottomBar = {
             BottomBar(
                 backupName = state().backupName,
+                backupUriString = state().safUriString,
                 goToNextScreen = goToNextScreen,
             )
         }
@@ -192,6 +193,7 @@ private fun TopBar(
 @Composable
 private fun BottomBar(
     backupName: String,
+    backupUriString: String?,
     goToNextScreen: (BackupLocation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -205,7 +207,7 @@ private fun BottomBar(
                     goToNextScreen(
                         BackupLocation(
                             backupName = backupName,
-                            backupLocation = DEFAULT_BACKUP_ROOT
+                            backupUriString = backupUriString,
                         )
                     )
                 }

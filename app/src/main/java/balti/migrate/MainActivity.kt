@@ -11,7 +11,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
-import androidx.core.net.toUri
 import balti.migrate.backup.data.service.BackupService
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.app.ui.navigation.Graph
@@ -21,7 +20,7 @@ import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
 import baltiapps.migrate.domain.ACTION_CANCEL_RESTORE
 import baltiapps.migrate.domain.ACTION_START_BACKUP
 import baltiapps.migrate.domain.ACTION_START_RESTORE
-import baltiapps.migrate.domain.EXTRA_BACKUP_LOCATION
+import baltiapps.migrate.domain.EXTRA_BACKUP_URI_STRING
 import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
 import baltiapps.migrate.domain.PermissionConstants
 import baltiapps.migrate.domain.backup.model.BackupLocation
@@ -140,7 +139,7 @@ class MainActivity : ComponentActivity() {
     private fun startBackupService(backupLocation: BackupLocation) {
         Intent(this, BackupService::class.java).apply {
             action = ACTION_START_BACKUP
-            putExtra(EXTRA_BACKUP_LOCATION, backupLocation.backupLocation)
+            putExtra(EXTRA_BACKUP_URI_STRING, backupLocation.backupUriString)
             putExtra(EXTRA_BACKUP_NAME, backupLocation.backupName)
         }.run {
             startForegroundService(this)

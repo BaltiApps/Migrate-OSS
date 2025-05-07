@@ -2,12 +2,14 @@ package balti.migrate.backup.data.service
 
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import androidx.core.net.toUri
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import balti.migrate.backup.di.Names
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
 import balti.migrate.common.data.model.NotificationInfo
+import balti.migrate.common.data.model.SafFile
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import balti.migrate.common.utils.ServiceUtils
 import balti.migrate.common.utils.convertToNotificationBuilder
@@ -18,13 +20,14 @@ import baltiapps.migrate.domain.BACKUP_FILE_NAME_CALL_LOGS
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_CONTACTS
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_SMS
 import baltiapps.migrate.domain.BACKUP_LOG
-import baltiapps.migrate.domain.EXTRA_BACKUP_LOCATION
+import baltiapps.migrate.domain.EXTRA_BACKUP_URI_STRING
 import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
 import baltiapps.migrate.domain.INTERNAL_ROUGH_WORK_BACKUP_DIRECTORY
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
+import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.ContextSource
@@ -91,13 +94,14 @@ class BackupService : LifecycleService() {
 
         when (intent?.action) {
             ACTION_START_BACKUP -> {
-                val location = intent.getStringExtra(EXTRA_BACKUP_LOCATION)
                 val name = intent.getStringExtra(EXTRA_BACKUP_NAME)
+                val backupUriString = intent.getStringExtra(EXTRA_BACKUP_URI_STRING)
 
                 if (name == null) return super.onStartCommand(intent, flags, startId)
 
                 backupJob = startBackup(
-                    backupName = name
+                    backupName = name,
+                    backupUriString = backupUriString,
                 )
             }
             ACTION_CANCEL_BACKUP -> {
@@ -109,6 +113,7 @@ class BackupService : LifecycleService() {
 
     private fun startBackup(
         backupName: String,
+        backupUriString: String? = null,
     ): Job {
         return lifecycleScope.launch(Dispatchers.IO) {
             Timber.i("backup - setup")
@@ -119,7 +124,14 @@ class BackupService : LifecycleService() {
             val roughWorkDir = JavaFile("$filesDir/$INTERNAL_ROUGH_WORK_BACKUP_DIRECTORY")
             val internalDir = JavaFile(roughWorkDir, backupName)
             val internalDirPath = internalDir.path
-            val backupDestination = MediaStoreDownloadFile(destination)
+            val backupDestination = if (backupUriString == null) {
+                MediaStoreDownloadFile(destination)
+            } else {
+                SafFile(
+                    uriToLocation = backupUriString.toUri(),
+                    name = backupName,
+                )
+            }
 
             roughWorkDir.file.deleteRecursively()
             fileSystemSource.createDirectory(internalDir)
@@ -204,7 +216,7 @@ class BackupService : LifecycleService() {
 
     private suspend fun exportBackup(
         source: JavaFile,
-        destination: MediaStoreDownloadFile,
+        destination: GenericFile,
     ) {
         try {
             serviceUtils.emitHeadingLog(Progress.ProgressType.EXPORTING_BACKUP)
