@@ -18,7 +18,7 @@ class TransferUtilsJavaFile {
         source.file.walkTopDown().forEach { file ->
             Timber.i("TJJ - file to copy - ${file.absolutePath}")
 
-            val relDirPath = relativeDirectoryPath(
+            val relDirPath = TransferUtils.relativeDirectoryPath(
                 source = source,
                 currentFile = file,
             )

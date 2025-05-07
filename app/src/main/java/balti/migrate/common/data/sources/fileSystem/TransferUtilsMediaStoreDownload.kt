@@ -74,7 +74,7 @@ class TransferUtilsMediaStoreDownload(
                 val id = dbUtils.getCursorData<Long>(cursor, MediaStore.Downloads._ID)
                 val name = dbUtils.getCursorData<String>(cursor, MediaStore.Downloads.DISPLAY_NAME)
 
-                val relDirPath = relativeDirectoryPath(
+                val relDirPath = TransferUtils.relativeDirectoryPath(
                     source = source,
                     cursor = cursor,
                     dbUtils = dbUtils,
@@ -137,7 +137,7 @@ class TransferUtilsMediaStoreDownload(
 
             Timber.i("TJM - file to copy - ${file.absolutePath}")
 
-            val relDirPath = relativeDirectoryPath(
+            val relDirPath = TransferUtils.relativeDirectoryPath(
                 source = source,
                 currentFile = file,
             )
