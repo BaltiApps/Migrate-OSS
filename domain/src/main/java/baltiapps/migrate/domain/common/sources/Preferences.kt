@@ -10,6 +10,7 @@ interface Preferences {
         const val KEY_SAVED_RESTORE_ERROR_LIST = "last_saved_restore_errors"
         const val KEY_SHOULD_SHOW_PERMISSION_SCREEN = "should_show_permission_screen"
         const val KEY_SHOULD_SHOW_APP_BACKUP_UNAVAILABLE = "should_show_app_backup_unavailable"
+        const val KEY_CUSTOM_BACKUP_LOCATION = "custom_backup_location"
     }
 
     fun saveBackupProgressList(list: List<Progress>)
@@ -35,4 +36,7 @@ interface Preferences {
 
     fun shouldShowAppBackupUnavailable(): Boolean
     fun setShouldShowAppBackupUnavailable(value: Boolean)
+
+    fun getCustomLocationParameter(): String
+    fun setCustomLocationParameter(locationParameter: String)
 }

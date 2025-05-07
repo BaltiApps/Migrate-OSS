@@ -103,4 +103,13 @@ class PreferencesImpl(
         editor.putBoolean(Preferences.KEY_SHOULD_SHOW_APP_BACKUP_UNAVAILABLE, value)
         editor.apply()
     }
+
+    override fun getCustomLocationParameter(): String {
+        return sharedPreferences.getString(Preferences.KEY_CUSTOM_BACKUP_LOCATION, "") ?: ""
+    }
+
+    override fun setCustomLocationParameter(locationParameter: String) {
+        editor.putString(Preferences.KEY_CUSTOM_BACKUP_LOCATION, locationParameter)
+        editor.apply()
+    }
 }
