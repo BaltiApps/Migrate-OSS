@@ -1,6 +1,8 @@
 package balti.migrate.common.data.sources.fileSystem
 
+import android.content.Context
 import android.database.Cursor
+import android.net.Uri
 import android.provider.MediaStore
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
@@ -60,4 +62,9 @@ object TransferUtils {
             .trimEnd('/')
     }
 
+    fun hasPermission(context: Context, uri: Uri): Boolean {
+        return context.applicationContext.contentResolver.persistedUriPermissions.any {
+            it.uri == uri && it.isReadPermission && it.isWritePermission
+        }
+    }
 }
