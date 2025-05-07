@@ -11,7 +11,7 @@ import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemUtils
 import timber.log.Timber
 import java.io.File
 
-class MediaStoreDownloadUtils(
+class TransferUtilsMediaStoreDownload(
     private val applicationContext: Context,
     private val dbUtils: DBUtils,
 ) {

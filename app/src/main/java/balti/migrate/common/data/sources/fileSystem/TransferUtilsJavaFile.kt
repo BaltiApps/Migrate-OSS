@@ -4,7 +4,7 @@ import balti.migrate.common.data.model.JavaFile
 import timber.log.Timber
 import java.io.File
 
-class JavaFileUtils {
+class TransferUtilsJavaFile {
     fun transferJavaFileToJavaFile(
         source: JavaFile,
         destinationDirectory: JavaFile,

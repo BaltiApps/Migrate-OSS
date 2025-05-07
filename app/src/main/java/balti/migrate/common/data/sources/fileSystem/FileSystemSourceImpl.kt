@@ -13,12 +13,12 @@ class FileSystemSourceImpl(
     private val dbUtils: DBUtils,
 ) : FileSystemSource() {
 
-    private val javaFileUtils by lazy {
-        JavaFileUtils()
+    private val transferUtilsJavaFile by lazy {
+        TransferUtilsJavaFile()
     }
 
-    private val mediaStoreDownloadUtils by lazy {
-        MediaStoreDownloadUtils(applicationContext, dbUtils)
+    private val transferUtilsMediaStoreDownload by lazy {
+        TransferUtilsMediaStoreDownload(applicationContext, dbUtils)
     }
 
     override fun createDirectory(directory: GenericFile): Boolean {
@@ -27,7 +27,7 @@ class FileSystemSourceImpl(
                 directory.file.mkdirs()
                 directory.file.canWrite()
             }
-            is MediaStoreDownloadFile -> mediaStoreDownloadUtils.createNoMediaFile(directory)
+            is MediaStoreDownloadFile -> transferUtilsMediaStoreDownload.createNoMediaFile(directory)
             else -> false
         }
     }
@@ -39,7 +39,7 @@ class FileSystemSourceImpl(
     ): Boolean {
         return when {
             source is JavaFile && destination is JavaFile -> {
-                javaFileUtils.transferJavaFileToJavaFile(
+                transferUtilsJavaFile.transferJavaFileToJavaFile(
                     source = source,
                     destinationDirectory = destination,
                     deleteSource = true,
@@ -47,7 +47,7 @@ class FileSystemSourceImpl(
                 )
             }
             source is JavaFile && destination is MediaStoreDownloadFile -> {
-                mediaStoreDownloadUtils.transferJavaFileToMediaStoreDownloads(
+                transferUtilsMediaStoreDownload.transferJavaFileToMediaStoreDownloads(
                     source = source,
                     destinationDirectory = destination,
                     deleteSource = true,
@@ -55,7 +55,7 @@ class FileSystemSourceImpl(
                 )
             }
             source is MediaStoreDownloadFile && destination is JavaFile -> {
-                mediaStoreDownloadUtils.transferMediaStoreDownloadsToJavaFile(
+                transferUtilsMediaStoreDownload.transferMediaStoreDownloadsToJavaFile(
                     source = source,
                     destinationDirectory = destination,
                     deleteSource = true,
@@ -75,7 +75,7 @@ class FileSystemSourceImpl(
     ): Boolean {
         return when {
             source is JavaFile && destination is JavaFile -> {
-                javaFileUtils.transferJavaFileToJavaFile(
+                transferUtilsJavaFile.transferJavaFileToJavaFile(
                     source = source,
                     destinationDirectory = destination,
                     deleteSource = false,
@@ -83,7 +83,7 @@ class FileSystemSourceImpl(
                 )
             }
             source is JavaFile && destination is MediaStoreDownloadFile -> {
-                mediaStoreDownloadUtils.transferJavaFileToMediaStoreDownloads(
+                transferUtilsMediaStoreDownload.transferJavaFileToMediaStoreDownloads(
                     source = source,
                     destinationDirectory = destination,
                     deleteSource = false,
@@ -91,7 +91,7 @@ class FileSystemSourceImpl(
                 )
             }
             source is MediaStoreDownloadFile && destination is JavaFile -> {
-                mediaStoreDownloadUtils.transferMediaStoreDownloadsToJavaFile(
+                transferUtilsMediaStoreDownload.transferMediaStoreDownloadsToJavaFile(
                     source = source,
                     destinationDirectory = destination,
                     deleteSource = false,
