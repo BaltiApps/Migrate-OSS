@@ -1,4 +1,4 @@
-package balti.migrate.app.ui.screens.setupPermission
+package balti.migrate.common.utils
 
 import android.Manifest
 import android.content.Intent
