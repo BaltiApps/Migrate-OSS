@@ -89,6 +89,12 @@
     <!--BackupName.kt-->
     <string name="backup_info">Backup info</string>
     <string name="enter_backup_name">Enter backup name</string>
+    <string name="backup_location_not_accessible">Last selected backup location is not accessible. Please setup again.</string>
+    <string name="setup_backup_location">Setup a backup location (recommended)</string>
+    <string name="backup_will_be_dumped_to_default_location">
+        Backup location not setup, backup will be dumped to
+    </string>
+    <string name="default_location" translatable="false">[Internal storage]/Download/Migrate</string>
 
     <!--ContextSourceImpl.kt-->
     <string name="loading">Loading…</string>
@@ -191,4 +197,5 @@
     <string name="waiting">Waiting</string>
     <string name="start">Start</string>
     <string name="proceed">Proceed</string>
+    <string name="setup">Setup</string>
 </resources>

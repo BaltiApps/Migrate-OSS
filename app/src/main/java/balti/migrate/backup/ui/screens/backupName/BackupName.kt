@@ -2,12 +2,18 @@ package balti.migrate.backup.ui.screens.backupName
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.common.ui.components.ButtonStatus
 import balti.migrate.common.ui.components.NextFab
+import balti.migrate.common.utils.PermissionUtils
 import balti.migrate.common.utils.getDefaultBackupName
 import baltiapps.migrate.domain.DEFAULT_BACKUP_ROOT
 import baltiapps.migrate.domain.backup.model.BackupLocation
@@ -45,6 +52,9 @@ fun BackupName(
         onBackupNameChanged = {
             viewModel.onAction(BackupNameAction.NameChanged(it))
         },
+        onUriSelectClicked = PermissionUtils.requestSafLocation {
+            viewModel.onAction(BackupNameAction.OnSafLocationSelected(it))
+        }
     )
 }
 
@@ -54,6 +64,7 @@ private fun Content(
     navigateUp: () -> Unit,
     goToNextScreen: (BackupLocation) -> Unit,
     onBackupNameChanged: (String) -> Unit,
+    onUriSelectClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -77,23 +88,79 @@ private fun Content(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(
                 space = 8.dp,
-                alignment = Alignment.CenterVertically,
             ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = state().backupName,
-                onValueChange = {
-                    onBackupNameChanged(it)
-                },
-                label = {
-                    Text(stringResource(R.string.enter_backup_name))
-                },
-                placeholder = {
-                    Text(getDefaultBackupName())
-                }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1F),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state().backupName,
+                    onValueChange = {
+                        onBackupNameChanged(it)
+                    },
+                    label = {
+                        Text(stringResource(R.string.enter_backup_name))
+                    },
+                    placeholder = {
+                        Text(getDefaultBackupName())
+                    }
+                )
+            }
+            SafUriSelector(
+                state = state(),
+                onUriSelectClicked = onUriSelectClicked,
             )
+        }
+    }
+}
+
+@Composable
+private fun SafUriSelector(
+    state: BackupNameState,
+    onUriSelectClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (state.safUriString != null && state.isSafUriAccessible == true) {
+        return
+    }
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Warning,
+                contentDescription = null,
+                modifier = Modifier.size(48.dp)
+            )
+            Column(
+                modifier = Modifier.weight(1F),
+            ) {
+                Text(
+                    text = if (state.isSafUriAccessible == false) {
+                        stringResource(R.string.backup_location_not_accessible)
+                    } else {
+                        stringResource(R.string.setup_backup_location)
+                    }
+                )
+                Spacer(Modifier.size(8.dp))
+                Button(
+                    modifier = Modifier.align(Alignment.End),
+                    onClick = onUriSelectClicked
+                ) {
+                    Text(stringResource(R.string.setup))
+                }
+            }
         }
     }
 }
