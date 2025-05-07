@@ -96,6 +96,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.service)
     implementation(libs.com.jakewharton.timber)
     implementation(libs.com.google.guava)
+    implementation(libs.androidx.documentfile)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

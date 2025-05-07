@@ -17,6 +17,7 @@ lifecycleVersion = "2.8.7"
 timberVersion = "5.0.1"
 guavaVersion = "33.3.1-android"
 material3 = "1.4.0-alpha13"
+documentfile = "1.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -45,6 +46,7 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "lifecycleVersion" }
 com-jakewharton-timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
 com-google-guava = { module = "com.google.guava:guava", version.ref = "guavaVersion" }
+androidx-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "documentfile" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
