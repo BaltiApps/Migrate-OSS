@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-class MediaStoreExportDirectoryBrowser(
+class ExportDirectoryBrowserMediaStore(
     private val applicationContext: Context,
     private val dbUtils: DBUtils,
 ): ExportDirectoryBrowser<MediaStoreDownloadFile> {

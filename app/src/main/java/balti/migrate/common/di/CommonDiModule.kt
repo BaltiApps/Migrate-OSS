@@ -3,7 +3,7 @@ package balti.migrate.common.di
 import balti.migrate.common.data.sources.ContextSourceImpl
 import balti.migrate.common.data.sources.PreferencesImpl
 import balti.migrate.common.data.sources.fileSystem.FileSystemSourceImpl
-import balti.migrate.common.data.sources.fileSystem.MediaStoreExportDirectoryBrowser
+import balti.migrate.common.data.sources.fileSystem.ExportDirectoryBrowserMediaStore
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import balti.migrate.common.utils.DBUtils
 import balti.migrate.common.utils.ListItemUtils
@@ -45,7 +45,7 @@ val commonDiModule = module {
     singleOf(::PreferencesImpl) bind Preferences::class
 
     single<ExportDirectoryBrowser<*>>(named(Names.MEDIA_STORE_EXPORT_DIRECTORY_BROWSER)) {
-        MediaStoreExportDirectoryBrowser(
+        ExportDirectoryBrowserMediaStore(
             applicationContext = get(),
             dbUtils = get(),
         )
