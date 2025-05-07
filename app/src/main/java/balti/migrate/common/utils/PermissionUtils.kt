@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 
 object PermissionUtils {
 
@@ -70,6 +71,29 @@ object PermissionUtils {
         }
         return {
             permissionLauncher.launch(intent)
+        }
+    }
+
+    @Composable
+    fun requestSafLocation(
+        onResult: (uriString: String?) -> Unit,
+    ): () -> Unit {
+        val context = LocalContext.current
+        val documentPicker = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.OpenDocumentTree(),
+        ) { uri ->
+            if (uri == null) {
+                onResult(null)
+                return@rememberLauncherForActivityResult
+            }
+            context.contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            )
+            onResult(uri.toString())
+        }
+        return {
+            documentPicker.launch(null)
         }
     }
 }
