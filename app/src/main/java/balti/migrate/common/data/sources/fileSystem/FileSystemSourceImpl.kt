@@ -14,7 +14,7 @@ class FileSystemSourceImpl(
 ) : FileSystemSource() {
 
     private val javaFileUtils by lazy {
-        JavaFileUtils(applicationContext)
+        JavaFileUtils()
     }
 
     private val mediaStoreDownloadUtils by lazy {
@@ -47,7 +47,7 @@ class FileSystemSourceImpl(
                 )
             }
             source is JavaFile && destination is MediaStoreDownloadFile -> {
-                javaFileUtils.transferJavaFileToMediaStoreDownloads(
+                mediaStoreDownloadUtils.transferJavaFileToMediaStoreDownloads(
                     source = source,
                     destinationDirectory = destination,
                     deleteSource = true,
@@ -83,7 +83,7 @@ class FileSystemSourceImpl(
                 )
             }
             source is JavaFile && destination is MediaStoreDownloadFile -> {
-                javaFileUtils.transferJavaFileToMediaStoreDownloads(
+                mediaStoreDownloadUtils.transferJavaFileToMediaStoreDownloads(
                     source = source,
                     destinationDirectory = destination,
                     deleteSource = false,

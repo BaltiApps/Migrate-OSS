@@ -3,7 +3,6 @@ package balti.migrate.common.data.sources.fileSystem
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.provider.MediaStore
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
@@ -78,6 +77,7 @@ class MediaStoreDownloadUtils(
                 val relDirPath = relativeDirectoryPath(
                     source = source,
                     cursor = cursor,
+                    dbUtils = dbUtils,
                 )
 
                 val relativeFilePath = "$relDirPath/$name"
@@ -121,29 +121,76 @@ class MediaStoreDownloadUtils(
         return true
     }
 
-    /**
-     * Example 1:
-     *
-     * source - Download/Migrate/03-May
-     * cursor - Download/Migrate/03-May/dirB/f1.txt
-     *   relative path - Download/Migrate/03-May/dirB/
-     *   name - f1.txt (not used here)
-     *
-     * Example 2:
-     *
-     * source - Download/Migrate/03-May
-     * cursor - Download/Migrate/03-May/f1.txt
-     *   relative path - Download/Migrate/03-May/
-     *   name - f1.txt (not used here)
-     *
-     * Output - (blank)
-     */
-    private fun relativeDirectoryPath(source: MediaStoreDownloadFile, cursor: Cursor): String {
-        val relPath = kotlin.runCatching {
-            dbUtils.getCursorData<String>(cursor, MediaStore.Downloads.RELATIVE_PATH)
-        }.getOrNull() ?: return ""
-        return relPath
-            .substringAfter(source.path)
-            .trimEnd('/')
+    fun transferJavaFileToMediaStoreDownloads(
+        source: JavaFile,
+        destinationDirectory: MediaStoreDownloadFile,
+        deleteSource: Boolean,
+        relativeFilePathFilter: (String) -> Boolean = { true },
+    ): Boolean {
+        Timber.i("TJM - Transfer JavaFile -> MediaStoreDownloadFile")
+        Timber.i("TJM - source path - ${source.path}")
+        Timber.i("TJM - dest. path - ${destinationDirectory.path}")
+
+        val resolver = applicationContext.contentResolver
+
+        source.file.walkTopDown().filter { it.isFile }.forEach { file ->
+
+            Timber.i("TJM - file to copy - ${file.absolutePath}")
+
+            val relDirPath = relativeDirectoryPath(
+                source = source,
+                currentFile = file,
+            )
+
+            val relativeFilePath = "$relDirPath/${file.name}"
+
+            Timber.i("TJM - relative dir path - $relDirPath")
+            Timber.i("TJM - relative file path - $relativeFilePath")
+
+            try {
+                Timber.i("TJM - attempt transfer")
+                if (relativeFilePathFilter(relativeFilePath)) {
+                    val contentValues = ContentValues().apply {
+                        put(MediaStore.Downloads.DISPLAY_NAME, file.name)
+                        put(MediaStore.Downloads.MIME_TYPE, "application/octet-stream")
+                        put(MediaStore.Downloads.RELATIVE_PATH, destinationDirectory.path + relDirPath)
+                    }
+
+                    val uri = resolver.insert(
+                        MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                        contentValues
+                    )
+
+                    Timber.i("TJM - copy to $uri")
+
+                    uri?.let {
+                        resolver.openOutputStream(it)?.use { out ->
+                            file.inputStream().use { input -> input.copyTo(out) }
+                        }
+                    }
+
+                    Timber.i("TJM - copy to $uri success")
+
+                    if (deleteSource) {
+                        file.delete().apply {
+                            Timber.i("TJM - deleted file ${file.absolutePath} - success - $this")
+                        }
+                    }
+                } else {
+                    Timber.i("TJM - not copying file, relative path \"$relativeFilePath\" did not qualify")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Timber.e("TJM - exception - ${e.message}")
+                return false
+            }
+        }
+
+        if (deleteSource) {
+            source.file.delete()
+        }
+
+        Timber.i("TJM - finished all transfers")
+        return true
     }
 }
