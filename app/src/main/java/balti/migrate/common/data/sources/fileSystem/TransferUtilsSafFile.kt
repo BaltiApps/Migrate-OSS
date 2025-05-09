@@ -34,17 +34,17 @@ class TransferUtilsSafFile(
         deleteSource: Boolean,
         relativeFilePathFilter: (String) -> Boolean = { true },
     ): Boolean {
-        Timber.i("TSJ - Transfer SafFile -> JavaFile")
+        Timber.i("TJS - Transfer SafFile -> JavaFile")
 
-        Timber.i("TSJ - source path - ${source.path}")
-        Timber.i("TSJ - dest. path - ${destinationDirectory.path}")
+        Timber.i("TJS - source path - ${source.path}")
+        Timber.i("TJS - dest. path - ${destinationDirectory.path}")
 
         val destination =
             DocumentFile.fromTreeUri(applicationContext, destinationDirectory.uriToLocation)
                 ?: return false
 
         try {
-            Timber.i("TSJ - attempt transfer")
+            Timber.i("TJS - attempt transfer")
             recursiveCopy(
                 originalSource = source,
                 currentFile = source.file,
@@ -54,10 +54,10 @@ class TransferUtilsSafFile(
             )
         } catch (e: Exception) {
             e.printStackTrace()
-            Timber.e("TSJ - exception - ${e.message}")
+            Timber.e("TJS - exception - ${e.message}")
             return false
         }
-        Timber.i("TSJ - finished all transfers")
+        Timber.i("TJS - finished all transfers")
         return true
     }
 
@@ -75,22 +75,22 @@ class TransferUtilsSafFile(
 
         val relativeFilePath = "$relDirPath/${currentFile.name}"
 
-        Timber.i("TSJ - relative dir path - $relDirPath")
-        Timber.i("TSJ - relative file path - $relativeFilePath")
+        Timber.i("TJS - relative dir path - $relDirPath")
+        Timber.i("TJS - relative file path - $relativeFilePath")
 
         if (!relativeFilePathFilter(relativeFilePath)) {
-            Timber.i("TSJ - not copying file, relative path \"$relativeFilePath\" did not qualify")
+            Timber.i("TJS - not copying file, relative path \"$relativeFilePath\" did not qualify")
             return
         }
 
         if (currentFile.isDirectory) {
-            Timber.i("TSJ - copying directory - ${currentFile.absolutePath}")
+            Timber.i("TJS - copying directory - ${currentFile.absolutePath}")
             val newDestination = destination.findFile(currentFile.name)
                 ?.takeIf { it.isDirectory }
                 ?: destination.createDirectory(currentFile.name)!!
             val files = currentFile.listFiles()
             files?.forEach { file ->
-                Timber.i("TSJ - start recursion - ${file.absolutePath}")
+                Timber.i("TJS - start recursion - ${file.absolutePath}")
                 recursiveCopy(
                     originalSource = originalSource,
                     currentFile = file,
@@ -100,13 +100,13 @@ class TransferUtilsSafFile(
                 )
             }
         } else {
-            Timber.i("TSJ - copying file - ${currentFile.absolutePath}")
-            Timber.i("TSJ - copy to ${destination.uri}")
+            Timber.i("TJS - copying file - ${currentFile.absolutePath}")
+            Timber.i("TJS - copy to ${destination.uri}")
             val newFile = destination.createFile("application/octet-stream", currentFile.name)!!
             copyFile(currentFile, newFile.uri)
-            Timber.i("TSJ - copy to ${destination.uri} success")
+            Timber.i("TJS - copy to ${destination.uri} success")
             if (deleteSource) {
-                Timber.i("TSJ - delete ${currentFile.absolutePath}")
+                Timber.i("TJS - delete ${currentFile.absolutePath}")
                 currentFile.delete()
             }
         }
