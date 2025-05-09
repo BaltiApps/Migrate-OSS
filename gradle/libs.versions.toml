@@ -5,19 +5,19 @@ coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.7"
+lifecycleRuntimeKtx = "2.9.0"
 activityCompose = "1.10.1"
-composeBom = "2025.04.01" # https://developer.android.com/develop/ui/compose/bom/bom-mapping
-composeNavigation = "2.8.9"
-serialization = "1.6.3"
+composeBom = "2025.05.00" # https://developer.android.com/develop/ui/compose/bom/bom-mapping
+composeNavigation = "2.9.0"
+serialization = "1.7.3"
 koinBom = "4.0.0"
 jetbrainsKotlinJvm = "1.9.0"
 coroutinesCore = "1.8.1"
-lifecycleVersion = "2.8.7"
+lifecycleVersion = "2.9.0"
 timberVersion = "5.0.1"
 guavaVersion = "33.3.1-android"
-material3 = "1.4.0-alpha13"
-documentfile = "1.0.1"
+material3 = "1.4.0-alpha14"
+documentfile = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
