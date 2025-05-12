@@ -34,7 +34,7 @@ class TransferUtilsSafFile(
         deleteSource: Boolean,
         relativeFilePathFilter: (String) -> Boolean = { true },
     ): Boolean {
-        Timber.i("TJS - Transfer SafFile -> JavaFile")
+        Timber.i("TJS - Transfer JavaFile -> SafFile")
 
         Timber.i("TJS - source path - ${source.path}")
         Timber.i("TJS - dest. path - ${destinationDirectory.path}")
