@@ -13,23 +13,30 @@ object TransferUtils {
     /**
      * Example 1:
      *
-     * Source - /root/dirA
-     * currentFile - /root/dirA/dirB/f1.txt
+     * parent - /root/dirA
+     * child - /root/dirA/dirB/f1.txt
      *
      * Output - /dirB
      *
      * Example 2:
      *
-     * Source - /root/dirA
-     * currentFile - /root/dirA/f1.txt
+     * parent - /root/dirA
+     * child - /root/dirA/f1.txt
      *
      * Output - (blank)
      */
-    fun relativeDirectoryPath(source: JavaFile, currentFile: File): String {
-        return currentFile.absolutePath
-            .substringAfter(source.file.absolutePath)
-            .removeSuffix(currentFile.name)
+    fun relativeDirectoryPath(parent: File, child: File): String {
+        return child.absolutePath
+            .substringAfter(parent.absolutePath)
+            .removeSuffix(child.name)
             .trimEnd('/')
+    }
+
+    fun relativeDirectoryPath(source: JavaFile, currentFile: File): String {
+        return relativeDirectoryPath(
+            parent = source.file,
+            child = currentFile
+        )
     }
 
     /**
