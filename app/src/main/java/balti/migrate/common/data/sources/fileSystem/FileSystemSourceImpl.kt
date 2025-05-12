@@ -60,16 +60,16 @@ class FileSystemSourceImpl(
                     relativeFilePathFilter = relativeFilePathFilter,
                 )
             }
-            source is JavaFile && destination is SafFile -> {
-                transferUtilsSafFile.transferJavaFileToSafFile(
+            source is MediaStoreDownloadFile && destination is JavaFile -> {
+                transferUtilsMediaStoreDownload.transferMediaStoreDownloadsToJavaFile(
                     source = source,
                     destinationDirectory = destination,
                     deleteSource = true,
                     relativeFilePathFilter = relativeFilePathFilter,
                 )
             }
-            source is MediaStoreDownloadFile && destination is JavaFile -> {
-                transferUtilsMediaStoreDownload.transferMediaStoreDownloadsToJavaFile(
+            source is JavaFile && destination is SafFile -> {
+                transferUtilsSafFile.transferJavaFileToSafFile(
                     source = source,
                     destinationDirectory = destination,
                     deleteSource = true,
