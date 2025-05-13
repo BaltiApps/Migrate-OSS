@@ -53,6 +53,10 @@ class FileSystemSourceImpl(
                 )
             }
             source is JavaFile && destination is MediaStoreDownloadFile -> {
+                /*
+                 * On backup complete
+                 * internal -> Download/Migrate
+                 */
                 transferUtilsMediaStoreDownload.transferJavaFileToMediaStoreDownloads(
                     source = source,
                     destinationDirectory = destination,
@@ -69,6 +73,10 @@ class FileSystemSourceImpl(
                 )
             }
             source is JavaFile && destination is SafFile -> {
+                /*
+                 * On backup complete
+                 * internal -> SAF storage
+                 */
                 transferUtilsSafFile.transferJavaFileToSafFile(
                     source = source,
                     destinationDirectory = destination,
@@ -105,7 +113,31 @@ class FileSystemSourceImpl(
                 )
             }
             source is MediaStoreDownloadFile && destination is JavaFile -> {
+                /*
+                 * On importing backup
+                 * Download/Migrate -> internal
+                 */
                 transferUtilsMediaStoreDownload.transferMediaStoreDownloadsToJavaFile(
+                    source = source,
+                    destinationDirectory = destination,
+                    deleteSource = false,
+                    relativeFilePathFilter = relativeFilePathFilter,
+                )
+            }
+            source is JavaFile && destination is SafFile -> {
+                transferUtilsSafFile.transferJavaFileToSafFile(
+                    source = source,
+                    destinationDirectory = destination,
+                    deleteSource = false,
+                    relativeFilePathFilter = relativeFilePathFilter,
+                )
+            }
+            source is SafFile && destination is JavaFile -> {
+                /*
+                 * On importing backup
+                 * SAF storage -> internal
+                 */
+                transferUtilsSafFile.transferSafFileToJavaFile(
                     source = source,
                     destinationDirectory = destination,
                     deleteSource = false,
