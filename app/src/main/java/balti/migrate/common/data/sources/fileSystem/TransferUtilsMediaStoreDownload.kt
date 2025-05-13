@@ -68,7 +68,7 @@ class TransferUtilsMediaStoreDownload(
             null
         )?.use { cursor ->
 
-            Timber.i("TJM - cursor count - ${cursor.count}")
+            Timber.i("TMJ - cursor count - ${cursor.count}")
 
             while (cursor.moveToNext()) {
                 val id = dbUtils.getCursorData<Long>(cursor, MediaStore.Downloads._ID)
