@@ -8,5 +8,6 @@ data class SafFile(
     override val name: String,
     override val path: String = "",
     override val isValidBackupDirectory: Boolean = false,
+    val parent: SafFile? = null,
 ) : GenericFile {
 }
