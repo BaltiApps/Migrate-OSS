@@ -2,18 +2,12 @@ package balti.migrate.backup.ui.screens.backupName
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,10 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.common.ui.components.ButtonStatus
+import balti.migrate.common.ui.components.LocationSelector
 import balti.migrate.common.ui.components.NextFab
 import balti.migrate.common.utils.PermissionUtils
 import balti.migrate.common.utils.getDefaultBackupName
-import baltiapps.migrate.domain.DEFAULT_BACKUP_ROOT
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -99,8 +93,18 @@ private fun Content(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                if (state().isSaf != null) {
+                    LocationSelector(
+                        isFallback = state().isSaf != true,
+                        locationLabel = state().locationString,
+                        isLocationAccessible = state().isSafUriAccessible,
+                        onSelectClicked = onUriSelectClicked
+                    )
+                }
                 OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
                     value = state().backupName,
                     onValueChange = {
                         onBackupNameChanged(it)
@@ -112,55 +116,6 @@ private fun Content(
                         Text(getDefaultBackupName())
                     }
                 )
-            }
-            SafUriSelector(
-                state = state(),
-                onUriSelectClicked = onUriSelectClicked,
-            )
-        }
-    }
-}
-
-@Composable
-private fun SafUriSelector(
-    state: BackupNameState,
-    onUriSelectClicked: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    if (state.safUriString != null && state.isSafUriAccessible == true) {
-        return
-    }
-
-    Card(
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Warning,
-                contentDescription = null,
-                modifier = Modifier.size(48.dp)
-            )
-            Column(
-                modifier = Modifier.weight(1F),
-            ) {
-                Text(
-                    text = if (state.isSafUriAccessible == false) {
-                        stringResource(R.string.backup_location_not_accessible)
-                    } else {
-                        stringResource(R.string.setup_backup_location)
-                    }
-                )
-                Spacer(Modifier.size(8.dp))
-                Button(
-                    modifier = Modifier.align(Alignment.End),
-                    onClick = onUriSelectClicked
-                ) {
-                    Text(stringResource(R.string.setup))
-                }
             }
         }
     }
