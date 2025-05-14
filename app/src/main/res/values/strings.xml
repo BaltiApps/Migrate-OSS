@@ -118,6 +118,11 @@
         Please grant permission to read files on the device.
     </string>
     <string name="importing_directory">Importing directory</string>
+    <!--LocationSelector.kt-->
+    <string name="location_not_accessible">Last selected location is not accessible. Please setup another location.</string>
+    <string name="using_fallback_location">Using fallback location, please setup a backup location.\n(highly recommended)</string>
+    <string name="click_to_change_location">Click to change location</string>
+    <string name="backup_location_label">Backup location: %s</string>
 
     <!--ContactRestoreSelection.kt-->
     <string name="label_contacts_restore">Contacts restore</string>
@@ -198,4 +203,5 @@
     <string name="start">Start</string>
     <string name="proceed">Proceed</string>
     <string name="setup">Setup</string>
+    <string name="change">Change</string>
 </resources>
