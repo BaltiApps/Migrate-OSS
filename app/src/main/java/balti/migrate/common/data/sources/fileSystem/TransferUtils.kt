@@ -3,9 +3,12 @@ package balti.migrate.common.data.sources.fileSystem
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
+import android.os.Environment
 import android.provider.MediaStore
+import androidx.documentfile.provider.DocumentFile
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
+import balti.migrate.common.data.model.SafFile
 import balti.migrate.common.utils.DBUtils
 import java.io.File
 
@@ -73,5 +76,39 @@ object TransferUtils {
         return context.applicationContext.contentResolver.persistedUriPermissions.any {
             it.uri == uri && it.isReadPermission && it.isWritePermission
         }
+    }
+
+    fun getSafFileName(
+        context: Context,
+        file: SafFile
+    ): String {
+        return file.name.ifBlank {
+            DocumentFile.fromTreeUri(context, file.uriToLocation)?.name ?: ""
+        }
+    }
+
+    fun getSafFilePath(
+        file: SafFile
+    ): String {
+        val uri = file.uriToLocation.toString()
+        val androidContentUri = "content://com.android.externalstorage.documents/tree/"
+
+        if (!uri.startsWith(androidContentUri)) return ""
+
+        val internalStoragePath = Environment.getExternalStorageDirectory().path
+
+        val path = uri.substringAfter(androidContentUri)
+            .let {
+                val head = it.substringBefore("%3A")
+                if (head == "primary") {
+                    "$internalStoragePath/${it.substringAfter("${head}%3A")}"
+                } else {
+                    "/mnt/media_rw/$head/${it.substringAfter("${head}%3A")}"
+                }
+            }
+            .replace("%3A", "/")
+            .replace("%2F", "/")
+
+        return path
     }
 }
