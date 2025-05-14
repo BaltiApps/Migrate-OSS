@@ -91,7 +91,11 @@ fun LocationSelector(
             }
             if (isFallback && isLocationAccessible) {
                 Text(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        bottom = 16.dp,
+                    ),
                     text = stringResource(R.string.backup_location_label, locationLabel),
                     fontStyle = FontStyle.Italic,
                 )
