@@ -4,6 +4,7 @@ import balti.migrate.common.data.sources.ContextSourceImpl
 import balti.migrate.common.data.sources.PreferencesImpl
 import balti.migrate.common.data.sources.fileSystem.FileSystemSourceImpl
 import balti.migrate.common.data.sources.fileSystem.ExportDirectoryBrowserMediaStore
+import balti.migrate.common.data.sources.fileSystem.ExportDirectoryBrowserSafFile
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import balti.migrate.common.utils.DBUtils
 import balti.migrate.common.utils.ListItemUtils
@@ -23,6 +24,7 @@ import org.koin.dsl.module
 enum class Names {
     TEXT_WRITER,
     MEDIA_STORE_EXPORT_DIRECTORY_BROWSER,
+    SAF_EXPORT_DIRECTORY_BROWSER,
 }
 
 val commonDiModule = module {
@@ -48,6 +50,12 @@ val commonDiModule = module {
         ExportDirectoryBrowserMediaStore(
             applicationContext = get(),
             dbUtils = get(),
+        )
+    }
+
+    single<ExportDirectoryBrowser<*>>(named(Names.SAF_EXPORT_DIRECTORY_BROWSER)) {
+        ExportDirectoryBrowserSafFile(
+            applicationContext = get(),
         )
     }
 

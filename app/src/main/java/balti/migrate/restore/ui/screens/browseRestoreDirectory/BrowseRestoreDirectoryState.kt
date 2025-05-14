@@ -8,5 +8,8 @@ data class BrowseRestoreDirectoryState(
     val currentExportDirectory: GenericFile,
     val isImporting: Boolean,
     val isBackAllowed: Boolean,
+    val isSaf: Boolean?,
+    val locationString: String,
+    val isSafUriAccessible: Boolean,
 ) {
 }

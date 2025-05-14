@@ -4,9 +4,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -30,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.common.ui.components.LoadingDialog
+import balti.migrate.common.ui.components.LocationSelector
+import balti.migrate.common.utils.PermissionUtils
 import baltiapps.migrate.domain.common.model.GenericFile
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -59,6 +63,9 @@ fun BrowseRestoreDirectory(
         onExportDirectoryUp = {
             viewModel.onAction(BrowseRestoreDirectoryActions.OnExportDirectoryUp)
         },
+        onUriSelectClicked = PermissionUtils.requestSafLocation {
+            viewModel.onAction(BrowseRestoreDirectoryActions.OnSafLocationSelected(it))
+        },
         navigateUp = navigateUp,
     )
     
@@ -78,6 +85,7 @@ fun Content(
     onReloadExportDirectory: () -> Unit,
     onExportDirectoryOpen: (GenericFile) -> Unit,
     onExportDirectoryUp: () -> Unit,
+    onUriSelectClicked: () -> Unit,
     navigateUp: () -> Unit,
 ) {
     Scaffold(
@@ -105,6 +113,16 @@ fun Content(
                 .padding(innerPadding)
                 .padding(16.dp),
         ) {
+            if (state.isSaf != null) {
+                LocationSelector(
+                    isFallback = !state.isSaf,
+                    locationLabel = state.locationString,
+                    isLocationAccessible = !state.isSaf || state.isSafUriAccessible,
+                    onSelectClicked = onUriSelectClicked,
+                    fallbackWarning = stringResource(R.string.location_not_set_warning),
+                )
+                Spacer(modifier = Modifier.size(16.dp))
+            }
             PullToRefreshBox(
                 modifier = Modifier.fillMaxSize(),
                 isRefreshing = state.isLoading,

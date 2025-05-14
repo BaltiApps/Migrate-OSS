@@ -6,6 +6,9 @@ sealed class BrowseRestoreDirectoryActions {
     data object OnReloadExportDirectory: BrowseRestoreDirectoryActions()
     data class OnExportDirectoryOpen(val directory: GenericFile): BrowseRestoreDirectoryActions()
     data object OnExportDirectoryUp: BrowseRestoreDirectoryActions()
+    data class OnSafLocationSelected(
+        val uriString: String?,
+    ): BrowseRestoreDirectoryActions()
     data class OnExportDirectorySelected(
         val directory: GenericFile,
         val onImportFinished: () -> Unit,

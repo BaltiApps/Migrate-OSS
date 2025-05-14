@@ -5,6 +5,7 @@ import balti.migrate.common.data.model.ContactData
 import balti.migrate.common.data.model.SmsData
 import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
 import balti.migrate.common.di.Names.MEDIA_STORE_EXPORT_DIRECTORY_BROWSER
+import balti.migrate.common.di.Names.SAF_EXPORT_DIRECTORY_BROWSER
 import balti.migrate.restore.data.sources.RestoreNotificationHandlerImpl
 import balti.migrate.restore.data.sources.callLog.CallLogDBReader
 import balti.migrate.restore.data.sources.callLog.CallLogRestore
@@ -126,8 +127,10 @@ val restoreDiModule = module {
 
     viewModel {
         BrowseRestoreDirectoryViewModel(
-            exportDirectoryBrowser = get(named(MEDIA_STORE_EXPORT_DIRECTORY_BROWSER)),
+            exportDirectoryBrowserMediaStore = get(named(MEDIA_STORE_EXPORT_DIRECTORY_BROWSER)),
+            exportDirectoryBrowserSafFile = get(named(SAF_EXPORT_DIRECTORY_BROWSER)),
             readFilesFromBackupUseCase = get(),
+            preferences = get(),
             applicationContext = get(),
         )
     }

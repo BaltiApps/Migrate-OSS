@@ -114,10 +114,10 @@
 
     <!--BrowseRestoreDirectory.kt-->
     <string name="select_directory">Select directory</string>"
-    <string name="select_directory_permission_description">
-        Please grant permission to read files on the device.
-    </string>
+    <string name="location_not_set_warning">Some backups may not be visible. Please set backup location.</string>
     <string name="importing_directory">Importing directory</string>
+    <string name="no_parent">No parent, cannot go up.</string>
+
     <!--LocationSelector.kt-->
     <string name="location_not_accessible">Last selected location is not accessible. Please setup another location.</string>
     <string name="using_fallback_location">Using fallback location, please setup a backup location.\n(highly recommended)</string>
