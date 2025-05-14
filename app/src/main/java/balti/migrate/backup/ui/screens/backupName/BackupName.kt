@@ -2,9 +2,11 @@ package balti.migrate.backup.ui.screens.backupName
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.BottomAppBar
@@ -93,14 +95,16 @@ private fun Content(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (state().isSaf != null) {
+                val isSaf = state().isSaf
+                if (isSaf != null) {
                     LocationSelector(
-                        isFallback = state().isSaf != true,
+                        isFallback = !isSaf,
                         locationLabel = state().locationString,
-                        isLocationAccessible = state().isSafUriAccessible,
+                        isLocationAccessible = !isSaf || state().isSafUriAccessible,
                         onSelectClicked = onUriSelectClicked
                     )
                 }
+                Spacer(modifier = Modifier.size(16.dp))
                 OutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth()

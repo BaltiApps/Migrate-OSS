@@ -55,7 +55,9 @@ class BackupNameViewModel(
             _state.update {
                 it.copy(
                     isSaf = safLocationString.isNotBlank(),
-                    safUriString = safLocationString.ifBlank { null },
+                    safUriString = safLocationString.takeIf {
+                        it.isNotBlank() && isSafLocationAccessible
+                    },
                     locationString = getLocationLabel(safLocationString),
                     isSafUriAccessible = isSafLocationAccessible,
                 )
