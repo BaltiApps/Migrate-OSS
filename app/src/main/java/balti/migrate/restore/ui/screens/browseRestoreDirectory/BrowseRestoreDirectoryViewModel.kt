@@ -149,11 +149,9 @@ class BrowseRestoreDirectoryViewModel(
                 is BrowseRestoreDirectoryActions.OnSafLocationSelected -> {
                     if (action.uriString == null) {
                         return@launch
-                    } else if (TransferUtils.hasPermission(applicationContext, action.uriString.toUri())) {
+                    } else {
                         preferences.setCustomLocationParameter(action.uriString)
                         loadDirectory(getInitialExportDirectory())
-                    } else {
-                        Toast.makeText(applicationContext, R.string.no_parent, Toast.LENGTH_SHORT).show()
                     }
                 }
                 is BrowseRestoreDirectoryActions.OnExportDirectorySelected -> {
