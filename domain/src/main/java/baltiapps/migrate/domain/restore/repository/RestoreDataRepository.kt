@@ -28,4 +28,10 @@ class RestoreDataRepository: DataRepository() {
     fun getContactBackupFile(): GenericFile? = backupFiles.find { it.name == BACKUP_FILE_NAME_CONTACTS }
     fun getCallLogBackupFile(): GenericFile? = backupFiles.find { it.name == BACKUP_FILE_NAME_CALL_LOGS }
     fun getSmsBackupFile(): GenericFile? = backupFiles.find { it.name == BACKUP_FILE_NAME_SMS }
+
+    override fun resetRepository() {
+        super.resetRepository()
+        exportDirectory = null
+        backupFiles.clear()
+    }
 }

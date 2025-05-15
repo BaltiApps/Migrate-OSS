@@ -23,4 +23,14 @@ abstract class DataRepository {
 
     open val smsListItems: List<SmsListItem>
         get() = smsDataItems.toListItems().sortedByDescending { it.creationDate.dateInLong }
+
+    open fun resetRepository() {
+        contactsDataItems.clear()
+        callLogDataItems.clear()
+        smsDataItems.clear()
+
+        stagedContacts.clear()
+        stagedCallLogs.clear()
+        stagedSms.clear()
+    }
 }
