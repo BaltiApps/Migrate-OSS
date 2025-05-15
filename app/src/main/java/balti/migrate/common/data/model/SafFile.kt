@@ -6,7 +6,7 @@ import baltiapps.migrate.domain.common.model.GenericFile
 data class SafFile(
     val uriToLocation: Uri,
     override val name: String,
-    override val path: String = "",
+    override val path: String = uriToLocation.path ?: "",
     override val isValidBackupDirectory: Boolean = false,
     val parent: SafFile? = null,
 ) : GenericFile {
