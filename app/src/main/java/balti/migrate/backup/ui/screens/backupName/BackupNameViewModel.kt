@@ -30,12 +30,8 @@ class BackupNameViewModel(
     private fun getLocationLabel(uriString: String): String {
         if (uriString.isBlank()) return MediaStoreDownloadFile.EXPORT_PATH_PREFIX
 
-        val safFile = SafFile(
-            uriToLocation = uriString.toUri(),
-            name = "",
-        )
-        return TransferUtils.getSafFilePath(safFile).ifBlank {
-            TransferUtils.getSafFileName(applicationContext, safFile)
+        return TransferUtils.getUriFilePath(safLocationUri).ifBlank {
+            TransferUtils.getUriFileName(applicationContext, safLocationUri)
         }
     }
 

@@ -54,8 +54,8 @@ class BrowseRestoreDirectoryViewModel(
         return when(file) {
             is MediaStoreDownloadFile -> basePath
             is SafFile -> {
-                TransferUtils.getSafFilePath(file).ifBlank {
-                    TransferUtils.getSafFileName(applicationContext, file)
+                TransferUtils.getUriFilePath(file).ifBlank {
+                    TransferUtils.getUriFileName(applicationContext, file)
                 }
             }
             else -> ""
