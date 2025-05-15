@@ -11,6 +11,7 @@ import balti.migrate.common.data.model.MediaStoreDownloadFile
 import balti.migrate.common.data.model.NotificationInfo
 import balti.migrate.common.data.model.SafFile
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
+import balti.migrate.common.data.sources.fileSystem.TransferUtils
 import balti.migrate.common.utils.ServiceUtils
 import balti.migrate.common.utils.convertToNotificationBuilder
 import baltiapps.migrate.domain.ACTION_CANCEL_BACKUP
@@ -127,9 +128,11 @@ class BackupService : LifecycleService() {
             val backupDestination = if (backupUriString == null) {
                 MediaStoreDownloadFile(destination)
             } else {
+                val locationUri = backupUriString.toUri()
                 SafFile(
-                    uriToLocation = backupUriString.toUri(),
+                    uriToLocation = locationUri,
                     name = backupName,
+                    path = "${TransferUtils.getUriFilePath(locationUri)}/$backupName",
                 )
             }
 
