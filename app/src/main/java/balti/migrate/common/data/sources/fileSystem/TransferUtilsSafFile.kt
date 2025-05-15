@@ -164,6 +164,7 @@ class TransferUtilsSafFile(
         if (source.isDirectory) {
             Timber.i("TSJ - recursing for directory - ${source.uri}")
             for (child in source.listFiles()) {
+                Timber.i("TSJ - child name - ${child.name}")
                 val fileName = child.name ?: continue
                 val newDestination = File(destination, fileName)
                 Timber.i("TSJ - new destination - ${newDestination.absolutePath}")
