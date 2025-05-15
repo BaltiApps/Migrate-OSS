@@ -17,7 +17,7 @@ class ReadFilesFromBackupUseCase(
         getGenericFileForRepository: (relativePath: String) -> GenericFile,
     ) {
         withContext(Dispatchers.IO) {
-            restoreDataRepository.backupFiles.clear()
+            restoreDataRepository.resetRepository()
             restoreDataRepository.setExportDirectory(exportDirectory)
 
             fileSystemSource.copyDirectory(
