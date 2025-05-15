@@ -5,6 +5,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
@@ -78,26 +79,39 @@ object TransferUtils {
         }
     }
 
-    fun getSafFileName(
+    fun getUriFileName(
         context: Context,
-        file: SafFile
+        file: SafFile,
     ): String {
         return file.name.ifBlank {
-            DocumentFile.fromTreeUri(context, file.uriToLocation)?.name ?: ""
+            getUriFileName(context, file.uriToLocation)
         }
     }
 
-    fun getSafFilePath(
-        file: SafFile
+    fun getUriFileName(
+        context: Context,
+        uri: Uri,
     ): String {
-        val uri = file.uriToLocation.toString()
+        return DocumentFile.fromTreeUri(context, uri)?.name ?: ""
+    }
+
+    fun getUriFilePath(
+        file: SafFile,
+    ): String {
+        return getUriFilePath(file.uriToLocation)
+    }
+
+    fun getUriFilePath(
+        uri: Uri,
+    ): String {
+        val uriString = uri.toString()
         val androidContentUri = "content://com.android.externalstorage.documents/tree/"
 
-        if (!uri.startsWith(androidContentUri)) return ""
+        if (!uriString.startsWith(androidContentUri)) return ""
 
         val internalStoragePath = Environment.getExternalStorageDirectory().path
 
-        val path = uri.substringAfter(androidContentUri)
+        val path = uriString.substringAfter(androidContentUri)
             .let {
                 val head = it.substringBefore("%3A")
                 if (head == "primary") {
