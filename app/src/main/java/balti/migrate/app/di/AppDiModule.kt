@@ -1,5 +1,6 @@
 package balti.migrate.app.di
 
+import balti.migrate.app.ui.navigation.HomeGraphViewModel
 import balti.migrate.app.ui.navigation.RestoreRouteChoicesViewModel
 import balti.migrate.app.ui.screens.home.ScreenHomeViewModel
 import balti.migrate.app.ui.screens.setupPermission.SetupPermissionScreenViewModel
@@ -10,6 +11,7 @@ val appDiModule = module {
 
     /* ViewModel */
 
+    viewModelOf(::HomeGraphViewModel)
     viewModelOf(::RestoreRouteChoicesViewModel)
     viewModelOf(::SetupPermissionScreenViewModel)
     viewModelOf(::ScreenHomeViewModel)

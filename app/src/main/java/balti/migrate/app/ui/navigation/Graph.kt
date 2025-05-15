@@ -59,6 +59,7 @@ fun Graph(
             )
         }
         composable<RouteHome> {
+            val viewModel = it.getSharedViewModel<HomeGraphViewModel>(navController)
             ScreenHome(
                 onBackupSelected = {
                     when {
@@ -70,7 +71,10 @@ fun Graph(
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
-                        else -> navController.navigate(RouteBackup)
+                        else -> {
+                            viewModel.resetBackupRepository()
+                            navController.navigate(RouteBackup)
+                        }
                     }
                 },
                 onRestoreSelected = {
