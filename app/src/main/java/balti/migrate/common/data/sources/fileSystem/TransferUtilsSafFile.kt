@@ -184,7 +184,7 @@ class TransferUtilsSafFile(
                 child = destination,
             )
 
-            val relativeFilePath = "$relDirPath/${source.name}"
+            val relativeFilePath = "$relDirPath/${destination.name}"
 
             Timber.i("TSJ - relative dir path - $relDirPath")
             Timber.i("TSJ - relative file path - $relativeFilePath")
