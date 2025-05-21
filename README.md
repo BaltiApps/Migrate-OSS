@@ -3,7 +3,7 @@
 ![Feature graphic](display_assets/feature_graphic.png)
 
 ## Branch version
-Version: 6.0.0 (Artemis)
+Version: 6.0.1 (Artemis)
 
 ## Screenshots
 
