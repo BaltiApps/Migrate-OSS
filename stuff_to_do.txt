@@ -1,16 +1,16 @@
-✅ icons on restore task explainer dialogs
+✅️ icons on restore task explainer dialogs
 
 notifications
-- ✅ after backup / restore is completed - 26 Apr 2025
-- ✅ when backup / restore is cancelled - 26 Apr 2025
-- ✅ when backup / restore errors out - 26 Apr 2025
-- ✅ cancel action - 26 Apr 2025
-- ✅ click on notification to show progress screen - 26 Apr 2025
-- ✅ description to prompt user to reset the SMS app after restore.
+- ✅️ after backup / restore is completed - 26 Apr 2025
+- ✅️ when backup / restore is cancelled - 26 Apr 2025
+- ✅️ when backup / restore errors out - 26 Apr 2025
+- ✅️ cancel action - 26 Apr 2025
+- ✅️ click on notification to show progress screen - 26 Apr 2025
+- ✅️ description to prompt user to reset the SMS app after restore.
 
-✅ proper progress on backup / restore cancellation - 26 Apr 2025
+✅️ proper progress on backup / restore cancellation - 26 Apr 2025
 
-✅ back button not working in first backup selection screen - not reproducible anymore
+✅️ back button not working in first backup selection screen - not reproducible anymore
 
 contacts selection - for combination of local and synced contacts:
 - make header stick while scrolling
@@ -19,40 +19,40 @@ contacts selection - for combination of local and synced contacts:
 
 show count of (items_selected / total_items) for each backup and restore selection screen
 
-✅ redact names when writing logs in file
+✅️ redact names when writing logs in file
 
-✅ wakelock in backup / restore progress screen - 27 Apr 2025
+✅️ wakelock in backup / restore progress screen - 27 Apr 2025
 
-✅ prevent showing backup or restore screen if an operation is already running - 27 Apr 2025
+✅️ prevent showing backup or restore screen if an operation is already running - 27 Apr 2025
 
-✅ prompt to change SMS app after restore - 27 Apr 2025
+✅️ prompt to change SMS app after restore - 27 Apr 2025
 
-✅ show "Start" instead of "Next" before starting or restoring a backup - 30 Apr 2025
+✅️ show "Start" instead of "Next" before starting or restoring a backup - 30 Apr 2025
 
-✅ permission screen - 30 Apr 2025
+✅️ permission screen - 30 Apr 2025
 
-✅ info dialog - 28 Apr 2025
+✅️ info dialog - 28 Apr 2025
 
-✅ license document - 28 Apr 2025
+✅️ license document - 28 Apr 2025
 
 change log
 
 share progress and error logs
 
-✅ modify logs to report which stage of backup is running - 30 Apr 2025
+✅️ modify logs to report which stage of backup is running - 30 Apr 2025
 Example - instead of showing "(100/1000) 9999999999", show "CALL LOG (100/1000) 9999999999"
 
 prompt for notification permission before starting backup / restore
 
-✅ change default theme - 30 Apr 2025
+✅️ change default theme - 30 Apr 2025
 
-✅ dialog to show app backup is not available now - 30 Apr 2025
+✅️ dialog to show app backup is not available now - 30 Apr 2025
 
-✅ privacy policy document - 30 Apr 2025
+✅️ privacy policy document - 30 Apr 2025
 
-✅ app icon - 30 Apr 2025
+✅️ app icon - 30 Apr 2025
 
-✅ new versioning strategy - 30 Apr 2025
+✅️ new versioning strategy - 30 Apr 2025
 
 remove skip option from fab, make it a button when loading list items
 
