@@ -66,4 +66,6 @@ backup summary screen
 
 use worker rather than foreground service
 
-️⚠️⚠️⚠️⚠️⚠️ Get rid of external storage permission ⚠️⚠️⚠️⚠️⚠️
+✅️ ⚠️⚠️⚠️⚠️⚠️ Get rid of external storage permission ⚠️⚠️⚠️⚠️⚠️ - released on 22 May 2025
+
+release to F-Droid
