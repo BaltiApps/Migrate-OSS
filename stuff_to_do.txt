@@ -69,3 +69,5 @@ use worker rather than foreground service
 ✅️ ⚠️⚠️⚠️⚠️⚠️ Get rid of external storage permission ⚠️⚠️⚠️⚠️⚠️ - released on 22 May 2025
 
 release to F-Droid
+
+✅️ update privacy policy link
