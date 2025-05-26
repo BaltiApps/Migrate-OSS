@@ -1,6 +1,5 @@
 package balti.migrate.backup.ui.screens.listScreen.contactBackupSelection
 
-import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
@@ -9,6 +8,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.common.ui.listScreen.ListScreenShell
 import balti.migrate.common.ui.listScreen.ListState
+import balti.migrate.common.utils.PermissionUtils
 import baltiapps.migrate.domain.common.model.ContactListItem
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -26,8 +26,6 @@ fun ContactBackupSelection(
 
     SyncedWarningDialog()
 
-    val activity = LocalActivity.current
-
     Content(
         state = { state },
         navigateUp = navigateUp,
@@ -43,8 +41,8 @@ fun ContactBackupSelection(
         onToggleLocalContactsVisibility = {
             viewModel.performAction(ContactBackupSelectionAction.ToggleLocalContactsVisibility(it))
         },
-        requestPermission = {
-            viewModel.performAction(ContactBackupSelectionAction.RequestPermission(activity))
+        requestPermission = PermissionUtils.requestPermission(viewModel.permission) {
+            viewModel.performAction(ContactBackupSelectionAction.OnPermissionResult(it))
         },
         onItemToggled = {
             viewModel.performAction(ContactBackupSelectionAction.ToggleContactItem(it))
