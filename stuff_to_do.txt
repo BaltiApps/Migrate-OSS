@@ -13,11 +13,11 @@ notifications
 ✅️ back button not working in first backup selection screen - not reproducible anymore
 
 contacts selection - for combination of local and synced contacts:
-- make header stick while scrolling
+✅️ - make header stick while scrolling - 26 May 2025
 - show the "Why" button for synced contacts header
-- synced and local contact count
+✅️ - synced and local contact count - 26 May 2025
 
-show count of (items_selected / total_items) for each backup and restore selection screen
+✅️ show count of (items_selected / total_items) for each backup and restore selection screen - 26 May 2025
 
 ✅️ redact names when writing logs in file
 
