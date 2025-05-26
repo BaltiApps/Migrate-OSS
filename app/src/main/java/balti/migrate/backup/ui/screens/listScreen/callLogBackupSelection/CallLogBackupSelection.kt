@@ -11,9 +11,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
+import balti.migrate.common.ui.components.CountBar
+import balti.migrate.common.ui.components.RenderCallLogItem
 import balti.migrate.common.ui.listScreen.ListScreenShell
 import balti.migrate.common.ui.listScreen.ListState
-import balti.migrate.common.ui.components.RenderCallLogItem
 import baltiapps.migrate.domain.common.model.CallLogListItem
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -81,6 +82,14 @@ private fun Content(
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
+            stickyHeader {
+                val allItems = state().callLogList
+                val selectedItems = allItems.filter { it.isChecked }
+                CountBar(
+                    totalCount = allItems.size,
+                    selectedCount = selectedItems.size,
+                )
+            }
             items(
                 items = state().callLogList,
                 key = { it._id }
