@@ -1,8 +1,8 @@
 package balti.migrate.restore.ui.screens.progressScreen
 
-import android.widget.Toast
+import android.content.Intent
+import android.provider.Settings
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,6 +37,7 @@ import balti.migrate.common.ui.progressScreen.ErrorLayoutToggle
 import balti.migrate.common.ui.progressScreen.ProgressLogLayout
 import balti.migrate.common.ui.progressScreen.ProgressScreenBottomBar
 import balti.migrate.common.ui.progressScreen.ScrollAnchor
+import balti.migrate.common.utils.PermissionUtils
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -46,7 +48,7 @@ fun RestoreProgressScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val activity = LocalActivity.current
+    val context = LocalContext.current
 
     Content(
         state = { state },
@@ -63,10 +65,12 @@ fun RestoreProgressScreen(
         resumeLogs = {
             viewModel.performAction(RestoreProgressScreenAction.ResumeProgressLogs)
         },
-        changeSmsApp = {
-            Toast.makeText(activity, R.string.toast_text_change_sms_app, Toast.LENGTH_SHORT).show()
-            viewModel.performAction(RestoreProgressScreenAction.ChangeSmsApp(activity))
-        },
+        changeSmsApp = PermissionUtils.requestSpecialPermission(
+            intent = Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS),
+            onResult = {
+                viewModel.performAction(RestoreProgressScreenAction.OnChangeSmsApp)
+            }
+        ),
         closeProgressScreen = closeProgressScreen,
     )
 
