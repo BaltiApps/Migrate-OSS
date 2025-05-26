@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
+import balti.migrate.common.ui.components.CountBar
 import balti.migrate.common.ui.components.RenderContactItem
 import balti.migrate.common.ui.listScreen.ListScreenShell
 import balti.migrate.common.ui.listScreen.ListState
@@ -72,6 +73,14 @@ private fun Content(
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
+            stickyHeader {
+                val allItems = state().contactListItems
+                val selectedItems = allItems.filter { it.isChecked }
+                CountBar(
+                    totalCount = allItems.size,
+                    selectedCount = selectedItems.size,
+                )
+            }
             items(
                 items = state().contactListItems,
                 key = { it._id }
