@@ -1,7 +1,6 @@
 package balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection
 
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,6 +14,7 @@ import balti.migrate.common.ui.components.CountBar
 import balti.migrate.common.ui.components.RenderCallLogItem
 import balti.migrate.common.ui.listScreen.ListScreenShell
 import balti.migrate.common.ui.listScreen.ListState
+import balti.migrate.common.utils.PermissionUtils
 import baltiapps.migrate.domain.common.model.CallLogListItem
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -25,8 +25,6 @@ fun CallLogRestoreSelection(
     viewModel: CallLogRestoreSelectionViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
-    val activity = LocalActivity.current
 
     Content(
         state = { state },
@@ -40,8 +38,8 @@ fun CallLogRestoreSelection(
         onItemToggled = {
             viewModel.onAction(CallLogRestoreSelectionAction.ToggleCallLogItem(it))
         },
-        requestPermission = {
-            viewModel.onAction(CallLogRestoreSelectionAction.RequestPermission(activity))
+        requestPermission = PermissionUtils.requestPermissions(viewModel.permissionList) {
+            viewModel.onAction(CallLogRestoreSelectionAction.OnPermissionResult(it))
         },
         onNext = {
             viewModel.onAction(CallLogRestoreSelectionAction.StageCallLogs(goToNextScreen))
