@@ -3,7 +3,6 @@ package balti.migrate.backup.ui.screens.listScreen.smsBackupSelection
 import android.Manifest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import balti.migrate.MainActivity
 import balti.migrate.common.utils.ListItemUtils
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.ReadSmsForBackupUseCase
@@ -26,7 +25,7 @@ class SmsBackupSelectionViewModel(
     private val _state = MutableStateFlow(SmsBackupSelectionState())
     val state = _state.asStateFlow()
 
-    private val permission = Manifest.permission.READ_SMS
+    val permission = Manifest.permission.READ_SMS
 
     init {
         loadData()
@@ -59,11 +58,8 @@ class SmsBackupSelectionViewModel(
 
     fun performAction(action: SmsBackupSelectionAction) = viewModelScope.launch {
         when(action) {
-            is SmsBackupSelectionAction.RequestPermission -> {
-                if (action.activity !is MainActivity) return@launch
-                action.activity.requestPermission(permission) {
-                    if (it) loadData()
-                }
+            is SmsBackupSelectionAction.OnPermissionResult -> {
+                if (action.isGranted) loadData()
             }
             is SmsBackupSelectionAction.ToggleSmsItem -> {
                 val result = listItemUtils.toggleSingleItem(_state.value.smsList, action.item)

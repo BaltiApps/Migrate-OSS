@@ -1,6 +1,5 @@
 package balti.migrate.backup.ui.screens.listScreen.smsBackupSelection
 
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,6 +14,7 @@ import balti.migrate.common.ui.components.CountBar
 import balti.migrate.common.ui.components.RenderSmsItem
 import balti.migrate.common.ui.listScreen.ListScreenShell
 import balti.migrate.common.ui.listScreen.ListState
+import balti.migrate.common.utils.PermissionUtils
 import baltiapps.migrate.domain.common.model.SmsListItem
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -30,8 +30,6 @@ fun SmsBackupSelection(
         lifecycleOwner = lifecycleOwner
     )
 
-    val activity = LocalActivity.current
-
     Content(
         state = { state },
         navigateUp = navigateUp,
@@ -44,8 +42,8 @@ fun SmsBackupSelection(
         onItemToggled = { item ->
             viewModel.performAction(SmsBackupSelectionAction.ToggleSmsItem(item))
         },
-        requestPermission = {
-            viewModel.performAction(SmsBackupSelectionAction.RequestPermission(activity))
+        requestPermission = PermissionUtils.requestPermission(viewModel.permission) {
+            viewModel.performAction(SmsBackupSelectionAction.OnPermissionResult(it))
         },
         onNext = {
             viewModel.performAction(SmsBackupSelectionAction.StageSms(goToNextScreen))
