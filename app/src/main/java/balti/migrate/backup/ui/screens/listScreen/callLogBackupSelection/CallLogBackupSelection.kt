@@ -1,6 +1,5 @@
 package balti.migrate.backup.ui.screens.listScreen.callLogBackupSelection
 
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,6 +14,7 @@ import balti.migrate.common.ui.components.CountBar
 import balti.migrate.common.ui.components.RenderCallLogItem
 import balti.migrate.common.ui.listScreen.ListScreenShell
 import balti.migrate.common.ui.listScreen.ListState
+import balti.migrate.common.utils.PermissionUtils
 import baltiapps.migrate.domain.common.model.CallLogListItem
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -30,8 +30,6 @@ fun CallLogBackupSelection(
         lifecycleOwner = lifecycleOwner,
     )
 
-    val activity = LocalActivity.current
-
     Content(
         state = { state },
         navigateUp = navigateUp,
@@ -41,8 +39,8 @@ fun CallLogBackupSelection(
         onDeselectAll = {
             viewModel.performAction(CallLogBackupSelectionAction.ToggleAllCallLog(false))
         },
-        requestPermission = {
-            viewModel.performAction(CallLogBackupSelectionAction.RequestPermission(activity))
+        requestPermission = PermissionUtils.requestPermissions(viewModel.permissionList) {
+            viewModel.performAction(CallLogBackupSelectionAction.OnPermissionResult(it))
         },
         onItemToggled = {
             viewModel.performAction(CallLogBackupSelectionAction.ToggleCallLogItem(it))
