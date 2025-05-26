@@ -124,6 +124,9 @@
     <string name="click_to_change_location">Click to change location</string>
     <string name="backup_location_label">Backup location: %s</string>
 
+    <!--CountBar.kt-->
+    <string name="selected_items">Selected items</string>
+
     <!--ContactRestoreSelection.kt-->
     <string name="label_contacts_restore">Contacts restore</string>
 
