@@ -144,7 +144,7 @@ fun Graph(
                     closeProgressScreen = {
                         navController.popBackStack(RouteBackup, true)
                         if (isDeepLinked) {
-                            activity?.finish()
+                            activity.finish()
                         }
                     },
                 )
@@ -227,7 +227,7 @@ fun Graph(
                     closeProgressScreen = {
                         navController.popBackStack(RouteRestore, true)
                         if (isDeepLinked) {
-                            activity?.finish()
+                            activity.finish()
                         }
                     },
                 )
