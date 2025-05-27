@@ -284,7 +284,9 @@ fun Graph(
                     navController.navigate(navItem.route)
                 }
             ) {
-
+                AppSettings(
+                    onChangeDarkMode = setDarkMode,
+                )
             }
         }
     }
