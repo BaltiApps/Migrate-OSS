@@ -26,7 +26,11 @@ fun MainScreenNavContainer(
                 appNavBarItems.forEach { item ->
                     NavigationBarItem(
                         selected = currentNavRoute == item,
-                        onClick = { onBottomNavItemSelected(item) },
+                        onClick = {
+                            if (item != currentNavRoute) {
+                                onBottomNavItemSelected(item)
+                            }
+                        },
                         icon = {
                             Icon(
                                 imageVector = if (currentNavRoute == item) {
