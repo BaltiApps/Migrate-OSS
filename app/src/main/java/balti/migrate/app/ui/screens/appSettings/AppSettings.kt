@@ -102,10 +102,10 @@ private fun RadioOption(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
             .clickable {
                 onChangeDarkMode(darkMode)
-            },
+            }
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
     ) {
         Text(
@@ -114,7 +114,7 @@ private fun RadioOption(
         )
         RadioButton(
             selected = state.darkMode == darkMode,
-            onClick = {}
+            onClick = null,
         )
     }
 }
