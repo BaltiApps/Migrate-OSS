@@ -4,6 +4,8 @@
     <!--Graph.kt-->
     <string name="cannot_backup_when_restore_is_running">Restore is already running. Cannot backup.</string>
     <string name="cannot_restore_when_backup_is_running">Backup is already running. Cannot restore.</string>
+    <string name="home">Home</string>
+    <string name="settings">Settings</string>
 
     <!--ScreenHome-->
     <string name="backup">Backup</string>
