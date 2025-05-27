@@ -63,6 +63,7 @@ object PermissionUtils {
     fun requestSpecialPermission(
         intent: Intent,
         onResult: () -> Unit,
+        preLaunch: () -> Unit = {},
     ): () -> Unit {
         val permissionLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult(),
@@ -70,6 +71,7 @@ object PermissionUtils {
             onResult()
         }
         return {
+            preLaunch()
             permissionLauncher.launch(intent)
         }
     }
