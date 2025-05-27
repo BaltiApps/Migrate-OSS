@@ -6,7 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.core.net.toUri
 import balti.migrate.BuildConfig
-import balti.migrate.MainActivity
+import balti.migrate.app.MainActivity
 
 class DeepLinkUtils {
 
