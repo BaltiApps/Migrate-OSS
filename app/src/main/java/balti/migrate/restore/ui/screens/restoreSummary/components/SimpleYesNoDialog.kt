@@ -1,4 +1,4 @@
-package balti.migrate.restore.ui.screens.restoreSummary2.components
+package balti.migrate.restore.ui.screens.restoreSummary.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -12,7 +12,7 @@ import androidx.compose.ui.window.DialogProperties
 import balti.migrate.R
 
 @Composable
-fun SimpleYesNoDialog2(
+fun SimpleYesNoDialog(
     dialogText: String,
     onProceed: () -> Unit,
     onSkip: () -> Unit,

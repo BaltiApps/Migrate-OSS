@@ -29,7 +29,7 @@ import balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection.CallL
 import balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection.ContactRestoreSelection
 import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestoreSelection
 import balti.migrate.restore.ui.screens.progressScreen.RestoreProgressScreen
-import balti.migrate.restore.ui.screens.restoreSummary2.RestoreSummary2
+import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummary
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
@@ -203,7 +203,7 @@ fun Graph(
                 }
                 composable<RouteRestoreSummary> {
                     val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
-                    RestoreSummary2(
+                    RestoreSummary(
                         navigateUp = {
                             viewModel.onBackFromRoute()
                             navController.navigateUp()

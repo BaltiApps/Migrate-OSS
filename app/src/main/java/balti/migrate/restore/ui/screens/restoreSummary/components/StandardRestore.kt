@@ -1,4 +1,4 @@
-package balti.migrate.restore.ui.screens.restoreSummary2.components
+package balti.migrate.restore.ui.screens.restoreSummary.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,7 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Contacts
+import androidx.compose.material.icons.outlined.Call
+import androidx.compose.material.icons.outlined.Sms
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,15 +17,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import balti.migrate.R
-import balti.migrate.restore.ui.screens.restoreSummary2.RestoreSummaryState2
-
+import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummaryItemState
+import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummaryState
 
 @Composable
-fun DelegatedRestore2(
-    state: RestoreSummaryState2,
+fun StandardRestore(
+    state: RestoreSummaryState,
     modifier: Modifier = Modifier,
 ) {
-    if (state.countContacts <= 0) return
+    if ((state.countCallLogs + state.countSms) <= 0) return
     Column(
         modifier = modifier.fillMaxWidth(),
     ) {
@@ -35,18 +36,24 @@ fun DelegatedRestore2(
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             Text(
-                text = stringResource(R.string.delegated_restore),
+                text = stringResource(R.string.migrate_restore),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             HorizontalDivider()
         }
         Spacer(Modifier.size(8.dp))
-        SummaryItem2(
-            headlineStringRes = R.string.contacts_to_restore,
-            count = state.countContacts,
-            icon = Icons.Outlined.Contacts,
-            state = state.contactSummaryState,
+        SummaryItem(
+            headlineStringRes = R.string.call_logs_to_restore,
+            count = state.countCallLogs,
+            icon = Icons.Outlined.Call,
+            state = RestoreSummaryItemState.UNKNOWN,
+        )
+        SummaryItem(
+            headlineStringRes = R.string.sms_to_restore,
+            count = state.countCallLogs,
+            icon = Icons.Outlined.Sms,
+            state = RestoreSummaryItemState.UNKNOWN,
         )
     }
 }

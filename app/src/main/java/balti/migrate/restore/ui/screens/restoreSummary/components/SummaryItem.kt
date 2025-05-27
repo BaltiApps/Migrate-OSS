@@ -1,4 +1,4 @@
-package balti.migrate.restore.ui.screens.restoreSummary2.components
+package balti.migrate.restore.ui.screens.restoreSummary.components
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
@@ -15,10 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import balti.migrate.common.ui.components.EmptyImageVector
-import balti.migrate.restore.ui.screens.restoreSummary2.RestoreSummaryItemState
+import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummaryItemState
 
 @Composable
-fun SummaryItem2(
+fun SummaryItem(
     @StringRes headlineStringRes: Int,
     count: Int?,
     icon: ImageVector,

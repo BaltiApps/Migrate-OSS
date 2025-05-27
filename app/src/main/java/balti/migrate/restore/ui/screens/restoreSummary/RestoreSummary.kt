@@ -1,4 +1,4 @@
-package balti.migrate.restore.ui.screens.restoreSummary2
+package balti.migrate.restore.ui.screens.restoreSummary
 
 import android.app.role.RoleManager
 import android.content.Intent
@@ -37,17 +37,17 @@ import balti.migrate.common.ui.components.ButtonStatus
 import balti.migrate.common.ui.components.LoadingDialog
 import balti.migrate.common.ui.components.NextFab
 import balti.migrate.common.utils.PermissionUtils
-import balti.migrate.restore.ui.screens.restoreSummary2.components.DelegatedRestore2
-import balti.migrate.restore.ui.screens.restoreSummary2.components.SimpleYesNoDialog2
-import balti.migrate.restore.ui.screens.restoreSummary2.components.SpecialPermissions2
-import balti.migrate.restore.ui.screens.restoreSummary2.components.StandardRestore2
+import balti.migrate.restore.ui.screens.restoreSummary.components.DelegatedRestore
+import balti.migrate.restore.ui.screens.restoreSummary.components.SimpleYesNoDialog
+import balti.migrate.restore.ui.screens.restoreSummary.components.SpecialPermissions
+import balti.migrate.restore.ui.screens.restoreSummary.components.StandardRestore
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun RestoreSummary2(
+fun RestoreSummary(
     navigateUp: () -> Unit,
     startRestoreServiceAndGoToNextScreen: () -> Unit,
-    viewModel: RestoreSummaryViewModel2 = koinViewModel(),
+    viewModel: RestoreSummaryViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -59,7 +59,7 @@ fun RestoreSummary2(
     Content(
         state = { state },
         onStartRestore = {
-            viewModel.onAction(RestoreSummaryAction2.StartRestore(startRestoreServiceAndGoToNextScreen))
+            viewModel.onAction(RestoreSummaryAction.StartRestore(startRestoreServiceAndGoToNextScreen))
         },
         contactExportProgressDialog = {
             LoadingDialog(
@@ -68,13 +68,13 @@ fun RestoreSummary2(
             )
         },
         showDialogContactImport = {
-            SimpleYesNoDialog2(
+            SimpleYesNoDialog(
                 dialogText = stringResource(R.string.contacts_delegate_description),
                 onProceed = {
-                    viewModel.onAction(RestoreSummaryAction2.OnUserProceedContactImport)
+                    viewModel.onAction(RestoreSummaryAction.OnUserProceedContactImport)
                 },
                 onSkip = {
-                    viewModel.onAction(RestoreSummaryAction2.SkipContacts)
+                    viewModel.onAction(RestoreSummaryAction.SkipContacts)
                 },
                 icon = Icons.Outlined.Contacts,
             )
@@ -91,17 +91,17 @@ fun RestoreSummary2(
                 flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
             },
             onResult = {
-                viewModel.onAction(RestoreSummaryAction2.OnContactImported)
+                viewModel.onAction(RestoreSummaryAction.OnContactImported)
             }
         ),
         showDialogDefaultSmsSet = {
-            SimpleYesNoDialog2(
+            SimpleYesNoDialog(
                 dialogText = stringResource(R.string.default_sms_app_description),
                 onProceed = {
-                    viewModel.onAction(RestoreSummaryAction2.OnUserProceedSetDefaultSmsApp)
+                    viewModel.onAction(RestoreSummaryAction.OnUserProceedSetDefaultSmsApp)
                 },
                 onSkip = {
-                    viewModel.onAction(RestoreSummaryAction2.SkipSms)
+                    viewModel.onAction(RestoreSummaryAction.SkipSms)
                 },
                 icon = Icons.Outlined.Sms,
             )
@@ -109,7 +109,7 @@ fun RestoreSummary2(
         requestDefaultSmsApp = PermissionUtils.requestSpecialPermission(
             intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS),
             onResult = {
-                viewModel.onAction(RestoreSummaryAction2.OnDefaultSmsAppSet)
+                viewModel.onAction(RestoreSummaryAction.OnDefaultSmsAppSet)
             }
         ),
         navigateUp = navigateUp,
@@ -118,7 +118,7 @@ fun RestoreSummary2(
 
 @Composable
 private fun Content(
-    state: () -> RestoreSummaryState2,
+    state: () -> RestoreSummaryState,
     onStartRestore: () -> Unit,
     contactExportProgressDialog: @Composable () -> Unit,
     showDialogContactImport: @Composable () -> Unit,
@@ -161,15 +161,15 @@ private fun Content(
                 alignment = Alignment.CenterVertically,
             ),
         ) {
-            DelegatedRestore2(
+            DelegatedRestore(
                 state = state(),
                 modifier = Modifier.fillMaxWidth(),
             )
-            SpecialPermissions2(
+            SpecialPermissions(
                 state = state(),
                 modifier = Modifier.fillMaxWidth(),
             )
-            StandardRestore2(
+            StandardRestore(
                 state = state(),
                 modifier = Modifier.fillMaxWidth(),
             )

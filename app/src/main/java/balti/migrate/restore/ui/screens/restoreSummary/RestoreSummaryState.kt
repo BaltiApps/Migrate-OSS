@@ -1,8 +1,8 @@
-package balti.migrate.restore.ui.screens.restoreSummary2
+package balti.migrate.restore.ui.screens.restoreSummary
 
 import baltiapps.migrate.domain.common.model.Progress
 
-data class RestoreSummaryState2(
+data class RestoreSummaryState(
     val isInitialized: Boolean = false,
     val countdown: Int = 5,
     val countContacts: Int = 0,

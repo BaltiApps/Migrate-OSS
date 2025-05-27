@@ -1,4 +1,4 @@
-package balti.migrate.restore.ui.screens.restoreSummary2.components
+package balti.migrate.restore.ui.screens.restoreSummary.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.Sms
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -17,15 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import balti.migrate.R
-import balti.migrate.restore.ui.screens.restoreSummary2.RestoreSummaryItemState
-import balti.migrate.restore.ui.screens.restoreSummary2.RestoreSummaryState2
+import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummaryState
 
 @Composable
-fun StandardRestore2(
-    state: RestoreSummaryState2,
+fun SpecialPermissions(
+    state: RestoreSummaryState,
     modifier: Modifier = Modifier,
 ) {
-    if ((state.countCallLogs + state.countSms) <= 0) return
+    if (state.countSms <= 0) return
     Column(
         modifier = modifier.fillMaxWidth(),
     ) {
@@ -36,24 +34,18 @@ fun StandardRestore2(
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             Text(
-                text = stringResource(R.string.migrate_restore),
+                text = stringResource(R.string.special_permissions_required),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             HorizontalDivider()
         }
         Spacer(Modifier.size(8.dp))
-        SummaryItem2(
-            headlineStringRes = R.string.call_logs_to_restore,
-            count = state.countCallLogs,
-            icon = Icons.Outlined.Call,
-            state = RestoreSummaryItemState.UNKNOWN,
-        )
-        SummaryItem2(
-            headlineStringRes = R.string.sms_to_restore,
-            count = state.countCallLogs,
+        SummaryItem(
+            headlineStringRes = R.string.set_as_default_sms_app,
+            count = null,
             icon = Icons.Outlined.Sms,
-            state = RestoreSummaryItemState.UNKNOWN,
+            state = state.smsSummaryState,
         )
     }
 }

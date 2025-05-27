@@ -1,4 +1,4 @@
-package balti.migrate.restore.ui.screens.restoreSummary2
+package balti.migrate.restore.ui.screens.restoreSummary
 
 enum class RestoreSummaryItemState {
     REQUEST_USER_INPUT,

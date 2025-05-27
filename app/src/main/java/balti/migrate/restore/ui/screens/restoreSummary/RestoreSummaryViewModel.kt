@@ -1,4 +1,4 @@
-package balti.migrate.restore.ui.screens.restoreSummary2
+package balti.migrate.restore.ui.screens.restoreSummary
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class RestoreSummaryViewModel2(
+class RestoreSummaryViewModel(
     private val applicationContext: Context,
     private val restoreDataRepository: RestoreDataRepository,
     private val exportContactsForRestoreUseCase: ExportContactsForRestoreUseCase,
@@ -26,7 +26,7 @@ class RestoreSummaryViewModel2(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
-        RestoreSummaryState2(
+        RestoreSummaryState(
             isInitialized = false,
             countContacts = 0,
             countCallLogs = 0,
@@ -105,41 +105,41 @@ class RestoreSummaryViewModel2(
         }
     }
 
-    fun onAction(action: RestoreSummaryAction2) {
+    fun onAction(action: RestoreSummaryAction) {
         when (action) {
-            is RestoreSummaryAction2.StartRestore -> {
+            is RestoreSummaryAction.StartRestore -> {
                 this.runService = action.runService
                 runRestore()
             }
-            is RestoreSummaryAction2.OnUserProceedContactImport -> {
+            is RestoreSummaryAction.OnUserProceedContactImport -> {
                 _state.update {
                     it.copy(contactSummaryState = RestoreSummaryItemState.ON_USER_INPUT_POSITIVE)
                 }
             }
-            is RestoreSummaryAction2.SkipContacts -> {
+            is RestoreSummaryAction.SkipContacts -> {
                 _state.update {
                     it.copy(contactSummaryState = RestoreSummaryItemState.ON_USER_INPUT_NEGATIVE)
                 }
                 runRestore()
             }
-            is RestoreSummaryAction2.OnContactImported -> {
+            is RestoreSummaryAction.OnContactImported -> {
                 _state.update {
                     it.copy(contactSummaryState = RestoreSummaryItemState.DONE)
                 }
                 runRestore()
             }
-            is RestoreSummaryAction2.OnUserProceedSetDefaultSmsApp -> {
+            is RestoreSummaryAction.OnUserProceedSetDefaultSmsApp -> {
                 _state.update {
                     it.copy(smsSummaryState = RestoreSummaryItemState.ON_USER_INPUT_POSITIVE)
                 }
             }
-            is RestoreSummaryAction2.SkipSms -> {
+            is RestoreSummaryAction.SkipSms -> {
                 _state.update {
                     it.copy(smsSummaryState = RestoreSummaryItemState.ON_USER_INPUT_NEGATIVE)
                 }
                 runRestore()
             }
-            is RestoreSummaryAction2.OnDefaultSmsAppSet -> {
+            is RestoreSummaryAction.OnDefaultSmsAppSet -> {
                 val isDefault = contextSource.checkPermission(smsPermission)
                 if (isDefault) {
                     _state.update {
