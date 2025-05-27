@@ -1,9 +1,9 @@
 package balti.migrate.backup.ui.screens.listScreen.contactBackupSelection
 
-import android.Manifest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import balti.migrate.common.utils.ListItemUtils
+import balti.migrate.common.utils.PermissionUtils
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.ReadContactsForBackupUseCase
 import baltiapps.migrate.domain.common.sources.ContextSource
@@ -25,14 +25,12 @@ class ContactBackupSelectionViewModel(
     private val _state = MutableStateFlow(ContactBackupSelectionState())
     val state = _state.asStateFlow()
 
-    val permission = Manifest.permission.READ_CONTACTS
-
     init {
         loadData()
     }
 
     private fun loadData() {
-        if (!contextSource.checkPermission(permission)) {
+        if (!contextSource.checkPermission(PermissionUtils.contactsReadPermission)) {
             _state.update { it.copy(hasPermission = false) }
             return
         }

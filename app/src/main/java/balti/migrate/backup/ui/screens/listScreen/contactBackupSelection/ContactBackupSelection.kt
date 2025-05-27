@@ -41,7 +41,7 @@ fun ContactBackupSelection(
         onToggleLocalContactsVisibility = {
             viewModel.performAction(ContactBackupSelectionAction.ToggleLocalContactsVisibility(it))
         },
-        requestPermission = PermissionUtils.requestPermission(viewModel.permission) {
+        requestPermission = PermissionUtils.requestPermission(PermissionUtils.contactsReadPermission) {
             viewModel.performAction(ContactBackupSelectionAction.OnPermissionResult(it))
         },
         onItemToggled = {

@@ -42,7 +42,7 @@ fun SmsBackupSelection(
         onItemToggled = { item ->
             viewModel.performAction(SmsBackupSelectionAction.ToggleSmsItem(item))
         },
-        requestPermission = PermissionUtils.requestPermission(viewModel.permission) {
+        requestPermission = PermissionUtils.requestPermission(PermissionUtils.smsReadPermission) {
             viewModel.performAction(SmsBackupSelectionAction.OnPermissionResult(it))
         },
         onNext = {

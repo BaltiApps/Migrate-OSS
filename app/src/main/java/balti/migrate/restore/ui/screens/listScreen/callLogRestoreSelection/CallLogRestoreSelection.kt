@@ -38,7 +38,7 @@ fun CallLogRestoreSelection(
         onItemToggled = {
             viewModel.onAction(CallLogRestoreSelectionAction.ToggleCallLogItem(it))
         },
-        requestPermission = PermissionUtils.requestPermissions(viewModel.permissionList) {
+        requestPermission = PermissionUtils.requestPermissions(PermissionUtils.callLogPermissions) {
             viewModel.onAction(CallLogRestoreSelectionAction.OnPermissionResult(it))
         },
         onNext = {

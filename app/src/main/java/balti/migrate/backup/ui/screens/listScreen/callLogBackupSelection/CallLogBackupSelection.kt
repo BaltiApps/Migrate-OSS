@@ -39,7 +39,7 @@ fun CallLogBackupSelection(
         onDeselectAll = {
             viewModel.performAction(CallLogBackupSelectionAction.ToggleAllCallLog(false))
         },
-        requestPermission = PermissionUtils.requestPermissions(viewModel.permissionList) {
+        requestPermission = PermissionUtils.requestPermissions(PermissionUtils.callLogPermissions) {
             viewModel.performAction(CallLogBackupSelectionAction.OnPermissionResult(it))
         },
         onItemToggled = {

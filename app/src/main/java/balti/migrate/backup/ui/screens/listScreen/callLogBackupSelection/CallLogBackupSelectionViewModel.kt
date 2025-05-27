@@ -1,9 +1,9 @@
 package balti.migrate.backup.ui.screens.listScreen.callLogBackupSelection
 
-import android.Manifest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import balti.migrate.common.utils.ListItemUtils
+import balti.migrate.common.utils.PermissionUtils
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.ReadCallLogForBackupUseCase
 import baltiapps.migrate.domain.common.sources.ContextSource
@@ -25,17 +25,12 @@ class CallLogBackupSelectionViewModel(
     private val _state = MutableStateFlow(CallLogBackupSelectionState())
     val state = _state.asStateFlow()
 
-    val permissionList = listOf(
-        Manifest.permission.READ_CALL_LOG,
-        Manifest.permission.WRITE_CALL_LOG,
-    )
-
     init {
         loadData()
     }
 
     private fun loadData() {
-        if (!contextSource.checkPermissions(permissionList)) {
+        if (!contextSource.checkPermissions(PermissionUtils.callLogPermissions)) {
             _state.update { it.copy(hasPermission = false) }
             return
         }
