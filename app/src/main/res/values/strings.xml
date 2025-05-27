@@ -145,7 +145,6 @@
     <string name="delegated_restore">Delegated restore</string>
     <string name="contacts_to_restore">Contacts to restore - %d</string>
     <string name="special_permissions_required">Special permissions required</string>
-    <string name="set_as_default_sms_app">Set as default SMS app</string>
     <string name="migrate_restore">Data to be restored by Migrate</string>
     <string name="call_logs_to_restore">Call logs to restore - %d</string>
     <string name="sms_to_restore">SMS to restore - %d</string>
@@ -155,6 +154,12 @@
         Migrate needs to be temporarily set as the default SMS app to restore SMS.\n
         You will be prompted to change the SMS app after the whole restore process is finished.\n
     </string>
+
+    <!--SummaryItem.kt-->
+    <string name="contact_count">Contact count</string>
+    <string name="call_log_count">Call log count</string>
+    <string name="sms_count">SMS count</string>
+    <string name="set_as_default_sms_app">Set as default SMS app</string>
 
     <!--RestoreProgressScreenViewModel.kt-->
     <string name="toast_text_change_sms_app">Open \"SMS app\" and change it.</string>

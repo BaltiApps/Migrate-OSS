@@ -18,6 +18,7 @@ import balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection.Conta
 import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestoreSelectionViewModel
 import balti.migrate.restore.ui.screens.progressScreen.RestoreProgressScreenViewModel
 import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummaryViewModel
+import balti.migrate.restore.ui.screens.restoreSummary2.RestoreSummaryViewModel2
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
@@ -138,6 +139,7 @@ val restoreDiModule = module {
     viewModelOf(::CallLogRestoreSelectionViewModel)
     viewModelOf(::SmsRestoreSelectionViewModel)
     viewModelOf(::RestoreSummaryViewModel)
+    viewModelOf(::RestoreSummaryViewModel2)
     viewModel {
         RestoreProgressScreenViewModel(
             contextSource = get(),
