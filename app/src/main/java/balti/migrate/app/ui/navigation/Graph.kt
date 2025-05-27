@@ -21,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import balti.migrate.R
 import balti.migrate.app.ui.components.MainScreenNavContainer
+import balti.migrate.app.ui.screens.appSettings.AppSettings
 import balti.migrate.app.ui.screens.home.ScreenHome
 import balti.migrate.app.ui.screens.setupPermission.SetupPermissionScreen
 import balti.migrate.backup.data.service.BackupService
@@ -38,6 +39,7 @@ import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestor
 import balti.migrate.restore.ui.screens.progressScreen.RestoreProgressScreen
 import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummary
 import baltiapps.migrate.domain.backup.model.BackupLocation
+import baltiapps.migrate.domain.common.sources.Preferences
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -48,6 +50,7 @@ fun Graph(
     startRestoreService: () -> Unit,
     cancelRestore: () -> Unit,
     shouldShowPermissionScreen: () -> Boolean,
+    setDarkMode: (Preferences.DarkMode) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val appNavBarItems = listOf(

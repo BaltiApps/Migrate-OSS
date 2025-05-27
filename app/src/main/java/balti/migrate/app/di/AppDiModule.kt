@@ -1,5 +1,6 @@
 package balti.migrate.app.di
 
+import balti.migrate.app.MainActivityViewModel
 import balti.migrate.app.ui.navigation.HomeGraphViewModel
 import balti.migrate.app.ui.navigation.RestoreRouteChoicesViewModel
 import balti.migrate.app.ui.screens.home.ScreenHomeViewModel
@@ -10,6 +11,8 @@ import org.koin.dsl.module
 val appDiModule = module {
 
     /* ViewModel */
+
+    viewModelOf(::MainActivityViewModel)
 
     viewModelOf(::HomeGraphViewModel)
     viewModelOf(::RestoreRouteChoicesViewModel)
