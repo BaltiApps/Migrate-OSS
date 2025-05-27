@@ -10,7 +10,11 @@ class AppSettingsViewModel(
     private val preferences: Preferences,
 ): ViewModel() {
 
-    private val _state = MutableStateFlow(AppSettingsState())
+    private val _state = MutableStateFlow(
+        AppSettingsState(
+            darkMode = preferences.getDarkMode(),
+        )
+    )
     val state = _state.asStateFlow()
 
     fun onAction(action: AppSettingsAction) {
