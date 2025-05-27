@@ -143,11 +143,8 @@
     <!--RestoreSummary.kt-->
     <string name="restore_summary">Restore summary</string>
     <string name="delegated_restore">Delegated restore</string>
-    <string name="contacts_to_restore">Contacts to restore - %d</string>
     <string name="special_permissions_required">Special permissions required</string>
     <string name="migrate_restore">Data to be restored by Migrate</string>
-    <string name="call_logs_to_restore">Call logs to restore - %d</string>
-    <string name="sms_to_restore">SMS to restore - %d</string>
     <string name="exporting_percentage">Exporting - %d%%</string>
     <string name="contacts_delegate_description">Select an app to import contacts, this can be the default contacts app in most devices.</string>
     <string name="default_sms_app_description">
@@ -156,9 +153,9 @@
     </string>
 
     <!--SummaryItem.kt-->
-    <string name="contact_count">Contact count</string>
-    <string name="call_log_count">Call log count</string>
-    <string name="sms_count">SMS count</string>
+    <string name="contacts_to_restore">Contacts to restore - %d</string>
+    <string name="call_logs_to_restore">Call logs to restore - %d</string>
+    <string name="sms_to_restore">SMS to restore - %d</string>
     <string name="set_as_default_sms_app">Set as default SMS app</string>
 
     <!--RestoreProgressScreenViewModel.kt-->

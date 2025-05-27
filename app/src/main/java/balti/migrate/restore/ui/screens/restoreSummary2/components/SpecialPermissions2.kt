@@ -42,7 +42,7 @@ fun SpecialPermissions2(
         }
         Spacer(Modifier.size(8.dp))
         SummaryItem2(
-            headline = stringResource(R.string.set_as_default_sms_app),
+            headlineStringRes = R.string.set_as_default_sms_app,
             count = null,
             icon = Icons.Outlined.Sms,
             state = state.smsSummaryState,

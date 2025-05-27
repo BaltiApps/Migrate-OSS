@@ -43,7 +43,7 @@ fun DelegatedRestore2(
         }
         Spacer(Modifier.size(8.dp))
         SummaryItem2(
-            headline = stringResource(R.string.contact_count),
+            headlineStringRes = R.string.contacts_to_restore,
             count = state.countContacts,
             icon = Icons.Outlined.Contacts,
             state = state.contactSummaryState,

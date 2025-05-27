@@ -44,13 +44,13 @@ fun StandardRestore2(
         }
         Spacer(Modifier.size(8.dp))
         SummaryItem2(
-            headline = stringResource(R.string.call_log_count),
+            headlineStringRes = R.string.call_logs_to_restore,
             count = state.countCallLogs,
             icon = Icons.Outlined.Call,
             state = RestoreSummaryItemState.UNKNOWN,
         )
         SummaryItem2(
-            headline = stringResource(R.string.sms_count),
+            headlineStringRes = R.string.sms_to_restore,
             count = state.countCallLogs,
             icon = Icons.Outlined.Sms,
             state = RestoreSummaryItemState.UNKNOWN,
