@@ -11,8 +11,7 @@ class MainActivityViewModel(
 
     val darkMode = mutableStateOf(preferences.getDarkMode())
 
-    fun setDarkMode(value: DarkMode) {
-        preferences.setDarkMode(value)
+    fun updateUiState(value: DarkMode) {
         darkMode.value = value
     }
 

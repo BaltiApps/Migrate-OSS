@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
                     startRestoreService = ::startRestoreService,
                     cancelRestore = ::cancelRestore,
                     shouldShowPermissionScreen = viewModel::shouldShowPermissionScreen,
-                    setDarkMode = viewModel::setDarkMode,
+                    updateUiState = viewModel::updateUiState,
                 )
             }
         }

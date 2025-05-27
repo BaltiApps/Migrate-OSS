@@ -24,14 +24,14 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AppSettings(
-    onChangeDarkMode: (Preferences.DarkMode) -> Unit,
+    updateUiState: (Preferences.DarkMode) -> Unit,
     viewModel: AppSettingsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     Content(
         state = state,
         onChangeDarkMode = {
-            viewModel.onAction(AppSettingsAction.ChangeDarkMode(it, onChangeDarkMode))
+            viewModel.onAction(AppSettingsAction.ChangeDarkMode(it, updateUiState))
         },
     )
 }

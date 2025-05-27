@@ -20,7 +20,8 @@ class AppSettingsViewModel(
     fun onAction(action: AppSettingsAction) {
         when (action) {
             is AppSettingsAction.ChangeDarkMode -> {
-                action.onSetDarkMode(action.darkMode)
+                preferences.setDarkMode(action.darkMode)
+                action.updateUiState(action.darkMode)
                 _state.update {
                     it.copy(darkMode = action.darkMode)
                 }
