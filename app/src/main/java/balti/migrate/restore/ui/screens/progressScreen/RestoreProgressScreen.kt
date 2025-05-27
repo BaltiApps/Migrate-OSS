@@ -2,6 +2,7 @@ package balti.migrate.restore.ui.screens.progressScreen
 
 import android.content.Intent
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -67,6 +68,9 @@ fun RestoreProgressScreen(
         },
         changeSmsApp = PermissionUtils.requestSpecialPermission(
             intent = Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS),
+            preLaunch = {
+                Toast.makeText(context, R.string.toast_text_change_sms_app, Toast.LENGTH_SHORT).show()
+            },
             onResult = {
                 viewModel.performAction(RestoreProgressScreenAction.OnChangeSmsApp)
             }
