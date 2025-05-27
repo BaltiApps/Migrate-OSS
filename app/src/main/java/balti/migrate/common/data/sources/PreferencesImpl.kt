@@ -3,6 +3,7 @@ package balti.migrate.common.data.sources
 import android.content.Context
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.sources.Preferences
+import baltiapps.migrate.domain.common.sources.Preferences.DarkMode
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -16,6 +17,20 @@ class PreferencesImpl(
 
     private val editor by lazy {
         sharedPreferences.edit()
+    }
+
+    override fun getDarkMode(): DarkMode {
+        val darkModeString = sharedPreferences.getString(Preferences.KEY_DARK_MODE, "")
+        val modes = DarkMode.entries.map { it.name }
+        return if (darkModeString in modes) {
+            DarkMode.valueOf(darkModeString!!)
+        }
+        else DarkMode.SYSTEM
+    }
+
+    override fun setDarkMode(value: DarkMode) {
+        editor.putString(Preferences.KEY_DARK_MODE, value.name)
+        editor.apply()
     }
 
     override fun saveBackupProgressList(list: List<Progress>) {

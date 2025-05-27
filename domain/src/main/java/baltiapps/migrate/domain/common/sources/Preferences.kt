@@ -11,7 +11,17 @@ interface Preferences {
         const val KEY_SHOULD_SHOW_PERMISSION_SCREEN = "should_show_permission_screen"
         const val KEY_SHOULD_SHOW_APP_BACKUP_UNAVAILABLE = "should_show_app_backup_unavailable"
         const val KEY_CUSTOM_BACKUP_LOCATION = "custom_backup_location"
+        const val KEY_DARK_MODE = "dark_mode"
     }
+
+    enum class DarkMode {
+        LIGHT,
+        DARK,
+        SYSTEM,
+    }
+
+    fun getDarkMode(): DarkMode
+    fun setDarkMode(value: DarkMode)
 
     fun saveBackupProgressList(list: List<Progress>)
     fun getLastSavedBackupProgressList() : List<Progress>
