@@ -1,8 +1,11 @@
 package balti.migrate.backup.ui.screens.listScreen.contactBackupSelection
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -13,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import balti.migrate.R
@@ -29,6 +33,7 @@ fun LocalAndSyncedContacts(
     onToggleSyncedContactsVisibility: (isVisible: Boolean) -> Unit,
     onToggleLocalContactsVisibility: (isVisible: Boolean) -> Unit,
     onItemToggled: (item: ContactListItem) -> Unit,
+    showSyncedContactsWhyNotRecommended: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val syncedContactCount = syncedContactList.size
@@ -43,10 +48,22 @@ fun LocalAndSyncedContacts(
         stickyHeader {
             ContactHeader(
                 header = {
-                    Text(
-                        text = stringResource(R.string.synced_contacts),
-                        style = MaterialTheme.typography.labelLarge,
-                    )
+                    Row {
+                        Text(
+                            text = stringResource(R.string.synced_contacts),
+                            style = MaterialTheme.typography.labelLarge,
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                        Text(
+                            text = stringResource(R.string.why),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.clickable {
+                                showSyncedContactsWhyNotRecommended()
+                            }
+                        )
+                    }
                     Text(
                         text = "${stringResource(R.string.selected_items)} - $syncedCountString",
                         style = MaterialTheme.typography.labelLarge,
@@ -206,5 +223,6 @@ private fun ContactPreview() {
         onToggleSyncedContactsVisibility = { syncedContactsExpanded = it },
         onToggleLocalContactsVisibility = { localContactsExpanded = it },
         onItemToggled = {},
+        showSyncedContactsWhyNotRecommended = {},
     )
 }

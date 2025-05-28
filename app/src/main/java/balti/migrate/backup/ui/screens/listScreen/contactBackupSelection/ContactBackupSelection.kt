@@ -124,6 +124,7 @@ private fun Content(
                 onToggleSyncedContactsVisibility = onToggleSyncedContactsVisibility,
                 onToggleLocalContactsVisibility = onToggleLocalContactsVisibility,
                 onItemToggled = onItemToggled,
+                showSyncedContactsWhyNotRecommended = showSyncedContactsWhyNotRecommended,
             )
         }
     }

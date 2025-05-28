@@ -28,7 +28,7 @@
     <string name="label_contacts_backup">Contacts backup</string>
     <string name="expand_list">Expand list</string>
     <string name="collapse_list">Collapse list</string>
-    <string name="synced_contacts">Synced contacts - backup not recommended</string>
+    <string name="synced_contacts">Synced contacts - not recommended</string>
     <string name="local_contacts">Local contacts</string>"
     <string name="contacts_backup_permission_description">
         Please grant permission to read the contacts.\n
