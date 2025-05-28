@@ -1,6 +1,6 @@
 ✅️ icons on restore task explainer dialogs
 
-notifications
+✅️ notifications
 - ✅️ after backup / restore is completed - 26 Apr 2025
 - ✅️ when backup / restore is cancelled - 26 Apr 2025
 - ✅️ when backup / restore errors out - 26 Apr 2025
@@ -12,10 +12,10 @@ notifications
 
 ✅️ back button not working in first backup selection screen - not reproducible anymore
 
-contacts selection - for combination of local and synced contacts:
-✅️ - make header stick while scrolling - 26 May 2025
-- show the "Why" button for synced contacts header
-✅️ - synced and local contact count - 26 May 2025
+✅️ contacts selection - for combination of local and synced contacts:
+- ✅️ make header stick while scrolling - 26 May 2025
+- ✅️ show the "Why" button for synced contacts header - 29 May 2025
+- ✅️ synced and local contact count - 26 May 2025
 
 ✅️ show count of (items_selected / total_items) for each backup and restore selection screen - 26 May 2025
 
@@ -60,7 +60,8 @@ remove fab when loading list items or awaiting user actions
 
 change color of fab when showing loading status
 
-slide button to start backup / restore
+slide button to start backup
+slide button to start restore
 
 backup summary screen
 
@@ -89,3 +90,5 @@ move permission checks outside of contextSource
 ✅️ change app icon in AboutDialog - 29 May 2025
 
 ✅️ fix navigation bug in restore route - 29 May 2025
+
+✅️ show title text in restore summary explainer dialogs - 29 May 2025
