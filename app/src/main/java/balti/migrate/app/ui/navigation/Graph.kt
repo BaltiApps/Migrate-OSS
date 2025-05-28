@@ -203,6 +203,7 @@ fun Graph(
                     BrowseRestoreDirectory(
                         navigateUp = navController::navigateUp,
                         onBackupSelected = {
+                            viewModel.resetRestorePointer()
                             navController.navigate(viewModel.findNextRoute())
                         }
                     )

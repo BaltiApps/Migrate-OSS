@@ -30,4 +30,8 @@ class RestoreRouteChoicesViewModel(
     fun onBackFromRoute() {
         pointerIndex--
     }
+
+    fun resetRestorePointer() {
+        pointerIndex = -1
+    }
 }
