@@ -52,7 +52,6 @@ fun Graph(
     shouldShowPermissionScreen: () -> Boolean,
     updateUiState: (darkMode: Preferences.DarkMode, followSystemColors: Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: GraphViewModel = koinViewModel()
 ) {
     val appNavBarItems = listOf(
         AppNavBarItem(
@@ -85,6 +84,7 @@ fun Graph(
             )
         }
         composable<RouteHome> {
+            val viewModel = it.getSharedViewModel<HomeGraphViewModel>(navController)
             MainScreenNavContainer(
                 appNavBarItems = appNavBarItems,
                 currentNavRoute = appNavBarItems[0],
@@ -199,50 +199,55 @@ fun Graph(
                 startDestination = RouteDirectorySelection
             ) {
                 composable<RouteDirectorySelection> {
+                    val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
                     BrowseRestoreDirectory(
                         navigateUp = navController::navigateUp,
                         onBackupSelected = {
-                            navController.navigate(viewModel.findNextRestoreRoute())
+                            navController.navigate(viewModel.findNextRoute())
                         }
                     )
                 }
                 composable<RouteCallLogRestoreSelection> {
+                    val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
                     CallLogRestoreSelection(
                         navigateUp = {
-                            viewModel.onBackFromRestoreRoute()
+                            viewModel.onBackFromRoute()
                             navController.navigateUp()
                         },
                         goToNextScreen = {
-                            navController.navigate(viewModel.findNextRestoreRoute())
+                            navController.navigate(viewModel.findNextRoute())
                         }
                     )
                 }
                 composable<RouteSmsRestoreSelection> {
+                    val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
                     SmsRestoreSelection(
                         navigateUp = {
-                            viewModel.onBackFromRestoreRoute()
+                            viewModel.onBackFromRoute()
                             navController.navigateUp()
                         },
                         goToNextScreen = {
-                            navController.navigate(viewModel.findNextRestoreRoute())
+                            navController.navigate(viewModel.findNextRoute())
                         }
                     )
                 }
                 composable<RouteContactRestoreSelection> {
+                    val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
                     ContactRestoreSelection(
                         navigateUp = {
-                            viewModel.onBackFromRestoreRoute()
+                            viewModel.onBackFromRoute()
                             navController.navigateUp()
                         },
                         goToNextScreen = {
-                            navController.navigate(viewModel.findNextRestoreRoute())
+                            navController.navigate(viewModel.findNextRoute())
                         }
                     )
                 }
                 composable<RouteRestoreSummary> {
+                    val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
                     RestoreSummary(
                         navigateUp = {
-                            viewModel.onBackFromRestoreRoute()
+                            viewModel.onBackFromRoute()
                             navController.navigateUp()
                         },
                         startRestoreServiceAndGoToNextScreen = {

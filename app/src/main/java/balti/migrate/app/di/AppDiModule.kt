@@ -1,7 +1,8 @@
 package balti.migrate.app.di
 
 import balti.migrate.app.MainActivityViewModel
-import balti.migrate.app.ui.navigation.GraphViewModel
+import balti.migrate.app.ui.navigation.HomeGraphViewModel
+import balti.migrate.app.ui.navigation.RestoreRouteChoicesViewModel
 import balti.migrate.app.ui.screens.appSettings.AppSettingsViewModel
 import balti.migrate.app.ui.screens.home.ScreenHomeViewModel
 import balti.migrate.app.ui.screens.setupPermission.SetupPermissionScreenViewModel
@@ -14,7 +15,8 @@ val appDiModule = module {
 
     viewModelOf(::MainActivityViewModel)
 
-    viewModelOf(::GraphViewModel)
+    viewModelOf(::HomeGraphViewModel)
+    viewModelOf(::RestoreRouteChoicesViewModel)
     viewModelOf(::SetupPermissionScreenViewModel)
     viewModelOf(::ScreenHomeViewModel)
     viewModelOf(::AppSettingsViewModel)
