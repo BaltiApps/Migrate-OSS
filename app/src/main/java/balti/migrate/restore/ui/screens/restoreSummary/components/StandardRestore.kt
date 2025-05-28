@@ -43,17 +43,21 @@ fun StandardRestore(
             HorizontalDivider()
         }
         Spacer(Modifier.size(8.dp))
-        SummaryItem(
-            headlineStringRes = R.string.call_logs_to_restore,
-            count = state.countCallLogs,
-            icon = Icons.Outlined.Call,
-            state = RestoreSummaryItemState.UNKNOWN,
-        )
-        SummaryItem(
-            headlineStringRes = R.string.sms_to_restore,
-            count = state.countSms,
-            icon = Icons.Outlined.Sms,
-            state = RestoreSummaryItemState.UNKNOWN,
-        )
+        if (state.countCallLogs > 0) {
+            SummaryItem(
+                headlineStringRes = R.string.call_logs_to_restore,
+                count = state.countCallLogs,
+                icon = Icons.Outlined.Call,
+                state = RestoreSummaryItemState.UNKNOWN,
+            )
+        }
+        if (state.countSms > 0) {
+            SummaryItem(
+                headlineStringRes = R.string.sms_to_restore,
+                count = state.countSms,
+                icon = Icons.Outlined.Sms,
+                state = RestoreSummaryItemState.UNKNOWN,
+            )
+        }
     }
 }
