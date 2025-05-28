@@ -69,6 +69,7 @@ fun RestoreSummary(
         },
         showDialogContactImport = {
             SimpleYesNoDialog(
+                titleText = stringResource(R.string.contacts_delegate_title),
                 dialogText = stringResource(R.string.contacts_delegate_description),
                 onProceed = {
                     viewModel.onAction(RestoreSummaryAction.OnUserProceedContactImport)
@@ -96,6 +97,7 @@ fun RestoreSummary(
         ),
         showDialogDefaultSmsSet = {
             SimpleYesNoDialog(
+                titleText = stringResource(R.string.default_sms_app_title),
                 dialogText = stringResource(R.string.default_sms_app_description),
                 onProceed = {
                     viewModel.onAction(RestoreSummaryAction.OnUserProceedSetDefaultSmsApp)

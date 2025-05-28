@@ -148,7 +148,9 @@
     <string name="special_permissions_required">Special permissions required</string>
     <string name="migrate_restore">Data to be restored by Migrate</string>
     <string name="exporting_percentage">Exporting - %d%%</string>
+    <string name="contacts_delegate_title">Import contacts</string>
     <string name="contacts_delegate_description">Select an app to import contacts, this can be the default contacts app in most devices.</string>
+    <string name="default_sms_app_title">Set as SMS app (temporary)</string>
     <string name="default_sms_app_description">
         Migrate needs to be temporarily set as the default SMS app to restore SMS.\n
         You will be prompted to change the SMS app after the whole restore process is finished.\n
