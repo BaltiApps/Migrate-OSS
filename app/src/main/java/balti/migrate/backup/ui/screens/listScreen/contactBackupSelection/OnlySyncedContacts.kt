@@ -28,6 +28,7 @@ fun OnlySyncedContacts(
     shouldShowContacts: Boolean,
     onShowContactsConfirmation: () -> Unit,
     onItemToggled: (item: ContactListItem) -> Unit,
+    showSyncedContactsWhyNotRecommended: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (shouldShowContacts) {
@@ -61,7 +62,7 @@ fun OnlySyncedContacts(
             )
             Spacer(Modifier.size(12.dp))
             TextButton(
-                onClick = { showSyncedContactsWarningDialog() }
+                onClick = { showSyncedContactsWhyNotRecommended() }
             ) {
                 Text(stringResource(R.string.why))
             }

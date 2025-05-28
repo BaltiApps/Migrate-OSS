@@ -47,6 +47,9 @@ fun ContactBackupSelection(
         onItemToggled = {
             viewModel.performAction(ContactBackupSelectionAction.ToggleContactItem(it))
         },
+        showSyncedContactsWhyNotRecommended = {
+            showSyncedContactsWarningDialog()
+        },
         onNext = {
             viewModel.performAction(ContactBackupSelectionAction.StageContacts(goToNextScreen))
         }
@@ -63,6 +66,7 @@ private fun Content(
     onToggleLocalContactsVisibility: (isVisible: Boolean) -> Unit,
     requestPermission: () -> Unit,
     onItemToggled: (item: ContactListItem) -> Unit,
+    showSyncedContactsWhyNotRecommended: () -> Unit,
     onNext: () -> Unit,
 ) {
     val syncedContactsExpanded = state().syncedContactsExpanded
@@ -104,6 +108,7 @@ private fun Content(
                     onToggleSyncedContactsVisibility(true)
                 },
                 onItemToggled = onItemToggled,
+                showSyncedContactsWhyNotRecommended = showSyncedContactsWhyNotRecommended,
             )
             shouldShowOnlyLocalContacts -> OnlyLocalContacts(
                 localContactList = localContactList,
