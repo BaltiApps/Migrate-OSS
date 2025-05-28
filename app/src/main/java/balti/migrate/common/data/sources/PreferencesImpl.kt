@@ -33,6 +33,15 @@ class PreferencesImpl(
         editor.apply()
     }
 
+    override fun shouldFollowSystemColors(): Boolean {
+        return sharedPreferences.getBoolean(Preferences.KEY_FOLLOW_SYSTEM_COLORS, false)
+    }
+
+    override fun setFollowSystemColors(value: Boolean) {
+        editor.putBoolean(Preferences.KEY_FOLLOW_SYSTEM_COLORS, value)
+        editor.apply()
+    }
+
     override fun saveBackupProgressList(list: List<Progress>) {
         editor.putString(Preferences.KEY_SAVED_BACKUP_PROGRESS_LIST, Json.encodeToString(list))
         editor.apply()

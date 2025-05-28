@@ -12,6 +12,7 @@ interface Preferences {
         const val KEY_SHOULD_SHOW_APP_BACKUP_UNAVAILABLE = "should_show_app_backup_unavailable"
         const val KEY_CUSTOM_BACKUP_LOCATION = "custom_backup_location"
         const val KEY_DARK_MODE = "dark_mode"
+        const val KEY_FOLLOW_SYSTEM_COLORS = "follow_system_colors"
     }
 
     enum class DarkMode {
@@ -22,6 +23,9 @@ interface Preferences {
 
     fun getDarkMode(): DarkMode
     fun setDarkMode(value: DarkMode)
+
+    fun shouldFollowSystemColors(): Boolean
+    fun setFollowSystemColors(value: Boolean)
 
     fun saveBackupProgressList(list: List<Progress>)
     fun getLastSavedBackupProgressList() : List<Progress>
