@@ -97,6 +97,7 @@ dependencies {
     implementation(libs.com.jakewharton.timber)
     implementation(libs.com.google.guava)
     implementation(libs.androidx.documentfile)
+    implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

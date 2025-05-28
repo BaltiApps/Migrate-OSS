@@ -2,9 +2,10 @@ package balti.migrate.app
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import balti.migrate.app.ui.navigation.Graph
 import balti.migrate.app.ui.theme.MigrateTheme
@@ -20,12 +21,13 @@ import baltiapps.migrate.domain.backup.model.BackupLocation
 import baltiapps.migrate.domain.common.sources.Preferences.DarkMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainActivityViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setAppDarkMode(viewModel.darkMode.value)
         enableEdgeToEdge()
         setContent {
             MigrateTheme(
@@ -42,10 +44,24 @@ class MainActivity : ComponentActivity() {
                     startRestoreService = ::startRestoreService,
                     cancelRestore = ::cancelRestore,
                     shouldShowPermissionScreen = viewModel::shouldShowPermissionScreen,
-                    updateUiState = viewModel::updateUiState,
+                    updateUiState = { darkMode, followSystemColors ->
+                        setAppDarkMode(darkMode)
+                        viewModel.updateUiState(darkMode, followSystemColors)
+                    },
                 )
             }
         }
+    }
+
+    private fun setAppDarkMode(darkMode: DarkMode) {
+        println(darkMode)
+        AppCompatDelegate.setDefaultNightMode(
+            when(darkMode) {
+                DarkMode.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+                DarkMode.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+                DarkMode.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            }
+        )
     }
 
     private fun startBackupService(backupLocation: BackupLocation) {
