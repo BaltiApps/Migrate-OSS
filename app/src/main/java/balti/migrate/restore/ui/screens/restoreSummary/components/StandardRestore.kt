@@ -51,7 +51,7 @@ fun StandardRestore(
         )
         SummaryItem(
             headlineStringRes = R.string.sms_to_restore,
-            count = state.countCallLogs,
+            count = state.countSms,
             icon = Icons.Outlined.Sms,
             state = RestoreSummaryItemState.UNKNOWN,
         )
