@@ -86,4 +86,6 @@ move permission checks outside of contextSource
 
 ✅️ color theme - 28 May 2025
 
-✅️ change app icon in AboutDialog - 28 May 2025
+✅️ change app icon in AboutDialog - 29 May 2025
+
+✅️ fix navigation bug in restore route - 29 May 2025
