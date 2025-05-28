@@ -10,9 +10,11 @@ class MainActivityViewModel(
 ): ViewModel() {
 
     val darkMode = mutableStateOf(preferences.getDarkMode())
+    val shouldFollowSystemColors = mutableStateOf(preferences.shouldFollowSystemColors())
 
-    fun updateUiState(value: DarkMode) {
-        darkMode.value = value
+    fun updateUiState(darkMode: DarkMode, followSystemColors: Boolean) {
+        this.darkMode.value = darkMode
+        shouldFollowSystemColors.value = followSystemColors
     }
 
     fun shouldShowPermissionScreen(): Boolean {

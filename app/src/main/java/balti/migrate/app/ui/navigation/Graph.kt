@@ -50,7 +50,7 @@ fun Graph(
     startRestoreService: () -> Unit,
     cancelRestore: () -> Unit,
     shouldShowPermissionScreen: () -> Boolean,
-    updateUiState: (Preferences.DarkMode) -> Unit,
+    updateUiState: (darkMode: Preferences.DarkMode, followSystemColors: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val appNavBarItems = listOf(

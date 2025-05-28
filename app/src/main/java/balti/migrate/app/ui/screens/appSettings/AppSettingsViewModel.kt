@@ -13,6 +13,7 @@ class AppSettingsViewModel(
     private val _state = MutableStateFlow(
         AppSettingsState(
             darkMode = preferences.getDarkMode(),
+            shouldFollowSystemColors = preferences.shouldFollowSystemColors(),
         )
     )
     val state = _state.asStateFlow()
@@ -21,9 +22,22 @@ class AppSettingsViewModel(
         when (action) {
             is AppSettingsAction.ChangeDarkMode -> {
                 preferences.setDarkMode(action.darkMode)
-                action.updateUiState(action.darkMode)
+                action.updateUiState(
+                    action.darkMode,
+                    _state.value.shouldFollowSystemColors,
+                )
                 _state.update {
                     it.copy(darkMode = action.darkMode)
+                }
+            }
+            is AppSettingsAction.ChangeShouldFollowSystemColors -> {
+                preferences.setFollowSystemColors(action.shouldFollow)
+                action.updateUiState(
+                    _state.value.darkMode,
+                    action.shouldFollow,
+                )
+                _state.update {
+                    it.copy(shouldFollowSystemColors = action.shouldFollow)
                 }
             }
         }

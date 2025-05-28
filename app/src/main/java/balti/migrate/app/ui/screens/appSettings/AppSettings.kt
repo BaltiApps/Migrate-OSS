@@ -24,7 +24,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AppSettings(
-    updateUiState: (Preferences.DarkMode) -> Unit,
+    updateUiState: (darkMode: Preferences.DarkMode, followSystemColors: Boolean) -> Unit,
     viewModel: AppSettingsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -33,6 +33,9 @@ fun AppSettings(
         onChangeDarkMode = {
             viewModel.onAction(AppSettingsAction.ChangeDarkMode(it, updateUiState))
         },
+        onChangeSystemColors = {
+            viewModel.onAction(AppSettingsAction.ChangeShouldFollowSystemColors(it, updateUiState))
+        },
     )
 }
 
@@ -40,6 +43,7 @@ fun AppSettings(
 private fun Content(
     state: AppSettingsState,
     onChangeDarkMode: (Preferences.DarkMode) -> Unit,
+    onChangeSystemColors: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val commonModifier = Modifier
@@ -88,6 +92,29 @@ private fun Content(
             HorizontalDivider(
                 modifier = commonModifier,
             )
+            ListItem(
+                headlineContent = {
+                    Text(text = stringResource(R.string.color_theme))
+                },
+                supportingContent = {
+                    Text(text = stringResource(R.string.color_theme_desc))
+                },
+            )
+            RadioOption(
+                state = state,
+                followSystemColors = true,
+                label = stringResource(R.string.follow_system),
+                onChangeFollowSystemColors = onChangeSystemColors,
+            )
+            RadioOption(
+                state = state,
+                followSystemColors = false,
+                label = stringResource(R.string.migrate_colors),
+                onChangeFollowSystemColors = onChangeSystemColors,
+            )
+            HorizontalDivider(
+                modifier = commonModifier,
+            )
         }
     }
 }
@@ -114,6 +141,33 @@ private fun RadioOption(
         )
         RadioButton(
             selected = state.darkMode == darkMode,
+            onClick = null,
+        )
+    }
+}
+
+@Composable
+private fun RadioOption(
+    state: AppSettingsState,
+    followSystemColors: Boolean,
+    label: String,
+    onChangeFollowSystemColors: (Boolean) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onChangeFollowSystemColors(followSystemColors)
+            }
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.weight(1f)
+        )
+        RadioButton(
+            selected = state.shouldFollowSystemColors == followSystemColors,
             onClick = null,
         )
     }

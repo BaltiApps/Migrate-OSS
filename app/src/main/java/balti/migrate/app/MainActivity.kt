@@ -34,6 +34,7 @@ class MainActivity : ComponentActivity() {
                     DarkMode.DARK -> true
                     DarkMode.SYSTEM -> isSystemInDarkTheme()
                 },
+                dynamicColor = viewModel.shouldFollowSystemColors.value,
             ) {
                 Graph(
                     startBackupService = ::startBackupService,
