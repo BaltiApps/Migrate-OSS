@@ -7,7 +7,7 @@ plugins {
 
 val versionMajor = 6
 val versionMinor = 0
-val versionPatch = 1
+val versionPatch = 2
 
 android {
     namespace = "balti.migrate"
