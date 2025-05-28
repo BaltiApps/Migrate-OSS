@@ -1,5 +1,6 @@
 package balti.migrate.app.ui.screens.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -89,13 +89,12 @@ fun AboutDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Icon(
+                Image(
                     modifier = Modifier
                         .size(96.dp)
                         .padding(16.dp)
                     ,
-                    painter = painterResource(R.drawable.notification_icon_00),
-                    tint = MaterialTheme.colorScheme.primary,
+                    painter = painterResource(R.drawable.app_icon_round),
                     contentDescription = null,
                 )
                 Text(
