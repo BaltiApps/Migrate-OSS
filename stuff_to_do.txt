@@ -71,3 +71,19 @@ use worker rather than foreground service
 release to F-Droid
 
 ✅️ update privacy policy link
+
+✅️ remove permission launchers from MainActivity - 27 May 2025
+
+✅️ simplify restore summary screen - 27 May 2025
+
+move permission checks outside of contextSource
+
+✅️ move MainActivity to app module - 27 May 2025
+
+✅️ navigation bottom bar to get app settings - 27 May 2025
+
+✅️ dark mode - 28 May 2025
+
+✅️ color theme - 28 May 2025
+
+✅️ change app icon in AboutDialog - 28 May 2025
