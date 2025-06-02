@@ -35,34 +35,8 @@ jobs:
       - name: Build APK
         run: ./gradlew assembleRelease
 
-      - name: Find APK path
-        id: find_apk
-        run: |
-          APK_PATH=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
-          echo "apk_path=$APK_PATH" | tee -a $GITHUB_OUTPUT
-
       - name: Build AAB
         run: ./gradlew bundleRelease
-
-      - name: Find AAB path
-        id: find_aab
-        run: |
-          AAB_PATH=$(find app/build/outputs/bundle/release -name "*.aab" | head -n 1)
-          echo "aab_path=$AAB_PATH" | tee -a $GITHUB_OUTPUT
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: Migrate-APK
-          path: ${{ steps.find_apk.outputs.apk_path }}
-          if-no-files-found: error
-
-      - name: Upload AAB
-        uses: actions/upload-artifact@v4
-        with:
-          name: Migrate-AAB
-          path: ${{ steps.find_aab.outputs.aab_path }}
-          if-no-files-found: error
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
