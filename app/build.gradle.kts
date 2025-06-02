@@ -71,6 +71,15 @@ android {
         setProperty("archivesBaseName", "Migrate-v${versionMajor}.${versionMinor}.${versionPatch}")
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = getKeyStoreFile(getEnvValue("KEYSTORE_BASE64") ?: "")
+            storePassword = getEnvValue("KEYSTORE_PASSWORD")
+            keyAlias = getEnvValue("KEY_ALIAS")
+            keyPassword = getEnvValue("KEY_PASSWORD")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -78,8 +87,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
