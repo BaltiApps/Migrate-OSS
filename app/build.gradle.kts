@@ -41,6 +41,8 @@ android {
         buildConfigField("String", "SCHEMA", "\"${schema}\"")
         buildConfigField("String", "HOST_PROGRESS_BACKUP", "\"${hostProgressBackup}\"")
         buildConfigField("String", "HOST_PROGRESS_RESTORE", "\"${hostProgressRestore}\"")
+
+        setProperty("archivesBaseName", "Migrate-v${versionMajor}.${versionMinor}.${versionPatch}")
     }
 
     buildTypes {
