@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build APK and AAB
+    name: Build and release
     runs-on: ubuntu-latest
 
     env:
