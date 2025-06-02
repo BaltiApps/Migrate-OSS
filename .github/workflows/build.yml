@@ -10,6 +10,12 @@ jobs:
     name: Build APK and AAB
     runs-on: ubuntu-latest
 
+    env:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -25,11 +31,6 @@ jobs:
 
       - name: Grant execute permission to gradlew
         run: chmod +x ./gradlew
-
-      - name: Create keystore
-        run: |
-          mkdir -p keystore
-          echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > keystore/release-key.jks
 
       - name: Build APK
         run: ./gradlew assembleRelease
