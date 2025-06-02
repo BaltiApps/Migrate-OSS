@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -8,6 +10,20 @@ plugins {
 val versionMajor = 6
 val versionMinor = 0
 val versionPatch = 2
+
+fun getEnvValue(key: String): String? {
+    val envData = System.getenv(key)
+    if (envData != null) return envData
+
+    val properties = Properties()
+    val propertiesFile = project.rootProject.file("local.properties")
+    if (propertiesFile.exists()) {
+        propertiesFile.inputStream().use {
+            properties.load(it)
+        }
+    }
+    return properties.getProperty(key)
+}
 
 android {
     namespace = "balti.migrate"
