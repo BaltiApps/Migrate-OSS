@@ -1,3 +1,4 @@
+import java.util.Base64
 import java.util.Properties
 
 plugins {
@@ -23,6 +24,15 @@ fun getEnvValue(key: String): String? {
         }
     }
     return properties.getProperty(key)
+}
+
+fun getKeyStoreFile(base64String: String): File {
+    val keystoreDir = File(rootDir, "keystore")
+    val keystoreFile = File(keystoreDir, "release-key.jks")
+    keystoreDir.mkdirs()
+    val decoded = Base64.getDecoder().decode(base64String)
+    keystoreFile.writeBytes(decoded)
+    return keystoreFile
 }
 
 android {
