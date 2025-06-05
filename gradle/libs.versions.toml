@@ -15,7 +15,6 @@ jetbrainsKotlinJvm = "1.9.0"
 coroutinesCore = "1.10.2"
 lifecycleVersion = "2.9.0"
 timberVersion = "5.0.1"
-guavaVersion = "33.3.1-android"
 material3 = "1.4.0-alpha15"
 documentfile = "1.1.0"
 
@@ -45,7 +44,6 @@ koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmo
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesCore" }
 androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "lifecycleVersion" }
 com-jakewharton-timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
-com-google-guava = { module = "com.google.guava:guava", version.ref = "guavaVersion" }
 androidx-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "documentfile" }
 
 [plugins]
