@@ -5,6 +5,8 @@ data class SetupPermissionScreenState(
     val isSmsReadPermissionGranted: Boolean = false,
     val isContactsReadPermissionGranted: Boolean = false,
     val isNotificationPermissionGranted: Boolean = false,
+    val isSuPermissionGranted: Boolean = false,
+    val isAskingSuPermission: Boolean = false,
 ) {
     val isAllPermissionsGranted: Boolean = isCallLogPermissionsGranted &&
             isSmsReadPermissionGranted &&

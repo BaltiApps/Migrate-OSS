@@ -1,16 +1,20 @@
 package balti.migrate.app.ui.screens.setupPermission
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import balti.migrate.common.utils.PermissionUtils
+import balti.migrate.common.utils.SuUtils
 import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.Preferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class SetupPermissionScreenViewModel(
     private val contextSource: ContextSource,
     private val preferences: Preferences,
+    private val suUtils: SuUtils,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SetupPermissionScreenState())
@@ -33,6 +37,27 @@ class SetupPermissionScreenViewModel(
                         contextSource.checkPermission(this)
                     } ?: true,
             )
+        }
+        if (preferences.wasSuPermissionPreviouslyGranted()) {
+            refreshSuPermission()
+        }
+    }
+
+    private fun refreshSuPermission(
+        onSuError: ((error: String) -> Unit)? = null,
+    ) {
+        viewModelScope.launch {
+            _state.update { it.copy(isAskingSuPermission = true) }
+            val isSuGranted = suUtils.checkRootPermission()
+            if (isSuGranted.isFailure) {
+                onSuError?.invoke(isSuGranted.exceptionOrNull()?.message ?: "Unknown error")
+            }
+            _state.update {
+                it.copy(
+                    isAskingSuPermission = false,
+                    isSuPermissionGranted = isSuGranted.isSuccess
+                )
+            }
         }
     }
 
@@ -66,6 +91,9 @@ class SetupPermissionScreenViewModel(
                 if (action.dontShowAgain) {
                     preferences.setShouldShowPermissionScreen(false)
                 }
+            }
+            is SetupPermissionScreenAction.CheckSuPermission -> {
+                refreshSuPermission(action.onError)
             }
         }
     }

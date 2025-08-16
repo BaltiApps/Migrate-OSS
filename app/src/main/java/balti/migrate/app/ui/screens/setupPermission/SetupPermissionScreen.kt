@@ -1,5 +1,7 @@
 package balti.migrate.app.ui.screens.setupPermission
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.Checklist
+import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Contacts
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Sms
@@ -39,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,6 +59,7 @@ fun SetupPermissionScreen(
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     Content(
         state = state,
@@ -76,8 +81,14 @@ fun SetupPermissionScreen(
             // For such devices, notification permission is already granted.
             viewModel.performAction(SetupPermissionScreenAction.OnNotificationPermissionResult(true))
         },
+        requestSuPermission = {
+            viewModel.performAction(SetupPermissionScreenAction.CheckSuPermission {
+                showSuError(context, it)
+            })
+        },
         requestAllPermissions = PermissionUtils.requestPermissions(PermissionUtils.allRuntimePermissions) {
             viewModel.performAction(SetupPermissionScreenAction.OnAllPermissionsResult(it))
+            viewModel.performAction(SetupPermissionScreenAction.CheckSuPermission())
         },
         onAllPermissionsGranted = {
             viewModel.performAction(SetupPermissionScreenAction.OnAllPermissionsGranted)
@@ -91,6 +102,10 @@ fun SetupPermissionScreen(
     )
 }
 
+private fun showSuError(context: Context, error: String) {
+    Toast.makeText(context, error.replace('\n', ' '), Toast.LENGTH_SHORT).show()
+}
+
 @Composable
 private fun Content(
     state: SetupPermissionScreenState,
@@ -98,14 +113,15 @@ private fun Content(
     requestSmsPermission: () -> Unit,
     requestContactsPermission: () -> Unit,
     requestNotificationPermission: () -> Unit,
+    requestSuPermission: () -> Unit,
     requestAllPermissions: () -> Unit,
     onAllPermissionsGranted: () -> Unit,
     skip: (dontShowAgain: Boolean) -> Unit,
     goToNextScreen: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LaunchedEffect(state.isAllPermissionsGranted) {
-        if (state.isAllPermissionsGranted) {
+    LaunchedEffect(state.isAllPermissionsGranted, state.isAskingSuPermission) {
+        if (state.isAllPermissionsGranted && !state.isAskingSuPermission) {
             onAllPermissionsGranted()
             goToNextScreen()
         }
@@ -156,6 +172,13 @@ private fun Content(
                     icon = Icons.Outlined.Notifications,
                     isGranted = state.isNotificationPermissionGranted,
                     requestPermission = requestNotificationPermission,
+                )
+                PermissionItem(
+                    title = stringResource(R.string.su_permission),
+                    description = stringResource(R.string.su_permission_description),
+                    icon = Icons.Outlined.Code,
+                    isGranted = state.isSuPermissionGranted,
+                    requestPermission = requestSuPermission,
                 )
             }
             Column(
@@ -272,6 +295,7 @@ private fun ContentPreview() {
         requestContactsPermission = {},
         requestNotificationPermission = {},
         requestAllPermissions = {},
+        requestSuPermission = {},
         onAllPermissionsGranted = {},
         skip = {},
         goToNextScreen = {},
