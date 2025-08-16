@@ -4,7 +4,6 @@ import android.content.Context
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.common.sources.Preferences.DarkMode
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class PreferencesImpl(
@@ -134,6 +133,15 @@ class PreferencesImpl(
 
     override fun setCustomLocationParameter(locationParameter: String) {
         editor.putString(Preferences.KEY_CUSTOM_BACKUP_LOCATION, locationParameter)
+        editor.apply()
+    }
+
+    override fun wasSuPermissionPreviouslyGranted(): Boolean {
+        return sharedPreferences.getBoolean(Preferences.KEY_SU_PERMISSION_ASKED, false)
+    }
+
+    override fun setSuPermissionPreviouslyGranted() {
+        editor.putBoolean(Preferences.KEY_SU_PERMISSION_ASKED, true)
         editor.apply()
     }
 }
