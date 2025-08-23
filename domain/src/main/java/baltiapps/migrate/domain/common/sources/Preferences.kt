@@ -56,5 +56,5 @@ interface Preferences {
     fun setCustomLocationParameter(locationParameter: String)
 
     fun wasSuPermissionPreviouslyGranted(): Boolean
-    fun setSuPermissionPreviouslyGranted()
+    fun setSuPermissionPreviouslyGranted(wasGranted: Boolean)
 }
