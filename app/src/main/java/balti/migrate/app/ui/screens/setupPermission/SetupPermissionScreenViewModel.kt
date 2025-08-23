@@ -49,6 +49,7 @@ class SetupPermissionScreenViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isAskingSuPermission = true) }
             val isSuGranted = suUtils.checkRootPermission()
+            preferences.setSuPermissionPreviouslyGranted(isSuGranted.isSuccess)
             if (isSuGranted.isFailure) {
                 onSuError?.invoke(isSuGranted.exceptionOrNull()?.message ?: "Unknown error")
             }
