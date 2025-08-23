@@ -183,8 +183,8 @@
     <string name="contacts_permission_description">Required to backup contacts. Restoring contacts is handed over to the system contacts app.</string>
     <string name="notification_permission">Show notifications</string>
     <string name="notification_permission_description">Required to notify backup / restore progress.</string>
-    <string name="su_permission">(Optional) Superuser root permission</string>
-    <string name="su_permission_description">For advanced options like app backup. This requires rooting your device (preferably with Magisk).</string>"
+    <string name="superuser_permission">(Optional) Superuser root permission</string>
+    <string name="superuser_permission_description">For advanced options like app backup. This requires rooting your device (preferably with Magisk).</string>"
     <string name="allow_all">Allow all</string>
     <string name="skip_for_now">Skip for now</string>
     <string name="dont_show_again">Don\'t show again</string>

@@ -3,7 +3,7 @@ package balti.migrate.app.ui.screens.setupPermission
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import balti.migrate.common.utils.PermissionUtils
-import balti.migrate.common.utils.SuUtils
+import balti.migrate.common.utils.SuperUserUtils
 import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.Preferences
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 class SetupPermissionScreenViewModel(
     private val contextSource: ContextSource,
     private val preferences: Preferences,
-    private val suUtils: SuUtils,
+    private val superUserUtils: SuperUserUtils,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SetupPermissionScreenState())
@@ -48,7 +48,7 @@ class SetupPermissionScreenViewModel(
     ) {
         viewModelScope.launch {
             _state.update { it.copy(isAskingSuPermission = true) }
-            val isSuGranted = suUtils.checkRootPermission()
+            val isSuGranted = superUserUtils.checkRootPermission()
             preferences.setSuPermissionPreviouslyGranted(isSuGranted.isSuccess)
             if (isSuGranted.isFailure) {
                 onSuError?.invoke(isSuGranted.exceptionOrNull()?.message ?: "Unknown error")

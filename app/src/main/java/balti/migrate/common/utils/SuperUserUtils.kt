@@ -8,7 +8,7 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class SuUtils {
+class SuperUserUtils {
     suspend fun checkRootPermission(): Result<Unit> {
         return try {
             withContext(Dispatchers.IO) {

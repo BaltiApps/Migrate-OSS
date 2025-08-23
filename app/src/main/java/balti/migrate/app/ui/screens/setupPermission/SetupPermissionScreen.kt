@@ -174,8 +174,8 @@ private fun Content(
                     requestPermission = requestNotificationPermission,
                 )
                 PermissionItem(
-                    title = stringResource(R.string.su_permission),
-                    description = stringResource(R.string.su_permission_description),
+                    title = stringResource(R.string.superuser_permission),
+                    description = stringResource(R.string.superuser_permission_description),
                     icon = Icons.Outlined.Code,
                     isGranted = state.isSuPermissionGranted,
                     requestPermission = requestSuPermission,
