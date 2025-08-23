@@ -81,14 +81,14 @@ fun SetupPermissionScreen(
             // For such devices, notification permission is already granted.
             viewModel.performAction(SetupPermissionScreenAction.OnNotificationPermissionResult(true))
         },
-        requestSuPermission = {
-            viewModel.performAction(SetupPermissionScreenAction.CheckSuPermission {
+        requestSuperuserPermission = {
+            viewModel.performAction(SetupPermissionScreenAction.CheckSuperuserPermission {
                 showSuError(context, it)
             })
         },
         requestAllPermissions = PermissionUtils.requestPermissions(PermissionUtils.allRuntimePermissions) {
             viewModel.performAction(SetupPermissionScreenAction.OnAllPermissionsResult(it))
-            viewModel.performAction(SetupPermissionScreenAction.CheckSuPermission())
+            viewModel.performAction(SetupPermissionScreenAction.CheckSuperuserPermission())
         },
         onAllPermissionsGranted = {
             viewModel.performAction(SetupPermissionScreenAction.OnAllPermissionsGranted)
@@ -113,15 +113,15 @@ private fun Content(
     requestSmsPermission: () -> Unit,
     requestContactsPermission: () -> Unit,
     requestNotificationPermission: () -> Unit,
-    requestSuPermission: () -> Unit,
+    requestSuperuserPermission: () -> Unit,
     requestAllPermissions: () -> Unit,
     onAllPermissionsGranted: () -> Unit,
     skip: (dontShowAgain: Boolean) -> Unit,
     goToNextScreen: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LaunchedEffect(state.isAllPermissionsGranted, state.isAskingSuPermission) {
-        if (state.isAllPermissionsGranted && !state.isAskingSuPermission) {
+    LaunchedEffect(state.isAllPermissionsGranted, state.isAskingSuperuserPermission) {
+        if (state.isAllPermissionsGranted && !state.isAskingSuperuserPermission) {
             onAllPermissionsGranted()
             goToNextScreen()
         }
@@ -177,8 +177,8 @@ private fun Content(
                     title = stringResource(R.string.superuser_permission),
                     description = stringResource(R.string.superuser_permission_description),
                     icon = Icons.Outlined.Code,
-                    isGranted = state.isSuPermissionGranted,
-                    requestPermission = requestSuPermission,
+                    isGranted = state.isSuperuserPermissionGranted,
+                    requestPermission = requestSuperuserPermission,
                 )
             }
             Column(
@@ -295,7 +295,7 @@ private fun ContentPreview() {
         requestContactsPermission = {},
         requestNotificationPermission = {},
         requestAllPermissions = {},
-        requestSuPermission = {},
+        requestSuperuserPermission = {},
         onAllPermissionsGranted = {},
         skip = {},
         goToNextScreen = {},

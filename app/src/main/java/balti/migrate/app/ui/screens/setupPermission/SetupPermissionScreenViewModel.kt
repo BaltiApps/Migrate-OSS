@@ -3,7 +3,7 @@ package balti.migrate.app.ui.screens.setupPermission
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import balti.migrate.common.utils.PermissionUtils
-import balti.migrate.common.utils.SuperUserUtils
+import balti.migrate.common.utils.SuperuserUtils
 import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.Preferences
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 class SetupPermissionScreenViewModel(
     private val contextSource: ContextSource,
     private val preferences: Preferences,
-    private val superUserUtils: SuperUserUtils,
+    private val superuserUtils: SuperuserUtils,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SetupPermissionScreenState())
@@ -38,25 +38,25 @@ class SetupPermissionScreenViewModel(
                     } ?: true,
             )
         }
-        if (preferences.wasSuPermissionPreviouslyGranted()) {
-            refreshSuPermission()
+        if (preferences.wasSuperuserPermissionPreviouslyGranted()) {
+            refreshSuperuserPermission()
         }
     }
 
-    private fun refreshSuPermission(
+    private fun refreshSuperuserPermission(
         onSuError: ((error: String) -> Unit)? = null,
     ) {
         viewModelScope.launch {
-            _state.update { it.copy(isAskingSuPermission = true) }
-            val isSuGranted = superUserUtils.checkRootPermission()
-            preferences.setSuPermissionPreviouslyGranted(isSuGranted.isSuccess)
+            _state.update { it.copy(isAskingSuperuserPermission = true) }
+            val isSuGranted = superuserUtils.checkSuperuserPermission()
+            preferences.setSuperuserPermissionPreviouslyGranted(isSuGranted.isSuccess)
             if (isSuGranted.isFailure) {
                 onSuError?.invoke(isSuGranted.exceptionOrNull()?.message ?: "Unknown error")
             }
             _state.update {
                 it.copy(
-                    isAskingSuPermission = false,
-                    isSuPermissionGranted = isSuGranted.isSuccess
+                    isAskingSuperuserPermission = false,
+                    isSuperuserPermissionGranted = isSuGranted.isSuccess
                 )
             }
         }
@@ -93,8 +93,8 @@ class SetupPermissionScreenViewModel(
                     preferences.setShouldShowPermissionScreen(false)
                 }
             }
-            is SetupPermissionScreenAction.CheckSuPermission -> {
-                refreshSuPermission(action.onError)
+            is SetupPermissionScreenAction.CheckSuperuserPermission -> {
+                refreshSuperuserPermission(action.onError)
             }
         }
     }

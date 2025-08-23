@@ -1,6 +1,6 @@
 package balti.migrate.common.utils
 
-import baltiapps.migrate.domain.exceptions.SuException
+import baltiapps.migrate.domain.exceptions.SuperuserException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
@@ -8,16 +8,16 @@ import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class SuperUserUtils {
-    suspend fun checkRootPermission(): Result<Unit> {
+class SuperuserUtils {
+    suspend fun checkSuperuserPermission(): Result<Unit> {
         return try {
             withContext(Dispatchers.IO) {
-                val suRequest = Runtime.getRuntime().exec("su")
-                val writer = BufferedWriter(OutputStreamWriter(suRequest.outputStream))
+                val process = Runtime.getRuntime().exec("su")
+                val writer = BufferedWriter(OutputStreamWriter(process.outputStream))
                 writer.write("exit\n")
                 writer.flush()
-                val errorReader = BufferedReader(InputStreamReader(suRequest.errorStream))
-                val outputReader = BufferedReader(InputStreamReader(suRequest.inputStream))
+                val errorReader = BufferedReader(InputStreamReader(process.errorStream))
+                val outputReader = BufferedReader(InputStreamReader(process.inputStream))
 
                 var line: String?
                 var errorMessage = ""
@@ -34,13 +34,13 @@ class SuperUserUtils {
                     else break
                 }
 
-                suRequest.waitFor()
-                val exitValue = suRequest.exitValue()
+                process.waitFor()
+                val exitValue = process.exitValue()
 
                 if (exitValue == 0) {
                     Result.success(Unit)
                 } else {
-                    Result.failure(SuException(exitValue, errorMessage))
+                    Result.failure(SuperuserException(exitValue, errorMessage))
                 }
             }
         } catch (e: Exception) {

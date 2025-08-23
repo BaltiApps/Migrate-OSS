@@ -13,7 +13,7 @@ interface Preferences {
         const val KEY_CUSTOM_BACKUP_LOCATION = "custom_backup_location"
         const val KEY_DARK_MODE = "dark_mode"
         const val KEY_FOLLOW_SYSTEM_COLORS = "follow_system_colors"
-        const val KEY_SU_PERMISSION_ASKED = "su_permission_asked"
+        const val KEY_SUPERUSER_PERMISSION_ASKED = "superuser_permission_asked"
     }
 
     enum class DarkMode {
@@ -55,6 +55,6 @@ interface Preferences {
     fun getCustomLocationParameter(): String
     fun setCustomLocationParameter(locationParameter: String)
 
-    fun wasSuPermissionPreviouslyGranted(): Boolean
-    fun setSuPermissionPreviouslyGranted(wasGranted: Boolean)
+    fun wasSuperuserPermissionPreviouslyGranted(): Boolean
+    fun setSuperuserPermissionPreviouslyGranted(wasGranted: Boolean)
 }

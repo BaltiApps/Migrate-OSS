@@ -8,5 +8,5 @@ sealed class SetupPermissionScreenAction {
     data object OnAllPermissionsGranted: SetupPermissionScreenAction()
     data class OnAllPermissionsResult(val isGranted: Boolean): SetupPermissionScreenAction()
     data class OnSkipClicked(val dontShowAgain: Boolean): SetupPermissionScreenAction()
-    data class CheckSuPermission(val onError: ((error: String) -> Unit)? = null): SetupPermissionScreenAction()
+    data class CheckSuperuserPermission(val onError: ((error: String) -> Unit)? = null): SetupPermissionScreenAction()
 }
