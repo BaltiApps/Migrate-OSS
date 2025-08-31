@@ -1,21 +1,20 @@
 [versions]
 agp = "8.12.2"
-kotlin = "2.1.21"
-coreKtx = "1.16.0"
+kotlin = "2.2.10"
+coreKtx = "1.17.0"
 junit = "4.13.2"
-junitVersion = "1.2.1"
-espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.9.0"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
+lifecycleRuntimeKtx = "2.9.3"
 activityCompose = "1.10.1"
-composeBom = "2025.05.01" # https://developer.android.com/develop/ui/compose/bom/bom-mapping
-composeNavigation = "2.9.0"
-serialization = "1.8.0"
-koinBom = "4.0.0"
-jetbrainsKotlinJvm = "1.9.0"
+composeBom = "2025.08.01" # https://developer.android.com/develop/ui/compose/bom/bom-mapping
+composeNavigation = "2.9.3"
+serialization = "1.9.0"
+koinBom = "4.1.0"
+jetbrainsKotlinJvm = "2.2.10"
 coroutinesCore = "1.10.2"
-lifecycleVersion = "2.9.0"
 timberVersion = "5.0.1"
-material3 = "1.4.0-alpha15"
+material3 = "1.4.0-beta03"
 documentfile = "1.1.0"
 
 [libraries]
@@ -24,6 +23,7 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
@@ -42,7 +42,6 @@ koin-coroutines = { group = "io.insert-koin", name = "koin-core-coroutines" }
 koin-compose = { group = "io.insert-koin", name = "koin-compose" }
 koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesCore" }
-androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "lifecycleVersion" }
 com-jakewharton-timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
 androidx-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "documentfile" }
 
