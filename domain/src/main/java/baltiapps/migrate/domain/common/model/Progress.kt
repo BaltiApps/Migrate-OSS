@@ -16,6 +16,7 @@ data class Progress(
         CONTACTS_READ,
         CONTACTS_BACKUP,
         CALL_LOG_READ,
+        APP_LIST_READ,
         CALL_LOG_BACKUP,
         SMS_READ,
         SMS_BACKUP,

@@ -1,6 +1,7 @@
 package balti.migrate.backup.di
 
 import balti.migrate.backup.data.sources.BackupNotificationHandlerImpl
+import balti.migrate.backup.data.sources.apps.AppListSource
 import balti.migrate.backup.data.sources.callLog.CallLogDBWriter
 import balti.migrate.backup.data.sources.callLog.CallLogSource
 import balti.migrate.backup.data.sources.contacts.ContactsSource
@@ -12,6 +13,7 @@ import balti.migrate.backup.ui.screens.listScreen.callLogBackupSelection.CallLog
 import balti.migrate.backup.ui.screens.listScreen.contactBackupSelection.ContactBackupSelectionViewModel
 import balti.migrate.backup.ui.screens.listScreen.smsBackupSelection.SmsBackupSelectionViewModel
 import balti.migrate.backup.ui.screens.progressScreen.BackupProgressScreenViewModel
+import balti.migrate.common.data.model.AppData
 import balti.migrate.common.data.model.CallLogData
 import balti.migrate.common.data.model.ContactData
 import balti.migrate.common.data.model.SmsData
@@ -37,6 +39,7 @@ enum class Names {
     CONTACTS_SOURCE,
     CALL_LOG_SOURCE,
     SMS_SOURCE,
+    APP_LIST_SOURCE,
     DB_WRITER_CONTACTS,
     DB_WRITER_CALL_LOG,
     DB_WRITER_SMS,
@@ -65,6 +68,9 @@ val backupDiModule = module {
     }
     single<DBWriter<SmsData>>(named(Names.DB_WRITER_SMS)) {
         SmsDBWriter(get())
+    }
+    single<DataSource<AppData>>(named(Names.APP_LIST_SOURCE)) {
+        AppListSource(get())
     }
     single<NotificationHandler<*>>(named(Names.NOTIFICATION_HANDLER_BACKUP)) {
         BackupNotificationHandlerImpl(
