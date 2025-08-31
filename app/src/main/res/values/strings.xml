@@ -64,6 +64,12 @@
         Click Skip to not backup SMS.
     </string>
 
+    <!--AppBackupSelection.kt-->
+    <string name="label_app_backup">App backup</string>"
+    <string name="app_backup_permission_description">
+        Please grant super user permission to backup apps.
+    </string>
+
     <!--RenderContactName.kt-->
     <string name="no_name_contact">(No name)</string>
 
@@ -84,6 +90,10 @@
     <string name="sms_draft">SMS Draft</string>
     <string name="sms_failed">SMS Failed</string>
     <string name="sms_queued">SMS Queued</string>
+
+    <!--RenderAppListItem.kt-->
+    <string name="version_code">Version code: %d</string>
+    <string name="version_name">Version name: %s</string>
 
     <!--ListPermissionRequestLayout.kt-->
     <string name="request_permission">Request permission</string>
