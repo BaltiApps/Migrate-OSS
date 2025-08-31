@@ -13,6 +13,9 @@ class BackupDataRepository: DataRepository() {
     fun shouldBackupSms(): Boolean {
         return stagedSms.isNotEmpty()
     }
+    fun shouldBackupApps(): Boolean {
+        return stagedApps.isNotEmpty()
+    }
 
     override val contactsListItems: List<ContactListItem>
         get() = super.contactsListItems.map { it.copy(isChecked = it.isLocalContact) }
