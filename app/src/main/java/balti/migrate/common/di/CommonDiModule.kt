@@ -16,6 +16,7 @@ import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.common.sources.fileSystem.ExportDirectoryBrowser
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
+import baltiapps.migrate.domain.common.usecase.StageSelectedApps
 import baltiapps.migrate.domain.common.usecase.StageSelectedCallLogs
 import baltiapps.migrate.domain.common.usecase.StageSelectedContacts
 import baltiapps.migrate.domain.common.usecase.StageSelectedSms
@@ -72,4 +73,5 @@ val commonDiModule = module {
     singleOf(::StageSelectedContacts)
     singleOf(::StageSelectedCallLogs)
     singleOf(::StageSelectedSms)
+    singleOf(::StageSelectedApps)
 }
