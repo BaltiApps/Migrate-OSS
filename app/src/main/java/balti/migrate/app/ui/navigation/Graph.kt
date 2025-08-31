@@ -26,6 +26,7 @@ import balti.migrate.app.ui.screens.home.ScreenHome
 import balti.migrate.app.ui.screens.setupPermission.SetupPermissionScreen
 import balti.migrate.backup.data.service.BackupService
 import balti.migrate.backup.ui.screens.backupName.BackupName
+import balti.migrate.backup.ui.screens.listScreen.appBackupSelection.AppBackupSelection
 import balti.migrate.backup.ui.screens.listScreen.callLogBackupSelection.CallLogBackupSelection
 import balti.migrate.backup.ui.screens.listScreen.contactBackupSelection.ContactBackupSelection
 import balti.migrate.backup.ui.screens.listScreen.smsBackupSelection.SmsBackupSelection
@@ -150,6 +151,14 @@ fun Graph(
                 }
                 composable<RouteSmsBackup> {
                     SmsBackupSelection(
+                        navigateUp = navController::navigateUp,
+                        goToNextScreen = {
+                            navController.navigate(RouteAppBackup)
+                        }
+                    )
+                }
+                composable<RouteAppBackup> {
+                    AppBackupSelection(
                         navigateUp = navController::navigateUp,
                         goToNextScreen = {
                             navController.navigate(RouteContactBackup)
@@ -313,6 +322,9 @@ object RouteCallLogBackup
 
 @Serializable
 object RouteSmsBackup
+
+@Serializable
+object RouteAppBackup
 
 @Serializable
 object RouteContactBackup
