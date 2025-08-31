@@ -23,6 +23,7 @@ import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
+import baltiapps.migrate.domain.backup.usecase.ReadAppListForBackupUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadCallLogForBackupUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadContactsForBackupUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadSmsForBackupUseCase
@@ -104,6 +105,12 @@ val backupDiModule = module {
     single {
         ReadSmsForBackupUseCase(
             smsSource = get(named(Names.SMS_SOURCE)),
+            backupDataRepository = get(),
+        )
+    }
+    single {
+        ReadAppListForBackupUseCase(
+            appListSource = get(named(Names.APP_LIST_SOURCE)),
             backupDataRepository = get(),
         )
     }
