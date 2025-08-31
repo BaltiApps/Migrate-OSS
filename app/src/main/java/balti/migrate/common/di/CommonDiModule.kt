@@ -1,5 +1,6 @@
 package balti.migrate.common.di
 
+import balti.migrate.common.data.converter.AppListItemToDataItemConverterImpl
 import balti.migrate.common.data.sources.ContextSourceImpl
 import balti.migrate.common.data.sources.PreferencesImpl
 import balti.migrate.common.data.sources.fileSystem.ExportDirectoryBrowserMediaStore
@@ -9,6 +10,7 @@ import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import balti.migrate.common.utils.DBUtils
 import balti.migrate.common.utils.ListItemUtils
 import balti.migrate.common.utils.SuperuserUtils
+import baltiapps.migrate.domain.common.converter.AppListItemToDataItemConverter
 import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.common.sources.fileSystem.ExportDirectoryBrowser
@@ -59,6 +61,10 @@ val commonDiModule = module {
         ExportDirectoryBrowserSafFile(
             applicationContext = get(),
         )
+    }
+
+    single<AppListItemToDataItemConverter<*>> {
+        AppListItemToDataItemConverterImpl()
     }
 
     /* Use cases */
