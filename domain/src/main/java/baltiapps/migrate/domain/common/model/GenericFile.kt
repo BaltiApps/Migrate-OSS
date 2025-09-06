@@ -4,8 +4,8 @@ interface GenericFile {
     val path: String  // includes name
     val name: String
         get() = path.trimEnd('/').substringAfterLast("/")
-    val subDirectoryPath: String
-        get() = path.removeSuffix(name).trimEnd('/')
+    val parentPath: String
+        get() = path.trimEnd('/').removeSuffix(name).trimEnd('/')
     val isValidBackupDirectory: Boolean
         get() = false
 }
