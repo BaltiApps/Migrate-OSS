@@ -13,6 +13,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
+/**
+ * Export selected contacts to .vcf file
+ */
 class ExportContactsForRestoreUseCase(
     private val dataRestore: RestoreDataRepository,
 ) {
@@ -23,8 +26,14 @@ class ExportContactsForRestoreUseCase(
     ): Flow<Progress> {
         return flow {
             if (!dataRestore.shouldRestoreContacts()) return@flow
+
+            textWriter.setup(
+                fileLocation = file.parentPath,
+                fileName = file.name,
+                append = false,
+            )
+
             val stagedContacts = dataRestore.stagedContacts
-            textWriter.setup(file.path, false)
             stagedContacts.forEachIndexed { index, item ->
                 val progress = Progress(
                     progressType = Progress.ProgressType.CONTACTS_EXPORT,
@@ -35,6 +44,7 @@ class ExportContactsForRestoreUseCase(
                     textWriter.writeLine(getContactContent(item))
                 }.run { emit(this) }
             }
+
             textWriter.close()
         }.flowOn(Dispatchers.IO)
     }

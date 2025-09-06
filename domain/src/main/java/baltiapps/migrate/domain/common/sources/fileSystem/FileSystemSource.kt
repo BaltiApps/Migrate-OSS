@@ -43,7 +43,7 @@ abstract class FileSystemSource() {
 }
 
 interface TextWriter<T> {
-    fun setup(fileLocation: String, append: Boolean)
+    fun setup(fileLocation: String, fileName: String, append: Boolean)
     fun write(data: T)
     fun writeLine(data: T)
     fun close()

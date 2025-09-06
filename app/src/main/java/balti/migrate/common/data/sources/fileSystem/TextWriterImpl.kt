@@ -8,8 +8,8 @@ class TextWriterImpl: TextWriter<String> {
     private lateinit var file: File
     private lateinit var fileWriter: FileWriter
 
-    override fun setup(fileLocation: String, append: Boolean) {
-        File(fileLocation).run {
+    override fun setup(fileLocation: String, fileName: String, append: Boolean) {
+        File(fileLocation, fileName).run {
             if (!append && exists()) {
                 delete()
             }

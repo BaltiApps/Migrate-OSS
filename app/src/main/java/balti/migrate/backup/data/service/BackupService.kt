@@ -21,8 +21,8 @@ import baltiapps.migrate.domain.BACKUP_FILE_NAME_CALL_LOGS
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_CONTACTS
 import baltiapps.migrate.domain.BACKUP_FILE_NAME_SMS
 import baltiapps.migrate.domain.BACKUP_LOG
-import baltiapps.migrate.domain.EXTRA_BACKUP_URI_STRING
 import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
+import baltiapps.migrate.domain.EXTRA_BACKUP_URI_STRING
 import baltiapps.migrate.domain.INTERNAL_ROUGH_WORK_BACKUP_DIRECTORY
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
@@ -43,7 +43,6 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import timber.log.Timber
-import java.io.File
 
 class BackupService : LifecycleService() {
 
@@ -60,9 +59,6 @@ class BackupService : LifecycleService() {
     private val backupSmsUseCase: BackupSmsUseCase by inject()
 
     private val preferences: Preferences by inject()
-
-    private val backupLog by lazy { File(this.cacheDir, BACKUP_LOG) }
-    private val backupErrorLog by lazy { File(this.cacheDir, BACKUP_ERROR_LOG) }
 
     private lateinit var logWriter: TextWriter<String>
     private lateinit var errorWriter: TextWriter<String>
@@ -201,9 +197,9 @@ class BackupService : LifecycleService() {
 
     private suspend fun setup() {
         logWriter = TextWriterImpl()
-        logWriter.setup(backupLog.canonicalPath, append = true)
+        logWriter.setup(fileLocation = cacheDir.path, fileName = BACKUP_LOG, append = true)
         errorWriter = TextWriterImpl()
-        errorWriter.setup(backupErrorLog.canonicalPath, append = true)
+        errorWriter.setup(fileLocation = cacheDir.path, fileName = BACKUP_ERROR_LOG, append = true)
 
         progressLogRepository.reset()
         preferences.resetSavedBackupProgressList()

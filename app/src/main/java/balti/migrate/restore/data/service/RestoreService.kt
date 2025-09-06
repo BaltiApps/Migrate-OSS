@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import timber.log.Timber
-import java.io.File
 
 class RestoreService: LifecycleService() {
 
@@ -43,9 +42,6 @@ class RestoreService: LifecycleService() {
     private val restoreSmsUseCase: RestoreSmsUseCase by inject()
 
     private val preferences: Preferences by inject()
-
-    private val restoreLog by lazy { File(this.cacheDir, RESTORE_LOG) }
-    private val restoreErrorLog by lazy { File(this.cacheDir, RESTORE_ERROR_LOG) }
 
     private lateinit var logWriter: TextWriter<String>
     private lateinit var errorWriter: TextWriter<String>
@@ -130,9 +126,9 @@ class RestoreService: LifecycleService() {
 
     private suspend fun setup() {
         logWriter = TextWriterImpl()
-        logWriter.setup(restoreLog.canonicalPath, append = true)
+        logWriter.setup(fileLocation = cacheDir.path, fileName = RESTORE_LOG, append = true)
         errorWriter = TextWriterImpl()
-        errorWriter.setup(restoreErrorLog.canonicalPath, append = true)
+        errorWriter.setup(fileLocation = cacheDir.path, fileName = RESTORE_ERROR_LOG, append = true)
 
         progressLogRepository.reset()
         preferences.resetSavedRestoreProgressList()
