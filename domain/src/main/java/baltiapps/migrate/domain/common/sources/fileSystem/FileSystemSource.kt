@@ -36,8 +36,19 @@ abstract class FileSystemSource() {
         readerBlock: (dbReader: T) -> Flow<Progress>,
     ): Flow<Progress> {
         dbReader.setup(file)
-        return readerBlock(dbReader).apply {
-            onCompletion { dbReader.close() }
+        return readerBlock(dbReader).onCompletion {
+            dbReader.close()
+        }
+    }
+
+    inline fun <T: GenericWriter<*>> write(
+        file: GenericFile,
+        writer: T,
+        writerBlock: (writer: T) -> Flow<Progress>,
+    ): Flow<Progress> {
+        writer.setup(file.path)
+        return writerBlock(writer).onCompletion {
+            writer.close()
         }
     }
 }
@@ -58,5 +69,11 @@ interface DBWriter<T: DataItem<*>> {
 interface DBReader<T: DataItem<*>> {
     fun setup(file: GenericFile)
     fun readRows(onFinished: (List<T>) -> Unit): Flow<Progress>
+    fun close()
+}
+
+interface GenericWriter<T> {
+    fun setup(writeLocation: String)
+    fun write(data: T, onComplete: () -> Unit = {}): Flow<Progress>
     fun close()
 }
