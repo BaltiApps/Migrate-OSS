@@ -1,14 +1,21 @@
 package balti.migrate.common.utils
 
+import android.content.Context
+import androidx.annotation.RawRes
 import baltiapps.migrate.domain.exceptions.SuperuserException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.BufferedReader
 import java.io.BufferedWriter
+import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class SuperuserUtils {
+class SuperuserUtils(
+    private val applicationContext: Context,
+) {
     suspend fun checkSuperuserPermission(): Result<Unit> {
         return try {
             withContext(Dispatchers.IO) {
@@ -46,5 +53,78 @@ class SuperuserUtils {
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    suspend fun runScript(
+        scriptPath: String,
+        parentSuperuserShell: Process,
+        endMarker: String,
+        onProgress: suspend (String) -> Unit,
+        onError: suspend (String) -> Unit,
+        vararg args : String,
+    ) {
+        withContext(Dispatchers.IO) {
+            val writer = BufferedWriter(OutputStreamWriter(parentSuperuserShell.outputStream))
+            val errorReader = BufferedReader(InputStreamReader(parentSuperuserShell.errorStream))
+            val outputReader = BufferedReader(InputStreamReader(parentSuperuserShell.inputStream))
+
+            val command = "sh $scriptPath ${args.joinToString(" ") { "\"$it\"" }}"
+
+            Timber.i(command)
+
+            writer.write("${command}\n")
+            writer.flush()
+
+            while (true) {
+                val line = outputReader.readLine()
+                Timber.v(line)
+                if (line == endMarker) {
+                    break
+                } else {
+                    onProgress(line)
+                }
+            }
+
+            while (true) {
+                val line = errorReader.readLine()
+                Timber.e(line)
+                if (line == endMarker) {
+                    break
+                } else {
+                    onError(line)
+                }
+            }
+        }
+    }
+
+    suspend fun unpackScript(
+        @RawRes scriptRes: Int,
+        scriptLocation: String,
+    ): Result<Unit> {
+        return withContext(Dispatchers.IO) {
+            val inputStream = applicationContext.resources.openRawResource(scriptRes)
+            val outputStream = FileOutputStream(File(scriptLocation))
+            try {
+                inputStream.use { input ->
+                    outputStream.use { output ->
+                        input.copyTo(output)
+                    }
+                }
+                Result.success(Unit)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    fun getSuperuserShell(): Process {
+        return Runtime.getRuntime().exec("su --mount-master")
+    }
+
+    fun closeSuperuserShell(process: Process) {
+        val writer = BufferedWriter(OutputStreamWriter(process.outputStream))
+        writer.write("exit\n")
+        writer.flush()
+        process.waitFor()
     }
 }
