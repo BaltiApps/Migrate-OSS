@@ -253,6 +253,10 @@ fun Graph(
                         }
                     )
                 }
+                composable<RouteAppRestoreSelection> {
+                    val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
+                    // TODO: Add app restore selection screen
+                }
                 composable<RouteRestoreSummary> {
                     val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
                     RestoreSummary(
@@ -352,6 +356,9 @@ object RouteSmsRestoreSelection
 
 @Serializable
 object RouteContactRestoreSelection
+
+@Serializable
+object RouteAppRestoreSelection
 
 @Serializable
 object RouteRestoreSummary
