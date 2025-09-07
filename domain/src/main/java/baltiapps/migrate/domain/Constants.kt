@@ -103,3 +103,10 @@ class AppInfoConstants {
         const val KEY_PERMISSIONS = "permissions"
     }
 }
+
+class AppBackupConstants {
+    companion object {
+        const val END_MARKER = "===DONE==="
+        const val NULL_MARKER = "NULL"
+    }
+}
