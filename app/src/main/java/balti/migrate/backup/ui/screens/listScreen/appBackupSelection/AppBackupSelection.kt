@@ -66,7 +66,9 @@ fun AppBackupSelection(
         onAllPermissionToggled = {
             viewModel.performAction(AppBackupSelectionAction.ToggleAllAppItemsPermissionSelection(it))
         },
-        onNext = goToNextScreen,
+        onNext = {
+            viewModel.performAction(AppBackupSelectionAction.StageAppItems(goToNextScreen))
+        },
     )
 }
 

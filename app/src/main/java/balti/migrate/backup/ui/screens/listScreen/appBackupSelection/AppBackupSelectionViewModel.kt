@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AppBackupSelectionViewModel(
     private val preferences: Preferences,
@@ -174,7 +175,9 @@ class AppBackupSelectionViewModel(
                 _state.update { it.copy(isStaging = true) }
                 stageSelectedApps.invoke(_state.value.appListItems, backupDataRepository)
                 _state.update { it.copy(isStaging = false) }
-                action.onStagingDone()
+                withContext(Dispatchers.Main) {
+                    action.onStagingDone()
+                }
             }
         }
     }
