@@ -66,7 +66,7 @@ class AppListSource(
                     isSystemApp = (app.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
                     isUpdatedSystemApp = (app.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0,
 
-                    logInfo = "$appName - ($packageName)"
+                    logInfo = "$appName : ($packageName)"
                 )
 
                 dataList.add(appData)
