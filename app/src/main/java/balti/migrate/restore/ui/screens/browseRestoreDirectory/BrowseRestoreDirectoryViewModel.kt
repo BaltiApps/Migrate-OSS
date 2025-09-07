@@ -15,7 +15,7 @@ import baltiapps.migrate.domain.INTERNAL_ROUGH_WORK_RESTORE_DIRECTORY
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.common.sources.fileSystem.ExportDirectoryBrowser
-import baltiapps.migrate.domain.restore.usecase.ReadFilesFromBackupUseCase
+import baltiapps.migrate.domain.restore.usecase.ImportFilesFromBackupUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 class BrowseRestoreDirectoryViewModel(
     private val exportDirectoryBrowserMediaStore: ExportDirectoryBrowser<GenericFile>,
     private val exportDirectoryBrowserSafFile: ExportDirectoryBrowser<GenericFile>,
-    private val readFilesFromBackupUseCase: ReadFilesFromBackupUseCase,
+    private val importFilesFromBackupUseCase: ImportFilesFromBackupUseCase,
     private val preferences: Preferences,
     private val applicationContext: Context,
 ): ViewModel() {
@@ -167,7 +167,7 @@ class BrowseRestoreDirectoryViewModel(
 
                     roughWorkDir.file.deleteRecursively()
 
-                    readFilesFromBackupUseCase.invoke(
+                    importFilesFromBackupUseCase.invoke(
                         exportDirectory = action.directory,
                         importDirectory = importDirectory,
                         getGenericFileForRepository = { relativePath ->

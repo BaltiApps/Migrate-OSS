@@ -7,7 +7,7 @@ import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class ReadFilesFromBackupUseCase(
+class ImportFilesFromBackupUseCase(
     private val restoreDataRepository: RestoreDataRepository,
     private val fileSystemSource: FileSystemSource,
 ) {

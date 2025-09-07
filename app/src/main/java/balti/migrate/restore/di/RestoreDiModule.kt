@@ -26,7 +26,7 @@ import baltiapps.migrate.domain.restore.sources.DataRestore
 import baltiapps.migrate.domain.restore.usecase.ExportContactsForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadCallLogForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadContactsForRestoreUseCase
-import baltiapps.migrate.domain.restore.usecase.ReadFilesFromBackupUseCase
+import baltiapps.migrate.domain.restore.usecase.ImportFilesFromBackupUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadSmsForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreCallLogUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreSmsUseCase
@@ -83,7 +83,7 @@ val restoreDiModule = module {
     /* Use cases */
 
     single {
-        ReadFilesFromBackupUseCase(
+        ImportFilesFromBackupUseCase(
             restoreDataRepository = get(),
             fileSystemSource = get(),
         )
@@ -129,7 +129,7 @@ val restoreDiModule = module {
         BrowseRestoreDirectoryViewModel(
             exportDirectoryBrowserMediaStore = get(named(MEDIA_STORE_EXPORT_DIRECTORY_BROWSER)),
             exportDirectoryBrowserSafFile = get(named(SAF_EXPORT_DIRECTORY_BROWSER)),
-            readFilesFromBackupUseCase = get(),
+            importFilesFromBackupUseCase = get(),
             preferences = get(),
             applicationContext = get(),
         )
