@@ -25,6 +25,8 @@ import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
 import baltiapps.migrate.domain.EXTRA_BACKUP_URI_STRING
 import baltiapps.migrate.domain.INTERNAL_ROUGH_WORK_BACKUP_DIRECTORY
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
+import baltiapps.migrate.domain.backup.usecase.BackupAppsInfoUseCase
+import baltiapps.migrate.domain.backup.usecase.BackupAppsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
@@ -57,6 +59,9 @@ class BackupService : LifecycleService() {
     private val backupContactsUseCase: BackupContactsUseCase by inject()
     private val backupCallLogUseCase: BackupCallLogUseCase by inject()
     private val backupSmsUseCase: BackupSmsUseCase by inject()
+
+    private val backupAppsInfoUseCase: BackupAppsInfoUseCase by inject()
+    private val backupAppsUseCase: BackupAppsUseCase by inject()
 
     private val preferences: Preferences by inject()
 
@@ -116,12 +121,11 @@ class BackupService : LifecycleService() {
             Timber.i("backup - setup")
             setup()
 
-            val destination = "${MediaStoreDownloadFile.EXPORT_PATH_PREFIX}/$backupName"
-
             val roughWorkDir = JavaFile("$filesDir/$INTERNAL_ROUGH_WORK_BACKUP_DIRECTORY")
             val internalDir = JavaFile(roughWorkDir, backupName)
             val internalDirPath = internalDir.path
             val backupDestination = if (backupUriString == null) {
+                val destination = "${MediaStoreDownloadFile.EXPORT_PATH_PREFIX}/$backupName"
                 MediaStoreDownloadFile(destination)
             } else {
                 val locationUri = backupUriString.toUri()
@@ -135,6 +139,10 @@ class BackupService : LifecycleService() {
             roughWorkDir.file.deleteRecursively()
             fileSystemSource.createDirectory(internalDir)
             fileSystemSource.createDirectory(backupDestination)
+
+            val backupDestinationAbsolutePath = if (backupDestination is MediaStoreDownloadFile) {
+                "/sdcard/${backupDestination.path}"
+            } else backupDestination.path
 
             notificationHandler.listenAtSafeIntervals()
 
@@ -173,6 +181,28 @@ class BackupService : LifecycleService() {
             )
 
             Timber.i("backup - finished - sms")
+
+            Timber.i("backup - start - app info")
+
+            serviceUtils.runStage(
+                shouldRun = repository::shouldBackupApps,
+                stageBody = { backupAppsInfoUseCase.invoke(internalDirPath) },
+                progressType = Progress.ProgressType.APP_INFO_BACKUP,
+                errorMessage = { "App info backup exception: ${it.message}" },
+            )
+
+            Timber.i("backup - finished - app info")
+
+            Timber.i("backup - start - apps")
+
+            serviceUtils.runStage(
+                shouldRun = repository::shouldBackupApps,
+                stageBody = { backupAppsUseCase.invoke(JavaFile(backupDestinationAbsolutePath)) },
+                progressType = Progress.ProgressType.APP_BACKUP,
+                errorMessage = { "App backup exception: ${it.message}" },
+            )
+
+            Timber.i("backup - finished - apps")
 
             Timber.i("backup - exporting backup")
 
