@@ -16,10 +16,12 @@ object BackupFilesUtils {
     }
     fun shouldImportFile(path: String): Boolean {
         val name = path.trimEnd('/').substringAfterLast('/')
-        return when(name) {
-            BACKUP_FILE_NAME_CONTACTS -> true
-            BACKUP_FILE_NAME_CALL_LOGS -> true
-            BACKUP_FILE_NAME_SMS -> true
+        return when {
+            name == BACKUP_FILE_NAME_CONTACTS -> true
+            name == BACKUP_FILE_NAME_CALL_LOGS -> true
+            name == BACKUP_FILE_NAME_SMS -> true
+            name.endsWith(".mpng") -> true
+            name.endsWith(".json") -> true
             else -> false
         }
     }
