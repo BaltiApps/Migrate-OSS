@@ -3,7 +3,6 @@ package balti.migrate.common.data.sources
 import android.app.role.RoleManager
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Environment
 import androidx.core.content.ContextCompat
 import balti.migrate.R
 import baltiapps.migrate.domain.PermissionConstants
@@ -16,6 +15,8 @@ class ContextSourceImpl(private val context: Context): ContextSource {
             Progress.ProgressType.CONTACTS_BACKUP -> context.getString(R.string.label_contacts_backup)
             Progress.ProgressType.CALL_LOG_BACKUP -> context.getString(R.string.label_call_log_backup)
             Progress.ProgressType.SMS_BACKUP -> context.getString(R.string.label_sms_backup)
+            Progress.ProgressType.APP_INFO_BACKUP -> context.getString(R.string.label_app_info_backup)
+            Progress.ProgressType.APP_BACKUP -> context.getString(R.string.label_app_backup)
             Progress.ProgressType.BACKUP_FINISHED -> context.getString(R.string.backup_finished)
             Progress.ProgressType.BACKUP_FINISHED_WITH_ERRORS -> context.getString(R.string.backup_finished_with_errors)
             Progress.ProgressType.EXPORTING_BACKUP -> context.getString(R.string.exporting_backup)

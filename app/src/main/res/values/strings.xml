@@ -110,6 +110,7 @@
 
     <!--ContextSourceImpl.kt-->
     <string name="loading">Loading…</string>
+    <string name="label_app_info_backup">App info backup</string>
     <string name="backup_finished">Backup finished!</string>
     <string name="backup_finished_with_errors">Backup finished with errors</string>
     <string name="backup_cancelled">Backup cancelled</string>
