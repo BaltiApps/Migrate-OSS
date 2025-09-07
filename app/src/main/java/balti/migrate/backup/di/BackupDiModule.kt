@@ -1,11 +1,14 @@
 package balti.migrate.backup.di
 
 import balti.migrate.backup.data.sources.BackupNotificationHandlerImpl
+import balti.migrate.backup.data.sources.apps.AppBackupEngine
+import balti.migrate.backup.data.sources.apps.AppIconWriter
+import balti.migrate.backup.data.sources.apps.AppInfoWriter
 import balti.migrate.backup.data.sources.apps.AppListSource
 import balti.migrate.backup.data.sources.callLog.CallLogDBWriter
 import balti.migrate.backup.data.sources.callLog.CallLogSource
-import balti.migrate.backup.data.sources.contacts.ContactsSource
 import balti.migrate.backup.data.sources.contacts.ContactsDBWriter
+import balti.migrate.backup.data.sources.contacts.ContactsSource
 import balti.migrate.backup.data.sources.sms.SmsDBWriter
 import balti.migrate.backup.data.sources.sms.SmsSource
 import balti.migrate.backup.ui.screens.backupName.BackupNameViewModel
@@ -21,6 +24,8 @@ import balti.migrate.common.data.model.SmsData
 import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.sources.DataSource
+import baltiapps.migrate.domain.backup.usecase.BackupAppsInfoUseCase
+import baltiapps.migrate.domain.backup.usecase.BackupAppsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
@@ -31,6 +36,8 @@ import baltiapps.migrate.domain.backup.usecase.ReadSmsForBackupUseCase
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
+import baltiapps.migrate.domain.common.sources.fileSystem.GenericWriter
+import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -45,6 +52,9 @@ enum class Names {
     DB_WRITER_CONTACTS,
     DB_WRITER_CALL_LOG,
     DB_WRITER_SMS,
+    APP_BACKUP_ENGINE,
+    APP_ICON_WRITER,
+    APP_INFO_WRITER,
     PROGRESS_LOG_REPOSITORY_BACKUP,
     NOTIFICATION_HANDLER_BACKUP,
 }
@@ -73,6 +83,18 @@ val backupDiModule = module {
     }
     single<DataSource<AppData>>(named(Names.APP_LIST_SOURCE)) {
         AppListSource(get())
+    }
+    single<GenericWriter<List<AppData>>>(named(Names.APP_BACKUP_ENGINE)) {
+        AppBackupEngine(
+            applicationContext = get(),
+            superuserUtils = get(),
+        )
+    }
+    single<TextWriter<AppData>>(named(Names.APP_ICON_WRITER)) {
+        AppIconWriter()
+    }
+    single<TextWriter<AppData>>(named(Names.APP_INFO_WRITER)) {
+        AppInfoWriter()
     }
     single<NotificationHandler<*>>(named(Names.NOTIFICATION_HANDLER_BACKUP)) {
         BackupNotificationHandlerImpl(
@@ -134,6 +156,20 @@ val backupDiModule = module {
             fileSystemSource = get(),
             smsDBWriter = get(named(Names.DB_WRITER_SMS)),
             dataRepository = get()
+        )
+    }
+    single {
+        BackupAppsInfoUseCase(
+            appIconWriter = get(named(Names.APP_ICON_WRITER)),
+            appInfoWriter = get(named(Names.APP_INFO_WRITER)),
+            dataRepository = get(),
+        )
+    }
+    single {
+        BackupAppsUseCase(
+            fileSystemSource = get(),
+            appBackupEngine = get(named(Names.APP_BACKUP_ENGINE)),
+            dataRepository = get(),
         )
     }
 
