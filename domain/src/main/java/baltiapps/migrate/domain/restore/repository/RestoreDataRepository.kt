@@ -24,10 +24,15 @@ class RestoreDataRepository: DataRepository() {
     fun shouldRestoreSms(): Boolean {
         return stagedSms.isNotEmpty()
     }
+    fun shouldRestoreApps(): Boolean {
+        return stagedApps.isNotEmpty()
+    }
 
     fun getContactBackupFile(): GenericFile? = backupFiles.find { it.name == BACKUP_FILE_NAME_CONTACTS }
     fun getCallLogBackupFile(): GenericFile? = backupFiles.find { it.name == BACKUP_FILE_NAME_CALL_LOGS }
     fun getSmsBackupFile(): GenericFile? = backupFiles.find { it.name == BACKUP_FILE_NAME_SMS }
+    fun getAppInfoFiles(): List<GenericFile> = backupFiles.filter { it.name.endsWith(".json") }
+    fun getAppIconFiles(): List<GenericFile> = backupFiles.filter { it.name.endsWith(".mpng") }
 
     override fun resetRepository() {
         super.resetRepository()
