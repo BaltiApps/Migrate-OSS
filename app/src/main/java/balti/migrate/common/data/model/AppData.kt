@@ -32,6 +32,8 @@ data class AppData(
     ): DataItem<AppListItem> {
     override val _id: String = packageName
 
+    val apkPathBase = apkPath.substringBeforeLast('/')
+
     override fun toListItem(): AppListItem {
         return AppListItem(
             _id = packageName,
