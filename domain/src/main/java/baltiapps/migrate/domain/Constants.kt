@@ -90,3 +90,16 @@ class PermissionConstants {
         const val SETTINGS_DEFAULT_APPS = "android.settings.MANAGE_DEFAULT_APPS_SETTINGS"
     }
 }
+
+class AppInfoConstants {
+    companion object {
+        const val KEY_PACKAGE_NAME = "packageName"
+        const val KEY_APP_NAME = "appName"
+        const val KEY_VERSION_NAME = "versionName"
+        const val KEY_VERSION_CODE = "versionCode"
+        const val KEY_GRANTED_PERMISSIONS = "grantedPermissions"
+        const val KEY_APK = "apk"
+        const val KEY_DATA = "data"
+        const val KEY_PERMISSIONS = "permissions"
+    }
+}
