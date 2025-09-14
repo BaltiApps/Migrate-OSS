@@ -60,6 +60,13 @@ interface TextWriter<T> {
     fun close()
 }
 
+interface TextReader<T> {
+    fun setup(fileLocation: String, fileName: String)
+    fun read(): T
+    fun readLines(onFinished: (List<T>) -> Unit): Flow<Progress>
+    fun close()
+}
+
 interface DBWriter<T: DataItem<*>> {
     fun setup(file: GenericFile)
     fun writeRows(dataItems: List<T>): Flow<Progress>
