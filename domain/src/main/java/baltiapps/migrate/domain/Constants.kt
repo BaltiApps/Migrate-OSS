@@ -98,6 +98,7 @@ class AppInfoConstants {
         const val KEY_VERSION_NAME = "versionName"
         const val KEY_VERSION_CODE = "versionCode"
         const val KEY_GRANTED_PERMISSIONS = "grantedPermissions"
+        const val KEY_IS_SYSTEM_APP = "isSystemApp"
         const val KEY_APK = "apk"
         const val KEY_DATA = "data"
         const val KEY_PERMISSIONS = "permissions"

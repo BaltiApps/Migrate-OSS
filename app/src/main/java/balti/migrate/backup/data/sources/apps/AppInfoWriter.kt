@@ -25,6 +25,7 @@ class AppInfoWriter: TextWriter<AppData> {
             put(AppInfoConstants.KEY_VERSION_NAME, data.versionName)
             put(AppInfoConstants.KEY_VERSION_CODE, data.versionCode)
             put(AppInfoConstants.KEY_GRANTED_PERMISSIONS, JSONArray(data.grantedPermissionList))
+            put(AppInfoConstants.KEY_IS_SYSTEM_APP, data.isSystemApp)
             put(AppInfoConstants.KEY_APK, data.shouldBackupApk)
             put(AppInfoConstants.KEY_DATA, data.shouldBackupData)
             put(AppInfoConstants.KEY_PERMISSIONS, data.shouldBackupPermissions)
