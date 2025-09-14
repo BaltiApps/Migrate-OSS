@@ -29,9 +29,10 @@ import baltiapps.migrate.domain.common.sources.fileSystem.TextReader
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import baltiapps.migrate.domain.restore.sources.DataRestore
 import baltiapps.migrate.domain.restore.usecase.ExportContactsForRestoreUseCase
+import baltiapps.migrate.domain.restore.usecase.ImportFilesFromBackupUseCase
+import baltiapps.migrate.domain.restore.usecase.ReadAppListForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadCallLogForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadContactsForRestoreUseCase
-import baltiapps.migrate.domain.restore.usecase.ImportFilesFromBackupUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadSmsForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreCallLogUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreSmsUseCase
@@ -132,6 +133,14 @@ val restoreDiModule = module {
         RestoreSmsUseCase(
             dataRestore = get(named(Names.SMS_RESTORE_SOURCE)),
             restoreDataRepository = get()
+        )
+    }
+    single {
+        ReadAppListForRestoreUseCase(
+            appIconReader = get(named(Names.APP_ICON_READER)),
+            appInfoReader = get(named(Names.APP_INFO_READER)),
+            restoreDataRepository = get(),
+            appListItemToDataItemConverter = get()
         )
     }
     singleOf(::ExportContactsForRestoreUseCase)
