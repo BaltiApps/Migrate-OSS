@@ -1,5 +1,6 @@
 package balti.migrate.restore.di
 
+import balti.migrate.common.data.model.AppData
 import balti.migrate.common.data.model.CallLogData
 import balti.migrate.common.data.model.ContactData
 import balti.migrate.common.data.model.SmsData
@@ -7,6 +8,8 @@ import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
 import balti.migrate.common.di.Names.MEDIA_STORE_EXPORT_DIRECTORY_BROWSER
 import balti.migrate.common.di.Names.SAF_EXPORT_DIRECTORY_BROWSER
 import balti.migrate.restore.data.sources.RestoreNotificationHandlerImpl
+import balti.migrate.restore.data.sources.apps.AppIconReader
+import balti.migrate.restore.data.sources.apps.AppInfoReader
 import balti.migrate.restore.data.sources.callLog.CallLogDBReader
 import balti.migrate.restore.data.sources.callLog.CallLogRestore
 import balti.migrate.restore.data.sources.contacts.ContactsDBReader
@@ -18,9 +21,11 @@ import balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection.Conta
 import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestoreSelectionViewModel
 import balti.migrate.restore.ui.screens.progressScreen.RestoreProgressScreenViewModel
 import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummaryViewModel
+import baltiapps.migrate.domain.common.model.DrawableAsset
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
+import baltiapps.migrate.domain.common.sources.fileSystem.TextReader
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import baltiapps.migrate.domain.restore.sources.DataRestore
 import baltiapps.migrate.domain.restore.usecase.ExportContactsForRestoreUseCase
@@ -42,6 +47,8 @@ enum class Names {
     CALL_LOG_RESTORE_SOURCE,
     SMS_DB_READER,
     SMS_RESTORE_SOURCE,
+    APP_ICON_READER,
+    APP_INFO_READER,
     PROGRESS_LOG_REPOSITORY_RESTORE,
     NOTIFICATION_HANDLER_RESTORE,
 }
@@ -64,6 +71,12 @@ val restoreDiModule = module {
     }
     single<DataRestore<SmsData>>(named(Names.SMS_RESTORE_SOURCE)) {
         SmsRestore(get(), get(), get())
+    }
+    single<TextReader<DrawableAsset>>(named(Names.APP_ICON_READER)) {
+        AppIconReader()
+    }
+    single<TextReader<AppData>>(named(Names.APP_INFO_READER)) {
+        AppInfoReader()
     }
     single<NotificationHandler<*>>(named(Names.NOTIFICATION_HANDLER_RESTORE)) {
         RestoreNotificationHandlerImpl(
