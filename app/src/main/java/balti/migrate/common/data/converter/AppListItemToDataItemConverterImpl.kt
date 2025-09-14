@@ -1,6 +1,7 @@
 package balti.migrate.common.data.converter
 
 import balti.migrate.common.data.model.AppData
+import balti.migrate.common.data.model.AppIcon
 import baltiapps.migrate.domain.common.converter.AppListItemToDataItemConverter
 import baltiapps.migrate.domain.common.model.AppListItem
 
@@ -14,5 +15,15 @@ class AppListItemToDataItemConverterImpl(): AppListItemToDataItemConverter<AppDa
             shouldBackupData = listItem.isDataSelected,
             shouldBackupPermissions = listItem.isPermissionsSelected,
         )
+    }
+
+    override fun setIcon(listItem: AppListItem, dataItem: AppData): AppData {
+        val icon = listItem.appIcon
+
+        return if (icon is AppIcon) {
+            dataItem.copy(
+                appIcon = icon.drawable
+            )
+        } else dataItem
     }
 }

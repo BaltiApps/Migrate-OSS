@@ -5,4 +5,5 @@ import baltiapps.migrate.domain.common.model.DataItem
 
 interface AppListItemToDataItemConverter<T: DataItem<AppListItem>> {
     fun convertSelection(listItem: AppListItem, dataItem: T): T
+    fun setIcon(listItem: AppListItem, dataItem: T): T
 }
