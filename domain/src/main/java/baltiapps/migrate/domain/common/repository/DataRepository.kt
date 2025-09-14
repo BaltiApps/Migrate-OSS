@@ -37,8 +37,12 @@ abstract class DataRepository {
         callLogDataItems.clear()
         smsDataItems.clear()
 
+        appDataItems.clear()
+
         stagedContacts.clear()
         stagedCallLogs.clear()
         stagedSms.clear()
+
+        stagedApps.clear()
     }
 }
