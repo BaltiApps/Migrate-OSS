@@ -2,24 +2,20 @@ package balti.migrate.backup.ui.screens.listScreen.appBackupSelection
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
+import balti.migrate.common.ui.components.AppCountBar
 import balti.migrate.common.ui.components.RenderAppListItem
 import balti.migrate.common.ui.listScreen.ListScreenShell
 import balti.migrate.common.ui.listScreen.ListState
@@ -116,10 +112,13 @@ private fun Content(
                 val allItems = state().appListItems
                 val selectedItems = allItems.filter { it.isAnySelected() }
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    AllCheckBar(
+                    AppCountBar(
                         totalCount = allItems.size,
                         selectedCount = selectedItems.size,
-                        state = state,
+                        isStaging = listState.isStaging,
+                        areAllApksSelected = state().areAllApksSelected,
+                        areAllDataSelected = state().areAllDataSelected,
+                        areAllPermissionsSelected = state().areAllPermissionsSelected,
                         onAllApkToggled = onAllApkToggled,
                         onAllDataToggled = onAllDataToggled,
                         onAllPermissionToggled = onAllPermissionToggled,
@@ -144,48 +143,5 @@ private fun Content(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun AllCheckBar(
-    totalCount: Int,
-    selectedCount: Int,
-    state: () -> AppBackupSelectionState,
-    onAllApkToggled: (Boolean) -> Unit,
-    onAllDataToggled: (Boolean) -> Unit,
-    onAllPermissionToggled: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = "${stringResource(R.string.selected_items)} - $selectedCount/$totalCount",
-            style = MaterialTheme.typography.labelLarge,
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Checkbox(
-            checked = state().areAllApksSelected,
-            onCheckedChange = {
-                onAllApkToggled(it)
-            },
-            enabled = !state().isStaging,
-        )
-        Checkbox(
-            checked = state().areAllDataSelected,
-            onCheckedChange = {
-                onAllDataToggled(it)
-            },
-            enabled = !state().isStaging,
-        )
-        Checkbox(
-            checked = state().areAllPermissionsSelected,
-            onCheckedChange = {
-                onAllPermissionToggled(it)
-            },
-            enabled = !state().isStaging,
-        )
     }
 }
