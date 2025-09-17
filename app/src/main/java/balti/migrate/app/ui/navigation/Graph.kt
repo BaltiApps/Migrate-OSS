@@ -34,6 +34,7 @@ import balti.migrate.backup.ui.screens.progressScreen.BackupProgressScreen
 import balti.migrate.common.utils.DeepLinkUtils
 import balti.migrate.restore.data.service.RestoreService
 import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDirectory
+import balti.migrate.restore.ui.screens.listScreen.appRestoreSelection.AppRestoreSelection
 import balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection.CallLogRestoreSelection
 import balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection.ContactRestoreSelection
 import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestoreSelection
@@ -255,7 +256,15 @@ fun Graph(
                 }
                 composable<RouteAppRestoreSelection> {
                     val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
-                    // TODO: Add app restore selection screen
+                    AppRestoreSelection(
+                        navigateUp = {
+                            viewModel.onBackFromRoute()
+                            navController.navigateUp()
+                        },
+                        goToNextScreen = {
+                            navController.navigate(viewModel.findNextRoute())
+                        }
+                    )
                 }
                 composable<RouteRestoreSummary> {
                     val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
