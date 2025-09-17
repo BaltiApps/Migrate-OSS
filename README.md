@@ -30,7 +30,12 @@ Version: 6.0.1 (Artemis)
    ```
    git clone https://github.com/BaltiApps/Migrate-OSS.git
    ```
-2. Open `Migrate-OSS` project in Android Studio. Then compile and run (`Shift+F10` in most cases).
+2. Open `Migrate-OSS` project in Android Studio. Then compile and run (`Shift+F10` in most cases).  
+   Alternately use the following commands:
+   ```
+   cd Migrate-OSS
+   ./gradlew clean && ./gradlew assembleDebug && adb install app/build/outputs/apk/debug/*.apk && adb shell monkey -p balti.migrate 1
+   ```
 
 ### Links
 
