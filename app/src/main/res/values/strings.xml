@@ -153,6 +153,12 @@
     <!--SmsRestoreSelection.kt-->
     <string name="label_sms_restore">SMS restore</string>
 
+    <!--AppRestoreSelection.kt-->
+    <string name="label_app_restore">App restore</string>"
+    <string name="app_restore_permission_description">
+        Please grant super user permission to restore apps.
+    </string>
+
     <!--RestoreSummary.kt-->
     <string name="restore_summary">Restore summary</string>
     <string name="delegated_restore">Delegated restore</string>
