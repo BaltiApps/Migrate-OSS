@@ -12,4 +12,7 @@ data class AppRestoreSelectionState(
     val areAllApksSelected: Boolean = false,
     val areAllDataSelected: Boolean = false,
     val areAllPermissionsSelected: Boolean = false,
+    val shouldEnableApkSelection: Boolean = true,
+    val shouldEnableDataSelection: Boolean = true,
+    val shouldEnablePermissionSelection: Boolean = true,
 )

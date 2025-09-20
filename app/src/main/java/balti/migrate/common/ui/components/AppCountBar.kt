@@ -24,6 +24,9 @@ fun AppCountBar(
     onAllDataToggled: (Boolean) -> Unit,
     onAllPermissionToggled: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    shouldEnableApkSelection: Boolean = true,
+    shouldEnableDataSelection: Boolean = true,
+    shouldEnablePermissionSelection: Boolean = true,
 ) {
     Row(
         modifier = modifier,
@@ -39,21 +42,21 @@ fun AppCountBar(
             onCheckedChange = {
                 onAllApkToggled(it)
             },
-            enabled = !isStaging,
+            enabled = shouldEnableApkSelection && !isStaging,
         )
         Checkbox(
             checked = areAllDataSelected,
             onCheckedChange = {
                 onAllDataToggled(it)
             },
-            enabled = !isStaging,
+            enabled = shouldEnableDataSelection && !isStaging,
         )
         Checkbox(
             checked = areAllPermissionsSelected,
             onCheckedChange = {
                 onAllPermissionToggled(it)
             },
-            enabled = !isStaging,
+            enabled = shouldEnablePermissionSelection && !isStaging,
         )
     }
 }

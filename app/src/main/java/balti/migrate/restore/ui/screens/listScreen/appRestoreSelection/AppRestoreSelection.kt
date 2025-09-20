@@ -123,6 +123,9 @@ private fun Content(
                         onAllApkToggled = onAllApkToggled,
                         onAllDataToggled = onAllDataToggled,
                         onAllPermissionToggled = onAllPermissionToggled,
+                        shouldEnableApkSelection = state().shouldEnableApkSelection,
+                        shouldEnableDataSelection = state().shouldEnableDataSelection,
+                        shouldEnablePermissionSelection = state().shouldEnablePermissionSelection,
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(MaterialTheme.colorScheme.surfaceContainer)

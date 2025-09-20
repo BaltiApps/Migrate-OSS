@@ -50,11 +50,15 @@ class AppRestoreSelectionViewModel(
             }
 
             readAppListForRestoreUseCase.invoke().onCompletion {
+                val appListItems = restoreDataRepository.appListItems
                 _state.update {
                     it.copy(
                         progress = it.progress.copy(percentage = 1.0),
                         shouldAskForSuperuserPermission = false,
-                        appListItems = restoreDataRepository.appListItems,
+                        appListItems = appListItems,
+                        shouldEnableApkSelection = appListItems.any { it.isApkEnabled },
+                        shouldEnableDataSelection = appListItems.any { it.isDataEnabled },
+                        shouldEnablePermissionSelection = appListItems.any { it.isPermissionsEnabled },
                     )
                 }
                 updateStatesForAllApksAllDataAllPermissions()
@@ -115,16 +119,16 @@ class AppRestoreSelectionViewModel(
                 // select all if some are selected and deselect all if all are deselected
                 val isAllSelected = this.isAllSelected()
                 val newItem = copy(
-                    isApkSelected = !isAllSelected,
-                    isDataSelected = !isAllSelected,
-                    isPermissionsSelected = !isAllSelected,
+                    isApkSelected = this.isApkEnabled && !isAllSelected,
+                    isDataSelected = this.isDataEnabled && !isAllSelected,
+                    isPermissionsSelected = this.isPermissionsEnabled && !isAllSelected,
                 )
                 replaceAppItem(newItem)
                 updateStatesForAllApksAllDataAllPermissions()
             }
             is AppRestoreSelectionAction.ToggleAllAppItemsApkSelection -> {
                 val newItems = state.value.appListItems.map {
-                    it.copy(isApkSelected = action.isChecked)
+                    it.copy(isApkSelected = it.isApkEnabled && action.isChecked)
                 }
                 _state.update {
                     it.copy(
@@ -135,7 +139,7 @@ class AppRestoreSelectionViewModel(
             }
             is AppRestoreSelectionAction.ToggleAllAppItemsDataSelection -> {
                 val newItems = state.value.appListItems.map {
-                    it.copy(isDataSelected = action.isChecked)
+                    it.copy(isDataSelected = it.isDataEnabled && action.isChecked)
                 }
                 _state.update {
                     it.copy(
@@ -146,7 +150,7 @@ class AppRestoreSelectionViewModel(
             }
             is AppRestoreSelectionAction.ToggleAllAppItemsPermissionSelection -> {
                 val newItems = state.value.appListItems.map {
-                    it.copy(isPermissionsSelected = action.isChecked)
+                    it.copy(isPermissionsSelected = it.isPermissionsEnabled && action.isChecked)
                 }
                 _state.update {
                     it.copy(
@@ -158,17 +162,17 @@ class AppRestoreSelectionViewModel(
             is AppRestoreSelectionAction.ToggleAllAppItems -> {
                 val newItems = state.value.appListItems.map {
                     it.copy(
-                        isApkSelected = action.isChecked,
-                        isDataSelected = action.isChecked,
-                        isPermissionsSelected = action.isChecked,
+                        isApkSelected = it.isApkEnabled && action.isChecked,
+                        isDataSelected = it.isDataEnabled && action.isChecked,
+                        isPermissionsSelected = it.isPermissionsEnabled && action.isChecked,
                     )
                 }
                 _state.update {
                     it.copy(
                         appListItems = newItems,
-                        areAllApksSelected = action.isChecked,
-                        areAllDataSelected = action.isChecked,
-                        areAllPermissionsSelected = action.isChecked,
+                        areAllApksSelected = it.shouldEnableApkSelection && action.isChecked,
+                        areAllDataSelected = it.shouldEnableDataSelection && action.isChecked,
+                        areAllPermissionsSelected = it.shouldEnablePermissionSelection && action.isChecked,
                     )
                 }
             }

@@ -46,6 +46,10 @@ data class AppData(
             isApkSelected = shouldBackupApk,
             isDataSelected = shouldBackupData,
             isPermissionsSelected = shouldBackupPermissions,
+
+            isApkEnabled = shouldBackupApk,
+            isDataEnabled = shouldBackupData,
+            isPermissionsEnabled = shouldBackupPermissions,
         )
     }
 }

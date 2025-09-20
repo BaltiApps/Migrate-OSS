@@ -12,6 +12,10 @@ data class AppListItem(
     val isDataSelected: Boolean,
     val isPermissionsSelected: Boolean,
 
+    val isApkEnabled: Boolean = true,
+    val isDataEnabled: Boolean = true,
+    val isPermissionsEnabled: Boolean = true,
+
 ): ListItem {
     fun isAnySelected() = isApkSelected || isDataSelected || isPermissionsSelected
     fun isAllSelected() = isApkSelected && isDataSelected && isPermissionsSelected

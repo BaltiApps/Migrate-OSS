@@ -82,21 +82,21 @@ fun RenderAppListItem(
                 onCheckedChange = {
                     onApkSelected(item)
                 },
-                enabled = enabled,
+                enabled = enabled && item.isApkEnabled,
             )
             Checkbox(
                 checked = item.isDataSelected,
                 onCheckedChange = {
                     onDataSelected(item)
                 },
-                enabled = enabled,
+                enabled = enabled && item.isDataEnabled,
             )
             Checkbox(
                 checked = item.isPermissionsSelected,
                 onCheckedChange = {
                     onPermissionSelected(item)
                 },
-                enabled = enabled,
+                enabled = enabled && item.isPermissionsEnabled,
             )
         }
     }
