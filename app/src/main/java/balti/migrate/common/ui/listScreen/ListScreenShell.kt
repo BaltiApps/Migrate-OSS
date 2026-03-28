@@ -1,6 +1,7 @@
 package balti.migrate.common.ui.listScreen
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -36,6 +37,7 @@ fun ListScreenShell(
     onPermissionRequest: () -> Unit,
     onNext: () -> Unit,
     nextButtonCustomLabel: String? = null,
+    topBarActions: @Composable RowScope.() -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -43,7 +45,7 @@ fun ListScreenShell(
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopBar(listState.listTitle, scrollBehavior, navigateUp)
+            TopBar(listState.listTitle, scrollBehavior, navigateUp, topBarActions)
         },
         bottomBar = {
             BottomBar(
@@ -101,6 +103,7 @@ private fun TopBar(
     backupTitle: String,
     scrollBehavior: TopAppBarScrollBehavior,
     navigateUp: () -> Unit,
+    actions: @Composable RowScope.() -> Unit,
 ) {
     LargeTopAppBar(
         title = {
@@ -116,6 +119,7 @@ private fun TopBar(
                 )
             }
         },
+        actions = actions,
         scrollBehavior = scrollBehavior,
     )
 }
