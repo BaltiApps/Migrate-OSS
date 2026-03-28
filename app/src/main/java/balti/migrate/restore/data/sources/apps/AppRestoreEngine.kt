@@ -124,14 +124,15 @@ class AppRestoreEngine(
                         args = arrayOf(
                             appData.appName,
                             appData.packageName,
+                            "${readLocation}/${appData.packageName}.tar.gz",
                             "0",  // TODO: find a way to send the user
-                            appData.grantedPermissionList.joinToString(" "),
+                            "true",
                             AppBackupConstants.END_MARKER,
                         )
                     )
                 }
 
-                if (appData.shouldBackupPermissions) {
+                if (appData.shouldBackupPermissions && appData.grantedPermissionList.isNotEmpty()) {
                     superuserUtils.runScript(
                         scriptPath = scriptLocationPermRestore,
                         parentSuperuserShell = suShell,
@@ -158,8 +159,8 @@ class AppRestoreEngine(
                         args = arrayOf(
                             appData.appName,
                             appData.packageName,
-                            "${readLocation}/${appData.packageName}.tar.gz",
                             "0",  // TODO: find a way to send the user
+                            appData.grantedPermissionList.joinToString(" "),
                             AppBackupConstants.END_MARKER,
                         )
                     )
