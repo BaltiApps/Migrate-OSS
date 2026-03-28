@@ -7,6 +7,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import androidx.core.content.pm.PackageInfoCompat
 import balti.migrate.common.data.model.AppData
+import baltiapps.migrate.domain.AppBackupConstants
 import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
@@ -37,6 +38,9 @@ class AppListSource(
                 val packageInfoForPermissions =
                     pm.getPackageInfo(app.packageName, PackageManager.GET_PERMISSIONS)
 
+                val installSourceInfo = pm.getInstallSourceInfo(app.packageName)
+                val installerName = installSourceInfo.installingPackageName
+
                 val appName = pm.getApplicationLabel(app).toString()
                 val packageName = app.packageName
 
@@ -65,6 +69,10 @@ class AppListSource(
 
                     isSystemApp = (app.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
                     isUpdatedSystemApp = (app.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0,
+
+                    installerName = installerName ?: AppBackupConstants.NULL_MARKER,
+
+                    user = 0, // TODO: find a way to store the proper user
 
                     logInfo = "$appName : ($packageName)"
                 )

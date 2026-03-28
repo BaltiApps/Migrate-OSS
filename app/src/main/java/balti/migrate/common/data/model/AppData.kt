@@ -27,6 +27,10 @@ data class AppData(
     val shouldBackupData: Boolean = true,
     val shouldBackupPermissions: Boolean = true,
 
+    val installerName: String,
+
+    val user: Int,
+
     override val logInfo: String,
 
     ): DataItem<AppListItem> {
