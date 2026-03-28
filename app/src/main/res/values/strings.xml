@@ -29,7 +29,7 @@
     <string name="expand_list">Expand list</string>
     <string name="collapse_list">Collapse list</string>
     <string name="synced_contacts">Synced contacts - not recommended</string>
-    <string name="local_contacts">Local contacts</string>"
+    <string name="local_contacts">Local contacts</string>
     <string name="contacts_backup_permission_description">
         Please grant permission to read the contacts.\n
         Click Skip to not backup contacts.
@@ -65,10 +65,15 @@
     </string>
 
     <!--AppBackupSelection.kt-->
-    <string name="label_app_backup">App backup</string>"
+    <string name="label_app_backup">App backup</string>
     <string name="app_backup_permission_description">
         Please grant super user permission to backup apps.
     </string>
+
+    <!--AppSelectionFilterDialog.kt-->
+    <string name="system_core">System core</string>
+    <string name="system_updated">System updated</string>
+    <string name="user_apps">User apps</string>
 
     <!--RenderContactName.kt-->
     <string name="no_name_contact">(No name)</string>
@@ -126,7 +131,7 @@
     <string name="show_only_errors">Show only errors</string>
 
     <!--BrowseRestoreDirectory.kt-->
-    <string name="select_directory">Select directory</string>"
+    <string name="select_directory">Select directory</string>
     <string name="location_not_set_warning">Some backups may not be visible. Please set backup location.</string>
     <string name="importing_directory">Importing directory</string>
     <string name="no_parent">No parent, cannot go up.</string>
@@ -154,7 +159,7 @@
     <string name="label_sms_restore">SMS restore</string>
 
     <!--AppRestoreSelection.kt-->
-    <string name="label_app_restore">App restore</string>"
+    <string name="label_app_restore">App restore</string>
     <string name="app_restore_permission_description">
         Please grant super user permission to restore apps.
     </string>
@@ -203,7 +208,7 @@
     <string name="notification_permission">Show notifications</string>
     <string name="notification_permission_description">Required to notify backup / restore progress.</string>
     <string name="superuser_permission">(Optional) Superuser root permission</string>
-    <string name="superuser_permission_description">For advanced options like app backup. This requires rooting your device (preferably with Magisk).</string>"
+    <string name="superuser_permission_description">For advanced options like app backup. This requires rooting your device (preferably with Magisk).</string>
     <string name="allow_all">Allow all</string>
     <string name="skip_for_now">Skip for now</string>
     <string name="dont_show_again">Don\'t show again</string>

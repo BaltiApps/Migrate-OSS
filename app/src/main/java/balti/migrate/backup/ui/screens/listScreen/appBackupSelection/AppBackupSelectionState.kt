@@ -3,6 +3,12 @@ package balti.migrate.backup.ui.screens.listScreen.appBackupSelection
 import baltiapps.migrate.domain.common.model.AppListItem
 import baltiapps.migrate.domain.common.model.Progress
 
+data class AppFilterSelection(
+    val systemCore: Boolean,
+    val systemUpdate: Boolean,
+    val userApps: Boolean,
+)
+
 data class AppBackupSelectionState(
     val shouldSkipBackup: Boolean = true,
     val progress: Progress = Progress.Empty,
@@ -12,4 +18,9 @@ data class AppBackupSelectionState(
     val areAllApksSelected: Boolean = false,
     val areAllDataSelected: Boolean = false,
     val areAllPermissionsSelected: Boolean = false,
+    val filterSelection: AppFilterSelection = AppFilterSelection(
+        systemCore = false,
+        systemUpdate = false,
+        userApps = true,
+    ),
 )
