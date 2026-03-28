@@ -20,6 +20,7 @@ import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
+import baltiapps.migrate.domain.restore.usecase.RestoreAppsUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreCallLogUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreSmsUseCase
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +41,7 @@ class RestoreService: LifecycleService() {
 
     private val restoreCallLogUseCase: RestoreCallLogUseCase by inject()
     private val restoreSmsUseCase: RestoreSmsUseCase by inject()
+    private val restoreAppsUseCase: RestoreAppsUseCase by inject()
 
     private val preferences: Preferences by inject()
 
@@ -111,6 +113,22 @@ class RestoreService: LifecycleService() {
             )
 
             Timber.i("restore - finished - sms")
+
+            Timber.i("restore - start - apps")
+
+            val exportDirectory = repository.exportDirectory
+            if (exportDirectory != null) {
+                serviceUtils.runStage(
+                    shouldRun = repository::shouldRestoreApps,
+                    stageBody = { restoreAppsUseCase.invoke(exportDirectory) },
+                    progressType = Progress.ProgressType.APP_RESTORE,
+                    errorMessage = { "App restore exception: ${it.message}" },
+                )
+            } else {
+                Timber.e("Restore apps failed: export directory is null")
+            }
+
+            Timber.i("restore - finished - apps")
 
             serviceUtils.emitHeadingLog(Progress.ProgressType.RESTORE_FINISHED)
 
