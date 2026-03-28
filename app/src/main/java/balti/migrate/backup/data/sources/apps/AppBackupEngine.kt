@@ -94,7 +94,6 @@ class AppBackupEngine(
                             appData.appName,
                             appData.packageName,
                             appData.apkPathBase,
-                            AppBackupConstants.NULL_MARKER,
                             AppBackupConstants.END_MARKER,
                         )
                     )
@@ -130,7 +129,6 @@ class AppBackupEngine(
                             appData.packageName,
                             appData.dataPath,
                             "true",
-                            AppBackupConstants.NULL_MARKER,
                             AppBackupConstants.END_MARKER,
                         )
                     )

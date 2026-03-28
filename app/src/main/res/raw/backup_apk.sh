@@ -9,7 +9,6 @@ PACKAGE_NAME="$3"
 
 APK_PATH_BASE="$4"
 
-NULL_MARKER="$5"
 END_MARKER="$6"
 
 print_end_marker() {
@@ -25,7 +24,7 @@ if [ ! -e "$DESTINATION" ]; then
 fi
 
 # backup APK
-if [ "$APK_PATH_BASE" != "$NULL_MARKER" ]; then
+if [ -d "$APK_PATH_BASE" ]; then
   appBackupDir="$DESTINATION/$PACKAGE_NAME.app"
   mkdir -p "$appBackupDir"
 

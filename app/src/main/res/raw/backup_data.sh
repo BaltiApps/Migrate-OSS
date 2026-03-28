@@ -11,7 +11,6 @@ DATA_PATH_BASE="$4"
 
 IGNORE_CACHE="$5"
 
-NULL_MARKER="$6"
 END_MARKER="$7"
 
 print_end_marker() {
@@ -27,7 +26,7 @@ if [ ! -e "$DESTINATION" ]; then
 fi
 
 # backup data
-if [ "$DATA_PATH_BASE" != "$NULL_MARKER" ]; then
+if [ -d "$DATA_PATH_BASE" ]; then
   dataBackupLocation="$DESTINATION/$PACKAGE_NAME.tar.gz"
   cd "$DATA_PATH_BASE" || { echo "Failed to cd into $DATA_PATH_BASE" >&2; print_end_marker; exit 1; }
 
