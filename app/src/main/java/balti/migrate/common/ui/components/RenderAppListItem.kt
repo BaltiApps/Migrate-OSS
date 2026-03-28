@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -42,6 +43,12 @@ fun RenderAppListItem(
         if (enabled) 1f else 0.38f
     )
 
+    val appTextColor = when {
+        item.isUpdatedSystemApp -> Color(0xFFF57F17) // Yellow 900
+        item.isSystemApp -> Color(0xFFE65100) // Orange 900
+        else -> MaterialTheme.colorScheme.onSurface
+    }
+
     Row(
         modifier = Modifier
             .clickable(enabled = enabled) {
@@ -64,6 +71,7 @@ fun RenderAppListItem(
             Text(
                 text = item.appName,
                 modifier = alphaModifier,
+                color = appTextColor,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -71,6 +79,7 @@ fun RenderAppListItem(
                 text = item._id,
                 fontWeight = FontWeight.Thin,
                 style = MaterialTheme.typography.bodySmall,
+                color = appTextColor,
             )
         }
 
