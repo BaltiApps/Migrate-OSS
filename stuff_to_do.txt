@@ -92,3 +92,10 @@ move permission checks outside of contextSource
 ✅️ fix navigation bug in restore route - 29 May 2025
 
 ✅️ show title text in restore summary explainer dialogs - 29 May 2025
+
+
+app backup and restore
+===========================
+✅️ app filtering options before backup (system core, system updated, user) - done on 29 Mar 2026
+space check
+location confirmation check with a random uuid file
