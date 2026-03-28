@@ -22,18 +22,29 @@ if [ -z "$USER" ]; then
   USER=0
 fi
 
-if [ -n "$GRANTED_PERMISSIONS" ] && [ "$GRANTED_PERMISSIONS" != "$NULL_MARKER" ]; then
-  echo "Revoking existing permissions for $PACKAGE_NAME"
-  pm revoke --all-permissions --user "$USER" "$PACKAGE_NAME"
+echo "Checking if $PACKAGE_NAME is installed..."
+if ! pm list packages "${PACKAGE_NAME}" > /dev/null 2>&1; then
+  echo "Error: App not installed! - $APP_NAME : $PACKAGE_NAME" >&2
+  print_end_marker
+  exit 1
+fi
 
-  echo
+if [ -n "$GRANTED_PERMISSIONS" ]; then
+  echo "Permissions to grant: $GRANTED_PERMISSIONS"
+  
+  echo "Revoking all existing permissions for $PACKAGE_NAME (User: $USER)..."
+  pm revoke --all-permissions --user "$USER" "$PACKAGE_NAME" 2>/dev/null
+
+  echo "Granting permissions one by one..."
 
   for perm in $GRANTED_PERMISSIONS; do
-    echo "Granting permission - $perm"
-    pm grant --user "$USER" "$PACKAGE_NAME" "$perm"
+    echo "Granting permission: $perm"
+    pm grant --user "$USER" "$PACKAGE_NAME" "$perm" 2>&1 | sed 's/^/  /'
   done
-  echo
-  echo
+  
+  echo "Permission restore finished for $PACKAGE_NAME"
+else
+  echo "No permissions to restore for $PACKAGE_NAME found."
 fi
 
 print_end_marker
