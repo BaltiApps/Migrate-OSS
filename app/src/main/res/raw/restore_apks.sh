@@ -29,75 +29,98 @@ fi
 
 if [ -d "$APK_LOCATION" ]; then
 
+  mkdir -p /data/local/tmp
+
+  cp -a "$APK_LOCATION" /data/local/tmp
+
+  APK_DIR="${APK_LOCATION##*/}"
+  APK_LOCATION="/data/local/tmp/${APK_DIR}"
+
   cd "$APK_LOCATION" || { echo "Failed to cd into $APK_LOCATION" >&2; print_end_marker; exit 1; }
 
   # stop package verification if required
   verification_state="$(settings get global package_verifier_enable)"
   case $verification_state in
     ""|null|0) ;;
-    *) settings put global package_verifier_enable 0;;
+    *) 
+      echo "Disabling package verifier (current state: $verification_state)"
+      settings put global package_verifier_enable 0
+      ;;
   esac
-
-  pm_command="pm install"
-
-  if [ "$api" -ge 29 ]; then
-    pm_command="${pm_command} --user $USER"
-  fi
 
   base_apk="base.apk"
 
   if [ ! -f "$base_apk" ]; then
-    echo "Base APK does not exist for $PACKAGE_NAME, exiting." >&2
+    echo "Error: Base APK ($base_apk) does not exist for $PACKAGE_NAME" >&2
     print_end_marker
     exit 1
   fi
 
-  echo "Installing APK"
+  echo "Starting install session for $PACKAGE_NAME..."
 
-  if [ "$INSTALLER_NAME" ] && [ "$INSTALLER_NAME" != "$NULL_MARKER" ] && pm list packages "$INSTALLER_NAME" | grep -q .; then
-    $pm_command -r -d -t -i "$INSTALLER_NAME" "$base_apk"
+  # Build pm install-create command
+  # -r: replace existing
+  # -d: allow downgrade
+  # -t: allow test packages
+  create_cmd="pm install-create -r -d -t --user $USER"
+
+  if [ -n "$INSTALLER_NAME" ] && [ "$INSTALLER_NAME" != "$NULL_MARKER" ] && pm list packages "$INSTALLER_NAME" | grep -q .; then
+    echo "Using installer: $INSTALLER_NAME"
+    create_cmd="$create_cmd -i $INSTALLER_NAME"
   else
-    $pm_command -r -d -t "$base_apk"
+    echo "Using default installer"
   fi
 
-  split_count=$(ls -1 . | grep "^split" | grep -c "\.apk$")
+  # Start session
+  session=$( $create_cmd | cut -d'[' -f2 | cut -d']' -f1 )
 
-  if [ "${split_count}" -gt 0 ]; then
-    ############## Made by Vijay ##############
+  if [ -z "$session" ]; then
+    echo "Error: Failed to create install session" >&2
+    print_end_marker
+    exit 1
+  fi
 
-    echo "Split: Creating Install Session"
+  echo "Session ID: $session"
 
-    pm_command="pm install-create --user ${USER}"
+  # add base apk
+  size=$(wc -c < "$base_apk")
+  echo "Adding $base_apk (Size: $size bytes)"
+  pm install-write -S "$size" "$session" "$base_apk" "$base_apk" || { echo "Error: Failed to add $base_apk to session" >&2; print_end_marker; exit 1; }
 
-    if [ -n "${INSTALLER_NAME}" ] && [ "${INSTALLER_NAME}" != "${NULL_MARKER}" ]; then
-        session=$(${pm_command} -i "${INSTALLER_NAME}" -p "${PACKAGE_NAME}" | cut -d'[' -f2 | cut -d']' -f1)
-    else
-        session=$(${pm_command} -p "${PACKAGE_NAME}" | cut -d'[' -f2 | cut -d']' -f1)
+  # add split apks
+  for split in split_*.apk; do
+    if [ -f "$split" ]; then
+      size=$(wc -c < "$split")
+      echo "Adding $split (Size: $size bytes)"
+      pm install-write -S "$size" "$session" "$split" "$split" || { echo "Warning: Failed to add $split to session" >&2; }
     fi
-
-    # add split apks
-    echo "Split: Adding Split Apks to Session"
-
-    for filename in split_*.apk; do
-        size="$(wc -c < "${filename}")"
-        pm install-write -S "${size}" "${session}" "${filename}" "${APK_LOCATION}/${filename}" 2>/dev/null && echo "Split: Added ${filename}"
-    done
-
-    echo "Split: Installing Split Session (Be patient, it may take longer)"
-    pm install-commit "${session}"
-
-    echo "Split: Done"
-    ############## Made by Vijay ##############
-  else
-    echo "No split apks. Split count: $split_count"
-  fi
+  done
 
   echo
+  echo "Committing install session (please be patient, it may take some minutes)..."
+  echo
+
+  pm install-commit "$session"
+
+  if [ $? -eq 0 ]; then
+    echo "Install successful for $PACKAGE_NAME"
+  else
+    echo "Error: Install failed for $PACKAGE_NAME" >&2
+  fi
+
+  echo "Restore process finished for $PACKAGE_NAME"
+
+  rm -rf "${APK_LOCATION}"
 
   case $verification_state in
     ""|null|0) ;;
-    *) settings put global package_verifier_enable "$verification_state";;
+    *) 
+      echo "Restoring package verifier state to: $verification_state"
+      settings put global package_verifier_enable "$verification_state"
+      ;;
   esac
+else
+  echo "Error: APK location $APK_LOCATION does not exist" >&2
 fi
 
 print_end_marker
