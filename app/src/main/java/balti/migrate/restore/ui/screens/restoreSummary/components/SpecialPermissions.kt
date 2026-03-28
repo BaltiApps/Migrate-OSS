@@ -25,7 +25,7 @@ fun SpecialPermissions(
     state: RestoreSummaryState,
     modifier: Modifier = Modifier,
 ) {
-    if (state.countSms <= 0 && state.countApps <= 0) return
+    if ((state.countSms + state.countApps) <= 0) return
     Column(
         modifier = modifier.fillMaxWidth(),
     ) {

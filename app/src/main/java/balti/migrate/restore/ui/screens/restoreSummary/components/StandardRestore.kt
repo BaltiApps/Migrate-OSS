@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.Sms
 import androidx.compose.material3.HorizontalDivider
@@ -26,7 +27,7 @@ fun StandardRestore(
     state: RestoreSummaryState,
     modifier: Modifier = Modifier,
 ) {
-    if ((state.countCallLogs + state.countSms) <= 0) return
+    if ((state.countCallLogs + state.countSms + state.countApps) <= 0) return
     Column(
         modifier = modifier.fillMaxWidth(),
     ) {
@@ -57,6 +58,14 @@ fun StandardRestore(
                 headlineStringRes = R.string.sms_to_restore,
                 count = state.countSms,
                 icon = IconSource.Vector(Icons.Outlined.Sms),
+                state = RestoreSummaryItemState.UNKNOWN,
+            )
+        }
+        if (state.countApps > 0) {
+            SummaryItem(
+                headlineStringRes = R.string.apps_to_restore,
+                count = state.countApps,
+                icon = IconSource.Vector(Icons.Outlined.Apps),
                 state = RestoreSummaryItemState.UNKNOWN,
             )
         }
