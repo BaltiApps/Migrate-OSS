@@ -48,7 +48,7 @@ class AppRestoreEngine(
             if (unpackResult1.isFailure || unpackResult2.isFailure || unpackResult3.isFailure) {
                 trySend(
                     Progress(
-                        progressType = Progress.ProgressType.APP_BACKUP,
+                        progressType = Progress.ProgressType.APP_RESTORE,
                         percentage = 0.0,
                         logs = "Unpack error - ${unpackResult1.exceptionOrNull()?.message}; ${unpackResult2.exceptionOrNull()?.message}; ${unpackResult3.exceptionOrNull()?.message}",
                         isFailure = true
@@ -78,7 +78,7 @@ class AppRestoreEngine(
                         onError = { error ->
                             trySend(
                                 Progress(
-                                    progressType = Progress.ProgressType.APP_BACKUP,
+                                    progressType = Progress.ProgressType.APP_RESTORE,
                                     percentage = percentage,
                                     logs = error,
                                     isFailure = true,
@@ -114,7 +114,7 @@ class AppRestoreEngine(
                         onError = { error ->
                             trySend(
                                 Progress(
-                                    progressType = Progress.ProgressType.APP_BACKUP,
+                                    progressType = Progress.ProgressType.APP_RESTORE,
                                     percentage = percentage,
                                     logs = error,
                                     isFailure = true,
@@ -149,7 +149,7 @@ class AppRestoreEngine(
                         onError = { error ->
                             trySend(
                                 Progress(
-                                    progressType = Progress.ProgressType.APP_BACKUP,
+                                    progressType = Progress.ProgressType.APP_RESTORE,
                                     percentage = percentage,
                                     logs = error,
                                     isFailure = true,
