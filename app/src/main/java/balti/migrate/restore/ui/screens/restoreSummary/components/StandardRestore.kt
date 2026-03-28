@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import balti.migrate.R
+import balti.migrate.common.ui.components.IconSource
 import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummaryItemState
 import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummaryState
 
@@ -47,7 +48,7 @@ fun StandardRestore(
             SummaryItem(
                 headlineStringRes = R.string.call_logs_to_restore,
                 count = state.countCallLogs,
-                icon = Icons.Outlined.Call,
+                icon = IconSource.Vector(Icons.Outlined.Call),
                 state = RestoreSummaryItemState.UNKNOWN,
             )
         }
@@ -55,7 +56,7 @@ fun StandardRestore(
             SummaryItem(
                 headlineStringRes = R.string.sms_to_restore,
                 count = state.countSms,
-                icon = Icons.Outlined.Sms,
+                icon = IconSource.Vector(Icons.Outlined.Sms),
                 state = RestoreSummaryItemState.UNKNOWN,
             )
         }

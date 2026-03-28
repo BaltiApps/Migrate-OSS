@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import balti.migrate.R
+import balti.migrate.common.ui.components.IconSource
 import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummaryState
 
 
@@ -45,7 +46,7 @@ fun DelegatedRestore(
         SummaryItem(
             headlineStringRes = R.string.contacts_to_restore,
             count = state.countContacts,
-            icon = Icons.Outlined.Contacts,
+            icon = IconSource.Vector(Icons.Outlined.Contacts),
             state = state.contactSummaryState,
         )
     }

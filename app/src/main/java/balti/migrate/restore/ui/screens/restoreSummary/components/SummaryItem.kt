@@ -12,16 +12,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import balti.migrate.common.ui.components.EmptyImageVector
+import balti.migrate.common.ui.components.IconSource
 import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummaryItemState
 
 @Composable
 fun SummaryItem(
     @StringRes headlineStringRes: Int,
     count: Int?,
-    icon: ImageVector,
+    icon: IconSource,
     state: RestoreSummaryItemState,
     modifier: Modifier = Modifier,
 ) {
@@ -34,10 +34,16 @@ fun SummaryItem(
             )
         },
         leadingContent = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-            )
+            when (icon) {
+                is IconSource.Vector -> Icon(
+                    imageVector = icon.imageVector,
+                    contentDescription = null,
+                )
+                is IconSource.Drawable -> Icon(
+                    painter = icon.painter,
+                    contentDescription = null,
+                )
+            }
         },
         trailingContent = {
             Icon(

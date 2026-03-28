@@ -12,4 +12,5 @@ data class RestoreSummaryState(
     val contactsExportProgress: Progress = Progress.Empty,
     val contactSummaryState: RestoreSummaryItemState,
     val smsSummaryState: RestoreSummaryItemState,
+    val appsSummaryState: RestoreSummaryItemState,
 )

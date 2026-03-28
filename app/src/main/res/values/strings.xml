@@ -178,6 +178,7 @@
     <string name="call_logs_to_restore">Call logs to restore - %d</string>
     <string name="sms_to_restore">SMS to restore - %d</string>
     <string name="set_as_default_sms_app">Set as default SMS app</string>
+    <string name="root_permission_needed">Root permission needed</string>
 
     <!--RestoreProgressScreenViewModel.kt-->
     <string name="toast_text_change_sms_app">Open \"SMS app\" and change it.</string>
