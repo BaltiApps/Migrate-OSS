@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import balti.migrate.R
+import balti.migrate.app.ui.theme.SystemCoreColor
+import balti.migrate.app.ui.theme.SystemUpdatedColor
 import balti.migrate.backup.ui.screens.listScreen.appBackupSelection.AppFilterSelection
 
 @Composable
@@ -35,13 +37,13 @@ fun AppSelectionFilterDialog(
             Column {
                 FilterItem(
                     label = stringResource(R.string.system_core),
-                    labelColor = Color(0xFFE65100), // Orange 900
+                    labelColor = SystemCoreColor,
                     isSelected = selection.systemCore,
                     onClick = { selection = selection.copy(systemCore = !selection.systemCore) }
                 )
                 FilterItem(
                     label = stringResource(R.string.system_updated),
-                    labelColor = Color(0xFFF57F17), // Yellow 900
+                    labelColor = SystemUpdatedColor,
                     isSelected = selection.systemUpdate,
                     onClick = { selection = selection.copy(systemUpdate = !selection.systemUpdate) }
                 )

@@ -73,3 +73,6 @@ val surfaceContainerLowDark = Color(0xFF171D1B)
 val surfaceContainerDark = Color(0xFF1B211F)
 val surfaceContainerHighDark = Color(0xFF252B29)
 val surfaceContainerHighestDark = Color(0xFF303634)
+
+val SystemCoreColor = Color(0xFFE65100) // Orange 900
+val SystemUpdatedColor = Color(0xFFF57F17) // Yellow 900

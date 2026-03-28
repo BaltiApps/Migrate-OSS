@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -27,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import balti.migrate.R
+import balti.migrate.app.ui.theme.SystemCoreColor
+import balti.migrate.app.ui.theme.SystemUpdatedColor
 import balti.migrate.common.data.model.AppIcon
 import baltiapps.migrate.domain.common.model.AppListItem
 
@@ -44,8 +45,8 @@ fun RenderAppListItem(
     )
 
     val appTextColor = when {
-        item.isUpdatedSystemApp -> Color(0xFFF57F17) // Yellow 900
-        item.isSystemApp -> Color(0xFFE65100) // Orange 900
+        item.isUpdatedSystemApp -> SystemUpdatedColor
+        item.isSystemApp -> SystemCoreColor
         else -> MaterialTheme.colorScheme.onSurface
     }
 
