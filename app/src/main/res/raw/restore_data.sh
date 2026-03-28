@@ -18,7 +18,7 @@ print_end_marker() {
   echo "$END_MARKER" >&2
 }
 
-echo "=== $APP_NAME ==="
+echo "=== $APP_NAME (DATA) ==="
 
 if [ -z "$USER" ]; then
   USER=0

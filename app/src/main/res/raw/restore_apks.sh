@@ -21,7 +21,7 @@ print_end_marker() {
 
 api="$(getprop ro.build.version.sdk)"
 
-echo "=== $APP_NAME ==="
+echo "=== $APP_NAME (APK) ==="
 
 if [ -z "$USER" ]; then
   USER=0

@@ -99,7 +99,7 @@ class AppRestoreEngine(
 
                 if (appData.shouldBackupData) {
                     superuserUtils.runScript(
-                        scriptPath = scriptLocationPermRestore,
+                        scriptPath = scriptLocationDataRestore,
                         parentSuperuserShell = suShell,
                         endMarker = AppBackupConstants.END_MARKER,
                         onProgress = { log ->
@@ -133,7 +133,7 @@ class AppRestoreEngine(
 
                 if (appData.shouldBackupPermissions) {
                     superuserUtils.runScript(
-                        scriptPath = scriptLocationApkRestore,
+                        scriptPath = scriptLocationPermRestore,
                         parentSuperuserShell = suShell,
                         endMarker = AppBackupConstants.END_MARKER,
                         onProgress = { log ->

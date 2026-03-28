@@ -16,7 +16,7 @@ print_end_marker() {
   echo "$END_MARKER" >&2
 }
 
-echo "=== $APP_NAME ==="
+echo "=== $APP_NAME (PERMISSIONS) ==="
 
 if [ -z "$USER" ]; then
   USER=0
