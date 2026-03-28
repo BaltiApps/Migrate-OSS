@@ -40,8 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -49,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
+import balti.migrate.common.ui.components.IconSource
 import balti.migrate.common.utils.PermissionUtils
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -149,35 +148,35 @@ private fun Content(
                 PermissionItem(
                     title = stringResource(R.string.call_log_permission),
                     description = stringResource(R.string.call_log_permission_description),
-                    icon = PermissionIcon.Vector(Icons.Outlined.Call),
+                    icon = IconSource.Vector(Icons.Outlined.Call),
                     isGranted = state.isCallLogPermissionsGranted,
                     requestPermission = requestCallLogPermissions
                 )
                 PermissionItem(
                     title = stringResource(R.string.sms_permission),
                     description = stringResource(R.string.sms_permission_description),
-                    icon = PermissionIcon.Vector(Icons.Outlined.Sms),
+                    icon = IconSource.Vector(Icons.Outlined.Sms),
                     isGranted = state.isSmsReadPermissionGranted,
                     requestPermission = requestSmsPermission
                 )
                 PermissionItem(
                     title = stringResource(R.string.contacts_permission),
                     description = stringResource(R.string.contacts_permission_description),
-                    icon = PermissionIcon.Vector(Icons.Outlined.Contacts),
+                    icon = IconSource.Vector(Icons.Outlined.Contacts),
                     isGranted = state.isContactsReadPermissionGranted,
                     requestPermission = requestContactsPermission
                 )
                 PermissionItem(
                     title = stringResource(R.string.notification_permission),
                     description = stringResource(R.string.notification_permission_description),
-                    icon = PermissionIcon.Vector(Icons.Outlined.Notifications),
+                    icon = IconSource.Vector(Icons.Outlined.Notifications),
                     isGranted = state.isNotificationPermissionGranted,
                     requestPermission = requestNotificationPermission,
                 )
                 PermissionItem(
                     title = stringResource(R.string.superuser_permission),
                     description = stringResource(R.string.superuser_permission_description),
-                    icon = PermissionIcon.Drawable(painterResource(R.drawable.root)),
+                    icon = IconSource.Drawable(painterResource(R.drawable.root)),
                     isGranted = state.isSuperuserPermissionGranted,
                     requestPermission = requestSuperuserPermission,
                 )
@@ -220,16 +219,11 @@ private fun Content(
     }
 }
 
-sealed interface PermissionIcon {
-    data class Vector(val imageVector: ImageVector) : PermissionIcon
-    data class Drawable(val painter: Painter) : PermissionIcon
-}
-
 @Composable
 private fun PermissionItem(
     title: String,
     description: String,
-    icon: PermissionIcon,
+    icon: IconSource,
     isGranted: Boolean,
     requestPermission: () -> Unit,
     modifier: Modifier = Modifier
@@ -262,11 +256,11 @@ private fun PermissionItem(
             },
             leadingContent = {
                 when (icon) {
-                    is PermissionIcon.Vector -> Icon(
+                    is IconSource.Vector -> Icon(
                         imageVector = icon.imageVector,
                         contentDescription = null,
                     )
-                    is PermissionIcon.Drawable -> Icon(
+                    is IconSource.Drawable -> Icon(
                         painter = icon.painter,
                         contentDescription = null,
                     )
