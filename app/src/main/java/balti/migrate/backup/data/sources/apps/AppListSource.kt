@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.content.pm.PermissionInfo
 import androidx.core.content.pm.PackageInfoCompat
 import balti.migrate.common.data.model.AppData
 import baltiapps.migrate.domain.AppBackupConstants
@@ -57,9 +58,15 @@ class AppListSource(
 
                     grantedPermissionList = packageInfoForPermissions.run {
                         requestedPermissions?.mapIndexedNotNull { index, perm ->
-                            perm.takeIf {
-                                requestedPermissionsFlags?.get(index)
+                            try {
+                                val pInfo = pm.getPermissionInfo(perm, 0)
+                                val isDangerous = pInfo.protection == PermissionInfo.PROTECTION_DANGEROUS
+                                val isGranted = requestedPermissionsFlags?.get(index)
                                     ?.and(PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0
+
+                                if (isDangerous && isGranted) perm else null
+                            } catch (e: PackageManager.NameNotFoundException) {
+                                null
                             }
                         } ?: emptyList()
                     },
