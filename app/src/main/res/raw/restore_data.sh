@@ -24,52 +24,74 @@ if [ -z "$USER" ]; then
   USER=0
 fi
 
-if ! pm list packages "${PACKAGE_NAME}"; then
-  echo "App not installed! - $APP_NAME : $PACKAGE_NAME" >&2
+echo "Checking if $PACKAGE_NAME is installed..."
+if ! pm list packages "${PACKAGE_NAME}" > /dev/null 2>&1; then
+  echo "Error: App not installed! - $APP_NAME : $PACKAGE_NAME" >&2
   print_end_marker
   exit 1
 fi
 
 dataDir="/data/user/$USER/$PACKAGE_NAME"
-app_uid=$(cmd package list packages -U --user "$USER" "$PACKAGE_NAME" | awk -F'uid:' '{print $2}' | tr -d '[:space:]')
+
+echo "Fetching UID for $PACKAGE_NAME..."
+app_uid=$(cmd package list packages -U --user "$USER" "$PACKAGE_NAME" | awk -F'uid:' '{print $2}')
+echo "UID for $PACKAGE_NAME - $app_uid"
 
 if [ -z "$app_uid" ]; then
-  echo "App uid not found: $PACKAGE_NAME" >&2
+  echo "Error: App uid not found for $PACKAGE_NAME" >&2
   print_end_marker
   exit 1
 fi
 
-echo "Force stopping app"
+echo "UID found: $app_uid"
 
+echo "Force stopping $PACKAGE_NAME..."
 am force-stop "$PACKAGE_NAME" 2>/dev/null
 
-echo "Wiping stale data"
+echo "Wiping stale data at $dataDir..."
+if [ -d "$dataDir" ]; then
+  rm -rf "${dataDir}"
+  echo "Stale data removed."
+else
+  echo "No stale data found."
+fi
 
-[ -d "$dataDir" ] && rm -rf "${dataDir}"
+echo "Extracting data from $DATA_TAR_LOCATION..."
 
-echo "Extracting data"
+if [ ! -f "$DATA_TAR_LOCATION" ]; then
+  echo "Error: Backup file $DATA_TAR_LOCATION not found!" >&2
+  print_end_marker
+  exit 1
+fi
 
-parentDir=$(dirname "$dataDir")
+mkdir -p "$dataDir"
+tar -xvzpf "$DATA_TAR_LOCATION" -C "$dataDir" || { echo "Error: Failed to extract data for $PACKAGE_NAME" >&2; print_end_marker; exit 1; }
 
-tar -xzpf "$DATA_TAR_LOCATION" -C "$parentDir" || { echo "Failed extract data for $PACKAGE_NAME" >&2; print_end_marker; exit 1; }
-
-printf "\nFixing contexts and permissions\n"
-
+echo "Fixing contexts and permissions for $dataDir..."
 chmod 771 "${dataDir}"
 chown "${app_uid}":"${app_uid}" -Rf "${dataDir}"
 restorecon -RF "${dataDir}" 2>/dev/null
 
 API=$(getprop ro.build.version.sdk)
+echo "Android API Level: $API"
 
 if [ "$API" -ge 29 ]; then
-  echo "A10+ fixing context"
+  echo "Android 10+ detected, applying specific SELinux context..."
   chcon -Rh u:object_r:app_data_file:s0 "${dataDir}"
 fi
 
 # notification fix added in v3.0
 if [ "${NOTIFICATION_FIX}" = "true" ]; then
-  echo "Removing gms file under $PACKAGE_NAME/shared_prefs"
-  cd "${dataDir}" && rm -f shared_prefs/com.google.android.gms.appid.xml || echo "Notification fix - failed to cd into $dataDir" >&2
+  echo "Applying notification fix: checking for Google GMS files..."
+  target_file="${dataDir}/shared_prefs/com.google.android.gms.appid.xml"
+  if [ -f "$target_file" ]; then
+    rm -f "$target_file"
+    echo "Removed $target_file"
+  else
+    echo "GMS file not found, skipping."
+  fi
 fi
+
+echo "Data restore finished for $PACKAGE_NAME"
 
 print_end_marker

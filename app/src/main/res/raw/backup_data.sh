@@ -35,9 +35,10 @@ if [ -d "$DATA_PATH_BASE" ]; then
   echo
 
   if [ "$IGNORE_CACHE" = "true" ]; then
-    tar -vczpf "$dataBackupLocation" "$DATA_PATH_BASE" --exclude="$DATA_PATH_BASE/cache"
+    tar -vczpf "$dataBackupLocation" . \
+      --exclude="./cache"
   else
-    tar -vczpf "$dataBackupLocation" "$DATA_PATH_BASE"
+    tar -vczpf "$dataBackupLocation" .
   fi
 fi
 
