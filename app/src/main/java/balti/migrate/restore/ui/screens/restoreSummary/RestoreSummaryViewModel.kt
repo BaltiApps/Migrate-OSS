@@ -6,11 +6,13 @@ import androidx.lifecycle.viewModelScope
 import balti.migrate.common.data.model.ContactData
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
+import balti.migrate.common.utils.SuperuserUtils
 import baltiapps.migrate.domain.INTERNAL_ROUGH_WORK_DIRECTORY
 import baltiapps.migrate.domain.PermissionConstants
 import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import baltiapps.migrate.domain.restore.usecase.ExportContactsForRestoreUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onCompletion
@@ -22,6 +24,7 @@ class RestoreSummaryViewModel(
     private val applicationContext: Context,
     private val restoreDataRepository: RestoreDataRepository,
     private val exportContactsForRestoreUseCase: ExportContactsForRestoreUseCase,
+    private val superuserUtils: SuperuserUtils,
     private val contextSource: ContextSource,
 ) : ViewModel() {
 
@@ -34,6 +37,7 @@ class RestoreSummaryViewModel(
             countApps = 0,
             contactSummaryState = RestoreSummaryItemState.UNKNOWN,
             smsSummaryState = RestoreSummaryItemState.UNKNOWN,
+            appsSummaryState = RestoreSummaryItemState.UNKNOWN,
         )
     )
     val state = _state.asStateFlow()
@@ -64,6 +68,7 @@ class RestoreSummaryViewModel(
                 countApps = appCount,
                 contactSummaryState = if (contactCount > 0) RestoreSummaryItemState.WAITING else RestoreSummaryItemState.UNKNOWN,
                 smsSummaryState = if (smsCount > 0) RestoreSummaryItemState.WAITING else RestoreSummaryItemState.UNKNOWN,
+                appsSummaryState = if (appCount > 0) RestoreSummaryItemState.WAITING else RestoreSummaryItemState.UNKNOWN,
             )
         }
     }
@@ -77,6 +82,18 @@ class RestoreSummaryViewModel(
                     it.copy(smsSummaryState = RestoreSummaryItemState.REQUEST_USER_INPUT)
                 }
             } else {
+                if (_state.value.appsSummaryState == RestoreSummaryItemState.WAITING) {
+                    superuserUtils.checkSuperuserPermission().run {
+                        _state.update {
+                            it.copy(
+                                appsSummaryState =
+                                    if (this.isSuccess) RestoreSummaryItemState.DONE
+                                    else RestoreSummaryItemState.CANCELLED
+                            )
+                        }
+                        delay(200)
+                    }
+                }
                 runService()
             }
         }
