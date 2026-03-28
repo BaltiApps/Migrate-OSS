@@ -38,17 +38,23 @@ class AppBackupEngine(
         return callbackFlow {
             suShell = superuserUtils.getSuperuserShell()
 
-            val scriptLocation = "${applicationContext.cacheDir}/backup_app_and_data.sh"
+            val apkScriptLocation = "${applicationContext.cacheDir}/backup_apk.sh"
+            val dataScriptLocation = "${applicationContext.cacheDir}/backup_data.sh"
 
-            val unpackResult =
-                superuserUtils.unpackScript(R.raw.backup_app_and_data, scriptLocation)
+            val unpackApkResult =
+                superuserUtils.unpackScript(R.raw.backup_apk, apkScriptLocation)
+            val unpackDataResult =
+                superuserUtils.unpackScript(R.raw.backup_data, dataScriptLocation)
 
-            if (unpackResult.isFailure) {
+            if (unpackApkResult.isFailure || unpackDataResult.isFailure) {
+                val errorMessage = unpackApkResult.exceptionOrNull()?.message
+                    ?: unpackDataResult.exceptionOrNull()?.message
+                    ?: "Unpack error"
                 trySend(
                     Progress(
                         progressType = Progress.ProgressType.APP_BACKUP,
                         percentage = 0.0,
-                        logs = unpackResult.exceptionOrNull()?.message ?: "Unpack error",
+                        logs = errorMessage,
                         isFailure = true
                     )
                 )
@@ -56,45 +62,81 @@ class AppBackupEngine(
             }
 
             data.forEachIndexed { index, appData ->
-                Timber.d("Run script for : ${appData.appName} - ${appData.packageName}")
+                Timber.d("Run scripts for : ${appData.appName} - ${appData.packageName}")
                 val percentage = getPercentage(index + 1, data.size)
 
-                superuserUtils.runScript(
-                    scriptPath = scriptLocation,
-                    parentSuperuserShell = suShell,
-                    endMarker = AppBackupConstants.END_MARKER,
-                    onProgress = { log ->
-                        trySend(
-                            Progress(
-                                progressType = Progress.ProgressType.APP_BACKUP,
-                                percentage = percentage,
-                                logs = log
+                if (appData.shouldBackupApk) {
+                    superuserUtils.runScript(
+                        scriptPath = apkScriptLocation,
+                        parentSuperuserShell = suShell,
+                        endMarker = AppBackupConstants.END_MARKER,
+                        onProgress = { log ->
+                            trySend(
+                                Progress(
+                                    progressType = Progress.ProgressType.APP_BACKUP,
+                                    percentage = percentage,
+                                    logs = log
+                                )
                             )
-                        )
-                    },
-                    onError = { error ->
-                        trySend(
-                            Progress(
-                                progressType = Progress.ProgressType.APP_BACKUP,
-                                percentage = percentage,
-                                logs = error,
-                                isFailure = error !in ignorableErrors
+                        },
+                        onError = { error ->
+                            trySend(
+                                Progress(
+                                    progressType = Progress.ProgressType.APP_BACKUP,
+                                    percentage = percentage,
+                                    logs = error,
+                                    isFailure = error !in ignorableErrors
+                                )
                             )
+                        },
+                        args = arrayOf(
+                            writeLocation,
+                            appData.appName,
+                            appData.packageName,
+                            appData.apkPathBase,
+                            AppBackupConstants.NULL_MARKER,
+                            AppBackupConstants.END_MARKER,
                         )
-                    },
-                    args = arrayOf(
-                        writeLocation,
-                        appData.appName,
-                        appData.packageName,
-                        if (appData.shouldBackupApk) appData.apkPathBase else AppBackupConstants.NULL_MARKER,
-                        if (appData.shouldBackupData) appData.dataPath else AppBackupConstants.NULL_MARKER,
-                        "true",
-                        AppBackupConstants.NULL_MARKER,
-                        AppBackupConstants.END_MARKER,
                     )
-                )
+                }
 
-                Timber.d("Script finished for : ${appData.appName} - ${appData.packageName}")
+                if (appData.shouldBackupData) {
+                    superuserUtils.runScript(
+                        scriptPath = dataScriptLocation,
+                        parentSuperuserShell = suShell,
+                        endMarker = AppBackupConstants.END_MARKER,
+                        onProgress = { log ->
+                            trySend(
+                                Progress(
+                                    progressType = Progress.ProgressType.APP_BACKUP,
+                                    percentage = percentage,
+                                    logs = log
+                                )
+                            )
+                        },
+                        onError = { error ->
+                            trySend(
+                                Progress(
+                                    progressType = Progress.ProgressType.APP_BACKUP,
+                                    percentage = percentage,
+                                    logs = error,
+                                    isFailure = error !in ignorableErrors
+                                )
+                            )
+                        },
+                        args = arrayOf(
+                            writeLocation,
+                            appData.appName,
+                            appData.packageName,
+                            appData.dataPath,
+                            "true",
+                            AppBackupConstants.NULL_MARKER,
+                            AppBackupConstants.END_MARKER,
+                        )
+                    )
+                }
+
+                Timber.d("Scripts finished for : ${appData.appName} - ${appData.packageName}")
             }
 
             Timber.d("Close callbackFlow")
