@@ -111,7 +111,7 @@ class BackupNotificationHandlerImpl(
 
         return (getInitialNotification()).copy(
             title = title,
-            text = progress.logs,
+            text = progress.displayText,
             progress = progressInt,
             maxProgress = 100,
             isIndeterminate = false,

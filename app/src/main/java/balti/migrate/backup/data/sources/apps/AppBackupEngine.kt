@@ -75,6 +75,7 @@ class AppBackupEngine(
                                 Progress(
                                     progressType = Progress.ProgressType.APP_BACKUP,
                                     percentage = percentage,
+                                    displayText = "${appData.appName} - APK",
                                     logs = log
                                 )
                             )
@@ -109,6 +110,7 @@ class AppBackupEngine(
                                 Progress(
                                     progressType = Progress.ProgressType.APP_BACKUP,
                                     percentage = percentage,
+                                    displayText = "${appData.appName} - DATA",
                                     logs = log
                                 )
                             )

@@ -6,9 +6,9 @@ import android.content.Intent
 import balti.migrate.R
 import balti.migrate.common.data.model.NotificationInfo
 import balti.migrate.common.utils.DeepLinkUtils
-import balti.migrate.common.utils.makeNotificationChannel
 import balti.migrate.common.utils.convertToNotificationBuilder
 import balti.migrate.common.utils.getCancelAction
+import balti.migrate.common.utils.makeNotificationChannel
 import balti.migrate.restore.data.service.RestoreService
 import baltiapps.migrate.domain.ACTION_CANCEL_RESTORE
 import baltiapps.migrate.domain.PermissionConstants
@@ -123,7 +123,7 @@ class RestoreNotificationHandlerImpl(
 
         return (getInitialNotification()).copy(
             title = title,
-            text = progress.logs,
+            text = progress.displayText,
             progress = progressInt,
             maxProgress = 100,
             isIndeterminate = false,
