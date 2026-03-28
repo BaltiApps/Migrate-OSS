@@ -54,6 +54,9 @@ data class AppData(
             isApkEnabled = shouldBackupApk,
             isDataEnabled = shouldBackupData,
             isPermissionsEnabled = shouldBackupPermissions,
+
+            isSystemApp = isSystemApp,
+            isUpdatedSystemApp = isUpdatedSystemApp,
         )
     }
 }

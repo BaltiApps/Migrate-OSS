@@ -136,6 +136,9 @@ private fun RenderAppListItemPreview() {
         isApkSelected = true,
         isDataSelected = false,
         isPermissionsSelected = true,
+
+        isSystemApp = false,
+        isUpdatedSystemApp = false,
     )
 
     RenderAppListItem(
