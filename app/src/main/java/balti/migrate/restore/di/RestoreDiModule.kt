@@ -10,6 +10,7 @@ import balti.migrate.common.di.Names.SAF_EXPORT_DIRECTORY_BROWSER
 import balti.migrate.restore.data.sources.RestoreNotificationHandlerImpl
 import balti.migrate.restore.data.sources.apps.AppIconReader
 import balti.migrate.restore.data.sources.apps.AppInfoReader
+import balti.migrate.restore.data.sources.apps.AppRestoreEngine
 import balti.migrate.restore.data.sources.callLog.CallLogDBReader
 import balti.migrate.restore.data.sources.callLog.CallLogRestore
 import balti.migrate.restore.data.sources.contacts.ContactsDBReader
@@ -26,6 +27,7 @@ import baltiapps.migrate.domain.common.model.DrawableAsset
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
+import baltiapps.migrate.domain.common.sources.fileSystem.GenericReader
 import baltiapps.migrate.domain.common.sources.fileSystem.TextReader
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import baltiapps.migrate.domain.restore.sources.DataRestore
@@ -35,6 +37,7 @@ import baltiapps.migrate.domain.restore.usecase.ReadAppListForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadCallLogForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadContactsForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadSmsForRestoreUseCase
+import baltiapps.migrate.domain.restore.usecase.RestoreAppsUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreCallLogUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreSmsUseCase
 import org.koin.core.module.dsl.singleOf
@@ -51,6 +54,7 @@ enum class Names {
     SMS_RESTORE_SOURCE,
     APP_ICON_READER,
     APP_INFO_READER,
+    APP_RESTORE_ENGINE,
     PROGRESS_LOG_REPOSITORY_RESTORE,
     NOTIFICATION_HANDLER_RESTORE,
 }
@@ -79,6 +83,12 @@ val restoreDiModule = module {
     }
     single<TextReader<AppData>>(named(Names.APP_INFO_READER)) {
         AppInfoReader()
+    }
+    single<GenericReader<List<AppData>>>(named(Names.APP_RESTORE_ENGINE)) {
+        AppRestoreEngine(
+            applicationContext = get(),
+            superuserUtils = get(),
+        )
     }
     single<NotificationHandler<*>>(named(Names.NOTIFICATION_HANDLER_RESTORE)) {
         RestoreNotificationHandlerImpl(
@@ -142,6 +152,13 @@ val restoreDiModule = module {
             appInfoReader = get(named(Names.APP_INFO_READER)),
             restoreDataRepository = get(),
             appListItemToDataItemConverter = get()
+        )
+    }
+    single {
+        RestoreAppsUseCase(
+            fileSystemSource = get(),
+            appRestoreEngine = get(named(Names.APP_RESTORE_ENGINE)),
+            dataRepository = get(),
         )
     }
     singleOf(::ExportContactsForRestoreUseCase)
