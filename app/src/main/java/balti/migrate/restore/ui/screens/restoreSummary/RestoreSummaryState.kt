@@ -8,6 +8,7 @@ data class RestoreSummaryState(
     val countContacts: Int = 0,
     val countCallLogs: Int = 0,
     val countSms: Int = 0,
+    val countApps: Int = 0,
     val contactsExportProgress: Progress = Progress.Empty,
     val contactSummaryState: RestoreSummaryItemState,
     val smsSummaryState: RestoreSummaryItemState,

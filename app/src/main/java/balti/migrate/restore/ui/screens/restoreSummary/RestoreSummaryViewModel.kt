@@ -31,6 +31,7 @@ class RestoreSummaryViewModel(
             countContacts = 0,
             countCallLogs = 0,
             countSms = 0,
+            countApps = 0,
             contactSummaryState = RestoreSummaryItemState.UNKNOWN,
             smsSummaryState = RestoreSummaryItemState.UNKNOWN,
         )
@@ -53,12 +54,14 @@ class RestoreSummaryViewModel(
         val contactCount = restoreDataRepository.stagedContacts.size
         val smsCount = restoreDataRepository.stagedSms.size
         val callLogCount = restoreDataRepository.stagedCallLogs.size
+        val appCount = restoreDataRepository.stagedApps.size
         _state.update {
             it.copy(
                 isInitialized = true,
                 countContacts = contactCount,
                 countCallLogs = callLogCount,
                 countSms = smsCount,
+                countApps = appCount,
                 contactSummaryState = if (contactCount > 0) RestoreSummaryItemState.WAITING else RestoreSummaryItemState.UNKNOWN,
                 smsSummaryState = if (smsCount > 0) RestoreSummaryItemState.WAITING else RestoreSummaryItemState.UNKNOWN,
             )
