@@ -33,6 +33,7 @@ data class Progress(
         SMS_BACKUP_READ,
         SMS_RESTORE,
         APP_INFO_READ,
+        APP_RESTORE,
         RESTORE_FINISHED,
         RESTORE_FINISHED_WITH_ERRORS,
         RESTORE_CANCELLED,
