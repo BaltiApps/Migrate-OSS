@@ -9,7 +9,7 @@ PACKAGE_NAME="$3"
 
 APK_PATH_BASE="$4"
 
-END_MARKER="$6"
+END_MARKER="$5"
 
 print_end_marker() {
   echo "$END_MARKER"

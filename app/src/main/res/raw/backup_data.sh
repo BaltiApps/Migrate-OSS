@@ -11,7 +11,7 @@ DATA_PATH_BASE="$4"
 
 IGNORE_CACHE="$5"
 
-END_MARKER="$7"
+END_MARKER="$6"
 
 print_end_marker() {
   echo "$END_MARKER"
