@@ -7,14 +7,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
+import balti.migrate.backup.ui.screens.listScreen.appBackupSelection.components.AppSelectionFilterDialog
 import balti.migrate.common.ui.components.AppCountBar
 import balti.migrate.common.ui.components.RenderAppListItem
 import balti.migrate.common.ui.listScreen.ListScreenShell
@@ -62,6 +71,9 @@ fun AppBackupSelection(
         onAllPermissionToggled = {
             viewModel.performAction(AppBackupSelectionAction.ToggleAllAppItemsPermissionSelection(it))
         },
+        onFilterChanged = {
+            viewModel.performAction(AppBackupSelectionAction.UpdateFilterSelection(it))
+        },
         onNext = {
             viewModel.performAction(AppBackupSelectionAction.StageAppItems(goToNextScreen))
         },
@@ -82,11 +94,25 @@ private fun Content(
     onAllApkToggled: (Boolean) -> Unit,
     onAllDataToggled: (Boolean) -> Unit,
     onAllPermissionToggled: (Boolean) -> Unit,
+    onFilterChanged: (AppFilterSelection) -> Unit,
     onNext: () -> Unit,
 ) {
     if (state().shouldSkipBackup) {
         onNext()
         return
+    }
+
+    var showFilterDialog by remember { mutableStateOf(false) }
+
+    if (showFilterDialog) {
+        AppSelectionFilterDialog(
+            initialSelection = state().filterSelection,
+            onConfirm = {
+                onFilterChanged(it)
+                showFilterDialog = false
+            },
+            onDismiss = { showFilterDialog = false }
+        )
     }
 
     val listState = ListState(
@@ -104,6 +130,14 @@ private fun Content(
         onDeselectAll = onDeselectAll,
         onPermissionRequest = requestPermission,
         onNext = onNext,
+        topBarActions = {
+            IconButton(onClick = { showFilterDialog = true }) {
+                Icon(imageVector = Icons.Default.FilterList, contentDescription = null)
+            }
+            IconButton(onClick = { }) {
+                Icon(imageVector = Icons.Default.Search, contentDescription = null)
+            }
+        }
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize()

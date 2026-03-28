@@ -56,7 +56,10 @@ class AppBackupSelectionViewModel(
                         appListItems = backupDataRepository.appListItems,
                     )
                 }
-                updateStatesForAllApksAllDataAllPermissions()
+                updateAppListWithFilter(
+                    selectionFilter = _state.value.filterSelection,
+                    searchText = null
+                )
             }.collect {
                 _state.update { state ->
                     state.copy(
@@ -84,6 +87,24 @@ class AppBackupSelectionViewModel(
                 areAllPermissionsSelected = it.appListItems.all { it.isPermissionsSelected },
             )
         }
+    }
+
+    private fun updateAppListWithFilter(selectionFilter: AppFilterSelection, searchText: String?) {
+        _state.update {
+            it.copy(
+                appListItems = backupDataRepository.appListItems.filter { app ->
+                    (selectionFilter.systemCore && app.isSystemApp && app.isUpdatedSystemApp.not()) ||
+                    (selectionFilter.systemUpdate && app.isUpdatedSystemApp) ||
+                    (selectionFilter.userApps && app.isSystemApp.not() && app.isUpdatedSystemApp.not())
+                }.filter { app ->
+                    searchText.isNullOrBlank() ||
+                            app.appName.contains(searchText) ||
+                            app._id.contains(searchText) ||
+                            app.versionName.contains(searchText)
+                }
+            )
+        }
+        updateStatesForAllApksAllDataAllPermissions()
     }
 
     fun performAction(action: AppBackupSelectionAction) = viewModelScope.launch(Dispatchers.Default) {
@@ -178,6 +199,13 @@ class AppBackupSelectionViewModel(
                 withContext(Dispatchers.Main) {
                     action.onStagingDone()
                 }
+            }
+            is AppBackupSelectionAction.UpdateFilterSelection -> {
+                _state.update { it.copy(filterSelection = action.filterSelection) }
+                updateAppListWithFilter(
+                    selectionFilter = action.filterSelection,
+                    searchText = null,
+                )
             }
         }
     }

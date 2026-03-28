@@ -18,4 +18,6 @@ sealed class AppBackupSelectionAction {
     data class ToggleAllAppItems(val isChecked: Boolean): AppBackupSelectionAction()
 
     data class StageAppItems(val onStagingDone: () -> Unit): AppBackupSelectionAction()
+
+    data class UpdateFilterSelection(val filterSelection: AppFilterSelection): AppBackupSelectionAction()
 }
