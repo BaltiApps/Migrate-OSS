@@ -29,6 +29,7 @@ class AppInfoWriter: TextWriter<AppData> {
             put(AppInfoConstants.KEY_APK, data.shouldBackupApk)
             put(AppInfoConstants.KEY_DATA, data.shouldBackupData)
             put(AppInfoConstants.KEY_PERMISSIONS, data.shouldBackupPermissions)
+            put(AppInfoConstants.KEY_INSTALLER, data.installerName)
         }
 
         file.writeText(json.toString(4))

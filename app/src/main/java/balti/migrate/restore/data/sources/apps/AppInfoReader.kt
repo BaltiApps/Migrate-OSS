@@ -57,6 +57,10 @@ class AppInfoReader: TextReader<AppData> {
             shouldBackupApk = json.optBoolean(AppInfoConstants.KEY_APK),
             shouldBackupData = json.optBoolean(AppInfoConstants.KEY_DATA),
             shouldBackupPermissions = json.optBoolean(AppInfoConstants.KEY_PERMISSIONS),
+            
+            installerName = json.optString(AppInfoConstants.KEY_INSTALLER),
+
+            user = 0, // TODO: find way to pass the actual user
 
             logInfo = "$appName : ($packageName)"
         )
