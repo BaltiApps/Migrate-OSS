@@ -5,7 +5,6 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
@@ -115,12 +114,11 @@ object TransferUtils {
             .let {
                 val head = it.substringBefore("%3A")
                 if (head == "primary") {
-                    "$internalStoragePath/${it.substringAfter("${head}%3A")}"
+                    "$internalStoragePath/${it.substringAfterLast("${head}%3A")}"
                 } else {
-                    "/mnt/media_rw/$head/${it.substringAfter("${head}%3A")}"
+                    "/mnt/media_rw/$head/${it.substringAfterLast("${head}%3A")}"
                 }
             }
-            .replace("%3A", "/")
             .replace("%2F", "/")
 
         return path

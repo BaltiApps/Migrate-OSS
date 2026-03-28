@@ -19,6 +19,8 @@ abstract class FileSystemSource() {
         relativeFilePathFilter: (relativeFilePath: String) -> Boolean = { true },
     ): Boolean
 
+    abstract fun getLocalFilePath(file: GenericFile): String?
+
     inline fun <T: DBWriter<*>> writeDB(
         file: GenericFile,
         dbWriter: T,
@@ -46,7 +48,8 @@ abstract class FileSystemSource() {
         writer: T,
         writerBlock: (writer: T) -> Flow<Progress>,
     ): Flow<Progress> {
-        writer.setup(file.path)
+        val path = getLocalFilePath(file) ?: file.path
+        writer.setup(path)
         return writerBlock(writer).onCompletion {
             writer.close()
         }
@@ -57,7 +60,8 @@ abstract class FileSystemSource() {
         reader: T,
         readerBlock: (reader: T) -> Flow<Progress>,
     ): Flow<Progress> {
-        reader.setup(file.path)
+        val path = getLocalFilePath(file) ?: file.path
+        reader.setup(path)
         return readerBlock(reader).onCompletion {
             reader.close()
         }

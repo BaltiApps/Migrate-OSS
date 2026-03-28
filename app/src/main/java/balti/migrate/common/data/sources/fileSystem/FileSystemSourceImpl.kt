@@ -1,6 +1,7 @@
 package balti.migrate.common.data.sources.fileSystem
 
 import android.content.Context
+import android.os.Environment
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
 import balti.migrate.common.data.model.SafFile
@@ -8,6 +9,7 @@ import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import baltiapps.migrate.domain.exceptions.UnknownFileTypeException
+import timber.log.Timber
 
 class FileSystemSourceImpl(
     private val applicationContext: Context,
@@ -150,4 +152,21 @@ class FileSystemSourceImpl(
         }
     }
 
+    override fun getLocalFilePath(file: GenericFile): String? {
+        val localPath = when (file) {
+            is JavaFile -> {
+                return file.path
+            }
+            is SafFile -> {
+                Timber.d("Local path calc for SafFile uri - ${file.uriToLocation}")
+                TransferUtils.getUriFilePath(file)
+            }
+            is MediaStoreDownloadFile -> {
+                return "${Environment.getExternalStorageDirectory().path}/${file.path}"
+            }
+            else -> null
+        }
+        Timber.d("Local path for file ${file.name} - $localPath")
+        return localPath
+    }
 }
