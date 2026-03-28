@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import balti.migrate.common.data.model.ContactData
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
+import balti.migrate.common.utils.PermissionUtils
 import balti.migrate.common.utils.SuperuserUtils
 import baltiapps.migrate.domain.INTERNAL_ROUGH_WORK_DIRECTORY
 import baltiapps.migrate.domain.PermissionConstants
@@ -38,6 +39,7 @@ class RestoreSummaryViewModel(
             contactSummaryState = RestoreSummaryItemState.UNKNOWN,
             smsSummaryState = RestoreSummaryItemState.UNKNOWN,
             appsSummaryState = RestoreSummaryItemState.UNKNOWN,
+            notificationSummaryState = RestoreSummaryItemState.UNKNOWN,
         )
     )
     val state = _state.asStateFlow()
@@ -94,7 +96,19 @@ class RestoreSummaryViewModel(
                         delay(200)
                     }
                 }
-                runService()
+
+                val notificationPermission = PermissionUtils.notificationsPermission
+                if (
+                    notificationPermission != null &&
+                    !contextSource.checkPermission(notificationPermission) &&
+                    _state.value.notificationSummaryState == RestoreSummaryItemState.UNKNOWN
+                ) {
+                    _state.update {
+                        it.copy(notificationSummaryState = RestoreSummaryItemState.REQUEST_USER_INPUT)
+                    }
+                } else {
+                    runService()
+                }
             }
         }
     }
@@ -169,6 +183,16 @@ class RestoreSummaryViewModel(
                     _state.update {
                         it.copy(smsSummaryState = RestoreSummaryItemState.CANCELLED)
                     }
+                }
+                runRestore()
+            }
+            is RestoreSummaryAction.OnNotificationPermissionResult -> {
+                _state.update {
+                    it.copy(
+                        notificationSummaryState =
+                            if (action.isGranted) RestoreSummaryItemState.DONE
+                            else RestoreSummaryItemState.CANCELLED
+                    )
                 }
                 runRestore()
             }

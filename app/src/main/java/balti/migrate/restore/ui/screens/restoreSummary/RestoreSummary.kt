@@ -114,6 +114,15 @@ fun RestoreSummary(
                 viewModel.onAction(RestoreSummaryAction.OnDefaultSmsAppSet)
             }
         ),
+        requestNotificationPermission = PermissionUtils.notificationsPermission?.run {
+            PermissionUtils.requestPermission(this) {
+                viewModel.onAction(RestoreSummaryAction.OnNotificationPermissionResult(it))
+            }
+        } ?: {
+            // Permission string will be null in versions below Android 13.
+            // For such devices, notification permission is already granted.
+            viewModel.onAction(RestoreSummaryAction.OnNotificationPermissionResult(true))
+        },
         navigateUp = navigateUp,
     )
 }
@@ -127,6 +136,7 @@ private fun Content(
     openContactsImport: () -> Unit,
     showDialogDefaultSmsSet: @Composable () -> Unit,
     requestDefaultSmsApp: () -> Unit,
+    requestNotificationPermission: () -> Unit,
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -139,6 +149,10 @@ private fun Content(
     when (state().smsSummaryState) {
         RestoreSummaryItemState.REQUEST_USER_INPUT -> showDialogDefaultSmsSet()
         RestoreSummaryItemState.ON_USER_INPUT_POSITIVE -> requestDefaultSmsApp()
+        else -> {}
+    }
+    when (state().notificationSummaryState) {
+        RestoreSummaryItemState.REQUEST_USER_INPUT -> requestNotificationPermission()
         else -> {}
     }
     Scaffold(

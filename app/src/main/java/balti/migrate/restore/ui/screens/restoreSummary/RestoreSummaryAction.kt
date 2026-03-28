@@ -8,4 +8,5 @@ sealed class RestoreSummaryAction {
     data object OnUserProceedSetDefaultSmsApp : RestoreSummaryAction()
     data object SkipSms : RestoreSummaryAction()
     data object OnDefaultSmsAppSet : RestoreSummaryAction()
+    data class OnNotificationPermissionResult(val isGranted: Boolean) : RestoreSummaryAction()
 }

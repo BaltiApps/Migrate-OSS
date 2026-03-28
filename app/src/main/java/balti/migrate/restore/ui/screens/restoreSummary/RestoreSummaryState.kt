@@ -13,4 +13,5 @@ data class RestoreSummaryState(
     val contactSummaryState: RestoreSummaryItemState,
     val smsSummaryState: RestoreSummaryItemState,
     val appsSummaryState: RestoreSummaryItemState,
+    val notificationSummaryState: RestoreSummaryItemState,
 )
