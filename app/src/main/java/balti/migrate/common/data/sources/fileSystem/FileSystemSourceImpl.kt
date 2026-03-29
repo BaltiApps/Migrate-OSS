@@ -1,7 +1,6 @@
 package balti.migrate.common.data.sources.fileSystem
 
 import android.content.Context
-import android.os.Environment
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
 import balti.migrate.common.data.model.SafFile
@@ -162,7 +161,7 @@ class FileSystemSourceImpl(
                 TransferUtils.getUriFilePath(file)
             }
             is MediaStoreDownloadFile -> {
-                return "${Environment.getExternalStorageDirectory().path}/${file.path}"
+                return "${TransferUtils.internalStoragePath}/${file.path}"
             }
             else -> null
         }

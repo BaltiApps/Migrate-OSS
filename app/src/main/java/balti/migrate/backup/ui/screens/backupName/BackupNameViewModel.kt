@@ -2,6 +2,7 @@ package balti.migrate.backup.ui.screens.backupName
 
 import android.content.Context
 import android.net.Uri
+import android.os.StatFs
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class BackupNameViewModel(
     private val applicationContext: Context,
@@ -33,7 +35,8 @@ class BackupNameViewModel(
         get() = TransferUtils.hasPermission(applicationContext, safLocationUri)
     
     private fun getLocationLabel(uriString: String): String {
-        if (uriString.isBlank()) return MediaStoreDownloadFile.EXPORT_PATH_PREFIX
+        if (uriString.isBlank()) return "${TransferUtils.internalStoragePath}/" +
+                MediaStoreDownloadFile.EXPORT_PATH_PREFIX
 
         return TransferUtils.getUriFilePath(safLocationUri).ifBlank {
             TransferUtils.getUriFileName(applicationContext, safLocationUri)
@@ -53,14 +56,23 @@ class BackupNameViewModel(
 
     private fun updateState() {
         viewModelScope.launch {
+            val safUriString = safLocationString.takeIf {
+                it.isNotBlank() && isSafLocationAccessible
+            }
+            val locationString = getLocationLabel(safUriString ?: "")
+            val stat = StatFs(locationString)
+
+            Timber.d("locationString: $locationString")
+            Timber.d("Total space - ${stat.totalBytes}, Available space - ${stat.availableBytes}")
+
             _state.update {
                 it.copy(
                     isSaf = safLocationString.isNotBlank(),
-                    safUriString = safLocationString.takeIf {
-                        it.isNotBlank() && isSafLocationAccessible
-                    },
-                    locationString = getLocationLabel(safLocationString),
+                    safUriString = safUriString,
+                    locationString = locationString,
                     isSafUriAccessible = isSafLocationAccessible,
+                    totalSpaceBytes = stat.totalBytes,
+                    availableSpaceBytes = stat.availableBytes,
                 )
             }
         }

@@ -13,6 +13,10 @@ import balti.migrate.common.utils.DBUtils
 import java.io.File
 
 object TransferUtils {
+
+    val internalStoragePath: String
+        get() = Environment.getExternalStorageDirectory().path
+
     /**
      * Example 1:
      *
@@ -107,8 +111,6 @@ object TransferUtils {
         val androidContentUri = "content://com.android.externalstorage.documents/tree/"
 
         if (!uriString.startsWith(androidContentUri)) return ""
-
-        val internalStoragePath = Environment.getExternalStorageDirectory().path
 
         val path = uriString.substringAfter(androidContentUri)
             .let {
