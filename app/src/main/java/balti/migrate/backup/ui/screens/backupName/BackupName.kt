@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,6 +32,7 @@ import balti.migrate.common.ui.components.LocationSelector
 import balti.migrate.common.ui.components.NextFab
 import balti.migrate.common.utils.PermissionUtils
 import balti.migrate.common.utils.getDefaultBackupName
+import balti.migrate.restore.ui.screens.restoreSummary.components.SimpleYesNoDialog
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -53,6 +55,9 @@ fun BackupName(
         },
         onUriSelectClicked = PermissionUtils.requestSafLocation {
             viewModel.onAction(BackupNameAction.OnSafLocationSelected(it))
+        },
+        onDismissNoSpaceDialog = {
+            viewModel.onAction(BackupNameAction.DismissNoSpaceDialog)
         }
     )
 }
@@ -64,6 +69,7 @@ private fun Content(
     onStartBackup: () -> Unit,
     onBackupNameChanged: (String) -> Unit,
     onUriSelectClicked: () -> Unit,
+    onDismissNoSpaceDialog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (state().isScanningAppSizes) {
@@ -71,6 +77,18 @@ private fun Content(
             text = "${stringResource(R.string.checking_app_sizes)}\n${state().appSizeScanProgress?.displayText}",
             maxLines = 2,
             progress = state().appSizeScanProgress,
+        )
+    }
+
+    if (state().shouldShowNoSpaceDialog) {
+        SimpleYesNoDialog(
+            titleText = stringResource(R.string.insufficient_storage_title),
+            dialogText = stringResource(R.string.insufficient_storage_message),
+            positiveButtonLabel = stringResource(R.string.see_sizes),
+            negativeButtonLabel = stringResource(android.R.string.cancel),
+            icon = Icons.Outlined.Storage,
+            onPositiveButton = {  },
+            onNegativeButton = onDismissNoSpaceDialog,
         )
     }
 
