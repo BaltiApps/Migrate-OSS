@@ -1,6 +1,7 @@
 package baltiapps.migrate.domain.common.repository
 
 import baltiapps.migrate.domain.common.model.AppListItem
+import baltiapps.migrate.domain.common.model.AppSizeInfo
 import baltiapps.migrate.domain.common.model.CallLogListItem
 import baltiapps.migrate.domain.common.model.ContactListItem
 import baltiapps.migrate.domain.common.model.DataItem
@@ -19,6 +20,8 @@ abstract class DataRepository {
     val stagedSms = mutableListOf<DataItem<SmsListItem>>()
 
     val stagedApps = mutableListOf<DataItem<AppListItem>>()
+
+    val stagedAppSizeMap = mutableListOf<AppSizeInfo>()
 
     open val contactsListItems: List<ContactListItem>
         get() = contactsDataItems.toListItems().sortedBy { it.displayName }
@@ -44,5 +47,7 @@ abstract class DataRepository {
         stagedSms.clear()
 
         stagedApps.clear()
+
+        stagedAppSizeMap.clear()
     }
 }
