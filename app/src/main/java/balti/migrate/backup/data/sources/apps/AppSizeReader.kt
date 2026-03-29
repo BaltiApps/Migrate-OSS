@@ -7,6 +7,7 @@ import balti.migrate.common.utils.SuperuserUtils
 import baltiapps.migrate.domain.AppBackupConstants
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.AppListItem
+import baltiapps.migrate.domain.common.model.AppSizeInfo
 import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.sources.fileSystem.GenericReader
@@ -20,7 +21,7 @@ import timber.log.Timber
 class AppSizeReader(
     private val applicationContext: Context,
     private val superuserUtils: SuperuserUtils,
-): GenericReader<List<DataItem<AppListItem>>, Map<String, Long>> {
+): GenericReader<List<DataItem<AppListItem>>, List<AppSizeInfo>> {
 
     private lateinit var suShell: Process
 
@@ -30,11 +31,11 @@ class AppSizeReader(
 
     override fun read(
         data: List<DataItem<AppListItem>>,
-        onComplete: (Map<String, Long>) -> Unit
+        onComplete: (List<AppSizeInfo>) -> Unit
     ): Flow<Progress> {
         return callbackFlow {
             suShell = superuserUtils.getSuperuserShell()
-            val sizes = mutableMapOf<String, Long>()
+            val sizes = mutableListOf<AppSizeInfo>()
 
             val scriptLocation = "${applicationContext.cacheDir}/get_app_consumed_space.sh"
             val unpackResult = superuserUtils.unpackScript(R.raw.get_app_consumed_space, scriptLocation)
@@ -67,7 +68,7 @@ class AppSizeReader(
                             if (parts.size == 2) {
                                 val packageName = parts[0]
                                 val sizeInBytes = parts[1].toLongOrNull() ?: 0L
-                                sizes[packageName] = sizeInBytes
+                                sizes.add(AppSizeInfo(packageName, sizeInBytes))
                             }
                         }
                         trySend(
