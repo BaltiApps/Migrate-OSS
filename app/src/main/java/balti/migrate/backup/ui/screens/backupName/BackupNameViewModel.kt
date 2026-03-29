@@ -62,10 +62,27 @@ class BackupNameViewModel(
                 it.isNotBlank() && isSafLocationAccessible
             }
             val locationString = getLocationLabel(safUriString ?: "")
-            val stat = StatFs(locationString)
+
+            var totalBytes = 0L
+            var availableBytes = 0L
+
+            try {
+                val stat = if (safUriString != null) {
+                    TransferUtils.getStatFsForSafUri(safUriString.toUri(), applicationContext)
+                } else {
+                    Timber.d("Using location string for StatFs: $locationString")
+                    StatFs(locationString)
+                }
+
+                totalBytes = stat?.totalBytes ?: 0
+                availableBytes = stat?.availableBytes ?: 0
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
             Timber.d("locationString: $locationString")
-            Timber.d("Total space - ${stat.totalBytes}, Available space - ${stat.availableBytes}")
+            Timber.d("Total space - ${totalBytes}, Available space - ${availableBytes}")
 
             _state.update {
                 it.copy(
@@ -73,8 +90,8 @@ class BackupNameViewModel(
                     safUriString = safUriString,
                     locationString = locationString,
                     isSafUriAccessible = isSafLocationAccessible,
-                    totalSpaceBytes = stat.totalBytes,
-                    availableSpaceBytes = stat.availableBytes,
+                    totalSpaceBytes = totalBytes,
+                    availableSpaceBytes = availableBytes,
                 )
             }
         }

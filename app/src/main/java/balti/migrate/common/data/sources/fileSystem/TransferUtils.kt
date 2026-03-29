@@ -4,12 +4,15 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
+import android.os.StatFs
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import androidx.documentfile.provider.DocumentFile
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
 import balti.migrate.common.data.model.SafFile
 import balti.migrate.common.utils.DBUtils
+import timber.log.Timber
 import java.io.File
 
 object TransferUtils {
@@ -124,5 +127,16 @@ object TransferUtils {
             .replace("%2F", "/")
 
         return path
+    }
+
+    fun getStatFsForSafUri(safUri: Uri, context: Context): StatFs? {
+        val docId = DocumentsContract.getTreeDocumentId(safUri)
+        val docUri = DocumentsContract.buildDocumentUriUsingTree(safUri, docId)
+
+        return context.contentResolver.openFileDescriptor(docUri, "r")?.use { pfd ->
+            val pfdPath = "/proc/self/fd/${pfd.fd}"
+            Timber.d("Using pfd path for StatFs: $pfdPath")
+            StatFs(pfdPath)
+        }
     }
 }
