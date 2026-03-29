@@ -116,6 +116,7 @@
     <string name="insufficient_storage_title">Insufficient storage</string>
     <string name="insufficient_storage_message">Some apps are too big to be backed up. You can either select a different location or delete some apps.\n\nRequired: %s\nAvailable: %s</string>
     <string name="see_sizes">See sizes</string>
+    <string name="storage_used_">Storage used : %s / %s</string>
 
     <!--ContextSourceImpl.kt-->
     <string name="loading">Loading…</string>
