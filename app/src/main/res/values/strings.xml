@@ -111,6 +111,7 @@
     <string name="backup_will_be_dumped_to_default_location">
         Backup location not setup, backup will be dumped to
     </string>
+    <string name="checking_app_sizes">Checking App sizes</string>
     <string name="default_location" translatable="false">[Internal storage]/Download/Migrate</string>
 
     <!--ContextSourceImpl.kt-->

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.common.ui.components.ButtonStatus
+import balti.migrate.common.ui.components.LoadingDialog
 import balti.migrate.common.ui.components.LocationSelector
 import balti.migrate.common.ui.components.NextFab
 import balti.migrate.common.utils.PermissionUtils
@@ -44,7 +45,9 @@ fun BackupName(
     Content(
         state = { state },
         navigateUp = navigateUp,
-        goToNextScreen = goToNextScreen,
+        onStartBackup = {
+            viewModel.onAction(BackupNameAction.StartBackup(goToNextScreen))
+        },
         onBackupNameChanged = {
             viewModel.onAction(BackupNameAction.NameChanged(it))
         },
@@ -58,11 +61,18 @@ fun BackupName(
 private fun Content(
     state: () -> BackupNameState,
     navigateUp: () -> Unit,
-    goToNextScreen: (BackupLocation) -> Unit,
+    onStartBackup: () -> Unit,
     onBackupNameChanged: (String) -> Unit,
     onUriSelectClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    if (state().isScanningAppSizes) {
+        LoadingDialog(
+            text = stringResource(R.string.checking_app_sizes),
+            progress = state().appSizeScanProgress,
+        )
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -72,9 +82,7 @@ private fun Content(
         },
         bottomBar = {
             BottomBar(
-                backupName = state().backupName,
-                backupUriString = state().safUriString,
-                goToNextScreen = goToNextScreen,
+                onStartBackup = onStartBackup,
             )
         }
     ) { paddingValues ->
@@ -151,9 +159,7 @@ private fun TopBar(
 
 @Composable
 private fun BottomBar(
-    backupName: String,
-    backupUriString: String?,
-    goToNextScreen: (BackupLocation) -> Unit,
+    onStartBackup: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BottomAppBar(
@@ -162,14 +168,7 @@ private fun BottomBar(
         floatingActionButton = {
             val buttonStatus = ButtonStatus.Unspecified(
                 label = stringResource(R.string.start),
-                onPressed = {
-                    goToNextScreen(
-                        BackupLocation(
-                            backupName = backupName,
-                            backupUriString = backupUriString,
-                        )
-                    )
-                }
+                onPressed = onStartBackup
             )
             NextFab(
                 buttonStatus = buttonStatus

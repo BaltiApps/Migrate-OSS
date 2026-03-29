@@ -5,6 +5,7 @@ import balti.migrate.backup.data.sources.apps.AppBackupEngine
 import balti.migrate.backup.data.sources.apps.AppIconWriter
 import balti.migrate.backup.data.sources.apps.AppInfoWriter
 import balti.migrate.backup.data.sources.apps.AppListSource
+import balti.migrate.backup.data.sources.apps.AppSizeReader
 import balti.migrate.backup.data.sources.callLog.CallLogDBWriter
 import balti.migrate.backup.data.sources.callLog.CallLogSource
 import balti.migrate.backup.data.sources.contacts.ContactsDBWriter
@@ -33,11 +34,16 @@ import baltiapps.migrate.domain.backup.usecase.ReadAppListForBackupUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadCallLogForBackupUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadContactsForBackupUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadSmsForBackupUseCase
+import baltiapps.migrate.domain.common.model.AppListItem
+import baltiapps.migrate.domain.common.model.AppSizeInfo
+import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
+import baltiapps.migrate.domain.common.sources.fileSystem.GenericReader
 import baltiapps.migrate.domain.common.sources.fileSystem.GenericWriter
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
+import baltiapps.migrate.domain.restore.usecase.CalculateStagedAppsSizesUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -55,6 +61,7 @@ enum class Names {
     APP_BACKUP_ENGINE,
     APP_ICON_WRITER,
     APP_INFO_WRITER,
+    APP_SIZE_READER,
     PROGRESS_LOG_REPOSITORY_BACKUP,
     NOTIFICATION_HANDLER_BACKUP,
 }
@@ -83,6 +90,12 @@ val backupDiModule = module {
     }
     single<DataSource<AppData>>(named(Names.APP_LIST_SOURCE)) {
         AppListSource(get())
+    }
+    single<GenericReader<List<DataItem<AppListItem>>, List<AppSizeInfo>>>(named(Names.APP_SIZE_READER)) {
+        AppSizeReader(
+            applicationContext = get(),
+            superuserUtils = get(),
+        )
     }
     single<GenericWriter<List<AppData>>>(named(Names.APP_BACKUP_ENGINE)) {
         AppBackupEngine(
@@ -170,6 +183,12 @@ val backupDiModule = module {
             fileSystemSource = get(),
             appBackupEngine = get(named(Names.APP_BACKUP_ENGINE)),
             dataRepository = get(),
+        )
+    }
+    single {
+        CalculateStagedAppsSizesUseCase(
+            backupDataRepository = get(),
+            appSizeReader = get(named(Names.APP_SIZE_READER)),
         )
     }
 

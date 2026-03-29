@@ -1,9 +1,15 @@
 package balti.migrate.backup.ui.screens.backupName
 
+import baltiapps.migrate.domain.common.model.AppSizeInfo
+import baltiapps.migrate.domain.common.model.Progress
+
 data class BackupNameState(
     val backupName: String,
     val isSaf: Boolean?,
     val safUriString: String?,
     val locationString: String,
     val isSafUriAccessible: Boolean,
+    val isScanningAppSizes: Boolean = false,
+    val appSizeScanProgress: Progress? = null,
+    val appSizes: List<AppSizeInfo> = listOf(),
 )
