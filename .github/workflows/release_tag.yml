@@ -9,6 +9,8 @@ jobs:
   build:
     name: Build and release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     env:
       KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -38,14 +40,25 @@ jobs:
       - name: Build AAB
         run: ./gradlew bundleRelease
 
+      - name: Generate SHA-256 checksums
+        run: |
+          APK_FILE=$(find app/build/outputs/apk/release -name "*.apk" | head -1)
+          AAB_FILE=$(find app/build/outputs/bundle/release -name "*.aab" | head -1)
+
+          # Write checksums file
+          sha256sum "$APK_FILE" "$AAB_FILE" > checksums.txt
+          cat checksums.txt
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
+          body: "Build log: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           files: |
             app/build/outputs/apk/release/*.apk
             app/build/outputs/bundle/release/*.aab
+            checksums.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
