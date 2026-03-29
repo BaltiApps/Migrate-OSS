@@ -12,6 +12,7 @@ data class BackupNameState(
     val isScanningAppSizes: Boolean = false,
     val appSizeScanProgress: Progress? = null,
     val appSizes: List<AppSizeInfo> = listOf(),
+    val shouldShowNoSpaceDialog: Boolean = false,
     val totalSpaceBytes: Long = 0L,
     val availableSpaceBytes: Long = 0L,
 )

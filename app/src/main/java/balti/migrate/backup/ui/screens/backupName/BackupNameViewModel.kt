@@ -12,6 +12,7 @@ import balti.migrate.common.utils.getDefaultBackupName
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.common.sources.Preferences
+import baltiapps.migrate.domain.common.usecase.GetRequiredSpaceUseCase
 import baltiapps.migrate.domain.restore.usecase.CalculateStagedAppsSizesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +26,7 @@ class BackupNameViewModel(
     private val preferences: Preferences,
     private val calculateStagedAppsSizesUseCase: CalculateStagedAppsSizesUseCase,
     private val backupDataRepository: BackupDataRepository,
+    private val getRequiredSpaceUseCase: GetRequiredSpaceUseCase,
 ) : ViewModel() {
 
     private val safLocationString: String
@@ -100,6 +102,9 @@ class BackupNameViewModel(
             is BackupNameAction.StartBackup -> {
                 startBackup(action.startBackupMethod)
             }
+            BackupNameAction.DismissNoSpaceDialog -> {
+                _state.update { it.copy(shouldShowNoSpaceDialog = false) }
+            }
         }
     }
 
@@ -118,6 +123,16 @@ class BackupNameViewModel(
                     _state.update { it.copy(appSizeScanProgress = progress) }
                 }
                 _state.update { it.copy(isScanningAppSizes = false) }
+
+                val requiredSpace = getRequiredSpaceUseCase.invoke(_state.value.appSizes)
+                val availableSpace = _state.value.availableSpaceBytes
+
+                Timber.d("Required space for backup: $requiredSpace, available: $availableSpace")
+
+                if (requiredSpace > availableSpace) {
+                    _state.update { it.copy(shouldShowNoSpaceDialog = true) }
+                    return@launch
+                }
             }
             startBackupMethod(
                 BackupLocation(
