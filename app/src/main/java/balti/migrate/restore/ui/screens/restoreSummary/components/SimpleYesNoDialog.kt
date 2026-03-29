@@ -14,9 +14,11 @@ import balti.migrate.R
 @Composable
 fun SimpleYesNoDialog(
     dialogText: String,
-    onProceed: () -> Unit,
-    onSkip: () -> Unit,
+    onPositiveButton: () -> Unit,
+    onNegativeButton: () -> Unit,
     modifier: Modifier = Modifier,
+    positiveButtonLabel: String? = null,
+    negativeButtonLabel: String? = null,
     icon: ImageVector? = null,
     titleText: String? = null,
 ) {
@@ -30,13 +32,13 @@ fun SimpleYesNoDialog(
             { Text(titleText) }
         },
         confirmButton = {
-            TextButton(onClick = onProceed) {
-                Text(stringResource(R.string.proceed))
+            TextButton(onClick = onPositiveButton) {
+                Text(positiveButtonLabel ?: stringResource(R.string.proceed))
             }
         },
         dismissButton = {
-            TextButton(onClick = onSkip) {
-                Text(stringResource(R.string.skip))
+            TextButton(onClick = onNegativeButton) {
+                Text(negativeButtonLabel ?: stringResource(R.string.skip))
             }
         },
         icon = if (icon != null) {

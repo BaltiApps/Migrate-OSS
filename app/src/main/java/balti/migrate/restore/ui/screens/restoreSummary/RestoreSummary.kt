@@ -71,10 +71,10 @@ fun RestoreSummary(
             SimpleYesNoDialog(
                 titleText = stringResource(R.string.contacts_delegate_title),
                 dialogText = stringResource(R.string.contacts_delegate_description),
-                onProceed = {
+                onPositiveButton = {
                     viewModel.onAction(RestoreSummaryAction.OnUserProceedContactImport)
                 },
-                onSkip = {
+                onNegativeButton = {
                     viewModel.onAction(RestoreSummaryAction.SkipContacts)
                 },
                 icon = Icons.Outlined.Contacts,
@@ -99,10 +99,10 @@ fun RestoreSummary(
             SimpleYesNoDialog(
                 titleText = stringResource(R.string.default_sms_app_title),
                 dialogText = stringResource(R.string.default_sms_app_description),
-                onProceed = {
+                onPositiveButton = {
                     viewModel.onAction(RestoreSummaryAction.OnUserProceedSetDefaultSmsApp)
                 },
-                onSkip = {
+                onNegativeButton = {
                     viewModel.onAction(RestoreSummaryAction.SkipSms)
                 },
                 icon = Icons.Outlined.Sms,
