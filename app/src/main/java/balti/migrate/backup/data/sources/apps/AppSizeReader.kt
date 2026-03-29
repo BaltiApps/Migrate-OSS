@@ -75,7 +75,7 @@ class AppSizeReader(
                                 progressType = Progress.ProgressType.APP_SIZE_READ,
                                 percentage = percentage,
                                 logs = log,
-                                displayText = "${appData.appName} - Size"
+                                displayText = appData.appName
                             )
                         )
                     },

@@ -68,7 +68,8 @@ private fun Content(
 ) {
     if (state().isScanningAppSizes) {
         LoadingDialog(
-            text = stringResource(R.string.checking_app_sizes),
+            text = "${stringResource(R.string.checking_app_sizes)}\n${state().appSizeScanProgress?.displayText}",
+            maxLines = 2,
             progress = state().appSizeScanProgress,
         )
     }
