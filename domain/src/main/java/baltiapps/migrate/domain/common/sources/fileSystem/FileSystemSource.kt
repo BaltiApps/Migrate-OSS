@@ -55,7 +55,7 @@ abstract class FileSystemSource() {
         }
     }
 
-    inline fun <T: GenericReader<*>> read(
+    inline fun <T: GenericReader<*, *>> read(
         file: GenericFile,
         reader: T,
         readerBlock: (reader: T) -> Flow<Progress>,
@@ -100,8 +100,8 @@ interface GenericWriter<T> {
     fun close()
 }
 
-interface GenericReader<T> {
+interface GenericReader<in T, out U> {
     fun setup(readLocation: String)
-    fun read(data: T, onComplete: () -> Unit = {}): Flow<Progress>
+    fun read(data: T, onComplete: (result: U) -> Unit = {}): Flow<Progress>
     fun close()
 }

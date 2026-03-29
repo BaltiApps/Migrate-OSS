@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 
 class RestoreAppsUseCase(
     private val fileSystemSource: FileSystemSource,
-    private val appRestoreEngine: GenericReader<List<DataItem<AppListItem>>>,
+    private val appRestoreEngine: GenericReader<List<DataItem<AppListItem>>, Unit>,
     private val dataRepository: RestoreDataRepository,
 ) {
     operator fun invoke(

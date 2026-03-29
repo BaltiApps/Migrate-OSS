@@ -84,7 +84,7 @@ val restoreDiModule = module {
     single<TextReader<AppData>>(named(Names.APP_INFO_READER)) {
         AppInfoReader()
     }
-    single<GenericReader<List<AppData>>>(named(Names.APP_RESTORE_ENGINE)) {
+    single<GenericReader<List<AppData>, Unit>>(named(Names.APP_RESTORE_ENGINE)) {
         AppRestoreEngine(
             applicationContext = get(),
             superuserUtils = get(),

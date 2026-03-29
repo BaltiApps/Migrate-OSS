@@ -18,7 +18,7 @@ import timber.log.Timber
 class AppRestoreEngine(
     private val applicationContext: Context,
     private val superuserUtils: SuperuserUtils,
-): GenericReader<List<AppData>> {
+): GenericReader<List<AppData>, Unit> {
 
     private lateinit var readLocation: String
     private lateinit var suShell: Process
@@ -29,7 +29,7 @@ class AppRestoreEngine(
 
     override fun read(
         data: List<AppData>,
-        onComplete: () -> Unit
+        onComplete: (Unit) -> Unit
     ): Flow<Progress> {
         return callbackFlow {
             suShell = superuserUtils.getSuperuserShell()
@@ -170,7 +170,7 @@ class AppRestoreEngine(
             Timber.d("Close callbackFlow")
             close()
             awaitClose {
-                onComplete()
+                onComplete(Unit)
             }
         }.flowOn(Dispatchers.IO)
     }
