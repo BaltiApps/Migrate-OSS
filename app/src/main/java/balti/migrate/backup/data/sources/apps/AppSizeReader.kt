@@ -53,6 +53,8 @@ class AppSizeReader(
                 return@callbackFlow
             }
 
+            val packageNames = data.map { it._id }
+
             data.forEachIndexed { index, dataItem ->
                 val appData = dataItem as? AppData ?: return@forEachIndexed
                 Timber.d("Run script for : ${appData.appName} - ${appData.packageName}")
@@ -63,12 +65,9 @@ class AppSizeReader(
                     parentSuperuserShell = suShell,
                     endMarker = AppBackupConstants.END_MARKER,
                     onProgress = { log ->
-                        if (log.contains(":")) {
-                            val parts = log.split(":")
-                            if (parts.size == 2) {
-                                val packageName = parts[0]
-                                val sizeInBytes = parts[1].toLongOrNull() ?: 0L
-                                sizes.add(AppSizeInfo(packageName, sizeInBytes))
+                        log.split(":").takeIf { it.size == 2 }?.let { (packageName, sizeStr) ->
+                            if (packageName in packageNames) {
+                                sizes.add(AppSizeInfo(packageName, sizeStr.toLongOrNull() ?: 0L))
                             }
                         }
                         trySend(
