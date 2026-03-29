@@ -130,7 +130,12 @@ class BackupNameViewModel(
                 Timber.d("Required space for backup: $requiredSpace, available: $availableSpace")
 
                 if (requiredSpace > availableSpace) {
-                    _state.update { it.copy(shouldShowNoSpaceDialog = true) }
+                    _state.update {
+                        it.copy(
+                            requiredSpaceBytes = requiredSpace,
+                            shouldShowNoSpaceDialog = true,
+                        )
+                    }
                     return@launch
                 }
             }

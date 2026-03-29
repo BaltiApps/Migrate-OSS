@@ -114,7 +114,7 @@
     <string name="checking_app_sizes">Checking App sizes</string>
     <string name="default_location" translatable="false">[Internal storage]/Download/Migrate</string>
     <string name="insufficient_storage_title">Insufficient storage</string>
-    <string name="insufficient_storage_message">Some apps are too big to be backed up. You can either select a different location or delete some apps.</string>
+    <string name="insufficient_storage_message">Some apps are too big to be backed up. You can either select a different location or delete some apps.\n\nRequired: %s\nAvailable: %s</string>
     <string name="see_sizes">See sizes</string>
 
     <!--ContextSourceImpl.kt-->

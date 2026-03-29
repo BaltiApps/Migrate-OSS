@@ -15,4 +15,5 @@ data class BackupNameState(
     val shouldShowNoSpaceDialog: Boolean = false,
     val totalSpaceBytes: Long = 0L,
     val availableSpaceBytes: Long = 0L,
+    val requiredSpaceBytes: Long = 0L,
 )
