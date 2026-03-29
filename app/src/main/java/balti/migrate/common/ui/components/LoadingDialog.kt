@@ -23,6 +23,7 @@ fun LoadingDialog(
     text: String,
     progress: Progress?,
     modifier: Modifier = Modifier,
+    maxLines: Int = Int.MAX_VALUE,
 ) {
     Dialog(
         onDismissRequest = {},
@@ -46,6 +47,7 @@ fun LoadingDialog(
                 Text(
                     text = text,
                     modifier = Modifier.weight(1f),
+                    maxLines = maxLines
                 )
                 LoadingProgressBar(
                     progress = progress
