@@ -132,6 +132,7 @@ object TransferUtils {
     fun getStatFsForSafUri(safUri: Uri, context: Context): StatFs? {
         val docId = DocumentsContract.getTreeDocumentId(safUri)
         val docUri = DocumentsContract.buildDocumentUriUsingTree(safUri, docId)
+        Timber.d("getStatFsForSafUri : docId - $docId : docUri - $docUri")
 
         return context.contentResolver.openFileDescriptor(docUri, "r")?.use { pfd ->
             val pfdPath = "/proc/self/fd/${pfd.fd}"

@@ -1,12 +1,15 @@
 package balti.migrate.backup.ui.screens.backupName
 
 import android.content.Context
+import android.content.IntentFilter
+import android.hardware.usb.UsbManager
 import android.net.Uri
 import android.os.StatFs
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import balti.migrate.common.data.model.MediaStoreDownloadFile
+import balti.migrate.common.data.sources.UsbStorageReceiver
 import balti.migrate.common.data.sources.fileSystem.TransferUtils
 import balti.migrate.common.utils.getDefaultBackupName
 import baltiapps.migrate.domain.backup.model.BackupLocation
@@ -14,6 +17,7 @@ import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.common.usecase.GetRequiredSpaceUseCase
 import baltiapps.migrate.domain.restore.usecase.CalculateStagedAppsSizesUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onCompletion
@@ -52,6 +56,18 @@ class BackupNameViewModel(
         )
     )
     val state = _state.asStateFlow()
+
+    private val usbReceiver by lazy {
+        UsbStorageReceiver(
+            onAttached = {
+                viewModelScope.launch {
+                    delay(3000)
+                    updateState()
+                }
+            },
+            onDetached = { updateState() },
+        )
+    }
 
     private fun updateState() {
         viewModelScope.launch {
@@ -96,6 +112,11 @@ class BackupNameViewModel(
 
     init {
         updateState()
+        val usbIntentFilters = IntentFilter().apply {
+            addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
+            addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
+        }
+        applicationContext.registerReceiver(usbReceiver, usbIntentFilters)
     }
 
     fun onAction(action: BackupNameAction) {
@@ -162,4 +183,9 @@ class BackupNameViewModel(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        Timber.d("Unregister UsbReceiver")
+        applicationContext.unregisterReceiver(usbReceiver)
+    }
 }
