@@ -18,10 +18,14 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -37,6 +41,7 @@ import balti.migrate.common.utils.getDefaultBackupName
 import balti.migrate.restore.ui.screens.restoreSummary.components.SimpleYesNoDialog
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import baltiapps.migrate.domain.common.utils.StringUtils.getHumanReadableSize
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -99,8 +104,15 @@ private fun Content(
         )
     }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    val noName = stringResource(R.string.set_a_name_first)
+    val unreachableLocation = stringResource(R.string.setup_a_valid_location)
+
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopBar(
                 navigateUp = navigateUp,
@@ -108,7 +120,19 @@ private fun Content(
         },
         bottomBar = {
             BottomBar(
-                onStartBackup = onStartBackup,
+                onStartBackup = {
+                    if (state().backupName.isBlank()) {
+                        scope.launch {
+                            snackbarHostState.showSnackbar(message = noName)
+                        }
+                    } else if (!state().isLocationAccessible) {
+                        scope.launch {
+                            snackbarHostState.showSnackbar(message = unreachableLocation)
+                        }
+                    } else {
+                        onStartBackup()
+                    }
+                },
             )
         }
     ) { paddingValues ->
