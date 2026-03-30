@@ -134,7 +134,7 @@ private fun Content(
                     LocationSelector(
                         isFallback = !isSaf,
                         locationLabel = state().locationString,
-                        isLocationAccessible = !isSaf || state().isSafUriAccessible,
+                        isLocationAccessible = state().isLocationAccessible,
                         onSelectClicked = onUriSelectClicked
                     )
                 }

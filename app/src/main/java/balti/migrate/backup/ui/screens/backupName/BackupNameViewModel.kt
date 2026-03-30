@@ -29,20 +29,17 @@ class BackupNameViewModel(
     private val getRequiredSpaceUseCase: GetRequiredSpaceUseCase,
 ) : ViewModel() {
 
-    private val safLocationString: String
+    private val savedSafLocationString: String
         get() = preferences.getCustomLocationParameter()
-    private val safLocationUri: Uri
-        get() = safLocationString.toUri()
-    private val isSafLocationAccessible: Boolean
-        get() = TransferUtils.hasPermission(applicationContext, safLocationUri)
-    
-    private fun getLocationLabel(uriString: String): String {
-        if (uriString.isBlank()) return "${TransferUtils.internalStoragePath}/" +
-                MediaStoreDownloadFile.EXPORT_PATH_PREFIX
+    private val savedSafLocationUri: Uri
+        get() = savedSafLocationString.toUri()
+    private val isSavedSafLocationAccessible: Boolean
+        get() = TransferUtils.hasPermission(applicationContext, savedSafLocationUri)
 
-        return TransferUtils.getUriFilePath(safLocationUri).ifBlank {
-            TransferUtils.getUriFileName(applicationContext, safLocationUri)
-        }
+    private fun getLocationString(): String {
+        return if (savedSafLocationString.isNotBlank()) {
+            TransferUtils.getUriFilePath(savedSafLocationUri)
+        } else "${TransferUtils.internalStoragePath}/${MediaStoreDownloadFile.EXPORT_PATH_PREFIX}"
     }
 
     private val _state = MutableStateFlow(
@@ -51,29 +48,24 @@ class BackupNameViewModel(
             isSaf = null,
             safUriString = null,
             locationString = "",
-            isSafUriAccessible = false,
+            isLocationAccessible = false,
         )
     )
     val state = _state.asStateFlow()
 
     private fun updateState() {
         viewModelScope.launch {
-            val safUriString = safLocationString.takeIf {
-                it.isNotBlank() && isSafLocationAccessible
-            }
 
-            val locationString = if (safLocationString.isNotBlank() && !isSafLocationAccessible) "" else {
-                getLocationLabel(safUriString ?: "")
-            }
+            val locationString = getLocationString()
 
-            Timber.d("Is location available - $isSafLocationAccessible")
+            Timber.d("Is location available - $locationString")
 
             var totalBytes = 0L
             var availableBytes = 0L
 
             try {
-                val stat = if (safUriString != null) {
-                    TransferUtils.getStatFsForSafUri(safUriString.toUri(), applicationContext)
+                val stat = if (savedSafLocationString.isNotBlank()) {
+                    TransferUtils.getStatFsForSafUri(savedSafLocationUri, applicationContext)
                 } else if (locationString.isNotBlank()) {
                     Timber.d("Using location string for StatFs: $locationString")
                     StatFs(locationString)
@@ -87,14 +79,14 @@ class BackupNameViewModel(
             }
 
             Timber.d("locationString: $locationString")
-            Timber.d("Total space - ${totalBytes}, Available space - ${availableBytes}")
+            Timber.d("Total space - ${totalBytes}, Available space - $availableBytes")
 
             _state.update {
                 it.copy(
-                    isSaf = safLocationString.isNotBlank(),
-                    safUriString = safUriString,
+                    isSaf = savedSafLocationString.isNotBlank(),
+                    safUriString = savedSafLocationString,
                     locationString = locationString,
-                    isSafUriAccessible = isSafLocationAccessible && totalBytes > 0,
+                    isLocationAccessible = isSavedSafLocationAccessible && totalBytes > 0,
                     totalSpaceBytes = totalBytes,
                     availableSpaceBytes = availableBytes,
                 )
