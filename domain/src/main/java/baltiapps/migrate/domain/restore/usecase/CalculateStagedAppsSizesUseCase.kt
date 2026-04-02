@@ -17,7 +17,7 @@ class CalculateStagedAppsSizesUseCase(
         return appSizeReader.read(
             data = backupDataRepository.stagedApps,
             onComplete = {
-                backupDataRepository.stagedAppSizeMap.clearAndAddAll(it)
+                backupDataRepository.stagedAppSizes.clearAndAddAll(it)
             }
         )
     }

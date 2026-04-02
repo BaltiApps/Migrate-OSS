@@ -21,7 +21,7 @@ abstract class DataRepository {
 
     val stagedApps = mutableListOf<DataItem<AppListItem>>()
 
-    val stagedAppSizeMap = mutableListOf<AppSizeInfo>()
+    val stagedAppSizes = mutableListOf<AppSizeInfo>()
 
     open val contactsListItems: List<ContactListItem>
         get() = contactsDataItems.toListItems().sortedBy { it.displayName }
@@ -48,6 +48,6 @@ abstract class DataRepository {
 
         stagedApps.clear()
 
-        stagedAppSizeMap.clear()
+        stagedAppSizes.clear()
     }
 }

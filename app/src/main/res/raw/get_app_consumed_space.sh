@@ -13,14 +13,15 @@ print_end_marker() {
   echo "$END_MARKER" >&2
 }
 
-total_bytes=0
+apk_bytes=0
+data_bytes=0
 
 # Calculate APK size
 if [ "$APK_PATH_BASE" != "$NULL_MARKER" ] && [ -d "$APK_PATH_BASE" ]; then
-  # du -sb returns size in bytes. We use cut to get only the first field (the size).
+  # du -sb returns size in bytes.
   apk_size=$(du -sb "$APK_PATH_BASE" 2>/dev/null | awk '{print $1}')
   if [ -n "$apk_size" ]; then
-    total_bytes=$((total_bytes + apk_size))
+    apk_bytes=$apk_size
   fi
 fi
 
@@ -28,11 +29,10 @@ fi
 if [ "$DATA_PATH_BASE" != "$NULL_MARKER" ] && [ -d "$DATA_PATH_BASE" ]; then
   data_size=$(du -sb "$DATA_PATH_BASE" 2>/dev/null | awk '{print $1}')
   if [ -n "$data_size" ]; then
-    total_bytes=$((total_bytes + data_size))
+    data_bytes=$data_size
   fi
 fi
 
-# Output in the requested format
-echo "$PACKAGE_NAME:$total_bytes"
+echo "$PACKAGE_NAME:APK:$apk_bytes:DATA:$data_bytes"
 
 print_end_marker

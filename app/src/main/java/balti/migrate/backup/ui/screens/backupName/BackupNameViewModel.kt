@@ -151,7 +151,7 @@ class BackupNameViewModel(
                     _state.update {
                         it.copy(
                             appSizeScanProgress = it.appSizeScanProgress?.copy(percentage = 1.0),
-                            appSizes = backupDataRepository.stagedAppSizeMap,
+                            appSizes = backupDataRepository.stagedAppSizes,
                         )
                     }
                 }.collect { progress ->

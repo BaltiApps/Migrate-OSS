@@ -65,11 +65,20 @@ class AppSizeReader(
                     parentSuperuserShell = suShell,
                     endMarker = AppBackupConstants.END_MARKER,
                     onProgress = { log ->
-                        log.split(":").takeIf { it.size == 2 }?.let { (packageName, sizeStr) ->
-                            if (packageName in packageNames) {
-                                sizes.add(AppSizeInfo(packageName, sizeStr.toLongOrNull() ?: 0L))
+                        // Expected format: package_name:APK:bytes:DATA:bytes
+                        log.split(":")
+                            .takeIf { it.size == 5 && it[1] == "APK" && it[3] == "DATA" }
+                            ?.let { (packageName, _, apkStr, _, dataStr) ->
+                                if (packageName in packageNames) {
+                                    sizes.add(
+                                        AppSizeInfo(
+                                            packageName = packageName,
+                                            bytesApk = apkStr.toLongOrNull() ?: 0L,
+                                            bytesData = dataStr.toLongOrNull() ?: 0L,
+                                        )
+                                    )
+                                }
                             }
-                        }
                         trySend(
                             Progress(
                                 progressType = Progress.ProgressType.APP_SIZE_READ,
