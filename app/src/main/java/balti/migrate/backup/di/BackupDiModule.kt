@@ -151,19 +151,19 @@ val backupDiModule = module {
     }
     single {
         BackupContactsUseCase(
-            contactsDBWriter = get(named(Names.DB_WRITER_CONTACTS)),
+            contactsBackupEngine = get(named(Names.DB_WRITER_CONTACTS)),
             dataRepository = get()
         )
     }
     single {
         BackupCallLogUseCase(
-            callLogDBWriter = get(named(Names.DB_WRITER_CALL_LOG)),
+            callLogBackupEngine = get(named(Names.DB_WRITER_CALL_LOG)),
             dataRepository = get()
         )
     }
     single {
         BackupSmsUseCase(
-            smsDBWriter = get(named(Names.DB_WRITER_SMS)),
+            smsBackupEngine = get(named(Names.DB_WRITER_SMS)),
             dataRepository = get()
         )
     }

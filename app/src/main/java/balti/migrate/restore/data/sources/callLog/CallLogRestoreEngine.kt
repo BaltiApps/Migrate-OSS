@@ -11,16 +11,16 @@ import balti.migrate.common.utils.DBUtils
 import baltiapps.migrate.domain.REDACTED
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.restore.sources.DataRestore
+import baltiapps.migrate.domain.restore.sources.RestoreEngine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-class CallLogRestore(
+class CallLogRestoreEngine(
     private val context: Context,
     private val dbUtils: DBUtils,
-): DataRestore<CallLogData> {
+): RestoreEngine<CallLogData> {
     override fun checkPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
             context,

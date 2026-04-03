@@ -10,17 +10,17 @@ import baltiapps.migrate.domain.REDACTED
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.sources.ContextSource
-import baltiapps.migrate.domain.restore.sources.DataRestore
+import baltiapps.migrate.domain.restore.sources.RestoreEngine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-class SmsRestore(
+class SmsRestoreEngine(
     private val context: Context,
     private val dbUtils: DBUtils,
     private val contextSource: ContextSource,
-): DataRestore<SmsData> {
+): RestoreEngine<SmsData> {
     override fun checkPermission(): Boolean {
         return contextSource.checkPermission(PermissionConstants.DEFAULT_SMS_APP)
     }

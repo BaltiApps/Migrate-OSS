@@ -7,7 +7,7 @@ import balti.migrate.common.utils.SuperuserUtils
 import baltiapps.migrate.domain.AppBackupConstants
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.restore.sources.DataRestore
+import baltiapps.migrate.domain.restore.sources.RestoreEngine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -17,7 +17,7 @@ import timber.log.Timber
 class AppRestoreEngine(
     private val applicationContext: Context,
     private val superuserUtils: SuperuserUtils,
-): DataRestore<AppData> {
+): RestoreEngine<AppData> {
 
     private lateinit var readLocation: String
     private lateinit var suShell: Process

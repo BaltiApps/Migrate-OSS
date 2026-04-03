@@ -12,10 +12,10 @@ import balti.migrate.restore.data.sources.apps.AppIconReader
 import balti.migrate.restore.data.sources.apps.AppInfoReader
 import balti.migrate.restore.data.sources.apps.AppRestoreEngine
 import balti.migrate.restore.data.sources.callLog.CallLogDBReader
-import balti.migrate.restore.data.sources.callLog.CallLogRestore
+import balti.migrate.restore.data.sources.callLog.CallLogRestoreEngine
 import balti.migrate.restore.data.sources.contacts.ContactsDBReader
 import balti.migrate.restore.data.sources.sms.SmsDBReader
-import balti.migrate.restore.data.sources.sms.SmsRestore
+import balti.migrate.restore.data.sources.sms.SmsRestoreEngine
 import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDirectoryViewModel
 import balti.migrate.restore.ui.screens.listScreen.appRestoreSelection.AppRestoreSelectionViewModel
 import balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection.CallLogRestoreSelectionViewModel
@@ -29,7 +29,7 @@ import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
 import baltiapps.migrate.domain.common.sources.fileSystem.TextReader
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
-import baltiapps.migrate.domain.restore.sources.DataRestore
+import baltiapps.migrate.domain.restore.sources.RestoreEngine
 import baltiapps.migrate.domain.restore.usecase.ExportContactsForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ImportFilesFromBackupUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadAppListForRestoreUseCase
@@ -68,14 +68,14 @@ val restoreDiModule = module {
     single<DBReader<CallLogData>>(named(Names.CALL_LOG_DB_READER)) {
         CallLogDBReader(get())
     }
-    single<DataRestore<CallLogData>>(named(Names.CALL_LOG_RESTORE_SOURCE)) {
-        CallLogRestore(get(), get())
+    single<RestoreEngine<CallLogData>>(named(Names.CALL_LOG_RESTORE_SOURCE)) {
+        CallLogRestoreEngine(get(), get())
     }
     single<DBReader<SmsData>>(named(Names.SMS_DB_READER)) {
         SmsDBReader(get())
     }
-    single<DataRestore<SmsData>>(named(Names.SMS_RESTORE_SOURCE)) {
-        SmsRestore(get(), get(), get())
+    single<RestoreEngine<SmsData>>(named(Names.SMS_RESTORE_SOURCE)) {
+        SmsRestoreEngine(get(), get(), get())
     }
     single<TextReader<DrawableAsset>>(named(Names.APP_ICON_READER)) {
         AppIconReader()
@@ -83,7 +83,7 @@ val restoreDiModule = module {
     single<TextReader<AppData>>(named(Names.APP_INFO_READER)) {
         AppInfoReader()
     }
-    single<DataRestore<AppData>>(named(Names.APP_RESTORE_ENGINE)) {
+    single<RestoreEngine<AppData>>(named(Names.APP_RESTORE_ENGINE)) {
         AppRestoreEngine(
             applicationContext = get(),
             superuserUtils = get(),
@@ -135,13 +135,13 @@ val restoreDiModule = module {
     }
     single {
         RestoreCallLogUseCase(
-            dataRestore = get(named(Names.CALL_LOG_RESTORE_SOURCE)),
+            callLogRestoreEngine = get(named(Names.CALL_LOG_RESTORE_SOURCE)),
             restoreDataRepository = get()
         )
     }
     single {
         RestoreSmsUseCase(
-            dataRestore = get(named(Names.SMS_RESTORE_SOURCE)),
+            smsRestoreEngine = get(named(Names.SMS_RESTORE_SOURCE)),
             restoreDataRepository = get()
         )
     }

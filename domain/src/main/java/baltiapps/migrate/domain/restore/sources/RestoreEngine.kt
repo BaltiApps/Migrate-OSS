@@ -4,7 +4,7 @@ import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.flow.Flow
 
-interface DataRestore<T: DataItem<*>> {
+interface RestoreEngine<T: DataItem<*>> {
     fun setLocation(location: String) {}
     fun checkPermission(): Boolean
     fun restoreDataItems(items: List<T>): Flow<Progress>
