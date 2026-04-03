@@ -1,5 +1,6 @@
 package balti.migrate.common.di
 
+import balti.migrate.common.data.converter.AppDataItemAppSizeInfoMergerImpl
 import balti.migrate.common.data.converter.AppListItemToDataItemConverterImpl
 import balti.migrate.common.data.sources.ContextSourceImpl
 import balti.migrate.common.data.sources.PreferencesImpl
@@ -10,6 +11,7 @@ import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import balti.migrate.common.utils.DBUtils
 import balti.migrate.common.utils.ListItemUtils
 import balti.migrate.common.utils.SuperuserUtils
+import baltiapps.migrate.domain.common.converter.AppDataItemAppSizeInfoMerger
 import baltiapps.migrate.domain.common.converter.AppListItemToDataItemConverter
 import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.Preferences
@@ -67,6 +69,9 @@ val commonDiModule = module {
 
     single<AppListItemToDataItemConverter<*>> {
         AppListItemToDataItemConverterImpl()
+    }
+    single<AppDataItemAppSizeInfoMerger<*>> {
+        AppDataItemAppSizeInfoMergerImpl()
     }
 
     /* Use cases */
