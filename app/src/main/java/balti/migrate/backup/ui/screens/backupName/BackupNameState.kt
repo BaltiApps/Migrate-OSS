@@ -10,6 +10,7 @@ data class BackupNameState(
     val locationString: String,
     val isLocationAccessible: Boolean,
     val isScanningAppSizes: Boolean = false,
+    val isSpaceCalculationCancelled: Boolean = false,
     val appSizeScanProgress: Progress? = null,
     val appSizes: List<AppSizeInfo> = listOf(),
     val shouldShowNoSpaceDialog: Boolean = false,

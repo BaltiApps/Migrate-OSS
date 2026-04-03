@@ -11,4 +11,5 @@ sealed class BackupNameAction {
         val startBackupMethod: (BackupLocation) -> Unit,
     ): BackupNameAction()
     data object DismissNoSpaceDialog: BackupNameAction()
+    data object CancelSpaceCalculation: BackupNameAction()
 }
