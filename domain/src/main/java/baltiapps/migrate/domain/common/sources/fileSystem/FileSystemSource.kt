@@ -1,6 +1,5 @@
 package baltiapps.migrate.domain.common.sources.fileSystem
 
-import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.flow.Flow
@@ -20,17 +19,6 @@ abstract class FileSystemSource() {
     ): Boolean
 
     abstract fun getLocalFilePath(file: GenericFile): String?
-
-    inline fun <T: DBReader<*>> readDB(
-        file: GenericFile,
-        dbReader: T,
-        readerBlock: (dbReader: T) -> Flow<Progress>,
-    ): Flow<Progress> {
-        dbReader.setup(file)
-        return readerBlock(dbReader).onCompletion {
-            dbReader.close()
-        }
-    }
 
     inline fun <T: GenericReader<*, *>> read(
         file: GenericFile,
@@ -56,12 +44,6 @@ interface TextReader<T> {
     fun setup(fileLocation: String, fileName: String)
     fun read(): T
     fun readLines(onFinished: (List<T>) -> Unit): Flow<Progress>
-    fun close()
-}
-
-interface DBReader<T: DataItem<*>> {
-    fun setup(file: GenericFile)
-    fun readRows(onFinished: (List<T>) -> Unit): Flow<Progress>
     fun close()
 }
 

@@ -8,17 +8,17 @@ import baltiapps.migrate.domain.ContactsDBConstants
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
 import baltiapps.migrate.domain.exceptions.ContentReadException
+import baltiapps.migrate.domain.restore.sources.RestoreReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.io.File
 
-class ContactsDBReader(
+class ContactsRestoreReader(
     private val dbUtils: DBUtils,
-): DBReader<ContactData> {
+): RestoreReader<ContactData> {
 
     private lateinit var sqLiteDatabase: SQLiteDatabase
 
@@ -30,7 +30,7 @@ class ContactsDBReader(
         sqLiteDatabase = dbUtils.getDataBase(dbFile)
     }
 
-    override fun readRows(onFinished: (List<ContactData>) -> Unit): Flow<Progress> {
+    override fun readItems(onFinished: (List<ContactData>) -> Unit): Flow<Progress> {
         val dataList = mutableListOf<ContactData>()
 
         return flow {
@@ -55,6 +55,7 @@ class ContactsDBReader(
                 }
             }
             cursor.close()
+            sqLiteDatabase.close()
             onFinished(dataList)
         }.flowOn(Dispatchers.IO)
     }

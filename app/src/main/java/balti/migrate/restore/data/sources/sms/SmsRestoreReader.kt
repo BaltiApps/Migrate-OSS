@@ -8,17 +8,17 @@ import baltiapps.migrate.domain.SmsDBConstant
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
 import baltiapps.migrate.domain.exceptions.ContentReadException
+import baltiapps.migrate.domain.restore.sources.RestoreReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.io.File
 
-class SmsDBReader(
+class SmsRestoreReader(
     private val dbUtils: DBUtils,
-): DBReader<SmsData> {
+): RestoreReader<SmsData> {
 
     private lateinit var sqLiteDatabase: SQLiteDatabase
 
@@ -30,7 +30,7 @@ class SmsDBReader(
         sqLiteDatabase = dbUtils.getDataBase(dbFile)
     }
 
-    override fun readRows(onFinished: (List<SmsData>) -> Unit): Flow<Progress> {
+    override fun readItems(onFinished: (List<SmsData>) -> Unit): Flow<Progress> {
         val dataList = mutableListOf<SmsData>()
 
         return flow {

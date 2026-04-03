@@ -8,17 +8,17 @@ import baltiapps.migrate.domain.CallLogDBConstants
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
 import baltiapps.migrate.domain.exceptions.ContentReadException
+import baltiapps.migrate.domain.restore.sources.RestoreReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.io.File
 
-class CallLogDBReader(
+class CallLogRestoreReader(
     private val dbUtils: DBUtils,
-): DBReader<CallLogData> {
+): RestoreReader<CallLogData> {
 
     private lateinit var sqLiteDatabase: SQLiteDatabase
 
@@ -30,7 +30,7 @@ class CallLogDBReader(
         sqLiteDatabase = dbUtils.getDataBase(dbFile)
     }
 
-    override fun readRows(onFinished: (List<CallLogData>) -> Unit): Flow<Progress> {
+    override fun readItems(onFinished: (List<CallLogData>) -> Unit): Flow<Progress> {
         val dataList = mutableListOf<CallLogData>()
 
         return flow {
