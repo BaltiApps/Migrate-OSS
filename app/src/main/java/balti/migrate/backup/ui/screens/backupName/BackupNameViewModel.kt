@@ -110,7 +110,7 @@ class BackupNameViewModel(
                     isSaf = savedSafLocationString.isNotBlank(),
                     safUriString = savedSafLocationString,
                     locationString = locationString,
-                    isLocationAccessible = isSavedSafLocationAccessible && totalBytes > 0,
+                    isLocationAccessible = isSavedSafLocationAccessible && locationString.isNotBlank() && totalBytes > 0,
                     totalSpaceBytes = totalBytes,
                     availableSpaceBytes = availableBytes,
                 )
@@ -214,6 +214,7 @@ class BackupNameViewModel(
                 throw e
             } catch (e: Exception) {
                 e.printStackTrace()
+                _errorMessage.trySend(e.message.toString())
             }
         }
     }
