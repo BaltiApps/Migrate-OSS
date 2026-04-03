@@ -31,6 +31,9 @@ data class AppData(
 
     val user: Int,
 
+    val apkSizeBytes: Long = 0,
+    val dataSizeBytes: Long = 0,
+
     override val logInfo: String,
 
     ): DataItem<AppListItem> {
