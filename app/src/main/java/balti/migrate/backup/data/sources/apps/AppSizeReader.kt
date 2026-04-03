@@ -5,14 +5,12 @@ import balti.migrate.R
 import balti.migrate.common.data.model.AppData
 import balti.migrate.common.utils.SuperuserUtils
 import baltiapps.migrate.domain.AppBackupConstants
+import baltiapps.migrate.domain.backup.repository.BackupDataRepository
+import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.common.getPercentage
-import baltiapps.migrate.domain.common.model.AppListItem
 import baltiapps.migrate.domain.common.model.AppSizeInfo
-import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.common.sources.fileSystem.GenericReader
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
@@ -21,19 +19,16 @@ import timber.log.Timber
 class AppSizeReader(
     private val applicationContext: Context,
     private val superuserUtils: SuperuserUtils,
-): GenericReader<List<DataItem<AppListItem>>, List<AppSizeInfo>> {
+    private val backupDataRepository: BackupDataRepository,
+): DataSource<AppSizeInfo> {
 
     private lateinit var suShell: Process
 
-    override fun setup(readLocation: String) {
-        // Not used as this reader calculates sizes from the system
-    }
+    override fun checkPermission(): Boolean = true
 
-    override fun read(
-        data: List<DataItem<AppListItem>>,
-        onComplete: (List<AppSizeInfo>) -> Unit
-    ): Flow<Progress> {
+    override suspend fun getData(onFinishedLoading: (List<AppSizeInfo>) -> Unit): Flow<Progress> {
         return callbackFlow {
+            val data = backupDataRepository.stagedApps
             suShell = superuserUtils.getSuperuserShell()
             val sizes = mutableListOf<AppSizeInfo>()
 
@@ -109,16 +104,8 @@ class AppSizeReader(
             }
 
             Timber.d("Close callbackFlow")
-            close()
-            awaitClose {
-                onComplete(sizes)
-            }
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override fun close() {
-        if (::suShell.isInitialized) {
             superuserUtils.closeSuperuserShell(suShell)
-        }
+            close()
+        }.flowOn(Dispatchers.IO)
     }
 }

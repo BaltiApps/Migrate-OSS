@@ -35,12 +35,8 @@ import baltiapps.migrate.domain.backup.usecase.ReadAppListForBackupUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadCallLogForBackupUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadContactsForBackupUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadSmsForBackupUseCase
-import baltiapps.migrate.domain.common.model.AppListItem
-import baltiapps.migrate.domain.common.model.AppSizeInfo
-import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
-import baltiapps.migrate.domain.common.sources.fileSystem.GenericReader
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import baltiapps.migrate.domain.restore.usecase.CalculateStagedAppsSizesUseCase
 import org.koin.core.module.dsl.singleOf
@@ -90,12 +86,11 @@ val backupDiModule = module {
     single<DataSource<AppData>>(named(Names.APP_LIST_SOURCE)) {
         AppListSource(get())
     }
-    single<GenericReader<List<DataItem<AppListItem>>, List<AppSizeInfo>>>(named(Names.APP_SIZE_READER)) {
-        AppSizeReader(
-            applicationContext = get(),
-            superuserUtils = get(),
-        )
+
+    singleOf(::AppSizeReader) {
+        named(Names.APP_SIZE_READER)
     }
+
     single<BackupEngine<AppData>>(named(Names.APP_BACKUP_ENGINE)) {
         AppBackupEngine(
             applicationContext = get(),
