@@ -6,6 +6,7 @@ import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onCompletion
+import java.util.concurrent.CancellationException
 
 fun <T: DataItem<*>> backupEngineRunner(
     backupEngine: BackupEngine<T>,
@@ -37,6 +38,8 @@ private fun <T: DataItem<*>> backupEngineRunner(
         backupEngine.backupDataItems(items).onCompletion {
             runCatching { backupEngine.onBackupOver() }
         }
+    } catch (e: CancellationException) {
+        throw e
     } catch (e: Exception) {
         e.printStackTrace()
         runCatching { backupEngine.onBackupOver() }
