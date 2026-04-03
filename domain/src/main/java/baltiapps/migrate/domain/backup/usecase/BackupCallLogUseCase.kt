@@ -1,28 +1,25 @@
 package baltiapps.migrate.domain.backup.usecase
 
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
+import baltiapps.migrate.domain.backup.sources.DataBackup
+import baltiapps.migrate.domain.backup.sources.dataBackupRunner
 import baltiapps.migrate.domain.common.model.CallLogListItem
 import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
-import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import kotlinx.coroutines.flow.Flow
 
 class BackupCallLogUseCase(
-    private val fileSystemSource: FileSystemSource,
-    private val callLogDBWriter: DBWriter<DataItem<CallLogListItem>>,
+    private val callLogDBWriter: DataBackup<DataItem<CallLogListItem>>,
     private val dataRepository: BackupDataRepository,
 ) {
     operator fun invoke(
         file: GenericFile,
     ): Flow<Progress> {
-        return fileSystemSource.writeDB(
-            file = file,
-            dbWriter = callLogDBWriter,
-            writerBlock = {
-                it.writeRows(dataRepository.stagedCallLogs)
-            }
+        return dataBackupRunner(
+            backupEngine = callLogDBWriter,
+            location = file,
+            items = dataRepository.stagedCallLogs
         )
     }
 }

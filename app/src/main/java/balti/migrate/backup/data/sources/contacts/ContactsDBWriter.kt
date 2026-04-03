@@ -8,11 +8,11 @@ import baltiapps.migrate.domain.ContactsDBConstants.Companion.CONTACTS_TABLE_NAM
 import baltiapps.migrate.domain.ContactsDBConstants.Companion.DISPLAY_NAME
 import baltiapps.migrate.domain.ContactsDBConstants.Companion.VCF_CONTENT
 import baltiapps.migrate.domain.REDACTED
+import baltiapps.migrate.domain.backup.sources.DataBackup
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.runCatchingWithProgress
-import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -21,11 +21,13 @@ import java.io.File
 
 class ContactsDBWriter(
     private val dbUtils: DBUtils,
-): DBWriter<ContactData> {
+): DataBackup<ContactData> {
 
     private lateinit var sqLiteDatabase: SQLiteDatabase
 
-    override fun setup(file: GenericFile) {
+    override fun setLocation(file: GenericFile) {
+        super.setLocation(file)
+
         val dbFile = File(file.path).apply {
             if (exists()) delete()
         }
@@ -43,7 +45,7 @@ class ContactsDBWriter(
         }
     }
 
-    override fun writeRows(dataItems: List<ContactData>): Flow<Progress> {
+    override fun backupDataItems(dataItems: List<ContactData>): Flow<Progress> {
         return flow {
             dataItems.forEachIndexed { index, item ->
                 val progress = Progress(
@@ -70,7 +72,7 @@ class ContactsDBWriter(
         sqLiteDatabase.insert(CONTACTS_TABLE_NAME, null, contentValues)
     }
 
-    override fun close() {
+    override fun onBackupOver() {
         if (::sqLiteDatabase.isInitialized) {
             sqLiteDatabase.close()
         }

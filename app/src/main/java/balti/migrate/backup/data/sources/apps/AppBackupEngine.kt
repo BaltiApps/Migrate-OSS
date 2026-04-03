@@ -5,11 +5,10 @@ import balti.migrate.R
 import balti.migrate.common.data.model.AppData
 import balti.migrate.common.utils.SuperuserUtils
 import baltiapps.migrate.domain.AppBackupConstants
+import baltiapps.migrate.domain.backup.sources.DataBackup
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.common.sources.fileSystem.GenericWriter
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
@@ -18,23 +17,21 @@ import timber.log.Timber
 class AppBackupEngine(
     private val applicationContext: Context,
     private val superuserUtils: SuperuserUtils,
-) : GenericWriter<List<AppData>> {
+) : DataBackup<AppData> {
 
     private lateinit var writeLocation: String
     private lateinit var suShell: Process
 
-    override fun setup(writeLocation: String) {
-        this.writeLocation = writeLocation
+    override fun setLocation(location: String) {
+        super.setLocation(location)
+        this.writeLocation = location
     }
 
     val ignorableErrors = listOf(
         "removing leading '/' from member names"
     )
 
-    override fun write(
-        data: List<AppData>,
-        onComplete: () -> Unit
-    ): Flow<Progress> {
+    override fun backupDataItems(dataItems: List<AppData>): Flow<Progress> {
         return callbackFlow {
             suShell = superuserUtils.getSuperuserShell()
 
@@ -62,9 +59,9 @@ class AppBackupEngine(
                 return@callbackFlow
             }
 
-            data.forEachIndexed { index, appData ->
+            dataItems.forEachIndexed { index, appData ->
                 Timber.d("Run scripts for : ${appData.appName} - ${appData.packageName}")
-                val percentage = getPercentage(index + 1, data.size)
+                val percentage = getPercentage(index + 1, dataItems.size)
 
                 if (appData.shouldBackupApk) {
                     superuserUtils.runScript(
@@ -146,13 +143,10 @@ class AppBackupEngine(
 
             Timber.d("Close callbackFlow")
             close()
-            awaitClose {
-                onComplete()
-            }
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun close() {
+    override fun onBackupOver() {
         superuserUtils.closeSuperuserShell(suShell)
     }
 }

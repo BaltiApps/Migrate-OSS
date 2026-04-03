@@ -197,7 +197,7 @@ class BackupService : LifecycleService() {
 
             serviceUtils.runStage(
                 shouldRun = repository::shouldBackupApps,
-                stageBody = { backupAppsUseCase.invoke(JavaFile(backupDestinationAbsolutePath)) },
+                stageBody = { backupAppsUseCase.invoke(backupDestinationAbsolutePath) },
                 progressType = Progress.ProgressType.APP_BACKUP,
                 errorMessage = { "App backup exception: ${it.message}" },
             )

@@ -22,11 +22,11 @@ import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_SUBJECT
 import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_TABLE_NAME
 import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_THREAD_ID
 import baltiapps.migrate.domain.SmsDBConstant.Companion.SMS_TYPE
+import baltiapps.migrate.domain.backup.sources.DataBackup
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
 import baltiapps.migrate.domain.common.runCatchingWithProgress
-import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -35,11 +35,13 @@ import java.io.File
 
 class SmsDBWriter(
     private val dbUtils: DBUtils,
-): DBWriter<SmsData> {
+): DataBackup<SmsData> {
 
     private lateinit var sqLiteDatabase: SQLiteDatabase
 
-    override fun setup(file: GenericFile) {
+    override fun setLocation(file: GenericFile) {
+        super.setLocation(file)
+
         val dbFile = File(file.path).apply {
             if (exists()) delete()
         }
@@ -71,7 +73,7 @@ class SmsDBWriter(
         }
     }
 
-    override fun writeRows(dataItems: List<SmsData>): Flow<Progress> {
+    override fun backupDataItems(dataItems: List<SmsData>): Flow<Progress> {
         return flow {
             dataItems.forEachIndexed { index, item ->
                 val progress = Progress(
@@ -112,7 +114,7 @@ class SmsDBWriter(
         sqLiteDatabase.insert(SMS_TABLE_NAME, null, contentValues)
     }
 
-    override fun close() {
+    override fun onBackupOver() {
         if (::sqLiteDatabase.isInitialized) {
             sqLiteDatabase.close()
         }

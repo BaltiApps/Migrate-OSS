@@ -24,6 +24,7 @@ import balti.migrate.common.data.model.ContactData
 import balti.migrate.common.data.model.SmsData
 import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
+import baltiapps.migrate.domain.backup.sources.DataBackup
 import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.backup.usecase.BackupAppsInfoUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupAppsUseCase
@@ -39,9 +40,7 @@ import baltiapps.migrate.domain.common.model.AppSizeInfo
 import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
-import baltiapps.migrate.domain.common.sources.fileSystem.DBWriter
 import baltiapps.migrate.domain.common.sources.fileSystem.GenericReader
-import baltiapps.migrate.domain.common.sources.fileSystem.GenericWriter
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import baltiapps.migrate.domain.restore.usecase.CalculateStagedAppsSizesUseCase
 import org.koin.core.module.dsl.singleOf
@@ -73,19 +72,19 @@ val backupDiModule = module {
     single<DataSource<ContactData>>(named(Names.CONTACTS_SOURCE)) {
         ContactsSource(get(), get())
     }
-    single<DBWriter<ContactData>>(named(Names.DB_WRITER_CONTACTS)) {
+    single<DataBackup<ContactData>>(named(Names.DB_WRITER_CONTACTS)) {
         ContactsDBWriter(get())
     }
     single<DataSource<CallLogData>>(named(Names.CALL_LOG_SOURCE)) {
         CallLogSource(get(), get())
     }
-    single<DBWriter<CallLogData>>(named(Names.DB_WRITER_CALL_LOG)) {
+    single<DataBackup<CallLogData>>(named(Names.DB_WRITER_CALL_LOG)) {
         CallLogDBWriter(get())
     }
     single<DataSource<SmsData>>(named(Names.SMS_SOURCE)) {
         SmsSource(get(), get())
     }
-    single<DBWriter<SmsData>>(named(Names.DB_WRITER_SMS)) {
+    single<DataBackup<SmsData>>(named(Names.DB_WRITER_SMS)) {
         SmsDBWriter(get())
     }
     single<DataSource<AppData>>(named(Names.APP_LIST_SOURCE)) {
@@ -97,7 +96,7 @@ val backupDiModule = module {
             superuserUtils = get(),
         )
     }
-    single<GenericWriter<List<AppData>>>(named(Names.APP_BACKUP_ENGINE)) {
+    single<DataBackup<AppData>>(named(Names.APP_BACKUP_ENGINE)) {
         AppBackupEngine(
             applicationContext = get(),
             superuserUtils = get(),
@@ -152,21 +151,18 @@ val backupDiModule = module {
     }
     single {
         BackupContactsUseCase(
-            fileSystemSource = get(),
             contactsDBWriter = get(named(Names.DB_WRITER_CONTACTS)),
             dataRepository = get()
         )
     }
     single {
         BackupCallLogUseCase(
-            fileSystemSource = get(),
             callLogDBWriter = get(named(Names.DB_WRITER_CALL_LOG)),
             dataRepository = get()
         )
     }
     single {
         BackupSmsUseCase(
-            fileSystemSource = get(),
             smsDBWriter = get(named(Names.DB_WRITER_SMS)),
             dataRepository = get()
         )
@@ -181,7 +177,6 @@ val backupDiModule = module {
     }
     single {
         BackupAppsUseCase(
-            fileSystemSource = get(),
             appBackupEngine = get(named(Names.APP_BACKUP_ENGINE)),
             dataRepository = get(),
         )
