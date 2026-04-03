@@ -170,7 +170,7 @@ class BackupNameViewModel(
                             isSpaceCalculationCancelled = false,
                         )
                     }
-                    calculateStagedAppsSizesUseCase().onCompletion {
+                    calculateStagedAppsSizesUseCase.invoke().onCompletion {
                         _state.update {
                             it.copy(
                                 appSizeScanProgress = it.appSizeScanProgress?.copy(percentage = 1.0),
