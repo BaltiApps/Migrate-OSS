@@ -21,17 +21,6 @@ abstract class FileSystemSource() {
 
     abstract fun getLocalFilePath(file: GenericFile): String?
 
-    inline fun <T: DBWriter<*>> writeDB(
-        file: GenericFile,
-        dbWriter: T,
-        writerBlock: (dbWriter: T) -> Flow<Progress>,
-    ): Flow<Progress> {
-        dbWriter.setup(file)
-        return writerBlock(dbWriter).onCompletion {
-            dbWriter.close()
-        }
-    }
-
     inline fun <T: DBReader<*>> readDB(
         file: GenericFile,
         dbReader: T,
@@ -40,18 +29,6 @@ abstract class FileSystemSource() {
         dbReader.setup(file)
         return readerBlock(dbReader).onCompletion {
             dbReader.close()
-        }
-    }
-
-    inline fun <T: GenericWriter<*>> write(
-        file: GenericFile,
-        writer: T,
-        writerBlock: (writer: T) -> Flow<Progress>,
-    ): Flow<Progress> {
-        val path = getLocalFilePath(file) ?: file.path
-        writer.setup(path)
-        return writerBlock(writer).onCompletion {
-            writer.close()
         }
     }
 
@@ -82,21 +59,9 @@ interface TextReader<T> {
     fun close()
 }
 
-interface DBWriter<T: DataItem<*>> {
-    fun setup(file: GenericFile)
-    fun writeRows(dataItems: List<T>): Flow<Progress>
-    fun close()
-}
-
 interface DBReader<T: DataItem<*>> {
     fun setup(file: GenericFile)
     fun readRows(onFinished: (List<T>) -> Unit): Flow<Progress>
-    fun close()
-}
-
-interface GenericWriter<T> {
-    fun setup(writeLocation: String)
-    fun write(data: T, onComplete: () -> Unit = {}): Flow<Progress>
     fun close()
 }
 
