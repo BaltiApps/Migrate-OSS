@@ -62,6 +62,9 @@ class AppInfoReader: TextReader<AppData> {
 
             user = 0, // TODO: find way to pass the actual user
 
+            apkSizeBytes = json.optLong(AppInfoConstants.KEY_APK_SIZE_BYTES),
+            dataSizeBytes = json.optLong(AppInfoConstants.KEY_DATA_SIZE_BYTES),
+
             logInfo = "$appName : ($packageName)"
         )
         return appData

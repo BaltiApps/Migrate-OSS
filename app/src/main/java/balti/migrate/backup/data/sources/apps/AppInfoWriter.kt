@@ -28,6 +28,8 @@ class AppInfoWriter: TextWriter<AppData> {
             put(AppInfoConstants.KEY_IS_SYSTEM_APP, data.isSystemApp)
             put(AppInfoConstants.KEY_APK, data.shouldBackupApk)
             put(AppInfoConstants.KEY_DATA, data.shouldBackupData)
+            put(AppInfoConstants.KEY_APK_SIZE_BYTES, data.apkSizeBytes)
+            put(AppInfoConstants.KEY_DATA_SIZE_BYTES, data.dataSizeBytes)
             put(AppInfoConstants.KEY_PERMISSIONS, data.shouldBackupPermissions)
             put(AppInfoConstants.KEY_INSTALLER, data.installerName)
         }

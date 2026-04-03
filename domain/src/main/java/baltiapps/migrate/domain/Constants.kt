@@ -101,6 +101,8 @@ class AppInfoConstants {
         const val KEY_IS_SYSTEM_APP = "isSystemApp"
         const val KEY_APK = "apk"
         const val KEY_DATA = "data"
+        const val KEY_APK_SIZE_BYTES = "apkSizeBytes"
+        const val KEY_DATA_SIZE_BYTES = "dataSizeBytes"
         const val KEY_PERMISSIONS = "permissions"
         const val KEY_INSTALLER = "installer"
     }
