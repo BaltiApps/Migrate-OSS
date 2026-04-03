@@ -8,6 +8,7 @@ import android.os.StatFs
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import balti.migrate.R
 import balti.migrate.common.data.model.MediaStoreDownloadFile
 import balti.migrate.common.data.sources.UsbStorageReceiver
 import balti.migrate.common.data.sources.fileSystem.TransferUtils
@@ -19,10 +20,12 @@ import baltiapps.migrate.domain.common.usecase.GetRequiredSpaceUseCase
 import baltiapps.migrate.domain.restore.usecase.CalculateStagedAppsSizesUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -70,6 +73,9 @@ class BackupNameViewModel(
             onDetached = { updateState() },
         )
     }
+
+    private val _errorMessage = Channel<String>()
+    val errorMessage = _errorMessage.receiveAsFlow()
 
     private fun updateState() {
         viewModelScope.launch {
@@ -137,7 +143,13 @@ class BackupNameViewModel(
                 }
             }
             is BackupNameAction.StartBackup -> {
-                startBackup(action.startBackupMethod)
+                if (_state.value.backupName.isBlank()) {
+                    _errorMessage.trySend(applicationContext.getString(R.string.set_a_name_first))
+                } else if (!_state.value.isLocationAccessible) {
+                    _errorMessage.trySend(applicationContext.getString(R.string.setup_a_valid_location))
+                } else {
+                    startBackup(action.startBackupMethod)
+                }
             }
             is BackupNameAction.CancelSpaceCalculation -> {
                 _state.update { it.copy(isSpaceCalculationCancelled = true) }

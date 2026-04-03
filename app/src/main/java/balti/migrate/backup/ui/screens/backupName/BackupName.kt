@@ -25,7 +25,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -36,12 +35,12 @@ import balti.migrate.common.ui.components.ButtonStatus
 import balti.migrate.common.ui.components.LoadingDialog
 import balti.migrate.common.ui.components.LocationSelector
 import balti.migrate.common.ui.components.NextFab
+import balti.migrate.common.utils.ObserveEvents
 import balti.migrate.common.utils.PermissionUtils
 import balti.migrate.common.utils.getDefaultBackupName
 import balti.migrate.restore.ui.screens.restoreSummary.components.SimpleYesNoDialog
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import baltiapps.migrate.domain.common.utils.StringUtils.getHumanReadableSize
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -51,6 +50,15 @@ fun BackupName(
     viewModel: BackupNameViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    ObserveEvents(
+        eventsStream = viewModel.errorMessage,
+        onEvent = {
+            snackbarHostState.showSnackbar(it)
+        }
+    )
 
     Content(
         state = { state },
@@ -70,6 +78,7 @@ fun BackupName(
         onCancelSpaceCalculation = {
             viewModel.onAction(BackupNameAction.CancelSpaceCalculation)
         },
+        snackbarHostState = snackbarHostState,
     )
 }
 
@@ -82,6 +91,7 @@ private fun Content(
     onUriSelectClicked: () -> Unit,
     onDismissNoSpaceDialog: () -> Unit,
     onCancelSpaceCalculation: () -> Unit,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     if (state().isScanningAppSizes) {
@@ -109,12 +119,6 @@ private fun Content(
         )
     }
 
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
-    val noName = stringResource(R.string.set_a_name_first)
-    val unreachableLocation = stringResource(R.string.setup_a_valid_location)
-
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -124,21 +128,7 @@ private fun Content(
             )
         },
         bottomBar = {
-            BottomBar(
-                onStartBackup = {
-                    if (state().backupName.isBlank()) {
-                        scope.launch {
-                            snackbarHostState.showSnackbar(message = noName)
-                        }
-                    } else if (!state().isLocationAccessible) {
-                        scope.launch {
-                            snackbarHostState.showSnackbar(message = unreachableLocation)
-                        }
-                    } else {
-                        onStartBackup()
-                    }
-                },
-            )
+            BottomBar(onStartBackup = onStartBackup)
         }
     ) { paddingValues ->
         Column(
