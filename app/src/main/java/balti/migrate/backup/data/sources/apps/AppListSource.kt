@@ -9,9 +9,9 @@ import android.content.pm.PermissionInfo
 import androidx.core.content.pm.PackageInfoCompat
 import balti.migrate.common.data.model.AppData
 import baltiapps.migrate.domain.AppBackupConstants
-import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
+import baltiapps.migrate.domain.backup.sources.DataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.flowOn
 class AppListSource(
     private val context: Context,
 ): DataSource<AppData> {
-    override fun checkPermission(): Boolean = true
+    override suspend fun checkPermission(): Boolean = true
 
     @SuppressLint("QueryPermissionsNeeded")
     override suspend fun getData(onFinishedLoading: (List<AppData>) -> Unit): Flow<Progress> {

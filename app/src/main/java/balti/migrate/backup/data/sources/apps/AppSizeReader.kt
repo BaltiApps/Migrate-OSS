@@ -6,10 +6,10 @@ import balti.migrate.common.data.model.AppData
 import balti.migrate.common.utils.SuperuserUtils
 import baltiapps.migrate.domain.AppBackupConstants
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
-import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.AppSizeInfo
 import baltiapps.migrate.domain.common.model.Progress
+import baltiapps.migrate.domain.backup.sources.DataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -24,7 +24,9 @@ class AppSizeReader(
 
     private lateinit var suShell: Process
 
-    override fun checkPermission(): Boolean = true
+    override suspend fun checkPermission(): Boolean {
+        return superuserUtils.checkSuperuserPermission().isSuccess
+    }
 
     override suspend fun getData(onFinishedLoading: (List<AppSizeInfo>) -> Unit): Flow<Progress> {
         return callbackFlow {
