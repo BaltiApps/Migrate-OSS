@@ -32,6 +32,7 @@ class SmsRestore(
                 restoreSingleItem(item)
                 emit(
                     Progress(
+                        itemId = item._id,
                         progressType = Progress.ProgressType.SMS_RESTORE,
                         percentage = getPercentage(index + 1, items.size),
                         logs = "SMS (${index + 1}/${items.size}) ${item.logInfo}",

@@ -52,6 +52,7 @@ class AppBackupEngine(
                     ?: "Unpack error"
                 trySend(
                     Progress(
+                        itemId = "",
                         progressType = Progress.ProgressType.APP_BACKUP,
                         percentage = 0.0,
                         logs = errorMessage,
@@ -73,6 +74,7 @@ class AppBackupEngine(
                         onProgress = { log ->
                             trySend(
                                 Progress(
+                                    itemId = appData.packageName,
                                     progressType = Progress.ProgressType.APP_BACKUP,
                                     percentage = percentage,
                                     displayText = "${appData.appName} - APK",
@@ -83,6 +85,7 @@ class AppBackupEngine(
                         onError = { error ->
                             trySend(
                                 Progress(
+                                    itemId = appData.packageName,
                                     progressType = Progress.ProgressType.APP_BACKUP,
                                     percentage = percentage,
                                     logs = error,
@@ -108,6 +111,7 @@ class AppBackupEngine(
                         onProgress = { log ->
                             trySend(
                                 Progress(
+                                    itemId = appData.packageName,
                                     progressType = Progress.ProgressType.APP_BACKUP,
                                     percentage = percentage,
                                     displayText = "${appData.appName} - DATA",
@@ -118,6 +122,7 @@ class AppBackupEngine(
                         onError = { error ->
                             trySend(
                                 Progress(
+                                    itemId = appData.packageName,
                                     progressType = Progress.ProgressType.APP_BACKUP,
                                     percentage = percentage,
                                     logs = error,

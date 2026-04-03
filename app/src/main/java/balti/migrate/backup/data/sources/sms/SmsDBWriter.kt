@@ -75,6 +75,7 @@ class SmsDBWriter(
         return flow {
             dataItems.forEachIndexed { index, item ->
                 val progress = Progress(
+                    itemId = item._id,
                     progressType = Progress.ProgressType.SMS_BACKUP,
                     percentage = getPercentage(index + 1, dataItems.size),
                     logs = "SMS (${index + 1}/${dataItems.size}) ${item.logInfo}",

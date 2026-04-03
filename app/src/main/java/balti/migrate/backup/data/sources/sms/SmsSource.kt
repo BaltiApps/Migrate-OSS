@@ -8,9 +8,9 @@ import android.provider.Telephony
 import androidx.core.content.ContextCompat
 import balti.migrate.common.data.model.SmsData
 import balti.migrate.common.utils.DBUtils
+import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.exceptions.PermissionException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -50,6 +50,7 @@ class SmsSource(
                     dataList.add(this)
                     emit(
                         Progress(
+                            itemId = this._id,
                             progressType = Progress.ProgressType.SMS_READ,
                             percentage = getPercentage(i+1, totalCount),
                             logs = this.logInfo

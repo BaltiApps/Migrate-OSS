@@ -56,6 +56,7 @@ class ReadAppListForRestoreUseCase(
                 appDataItemsForRepository.add(appDataToStoreInRepository)
 
                 emit(Progress(
+                    itemId = appDataToStoreInRepository._id,
                     logs = appDataToStoreInRepository.logInfo,
                     progressType = Progress.ProgressType.APP_INFO_READ,
                     percentage = getPercentage(index+1, appInfoFiles.size)

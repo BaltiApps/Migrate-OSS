@@ -36,6 +36,7 @@ class ExportContactsForRestoreUseCase(
             val stagedContacts = dataRestore.stagedContacts
             stagedContacts.forEachIndexed { index, item ->
                 val progress = Progress(
+                    itemId = item._id,
                     progressType = Progress.ProgressType.CONTACTS_EXPORT,
                     percentage = getPercentage(index + 1, stagedContacts.size),
                     logs = "(${index + 1}/${stagedContacts.size}) ${item.logInfo}"

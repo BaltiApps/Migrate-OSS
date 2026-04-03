@@ -48,6 +48,7 @@ class AppRestoreEngine(
             if (unpackResult1.isFailure || unpackResult2.isFailure || unpackResult3.isFailure) {
                 trySend(
                     Progress(
+                        itemId = "",
                         progressType = Progress.ProgressType.APP_RESTORE,
                         percentage = 0.0,
                         logs = "Unpack error - ${unpackResult1.exceptionOrNull()?.message}; ${unpackResult2.exceptionOrNull()?.message}; ${unpackResult3.exceptionOrNull()?.message}",
@@ -69,6 +70,7 @@ class AppRestoreEngine(
                         onProgress = { log ->
                             trySend(
                                 Progress(
+                                    itemId = appData.packageName,
                                     progressType = Progress.ProgressType.APP_RESTORE,
                                     percentage = percentage,
                                     logs = log
@@ -78,6 +80,7 @@ class AppRestoreEngine(
                         onError = { error ->
                             trySend(
                                 Progress(
+                                    itemId = appData.packageName,
                                     progressType = Progress.ProgressType.APP_RESTORE,
                                     percentage = percentage,
                                     logs = error,
@@ -105,6 +108,7 @@ class AppRestoreEngine(
                         onProgress = { log ->
                             trySend(
                                 Progress(
+                                    itemId = appData.packageName,
                                     progressType = Progress.ProgressType.APP_RESTORE,
                                     percentage = percentage,
                                     logs = log
@@ -114,6 +118,7 @@ class AppRestoreEngine(
                         onError = { error ->
                             trySend(
                                 Progress(
+                                    itemId = appData.packageName,
                                     progressType = Progress.ProgressType.APP_RESTORE,
                                     percentage = percentage,
                                     logs = error,
@@ -140,6 +145,7 @@ class AppRestoreEngine(
                         onProgress = { log ->
                             trySend(
                                 Progress(
+                                    itemId = appData.packageName,
                                     progressType = Progress.ProgressType.APP_RESTORE,
                                     percentage = percentage,
                                     logs = log
@@ -149,6 +155,7 @@ class AppRestoreEngine(
                         onError = { error ->
                             trySend(
                                 Progress(
+                                    itemId = appData.packageName,
                                     progressType = Progress.ProgressType.APP_RESTORE,
                                     percentage = percentage,
                                     logs = error,

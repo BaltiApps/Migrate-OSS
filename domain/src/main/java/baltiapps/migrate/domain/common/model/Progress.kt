@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Progress(
+    val itemId: String,
     val progressType: ProgressType,
     val percentage: Double,
     val logs: String = "",
@@ -67,6 +68,7 @@ data class Progress(
 
     companion object {
         val Empty = Progress(
+            itemId = "EMPTY_EMPTY_EMPTY",
             progressType = ProgressType.STANDBY,
             percentage = 0.0,
             logs = ""

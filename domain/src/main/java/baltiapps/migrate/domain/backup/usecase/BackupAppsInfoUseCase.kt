@@ -43,6 +43,7 @@ class BackupAppsInfoUseCase(
                 val appName = appDataItem.logInfo.substringBeforeLast(':').trim()
 
                 emit(Progress(
+                    itemId = appDataItem._id,
                     logs = appName,
                     progressType = Progress.ProgressType.APP_INFO_BACKUP,
                     percentage = getPercentage(index+1, dataRepository.stagedApps.size),

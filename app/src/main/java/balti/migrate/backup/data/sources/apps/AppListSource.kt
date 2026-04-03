@@ -88,6 +88,7 @@ class AppListSource(
 
                 emit(
                     Progress(
+                        itemId = appData.packageName,
                         progressType = Progress.ProgressType.APP_LIST_READ,
                         percentage = getPercentage(index + 1, total),
                         logs = appData.logInfo,

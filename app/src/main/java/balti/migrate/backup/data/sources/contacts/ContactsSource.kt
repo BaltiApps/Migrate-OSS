@@ -10,10 +10,10 @@ import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
 import balti.migrate.common.data.model.ContactData
 import balti.migrate.common.utils.DBUtils
-import baltiapps.migrate.domain.exceptions.ContentReadException
+import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.backup.sources.DataSource
+import baltiapps.migrate.domain.exceptions.ContentReadException
 import baltiapps.migrate.domain.exceptions.PermissionException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -53,6 +53,7 @@ class ContactsSource(
                     dataList.add(this)
                     emit(
                         Progress(
+                            itemId = this._id,
                             progressType = Progress.ProgressType.CONTACTS_READ,
                             percentage = getPercentage(i+1, contactCount),
                             logs = this.logInfo

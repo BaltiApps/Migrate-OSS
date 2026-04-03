@@ -35,6 +35,7 @@ class CallLogRestore(
                 restoreSingleItem(item)
                 emit(
                     Progress(
+                        itemId = item._id,
                         progressType = Progress.ProgressType.CALL_LOG_RESTORE,
                         percentage = getPercentage(index + 1, items.size),
                         logs = "CALL LOG (${index + 1}/${items.size}) ${item.logInfo}",

@@ -47,6 +47,7 @@ class ContactsDBWriter(
         return flow {
             dataItems.forEachIndexed { index, item ->
                 val progress = Progress(
+                    itemId = item._id,
                     progressType = Progress.ProgressType.CONTACTS_BACKUP,
                     percentage = getPercentage(index + 1, dataItems.size),
                     logs = "CONTACT (${index + 1}/${dataItems.size}) ${item.logInfo}",

@@ -255,6 +255,7 @@ class BackupService : LifecycleService() {
             )
             serviceUtils.collectLogs(
                 Progress(
+                    itemId = "",
                     progressType = Progress.ProgressType.EXPORTING_BACKUP,
                     percentage = 1.0,
                     logs = destination.path,
@@ -265,6 +266,7 @@ class BackupService : LifecycleService() {
             e.printStackTrace()
             serviceUtils.collectLogs(
                 progress = Progress(
+                    itemId = "",
                     progressType = Progress.ProgressType.EXPORTING_BACKUP,
                     percentage = 1.0,
                     logs = "Error exporting backup to ${destination.path}: ${e.message}",

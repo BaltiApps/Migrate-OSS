@@ -31,6 +31,7 @@ class ServiceUtils(
         val headingTitle = contextSource.getProgressTitle(progressType)
         collectLogs(
             progress = Progress(
+                itemId = "",
                 progressType = progressType,
                 percentage = 1.0,
                 logs = "\n${headingTitle}\n${BREAK_LINE}\n",
@@ -56,6 +57,7 @@ class ServiceUtils(
             if (e is CancellationException) throw e
             e.printStackTrace()
             Progress(
+                itemId = "",
                 progressType = progressType,
                 percentage = 1.0,
                 logs = errorMessage(e),

@@ -43,6 +43,7 @@ class AppSizeReader(
             if (unpackResult.isFailure) {
                 trySend(
                     Progress(
+                        itemId = "",
                         progressType = Progress.ProgressType.APP_SIZE_READ,
                         percentage = 0.0,
                         logs = "Unpack error - ${unpackResult.exceptionOrNull()?.message}",
@@ -79,6 +80,7 @@ class AppSizeReader(
                             }
                         trySend(
                             Progress(
+                                itemId = dataItem.packageName,
                                 progressType = Progress.ProgressType.APP_SIZE_READ,
                                 percentage = percentage,
                                 logs = log,
@@ -89,6 +91,7 @@ class AppSizeReader(
                     onError = { error ->
                         trySend(
                             Progress(
+                                itemId = dataItem.packageName,
                                 progressType = Progress.ProgressType.APP_SIZE_READ,
                                 percentage = percentage,
                                 logs = error,

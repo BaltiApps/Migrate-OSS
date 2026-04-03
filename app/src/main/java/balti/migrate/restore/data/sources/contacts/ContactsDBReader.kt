@@ -45,6 +45,7 @@ class ContactsDBReader(
                     dataList.add(this)
                     emit(
                         Progress(
+                            itemId = this._id,
                             progressType = Progress.ProgressType.CONTACTS_BACKUP_READ,
                             percentage = getPercentage(i+1, totalCount),
                             logs = this.logInfo
