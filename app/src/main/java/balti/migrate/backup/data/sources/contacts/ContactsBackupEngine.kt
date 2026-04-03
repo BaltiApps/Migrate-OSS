@@ -8,7 +8,7 @@ import baltiapps.migrate.domain.ContactsDBConstants.Companion.CONTACTS_TABLE_NAM
 import baltiapps.migrate.domain.ContactsDBConstants.Companion.DISPLAY_NAME
 import baltiapps.migrate.domain.ContactsDBConstants.Companion.VCF_CONTENT
 import baltiapps.migrate.domain.REDACTED
-import baltiapps.migrate.domain.backup.sources.DataBackup
+import baltiapps.migrate.domain.backup.sources.BackupEngine
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
@@ -19,9 +19,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.io.File
 
-class ContactsDBWriter(
+class ContactsBackupEngine(
     private val dbUtils: DBUtils,
-): DataBackup<ContactData> {
+): BackupEngine<ContactData> {
 
     private lateinit var sqLiteDatabase: SQLiteDatabase
 

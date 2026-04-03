@@ -6,11 +6,11 @@ import balti.migrate.backup.data.sources.apps.AppIconWriter
 import balti.migrate.backup.data.sources.apps.AppInfoWriter
 import balti.migrate.backup.data.sources.apps.AppListSource
 import balti.migrate.backup.data.sources.apps.AppSizeReader
-import balti.migrate.backup.data.sources.callLog.CallLogDBWriter
+import balti.migrate.backup.data.sources.callLog.CallLogBackupEngine
 import balti.migrate.backup.data.sources.callLog.CallLogSource
-import balti.migrate.backup.data.sources.contacts.ContactsDBWriter
+import balti.migrate.backup.data.sources.contacts.ContactsBackupEngine
 import balti.migrate.backup.data.sources.contacts.ContactsSource
-import balti.migrate.backup.data.sources.sms.SmsDBWriter
+import balti.migrate.backup.data.sources.sms.SmsBackupEngine
 import balti.migrate.backup.data.sources.sms.SmsSource
 import balti.migrate.backup.ui.screens.backupName.BackupNameViewModel
 import balti.migrate.backup.ui.screens.listScreen.appBackupSelection.AppBackupSelectionViewModel
@@ -24,7 +24,7 @@ import balti.migrate.common.data.model.ContactData
 import balti.migrate.common.data.model.SmsData
 import balti.migrate.common.data.repository.ProgressLogRepositoryImpl
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
-import baltiapps.migrate.domain.backup.sources.DataBackup
+import baltiapps.migrate.domain.backup.sources.BackupEngine
 import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.backup.usecase.BackupAppsInfoUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupAppsUseCase
@@ -72,20 +72,20 @@ val backupDiModule = module {
     single<DataSource<ContactData>>(named(Names.CONTACTS_SOURCE)) {
         ContactsSource(get(), get())
     }
-    single<DataBackup<ContactData>>(named(Names.DB_WRITER_CONTACTS)) {
-        ContactsDBWriter(get())
+    single<BackupEngine<ContactData>>(named(Names.DB_WRITER_CONTACTS)) {
+        ContactsBackupEngine(get())
     }
     single<DataSource<CallLogData>>(named(Names.CALL_LOG_SOURCE)) {
         CallLogSource(get(), get())
     }
-    single<DataBackup<CallLogData>>(named(Names.DB_WRITER_CALL_LOG)) {
-        CallLogDBWriter(get())
+    single<BackupEngine<CallLogData>>(named(Names.DB_WRITER_CALL_LOG)) {
+        CallLogBackupEngine(get())
     }
     single<DataSource<SmsData>>(named(Names.SMS_SOURCE)) {
         SmsSource(get(), get())
     }
-    single<DataBackup<SmsData>>(named(Names.DB_WRITER_SMS)) {
-        SmsDBWriter(get())
+    single<BackupEngine<SmsData>>(named(Names.DB_WRITER_SMS)) {
+        SmsBackupEngine(get())
     }
     single<DataSource<AppData>>(named(Names.APP_LIST_SOURCE)) {
         AppListSource(get())
@@ -96,7 +96,7 @@ val backupDiModule = module {
             superuserUtils = get(),
         )
     }
-    single<DataBackup<AppData>>(named(Names.APP_BACKUP_ENGINE)) {
+    single<BackupEngine<AppData>>(named(Names.APP_BACKUP_ENGINE)) {
         AppBackupEngine(
             applicationContext = get(),
             superuserUtils = get(),

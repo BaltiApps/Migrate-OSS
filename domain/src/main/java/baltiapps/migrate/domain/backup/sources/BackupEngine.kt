@@ -5,7 +5,7 @@ import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.flow.Flow
 
-interface DataBackup<T: DataItem<*>> {
+interface BackupEngine<T: DataItem<*>> {
     fun setLocation(location: String) {}
     fun setLocation(file: GenericFile) {}
     fun backupDataItems(dataItems: List<T>): Flow<Progress>

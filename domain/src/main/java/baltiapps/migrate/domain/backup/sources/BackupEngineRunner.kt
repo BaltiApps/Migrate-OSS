@@ -7,28 +7,28 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onCompletion
 
-fun <T: DataItem<*>> dataBackupRunner(
-    backupEngine: DataBackup<T>,
+fun <T: DataItem<*>> backupEngineRunner(
+    backupEngine: BackupEngine<T>,
     location: GenericFile,
     items: List<T>,
 ): Flow<Progress> {
-    return dataBackupRunner(backupEngine, items) {
+    return backupEngineRunner(backupEngine, items) {
         backupEngine.setLocation(location)
     }
 }
 
-fun <T: DataItem<*>> dataBackupRunner(
-    backupEngine: DataBackup<T>,
+fun <T: DataItem<*>> backupEngineRunner(
+    backupEngine: BackupEngine<T>,
     location: String,
     items: List<T>,
 ): Flow<Progress> {
-    return dataBackupRunner(backupEngine, items) {
+    return backupEngineRunner(backupEngine, items) {
         backupEngine.setLocation(location)
     }
 }
 
-private fun <T: DataItem<*>> dataBackupRunner(
-    backupEngine: DataBackup<T>,
+private fun <T: DataItem<*>> backupEngineRunner(
+    backupEngine: BackupEngine<T>,
     items: List<T>,
     initializer: () -> Unit,
 ): Flow<Progress> {

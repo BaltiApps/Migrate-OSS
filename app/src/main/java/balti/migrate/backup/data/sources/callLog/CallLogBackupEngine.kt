@@ -22,7 +22,7 @@ import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_TRANSCRIPTION
 import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_TYPE
 import baltiapps.migrate.domain.CallLogDBConstants.Companion.CALLS_VOICEMAIL_URI
 import baltiapps.migrate.domain.REDACTED
-import baltiapps.migrate.domain.backup.sources.DataBackup
+import baltiapps.migrate.domain.backup.sources.BackupEngine
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
@@ -33,9 +33,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.io.File
 
-class CallLogDBWriter(
+class CallLogBackupEngine(
     private val dbUtils: DBUtils,
-): DataBackup<CallLogData> {
+): BackupEngine<CallLogData> {
 
     private lateinit var sqLiteDatabase: SQLiteDatabase
 

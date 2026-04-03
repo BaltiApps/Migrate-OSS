@@ -5,7 +5,7 @@ import balti.migrate.R
 import balti.migrate.common.data.model.AppData
 import balti.migrate.common.utils.SuperuserUtils
 import baltiapps.migrate.domain.AppBackupConstants
-import baltiapps.migrate.domain.backup.sources.DataBackup
+import baltiapps.migrate.domain.backup.sources.BackupEngine
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +17,7 @@ import timber.log.Timber
 class AppBackupEngine(
     private val applicationContext: Context,
     private val superuserUtils: SuperuserUtils,
-) : DataBackup<AppData> {
+) : BackupEngine<AppData> {
 
     private lateinit var writeLocation: String
     private lateinit var suShell: Process
