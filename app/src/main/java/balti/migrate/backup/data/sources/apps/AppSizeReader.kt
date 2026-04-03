@@ -53,8 +53,6 @@ class AppSizeReader(
                 return@callbackFlow
             }
 
-            val packageNames = data.map { it._id }
-
             data.forEachIndexed { index, dataItem ->
                 val appData = dataItem as? AppData ?: return@forEachIndexed
                 Timber.d("Run script for : ${appData.appName} - ${appData.packageName}")
@@ -69,7 +67,7 @@ class AppSizeReader(
                         log.split(":")
                             .takeIf { it.size == 5 && it[1] == "APK" && it[3] == "DATA" }
                             ?.let { (packageName, _, apkStr, _, dataStr) ->
-                                if (packageName in packageNames) {
+                                if (packageName == dataItem.packageName) {
                                     sizes.add(
                                         AppSizeInfo(
                                             packageName = packageName,
