@@ -10,14 +10,14 @@ import baltiapps.migrate.domain.common.model.SmsListItem
 import kotlinx.coroutines.flow.Flow
 
 class BackupSmsUseCase(
-    private val smsDBWriter: BackupEngine<DataItem<SmsListItem>>,
+    private val smsBackupEngine: BackupEngine<DataItem<SmsListItem>>,
     private val dataRepository: BackupDataRepository,
 ) {
     operator fun invoke(
         file: GenericFile,
     ): Flow<Progress> {
         return backupEngineRunner(
-            backupEngine = smsDBWriter,
+            backupEngine = smsBackupEngine,
             location = file,
             items = dataRepository.stagedSms
         )

@@ -10,14 +10,14 @@ import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.flow.Flow
 
 class BackupContactsUseCase(
-    private val contactsDBWriter: BackupEngine<DataItem<ContactListItem>>,
+    private val contactsBackupEngine: BackupEngine<DataItem<ContactListItem>>,
     private val dataRepository: BackupDataRepository,
 ) {
     operator fun invoke(
         file: GenericFile,
     ): Flow<Progress> {
         return backupEngineRunner(
-            backupEngine = contactsDBWriter,
+            backupEngine = contactsBackupEngine,
             location = file,
             items = dataRepository.stagedContacts
         )

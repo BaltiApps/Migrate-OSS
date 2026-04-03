@@ -10,14 +10,14 @@ import baltiapps.migrate.domain.common.model.Progress
 import kotlinx.coroutines.flow.Flow
 
 class BackupCallLogUseCase(
-    private val callLogDBWriter: BackupEngine<DataItem<CallLogListItem>>,
+    private val callLogBackupEngine: BackupEngine<DataItem<CallLogListItem>>,
     private val dataRepository: BackupDataRepository,
 ) {
     operator fun invoke(
         file: GenericFile,
     ): Flow<Progress> {
         return backupEngineRunner(
-            backupEngine = callLogDBWriter,
+            backupEngine = callLogBackupEngine,
             location = file,
             items = dataRepository.stagedCallLogs
         )
