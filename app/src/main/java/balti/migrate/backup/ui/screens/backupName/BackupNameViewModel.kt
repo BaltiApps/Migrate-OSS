@@ -15,8 +15,8 @@ import balti.migrate.common.data.sources.fileSystem.TransferUtils
 import balti.migrate.common.utils.getDefaultBackupName
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
-import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.backup.usecase.GetRequiredSpaceForBackupUseCase
+import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.restore.usecase.CalculateStagedAppsSizesUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.cancel
@@ -185,7 +185,7 @@ class BackupNameViewModel(
                     }
                     _state.update { it.copy(isScanningAppSizes = false) }
 
-                    val requiredSpace = getRequiredSpaceForBackupUseCase.invoke(_state.value.appSizes)
+                    val requiredSpace = getRequiredSpaceForBackupUseCase.invoke()
                     val availableSpace = _state.value.availableSpaceBytes
 
                     Timber.d("Required space for backup: $requiredSpace, available: $availableSpace")

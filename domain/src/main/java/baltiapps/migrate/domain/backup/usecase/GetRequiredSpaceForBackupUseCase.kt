@@ -1,9 +1,12 @@
 package baltiapps.migrate.domain.backup.usecase
 
-import baltiapps.migrate.domain.common.model.AppSizeInfo
+import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 
-class GetRequiredSpaceForBackupUseCase {
-    operator fun invoke(appSizes: List<AppSizeInfo>): Long {
+class GetRequiredSpaceForBackupUseCase(
+    private val backupDataRepository: BackupDataRepository,
+) {
+    operator fun invoke(): Long {
+        val appSizes = backupDataRepository.stagedAppSizes
         val maxSize = appSizes.maxOf { it.bytesTotal }
 
         val sum = appSizes.sumOf { it.bytesTotal }
