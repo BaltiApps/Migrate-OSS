@@ -27,7 +27,6 @@ import baltiapps.migrate.domain.common.model.DrawableAsset
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.DBReader
-import baltiapps.migrate.domain.common.sources.fileSystem.GenericReader
 import baltiapps.migrate.domain.common.sources.fileSystem.TextReader
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import baltiapps.migrate.domain.restore.sources.DataRestore
@@ -84,7 +83,7 @@ val restoreDiModule = module {
     single<TextReader<AppData>>(named(Names.APP_INFO_READER)) {
         AppInfoReader()
     }
-    single<GenericReader<List<AppData>, Unit>>(named(Names.APP_RESTORE_ENGINE)) {
+    single<DataRestore<AppData>>(named(Names.APP_RESTORE_ENGINE)) {
         AppRestoreEngine(
             applicationContext = get(),
             superuserUtils = get(),

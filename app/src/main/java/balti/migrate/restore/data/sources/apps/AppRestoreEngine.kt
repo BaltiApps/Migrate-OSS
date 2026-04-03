@@ -7,9 +7,8 @@ import balti.migrate.common.utils.SuperuserUtils
 import baltiapps.migrate.domain.AppBackupConstants
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.common.sources.fileSystem.GenericReader
+import baltiapps.migrate.domain.restore.sources.DataRestore
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
@@ -18,19 +17,21 @@ import timber.log.Timber
 class AppRestoreEngine(
     private val applicationContext: Context,
     private val superuserUtils: SuperuserUtils,
-): GenericReader<List<AppData>, Unit> {
+): DataRestore<AppData> {
 
     private lateinit var readLocation: String
     private lateinit var suShell: Process
 
-    override fun setup(readLocation: String) {
-        this.readLocation = readLocation
+    override fun setLocation(location: String) {
+        super.setLocation(location)
+        readLocation = location
     }
 
-    override fun read(
-        data: List<AppData>,
-        onComplete: (Unit) -> Unit
-    ): Flow<Progress> {
+    override fun checkPermission(): Boolean {
+        return true
+    }
+
+    override fun restoreDataItems(items: List<AppData>): Flow<Progress> {
         return callbackFlow {
             suShell = superuserUtils.getSuperuserShell()
 
@@ -58,9 +59,9 @@ class AppRestoreEngine(
                 return@callbackFlow
             }
 
-            data.forEachIndexed { index, appData ->
+            items.forEachIndexed { index, appData ->
                 Timber.d("Run script for : ${appData.appName} - ${appData.packageName}")
-                val percentage = getPercentage(index + 1, data.size)
+                val percentage = getPercentage(index + 1, items.size)
 
                 if (appData.shouldBackupApk) {
                     superuserUtils.runScript(
@@ -176,13 +177,11 @@ class AppRestoreEngine(
 
             Timber.d("Close callbackFlow")
             close()
-            awaitClose {
-                onComplete(Unit)
-            }
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun close() {
+    override fun onRestoreOver() {
+        super.onRestoreOver()
         superuserUtils.closeSuperuserShell(suShell)
     }
 }
