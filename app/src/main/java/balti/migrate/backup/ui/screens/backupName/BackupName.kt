@@ -66,7 +66,10 @@ fun BackupName(
         },
         onDismissNoSpaceDialog = {
             viewModel.onAction(BackupNameAction.DismissNoSpaceDialog)
-        }
+        },
+        onCancelSpaceCalculation = {
+            viewModel.onAction(BackupNameAction.CancelSpaceCalculation)
+        },
     )
 }
 
@@ -78,6 +81,7 @@ private fun Content(
     onBackupNameChanged: (String) -> Unit,
     onUriSelectClicked: () -> Unit,
     onDismissNoSpaceDialog: () -> Unit,
+    onCancelSpaceCalculation: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (state().isScanningAppSizes) {
@@ -85,6 +89,7 @@ private fun Content(
             text = "${stringResource(R.string.checking_app_sizes)}\n${state().appSizeScanProgress?.displayText}",
             maxLines = 2,
             progress = state().appSizeScanProgress,
+            onCancel = onCancelSpaceCalculation,
         )
     }
 

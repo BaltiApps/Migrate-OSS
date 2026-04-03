@@ -17,6 +17,8 @@ import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.common.usecase.GetRequiredSpaceUseCase
 import baltiapps.migrate.domain.restore.usecase.CalculateStagedAppsSizesUseCase
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -148,46 +150,59 @@ class BackupNameViewModel(
 
     private fun startBackup(startBackupMethod: (BackupLocation) -> Unit) {
         viewModelScope.launch {
-            if (backupDataRepository.shouldBackupApps()) {
-                _state.update {
-                    it.copy(
-                        isScanningAppSizes = true,
-                        isSpaceCalculationCancelled = false,
+            try {
+                if (backupDataRepository.shouldBackupApps()) {
+                    _state.update {
+                        it.copy(
+                            isScanningAppSizes = true,
+                            isSpaceCalculationCancelled = false,
+                        )
+                    }
+                    calculateStagedAppsSizesUseCase().onCompletion {
+                        _state.update {
+                            it.copy(
+                                appSizeScanProgress = it.appSizeScanProgress?.copy(percentage = 1.0),
+                                appSizes = backupDataRepository.stagedAppSizes,
+                            )
+                        }
+                    }.collect { progress ->
+                        _state.update { it.copy(appSizeScanProgress = progress) }
+                        if (_state.value.isSpaceCalculationCancelled) {
+                            this.coroutineContext.cancel()
+                        }
+                    }
+                    _state.update { it.copy(isScanningAppSizes = false) }
+
+                    val requiredSpace = getRequiredSpaceUseCase.invoke(_state.value.appSizes)
+                    val availableSpace = _state.value.availableSpaceBytes
+
+                    Timber.d("Required space for backup: $requiredSpace, available: $availableSpace")
+
+                    if (requiredSpace > availableSpace) {
+                        _state.update {
+                            it.copy(
+                                requiredSpaceBytes = requiredSpace,
+                                shouldShowNoSpaceDialog = true,
+                            )
+                        }
+                        return@launch
+                    }
+                }
+                startBackupMethod(
+                    BackupLocation(
+                        backupName = state.value.backupName,
+                        backupUriString = state.value.safUriString,
                     )
-                }
-                calculateStagedAppsSizesUseCase().onCompletion {
-                    _state.update {
-                        it.copy(
-                            appSizeScanProgress = it.appSizeScanProgress?.copy(percentage = 1.0),
-                            appSizes = backupDataRepository.stagedAppSizes,
-                        )
-                    }
-                }.collect { progress ->
-                    _state.update { it.copy(appSizeScanProgress = progress) }
-                }
-                _state.update { it.copy(isScanningAppSizes = false) }
-
-                val requiredSpace = getRequiredSpaceUseCase.invoke(_state.value.appSizes)
-                val availableSpace = _state.value.availableSpaceBytes
-
-                Timber.d("Required space for backup: $requiredSpace, available: $availableSpace")
-
-                if (requiredSpace > availableSpace) {
-                    _state.update {
-                        it.copy(
-                            requiredSpaceBytes = requiredSpace,
-                            shouldShowNoSpaceDialog = true,
-                        )
-                    }
-                    return@launch
-                }
-            }
-            startBackupMethod(
-                BackupLocation(
-                    backupName = state.value.backupName,
-                    backupUriString = state.value.safUriString,
                 )
-            )
+            } catch (e: CancellationException) {
+                Timber.d("Backup cancelled")
+                _state.update {
+                    it.copy(isScanningAppSizes = false)
+                }
+                throw e
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
