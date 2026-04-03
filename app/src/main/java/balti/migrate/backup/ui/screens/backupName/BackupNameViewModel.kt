@@ -137,6 +137,9 @@ class BackupNameViewModel(
             is BackupNameAction.StartBackup -> {
                 startBackup(action.startBackupMethod)
             }
+            is BackupNameAction.CancelSpaceCalculation -> {
+                _state.update { it.copy(isSpaceCalculationCancelled = true) }
+            }
             BackupNameAction.DismissNoSpaceDialog -> {
                 _state.update { it.copy(shouldShowNoSpaceDialog = false) }
             }
@@ -146,7 +149,12 @@ class BackupNameViewModel(
     private fun startBackup(startBackupMethod: (BackupLocation) -> Unit) {
         viewModelScope.launch {
             if (backupDataRepository.shouldBackupApps()) {
-                _state.update { it.copy(isScanningAppSizes = true) }
+                _state.update {
+                    it.copy(
+                        isScanningAppSizes = true,
+                        isSpaceCalculationCancelled = false,
+                    )
+                }
                 calculateStagedAppsSizesUseCase().onCompletion {
                     _state.update {
                         it.copy(
