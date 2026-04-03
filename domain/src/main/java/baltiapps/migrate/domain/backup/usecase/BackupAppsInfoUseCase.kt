@@ -1,6 +1,7 @@
 package baltiapps.migrate.domain.backup.usecase
 
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
+import baltiapps.migrate.domain.common.converter.AppDataItemAppSizeInfoMerger
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.AppListItem
 import baltiapps.migrate.domain.common.model.DataItem
@@ -14,28 +15,32 @@ import kotlinx.coroutines.flow.flowOn
 class BackupAppsInfoUseCase(
     private val appIconWriter: TextWriter<DataItem<AppListItem>>,
     private val appInfoWriter: TextWriter<DataItem<AppListItem>>,
+    private val appDataItemAppSizeInfoMerger: AppDataItemAppSizeInfoMerger<DataItem<AppListItem>>,
     private val dataRepository: BackupDataRepository,
 ) {
     operator fun invoke(
         internalBackupPath: String,
     ): Flow<Progress> {
         return flow {
-            dataRepository.stagedApps.forEachIndexed { index, appListItem ->
+            dataRepository.stagedApps.forEachIndexed { index, appDataItem ->
+
+                val appSizeInfo = dataRepository.stagedAppSizes.find { it.packageName == appDataItem._id }
+                val appDataItem = appDataItemAppSizeInfoMerger.merge(appDataItem, appSizeInfo)
 
                 appInfoWriter.setup(
                     fileLocation = internalBackupPath,
-                    fileName = "${appListItem._id}.json",
+                    fileName = "${appDataItem._id}.json",
                     append = false
                 )
-                appInfoWriter.write(appListItem)
+                appInfoWriter.write(appDataItem)
                 appIconWriter.setup(
                     fileLocation = internalBackupPath,
-                    fileName = "${appListItem._id}.mpng",
+                    fileName = "${appDataItem._id}.mpng",
                     append = false
                 )
-                appIconWriter.write(appListItem)
+                appIconWriter.write(appDataItem)
 
-                val appName = appListItem.logInfo.substringBeforeLast(':').trim()
+                val appName = appDataItem.logInfo.substringBeforeLast(':').trim()
 
                 emit(Progress(
                     logs = appName,

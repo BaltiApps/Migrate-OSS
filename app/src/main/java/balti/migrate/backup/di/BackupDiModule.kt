@@ -175,6 +175,7 @@ val backupDiModule = module {
         BackupAppsInfoUseCase(
             appIconWriter = get(named(Names.APP_ICON_WRITER)),
             appInfoWriter = get(named(Names.APP_INFO_WRITER)),
+            appDataItemAppSizeInfoMerger = get(),
             dataRepository = get(),
         )
     }
