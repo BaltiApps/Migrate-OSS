@@ -7,10 +7,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -19,12 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import balti.migrate.R
 import baltiapps.migrate.domain.common.model.AppSizeInfo
 import baltiapps.migrate.domain.common.utils.StringUtils.getHumanReadableSize
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppSizesDialog(
     appSizeInfos: List<AppSizeInfo>,
@@ -36,17 +36,12 @@ fun AppSizesDialog(
         appSizeInfos.sortedByDescending { it.bytesTotal }
     }
 
-    Dialog(
-        onDismissRequest = {},
-        properties = DialogProperties(
-            dismissOnClickOutside = false,
-            dismissOnBackPress = false,
-        ),
+    BasicAlertDialog(
+        onDismissRequest = onDismiss,
+        modifier = modifier
     ) {
-        Surface(
-            modifier = modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.background,
+        Card(
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
