@@ -97,6 +97,54 @@ class SuperuserUtils(
         }
     }
 
+    suspend fun runCommand(
+        command: String,
+        parentSuperuserShell: Process,
+        onFinish: (success: Boolean, message: String) -> Unit,
+    ) {
+        val endMarker = "===end==="
+        val output = StringBuilder()
+        val error = StringBuilder()
+
+        withContext(Dispatchers.IO) {
+            val writer = BufferedWriter(OutputStreamWriter(parentSuperuserShell.outputStream))
+            val errorReader = BufferedReader(InputStreamReader(parentSuperuserShell.errorStream))
+            val outputReader = BufferedReader(InputStreamReader(parentSuperuserShell.inputStream))
+
+            Timber.i(command)
+
+            writer.write("${command}\n")
+            writer.write("echo \"${endMarker}\"\n")
+            writer.write("echo \"${endMarker}\" >&2\n")
+            writer.write("exit\n")
+            writer.flush()
+
+            while (true) {
+                val line = outputReader.readLine()
+                Timber.v(line)
+                if (line == endMarker) {
+                    break
+                } else {
+                    output.appendLine(line)
+                }
+            }
+
+            while (true) {
+                val line = errorReader.readLine()
+                Timber.e(line)
+                if (line == endMarker) {
+                    break
+                } else {
+                    error.appendLine(line)
+                }
+            }
+
+            val success = error.isBlank()
+
+            onFinish(success, if (success) output.toString() else error.toString())
+        }
+    }
+
     suspend fun unpackScript(
         @RawRes scriptRes: Int,
         scriptLocation: String,
