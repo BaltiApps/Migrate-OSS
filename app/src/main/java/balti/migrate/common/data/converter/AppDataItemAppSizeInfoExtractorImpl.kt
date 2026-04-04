@@ -8,8 +8,8 @@ class AppDataItemAppSizeInfoExtractorImpl: AppDataItemAppSizeInfoExtractor<AppDa
     override fun extract(appDataItem: AppData): AppSizeInfo {
         return AppSizeInfo(
             packageName = appDataItem.packageName,
-            bytesApk = appDataItem.apkSizeBytes,
-            bytesData = appDataItem.dataSizeBytes,
+            bytesApk = appDataItem.apkSizeBytes.takeIf { appDataItem.shouldBackupApk } ?: 0L,
+            bytesData = appDataItem.dataSizeBytes.takeIf { appDataItem.shouldBackupData } ?: 0L,
         )
     }
 }
