@@ -3,6 +3,7 @@ package balti.migrate.restore.ui.screens.restoreSummary
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import balti.migrate.R
 import balti.migrate.common.data.model.ContactData
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
@@ -15,11 +16,13 @@ import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import baltiapps.migrate.domain.restore.sources.InternalStorageSpaceReader
 import baltiapps.migrate.domain.restore.usecase.ExportContactsForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.GetRequiredSpaceForRestoreUseCase
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -47,6 +50,9 @@ class RestoreSummaryViewModel(
         )
     )
     val state = _state.asStateFlow()
+
+    private val _errorMessage = Channel<String>()
+    val errorMessage = _errorMessage.receiveAsFlow()
 
     companion object {
         private const val VCF_FILE_NAME = "contacts.vcf"
@@ -159,8 +165,12 @@ class RestoreSummaryViewModel(
     fun onAction(action: RestoreSummaryAction) {
         when (action) {
             is RestoreSummaryAction.StartRestore -> {
-                this.runService = action.runService
-                runRestore()
+                if (!restoreDataRepository.shouldRestoreAnything()) {
+                    _errorMessage.trySend(applicationContext.getString(R.string.no_data_to_restore))
+                } else {
+                    this.runService = action.runService
+                    runRestore()
+                }
             }
             is RestoreSummaryAction.OnUserProceedContactImport -> {
                 _state.update {

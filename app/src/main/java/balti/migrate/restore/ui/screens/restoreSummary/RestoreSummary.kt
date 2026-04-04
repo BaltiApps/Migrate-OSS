@@ -19,6 +19,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -39,6 +41,7 @@ import balti.migrate.common.ui.components.ButtonStatus
 import balti.migrate.common.ui.components.LoadingDialog
 import balti.migrate.common.ui.components.NextFab
 import balti.migrate.common.ui.components.SimpleYesNoDialog
+import balti.migrate.common.utils.ObserveEvents
 import balti.migrate.common.utils.PermissionUtils
 import balti.migrate.restore.ui.screens.restoreSummary.components.DelegatedRestore
 import balti.migrate.restore.ui.screens.restoreSummary.components.SpecialPermissions
@@ -58,6 +61,15 @@ fun RestoreSummary(
     val roleManager = remember {
         context.getSystemService(RoleManager::class.java)
     }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    ObserveEvents(
+        eventsStream = viewModel.errorMessage,
+        onEvent = {
+            snackbarHostState.showSnackbar(it)
+        }
+    )
 
     Content(
         state = { state },
@@ -137,6 +149,7 @@ fun RestoreSummary(
         },
         getAppName = viewModel::getAppName,
         navigateUp = navigateUp,
+        snackbarHostState = snackbarHostState,
     )
 }
 
@@ -155,6 +168,7 @@ private fun Content(
     onDismissAppSizesDialog: () -> Unit,
     getAppName: (packageName: String) -> String,
     navigateUp: () -> Unit,
+    snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     if (state().shouldShowNoSpaceDialog) {
@@ -199,6 +213,7 @@ private fun Content(
     }
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopBar(navigateUp = navigateUp)
         },

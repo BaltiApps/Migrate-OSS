@@ -186,6 +186,7 @@
         You will be prompted to change the SMS app after the whole restore process is finished.\n
     </string>
     <string name="insufficient_storage_message_restore">Not enough internal storage space to restore apps.\n\nRequired: %s\nAvailable: %s</string>
+    <string name="no_data_to_restore">No data to restore!</string>
 
     <!--SummaryItem.kt-->
     <string name="contacts_to_restore">Contacts to restore - %d</string>
