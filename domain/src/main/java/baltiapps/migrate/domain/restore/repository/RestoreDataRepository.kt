@@ -28,6 +28,10 @@ class RestoreDataRepository: DataRepository() {
         return stagedApps.isNotEmpty()
     }
 
+    fun shouldRestoreAnything(): Boolean {
+        return (shouldRestoreContacts() || shouldRestoreCallLogs() || shouldRestoreSms() || shouldRestoreApps())
+    }
+
     fun getContactBackupFile(): GenericFile? = backupFiles.find { it.name == BACKUP_FILE_NAME_CONTACTS }
     fun getCallLogBackupFile(): GenericFile? = backupFiles.find { it.name == BACKUP_FILE_NAME_CALL_LOGS }
     fun getSmsBackupFile(): GenericFile? = backupFiles.find { it.name == BACKUP_FILE_NAME_SMS }
