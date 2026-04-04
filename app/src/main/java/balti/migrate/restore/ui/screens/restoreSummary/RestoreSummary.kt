@@ -34,6 +34,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.BuildConfig
 import balti.migrate.R
+import balti.migrate.common.ui.components.AppSizesDialog
 import balti.migrate.common.ui.components.ButtonStatus
 import balti.migrate.common.ui.components.LoadingDialog
 import balti.migrate.common.ui.components.NextFab
@@ -57,7 +58,7 @@ fun RestoreSummary(
     val roleManager = remember {
         context.getSystemService(RoleManager::class.java)
     }
-    
+
     Content(
         state = { state },
         onStartRestore = {
@@ -128,6 +129,13 @@ fun RestoreSummary(
         onDismissNoSpaceDialog = {
             viewModel.onAction(RestoreSummaryAction.DismissNoSpaceDialog)
         },
+        onShowAppSizesDialog = {
+            viewModel.onAction(RestoreSummaryAction.ShowAppSizesDialog)
+        },
+        onDismissAppSizesDialog = {
+            viewModel.onAction(RestoreSummaryAction.DismissAppSizesDialog)
+        },
+        getAppName = viewModel::getAppName,
         navigateUp = navigateUp,
     )
 }
@@ -143,6 +151,9 @@ private fun Content(
     requestDefaultSmsApp: () -> Unit,
     requestNotificationPermission: () -> Unit,
     onDismissNoSpaceDialog: () -> Unit,
+    onShowAppSizesDialog: () -> Unit,
+    onDismissAppSizesDialog: () -> Unit,
+    getAppName: (packageName: String) -> String,
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -154,11 +165,21 @@ private fun Content(
                 getHumanReadableSize(state().requiredSpaceBytes),
                 getHumanReadableSize(state().availableSpaceBytes),
             ),
-            positiveButtonLabel = stringResource(android.R.string.ok),
-            negativeButtonLabel = null,
+            positiveButtonLabel = stringResource(R.string.see_sizes),
+            negativeButtonLabel = stringResource(android.R.string.cancel),
             icon = Icons.Outlined.Storage,
-            onPositiveButton = onDismissNoSpaceDialog,
+            onPositiveButton = {
+                onDismissNoSpaceDialog()
+                onShowAppSizesDialog()
+            },
             onNegativeButton = onDismissNoSpaceDialog,
+        )
+    }
+    if (state().shouldShowAppSizesDialog) {
+        AppSizesDialog(
+            appSizeInfos = state().appSizeInfos,
+            onDismiss = onDismissAppSizesDialog,
+            getAppName = getAppName,
         )
     }
     when (state().contactSummaryState) {

@@ -1,5 +1,6 @@
 package balti.migrate.restore.ui.screens.restoreSummary
 
+import baltiapps.migrate.domain.common.model.AppSizeInfo
 import baltiapps.migrate.domain.common.model.Progress
 
 data class RestoreSummaryState(
@@ -17,4 +18,6 @@ data class RestoreSummaryState(
     val shouldShowNoSpaceDialog: Boolean = false,
     val requiredSpaceBytes: Long = 0L,
     val availableSpaceBytes: Long = 0L,
+    val appSizeInfos: List<AppSizeInfo> = emptyList(),
+    val shouldShowAppSizesDialog: Boolean = false,
 )

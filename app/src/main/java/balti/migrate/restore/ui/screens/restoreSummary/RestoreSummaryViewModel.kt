@@ -119,6 +119,7 @@ class RestoreSummaryViewModel(
                                 requiredSpaceBytes = requiredSpace,
                                 availableSpaceBytes = spaceInfo.bytesFree,
                                 shouldShowNoSpaceDialog = true,
+                                appSizeInfos = restoreDataRepository.stagedAppSizes,
                             )
                         }
                         return@launch
@@ -215,6 +216,20 @@ class RestoreSummaryViewModel(
             is RestoreSummaryAction.DismissNoSpaceDialog -> {
                 _state.update { it.copy(shouldShowNoSpaceDialog = false) }
             }
+            is RestoreSummaryAction.ShowAppSizesDialog -> {
+                _state.update { it.copy(shouldShowAppSizesDialog = true) }
+            }
+            is RestoreSummaryAction.DismissAppSizesDialog -> {
+                _state.update { it.copy(shouldShowAppSizesDialog = false) }
+            }
         }
+    }
+
+    fun getAppName(packageName: String): String {
+        return restoreDataRepository.stagedApps
+            .find { it._id == packageName }
+            ?.toListItem()
+            ?.appName
+            ?: packageName
     }
 }
