@@ -1,6 +1,5 @@
 package baltiapps.migrate.domain.backup.repository
 
-import baltiapps.migrate.domain.common.model.AppSizeInfo
 import baltiapps.migrate.domain.common.model.ContactListItem
 import baltiapps.migrate.domain.common.repository.DataRepository
 
@@ -22,13 +21,10 @@ class BackupDataRepository: DataRepository() {
         return (shouldBackupContacts() || shouldBackupCallLogs() || shouldBackupSms() || shouldBackupApps())
     }
 
-    val stagedAppSizes = mutableListOf<AppSizeInfo>()
-
     override val contactsListItems: List<ContactListItem>
         get() = super.contactsListItems.map { it.copy(isChecked = it.isLocalContact) }
 
     override fun resetRepository() {
         super.resetRepository()
-        stagedAppSizes.clear()
     }
 }
