@@ -12,7 +12,9 @@ import baltiapps.migrate.domain.INTERNAL_ROUGH_WORK_DIRECTORY
 import baltiapps.migrate.domain.PermissionConstants
 import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
+import baltiapps.migrate.domain.restore.sources.InternalStorageSpaceReader
 import baltiapps.migrate.domain.restore.usecase.ExportContactsForRestoreUseCase
+import baltiapps.migrate.domain.restore.usecase.GetRequiredSpaceForRestoreUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,6 +29,8 @@ class RestoreSummaryViewModel(
     private val exportContactsForRestoreUseCase: ExportContactsForRestoreUseCase,
     private val superuserUtils: SuperuserUtils,
     private val contextSource: ContextSource,
+    private val internalStorageSpaceReader: InternalStorageSpaceReader,
+    private val getRequiredSpaceForRestoreUseCase: GetRequiredSpaceForRestoreUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -107,6 +111,18 @@ class RestoreSummaryViewModel(
                         it.copy(notificationSummaryState = RestoreSummaryItemState.REQUEST_USER_INPUT)
                     }
                 } else {
+                    val spaceInfo = internalStorageSpaceReader.getSpaceInfo()
+                    val requiredSpace = getRequiredSpaceForRestoreUseCase.invoke()
+                    if (requiredSpace > spaceInfo.bytesFree) {
+                        _state.update {
+                            it.copy(
+                                requiredSpaceBytes = requiredSpace,
+                                availableSpaceBytes = spaceInfo.bytesFree,
+                                shouldShowNoSpaceDialog = true,
+                            )
+                        }
+                        return@launch
+                    }
                     runService()
                 }
             }
@@ -195,6 +211,9 @@ class RestoreSummaryViewModel(
                     )
                 }
                 runRestore()
+            }
+            is RestoreSummaryAction.DismissNoSpaceDialog -> {
+                _state.update { it.copy(shouldShowNoSpaceDialog = false) }
             }
         }
     }

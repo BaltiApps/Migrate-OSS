@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Contacts
 import androidx.compose.material.icons.outlined.Sms
+import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,6 +37,7 @@ import balti.migrate.R
 import balti.migrate.common.ui.components.ButtonStatus
 import balti.migrate.common.ui.components.LoadingDialog
 import balti.migrate.common.ui.components.NextFab
+import baltiapps.migrate.domain.common.utils.StringUtils.getHumanReadableSize
 import balti.migrate.common.utils.PermissionUtils
 import balti.migrate.restore.ui.screens.restoreSummary.components.DelegatedRestore
 import balti.migrate.restore.ui.screens.restoreSummary.components.SimpleYesNoDialog
@@ -123,6 +125,9 @@ fun RestoreSummary(
             // For such devices, notification permission is already granted.
             viewModel.onAction(RestoreSummaryAction.OnNotificationPermissionResult(true))
         },
+        onDismissNoSpaceDialog = {
+            viewModel.onAction(RestoreSummaryAction.DismissNoSpaceDialog)
+        },
         navigateUp = navigateUp,
     )
 }
@@ -137,9 +142,25 @@ private fun Content(
     showDialogDefaultSmsSet: @Composable () -> Unit,
     requestDefaultSmsApp: () -> Unit,
     requestNotificationPermission: () -> Unit,
+    onDismissNoSpaceDialog: () -> Unit,
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    if (state().shouldShowNoSpaceDialog) {
+        SimpleYesNoDialog(
+            titleText = stringResource(R.string.insufficient_storage_title),
+            dialogText = stringResource(
+                R.string.insufficient_storage_message_restore,
+                getHumanReadableSize(state().requiredSpaceBytes),
+                getHumanReadableSize(state().availableSpaceBytes),
+            ),
+            positiveButtonLabel = stringResource(android.R.string.ok),
+            negativeButtonLabel = null,
+            icon = Icons.Outlined.Storage,
+            onPositiveButton = onDismissNoSpaceDialog,
+            onNegativeButton = onDismissNoSpaceDialog,
+        )
+    }
     when (state().contactSummaryState) {
         RestoreSummaryItemState.PROCESSING -> contactExportProgressDialog()
         RestoreSummaryItemState.REQUEST_USER_INPUT -> showDialogContactImport()

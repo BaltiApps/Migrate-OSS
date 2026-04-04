@@ -33,6 +33,7 @@ import baltiapps.migrate.domain.restore.sources.InternalStorageSpaceReader
 import baltiapps.migrate.domain.restore.sources.RestoreEngine
 import baltiapps.migrate.domain.restore.sources.RestoreReader
 import baltiapps.migrate.domain.restore.usecase.ExportContactsForRestoreUseCase
+import baltiapps.migrate.domain.restore.usecase.GetRequiredSpaceForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ImportFilesFromBackupUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadAppListForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadCallLogForRestoreUseCase
@@ -162,6 +163,7 @@ val restoreDiModule = module {
         )
     }
     singleOf(::ExportContactsForRestoreUseCase)
+    singleOf(::GetRequiredSpaceForRestoreUseCase)
 
     /* View models*/
 
