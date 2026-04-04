@@ -3,6 +3,7 @@ package balti.migrate.common.ui.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -42,12 +43,12 @@ fun LoadingDialog(
             color = MaterialTheme.colorScheme.background,
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp, vertical = 16.dp),
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp, vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
@@ -62,7 +63,9 @@ fun LoadingDialog(
                 if (onCancel != null) {
                     TextButton(
                         onClick = onCancel,
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .offset(y = -(5).dp),
                     ) {
                         Text(text = stringResource(android.R.string.cancel))
                     }
@@ -87,5 +90,14 @@ private fun DialogPreview2() {
     LoadingDialog(
         text = stringResource(R.string.exporting_percentage, 40),
         progress = Progress.Empty.copy(percentage = 0.4),
+    )
+}
+@Composable
+@Preview
+private fun DialogPreview3() {
+    LoadingDialog(
+        text = stringResource(R.string.exporting_percentage, 40),
+        progress = Progress.Empty.copy(percentage = 0.4),
+        onCancel = {}
     )
 }
