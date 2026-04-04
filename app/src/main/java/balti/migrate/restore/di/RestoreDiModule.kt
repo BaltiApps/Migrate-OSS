@@ -11,6 +11,7 @@ import balti.migrate.restore.data.sources.RestoreNotificationHandlerImpl
 import balti.migrate.restore.data.sources.apps.AppIconReader
 import balti.migrate.restore.data.sources.apps.AppInfoReader
 import balti.migrate.restore.data.sources.apps.AppRestoreEngine
+import balti.migrate.restore.data.sources.apps.InternalStorageSpaceReaderImpl
 import balti.migrate.restore.data.sources.callLog.CallLogRestoreEngine
 import balti.migrate.restore.data.sources.callLog.CallLogRestoreReader
 import balti.migrate.restore.data.sources.contacts.ContactsRestoreReader
@@ -28,6 +29,7 @@ import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.TextReader
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
+import baltiapps.migrate.domain.restore.sources.InternalStorageSpaceReader
 import baltiapps.migrate.domain.restore.sources.RestoreEngine
 import baltiapps.migrate.domain.restore.sources.RestoreReader
 import baltiapps.migrate.domain.restore.usecase.ExportContactsForRestoreUseCase
@@ -43,6 +45,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 enum class Names {
@@ -96,6 +99,7 @@ val restoreDiModule = module {
             progressLogRepository = get(named(Names.PROGRESS_LOG_REPOSITORY_RESTORE))
         )
     }
+    singleOf(::InternalStorageSpaceReaderImpl) bind InternalStorageSpaceReader::class
 
     /* Repositories */
 
