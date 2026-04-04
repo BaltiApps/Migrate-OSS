@@ -14,6 +14,8 @@ class GetRequiredSpaceForRestoreUseCase(
 
         val appSizeInfos: List<AppSizeInfo> =
             dataRestore.stagedApps.map { appSizeInfoExtractor.extract(it) }
+                .takeIf { it.isNotEmpty() }
+                ?: return 0
 
         val totalBytes = appSizeInfos.sumOf { it.bytesTotal }
 
