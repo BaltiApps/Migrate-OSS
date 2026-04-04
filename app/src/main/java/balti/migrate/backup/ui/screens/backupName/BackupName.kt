@@ -35,10 +35,10 @@ import balti.migrate.common.ui.components.ButtonStatus
 import balti.migrate.common.ui.components.LoadingDialog
 import balti.migrate.common.ui.components.LocationSelector
 import balti.migrate.common.ui.components.NextFab
+import balti.migrate.common.ui.components.SimpleYesNoDialog
 import balti.migrate.common.utils.ObserveEvents
 import balti.migrate.common.utils.PermissionUtils
 import balti.migrate.common.utils.getDefaultBackupName
-import balti.migrate.common.ui.components.SimpleYesNoDialog
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import baltiapps.migrate.domain.common.utils.StringUtils.getHumanReadableSize
 import org.koin.compose.viewmodel.koinViewModel
@@ -95,8 +95,12 @@ private fun Content(
     modifier: Modifier = Modifier,
 ) {
     if (state().isScanningAppSizes) {
+        val appScanDisplayText = state().appSizeScanProgress?.displayText
+        val loadingText = stringResource(R.string.checking_app_sizes) +
+                (appScanDisplayText?.let { "\n$it" } ?: "")
+
         LoadingDialog(
-            text = "${stringResource(R.string.checking_app_sizes)}\n${state().appSizeScanProgress?.displayText}",
+            text = loadingText,
             maxLines = 2,
             progress = state().appSizeScanProgress,
             onCancel = onCancelSpaceCalculation,
