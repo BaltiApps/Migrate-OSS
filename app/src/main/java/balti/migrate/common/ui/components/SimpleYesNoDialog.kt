@@ -1,4 +1,4 @@
-package balti.migrate.restore.ui.screens.restoreSummary.components
+package balti.migrate.common.ui.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon

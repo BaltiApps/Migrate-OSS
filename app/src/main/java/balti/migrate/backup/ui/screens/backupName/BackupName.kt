@@ -38,7 +38,7 @@ import balti.migrate.common.ui.components.NextFab
 import balti.migrate.common.utils.ObserveEvents
 import balti.migrate.common.utils.PermissionUtils
 import balti.migrate.common.utils.getDefaultBackupName
-import balti.migrate.restore.ui.screens.restoreSummary.components.SimpleYesNoDialog
+import balti.migrate.common.ui.components.SimpleYesNoDialog
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import baltiapps.migrate.domain.common.utils.StringUtils.getHumanReadableSize
 import org.koin.compose.viewmodel.koinViewModel

@@ -37,12 +37,12 @@ import balti.migrate.R
 import balti.migrate.common.ui.components.ButtonStatus
 import balti.migrate.common.ui.components.LoadingDialog
 import balti.migrate.common.ui.components.NextFab
-import baltiapps.migrate.domain.common.utils.StringUtils.getHumanReadableSize
+import balti.migrate.common.ui.components.SimpleYesNoDialog
 import balti.migrate.common.utils.PermissionUtils
 import balti.migrate.restore.ui.screens.restoreSummary.components.DelegatedRestore
-import balti.migrate.restore.ui.screens.restoreSummary.components.SimpleYesNoDialog
 import balti.migrate.restore.ui.screens.restoreSummary.components.SpecialPermissions
 import balti.migrate.restore.ui.screens.restoreSummary.components.StandardRestore
+import baltiapps.migrate.domain.common.utils.StringUtils.getHumanReadableSize
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
