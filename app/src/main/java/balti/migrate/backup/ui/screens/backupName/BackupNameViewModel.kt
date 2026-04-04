@@ -147,6 +147,8 @@ class BackupNameViewModel(
                     _errorMessage.trySend(applicationContext.getString(R.string.set_a_name_first))
                 } else if (!_state.value.isLocationAccessible) {
                     _errorMessage.trySend(applicationContext.getString(R.string.setup_a_valid_location))
+                } else if (!backupDataRepository.shouldBackupAnything()) {
+                    _errorMessage.trySend(applicationContext.getString(R.string.no_data_to_backup))
                 } else {
                     startBackup(action.startBackupMethod)
                 }

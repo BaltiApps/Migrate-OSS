@@ -18,6 +18,10 @@ class BackupDataRepository: DataRepository() {
         return stagedApps.isNotEmpty()
     }
 
+    fun shouldBackupAnything(): Boolean {
+        return (shouldBackupContacts() || shouldBackupCallLogs() || shouldBackupSms() || shouldBackupApps())
+    }
+
     val stagedAppSizes = mutableListOf<AppSizeInfo>()
 
     override val contactsListItems: List<ContactListItem>
