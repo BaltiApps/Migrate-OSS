@@ -35,6 +35,7 @@ import baltiapps.migrate.domain.backup.usecase.ReadAppListForBackupUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadCallLogForBackupUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadContactsForBackupUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadSmsForBackupUseCase
+import baltiapps.migrate.domain.common.model.AppSizeInfo
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
@@ -87,8 +88,12 @@ val backupDiModule = module {
         AppListSource(get())
     }
 
-    singleOf(::AppSizeReader) {
-        named(Names.APP_SIZE_READER)
+    single<DataSource<AppSizeInfo>>(named(Names.APP_SIZE_READER)) {
+        AppSizeReader(
+            applicationContext = get(),
+            superuserUtils = get(),
+            backupDataRepository = get(),
+        )
     }
 
     single<BackupEngine<AppData>>(named(Names.APP_BACKUP_ENGINE)) {
