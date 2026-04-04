@@ -234,6 +234,9 @@
     <string name="migrate_colors">Classic Migrate colors</string>
     <string name="system_colors">System colors</string>
 
+    <!--AppSizesDialog.kt-->
+    <string name="app_sizes">App sizes</string>
+
     <!--MainActivity.kt-->
     <string name="no_application_available_to_restore_contacts">No applications found to restore contacts, please install Google contacts / Fossify contacts.</string>
 
