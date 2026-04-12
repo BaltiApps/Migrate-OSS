@@ -9,9 +9,10 @@ import android.content.pm.PermissionInfo
 import androidx.core.content.pm.PackageInfoCompat
 import balti.migrate.common.data.model.AppData
 import baltiapps.migrate.domain.AppBackupConstants
+import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.common.getPercentage
 import baltiapps.migrate.domain.common.model.Progress
-import baltiapps.migrate.domain.backup.sources.DataSource
+import baltiapps.migrate.domain.common.sources.Preferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.flowOn
 
 class AppListSource(
     private val context: Context,
+    private val preferences: Preferences,
 ): DataSource<AppData> {
     override suspend fun checkPermission(): Boolean = true
 
@@ -76,6 +78,10 @@ class AppListSource(
 
                     isSystemApp = (app.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
                     isUpdatedSystemApp = (app.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0,
+
+                    shouldBackupApk = preferences.wasSuperuserPermissionPreviouslyGranted(),
+                    shouldBackupData = preferences.wasSuperuserPermissionPreviouslyGranted(),
+                    shouldBackupPermissions = preferences.wasSuperuserPermissionPreviouslyGranted(),
 
                     installerName = installerName ?: AppBackupConstants.NULL_MARKER,
 

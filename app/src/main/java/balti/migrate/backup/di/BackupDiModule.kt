@@ -85,7 +85,7 @@ val backupDiModule = module {
         SmsBackupEngine(get())
     }
     single<DataSource<AppData>>(named(Names.APP_LIST_SOURCE)) {
-        AppListSource(get())
+        AppListSource(get(), get())
     }
 
     single<DataSource<AppSizeInfo>>(named(Names.APP_SIZE_READER)) {

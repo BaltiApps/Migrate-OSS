@@ -5,13 +5,16 @@ import androidx.core.graphics.drawable.toDrawable
 import balti.migrate.common.data.model.AppData
 import baltiapps.migrate.domain.AppInfoConstants
 import baltiapps.migrate.domain.common.model.Progress
+import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.common.sources.fileSystem.TextReader
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import org.json.JSONObject
 import java.io.File
 
-class AppInfoReader: TextReader<AppData> {
+class AppInfoReader(
+    private val preferences: Preferences,
+): TextReader<AppData> {
     private lateinit var file: File
 
     override fun setup(
@@ -54,9 +57,12 @@ class AppInfoReader: TextReader<AppData> {
             isSystemApp = json.optBoolean(AppInfoConstants.KEY_IS_SYSTEM_APP),
             isUpdatedSystemApp = false,
 
-            shouldBackupApk = json.optBoolean(AppInfoConstants.KEY_APK),
-            shouldBackupData = json.optBoolean(AppInfoConstants.KEY_DATA),
-            shouldBackupPermissions = json.optBoolean(AppInfoConstants.KEY_PERMISSIONS),
+            shouldBackupApk = preferences.wasSuperuserPermissionPreviouslyGranted() &&
+                    json.optBoolean(AppInfoConstants.KEY_APK),
+            shouldBackupData = preferences.wasSuperuserPermissionPreviouslyGranted() &&
+                    json.optBoolean(AppInfoConstants.KEY_DATA),
+            shouldBackupPermissions = preferences.wasSuperuserPermissionPreviouslyGranted() &&
+                    json.optBoolean(AppInfoConstants.KEY_PERMISSIONS),
             
             installerName = json.optString(AppInfoConstants.KEY_INSTALLER),
 
