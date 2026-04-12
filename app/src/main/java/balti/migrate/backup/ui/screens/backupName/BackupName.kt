@@ -209,7 +209,7 @@ private fun Content(
                     val progress = (usedSpaceBytes.toFloat() / state().totalSpaceBytes).coerceIn(0f, 1f)
                     Text(
                         text = stringResource(
-                            R.string.storage_used_,
+                            R.string.storage_free_,
                             getHumanReadableSize(state().availableSpaceBytes),
                             getHumanReadableSize(state().totalSpaceBytes
                             )

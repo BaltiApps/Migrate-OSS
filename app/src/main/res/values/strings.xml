@@ -116,7 +116,7 @@
     <string name="insufficient_storage_title">Insufficient storage</string>
     <string name="insufficient_storage_message">Some apps are too big to be backed up. You can either select a different location or delete some apps.\n\nRequired: %s\nAvailable: %s</string>
     <string name="see_sizes">See sizes</string>
-    <string name="storage_used_">Storage used : %s / %s</string>
+    <string name="storage_free_">Storage free : %s / %s</string>
     <string name="set_a_name_first">Set a name first</string>
     <string name="setup_a_valid_location">Setup a valid location first</string>
     <string name="no_data_to_backup">No data to backup!</string>
