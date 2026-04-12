@@ -1,21 +1,46 @@
 package balti.migrate.app.ui.screens.home
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import balti.migrate.common.utils.SuperuserUtils
 import baltiapps.migrate.domain.common.sources.Preferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class ScreenHomeViewModel(
     private val preferences: Preferences,
+    private val superuserUtils: SuperuserUtils,
 ): ViewModel() {
 
     private val _state = MutableStateFlow(
         ScreenHomeState(
             shouldShowAppBackupUnavailableDialog = preferences.shouldShowAppBackupUnavailable(),
+            isRootEnabled = preferences.wasSuperuserPermissionPreviouslyGranted(),
         )
     )
     val state = _state.asStateFlow()
+
+    init {
+        if (preferences.wasSuperuserPermissionPreviouslyGranted()) {
+            checkRootPermission()
+        }
+    }
+
+    private fun checkRootPermission(onToggleRequest: Boolean = false) {
+        viewModelScope.launch {
+            _state.update { it.copy(isCheckingRootPermission = true) }
+            val result = superuserUtils.checkSuperuserPermission()
+            if (result.isSuccess) {
+                preferences.setSuperuserPermissionPreviouslyGranted(true)
+                _state.update { it.copy(isRootEnabled = true, isCheckingRootPermission = false) }
+            } else {
+                preferences.setSuperuserPermissionPreviouslyGranted(false)
+                _state.update { it.copy(isRootEnabled = false, isCheckingRootPermission = false) }
+            }
+        }
+    }
 
     fun performAction(action: ScreenHomeAction) {
         when (action) {
@@ -28,6 +53,14 @@ class ScreenHomeViewModel(
             is ScreenHomeAction.OnAppBackupUnavailableDialogDismissed -> {
                 preferences.setShouldShowAppBackupUnavailable(false)
                 _state.update { it.copy(shouldShowAppBackupUnavailableDialog = false) }
+            }
+            is ScreenHomeAction.OnRootSwitchToggled -> {
+                if (action.enabled) {
+                    checkRootPermission(onToggleRequest = true)
+                } else {
+                    preferences.setSuperuserPermissionPreviouslyGranted(false)
+                    _state.update { it.copy(isRootEnabled = false) }
+                }
             }
         }
     }

@@ -19,10 +19,14 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
@@ -49,6 +53,9 @@ fun ScreenHome(
         },
         onBackupSelected = onBackupSelected,
         onRestoreSelected = onRestoreSelected,
+        onRootSwitchToggled = { enabled ->
+            viewModel.performAction(ScreenHomeAction.OnRootSwitchToggled(enabled))
+        },
     )
 }
 
@@ -60,8 +67,11 @@ private fun Content(
     onAppBackupUnavailableDialogDismissed: () -> Unit,
     onBackupSelected: () -> Unit,
     onRestoreSelected: () -> Unit,
+    onRootSwitchToggled: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showRootFeaturesDialog by remember { mutableStateOf(false) }
+
     if (state.shouldShowAboutDialog) {
         AboutDialog(
             onDismissRequest = onAboutDialogDismissed
@@ -84,6 +94,15 @@ private fun Content(
                     Text(stringResource(android.R.string.ok))
                 }
             }
+        )
+    }
+
+    if (showRootFeaturesDialog) {
+        RootFeaturesDialog(
+            isRootEnabled = state.isRootEnabled,
+            isCheckingRootPermission = state.isCheckingRootPermission,
+            onDismissRequest = { showRootFeaturesDialog = false },
+            onRootSwitchToggled = onRootSwitchToggled,
         )
     }
 
@@ -112,6 +131,15 @@ private fun Content(
             ButtonRestore(
                 onClick = onRestoreSelected,
             )
+            TextButton(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                onClick = { showRootFeaturesDialog = true },
+            ) {
+                Text(
+                    text = stringResource(R.string.setup_root_features),
+                    textDecoration = TextDecoration.Underline,
+                )
+            }
         }
     }
 }

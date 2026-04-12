@@ -13,6 +13,9 @@
     <string name="about">About</string>
     <string name="app_backup_currently_unavailable">App backup is currently unavailable.</string>
     <string name="app_backup_currently_unavailable_description">App backup (for rooted users) is being worked on and will be made available in a future release.</string>
+    <string name="setup_root_features">Setup root features</string>
+    <string name="root_features_dialog_message">Migrate can backup apps and data if you have rooted the device.\nIf disabled, all root features will be bypassed.</string>
+    <string name="root_features">Root features</string>
 
     <!--AboutDialog.kt-->
     <string name="app_version">Version: %s</string>
@@ -264,4 +267,5 @@
     <string name="proceed">Proceed</string>
     <string name="setup">Setup</string>
     <string name="change">Change</string>
+    <string name="close">Close</string>
 </resources>
