@@ -16,7 +16,6 @@ class ScreenHomeViewModel(
 
     private val _state = MutableStateFlow(
         ScreenHomeState(
-            shouldShowAppBackupUnavailableDialog = preferences.shouldShowAppBackupUnavailable(),
             isRootEnabled = preferences.wasSuPermissionGranted(),
         )
     )
@@ -49,10 +48,6 @@ class ScreenHomeViewModel(
             }
             is ScreenHomeAction.OnAboutDialogDismissed -> {
                 _state.update { it.copy(shouldShowAboutDialog = false) }
-            }
-            is ScreenHomeAction.OnAppBackupUnavailableDialogDismissed -> {
-                preferences.setShouldShowAppBackupUnavailable(false)
-                _state.update { it.copy(shouldShowAppBackupUnavailableDialog = false) }
             }
             is ScreenHomeAction.OnRootSwitchToggled -> {
                 if (action.enabled) {
