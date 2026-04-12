@@ -26,7 +26,7 @@ class AppBackupSelectionViewModel(
 
     private val _state = MutableStateFlow(
         AppBackupSelectionState(
-            shouldSkipBackup = !preferences.wasSuperuserPermissionPreviouslyGranted()
+            shouldSkipBackup = !preferences.wasSuPermissionGranted()
         )
     )
     val state = _state.asStateFlow()
@@ -40,7 +40,7 @@ class AppBackupSelectionViewModel(
 
             // If Superuser check failed, ask for superuser permission only if it was previously granted
             // and don't load anything else
-            if (preferences.wasSuperuserPermissionPreviouslyGranted()
+            if (preferences.wasSuPermissionGranted()
                 && superuserUtils.checkSuperuserPermission().isFailure) {
                 _state.update {
                     it.copy(shouldAskForSuperuserPermission = true)

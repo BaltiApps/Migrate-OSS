@@ -57,11 +57,11 @@ class AppInfoReader(
             isSystemApp = json.optBoolean(AppInfoConstants.KEY_IS_SYSTEM_APP),
             isUpdatedSystemApp = false,
 
-            shouldBackupApk = preferences.wasSuperuserPermissionPreviouslyGranted() &&
+            shouldBackupApk = preferences.wasSuPermissionGranted() &&
                     json.optBoolean(AppInfoConstants.KEY_APK),
-            shouldBackupData = preferences.wasSuperuserPermissionPreviouslyGranted() &&
+            shouldBackupData = preferences.wasSuPermissionGranted() &&
                     json.optBoolean(AppInfoConstants.KEY_DATA),
-            shouldBackupPermissions = preferences.wasSuperuserPermissionPreviouslyGranted() &&
+            shouldBackupPermissions = preferences.wasSuPermissionGranted() &&
                     json.optBoolean(AppInfoConstants.KEY_PERMISSIONS),
             
             installerName = json.optString(AppInfoConstants.KEY_INSTALLER),

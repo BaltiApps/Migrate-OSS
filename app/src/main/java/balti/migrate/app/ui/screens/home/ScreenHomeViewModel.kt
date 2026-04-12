@@ -17,13 +17,13 @@ class ScreenHomeViewModel(
     private val _state = MutableStateFlow(
         ScreenHomeState(
             shouldShowAppBackupUnavailableDialog = preferences.shouldShowAppBackupUnavailable(),
-            isRootEnabled = preferences.wasSuperuserPermissionPreviouslyGranted(),
+            isRootEnabled = preferences.wasSuPermissionGranted(),
         )
     )
     val state = _state.asStateFlow()
 
     init {
-        if (preferences.wasSuperuserPermissionPreviouslyGranted()) {
+        if (preferences.wasSuPermissionGranted()) {
             checkRootPermission()
         }
     }
@@ -33,10 +33,10 @@ class ScreenHomeViewModel(
             _state.update { it.copy(isCheckingRootPermission = true) }
             val result = superuserUtils.checkSuperuserPermission()
             if (result.isSuccess) {
-                preferences.setSuperuserPermissionPreviouslyGranted(true)
+                preferences.setWasSuPermissionGranted(true)
                 _state.update { it.copy(isRootEnabled = true, isCheckingRootPermission = false) }
             } else {
-                preferences.setSuperuserPermissionPreviouslyGranted(false)
+                preferences.setWasSuPermissionGranted(false)
                 _state.update { it.copy(isRootEnabled = false, isCheckingRootPermission = false) }
             }
         }
@@ -58,7 +58,7 @@ class ScreenHomeViewModel(
                 if (action.enabled) {
                     checkRootPermission(onToggleRequest = true)
                 } else {
-                    preferences.setSuperuserPermissionPreviouslyGranted(false)
+                    preferences.setWasSuPermissionGranted(false)
                     _state.update { it.copy(isRootEnabled = false) }
                 }
             }

@@ -136,11 +136,11 @@ class PreferencesImpl(
         editor.apply()
     }
 
-    override fun wasSuperuserPermissionPreviouslyGranted(): Boolean {
+    override fun wasSuPermissionGranted(): Boolean {
         return sharedPreferences.getBoolean(Preferences.KEY_SUPERUSER_PERMISSION_ASKED, false)
     }
 
-    override fun setSuperuserPermissionPreviouslyGranted(wasGranted: Boolean) {
+    override fun setWasSuPermissionGranted(wasGranted: Boolean) {
         editor.putBoolean(Preferences.KEY_SUPERUSER_PERMISSION_ASKED, wasGranted)
         editor.apply()
     }

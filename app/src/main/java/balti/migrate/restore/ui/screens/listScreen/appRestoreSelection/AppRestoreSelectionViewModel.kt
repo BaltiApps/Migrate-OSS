@@ -26,7 +26,7 @@ class AppRestoreSelectionViewModel(
 
     private val _state = MutableStateFlow(
         AppRestoreSelectionState(
-            shouldSkipRestore = !preferences.wasSuperuserPermissionPreviouslyGranted()
+            shouldSkipRestore = !preferences.wasSuPermissionGranted()
         )
     )
     val state = _state.asStateFlow()
@@ -40,7 +40,7 @@ class AppRestoreSelectionViewModel(
 
             // If Superuser check failed, ask for superuser permission only if it was previously granted
             // and don't load anything else
-            if (preferences.wasSuperuserPermissionPreviouslyGranted()
+            if (preferences.wasSuPermissionGranted()
                 && superuserUtils.checkSuperuserPermission().isFailure
             ) {
                 _state.update {

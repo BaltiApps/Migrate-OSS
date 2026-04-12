@@ -38,7 +38,7 @@ class SetupPermissionScreenViewModel(
                     } ?: true,
             )
         }
-        if (preferences.wasSuperuserPermissionPreviouslyGranted()) {
+        if (preferences.wasSuPermissionGranted()) {
             refreshSuperuserPermission()
         }
     }
@@ -49,7 +49,7 @@ class SetupPermissionScreenViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isAskingSuperuserPermission = true) }
             val isSuGranted = superuserUtils.checkSuperuserPermission()
-            preferences.setSuperuserPermissionPreviouslyGranted(isSuGranted.isSuccess)
+            preferences.setWasSuPermissionGranted(isSuGranted.isSuccess)
             if (isSuGranted.isFailure) {
                 onSuError?.invoke(isSuGranted.exceptionOrNull()?.message ?: "Unknown error")
             }

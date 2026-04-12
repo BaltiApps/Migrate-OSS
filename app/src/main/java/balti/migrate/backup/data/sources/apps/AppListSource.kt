@@ -79,9 +79,9 @@ class AppListSource(
                     isSystemApp = (app.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
                     isUpdatedSystemApp = (app.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0,
 
-                    shouldBackupApk = preferences.wasSuperuserPermissionPreviouslyGranted(),
-                    shouldBackupData = preferences.wasSuperuserPermissionPreviouslyGranted(),
-                    shouldBackupPermissions = preferences.wasSuperuserPermissionPreviouslyGranted(),
+                    shouldBackupApk = preferences.wasSuPermissionGranted(),
+                    shouldBackupData = preferences.wasSuPermissionGranted(),
+                    shouldBackupPermissions = preferences.wasSuPermissionGranted(),
 
                     installerName = installerName ?: AppBackupConstants.NULL_MARKER,
 
