@@ -159,7 +159,21 @@ class BackupNameViewModel(
             BackupNameAction.DismissNoSpaceDialog -> {
                 _state.update { it.copy(shouldShowNoSpaceDialog = false) }
             }
+            BackupNameAction.ShowAppSizesDialog -> {
+                _state.update { it.copy(shouldShowAppSizesDialog = true) }
+            }
+            BackupNameAction.DismissAppSizesDialog -> {
+                _state.update { it.copy(shouldShowAppSizesDialog = false) }
+            }
         }
+    }
+
+    fun getAppName(packageName: String): String {
+        return backupDataRepository.stagedApps
+            .find { it._id == packageName }
+            ?.toListItem()
+            ?.appName
+            ?: packageName
     }
 
     private fun startBackup(startBackupMethod: (BackupLocation) -> Unit) {

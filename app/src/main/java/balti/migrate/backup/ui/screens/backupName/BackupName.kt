@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
+import balti.migrate.common.ui.components.AppSizesDialog
 import balti.migrate.common.ui.components.ButtonStatus
 import balti.migrate.common.ui.components.LoadingDialog
 import balti.migrate.common.ui.components.LocationSelector
@@ -75,6 +76,13 @@ fun BackupName(
         onDismissNoSpaceDialog = {
             viewModel.onAction(BackupNameAction.DismissNoSpaceDialog)
         },
+        onShowAppSizesDialog = {
+            viewModel.onAction(BackupNameAction.ShowAppSizesDialog)
+        },
+        onDismissAppSizesDialog = {
+            viewModel.onAction(BackupNameAction.DismissAppSizesDialog)
+        },
+        getAppName = viewModel::getAppName,
         onCancelSpaceCalculation = {
             viewModel.onAction(BackupNameAction.CancelSpaceCalculation)
         },
@@ -90,6 +98,9 @@ private fun Content(
     onBackupNameChanged: (String) -> Unit,
     onUriSelectClicked: () -> Unit,
     onDismissNoSpaceDialog: () -> Unit,
+    onShowAppSizesDialog: () -> Unit,
+    onDismissAppSizesDialog: () -> Unit,
+    getAppName: (packageName: String) -> String,
     onCancelSpaceCalculation: () -> Unit,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
@@ -107,6 +118,13 @@ private fun Content(
         )
     }
 
+    if (state().shouldShowAppSizesDialog) {
+        AppSizesDialog(
+            appSizeInfos = state().appSizes,
+            onDismiss = onDismissAppSizesDialog,
+            getAppName = getAppName,
+        )
+    }
     if (state().shouldShowNoSpaceDialog) {
         SimpleYesNoDialog(
             titleText = stringResource(R.string.insufficient_storage_title),
@@ -118,7 +136,10 @@ private fun Content(
             positiveButtonLabel = stringResource(R.string.see_sizes),
             negativeButtonLabel = stringResource(android.R.string.cancel),
             icon = Icons.Outlined.Storage,
-            onPositiveButton = {  },
+            onPositiveButton = {
+                onDismissNoSpaceDialog()
+                onShowAppSizesDialog()
+            },
             onNegativeButton = onDismissNoSpaceDialog,
         )
     }
