@@ -161,6 +161,10 @@ fun Graph(
                 composable<RouteAppBackup> {
                     AppBackupSelection(
                         navigateUp = navController::navigateUp,
+                        skipAndGoToNextScreen = {
+                            navController.popBackStack()
+                            navController.navigate(RouteContactBackup)
+                        },
                         goToNextScreen = {
                             navController.navigate(RouteContactBackup)
                         }
@@ -260,6 +264,10 @@ fun Graph(
                         navigateUp = {
                             viewModel.onBackFromRoute()
                             navController.navigateUp()
+                        },
+                        skipAndGoToNextScreen = {
+                            navController.popBackStack()
+                            navController.navigate(viewModel.findNextRoute())
                         },
                         goToNextScreen = {
                             navController.navigate(viewModel.findNextRoute())

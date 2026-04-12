@@ -25,6 +25,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun AppRestoreSelection(
     navigateUp: () -> Unit,
+    skipAndGoToNextScreen: () -> Unit,
     goToNextScreen: () -> Unit,
     viewModel: AppRestoreSelectionViewModel = koinViewModel()
 ) {
@@ -62,6 +63,7 @@ fun AppRestoreSelection(
         onAllPermissionToggled = {
             viewModel.performAction(AppRestoreSelectionAction.ToggleAllAppItemsPermissionSelection(it))
         },
+        skipAndGoToNextScreen = skipAndGoToNextScreen,
         onNext = {
             viewModel.performAction(AppRestoreSelectionAction.StageAppItems(goToNextScreen))
         },
@@ -83,10 +85,11 @@ private fun Content(
     onAllApkToggled: (Boolean) -> Unit,
     onAllDataToggled: (Boolean) -> Unit,
     onAllPermissionToggled: (Boolean) -> Unit,
+    skipAndGoToNextScreen: () -> Unit,
     onNext: () -> Unit,
 ) {
     if (state().shouldSkipRestore) {
-        onNext()
+        skipAndGoToNextScreen()
         return
     }
 

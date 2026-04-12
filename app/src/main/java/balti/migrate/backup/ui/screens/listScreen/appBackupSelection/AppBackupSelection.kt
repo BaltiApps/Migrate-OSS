@@ -34,6 +34,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun AppBackupSelection(
     navigateUp: () -> Unit,
+    skipAndGoToNextScreen: () -> Unit,
     goToNextScreen: () -> Unit,
     viewModel: AppBackupSelectionViewModel = koinViewModel(),
 ) {
@@ -74,6 +75,7 @@ fun AppBackupSelection(
         onFilterChanged = {
             viewModel.performAction(AppBackupSelectionAction.UpdateFilterSelection(it))
         },
+        skipAndGoToNextScreen = skipAndGoToNextScreen,
         onNext = {
             viewModel.performAction(AppBackupSelectionAction.StageAppItems(goToNextScreen))
         },
@@ -95,10 +97,11 @@ private fun Content(
     onAllDataToggled: (Boolean) -> Unit,
     onAllPermissionToggled: (Boolean) -> Unit,
     onFilterChanged: (AppFilterSelection) -> Unit,
+    skipAndGoToNextScreen: () -> Unit,
     onNext: () -> Unit,
 ) {
     if (state().shouldSkipBackup) {
-        onNext()
+        skipAndGoToNextScreen()
         return
     }
 
