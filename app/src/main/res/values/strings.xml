@@ -266,4 +266,12 @@
     <string name="setup">Setup</string>
     <string name="change">Change</string>
     <string name="close">Close</string>
+    <string name="save">Save</string>
+
+    <!--extra options-->
+    <string name="extra_options">Extra options</string>
+    <string name="external_data">External data</string>
+    <string name="external_data_description">Data and Media stored in /sdcard/Android/. Only for apps which are selected for data backup.</string>
+    <string name="data">Data</string>
+    <string name="media">Media</string>
 </resources>

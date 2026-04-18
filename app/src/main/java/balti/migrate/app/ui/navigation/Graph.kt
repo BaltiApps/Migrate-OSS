@@ -2,6 +2,8 @@ package balti.migrate.app.ui.navigation
 
 import android.widget.Toast
 import androidx.activity.compose.LocalActivity
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
@@ -29,6 +31,8 @@ import balti.migrate.backup.ui.screens.backupName.BackupName
 import balti.migrate.backup.ui.screens.listScreen.appBackupSelection.AppBackupSelection
 import balti.migrate.backup.ui.screens.listScreen.callLogBackupSelection.CallLogBackupSelection
 import balti.migrate.backup.ui.screens.listScreen.contactBackupSelection.ContactBackupSelection
+import balti.migrate.backup.ui.screens.listScreen.extraOptions.ExtraOptionsScreen
+import balti.migrate.backup.ui.screens.listScreen.extraOptions.externalData.ExternalDataScreen
 import balti.migrate.backup.ui.screens.listScreen.smsBackupSelection.SmsBackupSelection
 import balti.migrate.backup.ui.screens.progressScreen.BackupProgressScreen
 import balti.migrate.common.utils.DeepLinkUtils
@@ -166,8 +170,29 @@ fun Graph(
                             navController.navigate(RouteContactBackup)
                         },
                         goToNextScreen = {
-                            navController.navigate(RouteContactBackup)
+                            navController.navigate(RouteExtraOptions)
                         }
+                    )
+                }
+                composable<RouteExtraOptions> {
+                    ExtraOptionsScreen(
+                        navigateUp = navController::navigateUp,
+                        goToNextScreen = {
+                            navController.navigate(RouteContactBackup)
+                        },
+                        goToExternalDataScreen = {
+                            navController.navigate(RouteExternalDataScreen)
+                        },
+                    )
+                }
+                composable<RouteExternalDataScreen>(
+                    enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                    exitTransition = { slideOutHorizontally(targetOffsetX = { it }) },
+                    popEnterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                    popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) },
+                ) {
+                    ExternalDataScreen(
+                        navigateOnSave = navController::navigateUp,
                     )
                 }
                 composable<RouteContactBackup> {
@@ -346,6 +371,12 @@ object RouteSmsBackup
 
 @Serializable
 object RouteAppBackup
+
+@Serializable
+object RouteExtraOptions
+
+@Serializable
+object RouteExternalDataScreen
 
 @Serializable
 object RouteContactBackup
