@@ -27,6 +27,7 @@ import baltiapps.migrate.domain.INTERNAL_ROUGH_WORK_BACKUP_DIRECTORY
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.BackupAppsInfoUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupAppsUseCase
+import baltiapps.migrate.domain.backup.usecase.BackupExternalDataUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
@@ -62,6 +63,7 @@ class BackupService : LifecycleService() {
 
     private val backupAppsInfoUseCase: BackupAppsInfoUseCase by inject()
     private val backupAppsUseCase: BackupAppsUseCase by inject()
+    private val backupExternalDataUseCase: BackupExternalDataUseCase by inject()
 
     private val preferences: Preferences by inject()
 
@@ -203,6 +205,17 @@ class BackupService : LifecycleService() {
             )
 
             Timber.i("backup - finished - apps")
+
+            Timber.i("backup - start - external data")
+
+            serviceUtils.runStage(
+                shouldRun = repository::shouldBackupExternalData,
+                stageBody = { backupExternalDataUseCase.invoke(backupDestinationAbsolutePath) },
+                progressType = Progress.ProgressType.EXTERNAL_DATA_BACKUP,
+                errorMessage = { "External data backup exception: ${it.message}" },
+            )
+
+            Timber.i("backup - finished - external data")
 
             Timber.i("backup - exporting backup")
 

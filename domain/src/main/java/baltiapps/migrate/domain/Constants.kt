@@ -105,6 +105,8 @@ class AppInfoConstants {
         const val KEY_DATA_SIZE_BYTES = "dataSizeBytes"
         const val KEY_PERMISSIONS = "permissions"
         const val KEY_INSTALLER = "installer"
+        const val KEY_EXTERNAL_DATA = "externalData"
+        const val KEY_EXTERNAL_MEDIA = "externalMedia"
     }
 }
 

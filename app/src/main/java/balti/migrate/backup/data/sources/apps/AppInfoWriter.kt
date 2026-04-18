@@ -32,6 +32,8 @@ class AppInfoWriter: TextWriter<AppData> {
             put(AppInfoConstants.KEY_DATA_SIZE_BYTES, data.dataSizeBytes)
             put(AppInfoConstants.KEY_PERMISSIONS, data.shouldBackupPermissions)
             put(AppInfoConstants.KEY_INSTALLER, data.installerName)
+            put(AppInfoConstants.KEY_EXTERNAL_DATA, data.shouldBackupExternalData)
+            put(AppInfoConstants.KEY_EXTERNAL_MEDIA, data.shouldBackupExternalMedia)
         }
 
         file.writeText(json.toString(4))
