@@ -36,7 +36,8 @@ data class AppData(
 
     val apkSizeBytes: Long = 0,
     val dataSizeBytes: Long = 0,
-    val externalDataMediaBytes: Long = 0,
+    val externalDataBytes: Long = 0,
+    val externalMediaBytes: Long = 0,
 
     override val logInfo: String,
 

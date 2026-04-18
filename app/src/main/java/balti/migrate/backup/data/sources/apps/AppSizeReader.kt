@@ -61,21 +61,23 @@ class AppSizeReader(
                     parentSuperuserShell = suShell,
                     endMarker = AppBackupConstants.END_MARKER,
                     onProgress = { log ->
-                        // Expected format: package_name:APK:bytes:DATA:bytes:EXTERNAL:bytes
+                        // Expected format: package_name:APK:bytes:DATA:bytes:EXTERNAL_DATA:bytes:EXTERNAL_MEDIA:bytes
                         log.split(":")
-                            .takeIf { it.size == 7 && it[1] == "APK" && it[3] == "DATA" && it[5] == "EXTERNAL" }
+                            .takeIf { it.size == 9 && it[1] == "APK" && it[3] == "DATA" && it[5] == "EXTERNAL_DATA" && it[7] == "EXTERNAL_MEDIA" }
                             ?.let { parts ->
                                 val packageName = parts[0]
                                 val apkStr = parts[2]
                                 val dataStr = parts[4]
-                                val externalStr = parts[6]
+                                val externalDataStr = parts[6]
+                                val externalMediaStr = parts[8]
                                 if (packageName == dataItem.packageName) {
                                     sizes.add(
                                         AppSizeInfo(
                                             packageName = packageName,
                                             bytesApk = apkStr.toLongOrNull() ?: 0L,
                                             bytesData = dataStr.toLongOrNull() ?: 0L,
-                                            bytesExternalDataMedia = externalStr.toLongOrNull() ?: 0L,
+                                            bytesExternalData = externalDataStr.toLongOrNull() ?: 0L,
+                                            bytesExternalMedia = externalMediaStr.toLongOrNull() ?: 0L,
                                         )
                                     )
                                 }

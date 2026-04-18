@@ -17,7 +17,8 @@ print_end_marker() {
 
 apk_bytes=0
 data_bytes=0
-external_bytes=0
+external_data_bytes=0
+external_media_bytes=0
 
 # Calculate APK size
 if [ "$APK_PATH_BASE" != "$NULL_MARKER" ] && [ -d "$APK_PATH_BASE" ]; then
@@ -40,7 +41,7 @@ fi
 if [ "$EXTERNAL_DATA_PATH" != "$NULL_MARKER" ] && [ -d "$EXTERNAL_DATA_PATH" ]; then
   ext_data_size=$(du -sb "$EXTERNAL_DATA_PATH" 2>/dev/null | awk '{print $1}')
   if [ -n "$ext_data_size" ]; then
-    external_bytes=$(awk "BEGIN {print $external_bytes + $ext_data_size}")
+    external_data_bytes=$ext_data_size
   fi
 fi
 
@@ -48,10 +49,10 @@ fi
 if [ "$EXTERNAL_MEDIA_PATH" != "$NULL_MARKER" ] && [ -d "$EXTERNAL_MEDIA_PATH" ]; then
   ext_media_size=$(du -sb "$EXTERNAL_MEDIA_PATH" 2>/dev/null | awk '{print $1}')
   if [ -n "$ext_media_size" ]; then
-    external_bytes=$(awk "BEGIN {print $external_bytes + $ext_media_size}")
+    external_media_bytes=$ext_media_size
   fi
 fi
 
-echo "$PACKAGE_NAME:APK:$apk_bytes:DATA:$data_bytes:EXTERNAL:$external_bytes"
+echo "$PACKAGE_NAME:APK:$apk_bytes:DATA:$data_bytes:EXTERNAL_DATA:$external_data_bytes:EXTERNAL_MEDIA:$external_media_bytes"
 
 print_end_marker

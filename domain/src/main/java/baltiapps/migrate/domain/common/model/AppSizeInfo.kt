@@ -4,12 +4,13 @@ data class AppSizeInfo(
     val packageName: String,
     val bytesApk: Long,
     val bytesData: Long,
-    val bytesExternalDataMedia: Long,
+    val bytesExternalData: Long,
+    val bytesExternalMedia: Long,
 
     override val _id: String = packageName,
     override val logInfo: String = packageName,
 ): DataItem<Nothing> {
-    val bytesTotal: Long get() = bytesApk + bytesData + bytesExternalDataMedia
+    val bytesTotal: Long get() = bytesApk + bytesData + bytesExternalData + bytesExternalMedia
 
     override fun toListItem(): Nothing {
         throw UnsupportedOperationException("AppSizeInfo does not support toListItem()")
