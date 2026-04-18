@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ExternalDataViewModel(
     private val backupDataRepository: BackupDataRepository,
@@ -109,7 +110,10 @@ class ExternalDataViewModel(
             }
 
             is ExternalDataAction.Save -> {
-                // TODO
+                _state.update { it.copy(isStaging = true) }
+                updateStagedApps.invoke(_state.value.appListItems, backupDataRepository)
+                _state.update { it.copy(isStaging = false) }
+                withContext(Dispatchers.Main) { action.onSaved() }
             }
         }
     }
