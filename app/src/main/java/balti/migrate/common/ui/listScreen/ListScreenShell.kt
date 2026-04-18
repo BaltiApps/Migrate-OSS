@@ -72,7 +72,7 @@ fun ListScreenShell(
                     onNext
                 )
 
-                listState.isLoading -> ListLoadingLayout(listState.progress)
+                listState.isLoading -> ListLoadingLayout(listState.progress, onSkip = onNext)
                 listState.hasNoData -> ListNoDataLayout(
                     title = listState.customNoDataMessage
                 )
@@ -136,15 +136,14 @@ private fun BottomBar(
     onNext: () -> Unit,
     nextButtonCustomLabel: String? = null,
 ) {
-    val shouldShowSkip = !hasPermission || isLoading || hasNoData
+    val shouldHideActions = !hasPermission || isLoading || hasNoData
     val nextButtonLabel = when {
         nextButtonCustomLabel != null -> nextButtonCustomLabel
-        shouldShowSkip -> stringResource(R.string.skip)
         else -> stringResource(R.string.next)
     }
     BottomAppBar(
         actions = {
-            if (!shouldShowSkip && onSelectAll != null) {
+            if (!shouldHideActions && onSelectAll != null) {
                 IconButton(
                     modifier = Modifier
                         .padding(4.dp)
@@ -157,7 +156,7 @@ private fun BottomBar(
                     )
                 }
             }
-            if (!shouldShowSkip && onDeselectAll != null) {
+            if (!shouldHideActions && onDeselectAll != null) {
                 IconButton(
                     modifier = Modifier
                         .padding(4.dp)
@@ -172,12 +171,12 @@ private fun BottomBar(
             }
         },
         floatingActionButton = {
-            val buttonStatus = if (isStaging) {
-                ButtonStatus.Loading(nextButtonLabel) {}
-            } else ButtonStatus.Unspecified(nextButtonLabel, onNext)
-            NextFab(
-                buttonStatus = buttonStatus
-            )
+            val buttonStatus = when {
+                isLoading -> ButtonStatus.Disabled(nextButtonLabel)
+                isStaging -> ButtonStatus.Loading(nextButtonLabel) {}
+                else -> ButtonStatus.Unspecified(nextButtonLabel, onNext)
+            }
+            NextFab(buttonStatus = buttonStatus)
         }
     )
 }
