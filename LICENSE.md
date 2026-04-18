@@ -1,4 +1,4 @@
-# License for "Migrate - Data Backup]"
+# License for "Migrate - Data Backup"
 
 Copyright © BaltiApps
 
