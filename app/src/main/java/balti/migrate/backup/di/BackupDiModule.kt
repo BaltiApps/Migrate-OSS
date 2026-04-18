@@ -15,8 +15,8 @@ import balti.migrate.backup.data.sources.sms.SmsBackupEngine
 import balti.migrate.backup.data.sources.sms.SmsSource
 import balti.migrate.backup.ui.screens.backupName.BackupNameViewModel
 import balti.migrate.backup.ui.screens.listScreen.appBackupSelection.AppBackupSelectionViewModel
-import balti.migrate.backup.ui.screens.listScreen.extraOptions.ExtraOptionsViewModel
-import balti.migrate.backup.ui.screens.listScreen.extraOptions.externalData.ExternalDataViewModel
+import balti.migrate.backup.ui.screens.listScreen.extraOptions.ExtraBackupOptionsViewModel
+import balti.migrate.backup.ui.screens.listScreen.extraOptions.externalData.ExternalDataBackupSelectionViewModel
 import balti.migrate.backup.ui.screens.listScreen.callLogBackupSelection.CallLogBackupSelectionViewModel
 import balti.migrate.backup.ui.screens.listScreen.contactBackupSelection.ContactBackupSelectionViewModel
 import balti.migrate.backup.ui.screens.listScreen.smsBackupSelection.SmsBackupSelectionViewModel
@@ -213,8 +213,8 @@ val backupDiModule = module {
     viewModelOf(::CallLogBackupSelectionViewModel)
     viewModelOf(::SmsBackupSelectionViewModel)
     viewModelOf(::AppBackupSelectionViewModel)
-    viewModelOf(::ExtraOptionsViewModel)
-    viewModelOf(::ExternalDataViewModel)
+    viewModelOf(::ExtraBackupOptionsViewModel)
+    viewModelOf(::ExternalDataBackupSelectionViewModel)
     viewModelOf(::BackupNameViewModel)
     viewModel {
         BackupProgressScreenViewModel(

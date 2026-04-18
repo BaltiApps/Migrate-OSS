@@ -17,17 +17,17 @@ import baltiapps.migrate.domain.common.model.Progress
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ExtraOptionsScreen(
+fun ExtraBackupOptionsScreen(
     navigateUp: () -> Unit,
     goToNextScreen: () -> Unit,
     goToExternalDataScreen: () -> Unit,
-    viewModel: ExtraOptionsViewModel = koinViewModel(),
+    viewModel: ExtraBackupOptionsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ObserveLifecycle { event ->
         if (event == Lifecycle.Event.ON_RESUME) {
-            viewModel.performAction(ExtraOptionsAction.RefreshCounts)
+            viewModel.performAction(ExtraBackupOptionsAction.RefreshCounts)
         }
     }
 
@@ -41,7 +41,7 @@ fun ExtraOptionsScreen(
 
 @Composable
 private fun Content(
-    state: () -> ExtraOptionsState,
+    state: () -> ExtraBackupOptionsState,
     navigateUp: () -> Unit,
     goToNextScreen: () -> Unit,
     goToExternalDataScreen: () -> Unit,

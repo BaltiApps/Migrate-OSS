@@ -9,16 +9,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ExtraOptionsViewModel(
+class ExtraBackupOptionsViewModel(
     private val backupDataRepository: BackupDataRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ExtraOptionsState())
+    private val _state = MutableStateFlow(ExtraBackupOptionsState())
     val state = _state.asStateFlow()
 
-    fun performAction(action: ExtraOptionsAction) = viewModelScope.launch(Dispatchers.Default) {
+    fun performAction(action: ExtraBackupOptionsAction) = viewModelScope.launch(Dispatchers.Default) {
         when (action) {
-            ExtraOptionsAction.RefreshCounts -> {
+            ExtraBackupOptionsAction.RefreshCounts -> {
                 _state.update { it.copy(isLoading = true) }
                 val eligible = backupDataRepository.stagedApps.filter { it.toListItem().isDataSelected }
                 val selected = eligible.count {

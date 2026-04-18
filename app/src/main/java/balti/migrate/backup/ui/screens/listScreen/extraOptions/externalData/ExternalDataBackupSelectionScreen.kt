@@ -23,36 +23,36 @@ import baltiapps.migrate.domain.common.model.Progress
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ExternalDataScreen(
+fun ExternalDataBackupSelectionScreen(
     navigateOnSave: () -> Unit,
-    viewModel: ExternalDataViewModel = koinViewModel(),
+    viewModel: ExternalDataBackupSelectionViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     Content(
         state = { state },
         navigateOnSave = navigateOnSave,
-        onSelectAll = { viewModel.performAction(ExternalDataAction.ToggleAllBoth(true)) },
-        onDeselectAll = { viewModel.performAction(ExternalDataAction.ToggleAllBoth(false)) },
-        onExternalDataToggled = { viewModel.performAction(ExternalDataAction.ToggleExternalData(it)) },
-        onExternalMediaToggled = { viewModel.performAction(ExternalDataAction.ToggleExternalMedia(it)) },
+        onSelectAll = { viewModel.performAction(ExternalDataBackupSelectionAction.ToggleAllBoth(true)) },
+        onDeselectAll = { viewModel.performAction(ExternalDataBackupSelectionAction.ToggleAllBoth(false)) },
+        onExternalDataToggled = { viewModel.performAction(ExternalDataBackupSelectionAction.ToggleExternalData(it)) },
+        onExternalMediaToggled = { viewModel.performAction(ExternalDataBackupSelectionAction.ToggleExternalMedia(it)) },
         onAllExternalDataToggled = {
             viewModel.performAction(
-                ExternalDataAction.ToggleAllExternalData(it)
+                ExternalDataBackupSelectionAction.ToggleAllExternalData(it)
             )
         },
         onAllExternalMediaToggled = {
             viewModel.performAction(
-                ExternalDataAction.ToggleAllExternalMedia(it)
+                ExternalDataBackupSelectionAction.ToggleAllExternalMedia(it)
             )
         },
-        onRowClicked = { viewModel.performAction(ExternalDataAction.ToggleItemBoth(it)) },
-        onSave = { viewModel.performAction(ExternalDataAction.Save(navigateOnSave)) },
+        onRowClicked = { viewModel.performAction(ExternalDataBackupSelectionAction.ToggleItemBoth(it)) },
+        onSave = { viewModel.performAction(ExternalDataBackupSelectionAction.Save(navigateOnSave)) },
     )
 }
 
 @Composable
 private fun Content(
-    state: () -> ExternalDataState,
+    state: () -> ExternalDataBackupSelectionState,
     navigateOnSave: () -> Unit,
     onSelectAll: () -> Unit,
     onDeselectAll: () -> Unit,

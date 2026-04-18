@@ -12,12 +12,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ExternalDataViewModel(
+class ExternalDataBackupSelectionViewModel(
     private val backupDataRepository: BackupDataRepository,
     private val updateStagedApps: UpdateStagedApps,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ExternalDataState())
+    private val _state = MutableStateFlow(ExternalDataBackupSelectionState())
     val state = _state.asStateFlow()
 
     init {
@@ -48,19 +48,19 @@ class ExternalDataViewModel(
         }
     }
 
-    fun performAction(action: ExternalDataAction) = viewModelScope.launch(Dispatchers.Default) {
+    fun performAction(action: ExternalDataBackupSelectionAction) = viewModelScope.launch(Dispatchers.Default) {
         when (action) {
-            is ExternalDataAction.ToggleExternalData -> {
+            is ExternalDataBackupSelectionAction.ToggleExternalData -> {
                 replaceItem(action.item.copy(isExternalDataSelected = !action.item.isExternalDataSelected))
                 updateAllSelectedStates()
             }
 
-            is ExternalDataAction.ToggleExternalMedia -> {
+            is ExternalDataBackupSelectionAction.ToggleExternalMedia -> {
                 replaceItem(action.item.copy(isExternalMediaSelected = !action.item.isExternalMediaSelected))
                 updateAllSelectedStates()
             }
 
-            is ExternalDataAction.ToggleItemBoth -> action.item.run {
+            is ExternalDataBackupSelectionAction.ToggleItemBoth -> action.item.run {
                 val isBothSelected = isExternalDataSelected && isExternalMediaSelected
                 replaceItem(
                     copy(
@@ -71,7 +71,7 @@ class ExternalDataViewModel(
                 updateAllSelectedStates()
             }
 
-            is ExternalDataAction.ToggleAllExternalData -> {
+            is ExternalDataBackupSelectionAction.ToggleAllExternalData -> {
                 val newItems =
                     _state.value.appListItems.map { it.copy(isExternalDataSelected = action.isChecked) }
                 _state.update {
@@ -82,7 +82,7 @@ class ExternalDataViewModel(
                 }
             }
 
-            is ExternalDataAction.ToggleAllExternalMedia -> {
+            is ExternalDataBackupSelectionAction.ToggleAllExternalMedia -> {
                 val newItems =
                     _state.value.appListItems.map { it.copy(isExternalMediaSelected = action.isChecked) }
                 _state.update {
@@ -93,7 +93,7 @@ class ExternalDataViewModel(
                 }
             }
 
-            is ExternalDataAction.ToggleAllBoth -> {
+            is ExternalDataBackupSelectionAction.ToggleAllBoth -> {
                 val newItems = _state.value.appListItems.map {
                     it.copy(
                         isExternalDataSelected = action.isChecked,
@@ -109,7 +109,7 @@ class ExternalDataViewModel(
                 }
             }
 
-            is ExternalDataAction.Save -> {
+            is ExternalDataBackupSelectionAction.Save -> {
                 _state.update { it.copy(isStaging = true) }
                 updateStagedApps.invoke(_state.value.appListItems, backupDataRepository)
                 _state.update { it.copy(isStaging = false) }

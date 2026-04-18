@@ -31,8 +31,8 @@ import balti.migrate.backup.ui.screens.backupName.BackupName
 import balti.migrate.backup.ui.screens.listScreen.appBackupSelection.AppBackupSelection
 import balti.migrate.backup.ui.screens.listScreen.callLogBackupSelection.CallLogBackupSelection
 import balti.migrate.backup.ui.screens.listScreen.contactBackupSelection.ContactBackupSelection
-import balti.migrate.backup.ui.screens.listScreen.extraOptions.ExtraOptionsScreen
-import balti.migrate.backup.ui.screens.listScreen.extraOptions.externalData.ExternalDataScreen
+import balti.migrate.backup.ui.screens.listScreen.extraOptions.ExtraBackupOptionsScreen
+import balti.migrate.backup.ui.screens.listScreen.extraOptions.externalData.ExternalDataBackupSelectionScreen
 import balti.migrate.backup.ui.screens.listScreen.smsBackupSelection.SmsBackupSelection
 import balti.migrate.backup.ui.screens.progressScreen.BackupProgressScreen
 import balti.migrate.common.utils.DeepLinkUtils
@@ -175,7 +175,7 @@ fun Graph(
                     )
                 }
                 composable<RouteExtraOptions> {
-                    ExtraOptionsScreen(
+                    ExtraBackupOptionsScreen(
                         navigateUp = navController::navigateUp,
                         goToNextScreen = {
                             navController.navigate(RouteContactBackup)
@@ -191,7 +191,7 @@ fun Graph(
                     popEnterTransition = { slideInHorizontally(initialOffsetX = { it }) },
                     popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) },
                 ) {
-                    ExternalDataScreen(
+                    ExternalDataBackupSelectionScreen(
                         navigateOnSave = navController::navigateUp,
                     )
                 }
