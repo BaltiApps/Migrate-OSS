@@ -10,6 +10,9 @@ class AppDataItemAppSizeInfoExtractorImpl: AppDataItemAppSizeInfoExtractor<AppDa
             packageName = appDataItem.packageName,
             bytesApk = appDataItem.apkSizeBytes.takeIf { appDataItem.shouldBackupApk } ?: 0L,
             bytesData = appDataItem.dataSizeBytes.takeIf { appDataItem.shouldBackupData } ?: 0L,
+            bytesExternalDataMedia = appDataItem.externalDataMediaBytes.takeIf {
+                appDataItem.shouldBackupExternalData
+            } ?: 0L
         )
     }
 }

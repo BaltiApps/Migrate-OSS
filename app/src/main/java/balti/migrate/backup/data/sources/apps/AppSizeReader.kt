@@ -61,16 +61,21 @@ class AppSizeReader(
                     parentSuperuserShell = suShell,
                     endMarker = AppBackupConstants.END_MARKER,
                     onProgress = { log ->
-                        // Expected format: package_name:APK:bytes:DATA:bytes
+                        // Expected format: package_name:APK:bytes:DATA:bytes:EXTERNAL:bytes
                         log.split(":")
-                            .takeIf { it.size == 5 && it[1] == "APK" && it[3] == "DATA" }
-                            ?.let { (packageName, _, apkStr, _, dataStr) ->
+                            .takeIf { it.size == 7 && it[1] == "APK" && it[3] == "DATA" && it[5] == "EXTERNAL" }
+                            ?.let { parts ->
+                                val packageName = parts[0]
+                                val apkStr = parts[2]
+                                val dataStr = parts[4]
+                                val externalStr = parts[6]
                                 if (packageName == dataItem.packageName) {
                                     sizes.add(
                                         AppSizeInfo(
                                             packageName = packageName,
                                             bytesApk = apkStr.toLongOrNull() ?: 0L,
                                             bytesData = dataStr.toLongOrNull() ?: 0L,
+                                            bytesExternalDataMedia = externalStr.toLongOrNull() ?: 0L,
                                         )
                                     )
                                 }
@@ -99,6 +104,8 @@ class AppSizeReader(
                         appData.packageName,
                         if (appData.shouldBackupApk) appData.apkPathBase else AppBackupConstants.NULL_MARKER,
                         if (appData.shouldBackupData) appData.dataPath else AppBackupConstants.NULL_MARKER,
+                        if (appData.shouldBackupExternalData) "/sdcard/Android/data/${appData.packageName}" else AppBackupConstants.NULL_MARKER,
+                        if (appData.shouldBackupExternalMedia) "/sdcard/Android/media/${appData.packageName}" else AppBackupConstants.NULL_MARKER,
                         AppBackupConstants.NULL_MARKER,
                         AppBackupConstants.END_MARKER,
                     )

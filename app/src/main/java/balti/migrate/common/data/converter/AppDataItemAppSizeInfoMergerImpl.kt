@@ -12,6 +12,7 @@ class AppDataItemAppSizeInfoMergerImpl: AppDataItemAppSizeInfoMerger<AppData> {
         return appDataItem.copy(
             apkSizeBytes = appSizeInfo?.bytesApk ?: 0L,
             dataSizeBytes = appSizeInfo?.bytesData ?: 0L,
+            externalDataMediaBytes = appSizeInfo?.bytesExternalDataMedia ?: 0L,
         )
     }
 }

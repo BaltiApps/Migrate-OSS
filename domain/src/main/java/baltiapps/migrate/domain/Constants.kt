@@ -107,6 +107,7 @@ class AppInfoConstants {
         const val KEY_INSTALLER = "installer"
         const val KEY_EXTERNAL_DATA = "externalData"
         const val KEY_EXTERNAL_MEDIA = "externalMedia"
+        const val KEY_EXTERNAL_BYTES = "externalDataMediaBytes"
     }
 }
 
