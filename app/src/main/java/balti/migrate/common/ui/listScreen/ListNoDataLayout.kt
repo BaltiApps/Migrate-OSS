@@ -1,6 +1,5 @@
 package balti.migrate.common.ui.listScreen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +33,7 @@ fun ListNoDataLayout(
         ),
     ) {
         val dim = 0.75f
-        Image(
+        Icon(
             imageVector = Icons.Outlined.Info,
             contentDescription = null,
             modifier = Modifier.size(36.dp).alpha(dim),
