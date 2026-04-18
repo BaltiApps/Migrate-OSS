@@ -27,6 +27,9 @@ data class AppData(
     val shouldBackupData: Boolean = true,
     val shouldBackupPermissions: Boolean = true,
 
+    val shouldBackupExternalData: Boolean = false,
+    val shouldBackupExternalMedia: Boolean = false,
+
     val installerName: String,
 
     val user: Int,
@@ -57,6 +60,9 @@ data class AppData(
             isApkEnabled = shouldBackupApk,
             isDataEnabled = shouldBackupData,
             isPermissionsEnabled = shouldBackupPermissions,
+
+            isExternalDataSelected = shouldBackupExternalData,
+            isExternalMediaSelected = shouldBackupExternalMedia,
 
             isSystemApp = isSystemApp,
             isUpdatedSystemApp = isUpdatedSystemApp,

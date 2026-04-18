@@ -17,6 +17,12 @@ class BackupDataRepository: DataRepository() {
         return stagedApps.isNotEmpty()
     }
 
+    fun shouldBackupExternalData(): Boolean {
+        return stagedApps.any {
+            it.toListItem().isExternalDataSelected || it.toListItem().isExternalMediaSelected
+        }
+    }
+
     fun shouldBackupAnything(): Boolean {
         return (shouldBackupContacts() || shouldBackupCallLogs() || shouldBackupSms() || shouldBackupApps())
     }

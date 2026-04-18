@@ -24,6 +24,7 @@ data class Progress(
         APP_LIST_READ,
         APP_INFO_BACKUP,
         APP_BACKUP,
+        EXTERNAL_DATA_BACKUP,
         APP_SIZE_READ,
         EXPORTING_BACKUP,
         BACKUP_FINISHED,

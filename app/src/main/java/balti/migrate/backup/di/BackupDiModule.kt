@@ -2,6 +2,7 @@ package balti.migrate.backup.di
 
 import balti.migrate.backup.data.sources.BackupNotificationHandlerImpl
 import balti.migrate.backup.data.sources.apps.AppBackupEngine
+import balti.migrate.backup.data.sources.apps.ExternalDataBackupEngine
 import balti.migrate.backup.data.sources.apps.AppIconWriter
 import balti.migrate.backup.data.sources.apps.AppInfoWriter
 import balti.migrate.backup.data.sources.apps.AppListSource
@@ -14,6 +15,8 @@ import balti.migrate.backup.data.sources.sms.SmsBackupEngine
 import balti.migrate.backup.data.sources.sms.SmsSource
 import balti.migrate.backup.ui.screens.backupName.BackupNameViewModel
 import balti.migrate.backup.ui.screens.listScreen.appBackupSelection.AppBackupSelectionViewModel
+import balti.migrate.backup.ui.screens.listScreen.extraOptions.ExtraOptionsViewModel
+import balti.migrate.backup.ui.screens.listScreen.extraOptions.externalData.ExternalDataViewModel
 import balti.migrate.backup.ui.screens.listScreen.callLogBackupSelection.CallLogBackupSelectionViewModel
 import balti.migrate.backup.ui.screens.listScreen.contactBackupSelection.ContactBackupSelectionViewModel
 import balti.migrate.backup.ui.screens.listScreen.smsBackupSelection.SmsBackupSelectionViewModel
@@ -28,6 +31,7 @@ import baltiapps.migrate.domain.backup.sources.BackupEngine
 import baltiapps.migrate.domain.backup.sources.DataSource
 import baltiapps.migrate.domain.backup.usecase.BackupAppsInfoUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupAppsUseCase
+import baltiapps.migrate.domain.backup.usecase.BackupExternalDataUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
@@ -35,7 +39,9 @@ import baltiapps.migrate.domain.backup.usecase.ReadAppListForBackupUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadCallLogForBackupUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadContactsForBackupUseCase
 import baltiapps.migrate.domain.backup.usecase.ReadSmsForBackupUseCase
+import baltiapps.migrate.domain.common.model.AppListItem
 import baltiapps.migrate.domain.common.model.AppSizeInfo
+import baltiapps.migrate.domain.common.model.DataItem
 import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
@@ -55,6 +61,7 @@ enum class Names {
     DB_WRITER_CALL_LOG,
     DB_WRITER_SMS,
     APP_BACKUP_ENGINE,
+    APP_EXTERNAL_DATA_BACKUP_ENGINE,
     APP_ICON_WRITER,
     APP_INFO_WRITER,
     APP_SIZE_READER,
@@ -98,6 +105,12 @@ val backupDiModule = module {
 
     single<BackupEngine<AppData>>(named(Names.APP_BACKUP_ENGINE)) {
         AppBackupEngine(
+            applicationContext = get(),
+            superuserUtils = get(),
+        )
+    }
+    single<BackupEngine<DataItem<AppListItem>>>(named(Names.APP_EXTERNAL_DATA_BACKUP_ENGINE)) {
+        ExternalDataBackupEngine(
             applicationContext = get(),
             superuserUtils = get(),
         )
@@ -182,6 +195,12 @@ val backupDiModule = module {
         )
     }
     single {
+        BackupExternalDataUseCase(
+            externalDataBackupEngine = get(named(Names.APP_EXTERNAL_DATA_BACKUP_ENGINE)),
+            dataRepository = get(),
+        )
+    }
+    single {
         CalculateStagedAppsSizesUseCase(
             backupDataRepository = get(),
             appSizeReader = get(named(Names.APP_SIZE_READER)),
@@ -194,6 +213,8 @@ val backupDiModule = module {
     viewModelOf(::CallLogBackupSelectionViewModel)
     viewModelOf(::SmsBackupSelectionViewModel)
     viewModelOf(::AppBackupSelectionViewModel)
+    viewModelOf(::ExtraOptionsViewModel)
+    viewModelOf(::ExternalDataViewModel)
     viewModelOf(::BackupNameViewModel)
     viewModel {
         BackupProgressScreenViewModel(
