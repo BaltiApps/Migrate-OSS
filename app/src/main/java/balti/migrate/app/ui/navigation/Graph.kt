@@ -41,6 +41,7 @@ import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDire
 import balti.migrate.restore.ui.screens.listScreen.appRestoreSelection.AppRestoreSelection
 import balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection.CallLogRestoreSelection
 import balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection.ContactRestoreSelection
+import balti.migrate.restore.ui.screens.listScreen.externalDataRestoreSelection.ExternalDataRestoreSelectionScreen
 import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestoreSelection
 import balti.migrate.restore.ui.screens.progressScreen.RestoreProgressScreen
 import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummary
@@ -242,8 +243,7 @@ fun Graph(
                     BrowseRestoreDirectory(
                         navigateUp = navController::navigateUp,
                         onBackupSelected = {
-                            viewModel.resetRestorePointer()
-                            navController.navigate(viewModel.findNextRoute())
+                            navController.navigate(viewModel.findNextRoute(null))
                         }
                     )
                 }
@@ -251,11 +251,10 @@ fun Graph(
                     val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
                     CallLogRestoreSelection(
                         navigateUp = {
-                            viewModel.onBackFromRoute()
                             navController.navigateUp()
                         },
                         goToNextScreen = {
-                            navController.navigate(viewModel.findNextRoute())
+                            navController.navigate(viewModel.findNextRoute(RouteCallLogRestoreSelection))
                         }
                     )
                 }
@@ -263,11 +262,10 @@ fun Graph(
                     val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
                     SmsRestoreSelection(
                         navigateUp = {
-                            viewModel.onBackFromRoute()
                             navController.navigateUp()
                         },
                         goToNextScreen = {
-                            navController.navigate(viewModel.findNextRoute())
+                            navController.navigate(viewModel.findNextRoute(RouteSmsRestoreSelection))
                         }
                     )
                 }
@@ -275,11 +273,10 @@ fun Graph(
                     val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
                     ContactRestoreSelection(
                         navigateUp = {
-                            viewModel.onBackFromRoute()
                             navController.navigateUp()
                         },
                         goToNextScreen = {
-                            navController.navigate(viewModel.findNextRoute())
+                            navController.navigate(viewModel.findNextRoute(RouteContactRestoreSelection))
                         }
                     )
                 }
@@ -287,23 +284,20 @@ fun Graph(
                     val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
                     AppRestoreSelection(
                         navigateUp = {
-                            viewModel.onBackFromRoute()
                             navController.navigateUp()
                         },
                         skipAndGoToNextScreen = {
                             navController.popBackStack()
-                            navController.navigate(viewModel.findNextRoute())
+                            navController.navigate(viewModel.findNextRoute(RouteAppRestoreSelection))
                         },
                         goToNextScreen = {
-                            navController.navigate(viewModel.findNextRoute())
+                            navController.navigate(viewModel.findNextRoute(RouteAppRestoreSelection))
                         }
                     )
                 }
                 composable<RouteRestoreSummary> {
-                    val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
                     RestoreSummary(
                         navigateUp = {
-                            viewModel.onBackFromRoute()
                             navController.navigateUp()
                         },
                         startRestoreServiceAndGoToNextScreen = {
@@ -407,6 +401,9 @@ object RouteContactRestoreSelection
 
 @Serializable
 object RouteAppRestoreSelection
+
+@Serializable
+object RouteExternalDataRestoreScreen
 
 @Serializable
 object RouteRestoreSummary
