@@ -37,6 +37,9 @@ class AppInfoReader(
         val packageName = json.optString(AppInfoConstants.KEY_PACKAGE_NAME)
         val appName = json.optString(AppInfoConstants.KEY_APP_NAME)
 
+        val externalDataBytes = json.optLong(AppInfoConstants.KEY_EXTERNAL_DATA_BYTES)
+        val externalMediaBytes = json.optLong(AppInfoConstants.KEY_EXTERNAL_MEDIA_BYTES)
+
         val appData = AppData(
             packageName = packageName,
             appName = appName,
@@ -63,13 +66,21 @@ class AppInfoReader(
                     json.optBoolean(AppInfoConstants.KEY_DATA),
             shouldBackupPermissions = preferences.wasSuPermissionGranted() &&
                     json.optBoolean(AppInfoConstants.KEY_PERMISSIONS),
-            
+            shouldBackupExternalData = preferences.wasSuPermissionGranted() &&
+                    json.optBoolean(AppInfoConstants.KEY_EXTERNAL_DATA) &&
+                    externalDataBytes > 0L,
+            shouldBackupExternalMedia = preferences.wasSuPermissionGranted() &&
+                    json.optBoolean(AppInfoConstants.KEY_EXTERNAL_MEDIA) &&
+                    externalMediaBytes > 0L,
+
             installerName = json.optString(AppInfoConstants.KEY_INSTALLER),
 
             user = 0, // TODO: find way to pass the actual user
 
             apkSizeBytes = json.optLong(AppInfoConstants.KEY_APK_SIZE_BYTES),
             dataSizeBytes = json.optLong(AppInfoConstants.KEY_DATA_SIZE_BYTES),
+            externalDataBytes = externalDataBytes,
+            externalMediaBytes = externalMediaBytes,
 
             logInfo = "$appName : ($packageName)"
         )

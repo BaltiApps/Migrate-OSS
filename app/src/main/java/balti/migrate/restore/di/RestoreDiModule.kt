@@ -11,6 +11,7 @@ import balti.migrate.restore.data.sources.RestoreNotificationHandlerImpl
 import balti.migrate.restore.data.sources.apps.AppIconReader
 import balti.migrate.restore.data.sources.apps.AppInfoReader
 import balti.migrate.restore.data.sources.apps.AppRestoreEngine
+import balti.migrate.restore.data.sources.apps.ExternalDataRestoreEngine
 import balti.migrate.restore.data.sources.apps.InternalStorageSpaceReaderImpl
 import balti.migrate.restore.data.sources.callLog.CallLogRestoreEngine
 import balti.migrate.restore.data.sources.callLog.CallLogRestoreReader
@@ -41,6 +42,7 @@ import baltiapps.migrate.domain.restore.usecase.ReadContactsForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.ReadSmsForRestoreUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreAppsUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreCallLogUseCase
+import baltiapps.migrate.domain.restore.usecase.RestoreExternalDataUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreSmsUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
@@ -58,6 +60,7 @@ enum class Names {
     APP_ICON_READER,
     APP_INFO_READER,
     APP_RESTORE_ENGINE,
+    EXTERNAL_DATA_RESTORE_ENGINE,
     PROGRESS_LOG_REPOSITORY_RESTORE,
     NOTIFICATION_HANDLER_RESTORE,
 }
@@ -89,6 +92,12 @@ val restoreDiModule = module {
     }
     single<RestoreEngine<AppData>>(named(Names.APP_RESTORE_ENGINE)) {
         AppRestoreEngine(
+            applicationContext = get(),
+            superuserUtils = get(),
+        )
+    }
+    single<RestoreEngine<AppData>>(named(Names.EXTERNAL_DATA_RESTORE_ENGINE)) {
+        ExternalDataRestoreEngine(
             applicationContext = get(),
             superuserUtils = get(),
         )
@@ -159,6 +168,13 @@ val restoreDiModule = module {
         RestoreAppsUseCase(
             fileSystemSource = get(),
             appRestoreEngine = get(named(Names.APP_RESTORE_ENGINE)),
+            dataRepository = get(),
+        )
+    }
+    single {
+        RestoreExternalDataUseCase(
+            fileSystemSource = get(),
+            externalDataRestoreEngine = get(named(Names.EXTERNAL_DATA_RESTORE_ENGINE)),
             dataRepository = get(),
         )
     }

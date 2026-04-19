@@ -38,6 +38,7 @@ data class Progress(
         SMS_RESTORE,
         APP_INFO_READ,
         APP_RESTORE,
+        EXTERNAL_DATA_RESTORE,
         RESTORE_FINISHED,
         RESTORE_FINISHED_WITH_ERRORS,
         RESTORE_CANCELLED,

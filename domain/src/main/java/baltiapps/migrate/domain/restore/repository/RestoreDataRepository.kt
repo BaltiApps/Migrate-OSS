@@ -28,6 +28,20 @@ class RestoreDataRepository: DataRepository() {
         return stagedApps.isNotEmpty()
     }
 
+    fun shouldOpenExternalDataSelectionScreen(): Boolean {
+        return stagedApps.any {
+            val listItem = it.toListItem()
+            listItem.isDataSelected && (listItem.isExternalDataEnabled || listItem.isExternalMediaEnabled)
+        }
+    }
+
+    fun shouldRestoreExternalData(): Boolean {
+        return stagedApps.any {
+            val listItem = it.toListItem()
+            listItem.isDataSelected && (listItem.isExternalDataSelected || listItem.isExternalMediaSelected)
+        }
+    }
+
     fun shouldRestoreAnything(): Boolean {
         return (shouldRestoreContacts() || shouldRestoreCallLogs() || shouldRestoreSms() || shouldRestoreApps())
     }

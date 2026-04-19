@@ -22,6 +22,7 @@ import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import baltiapps.migrate.domain.restore.usecase.RestoreAppsUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreCallLogUseCase
+import baltiapps.migrate.domain.restore.usecase.RestoreExternalDataUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreSmsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -42,6 +43,7 @@ class RestoreService: LifecycleService() {
     private val restoreCallLogUseCase: RestoreCallLogUseCase by inject()
     private val restoreSmsUseCase: RestoreSmsUseCase by inject()
     private val restoreAppsUseCase: RestoreAppsUseCase by inject()
+    private val restoreExternalDataUseCase: RestoreExternalDataUseCase by inject()
 
     private val preferences: Preferences by inject()
 
@@ -129,6 +131,21 @@ class RestoreService: LifecycleService() {
             }
 
             Timber.i("restore - finished - apps")
+
+            Timber.i("restore - start - external data")
+
+            if (exportDirectory != null) {
+                serviceUtils.runStage(
+                    shouldRun = { repository.shouldRestoreExternalData() },
+                    stageBody = { restoreExternalDataUseCase.invoke(exportDirectory) },
+                    progressType = Progress.ProgressType.EXTERNAL_DATA_RESTORE,
+                    errorMessage = { "External data restore exception: ${it.message}" },
+                )
+            } else {
+                Timber.e("Restore external data failed: export directory is null")
+            }
+
+            Timber.i("restore - finished - external data")
 
             serviceUtils.emitHeadingLog(Progress.ProgressType.RESTORE_FINISHED)
 
