@@ -59,12 +59,15 @@ data class AppData(
             isDataSelected = shouldBackupData,
             isPermissionsSelected = shouldBackupPermissions,
 
-            isApkEnabled = shouldBackupApk,
-            isDataEnabled = shouldBackupData,
-            isPermissionsEnabled = shouldBackupPermissions,
+            isApkEnabled = apkSizeBytes != 0L,
+            isDataEnabled = dataSizeBytes != 0L,
+            isPermissionsEnabled = grantedPermissionList.isNotEmpty(),
 
             isExternalDataSelected = shouldBackupExternalData,
             isExternalMediaSelected = shouldBackupExternalMedia,
+
+            isExternalDataEnabled = externalDataBytes != 0L,
+            isExternalMediaEnabled = externalMediaBytes != 0L,
 
             isSystemApp = isSystemApp,
             isUpdatedSystemApp = isUpdatedSystemApp,
