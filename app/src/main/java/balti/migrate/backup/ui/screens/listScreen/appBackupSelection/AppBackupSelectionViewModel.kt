@@ -84,7 +84,7 @@ class AppBackupSelectionViewModel(
             it.copy(
                 areAllApksSelected = it.appListItems.all { it.isApkSelected },
                 areAllDataSelected = it.appListItems.all { it.isDataSelected },
-                areAllPermissionsSelected = it.appListItems.all { it.isPermissionsSelected },
+                areAllPermissionsSelected = it.appListItems.all { it.isPermissionsSelected || !it.isPermissionsEnabled },
             )
         }
     }
@@ -137,7 +137,7 @@ class AppBackupSelectionViewModel(
                 val newItem = copy(
                     isApkSelected = !isAllSelected,
                     isDataSelected = !isAllSelected,
-                    isPermissionsSelected = !isAllSelected,
+                    isPermissionsSelected = action.item.isPermissionsEnabled && !isAllSelected,
                 )
                 replaceAppItem(newItem)
                 updateStatesForAllApksAllDataAllPermissions()
@@ -166,7 +166,7 @@ class AppBackupSelectionViewModel(
             }
             is AppBackupSelectionAction.ToggleAllAppItemsPermissionSelection -> {
                 val newItems = state.value.appListItems.map {
-                    it.copy(isPermissionsSelected = action.isChecked)
+                    it.copy(isPermissionsSelected = it.isPermissionsEnabled && action.isChecked)
                 }
                 _state.update {
                     it.copy(
@@ -180,7 +180,7 @@ class AppBackupSelectionViewModel(
                     it.copy(
                         isApkSelected = action.isChecked,
                         isDataSelected = action.isChecked,
-                        isPermissionsSelected = action.isChecked,
+                        isPermissionsSelected = it.isPermissionsEnabled && action.isChecked,
                     )
                 }
                 _state.update {

@@ -47,6 +47,21 @@ class AppListSource(
                 val appName = pm.getApplicationLabel(app).toString()
                 val packageName = app.packageName
 
+                val grantedPermissions = packageInfoForPermissions.run {
+                    requestedPermissions?.mapIndexedNotNull { index, perm ->
+                        try {
+                            val pInfo = pm.getPermissionInfo(perm, 0)
+                            val isDangerous = pInfo.protection == PermissionInfo.PROTECTION_DANGEROUS
+                            val isGranted = requestedPermissionsFlags?.get(index)
+                                ?.and(PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0
+
+                            if (isDangerous && isGranted) perm else null
+                        } catch (e: PackageManager.NameNotFoundException) {
+                            null
+                        }
+                    } ?: emptyList()
+                }
+
                 val appData = AppData(
                     packageName = packageName,
                     appName = appName,
@@ -58,20 +73,7 @@ class AppListSource(
                     apkPath = app.sourceDir,
                     dataPath = app.dataDir,
 
-                    grantedPermissionList = packageInfoForPermissions.run {
-                        requestedPermissions?.mapIndexedNotNull { index, perm ->
-                            try {
-                                val pInfo = pm.getPermissionInfo(perm, 0)
-                                val isDangerous = pInfo.protection == PermissionInfo.PROTECTION_DANGEROUS
-                                val isGranted = requestedPermissionsFlags?.get(index)
-                                    ?.and(PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0
-
-                                if (isDangerous && isGranted) perm else null
-                            } catch (e: PackageManager.NameNotFoundException) {
-                                null
-                            }
-                        } ?: emptyList()
-                    },
+                    grantedPermissionList = grantedPermissions,
 
                     uid = app.uid,
                     gid = app.uid,
@@ -81,9 +83,14 @@ class AppListSource(
 
                     shouldBackupApk = preferences.wasSuPermissionGranted(),
                     shouldBackupData = preferences.wasSuPermissionGranted(),
-                    shouldBackupPermissions = preferences.wasSuPermissionGranted(),
+                    shouldBackupPermissions = preferences.wasSuPermissionGranted() && grantedPermissions.isNotEmpty(),
 
                     installerName = installerName ?: AppBackupConstants.NULL_MARKER,
+
+                    apkSizeBytes = 1L,
+                    dataSizeBytes = 1L,
+                    externalDataBytes = 1L,
+                    externalMediaBytes = 1L,
 
                     user = 0, // TODO: find a way to store the proper user
 

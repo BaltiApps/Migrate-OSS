@@ -26,6 +26,22 @@ data class AppListItem(
     val isUpdatedSystemApp: Boolean,
 
 ): ListItem {
-    fun isAnySelected() = isApkSelected || isDataSelected || isPermissionsSelected
-    fun isAllSelected() = isApkSelected && isDataSelected && isPermissionsSelected
+    fun isAnySelected(): Boolean {
+        val variablesToConsider = mutableListOf<Boolean>()
+
+        if (isApkEnabled) variablesToConsider.add(isApkSelected)
+        if (isDataEnabled) variablesToConsider.add(isDataSelected)
+        if (isPermissionsEnabled) variablesToConsider.add(isPermissionsSelected)
+
+        return variablesToConsider.any { it }
+    }
+    fun isAllSelected(): Boolean {
+        val variablesToConsider = mutableListOf<Boolean>()
+
+        if (isApkEnabled) variablesToConsider.add(isApkSelected)
+        if (isDataEnabled) variablesToConsider.add(isDataSelected)
+        if (isPermissionsEnabled) variablesToConsider.add(isPermissionsSelected)
+
+        return variablesToConsider.isNotEmpty() && variablesToConsider.all { it }
+    }
 }
