@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.Sms
+import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,7 +28,7 @@ fun StandardRestore(
     state: RestoreSummaryState,
     modifier: Modifier = Modifier,
 ) {
-    if ((state.countCallLogs + state.countSms + state.countApps) <= 0) return
+    if ((state.countCallLogs + state.countSms + state.countApps + state.countExternalDataApps) <= 0) return
     Column(
         modifier = modifier.fillMaxWidth(),
     ) {
@@ -66,6 +67,14 @@ fun StandardRestore(
                 headlineStringRes = R.string.apps_to_restore,
                 count = state.countApps,
                 icon = IconSource.Vector(Icons.Outlined.Apps),
+                state = RestoreSummaryItemState.UNKNOWN,
+            )
+        }
+        if (state.countExternalDataApps > 0) {
+            SummaryItem(
+                headlineStringRes = R.string.external_data_to_restore,
+                count = state.countExternalDataApps,
+                icon = IconSource.Vector(Icons.Outlined.Storage),
                 state = RestoreSummaryItemState.UNKNOWN,
             )
         }

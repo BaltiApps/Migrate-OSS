@@ -71,6 +71,9 @@ class RestoreSummaryViewModel(
         val smsCount = restoreDataRepository.stagedSms.size
         val callLogCount = restoreDataRepository.stagedCallLogs.size
         val appCount = restoreDataRepository.stagedApps.size
+        val externalDataAppCount = restoreDataRepository.stagedApps.count {
+            it.toListItem().isExternalDataSelected || it.toListItem().isExternalMediaSelected
+        }
         _state.update {
             it.copy(
                 isInitialized = true,
@@ -78,6 +81,7 @@ class RestoreSummaryViewModel(
                 countCallLogs = callLogCount,
                 countSms = smsCount,
                 countApps = appCount,
+                countExternalDataApps = externalDataAppCount,
                 contactSummaryState = if (contactCount > 0) RestoreSummaryItemState.WAITING else RestoreSummaryItemState.UNKNOWN,
                 smsSummaryState = if (smsCount > 0) RestoreSummaryItemState.WAITING else RestoreSummaryItemState.UNKNOWN,
                 appsSummaryState = if (appCount > 0) RestoreSummaryItemState.WAITING else RestoreSummaryItemState.UNKNOWN,

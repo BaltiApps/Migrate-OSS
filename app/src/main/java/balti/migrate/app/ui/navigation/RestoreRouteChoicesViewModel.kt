@@ -12,6 +12,7 @@ class RestoreRouteChoicesViewModel(
         RouteSmsRestoreSelection to { dataRepository.getSmsBackupFile() != null },
         RouteContactRestoreSelection to { dataRepository.getContactBackupFile() != null },
         RouteAppRestoreSelection to { dataRepository.getAppInfoFiles().isNotEmpty() },
+        RouteExternalDataRestoreScreen to { dataRepository.shouldOpenExternalDataSelectionScreen() },
         RouteRestoreSummary to { true },
     )
 

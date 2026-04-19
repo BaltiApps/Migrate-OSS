@@ -22,6 +22,7 @@ import balti.migrate.restore.ui.screens.browseRestoreDirectory.BrowseRestoreDire
 import balti.migrate.restore.ui.screens.listScreen.appRestoreSelection.AppRestoreSelectionViewModel
 import balti.migrate.restore.ui.screens.listScreen.callLogRestoreSelection.CallLogRestoreSelectionViewModel
 import balti.migrate.restore.ui.screens.listScreen.contactRestoreSelection.ContactRestoreSelectionViewModel
+import balti.migrate.restore.ui.screens.listScreen.externalDataRestoreSelection.ExternalDataRestoreSelectionViewModel
 import balti.migrate.restore.ui.screens.listScreen.smsRestoreSelection.SmsRestoreSelectionViewModel
 import balti.migrate.restore.ui.screens.progressScreen.RestoreProgressScreenViewModel
 import balti.migrate.restore.ui.screens.restoreSummary.RestoreSummaryViewModel
@@ -196,6 +197,7 @@ val restoreDiModule = module {
     viewModelOf(::CallLogRestoreSelectionViewModel)
     viewModelOf(::SmsRestoreSelectionViewModel)
     viewModelOf(::AppRestoreSelectionViewModel)
+    viewModelOf(::ExternalDataRestoreSelectionViewModel)
     viewModelOf(::RestoreSummaryViewModel)
     viewModel {
         RestoreProgressScreenViewModel(

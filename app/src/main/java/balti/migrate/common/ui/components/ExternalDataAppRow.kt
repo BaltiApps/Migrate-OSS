@@ -48,12 +48,12 @@ fun ExternalDataAppRow(
         Checkbox(
             checked = item.isExternalDataSelected,
             onCheckedChange = { onExternalDataToggled(item) },
-            enabled = enabled,
+            enabled = enabled && item.isExternalDataEnabled,
         )
         Checkbox(
             checked = item.isExternalMediaSelected,
             onCheckedChange = { onExternalMediaToggled(item) },
-            enabled = enabled,
+            enabled = enabled && item.isExternalMediaEnabled,
         )
     }
 }

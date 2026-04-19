@@ -295,6 +295,17 @@ fun Graph(
                         }
                     )
                 }
+                composable<RouteExternalDataRestoreScreen> {
+                    val viewModel = it.getSharedViewModel<RestoreRouteChoicesViewModel>(navController)
+                    ExternalDataRestoreSelectionScreen(
+                        navigateUp = {
+                            navController.navigateUp()
+                        },
+                        goToNextScreen = {
+                            navController.navigate(viewModel.findNextRoute(RouteExternalDataRestoreScreen))
+                        },
+                    )
+                }
                 composable<RouteRestoreSummary> {
                     RestoreSummary(
                         navigateUp = {
