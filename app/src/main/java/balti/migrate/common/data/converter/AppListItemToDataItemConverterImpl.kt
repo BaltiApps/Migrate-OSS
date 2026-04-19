@@ -14,8 +14,8 @@ class AppListItemToDataItemConverterImpl(): AppListItemToDataItemConverter<AppDa
             shouldBackupApk = listItem.isApkSelected,
             shouldBackupData = listItem.isDataSelected,
             shouldBackupPermissions = listItem.isPermissionsSelected,
-            shouldBackupExternalData = listItem.isExternalDataSelected,
-            shouldBackupExternalMedia = listItem.isExternalMediaSelected,
+            shouldBackupExternalData = listItem.isDataSelected && listItem.isExternalDataSelected,
+            shouldBackupExternalMedia = listItem.isDataSelected && listItem.isExternalMediaSelected,
         )
     }
 
