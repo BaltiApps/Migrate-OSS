@@ -70,8 +70,8 @@ class ExternalDataRestoreSelectionViewModel(
                 val isBothSelected = isExternalDataSelected && isExternalMediaSelected
                 replaceItem(
                     copy(
-                        isExternalDataSelected = !isBothSelected,
-                        isExternalMediaSelected = !isBothSelected,
+                        isExternalDataSelected = isExternalDataEnabled && !isBothSelected,
+                        isExternalMediaSelected = isExternalMediaEnabled && !isBothSelected,
                     )
                 )
                 updateAllSelectedStates()
