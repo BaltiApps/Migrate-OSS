@@ -28,7 +28,13 @@ class ExternalDataRestoreSelectionViewModel(
         val items = restoreDataRepository.stagedApps
             .filter { it.toListItem().isExternalDataSelected || it.toListItem().isExternalMediaSelected }
             .map { it.toListItem() }
-        _state.update { it.copy(appListItems = items) }
+        _state.update {
+            it.copy(
+                appListItems = items,
+                shouldEnableExternalDataSelection = items.any { it.isExternalDataEnabled },
+                shouldEnableExternalMediaSelection = items.any { it.isExternalMediaEnabled },
+            )
+        }
         updateAllSelectedStates()
     }
 

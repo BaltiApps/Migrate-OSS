@@ -111,6 +111,8 @@ private fun Content(
                     areAllExternalMediaSelected = state().areAllExternalMediaSelected,
                     onAllExternalDataToggled = onAllExternalDataToggled,
                     onAllExternalMediaToggled = onAllExternalMediaToggled,
+                    shouldEnableExternalDataSelection = state().shouldEnableExternalDataSelection,
+                    shouldEnableExternalMediaSelection = state().shouldEnableExternalMediaSelection,
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.surfaceContainer)

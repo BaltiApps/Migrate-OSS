@@ -21,6 +21,8 @@ fun ExternalDataCountBar(
     onAllExternalDataToggled: (Boolean) -> Unit,
     onAllExternalMediaToggled: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    shouldEnableExternalDataSelection: Boolean = true,
+    shouldEnableExternalMediaSelection: Boolean = true,
 ) {
     Row(
         modifier = modifier,
@@ -34,12 +36,12 @@ fun ExternalDataCountBar(
         Checkbox(
             checked = areAllExternalDataSelected,
             onCheckedChange = onAllExternalDataToggled,
-            enabled = !isStaging && totalCount > 0,
+            enabled = !isStaging && shouldEnableExternalDataSelection,
         )
         Checkbox(
             checked = areAllExternalMediaSelected,
             onCheckedChange = onAllExternalMediaToggled,
-            enabled = !isStaging && totalCount > 0,
+            enabled = !isStaging && shouldEnableExternalMediaSelection,
         )
     }
 }

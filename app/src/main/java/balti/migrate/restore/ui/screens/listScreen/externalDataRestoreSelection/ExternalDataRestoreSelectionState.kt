@@ -7,4 +7,6 @@ data class ExternalDataRestoreSelectionState(
     val areAllExternalDataSelected: Boolean = false,
     val areAllExternalMediaSelected: Boolean = false,
     val isStaging: Boolean = false,
+    val shouldEnableExternalDataSelection: Boolean = true,
+    val shouldEnableExternalMediaSelection: Boolean = true,
 )
