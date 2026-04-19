@@ -23,4 +23,5 @@ data class AppBackupSelectionState(
         systemUpdate = false,
         userApps = true,
     ),
+    val isAllPermissionsCheckboxDisabled: Boolean = false,
 )

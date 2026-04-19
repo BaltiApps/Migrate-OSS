@@ -159,6 +159,7 @@ private fun Content(
                         onAllApkToggled = onAllApkToggled,
                         onAllDataToggled = onAllDataToggled,
                         onAllPermissionToggled = onAllPermissionToggled,
+                        shouldEnablePermissionSelection = !state().isAllPermissionsCheckboxDisabled,
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(MaterialTheme.colorScheme.surfaceContainer)

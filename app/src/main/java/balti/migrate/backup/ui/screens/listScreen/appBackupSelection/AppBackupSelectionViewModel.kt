@@ -54,6 +54,7 @@ class AppBackupSelectionViewModel(
                         progress = it.progress.copy(percentage = 1.0),
                         shouldAskForSuperuserPermission = false,
                         appListItems = backupDataRepository.appListItems,
+                        isAllPermissionsCheckboxDisabled = backupDataRepository.appListItems.none { app -> app.isPermissionsEnabled },
                     )
                 }
                 updateAppListWithFilter(
