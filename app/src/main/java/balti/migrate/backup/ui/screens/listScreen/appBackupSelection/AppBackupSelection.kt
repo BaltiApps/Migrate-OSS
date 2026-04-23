@@ -139,7 +139,7 @@ private fun Content(
         hasPermission = !state().shouldAskForSuperuserPermission,
         permissionDescription = stringResource(R.string.app_backup_permission_description),
         progress = state().progress,
-        hasNoData = state().appListItems.isEmpty(),
+        hasNoData = state().displayedAppListItems.isEmpty(),
         customNoDataMessage = if (state().showSearchBar) stringResource(R.string.no_app_found) else null,
         customNoDataDescription = if (state().showSearchBar) "" else null,
     )
@@ -177,7 +177,7 @@ private fun Content(
             modifier = Modifier.fillMaxSize()
         ) {
             stickyHeader {
-                val allItems = state().appListItems
+                val allItems = state().displayedAppListItems
                 val selectedItems = allItems.filter { it.isAnySelected() }
                 Column(modifier = Modifier.fillMaxWidth()) {
                     AppCountBar(
@@ -199,7 +199,7 @@ private fun Content(
                 }
             }
             items(
-                items = state().appListItems,
+                items = state().displayedAppListItems,
                 key = { it._id }
             ) { item ->
                 RenderAppListItem(

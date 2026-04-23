@@ -26,4 +26,5 @@ data class AppBackupSelectionState(
     val isAllPermissionsCheckboxDisabled: Boolean = false,
     val searchText: String = "",
     val showSearchBar: Boolean = false,
+    val displayedAppListItems: List<AppListItem> = emptyList(),
 )

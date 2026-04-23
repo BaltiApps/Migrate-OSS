@@ -59,8 +59,8 @@ class AppBackupSelectionViewModel(
                 }
                 updateAppListWithFilter(
                     selectionFilter = _state.value.filterSelection,
-                    searchText = null
                 )
+                applySearchFilter()
             }.collect {
                 _state.update { state ->
                     state.copy(
@@ -83,29 +83,63 @@ class AppBackupSelectionViewModel(
     private fun updateStatesForAllApksAllDataAllPermissions() {
         _state.update {
             it.copy(
-                areAllApksSelected = it.appListItems.all { it.isApkSelected },
-                areAllDataSelected = it.appListItems.all { it.isDataSelected },
-                areAllPermissionsSelected = it.appListItems.all { it.isPermissionsSelected || !it.isPermissionsEnabled },
+                areAllApksSelected = it.displayedAppListItems.all { it.isApkSelected },
+                areAllDataSelected = it.displayedAppListItems.all { it.isDataSelected },
+                areAllPermissionsSelected = it.displayedAppListItems.all { it.isPermissionsSelected || !it.isPermissionsEnabled },
             )
         }
     }
 
-    private fun updateAppListWithFilter(selectionFilter: AppFilterSelection, searchText: String?) {
+    private fun updateAppListWithFilter(selectionFilter: AppFilterSelection) {
         _state.update {
             it.copy(
                 appListItems = backupDataRepository.appListItems.filter { app ->
                     (selectionFilter.systemCore && app.isSystemApp && app.isUpdatedSystemApp.not()) ||
                     (selectionFilter.systemUpdate && app.isUpdatedSystemApp) ||
                     (selectionFilter.userApps && app.isSystemApp.not() && app.isUpdatedSystemApp.not())
-                }.filter { app ->
-                    searchText.isNullOrBlank() ||
-                            app.appName.contains(searchText) ||
-                            app._id.contains(searchText) ||
-                            app.versionName.contains(searchText)
                 }
             )
         }
         updateStatesForAllApksAllDataAllPermissions()
+    }
+
+    private fun applySearchFilter() {
+        val lowerSearch = _state.value.searchText.lowercase()
+        _state.update { state ->
+            state.copy(
+                displayedAppListItems = state.appListItems.filter {
+                    lowerSearch.isBlank() ||
+                            it.appName.lowercase().contains(lowerSearch) ||
+                            it._id.lowercase().contains(lowerSearch) ||
+                            it.versionName.lowercase().contains(lowerSearch)
+                }
+            )
+        }
+    }
+
+    private fun toggleAll(
+        apk: Boolean?,
+        data: Boolean?,
+        permissions: Boolean?,
+    ) {
+        val changedItems = state.value.displayedAppListItems.map {
+            it.copy(
+                isApkSelected = apk ?: it.isApkSelected,
+                isDataSelected = data ?: it.isDataSelected,
+                isPermissionsSelected = it.isPermissionsEnabled && permissions ?: it.isPermissionsSelected,
+            )
+        }
+        val merged = _state.value.appListItems.map { app ->
+            changedItems.find { it._id == app._id } ?: app
+        }
+        _state.update {
+            it.copy(
+                appListItems = merged,
+                areAllApksSelected = apk ?: it.areAllApksSelected,
+                areAllDataSelected = data ?: it.areAllDataSelected,
+                areAllPermissionsSelected = permissions ?: it.areAllPermissionsSelected,
+            )
+        }
     }
 
     fun performAction(action: AppBackupSelectionAction) = viewModelScope.launch(Dispatchers.Default) {
@@ -120,17 +154,14 @@ class AppBackupSelectionViewModel(
             is AppBackupSelectionAction.ToggleAppItemApkSelection -> {
                 val newItem = action.item.copy(isApkSelected = !action.item.isApkSelected)
                 replaceAppItem(newItem)
-                updateStatesForAllApksAllDataAllPermissions()
             }
             is AppBackupSelectionAction.ToggleAppItemDataSelection -> {
                 val newItem = action.item.copy(isDataSelected = !action.item.isDataSelected)
                 replaceAppItem(newItem)
-                updateStatesForAllApksAllDataAllPermissions()
             }
             is AppBackupSelectionAction.ToggleAppItemPermissionSelection -> {
                 val newItem = action.item.copy(isPermissionsSelected = !action.item.isPermissionsSelected)
                 replaceAppItem(newItem)
-                updateStatesForAllApksAllDataAllPermissions()
             }
             is AppBackupSelectionAction.ToggleEverythingForAnApp -> action.item.run {
                 // select all if some are selected and deselect all if all are deselected
@@ -141,57 +172,34 @@ class AppBackupSelectionViewModel(
                     isPermissionsSelected = action.item.isPermissionsEnabled && !isAllSelected,
                 )
                 replaceAppItem(newItem)
-                updateStatesForAllApksAllDataAllPermissions()
             }
             is AppBackupSelectionAction.ToggleAllAppItemsApkSelection -> {
-                val newItems = state.value.appListItems.map {
-                    it.copy(isApkSelected = action.isChecked)
-                }
-                _state.update {
-                    it.copy(
-                        appListItems = newItems,
-                        areAllApksSelected = action.isChecked,
-                    )
-                }
+                toggleAll(
+                    apk = action.isChecked,
+                    data = null,
+                    permissions = null,
+                )
             }
             is AppBackupSelectionAction.ToggleAllAppItemsDataSelection -> {
-                val newItems = state.value.appListItems.map {
-                    it.copy(isDataSelected = action.isChecked)
-                }
-                _state.update {
-                    it.copy(
-                        appListItems = newItems,
-                        areAllDataSelected = action.isChecked,
-                    )
-                }
+                toggleAll(
+                    apk = null,
+                    data = action.isChecked,
+                    permissions = null,
+                )
             }
             is AppBackupSelectionAction.ToggleAllAppItemsPermissionSelection -> {
-                val newItems = state.value.appListItems.map {
-                    it.copy(isPermissionsSelected = it.isPermissionsEnabled && action.isChecked)
-                }
-                _state.update {
-                    it.copy(
-                        appListItems = newItems,
-                        areAllPermissionsSelected = action.isChecked,
-                    )
-                }
+                toggleAll(
+                    apk = null,
+                    data = null,
+                    permissions = action.isChecked,
+                )
             }
             is AppBackupSelectionAction.ToggleAllAppItems -> {
-                val newItems = state.value.appListItems.map {
-                    it.copy(
-                        isApkSelected = action.isChecked,
-                        isDataSelected = action.isChecked,
-                        isPermissionsSelected = it.isPermissionsEnabled && action.isChecked,
-                    )
-                }
-                _state.update {
-                    it.copy(
-                        appListItems = newItems,
-                        areAllApksSelected = action.isChecked,
-                        areAllDataSelected = action.isChecked,
-                        areAllPermissionsSelected = action.isChecked,
-                    )
-                }
+                toggleAll(
+                    apk = action.isChecked,
+                    data = action.isChecked,
+                    permissions = action.isChecked,
+                )
             }
             is AppBackupSelectionAction.StageAppItems -> {
                 _state.update { it.copy(isStaging = true) }
@@ -205,27 +213,20 @@ class AppBackupSelectionViewModel(
                 _state.update { it.copy(filterSelection = action.filterSelection) }
                 updateAppListWithFilter(
                     selectionFilter = action.filterSelection,
-                    searchText = _state.value.searchText,
                 )
             }
             is AppBackupSelectionAction.UpdateSearchText -> {
                 _state.update { it.copy(searchText = action.searchText) }
-                updateAppListWithFilter(
-                    selectionFilter = _state.value.filterSelection,
-                    searchText = action.searchText,
-                )
             }
             AppBackupSelectionAction.ToggleSearchBar -> {
                 val nowVisible = !_state.value.showSearchBar
                 _state.update { it.copy(showSearchBar = nowVisible) }
                 if (!nowVisible) {
                     _state.update { it.copy(searchText = "") }
-                    updateAppListWithFilter(
-                        selectionFilter = _state.value.filterSelection,
-                        searchText = null,
-                    )
                 }
             }
         }
+        applySearchFilter()
+        updateStatesForAllApksAllDataAllPermissions()
     }
 }
