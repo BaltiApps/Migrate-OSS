@@ -162,14 +162,16 @@ private fun Content(
             }
         },
         topBarActions = {
-            IconButton(onClick = { showFilterDialog = true }) {
-                Icon(imageVector = Icons.Default.FilterList, contentDescription = null)
-            }
-            IconButton(onClick = onToggleSearchBar) {
-                Icon(
-                    imageVector = if (state().showSearchBar) Icons.Default.Close else Icons.Default.Search,
-                    contentDescription = null,
-                )
+            if (!listState.isLoading) {
+                IconButton(onClick = { showFilterDialog = true }) {
+                    Icon(imageVector = Icons.Default.FilterList, contentDescription = null)
+                }
+                IconButton(onClick = onToggleSearchBar) {
+                    Icon(
+                        imageVector = if (state().showSearchBar) Icons.Default.Close else Icons.Default.Search,
+                        contentDescription = null,
+                    )
+                }
             }
         }
     ) {
