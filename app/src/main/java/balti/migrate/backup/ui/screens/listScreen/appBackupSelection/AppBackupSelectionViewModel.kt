@@ -205,8 +205,26 @@ class AppBackupSelectionViewModel(
                 _state.update { it.copy(filterSelection = action.filterSelection) }
                 updateAppListWithFilter(
                     selectionFilter = action.filterSelection,
-                    searchText = null,
+                    searchText = _state.value.searchText,
                 )
+            }
+            is AppBackupSelectionAction.UpdateSearchText -> {
+                _state.update { it.copy(searchText = action.searchText) }
+                updateAppListWithFilter(
+                    selectionFilter = _state.value.filterSelection,
+                    searchText = action.searchText,
+                )
+            }
+            AppBackupSelectionAction.ToggleSearchBar -> {
+                val nowVisible = !_state.value.showSearchBar
+                _state.update { it.copy(showSearchBar = nowVisible) }
+                if (!nowVisible) {
+                    _state.update { it.copy(searchText = "") }
+                    updateAppListWithFilter(
+                        selectionFilter = _state.value.filterSelection,
+                        searchText = null,
+                    )
+                }
             }
         }
     }

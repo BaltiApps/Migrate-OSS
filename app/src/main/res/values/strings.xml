@@ -267,6 +267,8 @@
     <string name="setup">Setup</string>
     <string name="change">Change</string>
     <string name="close">Close</string>
+    <string name="search_apps">Search apps</string>
+    <string name="no_app_found">No app found</string>
     <string name="save">Save</string>
 
     <!--extra options-->

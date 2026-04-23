@@ -1,5 +1,7 @@
 package balti.migrate.backup.ui.screens.listScreen.appBackupSelection
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
@@ -26,6 +29,7 @@ import balti.migrate.R
 import balti.migrate.backup.ui.screens.listScreen.appBackupSelection.components.AppSelectionFilterDialog
 import balti.migrate.common.ui.components.AppCountBar
 import balti.migrate.common.ui.components.RenderAppListItem
+import balti.migrate.common.ui.components.SearchBar
 import balti.migrate.common.ui.listScreen.ListScreenShell
 import balti.migrate.common.ui.listScreen.ListState
 import baltiapps.migrate.domain.common.model.AppListItem
@@ -39,6 +43,9 @@ fun AppBackupSelection(
     viewModel: AppBackupSelectionViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    BackHandler(enabled = state.showSearchBar) {
+        viewModel.performAction(AppBackupSelectionAction.ToggleSearchBar)
+    }
     Content(
         state = { state },
         navigateUp = navigateUp,
@@ -75,6 +82,12 @@ fun AppBackupSelection(
         onFilterChanged = {
             viewModel.performAction(AppBackupSelectionAction.UpdateFilterSelection(it))
         },
+        onSearchTextChanged = {
+            viewModel.performAction(AppBackupSelectionAction.UpdateSearchText(it))
+        },
+        onToggleSearchBar = {
+            viewModel.performAction(AppBackupSelectionAction.ToggleSearchBar)
+        },
         skipAndGoToNextScreen = skipAndGoToNextScreen,
         onNext = {
             viewModel.performAction(AppBackupSelectionAction.StageAppItems(goToNextScreen))
@@ -97,6 +110,8 @@ private fun Content(
     onAllDataToggled: (Boolean) -> Unit,
     onAllPermissionToggled: (Boolean) -> Unit,
     onFilterChanged: (AppFilterSelection) -> Unit,
+    onSearchTextChanged: (String) -> Unit,
+    onToggleSearchBar: () -> Unit,
     skipAndGoToNextScreen: () -> Unit,
     onNext: () -> Unit,
 ) {
@@ -124,21 +139,37 @@ private fun Content(
         hasPermission = !state().shouldAskForSuperuserPermission,
         permissionDescription = stringResource(R.string.app_backup_permission_description),
         progress = state().progress,
-        hasNoData = state().appListItems.isEmpty()
+        hasNoData = state().appListItems.isEmpty(),
+        customNoDataMessage = if (state().showSearchBar) stringResource(R.string.no_app_found) else null,
+        customNoDataDescription = if (state().showSearchBar) "" else null,
     )
+
     ListScreenShell(
         listState = listState,
         navigateUp = navigateUp,
         onSelectAll = onSelectAll,
         onDeselectAll = onDeselectAll,
         onPermissionRequest = requestPermission,
-        onNext = onNext,
+        onNext = if (state().showSearchBar) onToggleSearchBar else onNext,
+        nextButtonCustomLabel = if (state().showSearchBar) stringResource(R.string.done) else null,
+        footer = {
+            AnimatedVisibility(visible = state().showSearchBar) {
+                SearchBar(
+                    searchText = state().searchText,
+                    onSearchTextChanged = onSearchTextChanged,
+                    onDone = onToggleSearchBar,
+                )
+            }
+        },
         topBarActions = {
             IconButton(onClick = { showFilterDialog = true }) {
                 Icon(imageVector = Icons.Default.FilterList, contentDescription = null)
             }
-            IconButton(onClick = { }) {
-                Icon(imageVector = Icons.Default.Search, contentDescription = null)
+            IconButton(onClick = onToggleSearchBar) {
+                Icon(
+                    imageVector = if (state().showSearchBar) Icons.Default.Close else Icons.Default.Search,
+                    contentDescription = null,
+                )
             }
         }
     ) {

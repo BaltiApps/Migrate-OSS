@@ -1,8 +1,10 @@
 package balti.migrate.common.ui.listScreen
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -38,6 +40,7 @@ fun ListScreenShell(
     onNext: () -> Unit,
     nextButtonCustomLabel: String? = null,
     topBarActions: @Composable RowScope.() -> Unit = {},
+    footer: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -60,24 +63,28 @@ fun ListScreenShell(
             )
         }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            when {
-                !listState.hasPermission -> ListPermissionRequestLayout(
-                    listState.permissionDescription,
-                    onPermissionRequest,
-                    onNext
-                )
+            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                when {
+                    !listState.hasPermission -> ListPermissionRequestLayout(
+                        listState.permissionDescription,
+                        onPermissionRequest,
+                        onNext
+                    )
 
-                listState.isLoading -> ListLoadingLayout(listState.progress, onSkip = onNext)
-                listState.hasNoData -> ListNoDataLayout(
-                    title = listState.customNoDataMessage
-                )
-                else -> content()
+                    listState.isLoading -> ListLoadingLayout(listState.progress, onSkip = onNext)
+                    listState.hasNoData -> ListNoDataLayout(
+                        title = listState.customNoDataMessage,
+                        description = listState.customNoDataDescription,
+                    )
+                    else -> content()
+                }
             }
+            footer?.invoke()
         }
     }
 }
@@ -90,6 +97,7 @@ data class ListState(
     val progress: Progress,
     val hasNoData: Boolean,
     val customNoDataMessage: String? = null,
+    val customNoDataDescription: String? = null,
 ) {
     val loadingProgress: Double
         get() = progress.percentage

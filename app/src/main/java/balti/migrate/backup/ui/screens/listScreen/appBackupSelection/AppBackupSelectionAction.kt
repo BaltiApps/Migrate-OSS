@@ -20,4 +20,7 @@ sealed class AppBackupSelectionAction {
     data class StageAppItems(val onStagingDone: () -> Unit): AppBackupSelectionAction()
 
     data class UpdateFilterSelection(val filterSelection: AppFilterSelection): AppBackupSelectionAction()
+
+    data class UpdateSearchText(val searchText: String): AppBackupSelectionAction()
+    object ToggleSearchBar: AppBackupSelectionAction()
 }

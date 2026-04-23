@@ -23,6 +23,7 @@ import balti.migrate.R
 fun ListNoDataLayout(
     modifier: Modifier = Modifier,
     title: String? = null,
+    description: String? = null,
 ) {
     Column(
         modifier = modifier.padding(8.dp).fillMaxSize(),
@@ -43,11 +44,14 @@ fun ListNoDataLayout(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.alpha(dim),
         )
-        Text(
-            text = stringResource(R.string.no_data_desc),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.alpha(dim),
-        )
+        val descText = description ?: stringResource(R.string.no_data_desc)
+        if (descText.isNotEmpty()) {
+            Text(
+                text = descText,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.alpha(dim),
+            )
+        }
     }
 }
 
