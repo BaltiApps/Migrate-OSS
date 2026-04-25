@@ -27,9 +27,9 @@ import baltiapps.migrate.domain.INTERNAL_ROUGH_WORK_BACKUP_DIRECTORY
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.BackupAppsInfoUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupAppsUseCase
-import baltiapps.migrate.domain.backup.usecase.BackupExternalDataUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupCallLogUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupContactsUseCase
+import baltiapps.migrate.domain.backup.usecase.BackupExternalDataUseCase
 import baltiapps.migrate.domain.backup.usecase.BackupSmsUseCase
 import baltiapps.migrate.domain.common.model.GenericFile
 import baltiapps.migrate.domain.common.model.Progress
@@ -229,14 +229,15 @@ class BackupService : LifecycleService() {
 
             Timber.i("backup - finished exporting backup")
 
+            val timeTaken = StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime)
             serviceUtils.emitHeadingLog(
                 progressType = Progress.ProgressType.BACKUP_FINISHED,
-                displayText = StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime),
+                displayText = timeTaken,
             )
 
             Timber.i("backup - finished")
 
-            endNotifications()
+            endNotifications(timeTaken)
             storeProgressAndErrorsOnFinish()
             Timber.i("restore - notification handler stopped listening")
             cleanup()
@@ -303,12 +304,12 @@ class BackupService : LifecycleService() {
         stopSelf()
     }
 
-    private fun endNotifications() {
+    private fun endNotifications(timeTaken: String? = null) {
         notificationHandler.stopListening()
         val notificationInfo = when {
-            backupJob?.isCancelled == true -> notificationHandler.getCancelledNotification()
-            progressLogRepository.isAnyErrorPresent -> notificationHandler.getFinishedWithErrorNotification()
-            else -> notificationHandler.getFinishedNotification()
+            backupJob?.isCancelled == true -> notificationHandler.getCancelledNotification(timeTaken)
+            progressLogRepository.isAnyErrorPresent -> notificationHandler.getFinishedWithErrorNotification(timeTaken)
+            else -> notificationHandler.getFinishedNotification(timeTaken)
         }
         notificationHandler.displayNotification(notificationInfo)
     }
@@ -327,14 +328,15 @@ class BackupService : LifecycleService() {
     private fun cancelBackup() {
         lifecycleScope.launch {
             backupJob?.cancel()
+            val timeTaken = if (startTime > 0L) StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime) else null
             if (isSetup()) {
                 delay(1000)
                 serviceUtils.emitHeadingLog(
                     progressType = Progress.ProgressType.BACKUP_CANCELLED,
-                    displayText = StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime),
+                    displayText = timeTaken ?: "",
                 )
             }
-            endNotifications()
+            endNotifications(timeTaken)
             storeProgressAndErrorsOnFinish()
             delay(1000)
             cleanup()

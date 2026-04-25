@@ -83,33 +83,39 @@ class RestoreNotificationHandlerImpl(
         )
     }
 
-    override fun getFinishedNotification(): NotificationInfo {
+    private fun buildFinishText(subtitle: String?): String? {
+        return listOfNotNull(subtitle, notificationContentTextOnFinish())
+            .joinToString(" · ")
+            .ifEmpty { null }
+    }
+
+    override fun getFinishedNotification(subtitle: String?): NotificationInfo {
         return NotificationInfo(
             notificationId = NOTIFICATION_ID_RESTORE_COMPLETE,
             notificationChannelId = CHANNEL_RESTORE_END_ID,
             icon = R.drawable.notification_icon_00,
             title = context.getString(R.string.restore_finished),
-            text = notificationContentTextOnFinish(),
+            text = buildFinishText(subtitle),
         )
     }
 
-    override fun getCancelledNotification(): NotificationInfo {
+    override fun getCancelledNotification(subtitle: String?): NotificationInfo {
         return NotificationInfo(
             notificationId = NOTIFICATION_ID_RESTORE_CANCELLED,
             notificationChannelId = CHANNEL_RESTORE_END_ID,
             icon = R.drawable.notification_icon_00,
             title = context.getString(R.string.restore_cancelled),
-            text = notificationContentTextOnFinish(),
+            text = buildFinishText(subtitle),
         )
     }
 
-    override fun getFinishedWithErrorNotification(): NotificationInfo {
+    override fun getFinishedWithErrorNotification(subtitle: String?): NotificationInfo {
         return NotificationInfo(
             notificationId = NOTIFICATION_ID_RESTORE_FINISHED_WITH_ERRORS,
             notificationChannelId = CHANNEL_RESTORE_END_ID,
             icon = R.drawable.notification_icon_00,
             title = context.getString(R.string.restore_finished_with_errors),
-            text = notificationContentTextOnFinish(),
+            text = buildFinishText(subtitle),
         )
     }
 

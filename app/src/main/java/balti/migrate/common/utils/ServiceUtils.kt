@@ -35,7 +35,7 @@ class ServiceUtils(
                 itemId = "",
                 progressType = progressType,
                 percentage = 1.0,
-                logs = "\n${headingTitle}\n${BREAK_LINE}\n",
+                logs = "\n${headingTitle}\n${BREAK_LINE}\n${displayText}\n",
                 displayText = displayText,
                 isLogHeading = true,
             ),

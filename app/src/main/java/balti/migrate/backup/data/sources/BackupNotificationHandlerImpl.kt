@@ -74,30 +74,33 @@ class BackupNotificationHandlerImpl(
         )
     }
 
-    override fun getFinishedNotification(): NotificationInfo {
+    override fun getFinishedNotification(subtitle: String?): NotificationInfo {
         return NotificationInfo(
             notificationId = NOTIFICATION_ID_BACKUP_FINISHED,
             notificationChannelId = CHANNEL_BACKUP_END_ID,
             icon = R.drawable.notification_icon_00,
             title = context.getString(R.string.backup_finished),
+            text = subtitle,
         )
     }
 
-    override fun getCancelledNotification(): NotificationInfo {
+    override fun getCancelledNotification(subtitle: String?): NotificationInfo {
         return NotificationInfo(
             notificationId = NOTIFICATION_ID_BACKUP_CANCELLED,
             notificationChannelId = CHANNEL_BACKUP_END_ID,
             icon = R.drawable.notification_icon_00,
             title = context.getString(R.string.backup_cancelled),
+            text = subtitle,
         )
     }
 
-    override fun getFinishedWithErrorNotification(): NotificationInfo {
+    override fun getFinishedWithErrorNotification(subtitle: String?): NotificationInfo {
         return NotificationInfo(
             notificationId = NOTIFICATION_ID_BACKUP_FINISHED_WITH_ERRORS,
             notificationChannelId = CHANNEL_BACKUP_END_ID,
             icon = R.drawable.notification_icon_00,
             title = context.getString(R.string.backup_finished_with_errors),
+            text = subtitle,
         )
     }
 

@@ -150,14 +150,15 @@ class RestoreService: LifecycleService() {
 
             Timber.i("restore - finished - external data")
 
+            val timeTaken = StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime)
             serviceUtils.emitHeadingLog(
                 progressType = Progress.ProgressType.RESTORE_FINISHED,
-                displayText = StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime),
+                displayText = timeTaken,
             )
 
             Timber.i("restore - finished")
 
-            endNotifications()
+            endNotifications(timeTaken)
             Timber.i("restore - notification handler stopped listening")
             storeProgressAndErrorsOnFinish()
             cleanup()
@@ -191,12 +192,12 @@ class RestoreService: LifecycleService() {
         stopSelf()
     }
 
-    private fun endNotifications() {
+    private fun endNotifications(timeTaken: String? = null) {
         notificationHandler.stopListening()
         val notificationInfo = when {
-            restoreJob?.isCancelled == true -> notificationHandler.getCancelledNotification()
-            progressLogRepository.isAnyErrorPresent -> notificationHandler.getFinishedWithErrorNotification()
-            else -> notificationHandler.getFinishedNotification()
+            restoreJob?.isCancelled == true -> notificationHandler.getCancelledNotification(timeTaken)
+            progressLogRepository.isAnyErrorPresent -> notificationHandler.getFinishedWithErrorNotification(timeTaken)
+            else -> notificationHandler.getFinishedNotification(timeTaken)
         }
         notificationHandler.displayNotification(notificationInfo)
     }
@@ -215,14 +216,15 @@ class RestoreService: LifecycleService() {
     private fun cancelRestore() {
         lifecycleScope.launch {
             restoreJob?.cancel()
+            val timeTaken = if (startTime > 0L) StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime) else null
             if (isSetup()) {
                 delay(1000)
                 serviceUtils.emitHeadingLog(
                     progressType = Progress.ProgressType.RESTORE_CANCELLED,
-                    displayText = StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime),
+                    displayText = timeTaken ?: "",
                 )
             }
-            endNotifications()
+            endNotifications(timeTaken)
             storeProgressAndErrorsOnFinish()
             delay(1000)
             cleanup()
