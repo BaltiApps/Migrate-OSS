@@ -18,4 +18,7 @@ sealed class AppRestoreSelectionAction {
     data class ToggleAllAppItems(val isChecked: Boolean): AppRestoreSelectionAction()
 
     data class StageAppItems(val onStagingDone: () -> Unit): AppRestoreSelectionAction()
+
+    data class UpdateSearchText(val searchText: String): AppRestoreSelectionAction()
+    object ToggleSearchBar: AppRestoreSelectionAction()
 }

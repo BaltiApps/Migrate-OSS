@@ -61,6 +61,7 @@ class AppRestoreSelectionViewModel(
                         shouldEnablePermissionSelection = appListItems.any { it.isPermissionsEnabled },
                     )
                 }
+                applySearchFilter()
                 updateStatesForAllApksAllDataAllPermissions()
             }.collect {
                 _state.update { state ->
@@ -84,9 +85,23 @@ class AppRestoreSelectionViewModel(
     private fun updateStatesForAllApksAllDataAllPermissions() {
         _state.update {
             it.copy(
-                areAllApksSelected = it.appListItems.all { it.isApkSelected },
-                areAllDataSelected = it.appListItems.all { it.isDataSelected },
-                areAllPermissionsSelected = it.appListItems.all { it.isPermissionsSelected },
+                areAllApksSelected = it.displayedAppListItems.all { it.isApkSelected },
+                areAllDataSelected = it.displayedAppListItems.all { it.isDataSelected },
+                areAllPermissionsSelected = it.displayedAppListItems.all { it.isPermissionsSelected },
+            )
+        }
+    }
+
+    private fun applySearchFilter() {
+        val lowerSearch = _state.value.searchText.lowercase()
+        _state.update { state ->
+            state.copy(
+                displayedAppListItems = state.appListItems.filter {
+                    lowerSearch.isBlank() ||
+                            it.appName.lowercase().contains(lowerSearch) ||
+                            it._id.lowercase().contains(lowerSearch) ||
+                            it.versionName.lowercase().contains(lowerSearch)
+                }
             )
         }
     }
@@ -103,17 +118,14 @@ class AppRestoreSelectionViewModel(
             is AppRestoreSelectionAction.ToggleAppItemApkSelection -> {
                 val newItem = action.item.copy(isApkSelected = !action.item.isApkSelected)
                 replaceAppItem(newItem)
-                updateStatesForAllApksAllDataAllPermissions()
             }
             is AppRestoreSelectionAction.ToggleAppItemDataSelection -> {
                 val newItem = action.item.copy(isDataSelected = !action.item.isDataSelected)
                 replaceAppItem(newItem)
-                updateStatesForAllApksAllDataAllPermissions()
             }
             is AppRestoreSelectionAction.ToggleAppItemPermissionSelection -> {
                 val newItem = action.item.copy(isPermissionsSelected = !action.item.isPermissionsSelected)
                 replaceAppItem(newItem)
-                updateStatesForAllApksAllDataAllPermissions()
             }
             is AppRestoreSelectionAction.ToggleEverythingForAnApp -> action.item.run {
                 // select all if some are selected and deselect all if all are deselected
@@ -124,7 +136,6 @@ class AppRestoreSelectionViewModel(
                     isPermissionsSelected = this.isPermissionsEnabled && !isAllSelected,
                 )
                 replaceAppItem(newItem)
-                updateStatesForAllApksAllDataAllPermissions()
             }
             is AppRestoreSelectionAction.ToggleAllAppItemsApkSelection -> {
                 val newItems = state.value.appListItems.map {
@@ -184,6 +195,18 @@ class AppRestoreSelectionViewModel(
                     action.onStagingDone()
                 }
             }
+            is AppRestoreSelectionAction.UpdateSearchText -> {
+                _state.update { it.copy(searchText = action.searchText) }
+            }
+            AppRestoreSelectionAction.ToggleSearchBar -> {
+                val nowVisible = !_state.value.showSearchBar
+                _state.update { it.copy(showSearchBar = nowVisible) }
+                if (!nowVisible) {
+                    _state.update { it.copy(searchText = "") }
+                }
+            }
         }
+        applySearchFilter()
+        updateStatesForAllApksAllDataAllPermissions()
     }
 }

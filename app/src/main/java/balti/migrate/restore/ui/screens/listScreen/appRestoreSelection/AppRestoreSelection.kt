@@ -1,5 +1,7 @@
 package balti.migrate.restore.ui.screens.listScreen.appRestoreSelection
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,6 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.common.ui.components.AppCountBar
 import balti.migrate.common.ui.components.RenderAppListItem
+import balti.migrate.common.ui.components.SearchBar
 import balti.migrate.common.ui.listScreen.ListScreenShell
 import balti.migrate.common.ui.listScreen.ListState
 import baltiapps.migrate.domain.common.model.AppListItem
@@ -30,6 +38,9 @@ fun AppRestoreSelection(
     viewModel: AppRestoreSelectionViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    BackHandler(enabled = state.showSearchBar) {
+        viewModel.performAction(AppRestoreSelectionAction.ToggleSearchBar)
+    }
     Content(
         state = { state },
         navigateUp = navigateUp,
@@ -63,6 +74,12 @@ fun AppRestoreSelection(
         onAllPermissionToggled = {
             viewModel.performAction(AppRestoreSelectionAction.ToggleAllAppItemsPermissionSelection(it))
         },
+        onSearchTextChanged = {
+            viewModel.performAction(AppRestoreSelectionAction.UpdateSearchText(it))
+        },
+        onToggleSearchBar = {
+            viewModel.performAction(AppRestoreSelectionAction.ToggleSearchBar)
+        },
         skipAndGoToNextScreen = skipAndGoToNextScreen,
         onNext = {
             viewModel.performAction(AppRestoreSelectionAction.StageAppItems(goToNextScreen))
@@ -85,6 +102,8 @@ private fun Content(
     onAllApkToggled: (Boolean) -> Unit,
     onAllDataToggled: (Boolean) -> Unit,
     onAllPermissionToggled: (Boolean) -> Unit,
+    onSearchTextChanged: (String) -> Unit,
+    onToggleSearchBar: () -> Unit,
     skipAndGoToNextScreen: () -> Unit,
     onNext: () -> Unit,
 ) {
@@ -99,7 +118,9 @@ private fun Content(
         hasPermission = !state().shouldAskForSuperuserPermission,
         permissionDescription = stringResource(R.string.app_restore_permission_description),
         progress = state().progress,
-        hasNoData = state().appListItems.isEmpty()
+        hasNoData = state().displayedAppListItems.isEmpty(),
+        customNoDataMessage = if (state().showSearchBar) stringResource(R.string.no_app_found) else null,
+        customNoDataDescription = if (state().showSearchBar) "" else null,
     )
     ListScreenShell(
         listState = listState,
@@ -107,7 +128,27 @@ private fun Content(
         onSelectAll = onSelectAll,
         onDeselectAll = onDeselectAll,
         onPermissionRequest = requestPermission,
-        onNext = onNext,
+        onNext = if (state().showSearchBar) onToggleSearchBar else onNext,
+        nextButtonCustomLabel = if (state().showSearchBar) stringResource(R.string.done) else null,
+        footer = {
+            AnimatedVisibility(visible = state().showSearchBar) {
+                SearchBar(
+                    searchText = state().searchText,
+                    onSearchTextChanged = onSearchTextChanged,
+                    onDone = onToggleSearchBar,
+                )
+            }
+        },
+        topBarActions = {
+            if (!listState.isLoading) {
+                IconButton(onClick = onToggleSearchBar) {
+                    Icon(
+                        imageVector = if (state().showSearchBar) Icons.Default.Close else Icons.Default.Search,
+                        contentDescription = null,
+                    )
+                }
+            }
+        },
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize()
@@ -137,7 +178,7 @@ private fun Content(
                 }
             }
             items(
-                items = state().appListItems,
+                items = state().displayedAppListItems,
                 key = { it._id }
             ) { item ->
                 RenderAppListItem(

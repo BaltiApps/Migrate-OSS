@@ -15,4 +15,7 @@ data class AppRestoreSelectionState(
     val shouldEnableApkSelection: Boolean = true,
     val shouldEnableDataSelection: Boolean = true,
     val shouldEnablePermissionSelection: Boolean = true,
+    val searchText: String = "",
+    val showSearchBar: Boolean = false,
+    val displayedAppListItems: List<AppListItem> = emptyList(),
 )
