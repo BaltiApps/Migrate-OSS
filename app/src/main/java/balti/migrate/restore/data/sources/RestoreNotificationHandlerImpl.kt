@@ -55,7 +55,7 @@ class RestoreNotificationHandlerImpl(
         notificationManager.makeNotificationChannel(
             channelId = CHANNEL_RESTORE_RUNNING_ID,
             channelDesc = CHANNEL_RESTORE_RUNNING_DESC,
-            importance = NotificationManager.IMPORTANCE_LOW
+            importance = NotificationManager.IMPORTANCE_DEFAULT
         )
         notificationManager.makeNotificationChannel(
             channelId = CHANNEL_RESTORE_END_ID,

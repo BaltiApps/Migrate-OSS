@@ -54,7 +54,7 @@ class BackupNotificationHandlerImpl(
         notificationManager.makeNotificationChannel(
             channelId = CHANNEL_BACKUP_RUNNING_ID,
             channelDesc = CHANNEL_BACKUP_RUNNING_DESC,
-            importance = NotificationManager.IMPORTANCE_LOW
+            importance = NotificationManager.IMPORTANCE_DEFAULT
         )
         notificationManager.makeNotificationChannel(
             channelId = CHANNEL_BACKUP_END_ID,
