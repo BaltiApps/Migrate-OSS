@@ -37,7 +37,9 @@ import balti.migrate.common.ui.components.NextFab
 import balti.migrate.common.ui.progressScreen.ErrorLayoutToggle
 import balti.migrate.common.ui.progressScreen.ProgressLogLayout
 import balti.migrate.common.ui.progressScreen.ProgressScreenBottomBar
+import balti.migrate.common.ui.progressScreen.ProgressStageCard
 import balti.migrate.common.ui.progressScreen.ScrollAnchor
+import baltiapps.migrate.domain.common.model.Progress
 import balti.migrate.common.utils.PermissionUtils
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -151,6 +153,16 @@ private fun Content(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            if (!state().isLoading) {
+                val currentProgress = state().progressList.lastOrNull()
+                ProgressStageCard(
+                    progressType = currentProgress?.progressType ?: Progress.ProgressType.STANDBY,
+                    title = state().headingText,
+                    subtitle = currentProgress?.displayText ?: "",
+                    percentage = currentProgress?.percentage?.toFloat() ?: 0f,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
             ErrorLayoutToggle(
                 isErrorOnly = state().errorOnly,
                 onToggleErrorOnly = onToggleErrorOnly,
