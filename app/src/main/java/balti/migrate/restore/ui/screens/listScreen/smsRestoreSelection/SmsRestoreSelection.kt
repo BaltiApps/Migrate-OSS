@@ -39,7 +39,8 @@ fun SmsRestoreSelection(
         },
         onNext = {
             viewModel.onAction(SmsRestoreSelectionAction.StageSms(goToNextScreen))
-        }
+        },
+        onSkip = goToNextScreen,
     )
 
     BackHandler { navigateUp() }
@@ -53,6 +54,7 @@ private fun Content(
     onDeselectAll: () -> Unit,
     onItemToggled: (SmsListItem) -> Unit,
     onNext: () -> Unit,
+    onSkip: () -> Unit,
 ) {
     val listState = ListState(
         listTitle = stringResource(R.string.label_sms_restore),
@@ -69,6 +71,7 @@ private fun Content(
         onDeselectAll = onDeselectAll,
         onPermissionRequest = {},
         onNext = onNext,
+        onSkip = onSkip,
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize()

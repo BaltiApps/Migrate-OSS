@@ -39,7 +39,8 @@ fun ContactRestoreSelection(
         },
         onNext = {
             viewModel.onAction(ContactRestoreSelectionAction.StageContacts(goToNextScreen))
-        }
+        },
+        onSkip = goToNextScreen,
     )
 
     BackHandler { navigateUp() }
@@ -53,6 +54,7 @@ private fun Content(
     onDeselectAll: () -> Unit,
     onItemToggled: (ContactListItem) -> Unit,
     onNext: () -> Unit,
+    onSkip: () -> Unit,
 ) {
     val listState = ListState(
         listTitle = stringResource(R.string.label_contacts_restore),
@@ -69,6 +71,7 @@ private fun Content(
         onDeselectAll = onDeselectAll,
         onPermissionRequest = {},
         onNext = onNext,
+        onSkip = onSkip,
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize()

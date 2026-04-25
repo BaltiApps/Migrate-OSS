@@ -47,6 +47,7 @@ fun ExternalDataBackupSelectionScreen(
         },
         onRowClicked = { viewModel.performAction(ExternalDataBackupSelectionAction.ToggleItemBoth(it)) },
         onSave = { viewModel.performAction(ExternalDataBackupSelectionAction.Save(navigateOnSave)) },
+        onSkip = navigateOnSave,
     )
 }
 
@@ -62,6 +63,7 @@ private fun Content(
     onAllExternalMediaToggled: (Boolean) -> Unit,
     onRowClicked: (AppListItem) -> Unit,
     onSave: () -> Unit,
+    onSkip: () -> Unit,
 ) {
     val listState = ListState(
         listTitle = stringResource(R.string.external_data),
@@ -78,6 +80,7 @@ private fun Content(
         onDeselectAll = onDeselectAll,
         onPermissionRequest = {},
         onNext = onSave,
+        onSkip = onSkip,
         nextButtonCustomLabel = stringResource(R.string.save),
     ) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {

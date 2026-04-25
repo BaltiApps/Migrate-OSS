@@ -84,6 +84,7 @@ fun AppRestoreSelection(
         onNext = {
             viewModel.performAction(AppRestoreSelectionAction.StageAppItems(goToNextScreen))
         },
+        onSkipWithSkipButton = goToNextScreen,
     )
 }
 
@@ -106,6 +107,7 @@ private fun Content(
     onToggleSearchBar: () -> Unit,
     skipAndGoToNextScreen: () -> Unit,
     onNext: () -> Unit,
+    onSkipWithSkipButton: () -> Unit,
 ) {
     if (state().shouldSkipRestore) {
         skipAndGoToNextScreen()
@@ -129,6 +131,7 @@ private fun Content(
         onDeselectAll = onDeselectAll,
         onPermissionRequest = requestPermission,
         onNext = if (state().showSearchBar) onToggleSearchBar else onNext,
+        onSkip = onSkipWithSkipButton,
         nextButtonCustomLabel = if (state().showSearchBar) stringResource(R.string.done) else null,
         footer = {
             AnimatedVisibility(visible = state().showSearchBar) {

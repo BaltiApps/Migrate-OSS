@@ -52,7 +52,8 @@ fun ContactBackupSelection(
         },
         onNext = {
             viewModel.performAction(ContactBackupSelectionAction.StageContacts(goToNextScreen))
-        }
+        },
+        onSkip = goToNextScreen,
     )
 }
 
@@ -68,6 +69,7 @@ private fun Content(
     onItemToggled: (item: ContactListItem) -> Unit,
     showSyncedContactsWhyNotRecommended: () -> Unit,
     onNext: () -> Unit,
+    onSkip: () -> Unit,
 ) {
     val syncedContactsExpanded = state().syncedContactsExpanded
     val localContactsExpanded = state().localContactsExpanded
@@ -97,6 +99,7 @@ private fun Content(
         onDeselectAll = onDeselectAll.takeIf { enableMultiSelectButtons },
         onPermissionRequest = requestPermission,
         onNext = onNext,
+        onSkip = onSkip,
         nextButtonCustomLabel = nextButtonCustomLabel,
     ) {
         when {

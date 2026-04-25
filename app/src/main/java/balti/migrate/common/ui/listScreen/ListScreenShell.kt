@@ -39,6 +39,7 @@ fun ListScreenShell(
     onDeselectAll: (() -> Unit)?,
     onPermissionRequest: () -> Unit,
     onNext: () -> Unit,
+    onSkip: () -> Unit,
     nextButtonCustomLabel: String? = null,
     topBarActions: @Composable RowScope.() -> Unit = {},
     footer: (@Composable () -> Unit)? = null,
@@ -78,7 +79,7 @@ fun ListScreenShell(
                         onNext
                     )
 
-                    listState.isLoading -> ListLoadingLayout(listState.progress, onSkip = onNext)
+                    listState.isLoading -> ListLoadingLayout(listState.progress, onSkip = onSkip)
                     listState.hasNoData -> ListNoDataLayout(
                         title = listState.customNoDataMessage,
                         description = listState.customNoDataDescription,

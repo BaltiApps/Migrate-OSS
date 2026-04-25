@@ -39,6 +39,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun AppBackupSelection(
     navigateUp: () -> Unit,
     skipAndGoToNextScreen: () -> Unit,
+    onSkipWithSkipButton: () -> Unit,
     goToNextScreen: () -> Unit,
     viewModel: AppBackupSelectionViewModel = koinViewModel(),
 ) {
@@ -92,6 +93,7 @@ fun AppBackupSelection(
         onNext = {
             viewModel.performAction(AppBackupSelectionAction.StageAppItems(goToNextScreen))
         },
+        onSkipWithSkipButton = onSkipWithSkipButton,
     )
 }
 
@@ -114,6 +116,7 @@ private fun Content(
     onToggleSearchBar: () -> Unit,
     skipAndGoToNextScreen: () -> Unit,
     onNext: () -> Unit,
+    onSkipWithSkipButton: () -> Unit,
 ) {
     if (state().shouldSkipBackup) {
         skipAndGoToNextScreen()
@@ -151,6 +154,7 @@ private fun Content(
         onDeselectAll = onDeselectAll,
         onPermissionRequest = requestPermission,
         onNext = if (state().showSearchBar) onToggleSearchBar else onNext,
+        onSkip = onSkipWithSkipButton,
         nextButtonCustomLabel = if (state().showSearchBar) stringResource(R.string.done) else null,
         footer = {
             AnimatedVisibility(visible = state().showSearchBar) {

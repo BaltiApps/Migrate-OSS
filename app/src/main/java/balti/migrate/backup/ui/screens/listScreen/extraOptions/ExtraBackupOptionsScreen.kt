@@ -61,6 +61,7 @@ private fun Content(
         onDeselectAll = null,
         onPermissionRequest = {},
         onNext = goToNextScreen,
+        onSkip = goToNextScreen,
     ) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             item {

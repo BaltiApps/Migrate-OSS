@@ -47,7 +47,8 @@ fun SmsBackupSelection(
         },
         onNext = {
             viewModel.performAction(SmsBackupSelectionAction.StageSms(goToNextScreen))
-        }
+        },
+        onSkip = goToNextScreen,
     )
 }
 
@@ -60,6 +61,7 @@ private fun Content(
     onItemToggled: (SmsListItem) -> Unit,
     requestPermission: () -> Unit,
     onNext: () -> Unit,
+    onSkip: () -> Unit,
 ) {
     val listState = ListState(
         listTitle = stringResource(R.string.label_sms_backup),
@@ -76,6 +78,7 @@ private fun Content(
         onDeselectAll = onDeselectAll,
         onPermissionRequest = requestPermission,
         onNext = onNext,
+        onSkip = onSkip,
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize()

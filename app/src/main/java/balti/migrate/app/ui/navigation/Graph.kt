@@ -170,6 +170,9 @@ fun Graph(
                             navController.popBackStack()
                             navController.navigate(RouteContactBackup)
                         },
+                        onSkipWithSkipButton = {
+                            navController.navigate(RouteContactBackup)
+                        },
                         goToNextScreen = {
                             navController.navigate(RouteExtraOptions)
                         }

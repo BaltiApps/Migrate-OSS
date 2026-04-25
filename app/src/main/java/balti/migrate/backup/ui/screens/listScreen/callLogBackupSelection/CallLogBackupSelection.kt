@@ -47,7 +47,8 @@ fun CallLogBackupSelection(
         },
         onNext = {
             viewModel.performAction(CallLogBackupSelectionAction.StageCallLogs(goToNextScreen))
-        }
+        },
+        onSkip = goToNextScreen,
     )
 }
 
@@ -60,6 +61,7 @@ private fun Content(
     requestPermission: () -> Unit,
     onItemToggled: (CallLogListItem) -> Unit,
     onNext: () -> Unit,
+    onSkip: () -> Unit,
 ) {
     val listState = ListState(
         listTitle = stringResource(R.string.label_call_log_backup),
@@ -76,6 +78,7 @@ private fun Content(
         onDeselectAll = onDeselectAll,
         onPermissionRequest = requestPermission,
         onNext = onNext,
+        onSkip = onSkip,
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize()
