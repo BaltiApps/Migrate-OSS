@@ -5,6 +5,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import balti.migrate.R
 import balti.migrate.backup.di.Names
 import balti.migrate.common.data.model.JavaFile
 import balti.migrate.common.data.model.MediaStoreDownloadFile
@@ -229,7 +230,7 @@ class BackupService : LifecycleService() {
 
             Timber.i("backup - finished exporting backup")
 
-            val timeTaken = StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime)
+            val timeTaken = getString(R.string.time_taken, StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime))
             serviceUtils.emitHeadingLog(
                 progressType = Progress.ProgressType.BACKUP_FINISHED,
                 displayText = timeTaken,
@@ -328,7 +329,7 @@ class BackupService : LifecycleService() {
     private fun cancelBackup() {
         lifecycleScope.launch {
             backupJob?.cancel()
-            val timeTaken = if (startTime > 0L) StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime) else null
+            val timeTaken = if (startTime > 0L) getString(R.string.time_taken, StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime)) else null
             if (isSetup()) {
                 delay(1000)
                 serviceUtils.emitHeadingLog(

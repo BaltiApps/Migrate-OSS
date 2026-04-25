@@ -270,6 +270,7 @@
     <string name="search_apps">Search apps</string>
     <string name="no_app_found">No app found</string>
     <string name="save">Save</string>
+    <string name="time_taken">Time taken : %s</string>
 
     <!--extra options-->
     <string name="extra_options">Extra options</string>

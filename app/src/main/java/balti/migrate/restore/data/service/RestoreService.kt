@@ -9,6 +9,7 @@ import balti.migrate.common.data.sources.fileSystem.TextWriterImpl
 import balti.migrate.common.utils.ServiceUtils
 import balti.migrate.common.utils.convertToNotificationBuilder
 import balti.migrate.restore.di.Names
+import balti.migrate.R
 import baltiapps.migrate.domain.ACTION_CANCEL_RESTORE
 import baltiapps.migrate.domain.ACTION_START_RESTORE
 import baltiapps.migrate.domain.RESTORE_ERROR_LOG
@@ -150,7 +151,7 @@ class RestoreService: LifecycleService() {
 
             Timber.i("restore - finished - external data")
 
-            val timeTaken = StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime)
+            val timeTaken = getString(R.string.time_taken, StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime))
             serviceUtils.emitHeadingLog(
                 progressType = Progress.ProgressType.RESTORE_FINISHED,
                 displayText = timeTaken,
@@ -216,7 +217,7 @@ class RestoreService: LifecycleService() {
     private fun cancelRestore() {
         lifecycleScope.launch {
             restoreJob?.cancel()
-            val timeTaken = if (startTime > 0L) StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime) else null
+            val timeTaken = if (startTime > 0L) getString(R.string.time_taken, StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime)) else null
             if (isSetup()) {
                 delay(1000)
                 serviceUtils.emitHeadingLog(
