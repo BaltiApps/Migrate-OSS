@@ -133,6 +133,8 @@
     <string name="restore_finished">Restore finished!</string>
     <string name="restore_finished_with_errors">Restore finished with errors</string>
     <string name="restore_cancelled">Restore cancelled</string>
+    <string name="label_external_data_backup">Ext. data backup</string>
+    <string name="label_external_data_restore">Ext. data restore</string>
 
     <!--ProgressRepositoryImpl.kt-->
     <string name="older_logs_truncated">Older logs are truncated</string>
