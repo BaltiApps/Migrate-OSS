@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -153,7 +154,10 @@ private fun Content(
             )
         },
         bottomBar = {
-            BottomBar(onStartBackup = onStartBackup)
+            BottomBar(
+                onStartBackup = onStartBackup,
+                isStartDisabled = state().isLoadingLocation,
+            )
         }
     ) { paddingValues ->
         Column(
@@ -173,6 +177,12 @@ private fun Content(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
+                if (state().isLoadingLocation) {
+                    CircularProgressIndicator()
+                    return@Scaffold
+                }
+
                 val isSaf = state().isSaf
                 if (isSaf != null) {
                     LocationSelector(
@@ -254,16 +264,19 @@ private fun TopBar(
 @Composable
 private fun BottomBar(
     onStartBackup: () -> Unit,
+    isStartDisabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     BottomAppBar(
         modifier = modifier,
         actions = {},
         floatingActionButton = {
-            val buttonStatus = ButtonStatus.Unspecified(
-                label = stringResource(R.string.start),
-                onPressed = onStartBackup
-            )
+            val label = stringResource(R.string.start)
+            val buttonStatus = if (isStartDisabled) {
+                ButtonStatus.Disabled(label = label)
+            } else {
+                ButtonStatus.Unspecified(label = label, onPressed = onStartBackup)
+            }
             NextFab(
                 buttonStatus = buttonStatus
             )

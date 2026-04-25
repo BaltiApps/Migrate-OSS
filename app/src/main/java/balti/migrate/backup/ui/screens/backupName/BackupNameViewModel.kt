@@ -19,6 +19,7 @@ import baltiapps.migrate.domain.backup.usecase.GetRequiredSpaceForBackupUseCase
 import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.restore.usecase.CalculateStagedAppsSizesUseCase
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class BackupNameViewModel(
@@ -79,27 +81,38 @@ class BackupNameViewModel(
 
     private fun updateState() {
         viewModelScope.launch {
-
-            val locationString = getLocationString()
-
-            Timber.d("Is location available - $locationString")
-
+            _state.update { it.copy(isLoadingLocation = true) }
+            val locationString: String
             var totalBytes = 0L
             var availableBytes = 0L
+            val isSaf: Boolean
+            val safUriString: String
+            val isLocationAccessible: Boolean
 
-            try {
-                val stat = if (savedSafLocationString.isNotBlank()) {
-                    TransferUtils.getStatFsForSafUri(savedSafLocationUri, applicationContext)
-                } else if (locationString.isNotBlank()) {
-                    Timber.d("Using location string for StatFs: $locationString")
-                    StatFs(locationString)
-                } else null
+            withContext(Dispatchers.IO) {
+                locationString = getLocationString()
 
-                totalBytes = stat?.totalBytes ?: 0
-                availableBytes = stat?.availableBytes ?: 0
+                Timber.d("Is location available - $locationString")
 
-            } catch (e: Exception) {
-                e.printStackTrace()
+                isSaf = savedSafLocationString.isNotBlank()
+                safUriString = savedSafLocationString
+
+                try {
+                    val stat = if (savedSafLocationString.isNotBlank()) {
+                        TransferUtils.getStatFsForSafUri(savedSafLocationUri, applicationContext)
+                    } else if (locationString.isNotBlank()) {
+                        Timber.d("Using location string for StatFs: $locationString")
+                        StatFs(locationString)
+                    } else null
+
+                    totalBytes = stat?.totalBytes ?: 0
+                    availableBytes = stat?.availableBytes ?: 0
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                isLocationAccessible = isSavedSafLocationAccessible && locationString.isNotBlank() && totalBytes > 0
             }
 
             Timber.d("locationString: $locationString")
@@ -107,10 +120,11 @@ class BackupNameViewModel(
 
             _state.update {
                 it.copy(
-                    isSaf = savedSafLocationString.isNotBlank(),
-                    safUriString = savedSafLocationString,
+                    isSaf = isSaf,
+                    safUriString = safUriString,
                     locationString = locationString,
-                    isLocationAccessible = isSavedSafLocationAccessible && locationString.isNotBlank() && totalBytes > 0,
+                    isLocationAccessible = isLocationAccessible,
+                    isLoadingLocation = false,
                     totalSpaceBytes = totalBytes,
                     availableSpaceBytes = availableBytes,
                 )

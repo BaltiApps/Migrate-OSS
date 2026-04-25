@@ -9,6 +9,7 @@ data class BackupNameState(
     val safUriString: String?,
     val locationString: String,
     val isLocationAccessible: Boolean,
+    val isLoadingLocation: Boolean = true,
     val isScanningAppSizes: Boolean = false,
     val isSpaceCalculationCancelled: Boolean = false,
     val appSizeScanProgress: Progress? = null,
