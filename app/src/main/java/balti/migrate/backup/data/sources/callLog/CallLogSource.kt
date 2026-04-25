@@ -42,25 +42,29 @@ class CallLogSource(
             val cursor = dbUtils.getCursor(context, CallLog.Calls.CONTENT_URI)
 
             val totalCount = cursor.count
-            if (totalCount == 0) return@flow
+            if (totalCount == 0) {
+                cursor.close()
+                return@flow
+            }
             cursor.moveToFirst()
 
-            for (i in 0 until totalCount) {
-                getSingleCallLog(cursor).run {
-                    dataList.add(this)
-                    emit(
-                        Progress(
-                            itemId = this._id,
-                            progressType = Progress.ProgressType.CALL_LOG_READ,
-                            percentage = getPercentage(i+1, totalCount),
-                            logs = this.logInfo
+            cursor.use {
+                for (i in 0 until totalCount) {
+                    getSingleCallLog(cursor).run {
+                        dataList.add(this)
+                        emit(
+                            Progress(
+                                itemId = this._id,
+                                progressType = Progress.ProgressType.CALL_LOG_READ,
+                                percentage = getPercentage(i+1, totalCount),
+                                logs = this.logInfo
+                            )
                         )
-                    )
-                    cursor.moveToNext()
+                        cursor.moveToNext()
+                    }
                 }
             }
 
-            cursor.close()
             onFinishedLoading(dataList)
         }.flowOn(Dispatchers.IO)
     }

@@ -37,24 +37,28 @@ class ContactsRestoreReader(
             val cursor = dbUtils.getCursor(sqLiteDatabase, ContactsDBConstants.CONTACTS_TABLE_NAME)
 
             val totalCount = cursor.count
-            if (totalCount == 0) return@flow
+            if (totalCount == 0) {
+                cursor.close()
+                return@flow
+            }
             cursor.moveToFirst()
 
-            for (i in 0 until totalCount) {
-                getSingleContact(cursor).run {
-                    dataList.add(this)
-                    emit(
-                        Progress(
-                            itemId = this._id,
-                            progressType = Progress.ProgressType.CONTACTS_BACKUP_READ,
-                            percentage = getPercentage(i+1, totalCount),
-                            logs = this.logInfo
+            cursor.use {
+                for (i in 0 until totalCount) {
+                    getSingleContact(cursor).run {
+                        dataList.add(this)
+                        emit(
+                            Progress(
+                                itemId = this._id,
+                                progressType = Progress.ProgressType.CONTACTS_BACKUP_READ,
+                                percentage = getPercentage(i+1, totalCount),
+                                logs = this.logInfo
+                            )
                         )
-                    )
-                    cursor.moveToNext()
+                        cursor.moveToNext()
+                    }
                 }
             }
-            cursor.close()
             sqLiteDatabase.close()
             onFinished(dataList)
         }.flowOn(Dispatchers.IO)

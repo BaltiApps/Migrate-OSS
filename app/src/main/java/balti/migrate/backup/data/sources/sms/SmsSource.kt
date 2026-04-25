@@ -42,25 +42,29 @@ class SmsSource(
             val cursor = dbUtils.getCursor(context, Telephony.Sms.CONTENT_URI)
 
             val totalCount = cursor.count
-            if (totalCount == 0) return@flow
+            if (totalCount == 0) {
+                cursor.close()
+                return@flow
+            }
             cursor.moveToFirst()
 
-            for (i in 0 until totalCount) {
-                getSingleSms(cursor).run {
-                    dataList.add(this)
-                    emit(
-                        Progress(
-                            itemId = this._id,
-                            progressType = Progress.ProgressType.SMS_READ,
-                            percentage = getPercentage(i+1, totalCount),
-                            logs = this.logInfo
+            cursor.use {
+                for (i in 0 until totalCount) {
+                    getSingleSms(cursor).run {
+                        dataList.add(this)
+                        emit(
+                            Progress(
+                                itemId = this._id,
+                                progressType = Progress.ProgressType.SMS_READ,
+                                percentage = getPercentage(i+1, totalCount),
+                                logs = this.logInfo
+                            )
                         )
-                    )
-                    cursor.moveToNext()
+                        cursor.moveToNext()
+                    }
                 }
             }
 
-            cursor.close()
             onFinishedLoading(dataList)
         }.flowOn(Dispatchers.IO)
     }

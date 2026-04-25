@@ -45,25 +45,29 @@ class ContactsSource(
             val cursor = dbUtils.getCursor(context, ContactsContract.Contacts.CONTENT_URI)
 
             val contactCount = cursor.count
-            if (contactCount == 0) return@flow
+            if (contactCount == 0) {
+                cursor.close()
+                return@flow
+            }
             cursor.moveToFirst()
 
-            for (i in 0 until contactCount) {
-                getSingleContact(cursor).run {
-                    dataList.add(this)
-                    emit(
-                        Progress(
-                            itemId = this._id,
-                            progressType = Progress.ProgressType.CONTACTS_READ,
-                            percentage = getPercentage(i+1, contactCount),
-                            logs = this.logInfo
+            cursor.use {
+                for (i in 0 until contactCount) {
+                    getSingleContact(cursor).run {
+                        dataList.add(this)
+                        emit(
+                            Progress(
+                                itemId = this._id,
+                                progressType = Progress.ProgressType.CONTACTS_READ,
+                                percentage = getPercentage(i+1, contactCount),
+                                logs = this.logInfo
+                            )
                         )
-                    )
-                    cursor.moveToNext()
+                        cursor.moveToNext()
+                    }
                 }
             }
 
-            cursor.close()
             onFinishedLoading(dataList)
         }.flowOn(Dispatchers.IO)
     }
