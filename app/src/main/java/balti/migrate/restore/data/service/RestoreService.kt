@@ -19,6 +19,7 @@ import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
+import baltiapps.migrate.domain.common.utils.StringUtils
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
 import baltiapps.migrate.domain.restore.usecase.RestoreAppsUseCase
 import baltiapps.migrate.domain.restore.usecase.RestoreCallLogUseCase
@@ -53,6 +54,7 @@ class RestoreService: LifecycleService() {
     private lateinit var serviceUtils: ServiceUtils
 
     private var restoreJob: Job? = null
+    private var startTime: Long = 0L
 
     companion object {
         var isRunning: Boolean = false
@@ -91,6 +93,7 @@ class RestoreService: LifecycleService() {
         return lifecycleScope.launch(Dispatchers.IO) {
             Timber.i("restore - setup")
             setup()
+            startTime = System.currentTimeMillis()
 
             notificationHandler.listenAtSafeIntervals()
 
@@ -147,7 +150,10 @@ class RestoreService: LifecycleService() {
 
             Timber.i("restore - finished - external data")
 
-            serviceUtils.emitHeadingLog(Progress.ProgressType.RESTORE_FINISHED)
+            serviceUtils.emitHeadingLog(
+                progressType = Progress.ProgressType.RESTORE_FINISHED,
+                displayText = StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime),
+            )
 
             Timber.i("restore - finished")
 
@@ -211,7 +217,10 @@ class RestoreService: LifecycleService() {
             restoreJob?.cancel()
             if (isSetup()) {
                 delay(1000)
-                serviceUtils.emitHeadingLog(Progress.ProgressType.RESTORE_CANCELLED)
+                serviceUtils.emitHeadingLog(
+                    progressType = Progress.ProgressType.RESTORE_CANCELLED,
+                    displayText = StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime),
+                )
             }
             endNotifications()
             storeProgressAndErrorsOnFinish()

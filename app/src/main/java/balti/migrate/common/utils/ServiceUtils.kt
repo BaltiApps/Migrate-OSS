@@ -27,6 +27,7 @@ class ServiceUtils(
 
     suspend fun emitHeadingLog(
         progressType: Progress.ProgressType,
+        displayText: String = "",
     ) {
         val headingTitle = contextSource.getProgressTitle(progressType)
         collectLogs(
@@ -35,6 +36,7 @@ class ServiceUtils(
                 progressType = progressType,
                 percentage = 1.0,
                 logs = "\n${headingTitle}\n${BREAK_LINE}\n",
+                displayText = displayText,
                 isLogHeading = true,
             ),
         )

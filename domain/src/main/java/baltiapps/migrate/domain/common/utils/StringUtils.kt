@@ -3,6 +3,18 @@ package baltiapps.migrate.domain.common.utils
 import java.util.Locale
 
 object StringUtils {
+    fun getHumanReadableTimeDuration(durationMs: Long): String {
+        val totalSeconds = durationMs / 1000
+        val hours = totalSeconds / 3600
+        val minutes = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
+        return when {
+            hours > 0 -> "${hours}h ${minutes}m ${seconds}s"
+            minutes > 0 -> "${minutes}m ${seconds}s"
+            else -> "${seconds}s"
+        }
+    }
+
     fun getHumanReadableSize(sizeInBytes: Long): String {
         val bytes = sizeInBytes.toDouble()
         val kb = 1024.0

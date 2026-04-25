@@ -39,6 +39,7 @@ import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemSource
 import baltiapps.migrate.domain.common.sources.fileSystem.TextWriter
+import baltiapps.migrate.domain.common.utils.StringUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -73,6 +74,7 @@ class BackupService : LifecycleService() {
     private lateinit var serviceUtils: ServiceUtils
 
     private var backupJob: Job? = null
+    private var startTime: Long = 0L
 
     companion object {
         var isRunning: Boolean = false
@@ -122,6 +124,7 @@ class BackupService : LifecycleService() {
         return lifecycleScope.launch(Dispatchers.IO) {
             Timber.i("backup - setup")
             setup()
+            startTime = System.currentTimeMillis()
 
             val roughWorkDir = JavaFile("$filesDir/$INTERNAL_ROUGH_WORK_BACKUP_DIRECTORY")
             val internalDir = JavaFile(roughWorkDir, backupName)
@@ -226,7 +229,10 @@ class BackupService : LifecycleService() {
 
             Timber.i("backup - finished exporting backup")
 
-            serviceUtils.emitHeadingLog(Progress.ProgressType.BACKUP_FINISHED)
+            serviceUtils.emitHeadingLog(
+                progressType = Progress.ProgressType.BACKUP_FINISHED,
+                displayText = StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime),
+            )
 
             Timber.i("backup - finished")
 
@@ -323,7 +329,10 @@ class BackupService : LifecycleService() {
             backupJob?.cancel()
             if (isSetup()) {
                 delay(1000)
-                serviceUtils.emitHeadingLog(Progress.ProgressType.BACKUP_CANCELLED)
+                serviceUtils.emitHeadingLog(
+                    progressType = Progress.ProgressType.BACKUP_CANCELLED,
+                    displayText = StringUtils.getHumanReadableTimeDuration(System.currentTimeMillis() - startTime),
+                )
             }
             endNotifications()
             storeProgressAndErrorsOnFinish()
