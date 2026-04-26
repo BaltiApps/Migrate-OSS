@@ -28,7 +28,7 @@ if [ "$EXT_DATA_TAR" != "$NULL_MARKER" ]; then
     echo "Restore external data"
     echo
 
-    tar -xzpf "$EXT_DATA_TAR"
+    tar -xvzpf "$EXT_DATA_TAR"
   else
     echo "External data tar not found: $EXT_DATA_TAR" >&2
   fi
@@ -44,7 +44,7 @@ if [ "$EXT_MEDIA_TAR" != "$NULL_MARKER" ]; then
     echo "Restore external media"
     echo
 
-    tar -xzpf "$EXT_MEDIA_TAR"
+    tar -xvzpf "$EXT_MEDIA_TAR"
   else
     echo "External media tar not found: $EXT_MEDIA_TAR" >&2
   fi
