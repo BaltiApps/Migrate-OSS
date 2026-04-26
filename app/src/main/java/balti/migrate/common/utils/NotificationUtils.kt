@@ -13,9 +13,12 @@ fun NotificationManager.makeNotificationChannel(
     channelId: String,
     channelDesc: String,
     importance: Int,
+    silent: Boolean = false,
 ) {
     createNotificationChannel(
-        NotificationChannel(channelId, channelDesc, importance)
+        NotificationChannel(channelId, channelDesc, importance).apply {
+            if (silent) setSound(null, null)
+        }
     )
 }
 
