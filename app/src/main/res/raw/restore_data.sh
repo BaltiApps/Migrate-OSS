@@ -68,7 +68,7 @@ mkdir -p "$dataDir"
 tar -xvzpf "$DATA_TAR_LOCATION" -C "$dataDir" || { echo "Error: Failed to extract data for $PACKAGE_NAME" >&2; print_end_marker; exit 1; }
 
 echo "Fixing contexts and permissions for $dataDir..."
-chmod 771 "${dataDir}"
+chmod 700 "${dataDir}"
 chown "${app_uid}":"${app_uid}" -Rf "${dataDir}"
 restorecon -RF "${dataDir}" 2>/dev/null
 
