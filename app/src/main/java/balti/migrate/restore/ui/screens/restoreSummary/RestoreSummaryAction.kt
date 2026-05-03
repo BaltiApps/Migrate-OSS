@@ -9,6 +9,8 @@ sealed class RestoreSummaryAction {
     data object SkipSms : RestoreSummaryAction()
     data object OnDefaultSmsAppSet : RestoreSummaryAction()
     data class OnNotificationPermissionResult(val isGranted: Boolean) : RestoreSummaryAction()
+    data object DismissExternalDataWarningDialog : RestoreSummaryAction()
+    data object ProceedExternalDataWarningDialog : RestoreSummaryAction()
     data object DismissNoSpaceDialog : RestoreSummaryAction()
     data object ShowAppSizesDialog : RestoreSummaryAction()
     data object DismissAppSizesDialog : RestoreSummaryAction()

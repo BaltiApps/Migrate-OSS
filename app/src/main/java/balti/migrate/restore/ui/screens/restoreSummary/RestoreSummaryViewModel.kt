@@ -61,6 +61,7 @@ class RestoreSummaryViewModel(
     val vcfFile: JavaFile = JavaFile("${applicationContext.filesDir}/$INTERNAL_ROUGH_WORK_DIRECTORY/$VCF_FILE_NAME")
 
     private lateinit var runService: () -> Unit
+    private var externalDataWarningAcknowledged = false
 
     private val textWriter = TextWriterImpl()
 
@@ -134,7 +135,11 @@ class RestoreSummaryViewModel(
                         }
                         return@launch
                     }
-                    runService()
+                    if (restoreDataRepository.shouldRestoreExternalData() && !externalDataWarningAcknowledged) {
+                        _state.update { it.copy(shouldShowExternalDataWarningDialog = true) }
+                    } else {
+                        runService()
+                    }
                 }
             }
         }
@@ -225,6 +230,14 @@ class RestoreSummaryViewModel(
                             else RestoreSummaryItemState.CANCELLED
                     )
                 }
+                runRestore()
+            }
+            is RestoreSummaryAction.DismissExternalDataWarningDialog -> {
+                _state.update { it.copy(shouldShowExternalDataWarningDialog = false) }
+            }
+            is RestoreSummaryAction.ProceedExternalDataWarningDialog -> {
+                _state.update { it.copy(shouldShowExternalDataWarningDialog = false) }
+                externalDataWarningAcknowledged = true
                 runRestore()
             }
             is RestoreSummaryAction.DismissNoSpaceDialog -> {

@@ -16,6 +16,7 @@ data class RestoreSummaryState(
     val smsSummaryState: RestoreSummaryItemState,
     val appsSummaryState: RestoreSummaryItemState,
     val notificationSummaryState: RestoreSummaryItemState,
+    val shouldShowExternalDataWarningDialog: Boolean = false,
     val shouldShowNoSpaceDialog: Boolean = false,
     val requiredSpaceBytes: Long = 0L,
     val availableSpaceBytes: Long = 0L,

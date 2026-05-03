@@ -38,6 +38,7 @@ import balti.migrate.BuildConfig
 import balti.migrate.R
 import balti.migrate.common.ui.components.AppSizesDialog
 import balti.migrate.common.ui.components.ButtonStatus
+import balti.migrate.common.ui.components.ExternalDataRestoreWarningDialog
 import balti.migrate.common.ui.components.LoadingDialog
 import balti.migrate.common.ui.components.NextFab
 import balti.migrate.common.ui.components.SimpleYesNoDialog
@@ -138,6 +139,12 @@ fun RestoreSummary(
             // For such devices, notification permission is already granted.
             viewModel.onAction(RestoreSummaryAction.OnNotificationPermissionResult(true))
         },
+        onDismissExternalDataWarningDialog = {
+            viewModel.onAction(RestoreSummaryAction.DismissExternalDataWarningDialog)
+        },
+        onProceedExternalDataWarningDialog = {
+            viewModel.onAction(RestoreSummaryAction.ProceedExternalDataWarningDialog)
+        },
         onDismissNoSpaceDialog = {
             viewModel.onAction(RestoreSummaryAction.DismissNoSpaceDialog)
         },
@@ -163,6 +170,8 @@ private fun Content(
     showDialogDefaultSmsSet: @Composable () -> Unit,
     requestDefaultSmsApp: () -> Unit,
     requestNotificationPermission: () -> Unit,
+    onDismissExternalDataWarningDialog: () -> Unit,
+    onProceedExternalDataWarningDialog: () -> Unit,
     onDismissNoSpaceDialog: () -> Unit,
     onShowAppSizesDialog: () -> Unit,
     onDismissAppSizesDialog: () -> Unit,
@@ -171,6 +180,12 @@ private fun Content(
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
+    if (state().shouldShowExternalDataWarningDialog) {
+        ExternalDataRestoreWarningDialog(
+            onDismiss = onDismissExternalDataWarningDialog,
+            onProceed = onProceedExternalDataWarningDialog,
+        )
+    }
     if (state().shouldShowNoSpaceDialog) {
         SimpleYesNoDialog(
             titleText = stringResource(R.string.insufficient_storage_title),
