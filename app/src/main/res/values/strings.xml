@@ -281,4 +281,9 @@
     <string name="external_data_description">Data and Media stored in /sdcard/Android/. Only for apps which are selected for data backup.</string>
     <string name="data">Data</string>
     <string name="media">Media</string>
+
+    <!--ExternalDataRestoreWarningDialog.kt-->
+    <string name="external_data_warning">External data warning</string>
+    <string name="external_data_restore_warning_title">Restart needed. Detection may be slow.</string>
+    <string name="external_data_restore_warning_description">For example if you have hundreds of photos in WhatsApp chats, after restore WhatsApp will not see them immediately. After device restart, it may take several hours for the indexing to complete.</string>
 </resources>
