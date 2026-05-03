@@ -2,10 +2,12 @@ package balti.migrate.common.ui.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.DialogProperties
@@ -15,11 +17,12 @@ import balti.migrate.R
 fun SimpleYesNoDialog(
     dialogText: String,
     onPositiveButton: () -> Unit,
-    onNegativeButton: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
+    onNegativeButton: (() -> Unit)? = null,
     positiveButtonLabel: String? = null,
     negativeButtonLabel: String? = null,
     icon: ImageVector? = null,
+    iconTint: Color? = null,
     titleText: String? = null,
 ) {
     AlertDialog(
@@ -47,7 +50,8 @@ fun SimpleYesNoDialog(
             {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = iconTint ?: LocalContentColor.current,
                 )
             }
         } else null,
