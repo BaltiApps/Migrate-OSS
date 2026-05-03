@@ -106,6 +106,7 @@ class ExternalDataRestoreEngine(
                         packageName,
                         extDataTar,
                         extMediaTar,
+                        "0",  // TODO: find a way to send the user
                         AppBackupConstants.NULL_MARKER,
                         AppBackupConstants.END_MARKER,
                     )
