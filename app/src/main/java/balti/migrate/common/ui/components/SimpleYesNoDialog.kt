@@ -15,7 +15,7 @@ import balti.migrate.R
 fun SimpleYesNoDialog(
     dialogText: String,
     onPositiveButton: () -> Unit,
-    onNegativeButton: () -> Unit,
+    onNegativeButton: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     positiveButtonLabel: String? = null,
     negativeButtonLabel: String? = null,
@@ -36,9 +36,11 @@ fun SimpleYesNoDialog(
                 Text(positiveButtonLabel ?: stringResource(R.string.proceed))
             }
         },
-        dismissButton = {
-            TextButton(onClick = onNegativeButton) {
-                Text(negativeButtonLabel ?: stringResource(R.string.skip))
+        dismissButton = onNegativeButton?.let {
+            {
+                TextButton(onClick = it) {
+                    Text(negativeButtonLabel ?: stringResource(R.string.skip))
+                }
             }
         },
         icon = if (icon != null) {
