@@ -1,5 +1,6 @@
 package balti.migrate.common.ui.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material3.Checkbox
@@ -37,26 +38,43 @@ fun AppCountBar(
             style = MaterialTheme.typography.labelLarge,
         )
         Spacer(modifier = Modifier.weight(1f))
-        Checkbox(
-            checked = areAllApksSelected,
-            onCheckedChange = {
-                onAllApkToggled(it)
-            },
-            enabled = shouldEnableApkSelection && !isStaging,
-        )
-        Checkbox(
-            checked = areAllDataSelected,
-            onCheckedChange = {
-                onAllDataToggled(it)
-            },
-            enabled = shouldEnableDataSelection && !isStaging,
-        )
-        Checkbox(
-            checked = areAllPermissionsSelected,
-            onCheckedChange = {
-                onAllPermissionToggled(it)
-            },
-            enabled = shouldEnablePermissionSelection && !isStaging,
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "A", style = MaterialTheme.typography.labelSmall)
+            Checkbox(
+                checked = areAllApksSelected,
+                onCheckedChange = { onAllApkToggled(it) },
+                enabled = shouldEnableApkSelection && !isStaging,
+            )
+        }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "D", style = MaterialTheme.typography.labelSmall)
+            Checkbox(
+                checked = areAllDataSelected,
+                onCheckedChange = { onAllDataToggled(it) },
+                enabled = shouldEnableDataSelection && !isStaging,
+            )
+        }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "P", style = MaterialTheme.typography.labelSmall)
+            Checkbox(
+                checked = areAllPermissionsSelected,
+                onCheckedChange = { onAllPermissionToggled(it) },
+                enabled = shouldEnablePermissionSelection && !isStaging,
+            )
+        }
+    }
+}
+
+@Composable
+fun AppCountBarLegend(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            text = stringResource(R.string.app_count_bar_legend),
+            style = MaterialTheme.typography.labelSmall,
         )
     }
 }

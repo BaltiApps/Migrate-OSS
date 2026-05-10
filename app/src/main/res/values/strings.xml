@@ -156,6 +156,7 @@
 
     <!--CountBar.kt-->
     <string name="selected_items">Selected items</string>
+    <string name="app_count_bar_legend">A - APKs, D - Data, P - Permissions</string>
 
     <!--ContactRestoreSelection.kt-->
     <string name="label_contacts_restore">Contacts restore</string>
