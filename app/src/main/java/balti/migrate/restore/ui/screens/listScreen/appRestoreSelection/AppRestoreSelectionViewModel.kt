@@ -7,6 +7,7 @@ import baltiapps.migrate.domain.common.model.AppListItem
 import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.common.usecase.StageSelectedApps
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
+import baltiapps.migrate.domain.restore.sources.AppVersionInfoFetcher
 import baltiapps.migrate.domain.restore.usecase.ReadAppListForRestoreUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,7 @@ class AppRestoreSelectionViewModel(
     private val readAppListForRestoreUseCase: ReadAppListForRestoreUseCase,
     private val stageSelectedApps: StageSelectedApps,
     private val restoreDataRepository: RestoreDataRepository,
+    private val appVersionInfoFetcher: AppVersionInfoFetcher,
 ): ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -50,7 +52,12 @@ class AppRestoreSelectionViewModel(
             }
 
             readAppListForRestoreUseCase.invoke().onCompletion {
-                val appListItems = restoreDataRepository.appListItems
+                val appListItems = restoreDataRepository.appListItems.map { item ->
+                    val installedVersionCode = appVersionInfoFetcher.getInstalledAppVersionCode(item._id)
+                    val isVersionLower = installedVersionCode > 0 && item.versionCode < installedVersionCode
+                    if (isVersionLower) item.copy(isVersionLowerThanInstalled = true, isApkEnabled = false)
+                    else item
+                }
                 _state.update {
                     it.copy(
                         progress = it.progress.copy(percentage = 1.0),

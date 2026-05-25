@@ -11,7 +11,7 @@ class AppListItemToDataItemConverterImpl(): AppListItemToDataItemConverter<AppDa
         dataItem: AppData
     ): AppData {
         return dataItem.copy(
-            shouldBackupApk = listItem.isApkSelected,
+            shouldBackupApk = listItem.isApkSelected && !listItem.isVersionLowerThanInstalled,
             shouldBackupData = listItem.isDataSelected,
             shouldBackupPermissions = listItem.isPermissionsSelected,
             shouldBackupExternalData = listItem.isDataSelected && listItem.isExternalDataSelected,

@@ -22,6 +22,8 @@ data class AppListItem(
     val isExternalDataEnabled: Boolean = true,
     val isExternalMediaEnabled: Boolean = true,
 
+    val isVersionLowerThanInstalled: Boolean = false,
+
     val isSystemApp: Boolean,
     val isUpdatedSystemApp: Boolean,
 

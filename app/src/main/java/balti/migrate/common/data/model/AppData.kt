@@ -69,6 +69,8 @@ data class AppData(
             isExternalDataEnabled = externalDataBytes != 0L,
             isExternalMediaEnabled = externalMediaBytes != 0L,
 
+            isVersionLowerThanInstalled = false,
+
             isSystemApp = isSystemApp,
             isUpdatedSystemApp = isUpdatedSystemApp,
         )

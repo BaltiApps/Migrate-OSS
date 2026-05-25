@@ -11,6 +11,7 @@ import balti.migrate.restore.data.sources.RestoreNotificationHandlerImpl
 import balti.migrate.restore.data.sources.apps.AppIconReader
 import balti.migrate.restore.data.sources.apps.AppInfoReader
 import balti.migrate.restore.data.sources.apps.AppRestoreEngine
+import balti.migrate.restore.data.sources.apps.AppVersionInfoFetcherImpl
 import balti.migrate.restore.data.sources.apps.ExternalDataRestoreEngine
 import balti.migrate.restore.data.sources.apps.InternalStorageSpaceReaderImpl
 import balti.migrate.restore.data.sources.callLog.CallLogRestoreEngine
@@ -31,6 +32,7 @@ import baltiapps.migrate.domain.common.repository.ProgressLogRepository
 import baltiapps.migrate.domain.common.sources.NotificationHandler
 import baltiapps.migrate.domain.common.sources.fileSystem.TextReader
 import baltiapps.migrate.domain.restore.repository.RestoreDataRepository
+import baltiapps.migrate.domain.restore.sources.AppVersionInfoFetcher
 import baltiapps.migrate.domain.restore.sources.InternalStorageSpaceReader
 import baltiapps.migrate.domain.restore.sources.RestoreEngine
 import baltiapps.migrate.domain.restore.sources.RestoreReader
@@ -111,6 +113,7 @@ val restoreDiModule = module {
         )
     }
     singleOf(::InternalStorageSpaceReaderImpl) bind InternalStorageSpaceReader::class
+    singleOf(::AppVersionInfoFetcherImpl) bind AppVersionInfoFetcher::class
 
     /* Repositories */
 
