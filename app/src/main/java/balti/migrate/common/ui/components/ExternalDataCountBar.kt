@@ -4,7 +4,6 @@ import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +33,7 @@ fun ExternalDataCountBar(
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.weight(1f),
         ) {
             Text(
                 text = "${stringResource(R.string.selected_items)} - $selectedCount/$totalCount",
@@ -45,7 +45,6 @@ fun ExternalDataCountBar(
                 modifier = Modifier.basicMarquee(),
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             CheckboxLabel("D")
             Checkbox(

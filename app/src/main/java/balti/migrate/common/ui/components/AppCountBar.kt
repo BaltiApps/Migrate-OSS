@@ -1,9 +1,9 @@
 package balti.migrate.common.ui.components
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,6 +37,7 @@ fun AppCountBar(
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.weight(1f),
         ) {
             Text(
                 text = "${stringResource(R.string.selected_items)} - $selectedCount/$totalCount",
@@ -45,9 +46,9 @@ fun AppCountBar(
             Text(
                 text = stringResource(R.string.app_count_bar_legend),
                 style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.basicMarquee(),
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             CheckboxLabel("A")
             Checkbox(
