@@ -79,11 +79,11 @@ fun AppCountBar(
 }
 
 @Composable
-private fun CheckboxLabel(text: String) {
+internal fun CheckboxLabel(text: String) {
     Text(text = text, style = MaterialTheme.typography.labelSmall)
 }
 
-private fun Modifier.removeTopPadding() = layout { measurable, constraints ->
+internal fun Modifier.removeTopPadding() = layout { measurable, constraints ->
     val placeable = measurable.measure(constraints)
     val topPadding = 10.dp.roundToPx()
     layout(placeable.width, placeable.height - topPadding) {
