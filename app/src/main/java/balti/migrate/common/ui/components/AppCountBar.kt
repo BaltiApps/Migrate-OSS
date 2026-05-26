@@ -1,5 +1,6 @@
 package balti.migrate.common.ui.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,9 +10,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import balti.migrate.R
-
 
 @Composable
 fun AppCountBar(
@@ -33,48 +35,58 @@ fun AppCountBar(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = "${stringResource(R.string.selected_items)} - $selectedCount/$totalCount",
-            style = MaterialTheme.typography.labelLarge,
-        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = "${stringResource(R.string.selected_items)} - $selectedCount/$totalCount",
+                style = MaterialTheme.typography.labelLarge,
+            )
+            Text(
+                text = stringResource(R.string.app_count_bar_legend),
+                style = MaterialTheme.typography.labelSmall,
+            )
+        }
         Spacer(modifier = Modifier.weight(1f))
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "A", style = MaterialTheme.typography.labelSmall)
+            CheckboxLabel("A")
             Checkbox(
                 checked = areAllApksSelected,
                 onCheckedChange = { onAllApkToggled(it) },
                 enabled = shouldEnableApkSelection && !isStaging,
+                modifier = Modifier.removeTopPadding()
             )
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "D", style = MaterialTheme.typography.labelSmall)
+            CheckboxLabel("D")
             Checkbox(
                 checked = areAllDataSelected,
                 onCheckedChange = { onAllDataToggled(it) },
                 enabled = shouldEnableDataSelection && !isStaging,
+                modifier = Modifier.removeTopPadding()
             )
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "P", style = MaterialTheme.typography.labelSmall)
+            CheckboxLabel("P")
             Checkbox(
                 checked = areAllPermissionsSelected,
                 onCheckedChange = { onAllPermissionToggled(it) },
                 enabled = shouldEnablePermissionSelection && !isStaging,
+                modifier = Modifier.removeTopPadding()
             )
         }
     }
 }
 
 @Composable
-fun AppCountBarLegend(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Spacer(modifier = Modifier.weight(1f))
-        Text(
-            text = stringResource(R.string.app_count_bar_legend),
-            style = MaterialTheme.typography.labelSmall,
-        )
+private fun CheckboxLabel(text: String) {
+    Text(text = text, style = MaterialTheme.typography.labelSmall)
+}
+
+private fun Modifier.removeTopPadding() = layout { measurable, constraints ->
+    val placeable = measurable.measure(constraints)
+    val topPadding = 10.dp.roundToPx()
+    layout(placeable.width, placeable.height - topPadding) {
+        placeable.placeRelative(0, -topPadding)
     }
 }

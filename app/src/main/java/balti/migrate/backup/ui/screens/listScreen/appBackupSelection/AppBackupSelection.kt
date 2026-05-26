@@ -28,7 +28,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.backup.ui.screens.listScreen.appBackupSelection.components.AppSelectionFilterDialog
 import balti.migrate.common.ui.components.AppCountBar
-import balti.migrate.common.ui.components.AppCountBarLegend
 import balti.migrate.common.ui.components.RenderAppListItem
 import balti.migrate.common.ui.components.SearchBar
 import balti.migrate.common.ui.listScreen.ListScreenShell
@@ -202,12 +201,6 @@ private fun Content(
                             .fillMaxWidth()
                             .background(MaterialTheme.colorScheme.surfaceContainer)
                             .padding(8.dp),
-                    )
-                    AppCountBarLegend(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surfaceContainer)
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
                     )
                 }
             }
