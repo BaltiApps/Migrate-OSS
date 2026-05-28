@@ -1,56 +1,86 @@
 package balti.migrate.app.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import balti.migrate.app.ui.navigation.AppNavBarItem
+import androidx.compose.ui.res.stringResource
+import balti.migrate.R
+import balti.migrate.app.ui.screens.appSettings.AppSettings
+import balti.migrate.app.ui.screens.home.ScreenHome
+import baltiapps.migrate.domain.common.sources.Preferences
+
+private enum class MainScreenTab { Home, Settings }
 
 @Composable
 fun MainScreenNavContainer(
-    appNavBarItems: List<AppNavBarItem>,
-    currentNavRoute: AppNavBarItem,
-    onBottomNavItemSelected: (AppNavBarItem) -> Unit,
-    content: @Composable () -> Unit,
+    onBackupSelected: () -> Unit,
+    onRestoreSelected: () -> Unit,
+    updateUiState: (darkMode: Preferences.DarkMode, followSystemColors: Boolean) -> Unit,
 ) {
+    var currentTab by remember { mutableStateOf(MainScreenTab.Home) }
+
+    BackHandler(enabled = currentTab != MainScreenTab.Home) {
+        currentTab = MainScreenTab.Home
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             NavigationBar {
-                appNavBarItems.forEach { item ->
-                    NavigationBarItem(
-                        selected = currentNavRoute == item,
-                        onClick = {
-                            if (item != currentNavRoute) {
-                                onBottomNavItemSelected(item)
-                            }
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = if (currentNavRoute == item) {
-                                    item.filledIconVector
-                                } else item.unfilledIconVector,
-                                contentDescription = item.label,
-                            )
-                        },
-                        label = {
-                            Text(text = item.label)
-                        }
-                    )
-                }
+                NavigationBarItem(
+                    selected = currentTab == MainScreenTab.Home,
+                    onClick = { currentTab = MainScreenTab.Home },
+                    icon = {
+                        Icon(
+                            imageVector = if (currentTab == MainScreenTab.Home) Icons.Filled.Home else Icons.Outlined.Home,
+                            contentDescription = stringResource(R.string.home),
+                        )
+                    },
+                    label = { Text(stringResource(R.string.home)) },
+                )
+                NavigationBarItem(
+                    selected = currentTab == MainScreenTab.Settings,
+                    onClick = { currentTab = MainScreenTab.Settings },
+                    icon = {
+                        Icon(
+                            imageVector = if (currentTab == MainScreenTab.Settings) Icons.Filled.Settings else Icons.Outlined.Settings,
+                            contentDescription = stringResource(R.string.settings),
+                        )
+                    },
+                    label = { Text(stringResource(R.string.settings)) },
+                )
             }
         }
     ) { padding ->
         Box(
             modifier = Modifier.fillMaxSize().padding(padding)
         ) {
-            content()
+            when (currentTab) {
+                MainScreenTab.Home -> ScreenHome(
+                    onBackupSelected = onBackupSelected,
+                    onRestoreSelected = onRestoreSelected,
+                )
+                MainScreenTab.Settings -> AppSettings(
+                    updateUiState = updateUiState,
+                )
+            }
         }
     }
 }

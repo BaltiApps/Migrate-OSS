@@ -4,15 +4,9 @@ import android.widget.Toast
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -23,8 +17,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import balti.migrate.R
 import balti.migrate.app.ui.components.MainScreenNavContainer
-import balti.migrate.app.ui.screens.appSettings.AppSettings
-import balti.migrate.app.ui.screens.home.ScreenHome
 import balti.migrate.app.ui.screens.setupPermission.SetupPermissionScreen
 import balti.migrate.backup.data.service.BackupService
 import balti.migrate.backup.ui.screens.backupName.BackupName
@@ -60,21 +52,6 @@ fun Graph(
     updateUiState: (darkMode: Preferences.DarkMode, followSystemColors: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val appNavBarItems = listOf(
-        AppNavBarItem(
-            route = RouteHome,
-            label = stringResource(id = R.string.home),
-            filledIconVector = Icons.Filled.Home,
-            unfilledIconVector = Icons.Outlined.Home,
-        ),
-        AppNavBarItem(
-            route = RouteSettings,
-            label = stringResource(id = R.string.settings),
-            filledIconVector = Icons.Filled.Settings,
-            unfilledIconVector = Icons.Outlined.Settings,
-        ),
-    )
-
     val navController = rememberNavController()
     val activity = LocalActivity.current
     NavHost(
@@ -93,53 +70,33 @@ fun Graph(
         composable<RouteHome> {
             val viewModel = it.getSharedViewModel<HomeGraphViewModel>(navController)
             MainScreenNavContainer(
-                appNavBarItems = appNavBarItems,
-                currentNavRoute = appNavBarItems[0],
-                onBottomNavItemSelected = { navItem ->
-                    navController.popBackStack()
-                    navController.navigate(navItem.route)
-                }
-            ) {
-                ScreenHome(
-                    onBackupSelected = {
-                        when {
-                            BackupService.isRunning -> navController.navigate(
-                                RouteBackupProgressScreen
-                            )
-
-                            RestoreService.isRunning -> {
-                                Toast.makeText(
-                                    activity,
-                                    R.string.cannot_backup_when_restore_is_running,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-
-                            else -> {
-                                viewModel.resetBackupRepository()
-                                navController.navigate(RouteBackup)
-                            }
+                onBackupSelected = {
+                    when {
+                        BackupService.isRunning -> navController.navigate(RouteBackupProgressScreen)
+                        RestoreService.isRunning -> Toast.makeText(
+                            activity,
+                            R.string.cannot_backup_when_restore_is_running,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        else -> {
+                            viewModel.resetBackupRepository()
+                            navController.navigate(RouteBackup)
                         }
-                    },
-                    onRestoreSelected = {
-                        when {
-                            RestoreService.isRunning -> navController.navigate(
-                                RouteRestoreProgressScreen
-                            )
-
-                            BackupService.isRunning -> {
-                                Toast.makeText(
-                                    activity,
-                                    R.string.cannot_restore_when_backup_is_running,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-
-                            else -> navController.navigate(RouteRestore)
-                        }
-                    },
-                )
-            }
+                    }
+                },
+                onRestoreSelected = {
+                    when {
+                        RestoreService.isRunning -> navController.navigate(RouteRestoreProgressScreen)
+                        BackupService.isRunning -> Toast.makeText(
+                            activity,
+                            R.string.cannot_restore_when_backup_is_running,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        else -> navController.navigate(RouteRestore)
+                    }
+                },
+                updateUiState = updateUiState,
+            )
         }
         navigation<RouteBackup>(
             startDestination = RouteBackupSelections,
@@ -339,20 +296,6 @@ fun Graph(
                 )
             }
         }
-        composable<RouteSettings> {
-            MainScreenNavContainer(
-                appNavBarItems = appNavBarItems,
-                currentNavRoute = appNavBarItems[1],
-                onBottomNavItemSelected = { navItem ->
-                    navController.popBackStack()
-                    navController.navigate(navItem.route)
-                }
-            ) {
-                AppSettings(
-                    updateUiState = updateUiState,
-                )
-            }
-        }
     }
 }
 
@@ -361,9 +304,6 @@ object RoutePermissionScreen
 
 @Serializable
 object RouteHome
-
-@Serializable
-object RouteSettings
 
 @Serializable
 object RouteBackup
