@@ -1,5 +1,6 @@
 package balti.migrate.app.ui.screens.purchase
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
+import balti.migrate.app.ui.screens.purchase.components.ErrorContent
 import balti.migrate.app.ui.screens.purchase.components.PurchaseContent
 import balti.migrate.app.ui.screens.purchase.components.ThankYouContent
 import org.koin.compose.viewmodel.koinViewModel
@@ -25,10 +27,14 @@ fun PurchaseScreen(
     viewModel: PurchaseScreenViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val activity = LocalActivity.current ?: return
     Content(
         state = state,
         onItemSelected = { item ->
-            viewModel.performAction(PurchaseScreenAction.OnItemSelected(item))
+            viewModel.performAction(PurchaseScreenAction.OnItemSelected(item, activity))
+        },
+        onRetry = {
+            viewModel.performAction(PurchaseScreenAction.OnRetry)
         },
     )
 }
@@ -38,6 +44,7 @@ fun PurchaseScreen(
 private fun Content(
     state: PurchaseScreenState,
     onItemSelected: (PurchaseItem) -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -55,13 +62,16 @@ private fun Content(
                 .padding(dimensionResource(R.dimen.screen_padding))
                 .verticalScroll(rememberScrollState())
 
-            if (state.purchasedItem != null) {
-                ThankYouContent(
+            when {
+                state.purchasedItem != null -> ThankYouContent(
                     item = state.purchasedItem,
                     modifier = scrollModifier,
                 )
-            } else {
-                PurchaseContent(
+                state.isError -> ErrorContent(
+                    onRetry = onRetry,
+                    modifier = scrollModifier,
+                )
+                else -> PurchaseContent(
                     state = state,
                     onItemSelected = onItemSelected,
                     isLoading = state.isLoading,
@@ -72,17 +82,29 @@ private fun Content(
     }
 }
 
+
 @Preview
 @Composable
 private fun PurchaseScreenPreview() {
     Content(
         state = PurchaseScreenState(
             items = listOf(
-                PurchaseItem("Thanks", "$2.00"),
-                PurchaseItem("Awesome", "$4.00"),
-                PurchaseItem("Legend", "$6.00"),
+                PurchaseItem("migrate_donate_supporter", "Supporter", "$2.00"),
+                PurchaseItem("migrate_donate_backer", "Backer", "$4.00"),
+                PurchaseItem("migrate_donate_legend", "Legend", "$6.00"),
             )
         ),
         onItemSelected = {},
+        onRetry = {},
+    )
+}
+
+@Preview
+@Composable
+private fun PurchaseScreenErrorPreview() {
+    Content(
+        state = PurchaseScreenState(isError = true),
+        onItemSelected = {},
+        onRetry = {},
     )
 }
