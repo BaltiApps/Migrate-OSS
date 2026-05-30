@@ -20,13 +20,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import balti.migrate.R
 import balti.migrate.app.ui.screens.appSettings.AppSettings
 import balti.migrate.app.ui.screens.home.ScreenHome
+import balti.migrate.app.ui.screens.purchase.PurchaseScreen
 import baltiapps.migrate.domain.common.sources.Preferences
 
-private enum class MainScreenTab { Home, Settings }
+private enum class MainScreenTab { Home, Settings, Purchase }
 
 @Composable
 fun MainScreenNavContainer(
@@ -66,6 +68,17 @@ fun MainScreenNavContainer(
                     },
                     label = { Text(stringResource(R.string.settings)) },
                 )
+                NavigationBarItem(
+                    selected = currentTab == MainScreenTab.Purchase,
+                    onClick = { currentTab = MainScreenTab.Purchase },
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_gift),
+                            contentDescription = stringResource(R.string.purchase),
+                        )
+                    },
+                    label = { Text(stringResource(R.string.support)) },
+                )
             }
         }
     ) { padding ->
@@ -80,6 +93,7 @@ fun MainScreenNavContainer(
                 MainScreenTab.Settings -> AppSettings(
                     updateUiState = updateUiState,
                 )
+                MainScreenTab.Purchase -> PurchaseScreen()
             }
         }
     }

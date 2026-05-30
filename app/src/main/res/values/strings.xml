@@ -231,6 +231,17 @@
     <string name="skip_for_now">Skip for now</string>
     <string name="dont_show_again">Don\'t show again</string>
 
+    <!--PurchaseScreen-->
+    <string name="purchase">Purchase</string>
+    <string name="support">Support</string>
+    <string name="purchase_description_1">All core features remain free and usable forever.</string>
+    <string name="purchase_description_2">Your purchase motivates me to add more features and continue development.</string>
+    <string name="purchase_description_3">Choose any item as per your wish.\nThank you for your generous support ❤️</string>
+    <string name="get">Get</string>
+    <string name="purchase_thank_you_title">Thank you so much! ❤️</string>
+    <string name="purchase_thank_you_subtitle">Your support means a lot and keeps this project going.</string>
+    <string name="purchase_thank_you_item">You chose: %s (%s)</string>
+
     <!--AppSettings.kt-->
     <string name="appearance">Appearance</string>
     <string name="dark_mode">Dark mode</string>
