@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +33,7 @@ import balti.migrate.app.ui.screens.purchase.PurchaseScreenState
 internal fun PurchaseContent(
     state: PurchaseScreenState,
     onItemSelected: (PurchaseItem) -> Unit,
+    onRestorePurchase: () -> Unit,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
 ) {
@@ -103,6 +105,9 @@ internal fun PurchaseContent(
                 )
             } else {
                 Spacer(modifier = Modifier.height(8.dp))
+            }
+            TextButton(onClick = onRestorePurchase, enabled = !isLoading) {
+                Text(text = stringResource(R.string.restore_purchase))
             }
         }
     }

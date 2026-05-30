@@ -243,6 +243,7 @@
     <string name="purchase_thank_you_item">You chose: %s (%s)</string>
     <string name="purchase_error">Could not load items. Please check your connection.</string>
     <string name="retry">Retry</string>
+    <string name="restore_purchase">Restore purchase</string>
 
     <!--AppSettings.kt-->
     <string name="appearance">Appearance</string>

@@ -145,6 +145,11 @@ class PurchasesDataSourceImpl(private val context: Context) : PurchasesDataSourc
         return ownedId?.let { productDetailsMap[it]?.toMigrateProductInfo() }
     }
 
+    override suspend fun restorePurchases(productIds: List<String>): MigrateProductInfo? {
+        Timber.d("restorePurchases: triggered by user")
+        return getOwnedProduct(productIds)
+    }
+
     override fun launchBillingFlow(activity: Activity, productId: String) {
         val productDetails = productDetailsMap[productId] ?: run {
             Timber.e("launchBillingFlow: no ProductDetails found for $productId")

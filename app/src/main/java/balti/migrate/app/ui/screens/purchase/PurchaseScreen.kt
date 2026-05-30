@@ -36,6 +36,9 @@ fun PurchaseScreen(
         onRetry = {
             viewModel.performAction(PurchaseScreenAction.OnRetry)
         },
+        onRestorePurchase = {
+            viewModel.performAction(PurchaseScreenAction.OnRestorePurchase)
+        },
     )
 }
 
@@ -45,6 +48,7 @@ private fun Content(
     state: PurchaseScreenState,
     onItemSelected: (PurchaseItem) -> Unit,
     onRetry: () -> Unit,
+    onRestorePurchase: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -74,6 +78,7 @@ private fun Content(
                 else -> PurchaseContent(
                     state = state,
                     onItemSelected = onItemSelected,
+                    onRestorePurchase = onRestorePurchase,
                     isLoading = state.isLoading,
                     modifier = scrollModifier,
                 )
@@ -96,6 +101,7 @@ private fun PurchaseScreenPreview() {
         ),
         onItemSelected = {},
         onRetry = {},
+        onRestorePurchase = {},
     )
 }
 
@@ -106,5 +112,6 @@ private fun PurchaseScreenErrorPreview() {
         state = PurchaseScreenState(isError = true),
         onItemSelected = {},
         onRetry = {},
+        onRestorePurchase = {},
     )
 }

@@ -39,6 +39,21 @@ class PurchaseScreenViewModel(
                 purchasesDataSource.launchBillingFlow(action.activity, action.item.productId)
             }
             is PurchaseScreenAction.OnRetry -> loadProducts()
+            is PurchaseScreenAction.OnRestorePurchase -> restorePurchases()
+        }
+    }
+
+    private fun restorePurchases() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            val info = purchasesDataSource.restorePurchases(productIds)
+            if (info != null) {
+                purchasesDataSource.saveLocalPurchase(info.productId, info.title)
+                val purchasedItem = _state.value.items.firstOrNull { it.productId == info.productId }
+                _state.update { it.copy(purchasedItem = purchasedItem, isLoading = false) }
+            } else {
+                _state.update { it.copy(isLoading = false) }
+            }
         }
     }
 
