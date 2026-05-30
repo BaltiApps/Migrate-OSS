@@ -16,6 +16,7 @@ coroutinesCore = "1.10.2"
 timberVersion = "5.0.1"
 material3 = "1.4.0-beta03"
 documentfile = "1.1.0"
+billing = "9.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,6 +45,7 @@ koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmo
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesCore" }
 com-jakewharton-timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
 androidx-documentfile = { module = "androidx.documentfile:documentfile", version.ref = "documentfile" }
+billing = { module = "com.android.billingclient:billing", version.ref = "billing" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

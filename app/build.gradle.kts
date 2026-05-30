@@ -10,7 +10,7 @@ plugins {
 
 val versionMajor = 6
 val versionMinor = 1
-val versionPatch = 0
+val versionPatch = 1
 
 fun getEnvValue(key: String): String? {
     val envData = System.getenv(key)
@@ -135,6 +135,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.service)
     implementation(libs.com.jakewharton.timber)
     implementation(libs.androidx.documentfile)
+    implementation(libs.billing)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
