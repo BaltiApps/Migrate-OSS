@@ -71,21 +71,23 @@ if [ "$EXT_MEDIA_TAR" != "$NULL_MARKER" ]; then
       echo
       echo "WhatsApp: cycling .nomedia in WhatsApp Images/Sent for media indexing..."
       echo
-      nomedia_list=$(find "$destDir" -path "*/Media/WhatsApp Images/Sent/.nomedia" 2>/dev/null)
+      nomedia_list=$(find "$destDir/WhatsApp/accounts" -path "*/Media/*/Sent/.nomedia" 2>/dev/null)
       if [ -n "$nomedia_list" ]; then
         echo "$nomedia_list" | while IFS= read -r f; do
+          echo "Removing .nomedia: $(echo "$f" | awk -F'/' '{print $(NF-2)"/"$(NF-1)"/"$NF}')"
           rm -f "$f"
         done
-        echo "Scan 1 of 2"
         echo
+        echo "Scan 1 of 2"
         content call --uri content://media --method scan_volume --arg external_primary > /dev/null 2>&1
         echo "$nomedia_list" | while IFS= read -r f; do
           touch "$f"
         done
-        echo "Scan 2 of 2"
         echo
+        echo "Scan 2 of 2"
         content call --uri content://media --method scan_volume --arg external_primary > /dev/null 2>&1
       fi
+      echo
       echo "WhatsApp media indexing complete."
     fi
   else
