@@ -15,6 +15,7 @@ import balti.migrate.common.data.sources.fileSystem.TransferUtils
 import balti.migrate.common.utils.getDefaultBackupName
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
+import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemUtils
 import baltiapps.migrate.domain.backup.usecase.GetRequiredSpaceForBackupUseCase
 import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.restore.usecase.CalculateStagedAppsSizesUseCase
@@ -39,6 +40,8 @@ class BackupNameViewModel(
     private val backupDataRepository: BackupDataRepository,
     private val getRequiredSpaceForBackupUseCase: GetRequiredSpaceForBackupUseCase,
 ) : ViewModel() {
+
+    private val fsUtils by lazy { FileSystemUtils() }
 
     private val savedSafLocationString: String
         get() = preferences.getCustomLocationParameter()
@@ -232,7 +235,7 @@ class BackupNameViewModel(
                 }
                 startBackupMethod(
                     BackupLocation(
-                        backupName = state.value.backupName,
+                        backupName = fsUtils.sanitizeFilename(state.value.backupName),
                         backupUriString = state.value.safUriString,
                     )
                 )
