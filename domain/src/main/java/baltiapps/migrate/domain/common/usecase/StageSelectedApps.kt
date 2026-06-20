@@ -21,7 +21,7 @@ class StageSelectedApps(
             allListItems.forEach { listItem ->
                 val correspondingDataItem = dataRepository.appDataItems.find { it._id == listItem._id }
 
-                if (correspondingDataItem != null && listItem.isAnySelected()) {
+                if (correspondingDataItem != null && listItem.isAnySelected() && !listItem.isSelf) {
                     stagedItems.add(
                         appListItemToDataItemConverter.convertSelection(
                             listItem = listItem,

@@ -83,7 +83,15 @@ fun RenderAppListItem(
                 style = MaterialTheme.typography.bodySmall,
                 color = appTextColor,
             )
-            if (item.isVersionLowerThanInstalled) {
+            if (item.isSelf) {
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    modifier = Modifier.basicMarquee(),
+                    text = stringResource(R.string.restore_cannot_restore_self),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SystemUpdatedColor,
+                )
+            } else if (item.isVersionLowerThanInstalled) {
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     modifier = Modifier.basicMarquee(),

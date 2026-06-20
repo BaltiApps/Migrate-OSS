@@ -99,3 +99,5 @@ app backup and restore
 ✅️ app filtering options before backup (system core, system updated, user) - done on 29 Mar 2026
 space check
 location confirmation check with a random uuid file
+
+✅️ stop migrate from restoring itself.

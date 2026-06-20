@@ -1,6 +1,7 @@
 package balti.migrate.common.data.model
 
 import android.graphics.drawable.Drawable
+import balti.migrate.BuildConfig
 import baltiapps.migrate.domain.common.model.AppListItem
 import baltiapps.migrate.domain.common.model.DataItem
 
@@ -43,6 +44,7 @@ data class AppData(
 
     ): DataItem<AppListItem> {
     override val _id: String = packageName
+    val isSelf: Boolean = packageName == BuildConfig.APPLICATION_ID
 
     val apkPathBase = apkPath.substringBeforeLast('/')
 
@@ -55,21 +57,22 @@ data class AppData(
             versionName = versionName,
             versionCode = versionCode,
 
-            isApkSelected = shouldBackupApk,
-            isDataSelected = shouldBackupData,
-            isPermissionsSelected = shouldBackupPermissions,
+            isApkSelected = shouldBackupApk && !isSelf,
+            isDataSelected = shouldBackupData && !isSelf,
+            isPermissionsSelected = shouldBackupPermissions && !isSelf,
 
-            isApkEnabled = apkSizeBytes != 0L,
-            isDataEnabled = dataSizeBytes != 0L,
-            isPermissionsEnabled = grantedPermissionList.isNotEmpty(),
+            isApkEnabled = apkSizeBytes != 0L && !isSelf,
+            isDataEnabled = dataSizeBytes != 0L && !isSelf,
+            isPermissionsEnabled = grantedPermissionList.isNotEmpty() && !isSelf,
 
-            isExternalDataSelected = shouldBackupExternalData,
-            isExternalMediaSelected = shouldBackupExternalMedia,
+            isExternalDataSelected = shouldBackupExternalData && !isSelf,
+            isExternalMediaSelected = shouldBackupExternalMedia && !isSelf,
 
-            isExternalDataEnabled = externalDataBytes != 0L,
-            isExternalMediaEnabled = externalMediaBytes != 0L,
+            isExternalDataEnabled = externalDataBytes != 0L && !isSelf,
+            isExternalMediaEnabled = externalMediaBytes != 0L && !isSelf,
 
             isVersionLowerThanInstalled = false,
+            isSelf = isSelf,
 
             isSystemApp = isSystemApp,
             isUpdatedSystemApp = isUpdatedSystemApp,

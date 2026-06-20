@@ -175,6 +175,7 @@
     <!--AppRestoreSelection.kt-->
     <string name="label_app_restore">App restore</string>
     <string name="apk_version_lower_than_installed">Newer version installed. APK disabled.</string>
+    <string name="restore_cannot_restore_self">This app cannot restore itself.</string>
     <string name="app_restore_permission_description">
         Please grant super user permission to restore apps.
     </string>
