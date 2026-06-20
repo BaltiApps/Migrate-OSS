@@ -87,7 +87,7 @@ fun RenderAppListItem(
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     modifier = Modifier.basicMarquee(),
-                    text = stringResource(R.string.restore_cannot_restore_self),
+                    text = stringResource(R.string.cannot_back_up_or_restore_self),
                     style = MaterialTheme.typography.bodySmall,
                     color = SystemUpdatedColor,
                 )

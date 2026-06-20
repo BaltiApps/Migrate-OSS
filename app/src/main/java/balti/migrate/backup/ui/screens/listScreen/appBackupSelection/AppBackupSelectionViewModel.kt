@@ -124,9 +124,9 @@ class AppBackupSelectionViewModel(
     ) {
         val changedItems = state.value.displayedAppListItems.map {
             it.copy(
-                isApkSelected = apk ?: it.isApkSelected,
-                isDataSelected = data ?: it.isDataSelected,
-                isPermissionsSelected = it.isPermissionsEnabled && permissions ?: it.isPermissionsSelected,
+                isApkSelected = it.isApkEnabled && (apk ?: it.isApkSelected),
+                isDataSelected = it.isDataEnabled && (data ?: it.isDataSelected),
+                isPermissionsSelected = it.isPermissionsEnabled && (permissions ?: it.isPermissionsSelected),
             )
         }
         val merged = _state.value.appListItems.map { app ->
@@ -167,9 +167,9 @@ class AppBackupSelectionViewModel(
                 // select all if some are selected and deselect all if all are deselected
                 val isAllSelected = this.isAllSelected()
                 val newItem = copy(
-                    isApkSelected = !isAllSelected,
-                    isDataSelected = !isAllSelected,
-                    isPermissionsSelected = action.item.isPermissionsEnabled && !isAllSelected,
+                    isApkSelected = this.isApkEnabled && !isAllSelected,
+                    isDataSelected = this.isDataEnabled && !isAllSelected,
+                    isPermissionsSelected = this.isPermissionsEnabled && !isAllSelected,
                 )
                 replaceAppItem(newItem)
             }
