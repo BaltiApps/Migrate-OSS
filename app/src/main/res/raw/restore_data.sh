@@ -34,7 +34,7 @@ fi
 dataDir="/data/user/$USER/$PACKAGE_NAME"
 
 echo "Fetching UID for $PACKAGE_NAME..."
-app_uid=$(cmd package list packages -U --user "$USER" "$PACKAGE_NAME" | awk -F'uid:' '{print $2}')
+app_uid=$(cmd package list packages -U --user "$USER" "$PACKAGE_NAME" | grep -F "package:${PACKAGE_NAME} uid:" | awk -F'uid:' '{print $2}')
 echo "UID for $PACKAGE_NAME - $app_uid"
 
 if [ -z "$app_uid" ]; then

@@ -37,7 +37,7 @@ if [ "$EXT_DATA_TAR" != "$NULL_MARKER" ]; then
     tar -xvzpf "$EXT_DATA_TAR"
 
     echo "Fetching UID for $PACKAGE_NAME..."
-    app_uid=$(cmd package list packages -U --user "$USER" "$PACKAGE_NAME" | awk -F'uid:' '{print $2}')
+    app_uid=$(cmd package list packages -U --user "$USER" "$PACKAGE_NAME" | grep -F "package:${PACKAGE_NAME} uid:" | awk -F'uid:' '{print $2}')
     if [ -n "$app_uid" ]; then
       echo "Setting ownership of $destDir to uid $app_uid..."
       chown "${app_uid}":"ext_data_rw" -Rf "$destDir"
