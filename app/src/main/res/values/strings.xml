@@ -144,7 +144,7 @@
 
     <!--BrowseRestoreDirectory.kt-->
     <string name="select_directory">Select directory</string>
-    <string name="location_not_set_warning">Some backups may not be visible. Please set backup location.</string>
+    <string name="some_backups_may_not_be_visible_warning">Some backups may not be visible. Please set backup location.</string>
     <string name="importing_directory">Importing directory</string>
     <string name="no_parent">No parent, cannot go up.</string>
 

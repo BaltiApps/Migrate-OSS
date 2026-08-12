@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -56,7 +57,13 @@ fun LocationSelector(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (isWarning) {
+                if (isFallback) {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_error_24),
+                        contentDescription = null,
+                        tint = Color(0xFFB8860B),
+                    )
+                } else if (!isLocationAccessible) {
                     Icon(
                         painter = painterResource(R.drawable.outline_warning_24),
                         contentDescription = null,
@@ -125,10 +132,10 @@ private fun LocationSelectorPreview() {
             )
             LocationSelector(
                 isFallback = true,
-                locationLabel = "Migrate",
+                locationLabel = "Download/Migrate",
                 isLocationAccessible = true,
                 onSelectClicked = {},
-                fallbackWarning = stringResource(R.string.location_not_set_warning),
+                fallbackWarning = stringResource(R.string.some_backups_may_not_be_visible_warning),
             )
             LocationSelector(
                 isFallback = false,

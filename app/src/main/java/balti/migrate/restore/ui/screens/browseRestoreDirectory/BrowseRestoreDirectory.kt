@@ -119,7 +119,7 @@ fun Content(
                     locationLabel = state.locationString,
                     isLocationAccessible = !state.isSaf || state.isSafUriAccessible,
                     onSelectClicked = onUriSelectClicked,
-                    fallbackWarning = stringResource(R.string.location_not_set_warning),
+                    fallbackWarning = stringResource(R.string.some_backups_may_not_be_visible_warning),
                 )
                 Spacer(modifier = Modifier.size(16.dp))
             }
