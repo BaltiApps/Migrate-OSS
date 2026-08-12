@@ -121,7 +121,7 @@
     <string name="reading_storage_info">Reading storage info.\nUSB / external devices may take longer.</string>
     <string name="set_a_name_first">Set a name first</string>
     <string name="setup_a_valid_location">Setup a valid location first</string>
-    <string name="no_data_to_backup">No data to backup!</string>
+    <string name="no_data_to_backup">No data to back up!</string>
 
     <!--ContextSourceImpl.kt-->
     <string name="loading">Loading…</string>

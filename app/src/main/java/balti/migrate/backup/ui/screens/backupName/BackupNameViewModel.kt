@@ -15,9 +15,9 @@ import balti.migrate.common.data.sources.fileSystem.TransferUtils
 import balti.migrate.common.utils.getDefaultBackupName
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
-import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemUtils
 import baltiapps.migrate.domain.backup.usecase.GetRequiredSpaceForBackupUseCase
 import baltiapps.migrate.domain.common.sources.Preferences
+import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemUtils
 import baltiapps.migrate.domain.restore.usecase.CalculateStagedAppsSizesUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -124,7 +124,7 @@ class BackupNameViewModel(
             _state.update {
                 it.copy(
                     isSaf = isSaf,
-                    safUriString = safUriString,
+                    safUriString = safUriString.takeIf { isSaf },
                     locationString = locationString,
                     isLocationAccessible = isLocationAccessible,
                     isLoadingLocation = false,
@@ -162,7 +162,7 @@ class BackupNameViewModel(
             is BackupNameAction.StartBackup -> {
                 if (_state.value.backupName.isBlank()) {
                     _errorMessage.trySend(applicationContext.getString(R.string.set_a_name_first))
-                } else if (!_state.value.isLocationAccessible) {
+                } else if (_state.value.isSaf == true && !_state.value.isLocationAccessible) {
                     _errorMessage.trySend(applicationContext.getString(R.string.setup_a_valid_location))
                 } else if (!backupDataRepository.shouldBackupAnything()) {
                     _errorMessage.trySend(applicationContext.getString(R.string.no_data_to_backup))
