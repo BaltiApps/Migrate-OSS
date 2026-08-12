@@ -169,6 +169,10 @@ class SuperuserUtils(
         return Runtime.getRuntime().exec("su --mount-master")
     }
 
+    fun getNonElevatedShell(): Process {
+        return Runtime.getRuntime().exec("sh")
+    }
+
     fun closeSuperuserShell(process: Process) {
         val writer = BufferedWriter(OutputStreamWriter(process.outputStream))
         writer.write("exit\n")

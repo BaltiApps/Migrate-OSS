@@ -8,13 +8,13 @@ class InternalStorageSpaceReaderImpl(
     private val superuserUtils: SuperuserUtils,
 ): InternalStorageSpaceReader {
     override suspend fun getSpaceInfo(): InternalStorageSpaceReader.InternalStorageSpaceInfo {
-        val suShell = superuserUtils.getSuperuserShell()
+        val shell = superuserUtils.getNonElevatedShell()
 
         var spaceInfo = InternalStorageSpaceReader.InternalStorageSpaceInfo(0L, 0L)
 
         superuserUtils.runCommand(
             command = "df /data",
-            parentSuperuserShell = suShell,
+            parentSuperuserShell = shell,
             onFinish = { success, message ->
                 Timber.d("Success - $success, message - $message")
                 if (success) {
