@@ -10,7 +10,7 @@ plugins {
 
 val versionMajor = 6
 val versionMinor = 2
-val versionPatch = 2
+val versionPatch = 3
 
 fun getEnvValue(key: String): String? {
     val envData = System.getenv(key)
