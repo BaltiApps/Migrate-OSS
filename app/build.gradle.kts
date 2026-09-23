@@ -3,7 +3,6 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
 }
@@ -67,8 +66,6 @@ android {
         buildConfigField("String", "SCHEMA", "\"${schema}\"")
         buildConfigField("String", "HOST_PROGRESS_BACKUP", "\"${hostProgressBackup}\"")
         buildConfigField("String", "HOST_PROGRESS_RESTORE", "\"${hostProgressRestore}\"")
-
-        setProperty("archivesBaseName", "Migrate-v${versionMajor}.${versionMinor}.${versionPatch}")
     }
 
     signingConfigs {
@@ -91,25 +88,23 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-    kotlinOptions {
-        jvmTarget = "21"
-    }
     buildFeatures {
         buildConfig = true
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+}
+
+kotlin {
+    jvmToolchain(25)
+}
+
+base {
+    archivesName.set("Migrate-v${versionMajor}.${versionMinor}.${versionPatch}")
 }
 
 dependencies {
