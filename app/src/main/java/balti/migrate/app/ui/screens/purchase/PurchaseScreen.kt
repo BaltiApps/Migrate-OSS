@@ -17,6 +17,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
+import balti.migrate.app.data.purchasesV2.UiContextImpl
 import balti.migrate.app.ui.screens.purchase.components.ErrorContent
 import balti.migrate.app.ui.screens.purchase.components.PurchaseContent
 import balti.migrate.app.ui.screens.purchase.components.ThankYouContent
@@ -31,7 +32,7 @@ fun PurchaseScreen(
     Content(
         state = state,
         onItemSelected = { item ->
-            viewModel.performAction(PurchaseScreenAction.OnItemSelected(item, activity))
+            viewModel.performAction(PurchaseScreenAction.OnItemSelected(item, UiContextImpl(activity)))
         },
         onRetry = {
             viewModel.performAction(PurchaseScreenAction.OnRetry)

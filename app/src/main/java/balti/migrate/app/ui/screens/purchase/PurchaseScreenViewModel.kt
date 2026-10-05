@@ -2,110 +2,95 @@ package balti.migrate.app.ui.screens.purchase
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import balti.migrate.app.data.purchases.MigrateProductInfo
-import balti.migrate.app.data.purchases.MigratePurchaseResult
-import balti.migrate.app.data.purchases.PurchasesDataSource
+import baltiapps.migrate.domain.purchases.model.DonationProduct
+import baltiapps.migrate.domain.purchases.usecase.BuyAnItemUseCase
+import baltiapps.migrate.domain.purchases.usecase.GetSavedPurchaseUseCase
+import baltiapps.migrate.domain.purchases.usecase.ObservePurchaseStateUseCase
+import baltiapps.migrate.domain.purchases.usecase.RefreshPurchaseStateUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PurchaseScreenViewModel(
-    private val purchasesDataSource: PurchasesDataSource,
+    private val observePurchaseStateUseCase: ObservePurchaseStateUseCase,
+    private val refreshPurchaseStateUseCase: RefreshPurchaseStateUseCase,
+    private val buyAnItemUseCase: BuyAnItemUseCase,
+    private val getSavedPurchaseUseCase: GetSavedPurchaseUseCase,
 ) : ViewModel() {
 
-    private val productIds = listOf(
-        "migrate_donate_supporter",
-        "migrate_donate_backer",
-        "migrate_donate_legend",
-    )
+    private var products: List<DonationProduct> = emptyList()
+    private var purchasedProductId: String? = null
 
     private val _state = MutableStateFlow(PurchaseScreenState())
     val state = _state.asStateFlow()
 
     init {
+        _state.update { it.copy(purchasedItem = getSavedPurchaseItem()) }
         viewModelScope.launch {
-            purchasesDataSource.purchaseUpdates.collect { result ->
-                handlePurchaseResult(result)
-            }
+            observePurchaseStateUseCase.invoke(
+                onProductsChanged = {
+                    products = it
+                    renderItems()
+                },
+                onPurchasedProductChanged = {
+                    purchasedProductId = it
+                    renderItems()
+                },
+            )
         }
-        loadProducts()
+        refresh()
     }
 
     fun performAction(action: PurchaseScreenAction) {
         when (action) {
-            is PurchaseScreenAction.OnItemSelected -> {
-                _state.update { it.copy(isLoading = true) }
-                purchasesDataSource.launchBillingFlow(action.activity, action.item.productId)
-            }
-            is PurchaseScreenAction.OnRetry -> loadProducts()
-            is PurchaseScreenAction.OnRestorePurchase -> restorePurchases()
+            is PurchaseScreenAction.OnItemSelected -> buy(action)
+            is PurchaseScreenAction.OnRetry -> refresh()
+            is PurchaseScreenAction.OnRestorePurchase -> refresh()
         }
     }
 
-    private fun restorePurchases() {
-        viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
-            val info = purchasesDataSource.restorePurchases(productIds)
-            if (info != null) {
-                purchasesDataSource.saveLocalPurchase(info.productId, info.title)
-                val purchasedItem = _state.value.items.firstOrNull { it.productId == info.productId }
-                _state.update { it.copy(purchasedItem = purchasedItem, isLoading = false) }
-            } else {
-                _state.update { it.copy(isLoading = false) }
-            }
-        }
-    }
-
-    private fun loadProducts() {
+    private fun refresh() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, isError = false) }
-
-            val localPurchase = purchasesDataSource.getLocalPurchase()?.let { (id, title) -> PurchaseItem(id, title, "") }
-            val productsResult = purchasesDataSource.fetchProducts(productIds)
-
-            if (productsResult.isFailure) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        isError = localPurchase == null,
-                        purchasedItem = localPurchase
-                    )
-                }
-                return@launch
+            refreshPurchaseStateUseCase.invoke()
+            renderItems()
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    isError = it.items.isEmpty() && it.purchasedItem == null,
+                )
             }
-
-            val items = productIds.mapNotNull { id ->
-                productsResult.getOrThrow().firstOrNull { it.productId == id }?.toPurchaseItem()
-            }
-
-            val ownedProduct = purchasesDataSource.getOwnedProduct(productIds)
-            val purchasedItem = if (ownedProduct != null) {
-                purchasesDataSource.saveLocalPurchase(ownedProduct.productId, ownedProduct.title)
-                items.firstOrNull { it.productId == ownedProduct.productId }
-            } else {
-                localPurchase
-            }
-
-            _state.update { it.copy(items = items, purchasedItem = purchasedItem, isLoading = false) }
         }
     }
 
-    private fun handlePurchaseResult(result: MigratePurchaseResult) {
-        when (result) {
-            is MigratePurchaseResult.Success -> {
-                val purchasedItem = _state.value.items.firstOrNull { it.productId == result.productId }
-                purchasesDataSource.saveLocalPurchase(result.productId, purchasedItem?.title ?: "")
-                _state.update { it.copy(purchasedItem = purchasedItem, isLoading = false) }
-            }
-            is MigratePurchaseResult.Cancelled, is MigratePurchaseResult.Failed ->
-                _state.update { it.copy(isLoading = false) }
+    private fun buy(action: PurchaseScreenAction.OnItemSelected) {
+        val product = products.firstOrNull { it.productId == action.item.productId } ?: return
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            buyAnItemUseCase.invoke(product, action.uiContext)
+            // the new owned tier arrives through the observed flows
+            renderItems()
+            _state.update { it.copy(isLoading = false) }
         }
     }
 
-    private fun MigrateProductInfo.toPurchaseItem() = PurchaseItem(
+    private fun renderItems() {
+        val items = products
+            .sortedBy { it.tier.tier }
+            .map { it.toPurchaseItem() }
+        val purchasedItem = items.firstOrNull { it.productId == purchasedProductId }
+            ?: getSavedPurchaseItem()
+        _state.update { it.copy(items = items, purchasedItem = purchasedItem) }
+    }
+
+    private fun getSavedPurchaseItem(): PurchaseItem? {
+        return getSavedPurchaseUseCase.invoke()?.let { (id, name) -> PurchaseItem(id, name, "") }
+    }
+
+    private fun DonationProduct.toPurchaseItem() = PurchaseItem(
         productId = productId,
-        title = title,
+        title = name,
         price = price,
     )
 }
