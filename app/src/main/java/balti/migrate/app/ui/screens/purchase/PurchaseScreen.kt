@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.app.data.purchasesV2.UiContextImpl
 import balti.migrate.app.ui.screens.purchase.components.ErrorContent
+import balti.migrate.app.ui.screens.purchase.components.PendingContent
 import balti.migrate.app.ui.screens.purchase.components.PurchaseContent
 import balti.migrate.app.ui.screens.purchase.components.ThankYouContent
 import org.koin.compose.viewmodel.koinViewModel
@@ -70,6 +71,9 @@ private fun Content(
             when {
                 state.purchasedItem != null -> ThankYouContent(
                     item = state.purchasedItem,
+                    modifier = scrollModifier,
+                )
+                state.isPending -> PendingContent(
                     modifier = scrollModifier,
                 )
                 state.isError -> ErrorContent(

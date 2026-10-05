@@ -5,6 +5,7 @@ data class PurchaseScreenState(
     val purchasedItem: PurchaseItem? = null,
     val isLoading: Boolean = false,
     val isError: Boolean = false,
+    val isPending: Boolean = false,
 )
 
 data class PurchaseItem(

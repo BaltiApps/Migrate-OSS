@@ -3,6 +3,7 @@ package balti.migrate.app.ui.screens.purchase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import baltiapps.migrate.domain.purchases.model.DonationProduct
+import baltiapps.migrate.domain.purchases.model.DonationPurchaseResult
 import baltiapps.migrate.domain.purchases.usecase.BuyAnItemUseCase
 import baltiapps.migrate.domain.purchases.usecase.GetSavedPurchaseUseCase
 import baltiapps.migrate.domain.purchases.usecase.ObservePurchaseStateUseCase
@@ -67,11 +68,16 @@ class PurchaseScreenViewModel(
     private fun buy(action: PurchaseScreenAction.OnItemSelected) {
         val product = products.firstOrNull { it.productId == action.item.productId } ?: return
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
-            buyAnItemUseCase.invoke(product, action.uiContext)
+            _state.update { it.copy(isLoading = true, isPending = false) }
+            val result = buyAnItemUseCase.invoke(product, action.uiContext)
             // the new owned tier arrives through the observed flows
             renderItems()
-            _state.update { it.copy(isLoading = false) }
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    isPending = result is DonationPurchaseResult.Pending,
+                )
+            }
         }
     }
 
