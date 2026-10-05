@@ -14,6 +14,7 @@ import balti.migrate.R
 
 @Composable
 internal fun ErrorContent(
+    message: String,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -23,7 +24,7 @@ internal fun ErrorContent(
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = stringResource(R.string.purchase_error),
+            text = message,
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
         )

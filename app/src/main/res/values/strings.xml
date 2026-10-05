@@ -245,6 +245,8 @@
     <string name="purchase_thank_you_item_no_price">You chose: %s</string>
     <string name="purchase_pending_title">Payment pending</string>
     <string name="purchase_pending_subtitle">Your payment is still being processed. This will update once it completes.</string>
+    <string name="purchase_cancelled">Purchase cancelled</string>
+    <string name="purchase_failed">Could not complete the purchase. Please try again.</string>
     <string name="purchase_error">Could not load items. Please check your connection.</string>
     <string name="retry">Retry</string>
     <string name="restore_purchase">Restore purchase</string>

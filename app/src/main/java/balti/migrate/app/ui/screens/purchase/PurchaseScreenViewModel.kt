@@ -8,8 +8,10 @@ import baltiapps.migrate.domain.purchases.usecase.BuyAnItemUseCase
 import baltiapps.migrate.domain.purchases.usecase.GetSavedPurchaseUseCase
 import baltiapps.migrate.domain.purchases.usecase.ObservePurchaseStateUseCase
 import baltiapps.migrate.domain.purchases.usecase.RefreshPurchaseStateUseCase
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -26,8 +28,13 @@ class PurchaseScreenViewModel(
     private val _state = MutableStateFlow(PurchaseScreenState())
     val state = _state.asStateFlow()
 
+    private val _events = Channel<PurchaseScreenEvent>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
+
     init {
-        _state.update { it.copy(purchasedItem = getSavedPurchaseItem()) }
+        _state.update {
+            it.copy(purchaseState = getSavedPurchaseItem()?.let { item -> PurchaseState.Purchased(item) } ?: PurchaseState.Idle)
+        }
         viewModelScope.launch {
             observePurchaseStateUseCase.invoke(
                 onProductsChanged = {
@@ -53,13 +60,17 @@ class PurchaseScreenViewModel(
 
     private fun refresh() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, isError = false) }
+            _state.update { it.copy(isLoading = true, purchaseState = it.purchaseState.withoutNotices()) }
             refreshPurchaseStateUseCase.invoke()
             renderItems()
             _state.update {
                 it.copy(
                     isLoading = false,
-                    isError = it.items.isEmpty() && it.purchasedItem == null,
+                    purchaseState = if (it.purchaseState is PurchaseState.Idle && it.items.isEmpty()) {
+                        PurchaseState.LoadFailed
+                    } else {
+                        it.purchaseState
+                    },
                 )
             }
         }
@@ -68,15 +79,21 @@ class PurchaseScreenViewModel(
     private fun buy(action: PurchaseScreenAction.OnItemSelected) {
         val product = products.firstOrNull { it.productId == action.item.productId } ?: return
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, isPending = false) }
+            _state.update { it.copy(isLoading = true, purchaseState = PurchaseState.Idle) }
             val result = buyAnItemUseCase.invoke(product, action.uiContext)
             // the new owned tier arrives through the observed flows
             renderItems()
             _state.update {
-                it.copy(
-                    isLoading = false,
-                    isPending = result is DonationPurchaseResult.Pending,
-                )
+                val purchaseState = when (result) {
+                    is DonationPurchaseResult.Pending -> PurchaseState.Pending
+                    is DonationPurchaseResult.Cancelled -> {
+                        _events.trySend(PurchaseScreenEvent.PurchaseCancelled)
+                        it.purchaseState
+                    }
+                    is DonationPurchaseResult.Failed, is DonationPurchaseResult.Error -> PurchaseState.PurchaseFailed
+                    is DonationPurchaseResult.Success -> it.purchaseState
+                }
+                it.copy(isLoading = false, purchaseState = purchaseState)
             }
         }
     }
@@ -87,7 +104,19 @@ class PurchaseScreenViewModel(
             .map { it.toPurchaseItem() }
         val purchasedItem = items.firstOrNull { it.productId == purchasedProductId }
             ?: getSavedPurchaseItem()
-        _state.update { it.copy(items = items, purchasedItem = purchasedItem) }
+        _state.update {
+            val purchaseState = when {
+                purchasedItem != null -> PurchaseState.Purchased(purchasedItem)
+                it.purchaseState is PurchaseState.Purchased -> PurchaseState.Idle   // e.g. refunded
+                else -> it.purchaseState
+            }
+            it.copy(items = items, purchaseState = purchaseState)
+        }
+    }
+
+    private fun PurchaseState.withoutNotices(): PurchaseState = when (this) {
+        is PurchaseState.LoadFailed, is PurchaseState.PurchaseFailed -> PurchaseState.Idle
+        else -> this
     }
 
     private fun getSavedPurchaseItem(): PurchaseItem? {

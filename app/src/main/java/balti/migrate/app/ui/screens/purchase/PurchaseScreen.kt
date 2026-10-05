@@ -11,6 +11,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import androidx.compose.runtime.remember
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -22,6 +26,7 @@ import balti.migrate.app.ui.screens.purchase.components.ErrorContent
 import balti.migrate.app.ui.screens.purchase.components.PendingContent
 import balti.migrate.app.ui.screens.purchase.components.PurchaseContent
 import balti.migrate.app.ui.screens.purchase.components.ThankYouContent
+import balti.migrate.common.utils.ObserveEvents
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -30,8 +35,21 @@ fun PurchaseScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val activity = LocalActivity.current ?: return
+    val snackbarHostState = remember { SnackbarHostState() }
+    val cancelledMessage = stringResource(R.string.purchase_cancelled)
+
+    ObserveEvents(
+        eventsStream = viewModel.events,
+        onEvent = { event ->
+            when (event) {
+                is PurchaseScreenEvent.PurchaseCancelled -> snackbarHostState.showSnackbar(cancelledMessage)
+            }
+        }
+    )
+
     Content(
         state = state,
+        snackbarHostState = snackbarHostState,
         onItemSelected = { item ->
             viewModel.performAction(PurchaseScreenAction.OnItemSelected(item, UiContextImpl(activity)))
         },
@@ -48,13 +66,18 @@ fun PurchaseScreen(
 @Composable
 private fun Content(
     state: PurchaseScreenState,
+    snackbarHostState: SnackbarHostState,
     onItemSelected: (PurchaseItem) -> Unit,
     onRetry: () -> Unit,
     onRestorePurchase: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val loadFailedMessage = stringResource(R.string.purchase_error)
+    val purchaseFailedMessage = stringResource(R.string.purchase_failed)
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         BoxWithConstraints(
             modifier = Modifier
@@ -68,19 +91,25 @@ private fun Content(
                 .padding(dimensionResource(R.dimen.screen_padding))
                 .verticalScroll(rememberScrollState())
 
-            when {
-                state.purchasedItem != null -> ThankYouContent(
-                    item = state.purchasedItem,
+            when (val purchaseState = state.purchaseState) {
+                is PurchaseState.Purchased -> ThankYouContent(
+                    item = purchaseState.item,
                     modifier = scrollModifier,
                 )
-                state.isPending -> PendingContent(
+                is PurchaseState.Pending -> PendingContent(
                     modifier = scrollModifier,
                 )
-                state.isError -> ErrorContent(
+                is PurchaseState.LoadFailed -> ErrorContent(
+                    message = loadFailedMessage,
                     onRetry = onRetry,
                     modifier = scrollModifier,
                 )
-                else -> PurchaseContent(
+                is PurchaseState.PurchaseFailed -> ErrorContent(
+                    message = purchaseFailedMessage,
+                    onRetry = onRetry,
+                    modifier = scrollModifier,
+                )
+                is PurchaseState.Idle -> PurchaseContent(
                     state = state,
                     onItemSelected = onItemSelected,
                     onRestorePurchase = onRestorePurchase,
@@ -97,6 +126,7 @@ private fun Content(
 @Composable
 private fun PurchaseScreenPreview() {
     Content(
+        snackbarHostState = remember { SnackbarHostState() },
         state = PurchaseScreenState(
             items = listOf(
                 PurchaseItem("migrate_donate_supporter", "Supporter", "$2.00"),
@@ -114,7 +144,8 @@ private fun PurchaseScreenPreview() {
 @Composable
 private fun PurchaseScreenErrorPreview() {
     Content(
-        state = PurchaseScreenState(isError = true),
+        snackbarHostState = remember { SnackbarHostState() },
+        state = PurchaseScreenState(purchaseState = PurchaseState.LoadFailed),
         onItemSelected = {},
         onRetry = {},
         onRestorePurchase = {},
