@@ -6,19 +6,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.remember
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
 import balti.migrate.app.data.purchasesV2.UiContextImpl
@@ -59,6 +64,9 @@ fun PurchaseScreen(
         onRestorePurchase = {
             viewModel.performAction(PurchaseScreenAction.OnRestorePurchase)
         },
+        onRefresh = {
+            viewModel.performAction(PurchaseScreenAction.OnRefresh)
+        },
     )
 }
 
@@ -70,6 +78,7 @@ private fun Content(
     onItemSelected: (PurchaseItem) -> Unit,
     onRetry: () -> Unit,
     onRestorePurchase: () -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val loadFailedMessage = stringResource(R.string.purchase_error)
@@ -79,43 +88,61 @@ private fun Content(
         modifier = modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
-        BoxWithConstraints(
+        // isRefreshing stays false: the pull only triggers a refresh, progress is shown by the bar below
+        PullToRefreshBox(
+            isRefreshing = false,
+            onRefresh = onRefresh,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
         ) {
-            val minColumnHeight = maxHeight
-            val scrollModifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = minColumnHeight)
-                .padding(dimensionResource(R.dimen.screen_padding))
-                .verticalScroll(rememberScrollState())
+            BoxWithConstraints(
+                modifier = Modifier
+                    .fillMaxSize(),
+            ) {
+                val minColumnHeight = maxHeight
+                val scrollModifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = minColumnHeight)
+                    .padding(dimensionResource(R.dimen.screen_padding))
+                    .verticalScroll(rememberScrollState())
 
-            when (val purchaseState = state.purchaseState) {
-                is PurchaseState.Purchased -> ThankYouContent(
-                    item = purchaseState.item,
-                    modifier = scrollModifier,
-                )
-                is PurchaseState.Pending -> PendingContent(
-                    modifier = scrollModifier,
-                )
-                is PurchaseState.LoadFailed -> ErrorContent(
-                    message = loadFailedMessage,
-                    onRetry = onRetry,
-                    modifier = scrollModifier,
-                )
-                is PurchaseState.PurchaseFailed -> ErrorContent(
-                    message = purchaseFailedMessage,
-                    onRetry = onRetry,
-                    modifier = scrollModifier,
-                )
-                is PurchaseState.Idle -> PurchaseContent(
-                    state = state,
-                    onItemSelected = onItemSelected,
-                    onRestorePurchase = onRestorePurchase,
-                    isLoading = state.isLoading,
-                    modifier = scrollModifier,
-                )
+                when (val purchaseState = state.purchaseState) {
+                    is PurchaseState.Purchased -> ThankYouContent(
+                        item = purchaseState.item,
+                        modifier = scrollModifier,
+                    )
+                    is PurchaseState.Pending -> PendingContent(
+                        modifier = scrollModifier,
+                    )
+                    is PurchaseState.LoadFailed -> ErrorContent(
+                        message = loadFailedMessage,
+                        onRetry = onRetry,
+                        modifier = scrollModifier,
+                    )
+                    is PurchaseState.PurchaseFailed -> ErrorContent(
+                        message = purchaseFailedMessage,
+                        onRetry = onRetry,
+                        modifier = scrollModifier,
+                    )
+                    is PurchaseState.Idle -> PurchaseContent(
+                        state = state,
+                        onItemSelected = onItemSelected,
+                        onRestorePurchase = onRestorePurchase,
+                        isLoading = state.isLoading,
+                        modifier = scrollModifier,
+                    )
+                }
+
+                if (state.isLoading) {
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(horizontal = dimensionResource(R.dimen.screen_padding))
+                            .fillMaxWidth()
+                            .widthIn(max = 600.dp),
+                    )
+                }
             }
         }
     }
@@ -137,6 +164,7 @@ private fun PurchaseScreenPreview() {
         onItemSelected = {},
         onRetry = {},
         onRestorePurchase = {},
+        onRefresh = {},
     )
 }
 
@@ -149,5 +177,6 @@ private fun PurchaseScreenErrorPreview() {
         onItemSelected = {},
         onRetry = {},
         onRestorePurchase = {},
+        onRefresh = {},
     )
 }

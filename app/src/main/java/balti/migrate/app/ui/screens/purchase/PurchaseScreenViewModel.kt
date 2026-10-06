@@ -9,11 +9,13 @@ import baltiapps.migrate.domain.purchases.usecase.GetSavedPurchaseUseCase
 import baltiapps.migrate.domain.purchases.usecase.ObservePurchaseStateUseCase
 import baltiapps.migrate.domain.purchases.usecase.RefreshPurchaseStateUseCase
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class PurchaseScreenViewModel(
     private val observePurchaseStateUseCase: ObservePurchaseStateUseCase,
@@ -54,14 +56,19 @@ class PurchaseScreenViewModel(
         when (action) {
             is PurchaseScreenAction.OnItemSelected -> buy(action)
             is PurchaseScreenAction.OnRetry -> refresh()
+            is PurchaseScreenAction.OnRefresh -> refresh(minDurationMillis = MANUAL_REFRESH_MIN_DURATION_MILLIS)
             is PurchaseScreenAction.OnRestorePurchase -> refresh()
         }
     }
 
-    private fun refresh() {
+    private fun refresh(minDurationMillis: Long = 0) {
+        if (_state.value.isLoading) return
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, purchaseState = it.purchaseState.withoutNotices()) }
+            // keep the loading bar visible for at least this long, the refresh itself can finish instantly
+            val minDuration = launch { delay(minDurationMillis.milliseconds) }
             refreshPurchaseStateUseCase.invoke()
+            minDuration.join()
             renderItems()
             _state.update {
                 it.copy(
@@ -112,6 +119,10 @@ class PurchaseScreenViewModel(
             }
             it.copy(items = items, purchaseState = purchaseState)
         }
+    }
+
+    private companion object {
+        const val MANUAL_REFRESH_MIN_DURATION_MILLIS = 500L
     }
 
     private fun PurchaseState.withoutNotices(): PurchaseState = when (this) {
