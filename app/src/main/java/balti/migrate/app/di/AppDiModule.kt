@@ -2,6 +2,7 @@ package balti.migrate.app.di
 
 import balti.migrate.app.MainActivityViewModel
 import balti.migrate.app.ads.AdsController
+import balti.migrate.app.ads.ConsentManager
 import balti.migrate.app.data.purchasesV2.GPlayPurchaseDataSourceImpl
 import balti.migrate.app.data.purchasesV2.PurchaseMapperImpl
 import balti.migrate.app.data.purchasesV2.PurchaseStoreImpl
@@ -30,6 +31,7 @@ val appDiModule = module {
     /* Ads */
 
     singleOf(::AdsController)
+    singleOf(::ConsentManager)
 
     /* Data */
 

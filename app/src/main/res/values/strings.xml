@@ -261,6 +261,8 @@
     <string name="color_theme">Color theme</string>
     <string name="color_theme_desc">Change how the app looks</string>
     <string name="migrate_colors">Classic Migrate colors</string>
+    <string name="ad_privacy">Ad privacy</string>
+    <string name="ad_privacy_desc">Review or change your ad consent choices</string>
     <string name="system_colors">System colors</string>
 
     <!--AppSizesDialog.kt-->

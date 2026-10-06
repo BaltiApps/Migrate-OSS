@@ -1,5 +1,6 @@
 package balti.migrate.app.ui.screens.appSettings
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,17 +20,24 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import balti.migrate.R
+import balti.migrate.app.ads.ConsentManager
 import baltiapps.migrate.domain.common.sources.Preferences
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AppSettings(
     updateUiState: (darkMode: Preferences.DarkMode, followSystemColors: Boolean) -> Unit,
     viewModel: AppSettingsViewModel = koinViewModel(),
+    consentManager: ConsentManager = koinInject(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val isPrivacyOptionsRequired by consentManager.isPrivacyOptionsRequired.collectAsStateWithLifecycle()
+    val activity = LocalActivity.current
     Content(
         state = state,
+        showAdPrivacy = isPrivacyOptionsRequired,
+        onAdPrivacyClicked = { activity?.let(consentManager::showPrivacyOptions) },
         onChangeDarkMode = {
             viewModel.onAction(AppSettingsAction.ChangeDarkMode(it, updateUiState))
         },
@@ -42,6 +50,8 @@ fun AppSettings(
 @Composable
 private fun Content(
     state: AppSettingsState,
+    showAdPrivacy: Boolean,
+    onAdPrivacyClicked: () -> Unit,
     onChangeDarkMode: (Preferences.DarkMode) -> Unit,
     onChangeSystemColors: (Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -115,6 +125,20 @@ private fun Content(
             HorizontalDivider(
                 modifier = commonModifier,
             )
+            if (showAdPrivacy) {
+                ListItem(
+                    modifier = Modifier.clickable(onClick = onAdPrivacyClicked),
+                    headlineContent = {
+                        Text(text = stringResource(R.string.ad_privacy))
+                    },
+                    supportingContent = {
+                        Text(text = stringResource(R.string.ad_privacy_desc))
+                    },
+                )
+                HorizontalDivider(
+                    modifier = commonModifier,
+                )
+            }
         }
     }
 }
