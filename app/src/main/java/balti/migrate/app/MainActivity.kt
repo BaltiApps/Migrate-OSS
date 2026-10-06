@@ -31,17 +31,11 @@ class MainActivity : ComponentActivity() {
     private val viewModel: MainActivityViewModel by viewModel()
     private val adsController: AdsController by inject()
     private val consentManager: ConsentManager by inject()
+    private var isAdsSetupStarted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        if (adsController.isConfigured) {
-            consentManager.gatherConsent(this)
-            lifecycleScope.launch {
-                consentManager.canRequestAds.first { it }
-                adsController.initialize()
-            }
-        }
         setContent {
             MigrateTheme(
                 darkTheme = when(viewModel.darkMode.value) {
@@ -58,8 +52,20 @@ class MainActivity : ComponentActivity() {
                     cancelRestore = ::cancelRestore,
                     shouldShowPermissionScreen = viewModel::shouldShowPermissionScreen,
                     updateUiState = viewModel::updateUiState,
+                    setupAds = ::setupAds,
                 )
             }
+        }
+    }
+
+    private fun setupAds() {
+        if (!adsController.isConfigured || isAdsSetupStarted) return
+        isAdsSetupStarted = true
+
+        consentManager.gatherConsent(this)
+        lifecycleScope.launch {
+            consentManager.canRequestAds.first { it }
+            adsController.initialize()
         }
     }
 

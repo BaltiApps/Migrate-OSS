@@ -50,6 +50,7 @@ fun Graph(
     cancelRestore: () -> Unit,
     shouldShowPermissionScreen: () -> Boolean,
     updateUiState: (darkMode: Preferences.DarkMode, followSystemColors: Boolean) -> Unit,
+    setupAds: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
@@ -96,6 +97,7 @@ fun Graph(
                     }
                 },
                 updateUiState = updateUiState,
+                setupAds = setupAds,
             )
         }
         navigation<RouteBackup>(

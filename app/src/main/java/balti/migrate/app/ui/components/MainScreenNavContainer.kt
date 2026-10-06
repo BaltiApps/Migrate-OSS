@@ -15,6 +15,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +37,12 @@ fun MainScreenNavContainer(
     onBackupSelected: () -> Unit,
     onRestoreSelected: () -> Unit,
     updateUiState: (darkMode: Preferences.DarkMode, followSystemColors: Boolean) -> Unit,
+    setupAds: () -> Unit,
 ) {
+    LaunchedEffect(Unit) {
+        setupAds()
+    }
+
     var currentTab by remember { mutableStateOf(MainScreenTab.Home) }
     val homeBannerAdView = rememberBannerAdView(BuildConfig.ADMOB_BANNER_UNIT_ID_HOME)
 
