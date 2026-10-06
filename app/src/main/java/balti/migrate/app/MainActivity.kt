@@ -6,6 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
+import balti.migrate.BuildConfig
+import balti.migrate.app.ads.AdsController
 import balti.migrate.app.ui.navigation.Graph
 import balti.migrate.app.ui.theme.MigrateTheme
 import balti.migrate.backup.data.service.BackupService
@@ -18,15 +20,22 @@ import baltiapps.migrate.domain.EXTRA_BACKUP_NAME
 import baltiapps.migrate.domain.EXTRA_BACKUP_URI_STRING
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import baltiapps.migrate.domain.common.sources.Preferences.DarkMode
+import com.google.android.ump.ConsentDebugSettings
+import com.google.android.ump.ConsentRequestParameters
+import com.google.android.ump.UserMessagingPlatform
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainActivityViewModel by viewModel()
+    private val adsController: AdsController by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        setupAds()
         setContent {
             MigrateTheme(
                 darkTheme = when(viewModel.darkMode.value) {
@@ -46,6 +55,42 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    private fun setupAds() {
+        if (!adsController.isConfigured) return
+
+        val consentInformation = UserMessagingPlatform.getConsentInformation(this)
+        val initializeIfAllowed = {
+            if (consentInformation.canRequestAds()) adsController.initialize()
+        }
+
+        val consentDebugSettings = ConsentDebugSettings.Builder(this)
+            .setDebugGeography(ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA)
+            .addTestDeviceHashedId(BuildConfig.CONSENT_DEBUG_DEVICE_ID)
+            .build()
+
+        val consentRequestParameters = ConsentRequestParameters.Builder().apply {
+            if (BuildConfig.DEBUG) {
+                setConsentDebugSettings(consentDebugSettings)
+            }
+        }.build()
+
+        consentInformation.requestConsentInfoUpdate(
+            this,
+            consentRequestParameters,
+            {
+                UserMessagingPlatform.loadAndShowConsentFormIfRequired(this) { formError ->
+                    formError?.let { Timber.w("Consent form error: ${it.message}") }
+                    initializeIfAllowed()
+                }
+            },
+            { requestError ->
+                Timber.w("Consent info update error: ${requestError.message}")
+                initializeIfAllowed()
+            },
+        )
+        initializeIfAllowed()
     }
 
     private fun startBackupService(backupLocation: BackupLocation) {

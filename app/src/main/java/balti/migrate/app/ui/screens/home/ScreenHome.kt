@@ -35,6 +35,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ScreenHome(
     onBackupSelected: () -> Unit,
     onRestoreSelected: () -> Unit,
+    banner: @Composable () -> Unit = {},
     viewModel: ScreenHomeViewModel = koinViewModel()
 ) {
 
@@ -52,6 +53,7 @@ fun ScreenHome(
         onRootSwitchToggled = { enabled ->
             viewModel.performAction(ScreenHomeAction.OnRootSwitchToggled(enabled))
         },
+        banner = banner,
     )
 }
 
@@ -63,6 +65,7 @@ private fun Content(
     onBackupSelected: () -> Unit,
     onRestoreSelected: () -> Unit,
     onRootSwitchToggled: (Boolean) -> Unit,
+    banner: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showRootFeaturesDialog by remember { mutableStateOf(false) }
@@ -88,7 +91,8 @@ private fun Content(
             TopBar(
                 showAboutDialog = onAboutButtonClicked,
             )
-        }
+        },
+        bottomBar = banner,
     ) { values ->
         Column(
             modifier = Modifier

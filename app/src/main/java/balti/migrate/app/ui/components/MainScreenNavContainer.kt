@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import balti.migrate.BuildConfig
 import balti.migrate.R
 import balti.migrate.app.ui.screens.appSettings.AppSettings
 import balti.migrate.app.ui.screens.home.ScreenHome
@@ -37,6 +38,7 @@ fun MainScreenNavContainer(
     updateUiState: (darkMode: Preferences.DarkMode, followSystemColors: Boolean) -> Unit,
 ) {
     var currentTab by remember { mutableStateOf(MainScreenTab.Home) }
+    val homeBannerAdView = rememberBannerAdView(BuildConfig.ADMOB_BANNER_UNIT_ID_HOME)
 
     BackHandler(enabled = currentTab != MainScreenTab.Home) {
         currentTab = MainScreenTab.Home
@@ -89,6 +91,7 @@ fun MainScreenNavContainer(
                 MainScreenTab.Home -> ScreenHome(
                     onBackupSelected = onBackupSelected,
                     onRestoreSelected = onRestoreSelected,
+                    banner = { AdBanner(homeBannerAdView) },
                 )
                 MainScreenTab.Settings -> AppSettings(
                     updateUiState = updateUiState,

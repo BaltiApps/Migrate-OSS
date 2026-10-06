@@ -17,6 +17,8 @@ jobs:
       KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
       KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
       KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      ADMOB_APP_ID: ${{ secrets.ADMOB_APP_ID }}
+      ADMOB_BANNER_UNIT_ID_HOME: ${{ secrets.ADMOB_BANNER_UNIT_ID_HOME }}
 
     steps:
       - name: Checkout source code

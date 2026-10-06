@@ -55,6 +55,16 @@ android {
         manifestPlaceholders["contentProviderAuthority"] = contentProviderAuthority
         buildConfigField("String", "contentProviderAuthority", "\"${contentProviderAuthority}\"")
 
+        val admobAppId = getEnvValue("ADMOB_APP_ID")?.trim() ?: ""
+        manifestPlaceholders["admobAppId"] = admobAppId.ifBlank { "ca-app-pub-3940256099942544~3347511713" }
+        buildConfigField("String", "ADMOB_APP_ID", "\"${admobAppId}\"")
+
+        val admobBannerUnitId = getEnvValue("ADMOB_BANNER_UNIT_ID_HOME")?.trim() ?: ""
+        buildConfigField("String", "ADMOB_BANNER_UNIT_ID_HOME", "\"${admobBannerUnitId}\"")
+
+        val consentDebugDeviceId = getEnvValue("CONSENT_DEBUG_DEVICE_ID")?.trim() ?: ""
+        buildConfigField("String", "CONSENT_DEBUG_DEVICE_ID", "\"${consentDebugDeviceId}\"")
+
         val schema = "migrate"
         val hostProgressBackup = "backup_progress"
         val hostProgressRestore = "restore_progress"
@@ -131,6 +141,8 @@ dependencies {
     implementation(libs.com.jakewharton.timber)
     implementation(libs.androidx.documentfile)
     implementation(libs.billing)
+    implementation(libs.ads.mobile.sdk)
+    implementation(libs.ump)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
