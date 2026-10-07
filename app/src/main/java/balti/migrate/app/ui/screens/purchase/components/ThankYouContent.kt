@@ -50,6 +50,11 @@ internal fun ThankYouContent(
                 textAlign = TextAlign.Center,
             )
             Text(
+                text = stringResource(R.string.purchase_thank_you_no_ads),
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+            )
+            Text(
                 text = if (item.price.isNotBlank()) {
                     stringResource(R.string.purchase_thank_you_item, item.title, item.price)
                 } else {
