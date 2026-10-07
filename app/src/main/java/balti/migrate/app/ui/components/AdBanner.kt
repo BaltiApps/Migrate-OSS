@@ -25,13 +25,14 @@ import timber.log.Timber
 @Composable
 fun rememberBannerAdView(
     adUnitId: String,
+    enabled: Boolean = true,
     adsController: AdsController = koinInject(),
 ): AdView? {
     val activity = LocalActivity.current ?: return null
     val isReady by adsController.isReady.collectAsState()
 
-    val adView = remember(isReady, adUnitId) {
-        if (isReady && adUnitId.isNotBlank()) AdView(activity) else null
+    val adView = remember(isReady, enabled, adUnitId) {
+        if (isReady && enabled && adUnitId.isNotBlank()) AdView(activity) else null
     }
 
     DisposableEffect(adView) {

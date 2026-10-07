@@ -28,6 +28,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun AppSettings(
     updateUiState: (darkMode: Preferences.DarkMode, followSystemColors: Boolean) -> Unit,
+    isAdFree: Boolean,
     viewModel: AppSettingsViewModel = koinViewModel(),
     consentManager: ConsentManager = koinInject(),
 ) {
@@ -36,7 +37,7 @@ fun AppSettings(
     val activity = LocalActivity.current
     Content(
         state = state,
-        showAdPrivacy = isPrivacyOptionsRequired,
+        showAdPrivacy = isPrivacyOptionsRequired && !isAdFree,
         onAdPrivacyClicked = { activity?.let(consentManager::showPrivacyOptions) },
         onChangeDarkMode = {
             viewModel.onAction(AppSettingsAction.ChangeDarkMode(it, updateUiState))

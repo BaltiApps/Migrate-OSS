@@ -6,6 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import balti.migrate.app.ads.AdsController
 import balti.migrate.app.ads.ConsentManager
@@ -23,8 +25,12 @@ import baltiapps.migrate.domain.backup.model.BackupLocation
 import baltiapps.migrate.domain.common.sources.Preferences.DarkMode
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.time.Duration.Companion.milliseconds
+
+private const val PURCHASE_REFRESH_WAIT_MILLIS = 5000L
 
 class MainActivity : ComponentActivity() {
 
@@ -37,6 +43,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val isAdFree by viewModel.isAdFree.collectAsStateWithLifecycle()
             MigrateTheme(
                 darkTheme = when(viewModel.darkMode.value) {
                     DarkMode.LIGHT -> false
@@ -53,6 +60,7 @@ class MainActivity : ComponentActivity() {
                     shouldShowPermissionScreen = viewModel::shouldShowPermissionScreen,
                     updateUiState = viewModel::updateUiState,
                     setupAds = ::setupAds,
+                    isAdFree = isAdFree,
                 )
             }
         }
@@ -62,8 +70,14 @@ class MainActivity : ComponentActivity() {
         if (!adsController.isConfigured || isAdsSetupStarted) return
         isAdsSetupStarted = true
 
-        consentManager.gatherConsent(this)
         lifecycleScope.launch {
+            if (!viewModel.isAdFree.value) {
+                withTimeoutOrNull(PURCHASE_REFRESH_WAIT_MILLIS.milliseconds) {
+                    viewModel.isPurchaseStateResolved.first { it }
+                }
+            }
+            viewModel.isAdFree.first { !it }
+            consentManager.gatherConsent(this@MainActivity)
             consentManager.canRequestAds.first { it }
             adsController.initialize()
         }

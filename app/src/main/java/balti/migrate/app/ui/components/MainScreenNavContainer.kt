@@ -38,13 +38,14 @@ fun MainScreenNavContainer(
     onRestoreSelected: () -> Unit,
     updateUiState: (darkMode: Preferences.DarkMode, followSystemColors: Boolean) -> Unit,
     setupAds: () -> Unit,
+    isAdFree: Boolean,
 ) {
     LaunchedEffect(Unit) {
         setupAds()
     }
 
     var currentTab by remember { mutableStateOf(MainScreenTab.Home) }
-    val homeBannerAdView = rememberBannerAdView(BuildConfig.ADMOB_BANNER_UNIT_ID_HOME)
+    val homeBannerAdView = rememberBannerAdView(BuildConfig.ADMOB_BANNER_UNIT_ID_HOME, enabled = !isAdFree)
 
     BackHandler(enabled = currentTab != MainScreenTab.Home) {
         currentTab = MainScreenTab.Home
@@ -101,6 +102,7 @@ fun MainScreenNavContainer(
                 )
                 MainScreenTab.Settings -> AppSettings(
                     updateUiState = updateUiState,
+                    isAdFree = isAdFree,
                 )
                 MainScreenTab.Purchase -> PurchaseScreen()
             }
