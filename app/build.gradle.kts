@@ -59,8 +59,8 @@ android {
         manifestPlaceholders["admobAppId"] = admobAppId.ifBlank { "ca-app-pub-3940256099942544~3347511713" }
         buildConfigField("String", "ADMOB_APP_ID", "\"${admobAppId}\"")
 
-        val admobBannerUnitIdHome = getEnvValue("ADMOB_BANNER_UNIT_ID_HOME")?.trim() ?: ""
-        buildConfigField("String", "ADMOB_BANNER_UNIT_ID_HOME", "\"${admobBannerUnitIdHome}\"")
+        val admobBannerIdHome = getEnvValue("ADMOB_BANNER_ID_HOME")?.trim() ?: ""
+        buildConfigField("String", "ADMOB_BANNER_ID_HOME", "\"${admobBannerIdHome}\"")
 
         val admobBannerIdBackupProgress = getEnvValue("ADMOB_BANNER_ID_BACKUP_PROGRESS")?.trim() ?: ""
         buildConfigField("String", "ADMOB_BANNER_ID_BACKUP_PROGRESS", "\"${admobBannerIdBackupProgress}\"")

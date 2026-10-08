@@ -45,7 +45,7 @@ fun MainScreenNavContainer(
     }
 
     var currentTab by remember { mutableStateOf(MainScreenTab.Home) }
-    val homeBannerAdView = rememberBannerAdView(BuildConfig.ADMOB_BANNER_UNIT_ID_HOME, enabled = !isAdFree)
+    val homeBannerAdView = rememberBannerAdView(BuildConfig.ADMOB_BANNER_ID_HOME, enabled = !isAdFree)
 
     BackHandler(enabled = currentTab != MainScreenTab.Home) {
         currentTab = MainScreenTab.Home
