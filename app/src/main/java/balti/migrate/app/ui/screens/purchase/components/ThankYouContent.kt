@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.VolunteerActivism
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -49,10 +50,9 @@ internal fun ThankYouContent(
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
             )
-            Text(
+            PerkRow(
+                icon = Icons.Outlined.Check,
                 text = stringResource(R.string.purchase_thank_you_no_ads),
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
             )
             Text(
                 text = if (item.price.isNotBlank()) {
