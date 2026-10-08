@@ -25,7 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import balti.migrate.BuildConfig
 import balti.migrate.R
+import balti.migrate.app.ui.components.AdBanner
+import balti.migrate.app.ui.components.rememberBannerAdView
 import balti.migrate.common.ui.components.ButtonStatus
 import balti.migrate.common.ui.components.KeepScreenOn
 import balti.migrate.common.ui.components.LoadingProgressBar
@@ -43,8 +46,10 @@ fun BackupProgressScreen(
     viewModel: BackupProgressScreenViewModel = koinViewModel(),
     cancelBackup: () -> Unit,
     closeProgressScreen: () -> Unit,
+    isAdFree: Boolean,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val bannerAdView = rememberBannerAdView(BuildConfig.ADMOB_BANNER_ID_BACKUP_PROGRESS, enabled = !isAdFree)
 
     Content(
         state = { state },
@@ -62,6 +67,7 @@ fun BackupProgressScreen(
             viewModel.performAction(BackupProgressScreenAction.ResumeProgressLogs)
         },
         closeProgressScreen = closeProgressScreen,
+        banner = { AdBanner(bannerAdView) },
     )
 
     BackHandler { closeProgressScreen() }
@@ -76,6 +82,7 @@ private fun Content(
     pauseLogs: () -> Unit,
     resumeLogs: () -> Unit,
     closeProgressScreen: () -> Unit,
+    banner: @Composable () -> Unit,
 ) {
     var scrollAnchor by remember { mutableStateOf(ScrollAnchor.BOTTOM) }
     val items = if (state().errorOnly) state().errorList else state().progressList
@@ -104,24 +111,27 @@ private fun Content(
             )
         },
         bottomBar = {
-            ProgressScreenBottomBar(
-                onScrollToTop = {
-                    scrollAnchor = ScrollAnchor.TOP
-                },
-                onScrollToBottom = {
-                    scrollAnchor = ScrollAnchor.BOTTOM
-                },
-                fabContent = {
-                    val buttonStatus = when {
-                        state().isBackupFinished ->
-                            ButtonStatus.Success(stringResource(R.string.done), closeProgressScreen)
-                        state().isCancelling ->
-                            ButtonStatus.Loading(stringResource(R.string.cancel)) {}
-                        else -> ButtonStatus.Error(stringResource(R.string.cancel), cancelBackup)
+            Column {
+                banner()
+                ProgressScreenBottomBar(
+                    onScrollToTop = {
+                        scrollAnchor = ScrollAnchor.TOP
+                    },
+                    onScrollToBottom = {
+                        scrollAnchor = ScrollAnchor.BOTTOM
+                    },
+                    fabContent = {
+                        val buttonStatus = when {
+                            state().isBackupFinished ->
+                                ButtonStatus.Success(stringResource(R.string.done), closeProgressScreen)
+                            state().isCancelling ->
+                                ButtonStatus.Loading(stringResource(R.string.cancel)) {}
+                            else -> ButtonStatus.Error(stringResource(R.string.cancel), cancelBackup)
+                        }
+                        NextFab(buttonStatus)
                     }
-                    NextFab(buttonStatus)
-                }
-            )
+                )
+            }
         }
     ) { paddingValues ->
         Column(

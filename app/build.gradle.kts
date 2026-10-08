@@ -59,8 +59,14 @@ android {
         manifestPlaceholders["admobAppId"] = admobAppId.ifBlank { "ca-app-pub-3940256099942544~3347511713" }
         buildConfigField("String", "ADMOB_APP_ID", "\"${admobAppId}\"")
 
-        val admobBannerUnitId = getEnvValue("ADMOB_BANNER_UNIT_ID_HOME")?.trim() ?: ""
-        buildConfigField("String", "ADMOB_BANNER_UNIT_ID_HOME", "\"${admobBannerUnitId}\"")
+        val admobBannerUnitIdHome = getEnvValue("ADMOB_BANNER_UNIT_ID_HOME")?.trim() ?: ""
+        buildConfigField("String", "ADMOB_BANNER_UNIT_ID_HOME", "\"${admobBannerUnitIdHome}\"")
+
+        val admobBannerIdBackupProgress = getEnvValue("ADMOB_BANNER_ID_BACKUP_PROGRESS")?.trim() ?: ""
+        buildConfigField("String", "ADMOB_BANNER_ID_BACKUP_PROGRESS", "\"${admobBannerIdBackupProgress}\"")
+
+        val admobBannerIdRestoreProgress = getEnvValue("ADMOB_BANNER_ID_RESTORE_PROGRESS")?.trim() ?: ""
+        buildConfigField("String", "ADMOB_BANNER_ID_RESTORE_PROGRESS", "\"${admobBannerIdRestoreProgress}\"")
 
         val consentDebugDeviceId = getEnvValue("CONSENT_DEBUG_DEVICE_ID")?.trim() ?: ""
         buildConfigField("String", "CONSENT_DEBUG_DEVICE_ID", "\"${consentDebugDeviceId}\"")

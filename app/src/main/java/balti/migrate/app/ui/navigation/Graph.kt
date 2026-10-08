@@ -186,6 +186,7 @@ fun Graph(
                 val isDeepLinked =
                     activity?.intent?.data?.toString() == DeepLinkUtils.MigrateUri.UriProgressBackup.uriString
                 BackupProgressScreen(
+                    isAdFree = isAdFree,
                     cancelBackup = cancelBackup,
                     closeProgressScreen = {
                         navController.popBackStack(RouteBackup, true)
@@ -290,6 +291,7 @@ fun Graph(
                 val isDeepLinked =
                 activity?.intent?.data?.toString() == DeepLinkUtils.MigrateUri.UriProgressRestore.uriString
                 RestoreProgressScreen(
+                    isAdFree = isAdFree,
                     cancelRestore = cancelRestore,
                     closeProgressScreen = {
                         navController.popBackStack(RouteRestore, true)
