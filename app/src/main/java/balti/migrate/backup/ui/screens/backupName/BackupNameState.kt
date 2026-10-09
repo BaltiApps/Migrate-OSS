@@ -16,6 +16,7 @@ data class BackupNameState(
     val appSizes: List<AppSizeInfo> = listOf(),
     val shouldShowNoSpaceDialog: Boolean = false,
     val shouldShowAppSizesDialog: Boolean = false,
+    val shouldRequestNotificationPermission: Boolean = false,
     val totalSpaceBytes: Long = 0L,
     val availableSpaceBytes: Long = 0L,
     val requiredSpaceBytes: Long = 0L,

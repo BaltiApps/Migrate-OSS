@@ -75,6 +75,11 @@ fun BackupName(
         onUriSelectClicked = PermissionUtils.requestSafLocation {
             viewModel.onAction(BackupNameAction.OnSafLocationSelected(it))
         },
+        requestNotificationPermission = PermissionUtils.notificationsPermission?.run {
+            PermissionUtils.requestPermission(this) {
+                viewModel.onAction(BackupNameAction.OnNotificationPermissionResult(goToNextScreen))
+            }
+        },
         onDismissNoSpaceDialog = {
             viewModel.onAction(BackupNameAction.DismissNoSpaceDialog)
         },
@@ -99,6 +104,7 @@ private fun Content(
     onStartBackup: () -> Unit,
     onBackupNameChanged: (String) -> Unit,
     onUriSelectClicked: () -> Unit,
+    requestNotificationPermission: (() -> Unit)?,
     onDismissNoSpaceDialog: () -> Unit,
     onShowAppSizesDialog: () -> Unit,
     onDismissAppSizesDialog: () -> Unit,
@@ -107,6 +113,9 @@ private fun Content(
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
+    if (state().shouldRequestNotificationPermission) {
+        requestNotificationPermission?.invoke()
+    }
     if (state().isScanningAppSizes) {
         val appScanDisplayText = state().appSizeScanProgress?.displayText
         val loadingText = stringResource(R.string.checking_app_sizes) +

@@ -10,6 +10,9 @@ sealed class BackupNameAction {
     data class StartBackup(
         val startBackupMethod: (BackupLocation) -> Unit,
     ): BackupNameAction()
+    data class OnNotificationPermissionResult(
+        val startBackupMethod: (BackupLocation) -> Unit,
+    ): BackupNameAction()
     data object DismissNoSpaceDialog: BackupNameAction()
     data object ShowAppSizesDialog: BackupNameAction()
     data object DismissAppSizesDialog: BackupNameAction()

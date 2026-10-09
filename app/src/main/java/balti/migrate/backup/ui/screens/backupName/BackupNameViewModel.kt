@@ -12,10 +12,12 @@ import balti.migrate.R
 import balti.migrate.common.data.model.MediaStoreDownloadFile
 import balti.migrate.common.data.sources.UsbStorageReceiver
 import balti.migrate.common.data.sources.fileSystem.TransferUtils
+import balti.migrate.common.utils.PermissionUtils
 import balti.migrate.common.utils.getDefaultBackupName
 import baltiapps.migrate.domain.backup.model.BackupLocation
 import baltiapps.migrate.domain.backup.repository.BackupDataRepository
 import baltiapps.migrate.domain.backup.usecase.GetRequiredSpaceForBackupUseCase
+import baltiapps.migrate.domain.common.sources.ContextSource
 import baltiapps.migrate.domain.common.sources.Preferences
 import baltiapps.migrate.domain.common.sources.fileSystem.FileSystemUtils
 import baltiapps.migrate.domain.restore.usecase.CalculateStagedAppsSizesUseCase
@@ -39,6 +41,7 @@ class BackupNameViewModel(
     private val calculateStagedAppsSizesUseCase: CalculateStagedAppsSizesUseCase,
     private val backupDataRepository: BackupDataRepository,
     private val getRequiredSpaceForBackupUseCase: GetRequiredSpaceForBackupUseCase,
+    private val contextSource: ContextSource,
 ) : ViewModel() {
 
     private val fsUtils by lazy { FileSystemUtils() }
@@ -167,8 +170,21 @@ class BackupNameViewModel(
                 } else if (!backupDataRepository.shouldBackupAnything()) {
                     _errorMessage.trySend(applicationContext.getString(R.string.no_data_to_backup))
                 } else {
-                    startBackup(action.startBackupMethod)
+                    if (
+                        PermissionUtils.notificationsPermission?.run {
+                            contextSource.checkPermission(this)
+                        } ?: true
+                    ) {
+                        startBackup(action.startBackupMethod)
+                    } else {
+                        _state.update { it.copy(shouldRequestNotificationPermission = true) }
+                    }
                 }
+            }
+            is BackupNameAction.OnNotificationPermissionResult -> {
+                // Backup proceeds even if the permission is denied.
+                _state.update { it.copy(shouldRequestNotificationPermission = false) }
+                startBackup(action.startBackupMethod)
             }
             is BackupNameAction.CancelSpaceCalculation -> {
                 _state.update { it.copy(isSpaceCalculationCancelled = true) }
